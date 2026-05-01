@@ -1,0 +1,17 @@
+{
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bootstrap.py": "b863ed99d5ba9ac6f7d0cd069c7b71cd0fe4da8ff530f001c0f07cefff531983",
+    "immutability/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "immutability/exceptions.py": "b62cf898d50f89dc22aa4a96973fccd2a31d60dd5aca2b160fc806ce1137984d",
+    "immutability/guard.py": "b97f2220a5a6a2d63220a88b0d3e24f2e79d0d22488896fff8cfd28e0d1d01f6",
+    "immutability/policy.py": "c456aff3716210a9a27628085e41bd75d614f6e4cf7dac65b4f1d51eed4baa30",
+    "immutability/seal.py": "15d19d1b184b0482cff605cfe610f01192adea1a2828d0d2b4fddbcd1259de7c",
+    "immutability/seal_policy.py": "462a347f54c5fdb4ee0a7d7966fb2b147c3993f80e4d92819a9856786d0ddb96",
+    "immutability/snapshot.py": "89a6052d9f1d226906f2103e4a27bfcba1cb1204d7017f97a08a6d88030e27ba",
+    "immutability/verify.py": "582b6d312de97e4b9fc98761c05c7224f097306c331cf96aa3b70f739cbeb0a3",
+    "system_flow.md": "56bfee14ed86449403cc66b54336f9102c583853bde7e8d2ecaabd2c78a2fa92"
+  },
+  "root": "kernel",
+  "version": "v1"
+}

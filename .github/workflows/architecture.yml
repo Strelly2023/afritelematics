@@ -1,0 +1,21 @@
+name: AfriTech Architecture Guard
+
+on: [push, pull_request]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run Architecture Enforcement
+        run: python3 afritech_v1/architecture/enforce_dependencies.py

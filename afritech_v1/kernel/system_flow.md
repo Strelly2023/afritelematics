@@ -1,0 +1,1 @@
+BOOT → registry load → governance validation → runtime init → vm execution → audit record

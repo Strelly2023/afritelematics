@@ -1,0 +1,10 @@
+kernel_root: afritech_v1/kernel
+
+include:
+  - .py
+  - .md
+
+exclude:
+  - __pycache__
+  - .pyc
+  - .git
