@@ -1,26 +1,17 @@
 """
 AfriTech Sovereign Entry Point
-Constitutional migration bridge: v1 authority enforcement,
-new namespace sovereignty declaration.
+
+Post-migration constitutional authority root.
+
+afritech_v1 is frozen historical lineage only.
+No runtime authority may be imported from it.
 """
 
-from importlib import import_module
 from pathlib import Path
-import sys
 
 
 def constitutional_halt(message: str):
     raise SystemExit(f"\n❌ CONSTITUTIONAL HALT\n{message}\n")
-
-
-def load_required(module_path: str):
-    try:
-        return import_module(module_path)
-    except ImportError as e:
-        constitutional_halt(
-            f"Required authority module missing:\n"
-            f"{module_path}\n\n{e}"
-        )
 
 
 print("🏛️ AFRITECH SOVEREIGN BOOT SEQUENCE STARTING")
@@ -32,51 +23,78 @@ if "afritech_v1" in str(ROOT):
         "Execution attempted from frozen namespace."
     )
 
-print("🔄 Constitutional migration bridge active")
+print("🔐 Verifying constitutional lineage...")
 
 # ------------------------------------------------------------
-# v1 kernel authority (temporary migration bridge)
+# Historical lineage check
 # ------------------------------------------------------------
 
-print("🔐 Verifying kernel authority...")
+v1_root = ROOT.parent.parent / "afritech_v1"
 
-v1_main = load_required("afritech_v1.main")
+required_legacy = [
+    "main.py",
+    "architecture/kernel_manifest.yaml",
+    "registry/registry.yaml",
+]
 
-if hasattr(v1_main, "boot"):
-    v1_main.boot()
-else:
-    print("⚠️ Using import-time v1 verification")
+missing_legacy = [
+    f for f in required_legacy
+    if not (v1_root / f).exists()
+]
 
-print("✅ Kernel authority inherited")
+if missing_legacy:
+    constitutional_halt(
+        f"Historical lineage broken:\n{missing_legacy}"
+    )
+
+print("✅ Historical lineage preserved")
 
 # ------------------------------------------------------------
-# Lean formal layer presence
+# Lean constitutional layer
 # ------------------------------------------------------------
 
-lean_dir = Path(__file__).parent / "lean"
+lean_dir = ROOT.parent / "lean"
 
 required_lean = [
     "Kernel.lean",
     "State.lean",
     "Production.lean",
     "Executable.lean",
+    "Preservation.lean",
+    "Refinement.lean",
+    "KernelIntegration.lean",
 ]
 
-missing = [
+missing_lean = [
     f for f in required_lean
     if not (lean_dir / f).exists()
 ]
 
-if missing:
+if missing_lean:
     constitutional_halt(
-        f"Formal layer incomplete:\n{missing}"
+        f"Formal constitutional layer incomplete:\n{missing_lean}"
     )
 
-print("✅ Formal constitutional layer present")
+print("✅ Formal constitutional layer verified")
+
+# ------------------------------------------------------------
+# Runtime sovereignty
+# ------------------------------------------------------------
+
+runtime_executor = ROOT.parent / "runtime" / "guard_executor.py"
+
+if not runtime_executor.exists():
+    constitutional_halt(
+        "Runtime execution layer missing:\n"
+        "afritech/runtime/guard_executor.py"
+    )
+
+print("✅ Runtime sovereignty verified")
 
 # ------------------------------------------------------------
 # Sovereign declaration
 # ------------------------------------------------------------
 
-print("🏛️ Namespace authority transferred to /afritech")
-print("🟢 AfriTech RUNNING (STATE: MIGRATION-SOVEREIGN)")
+print("🏛️ Authority root: /afritech")
+print("📜 Legacy lineage: preserved (/afritech_v1 frozen)")
+print("🟢 AfriTech RUNNING (STATE: SOVEREIGN)")
