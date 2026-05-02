@@ -1,0 +1,16 @@
+schema: afritech.registry.history.v1
+epoch:
+  number: 2
+  parent: 1
+  status: FINAL
+  monotonic: true
+authority:
+  adr: ADR-0002
+timestamp:
+  enacted_at: '2026-05-02T20:17:16.967402Z'
+sealing:
+  pre_state: SEALED
+  unsealed_for_mutation: true
+  resealed: false
+violations:
+  detected: false

@@ -34,9 +34,11 @@ invariants:
   enforcement: REQUIRED
   mutable: false
 epoch:
-  current: 0
+  current: 2
   monotonic: true
   advancement_policy: ADR_REQUIRED
+  last_advanced_by: ADR-0002
+  advanced_at: '2026-05-02T20:17:16.967402Z'
 mutation:
   allowed: false
   unlock_condition:
@@ -52,13 +54,41 @@ historical_record:
   executable_v1: false
   reference_only: true
 attestation:
-  registry_hash: d4de5dfad5c2de8c7fe5d8058e381936203b28cd36cbda0f8024c2f3af58784f
+  registry_hash: 726088ba8274c6c857f97bd77970e82e4ede60b1db57f964abdb616007e6df25
   kernel_hashes:
-    lean: 3b7f2fa5325efe6cafb4b2500cbd8aee60ed5f5934f003cba60d9fe4906301e1
-    kernel: 1207f4981ef87ae3564dfe4dc13b89ffb0f13bb6dcaae60a243e4ccc5cc1e69a
-    state: 5a5b6294ae563d3b644df1d02be7c695d5240549fe9bdf1bda538527d674e4e3
-    guards: 749f08f0567a579cd0434f894b332b7237241e52b56db48aca8816133e644602
-    runtime: f2aca8a64e044022864378e37426489b4f4b678e0a060499ca92ec9d03b8d1ff
+    lean:
+      files:
+      - lean/Kernel.lean
+      - lean/State.lean
+      - lean/Production.lean
+      - lean/Executable.lean
+      - lean/Preservation.lean
+      - lean/Refinement.lean
+      - lean/KernelIntegration.lean
+      hash: 6c3c1c87cb81a1de3540623a4b981d41e31c4f7d2844d5bdf5d048cf763d67a0
+    kernel:
+      files:
+      - kernel/__init__.py
+      - kernel/core.py
+      - kernel/types.py
+      hash: 977b4e49f82d8ac316941920e31be36de3e1f2a6021935794310624e4fc62433
+    state:
+      files:
+      - state/__init__.py
+      - state/state.py
+      - state/types.py
+      hash: 7094b2a439fca49f134a68b38414706ed737e0d1bbc22d8406cb6ffe511f8663
+    guards:
+      files:
+      - guards/__init__.py
+      - guards/engine.py
+      hash: 698fe65702b7fb2e1a01a88ca91d177de3bd8ee306be8ad1817785984d0f85ab
+    runtime:
+      files:
+      - runtime/__init__.py
+      - runtime/guard_executor.py
+      - runtime/main.py
+      hash: 1e7096eff38231720dd5a15597d03d7399d574813f4e7b38efea1762fa0bc483
   seal_status: SEALED
 constitutional_assertions:
 - afritech is sole active authority
