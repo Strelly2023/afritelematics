@@ -65,3 +65,6 @@ def seal_registry():
     print("🔏 Registry sovereignty sealed")
     print(f"   registry_hash: {registry_hash}")
     print(f"   kernel_hash:   {kernel_hash}")
+
+if __name__ == "__main__":
+    seal_registry()
