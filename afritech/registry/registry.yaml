@@ -1,0 +1,75 @@
+schema: afritech.registry.v1
+
+registry:
+  id: AFRITECH-CONSTITUTIONAL-REGISTRY
+  version: 1
+  status: ACTIVE
+  authority: SOVEREIGN
+
+identity:
+  namespace: afritech
+  canonical_root: /afritech
+  constitutional_epoch: 0
+  state: SOVEREIGN
+
+lineage:
+  predecessor: afritech_v1
+  predecessor_status: FROZEN
+  predecessor_tag: afritech-v1-constitutional-freeze
+  transfer_mode: CONSTITUTIONAL_MIGRATION
+
+authority:
+  source_of_truth: registry
+  precedence:
+    - registry
+    - kernel_manifest
+    - lean
+    - runtime
+
+kernel:
+  manifest: architecture/kernel_manifest.yaml
+  mutable: false
+  change_policy: ADR_REQUIRED
+
+formal:
+  lean_root: lean/
+  proof_status: DECLARED
+  runtime_binding: PENDING
+
+invariants:
+  source: architecture/INVARIANTS.yaml
+  enforcement: REQUIRED
+  mutable: false
+
+epoch:
+  current: 0
+  monotonic: true
+  advancement_policy: ADR_REQUIRED
+
+mutation:
+  allowed: false
+  unlock_condition:
+    - approved_adr
+    - epoch_advance
+    - registry_reseal
+
+security:
+  silent_mutation: FORBIDDEN
+  dual_sovereignty: FORBIDDEN
+  runtime_authority_override: FORBIDDEN
+
+historical_record:
+  preserve_v1: true
+  executable_v1: false
+  reference_only: true
+
+attestation:
+  registry_hash: PENDING
+  kernel_hash: PENDING
+  seal_status: UNSEALED
+
+constitutional_assertions:
+  - afritech is sole active authority
+  - afritech_v1 is frozen lineage only
+  - all runtime legitimacy derives from registry
+  - mutation requires constitutional procedure
