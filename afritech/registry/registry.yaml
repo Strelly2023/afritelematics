@@ -1,7 +1,7 @@
-schema: afritech.registry.v1
+schema: afritech.registry.v2
 registry:
   id: AFRITECH-CONSTITUTIONAL-REGISTRY
-  version: 1
+  version: 2
   status: ACTIVE
   authority: SOVEREIGN
 identity:
@@ -27,8 +27,8 @@ kernel:
   change_policy: ADR_REQUIRED
 formal:
   lean_root: lean/
-  proof_status: DECLARED
-  runtime_binding: PENDING
+  proof_status: VERIFIED
+  runtime_binding: VERIFIED
 invariants:
   source: architecture/INVARIANTS.yaml
   enforcement: REQUIRED
@@ -52,11 +52,18 @@ historical_record:
   executable_v1: false
   reference_only: true
 attestation:
-  registry_hash: a7b66066a6b428825219c24e32be2587f52af85eb74d99bacec29257f4e3ce7a
-  kernel_hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  registry_hash: d4de5dfad5c2de8c7fe5d8058e381936203b28cd36cbda0f8024c2f3af58784f
+  kernel_hashes:
+    lean: 3b7f2fa5325efe6cafb4b2500cbd8aee60ed5f5934f003cba60d9fe4906301e1
+    kernel: 1207f4981ef87ae3564dfe4dc13b89ffb0f13bb6dcaae60a243e4ccc5cc1e69a
+    state: 5a5b6294ae563d3b644df1d02be7c695d5240549fe9bdf1bda538527d674e4e3
+    guards: 749f08f0567a579cd0434f894b332b7237241e52b56db48aca8816133e644602
+    runtime: f2aca8a64e044022864378e37426489b4f4b678e0a060499ca92ec9d03b8d1ff
   seal_status: SEALED
 constitutional_assertions:
 - afritech is sole active authority
 - afritech_v1 is frozen lineage only
 - all runtime legitimacy derives from registry
 - mutation requires constitutional procedure
+- registry sealing is cryptographically enforced
+- constitutional surfaces must hash-match at boot
