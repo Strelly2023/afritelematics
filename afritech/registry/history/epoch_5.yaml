@@ -1,0 +1,68 @@
+schema: afritech.registry.epoch.v1
+
+epoch:
+  number: 5
+  parent: 4
+  authority:
+    adr: ADR-0005
+  advanced_at: "2026-05-03T09:14:32Z"
+
+description: >
+  Epoch 5 records a non-substantive constitutional continuation
+  whose sole purpose is to normalize and clarify historical
+  registry lineage following bookkeeping corrections applied
+  in Epoch 4. No constitutional identity, authority, or policy
+  semantics are changed in this epoch.
+
+# ---------------------------------------------------------------------
+# Sealing metadata
+# ---------------------------------------------------------------------
+
+sealing:
+  pre_state: SEALED
+  unsealed_for_mutation: false
+  resealed: true
+  seal_status: SEALED
+
+# ---------------------------------------------------------------------
+# Attestation continuity (unchanged)
+# ---------------------------------------------------------------------
+
+attestation:
+  registry_schema: afritech.registry.v2
+  surfaces_attested:
+    - lean
+    - kernel
+    - state
+    - guards
+    - runtime
+  enforcement:
+    runtime: ENABLED
+    ci: ENABLED
+
+# ---------------------------------------------------------------------
+# Invariant confirmation
+# ---------------------------------------------------------------------
+
+invariants_preserved:
+  - epoch_monotonicity
+  - registry_sovereignty
+  - kernel_immutability
+  - silent_mutation_forbidden
+  - replay_validity
+
+# ---------------------------------------------------------------------
+# Correction record
+# ---------------------------------------------------------------------
+
+correction:
+  applied: true
+  adr: ADR-0005
+  type: BOOKKEEPING
+  purpose: >
+    Epoch advancement performed solely to normalize historical
+    representation and enable unambiguous replay verification.
+  affects_identity: false
+  affects_epoch_number_semantics: false
+  affects_hashes: false
+  affects_authority: false
