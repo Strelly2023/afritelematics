@@ -16,11 +16,11 @@ lineage:
   transfer_mode: CONSTITUTIONAL_MIGRATION
 authority:
   source_of_truth: registry
-  precedence:
-  - registry
-  - kernel_manifest
-  - lean
-  - runtime
+precedence:
+- registry
+- kernel_manifest
+- lean
+- runtime
 kernel:
   manifest: architecture/kernel_manifest.yaml
   mutable: false
@@ -34,11 +34,12 @@ invariants:
   enforcement: REQUIRED
   mutable: false
 epoch:
-  current: 2
+  constitutional_epoch: 0
+  current: 3
   monotonic: true
   advancement_policy: ADR_REQUIRED
   last_advanced_by: ADR-0002
-  advanced_at: '2026-05-02T20:17:16.967402Z'
+  advanced_at: '2026-05-02T20:27:08.877014Z'
 mutation:
   allowed: false
   unlock_condition:
@@ -54,7 +55,7 @@ historical_record:
   executable_v1: false
   reference_only: true
 attestation:
-  registry_hash: 726088ba8274c6c857f97bd77970e82e4ede60b1db57f964abdb616007e6df25
+  registry_hash: 8d26b6c10bcab22dde4ef870e68cd91d7fd4f29a257fc4eb275d2cbb0e508846
   kernel_hashes:
     lean:
       files:
@@ -88,12 +89,14 @@ attestation:
       - runtime/__init__.py
       - runtime/guard_executor.py
       - runtime/main.py
-      hash: 1e7096eff38231720dd5a15597d03d7399d574813f4e7b38efea1762fa0bc483
+      hash: 6b0ae2e79d3a6b50829908d35207209bb07b58ef13c4335e11eeaee99e4e8e97
   seal_status: SEALED
+seal_status: SEALED
 constitutional_assertions:
 - afritech is sole active authority
 - afritech_v1 is frozen lineage only
 - all runtime legitimacy derives from registry
 - mutation requires constitutional procedure
 - registry sealing is cryptographically enforced
+- constitutional history must remain replay-valid
 - constitutional surfaces must hash-match at boot
