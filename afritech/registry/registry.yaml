@@ -35,11 +35,11 @@ invariants:
   mutable: false
 epoch:
   constitutional_epoch: 0
-  current: 3
+  current: 4
   monotonic: true
   advancement_policy: ADR_REQUIRED
   last_advanced_by: ADR-0002
-  advanced_at: '2026-05-02T20:27:08.877014Z'
+  advanced_at: '2026-05-03T08:06:23.631635Z'
 mutation:
   allowed: false
   unlock_condition:
@@ -55,7 +55,8 @@ historical_record:
   executable_v1: false
   reference_only: true
 attestation:
-  registry_hash: 8d26b6c10bcab22dde4ef870e68cd91d7fd4f29a257fc4eb275d2cbb0e508846
+  algorithm: SHA256
+  registry_hash: 96c16308b326133a388ef71d322ea5e12bd61ec6e31f121067b58f15512450f1
   kernel_hashes:
     lean:
       files:
@@ -83,7 +84,7 @@ attestation:
       files:
       - guards/__init__.py
       - guards/engine.py
-      hash: 698fe65702b7fb2e1a01a88ca91d177de3bd8ee306be8ad1817785984d0f85ab
+      hash: 5435f4e0ff23b515141daced33332d7a3ed6d884179f30d4992f9fc63899c6d5
     runtime:
       files:
       - runtime/__init__.py
