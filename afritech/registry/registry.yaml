@@ -35,11 +35,11 @@ invariants:
   mutable: false
 epoch:
   constitutional_epoch: 0
-  current: 4
+  current: 5
   monotonic: true
   advancement_policy: ADR_REQUIRED
-  last_advanced_by: ADR-0002
-  advanced_at: '2026-05-03T08:06:23.631635Z'
+  last_advanced_by: ADR-0005
+  advanced_at: '2026-05-03T09:14:32Z'
 mutation:
   allowed: false
   unlock_condition:
@@ -55,8 +55,8 @@ historical_record:
   executable_v1: false
   reference_only: true
 attestation:
+  version: 1
   algorithm: SHA256
-  registry_hash: 96c16308b326133a388ef71d322ea5e12bd61ec6e31f121067b58f15512450f1
   kernel_hashes:
     lean:
       files:
@@ -91,6 +91,7 @@ attestation:
       - runtime/guard_executor.py
       - runtime/main.py
       hash: 6b0ae2e79d3a6b50829908d35207209bb07b58ef13c4335e11eeaee99e4e8e97
+  registry_hash: d53e316ec18b8afa339c141674fd2ebcd3f5cf13e3e6e3f50d49e26bc575deed
   seal_status: SEALED
 seal_status: SEALED
 constitutional_assertions:
@@ -101,3 +102,8 @@ constitutional_assertions:
 - registry sealing is cryptographically enforced
 - constitutional history must remain replay-valid
 - constitutional surfaces must hash-match at boot
+status:
+  replay_validity: REQUIRED
+  runtime_sovereignty: VERIFIED
+  lineage_integrity: PRESERVED
+  invariants_preserved: VERIFIED
