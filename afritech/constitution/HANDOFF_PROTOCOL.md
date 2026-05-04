@@ -1,7 +1,7 @@
 # AfriTech Constitutional Handoff Protocol
 
 **Status:** OPERATIVE  
-**Authority:** Procedural (Non‑Constitutional)  
+**Authority:** Procedural (Non-Constitutional)  
 **Scope:** Constitutional Access & Activation Guidance  
 **Purpose:** Preserve legitimacy across generational transition
 
@@ -55,18 +55,38 @@ Skipping any step invalidates constitutional legitimacy.
 
 The following files are recognized as constitutional source artifacts:
 
-
+```text
 afritech/constitution/FOUNDATION_CLOSE.md
+```
 
-##   Closing confirmation
+Any future constitutional source file must be:
 
-- ✅ File name and path explicitly specified  
-- ✅ Procedural only — no doctrine introduced  
-- ✅ Compatible with stabilization posture  
-- ✅ Prevents generational ambiguity without advancing inscription  
+- explicitly declared as constitutional
+- placed under `afritech/constitution/`
+- preserved without retroactive modification
 
-This is the **least‑action**, **maximum‑legitimacy** bridge between generations.
+No other files possess constitutional authority by default.
 
-If undertaken, this should be created **once**, committed cleanly, and left untouched.
+---
 
-No other constitutional or preparatory artifacts are required at this stage.
+## 4. Explicit Prohibitions
+
+Future constitutional actors must not:
+
+- reinterpret settled doctrine through commentary
+- modify constitutional source artifacts retroactively
+- create parallel or explanatory constitutional documents
+- draft outside explicit necessity thresholds
+- rely on unstated founder context or intent
+
+Any such action constitutes constitutional breach.
+
+---
+
+## Final Note
+
+This protocol does not grant permission to act.
+
+It defines **how legitimacy is preserved when action becomes unavoidable**.
+
+Until constitutional necessity is explicitly established, restraint remains the correct posture.
