@@ -1,0 +1,18 @@
+execution_trace:
+- input_hash: 519c68341a81f35f71338a44e5ea3a00db1e559ee87e2256be545574054fdef8
+  output_hash: 1c7f7df5f3bafe84839df0d9d7ac9c0fb6b2bcf577c3e4a465562957a20aecdb
+  step: scope_evaluation
+- input_hash: 519c68341a81f35f71338a44e5ea3a00db1e559ee87e2256be545574054fdef8
+  output_hash: f292c15b1515bab66c6c90be3620ef62691bde74cdffd4ccb1dfb1253fed2e28
+  step: routing_selection
+- input_hash: 519c68341a81f35f71338a44e5ea3a00db1e559ee87e2256be545574054fdef8
+  output_hash: b793258fe73b0408b94014232d46e49ce7c7f160d9243ef7984015c7d99f2d86
+  step: truth_emission
+replay_environment:
+  constitution_version: constitution-epoch-0001
+  deterministic_mode: true
+  model_version: llm-stub-deterministic-v1
+  runtime_version: afritech-runtime-0.1.0
+replay_hash: 69648a4c1d9a2123dffabe85852191cb136b2bf40292566a1a2c1cc8de9b8fd5
+request_hash: 519c68341a81f35f71338a44e5ea3a00db1e559ee87e2256be545574054fdef8
+truth_packet_hash: ce9a7d8cdc09d3cd0b6b928cdc357fe65ba9afc72f4951d6764ba8cc7d214760
