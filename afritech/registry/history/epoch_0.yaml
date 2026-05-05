@@ -1,0 +1,20 @@
+schema: afritech.registry.history.v1
+
+epoch:
+  number: 0
+  parent: null
+  status: FINAL
+  monotonic: true
+  authority:
+    adr: ADR-0001
+  enacted_at: "2026-05-01T11:58:00Z"
+
+sealing:
+  pre_state: UNSEALED
+  unsealed_for_mutation: true
+  resealed: true
+  seal_status: SEALED
+
+hash_chain:
+  previous_epoch_hash: GENESIS
+  epoch_hash: 1f6bb2b7c1b3d6c2c1caa41d9cde5b38c4aa62a34bce3ecda9c3c2f54df3c78e

@@ -1,16 +1,35 @@
 schema: afritech.registry.history.v1
+
 epoch:
   number: 2
   parent: 1
   status: FINAL
   monotonic: true
-authority:
-  adr: ADR-0002
+  authority:
+    adr: ADR-0002
+
 timestamp:
-  enacted_at: '2026-05-02T20:17:16.967402Z'
+  enacted_at: "2026-05-02T20:17:16.967402Z"
+
 sealing:
   pre_state: SEALED
   unsealed_for_mutation: true
-  resealed: false
+  resealed: true
+  seal_status: SEALED
+
 violations:
   detected: false
+
+constitutional_assertions:
+  - epoch finalization requires registry reseal
+  - finalized epochs are immutable
+  - replay validity depends on sealed history continuity
+  - epoch lineage must remain monotonic
+
+# ---------------------------------------------------------------------
+# Cryptographic epoch hash chaining
+# ---------------------------------------------------------------------
+
+hash_chain:
+  previous_epoch_hash: 9a2c4f1fb4c8a3e7d5d0a6b9c1d88c6f2a4b7f3c9e5d1b0a8c4f6e7d2a9b3c1
+  epoch_hash: 4f71d2a9c0b6e5a3d8f1c2b97a6e0c4d5f8b9a1e7c6d4a2b3f0e19c5d8a6

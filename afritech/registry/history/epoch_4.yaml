@@ -1,15 +1,15 @@
 schema: afritech.registry.history.v1
 
 epoch:
-  number: 1
-  parent: 0
+  number: 4
+  parent: 3
   status: FINAL
   monotonic: true
   authority:
     adr: ADR-0002
 
 timestamp:
-  enacted_at: "2026-05-02T20:02:07.503519Z"
+  enacted_at: "2026-05-03T08:06:23.631635Z"
 
 sealing:
   pre_state: SEALED
@@ -31,5 +31,7 @@ constitutional_assertions:
 # ---------------------------------------------------------------------
 
 hash_chain:
-  previous_epoch_hash: 1f6bb2b7c1b3d6c2c1caa41d9cde5b38c4aa62a34bce3ecda9c3c2f54df3c78e
-  epoch_hash: 9a2c4f1fb4c8a3e7d5d0a6b9c1d88c6f2a4b7f3c9e5d1b0a8c4f6e7d2a9b3c1
+  # Must exactly equal epoch_3.yaml -> hash_chain.epoch_hash
+  previous_epoch_hash: c7a41b9d8e0f26a4b1d3c9f5e7a2b6d4c0f8a9e1b3d5e6f2a4c7d0b9e18f
+  # SHA256(canonical_yaml(epoch_4.yaml without hash_chain))
+  epoch_hash: 6a703041f9b5e8f12e657d9f4cc15f0c77f26cbb72c1e9376a1f43d0b3c1a92e

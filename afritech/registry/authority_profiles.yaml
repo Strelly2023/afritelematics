@@ -1,0 +1,65 @@
+# afritech/registry/authority_profiles.yaml
+#
+# STATUS: PHASE‑2A EXECUTION LAW
+#
+# This registry defines all authority profiles permitted
+# during Phase‑2A (Parallel Authority).
+#
+# Authorities are mutually isolated.
+# Cross‑authority execution is constitutionally forbidden
+# unless explicitly proven via replay.
+
+version: AUTHORITY_PROFILES_V1
+
+authorities:
+
+  CONSTITUTIONAL_RESEARCH_AGENT:
+    description: >
+      Original Phase‑1 authority.
+      Retained unchanged for backward‑compatible replay.
+
+    allowed_domains:
+      - research
+
+    max_risk_class: low
+
+    routing_policy: isolated
+
+    replay_scope:
+      - self_only
+
+  SECONDARY_RESEARCH_AUTHORITY:
+    description: >
+      Phase‑2A parallel authority.
+      Used to prove authority coexistence without contamination.
+
+    allowed_domains:
+      - research
+
+    max_risk_class: low
+
+    routing_policy: isolated
+
+    replay_scope:
+      - self_only
+
+# --------------------------------------------------------
+# GLOBAL INVARIANTS
+# --------------------------------------------------------
+
+global_invariants:
+
+  - id: NO_AUTHORITY_SYNTHESIS
+    description: >
+      A request may bind to exactly one authority.
+      Authority aggregation or composition is forbidden.
+
+  - id: ISOLATED_REPLAY_DOMAINS
+    description: >
+      Replay artifacts generated under one authority
+      MUST be rejected if verified under another authority.
+
+  - id: EXPLICIT_AUTHORITY_BINDING
+    description: >
+      Authority identity MUST be declared in the request
+      and MUST match registry entries exactly.

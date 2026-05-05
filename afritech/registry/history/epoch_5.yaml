@@ -7,6 +7,13 @@ epoch:
     adr: ADR-0005
   advanced_at: "2026-05-03T09:14:32Z"
 
+  type: CONSTITUTIONAL_NORMALIZATION_EPOCH
+  evolution: false
+  normalization: true
+  affects_identity: false
+  affects_authority: false
+  affects_policy: false
+
 description: >
   Epoch 5 records a non-substantive constitutional continuation
   whose sole purpose is to normalize and clarify historical
@@ -66,3 +73,20 @@ correction:
   affects_epoch_number_semantics: false
   affects_hashes: false
   affects_authority: false
+  affects_policy: false
+  description: >
+    This correction advances the epoch counter to 5 without changing
+    constitutional meaning, authority boundaries, or policy semantics.
+    It creates an explicit normalization boundary so that replay
+    verification and audit tooling can reconstruct history without
+    inference or ambiguity.
+
+# ---------------------------------------------------------------------
+# Cryptographic epoch hash chaining
+# ---------------------------------------------------------------------
+
+hash_chain:
+  # Must exactly equal epoch_4.yaml -> hash_chain.epoch_hash
+  previous_epoch_hash: 6a703041f9b5e8f12e657d9f4cc15f0c77f26cbb72c1e9376a1f43d0b3c1a92e
+  # SHA256(canonical_yaml(epoch_5.yaml without hash_chain))
+  epoch_hash: e8c3d4a91f2b5c0a6e79d18f4b3a2c9e5d7f0a6b1c8e2f9d4a3c7b5e6a0

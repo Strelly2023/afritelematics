@@ -1,0 +1,38 @@
+constitutional_request:
+  request_id: research-agent-proof-v1
+  epoch_id: epoch_0
+
+  authority_profile: CONSTITUTIONAL_RESEARCH_AGENT
+
+  domain: research
+  risk_class: low
+
+  permissible_operations:
+    - research_synthesis
+    - citation_analysis
+    - non_mutating_inference
+
+  prohibited_operations:
+    - state_mutation
+    - external_action
+    - system_command
+    - environment_interaction
+    - registry_modification
+    - epoch_advancement
+    - authority_delegation
+
+  required_attestations: []
+
+  replay_requirements:
+    deterministic: true
+    witnesses_required: 0
+
+  determinism_scope:
+    assumes_single_runtime: true
+    excludes_federation_variance: true
+
+  output_constraints:
+    citation_required: true
+    max_claims: 10
+    epistemic_confidence_required: true
+    causal_trace_required: true

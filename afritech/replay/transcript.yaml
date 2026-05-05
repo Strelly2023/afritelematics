@@ -1,0 +1,245 @@
+# afritech/replay/transcript.yaml
+#
+# STATUS: CANONICAL REPLAY TRANSCRIPT SCHEMA
+#
+# This file defines the ONLY admissible replay transcript
+# structure for proving constitutional execution during the
+# FIRST_EXECUTABLE_PROOF phase.
+#
+# All replay verdicts are derived from artifacts conforming
+# exactly to this schema.
+#
+# Any execution claim without a transcript matching THIS FILE
+# is constitutionally void.
+
+version: REPLAY_TRANSCRIPT_SCHEMA_V1
+
+applicability:
+  phase: FIRST_EXECUTABLE_PROOF
+  governed_by:
+    - CONSTITUTIONAL_RESEARCH_AGENT_SPEC
+    - REPLAY_VERIFIER_SPEC
+  enforced_by:
+    - ReplayVerifier
+
+# -------------------------------------------------------------------
+# GLOBAL TRANSCRIPT INVARIANTS
+# -------------------------------------------------------------------
+
+global_invariants:
+
+  - id: TRANSCRIPT_REQUIRED
+    description: >
+      No execution may claim constitutional legitimacy
+      without a complete replay transcript.
+
+  - id: NO_IMPLICIT_FIELDS
+    description: >
+      Every field in a transcript MUST be explicitly present.
+      No defaults, inference, or omission is allowed.
+
+  - id: DETERMINISTIC_ONLY
+    description: >
+      Transcripts MUST represent deterministic execution only.
+      Any nondeterminism invalidates replay.
+
+  - id: REPLAY_HASH_TERMINAL
+    description: >
+      replay_hash is the terminal authority for replay identity.
+      Any mismatch invalidates legitimacy.
+
+# -------------------------------------------------------------------
+# CANONICAL TRANSCRIPT STRUCTURE
+# -------------------------------------------------------------------
+
+replay_transcript:
+
+  # ===============================================================
+  # HEADER / IDENTITY
+  # ===============================================================
+
+  header:
+    transcript_id:
+      type: uuid
+      required: true
+      description: >
+        Globally unique identifier for this transcript.
+
+    created_at:
+      type: timestamp
+      required: true
+      description: >
+        Time the transcript was generated.
+        Informational only; does not affect replay.
+
+    afritech_version:
+      type: string
+      required: true
+      description: >
+        AfriTech runtime version used for execution.
+
+    execution_environment_hash:
+      type: hash
+      required: true
+      description: >
+        Hash of environment configuration used to bind replay.
+
+  # ===============================================================
+  # REQUEST IDENTITY
+  # ===============================================================
+
+  request_hash:
+    type: hash
+    required: true
+    description: >
+      Cryptographic hash of the full constitutional request
+      envelope (`constitutional_request.yaml`).
+
+  # ===============================================================
+  # REPLAY ENVIRONMENT BINDING
+  # ===============================================================
+
+  replay_environment:
+    runtime_version:
+      type: string
+      required: true
+
+    model_version:
+      type: string
+      required: true
+
+    constitution_version:
+      type: string
+      required: true
+
+    deterministic_mode:
+      type: boolean
+      required: true
+      value: true
+
+  # ===============================================================
+  # EXECUTION TRACE
+  # ===============================================================
+
+  execution_trace:
+    type: ordered_list
+    required: true
+
+    entry_schema:
+      step:
+        type: string
+        required: true
+        description: >
+          Fully‑qualified execution step identifier.
+
+      input_hash:
+        type: hash
+        required: true
+        description: >
+          Hash of all step inputs.
+
+      output_hash:
+        type: hash
+        required: true
+        description: >
+          Hash of all step outputs.
+
+  # ===============================================================
+  # TRUTHPACKET IDENTITY
+  # ===============================================================
+
+  truth_packet_hash:
+    type: hash
+    required: true
+    description: >
+      Cryptographic hash of the emitted TruthPacket.
+
+  # ===============================================================
+  # EPISTEMIC CONFIDENCE (SUMMARY VIEW)
+  # ===============================================================
+  #
+  # This MUST match the TruthPacket epistemic_confidence
+  # exactly. Included here for replay validation convenience.
+
+  epistemic_confidence:
+    type: object
+    required: true
+    schema_ref: afritech/truth/epistemic_confidence.yaml
+
+  # ===============================================================
+  # CAUSAL TRACE (SUMMARY VIEW)
+  # ===============================================================
+
+  causal_trace:
+    type: object
+    required: true
+
+    fields:
+      decisions:
+        type: list
+        required: true
+
+      dependencies:
+        type: list
+        required: true
+
+      rejected_paths:
+        type: list
+        required: true
+
+  # ===============================================================
+  # TERMINAL REPLAY HASH
+  # ===============================================================
+
+  replay_hash:
+    type: hash
+    required: true
+    description: >
+      Terminal deterministic hash representing the
+      complete constitutional execution.
+      This value is authoritative.
+
+# -------------------------------------------------------------------
+# VALIDATION RULES
+# -------------------------------------------------------------------
+
+validation:
+
+  strict: true
+
+  failure_handling:
+    mode: HARD_FAILURE
+    description: >
+      Any deviation from this schema MUST result in
+      immediate replay invalidation.
+
+  audit_requirements:
+    - request_hash MUST match reconstructed request
+    - execution_trace MUST be complete and ordered
+    - truth_packet_hash MUST match regenerated TruthPacket
+    - epistemic_confidence MUST be reproducible
+    - replay_hash MUST match recomputed value
+
+# -------------------------------------------------------------------
+# PROHIBITED TRANSCRIPT PRACTICES
+# -------------------------------------------------------------------
+
+forbidden_practices:
+
+  - missing_execution_steps
+  - unordered_execution_trace
+  - elided_hashes
+  - inferred_fields
+  - partial_traces
+  - narrative_explanations
+  - non-deterministic markers
+
+# -------------------------------------------------------------------
+# CONSTITUTIONAL ASSERTION
+# -------------------------------------------------------------------
+
+constitutional_assertion: >
+  AfriTech recognizes no constitutional execution
+  unless it can be exactly reconstructed from
+  a transcript conforming to this schema.
+

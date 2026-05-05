@@ -1,0 +1,89 @@
+# afritech/inference/instances/research_authority_request_v1.yaml
+#
+# STATUS: PHASE‑2A RUNTIME REQUEST
+#
+# Purpose:
+# - Execute a constitutional request under a SECOND authority
+# - Prove authority coexistence with isolated replay domains
+# - Preserve all Phase‑1 replay invariants
+#
+# This file is an executable artifact, not schema law.
+
+constitutional_request:
+
+  # ===============================================================
+  # IDENTIFIERS
+  # ===============================================================
+
+  request_id: research-authority-proof-v1
+  epoch_id: phase2a_epoch_0
+
+
+  # ===============================================================
+  # AUTHORITY BINDING (EXPLICIT — PHASE‑2A)
+  # ===============================================================
+
+  authority_profile: SECONDARY_RESEARCH_AUTHORITY
+
+
+  # ===============================================================
+  # DOMAIN & RISK
+  # ===============================================================
+
+  domain: research
+  risk_class: low
+
+
+  # ===============================================================
+  # OPERATIONAL SCOPE
+  # ===============================================================
+
+  permissible_operations:
+    - research_synthesis
+    - citation_analysis
+    - non_mutating_inference
+
+  prohibited_operations:
+    - state_mutation
+    - external_action
+    - system_command
+    - environment_interaction
+    - registry_modification
+    - epoch_advancement
+    - authority_delegation
+
+
+  # ===============================================================
+  # ATTESTATION
+  # ===============================================================
+
+  required_attestations: []
+
+
+  # ===============================================================
+  # REPLAY REQUIREMENTS
+  # ===============================================================
+
+  replay_requirements:
+    deterministic: true
+    witnesses_required: 0
+
+
+  # ===============================================================
+  # DETERMINISM SCOPE
+  # ===============================================================
+
+  determinism_scope:
+    assumes_single_runtime: true
+    excludes_federation_variance: true
+
+
+  # ===============================================================
+  # OUTPUT CONSTRAINTS
+  # ===============================================================
+
+  output_constraints:
+    citation_required: true
+    max_claims: 10
+    epistemic_confidence_required: true
+    causal_trace_required: true

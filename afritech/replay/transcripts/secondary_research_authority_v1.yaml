@@ -1,0 +1,19 @@
+authority_profile: SECONDARY_RESEARCH_AUTHORITY
+execution_trace:
+- input_hash: a924c6bcb24d27563465e247366b5be3195e9413598d643bcfc827684da67faf
+  output_hash: a04a3cd0787e2f6990b230273e39f3c336af2f490309e29e8564dac44b9394da
+  step: scope_evaluation
+- input_hash: a924c6bcb24d27563465e247366b5be3195e9413598d643bcfc827684da67faf
+  output_hash: dca2edf000754aafdb97ccfd978637434c7a1e86f6d127f9f8b872f93ea343d7
+  step: routing_selection
+- input_hash: a924c6bcb24d27563465e247366b5be3195e9413598d643bcfc827684da67faf
+  output_hash: 242fb6c4b0d0e94c80b5fe83d754ac1e0a273a60ee4eb38efee762d9e7e308c5
+  step: truth_emission
+replay_environment:
+  constitution_version: constitution-epoch-0001
+  deterministic_mode: true
+  model_version: llm-stub-deterministic-v1
+  runtime_version: afritech-runtime-0.1.0
+replay_hash: 0c2e2ee08b29567bb9a65ddabe2680f6bf7c06fe94300cdec6b86687ff0690e6
+request_hash: a924c6bcb24d27563465e247366b5be3195e9413598d643bcfc827684da67faf
+truth_packet_hash: 3bdd24f9e28302b128e0bc103748518be9ed85c7974cc77ef59ad15cf43bbc26
