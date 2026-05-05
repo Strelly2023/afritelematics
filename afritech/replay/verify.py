@@ -46,6 +46,32 @@ class ReplayVerdict:
     violated_invariant: Optional[str]
     divergence_location: Optional[str]
 
+    @staticmethod
+    def valid(replay_hash: str) -> "ReplayVerdict":
+        return ReplayVerdict(
+            status="REPLAY_VALID",
+            replay_hash=replay_hash,
+            failure_mode=None,
+            environment_match=True,
+            trace_match=True,
+            truthpacket_match=True,
+            violated_invariant=None,
+            divergence_location=None,
+        )
+
+    @staticmethod
+    def invalid(failure: ReplayFailure) -> "ReplayVerdict":
+        return ReplayVerdict(
+            status="REPLAY_INVALID",
+            replay_hash=None,
+            failure_mode=failure.failure_mode,
+            environment_match=False,
+            trace_match=False,
+            truthpacket_match=False,
+            violated_invariant=failure.violated_invariant,
+            divergence_location=failure.divergence_location,
+        )
+
 
 # ============================================================
 # REQUEST
@@ -81,83 +107,76 @@ class ReplayVerifier:
     Replay artifacts are authority‑isolated.
     """
 
+    # --------------------------------------------------------
+    # PUBLIC ENTRYPOINT
+    # --------------------------------------------------------
+
     def verify(
         self,
         transcript_path: str,
-        request: ConstitutionalRequest
+        request: ConstitutionalRequest,
     ) -> ReplayVerdict:
 
         try:
             transcript = self._load_transcript(transcript_path)
 
-            # Phase‑2A authority enforcement
+            # Phase‑2A authority enforcement (first‑class)
             self._validate_authority(request, transcript)
 
+            # Phase‑1 invariants
             self._validate_environment(transcript)
             self._validate_request(request, transcript)
 
+            # Deterministic execution rerun
             rerun_trace = self._rerun_execution(request)
-            self._compare_trace(transcript["execution_trace"], rerun_trace)
-
-            truthpacket = self._regenerate_truthpacket(
-                request,
-                rerun_trace
+            self._compare_trace(
+                transcript["execution_trace"],
+                rerun_trace,
             )
 
-            truthpacket_hash = _sha256(_canonical_json(truthpacket))
+            # TruthPacket regeneration
+            truthpacket = self._regenerate_truthpacket(
+                request,
+                rerun_trace,
+            )
+
+            truthpacket_hash = _sha256(
+                _canonical_json(truthpacket)
+            )
 
             if truthpacket_hash != transcript["truth_packet_hash"]:
                 raise ReplayVerificationError(
                     ReplayFailure(
-                        "truthpacket_divergence",
-                        "truthpacket_identity",
-                        "truthpacket_regeneration",
-                        "TruthPacket hash mismatch",
+                        failure_mode="truthpacket_divergence",
+                        violated_invariant="truthpacket_identity",
+                        divergence_location="truthpacket_regeneration",
+                        details="TruthPacket hash mismatch",
                     )
                 )
 
             replay_hash = self._compute_replay_hash(
                 truthpacket,
-                rerun_trace
+                rerun_trace,
             )
 
             if replay_hash != transcript["replay_hash"]:
                 raise ReplayVerificationError(
                     ReplayFailure(
-                        "hash_mismatch",
-                        "deterministic_identity",
-                        "hash_recomputation",
-                        "Replay hash mismatch",
+                        failure_mode="hash_mismatch",
+                        violated_invariant="deterministic_identity",
+                        divergence_location="hash_recomputation",
+                        details="Replay hash mismatch",
                     )
                 )
 
-            return ReplayVerdict(
-                status="REPLAY_VALID",
-                replay_hash=replay_hash,
-                failure_mode=None,
-                environment_match=True,
-                trace_match=True,
-                truthpacket_match=True,
-                violated_invariant=None,
-                divergence_location=None,
-            )
+            return ReplayVerdict.valid(replay_hash)
 
         except ReplayVerificationError as e:
-            f = e.failure
-            return ReplayVerdict(
-                status="REPLAY_INVALID",
-                replay_hash=None,
-                failure_mode=f.failure_mode,
-                environment_match=False,
-                trace_match=False,
-                truthpacket_match=False,
-                violated_invariant=f.violated_invariant,
-                divergence_location=f.divergence_location,
-            )
+            return ReplayVerdict.invalid(e.failure)
 
 
     # ============================================================
-    # AUTHORITY (PHASE‑2A)
+    # AUTHORITY (PHASE‑2A ENFORCEMENT SURFACE)
     # ============================================================
 
     def _validate_authority(
@@ -175,20 +194,20 @@ class ReplayVerifier:
         if transcript_authority is None:
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "missing_authority_binding",
-                    "authority_identity",
-                    "authority_binding",
-                    "Transcript missing authority_profile",
+                    failure_mode="missing_authority_binding",
+                    violated_invariant="authority_identity",
+                    divergence_location="authority_binding",
+                    details="Transcript missing authority_profile",
                 )
             )
 
         if request_authority != transcript_authority:
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "authority_mismatch",
-                    "isolated_replay_domains",
-                    "authority_binding",
-                    "Authority mismatch between request and transcript",
+                    failure_mode="authority_mismatch",
+                    violated_invariant="isolated_replay_domains",
+                    divergence_location="authority_binding",
+                    details="Authority mismatch between request and transcript",
                 )
             )
 
@@ -199,20 +218,21 @@ class ReplayVerifier:
 
     def _load_transcript(self, path: str) -> dict[str, Any]:
         p = Path(path)
+
         if not p.exists() or not p.is_file():
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "invalid_transcript_path",
-                    "transcript_existence",
-                    "transcript_load",
-                    "Transcript file not found",
+                    failure_mode="invalid_transcript_path",
+                    violated_invariant="transcript_existence",
+                    divergence_location="transcript_load",
+                    details="Transcript file not found",
                 )
             )
 
         with p.open("r", encoding="utf-8") as f:
             transcript = yaml.safe_load(f)
 
-        required = {
+        required_fields = {
             "authority_profile",
             "request_hash",
             "replay_environment",
@@ -221,13 +241,13 @@ class ReplayVerifier:
             "replay_hash",
         }
 
-        if not isinstance(transcript, dict) or not required.issubset(transcript):
+        if not isinstance(transcript, dict) or not required_fields.issubset(transcript):
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "invalid_transcript_schema",
-                    "transcript_integrity",
-                    "transcript_load",
-                    "Missing transcript fields",
+                    failure_mode="invalid_transcript_schema",
+                    violated_invariant="transcript_integrity",
+                    divergence_location="transcript_load",
+                    details="Missing transcript fields",
                 )
             )
 
@@ -241,30 +261,30 @@ class ReplayVerifier:
     def _validate_environment(self, transcript: dict[str, Any]) -> None:
         env = transcript["replay_environment"]
 
-        required = {
+        required_fields = {
             "runtime_version",
             "model_version",
             "constitution_version",
             "deterministic_mode",
         }
 
-        if not required.issubset(env):
+        if not required_fields.issubset(env):
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "environment_mismatch",
-                    "environment_identity",
-                    "environment_validation",
-                    "Missing replay environment fields",
+                    failure_mode="environment_mismatch",
+                    violated_invariant="environment_identity",
+                    divergence_location="environment_validation",
+                    details="Missing replay environment fields",
                 )
             )
 
         if env["deterministic_mode"] is not True:
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "environment_mismatch",
-                    "deterministic_environment",
-                    "environment_validation",
-                    "Deterministic mode required",
+                    failure_mode="environment_mismatch",
+                    violated_invariant="deterministic_environment",
+                    divergence_location="environment_validation",
+                    details="Deterministic mode required",
                 )
             )
 
@@ -282,10 +302,10 @@ class ReplayVerifier:
         if request.canonical_hash() != transcript["request_hash"]:
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "request_mismatch",
-                    "request_identity",
-                    "request_reconstruction",
-                    "Request hash mismatch",
+                    failure_mode="request_mismatch",
+                    violated_invariant="request_identity",
+                    divergence_location="request_reconstruction",
+                    details="Request hash mismatch",
                 )
             )
 
@@ -333,10 +353,10 @@ class ReplayVerifier:
         if expected != actual:
             raise ReplayVerificationError(
                 ReplayFailure(
-                    "trace_divergence",
-                    "causal_reconstruction",
-                    "execution_rerun",
-                    "Execution trace mismatch",
+                    failure_mode="trace_divergence",
+                    violated_invariant="causal_reconstruction",
+                    divergence_location="execution_rerun",
+                    details="Execution trace mismatch",
                 )
             )
 

@@ -1,0 +1,278 @@
+# afritech/inference/constitutional_request.yaml
+#
+# STATUS: EXECUTION-BOUND CANONICAL SCHEMA
+#
+# This schema defines the ONLY constitutionally valid request
+# envelope permitted to enter execution during the
+# FIRST_EXECUTABLE_PROOF phase.
+#
+# Purpose:
+# - Enforce authority-before-intelligence
+# - Guarantee deterministic routing and replay
+# - Prevent implicit defaults and hidden scope expansion
+#
+# Any execution that processes a request not conforming
+# exactly to this schema is constitutionally invalid.
+
+version: CONSTITUTIONAL_REQUEST_V1
+
+applicability:
+  phase: FIRST_EXECUTABLE_PROOF
+  enforced_by:
+    - ConstitutionalAgent
+    - InferenceRouter
+    - ConstitutionalDispatch
+    - ReplayVerifier
+
+# -------------------------------------------------------------------
+# GLOBAL REQUEST INVARIANTS
+# -------------------------------------------------------------------
+
+global_invariants:
+
+  - id: EXPLICIT_AUTHORITY_REQUIRED
+    description: >
+      Every request MUST explicitly declare exactly one
+      authority_profile. Implicit authority is forbidden.
+
+  - id: AUTHORITY_PRECEDES_INFERENCE
+    description: >
+      Authority scope MUST be validated before any routing,
+      reasoning, or inference occurs.
+
+  - id: DETERMINISM_REQUIRED
+    description: >
+      Requests MUST declare deterministic replay requirements.
+      Non-deterministic execution is forbidden at this phase.
+
+  - id: NO_IMPLICIT_DEFAULTS
+    description: >
+      Absence of any required field renders the request invalid.
+      No field may be inferred or defaulted at runtime.
+
+  - id: SINGLE_REQUEST_SINGLE_AUTHORITY
+    description: >
+      A request may bind to exactly one authority profile.
+      Composite or layered authorities are forbidden.
+
+# -------------------------------------------------------------------
+# CANONICAL REQUEST SCHEMA
+# -------------------------------------------------------------------
+
+constitutional_request:
+
+  # ===============================================================
+  # IDENTIFIERS
+  # ===============================================================
+
+  request_id:
+    type: uuid
+    required: true
+    description: >
+      Globally unique identifier for the request.
+      Used for request hashing and replay reconstruction.
+
+  epoch_id:
+    type: string
+    required: true
+    description: >
+      Constitutional epoch identifier under which the
+      request is evaluated. Used strictly as a replay anchor.
+
+  # ===============================================================
+  # AUTHORITY BINDING
+  # ===============================================================
+
+  authority_profile:
+    type: string
+    required: true
+    allowed_values:
+      - CONSTITUTIONAL_RESEARCH_AGENT
+    description: >
+      Explicit authority profile governing this request.
+      Must match exactly one declared authority profile.
+
+  # ===============================================================
+  # RISK AND DOMAIN CLASSIFICATION
+  # ===============================================================
+
+  domain:
+    type: string
+    required: true
+    allowed_values:
+      - research
+    description: >
+      Execution domain classification.
+      Used for deterministic routing constraints.
+
+  risk_class:
+    type: string
+    required: true
+    allowed_values:
+      - low
+    description: >
+      Risk classification of the requested operation.
+      Higher risk classes are explicitly forbidden
+      at this proof phase.
+
+  # ===============================================================
+  # OPERATIONAL SCOPE
+  # ===============================================================
+
+  permissible_operations:
+    type: list
+    required: true
+    allowed_values:
+      - research_synthesis
+      - citation_analysis
+      - non_mutating_inference
+    description: >
+      Exhaustive list of operations this request permits.
+      Any operation not listed here is forbidden.
+
+  prohibited_operations:
+    type: list
+    required: true
+    allowed_values:
+      - state_mutation
+      - external_action
+      - system_command
+      - environment_interaction
+      - registry_modification
+      - epoch_advancement
+      - authority_delegation
+    description: >
+      Explicitly forbidden operations.
+      Prohibited operations take precedence over
+      permissible operations.
+
+  # ===============================================================
+  # ATTESTATION REQUIREMENTS
+  # ===============================================================
+
+  required_attestations:
+    type: list
+    required: true
+    description: >
+      List of attestation identifiers required for execution.
+      Must be empty for FIRST_EXECUTABLE_PROOF.
+
+  # ===============================================================
+  # REPLAY CONSTRAINTS
+  # ===============================================================
+
+  replay_requirements:
+    type: object
+    required: true
+
+    fields:
+      deterministic:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          Execution MUST be deterministic.
+          Any non-deterministic behavior invalidates proof.
+
+      witnesses_required:
+        type: integer
+        required: true
+        value: 0
+        description: >
+          Number of external witnesses required.
+          Must be zero at this phase.
+
+  # ===============================================================
+  # DETERMINISM SCOPE DECLARATION
+  # ===============================================================
+
+  determinism_scope:
+    type: object
+    required: true
+
+    fields:
+      assumes_single_runtime:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          Replay assumes a single runtime environment
+          with identical software and configuration.
+
+      excludes_federation_variance:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          Request explicitly excludes federated execution
+          and any distributed variance.
+
+  # ===============================================================
+  # OUTPUT CONSTRAINTS
+  # ===============================================================
+
+  output_constraints:
+    type: object
+    required: true
+
+    fields:
+      citation_required:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          All claims MUST be grounded with citations
+          in provenance_chain.
+
+      max_claims:
+        type: integer
+        required: true
+        max_value: 10
+        description: >
+          Upper bound on number of claims permitted
+          in the TruthPacket.
+
+      epistemic_confidence_required:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          TruthPacket MUST include full epistemic
+          confidence vector.
+
+      causal_trace_required:
+        type: boolean
+        required: true
+        value: true
+        description: >
+          TruthPacket MUST include causal_trace
+          enabling replayable causal audit.
+
+# -------------------------------------------------------------------
+# VALIDATION RULES
+# -------------------------------------------------------------------
+
+validation:
+
+  strict: true
+
+  failure_handling:
+    mode: HARD_FAILURE
+    timing: PRE_INFERENCE
+    description: >
+      Any schema violation MUST immediately halt execution
+      before routing or inference begins.
+
+  audit_requirements:
+    - request_hash MUST appear in replay transcript
+    - authority_profile MUST be replay-validated
+    - determinism_scope MUST be asserted in transcript
+
+# -------------------------------------------------------------------
+# CONSTITUTIONAL ASSERTION
+# -------------------------------------------------------------------
+
+constitutional_assertion: >
+  AfriTech recognizes no execution request that is not
+  explicitly and exhaustively declared in this schema.
+  What is not written is constitutionally forbidden.

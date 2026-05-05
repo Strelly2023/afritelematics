@@ -1,0 +1,89 @@
+===== ./.github/workflows/architecture.yml =====
+name: AfriTech Architecture Guard
+
+on: [push, pull_request]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run Architecture Enforcement
+        run: python3 afritech_v1/architecture/enforce_dependencies.py
+
+===== ./afritech_v1/architecture/dependency_rules.yaml =====
+layers:
+  architecture:
+    path: architecture
+    may_import: []  
+  kernel:
+    path: kernel
+    may_import: []
+
+  proof:
+    path: proof
+    may_import: [kernel]
+
+  security:
+    path: security
+    may_import: [kernel, proof]
+
+  governance:
+    path: governance
+    may_import: [kernel, security, proof]
+
+  vm:
+    path: vm
+    may_import: [kernel, proof, security]
+
+  compiler:
+    path: compiler
+    may_import: [kernel, proof]
+
+  runtime:
+    path: runtime
+    may_import: [vm, compiler, kernel, proof, security]
+
+  epoch:
+    path: epoch
+    may_import: [kernel]
+
+  registry:
+    path: registry
+    may_import: [kernel]
+
+  audit:
+    path: audit
+    may_import: [kernel, proof]
+
+  api:
+    path: api
+    may_import: [runtime, registry]
+
+
+===== ./afritech_v1/architecture/kernel_manifest.yaml =====
+kernel_root: afritech_v1/kernel
+
+include:
+  - .py
+  - .md
+
+exclude:
+  - __pycache__
+  - .pyc
+  - .git
+
+===== ./afritech_v1/registry/registry.yaml =====
+schema_version: 1
+status: BOOTSTRAP
+

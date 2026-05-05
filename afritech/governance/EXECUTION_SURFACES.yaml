@@ -1,0 +1,228 @@
+# afritech/governance/EXECUTION_SURFACES.yaml
+#
+# STATUS: EXECUTION-CONSTRAINING CANON
+#
+# This file defines the ONLY constitutional surfaces permitted
+# to influence runtime execution during the first executable
+# proof phase (Constitutional Research Agent + Replay Verifier).
+#
+# Purpose:
+# - Prevent ceremonial or narrative governance layers from
+#   entering execution pathways
+# - Freeze execution-facing constitutional interfaces
+# - Ensure deterministic, replay-verifiable legitimacy
+#
+# Any surface not explicitly listed here MUST NOT affect runtime.
+# Violation of this rule invalidates constitutional proof.
+
+version: EXECUTION_SURFACES_V1
+
+applicability:
+  phase: FIRST_EXECUTABLE_PROOF
+  gate_artifacts:
+    - CONSTITUTIONAL_RESEARCH_AGENT_SPEC
+    - REPLAY_VERIFIER_SPEC
+
+# -------------------------------------------------------------------
+# ALLOWED EXECUTION SURFACES
+# -------------------------------------------------------------------
+#
+# These are the ONLY constitutional artifacts that may be read,
+# evaluated, or enforced by runtime components.
+
+allowed_execution_surfaces:
+
+  registry:
+    description: >
+      Canonical identity and continuity registry.
+      Provides immutable reference anchors only.
+    paths:
+      - afritech/registry/registry.yaml
+    allowed_operations:
+      - read
+      - hash
+    forbidden_operations:
+      - mutation
+      - extension
+      - dynamic_resolution
+
+  epoch_state:
+    description: >
+      Current constitutional epoch context.
+      Used strictly as a read-only temporal anchor.
+    paths:
+      - afritech/registry/epochs/
+    allowed_operations:
+      - read
+      - hash
+    forbidden_operations:
+      - advancement
+      - rollback
+      - reseal
+
+  authority_profiles:
+    description: >
+      Authority scope definitions used by ConstitutionalAgent
+      to evaluate request legality.
+    paths:
+      - afritech/inference/authority_profiles.yaml
+    allowed_operations:
+      - scope_evaluation
+    forbidden_operations:
+      - delegation_creation
+      - authority_derivation
+      - dynamic_override
+
+  invariants:
+    description: >
+      Hard constitutional invariants enforced pre-inference.
+    paths:
+      - afritech/constitution/INVARIANTS.yaml
+    allowed_operations:
+      - evaluation
+    forbidden_operations:
+      - interpretation_expansion
+      - runtime_modification
+
+  rules:
+    description: >
+      Deterministic constitutional rules applicable to
+      authority scope and execution legality.
+    paths:
+      - afritech/governance/rules/
+    allowed_operations:
+      - evaluation
+    forbidden_operations:
+      - discretionary_application
+      - runtime_rule_selection
+
+  execution_specs:
+    description: >
+      Execution-gate specifications that define what
+      constitutes valid constitutional proof.
+    paths:
+      - afritech/docs/execution/CONSTITUTIONAL_RESEARCH_AGENT_SPEC.md
+      - afritech/replay/REPLAY_VERIFIER_SPEC.md
+    allowed_operations:
+      - validation_reference
+    forbidden_operations:
+      - semantic_extension
+      - implicit_behavior_inference
+
+  inference_request_schema:
+    description: >
+      Canonical constitutional request envelope.
+      Governs routing and dispatch determinism.
+    paths:
+      - afritech/inference/constitutional_request.yaml
+    allowed_operations:
+      - schema_validation
+    forbidden_operations:
+      - schema_mutation
+      - default_field_inference
+
+  truth_packet_schema:
+    description: >
+      Defines the epistemic artifact shape that must be produced
+      by constitutional execution.
+    paths:
+      - afritech/truth/packet.py
+      - afritech/truth/epistemic_confidence.yaml
+    allowed_operations:
+      - structure_validation
+    forbidden_operations:
+      - confidence_collapsing
+      - non-normalized_metrics
+
+# -------------------------------------------------------------------
+# EXPLICITLY FORBIDDEN SURFACES
+# -------------------------------------------------------------------
+#
+# These constitutional layers MUST NOT influence runtime
+# during first executable proof.
+#
+# Presence of any of these in execution logic INVALIDATES PROOF.
+
+forbidden_execution_surfaces:
+
+  narrative_governance:
+    description: >
+      Vision, philosophy, or explanatory constitutional text.
+    paths:
+      - afritech/docs/
+      - afritech/governance/narratives/
+    reason: non-executable, non-deterministic
+
+  role_abstractions:
+    description: >
+      High-level role concepts not bound to authority profiles.
+    paths:
+      - afritech/governance/roles/
+    reason: insufficiently deterministic for replay
+
+  delegation_frameworks:
+    description: >
+      Any authority delegation or dynamic trust expansion.
+    paths:
+      - afritech/governance/delegation/
+    reason: not required for first proof
+
+  federation_logic:
+    description: >
+      External witnesses, quorum logic, or distributed approval.
+    paths:
+      - afritech/federation/
+    reason: explicitly out of scope for CRA proof
+
+  environmental_domains:
+    description: >
+      Environmental, resource, or physical-world governance.
+    paths:
+      - afritech/environment/
+      - afritech/sustainability/
+    reason: depends on unresolved ingress legitimacy
+
+  contradiction_algebra:
+    description: >
+      Semantic truth reconciliation and contradiction resolution.
+    paths:
+      - afritech/truth/contradiction/
+    reason: requires separate proof boundary
+
+# -------------------------------------------------------------------
+# EXECUTION ENFORCEMENT RULES
+# -------------------------------------------------------------------
+
+enforcement:
+
+  runtime_guard:
+    required: true
+    description: >
+      Runtime components MUST assert that only allowed execution
+      surfaces are loaded or referenced.
+
+  violation_response:
+    type: HARD_FAILURE
+    effect: >
+      Any reference to forbidden surfaces MUST cause immediate
+      execution termination and proof invalidation.
+
+  audit_requirement:
+    description: >
+      Replay transcript MUST be sufficient to demonstrate that
+      no forbidden surface influenced execution.
+    enforced_by:
+      - ReplayVerifier
+
+# -------------------------------------------------------------------
+# CONSTITUTIONAL ASSERTION
+# -------------------------------------------------------------------
+
+constitutional_assertion: >
+  AfriTech permits execution only through explicitly declared
+  constitutional surfaces.
+  Anything not declared is constitutionally invisible.
+
+  This constraint ensures that the first executable proof is
+  built on a foundation of deterministic, replay-verifiable
+  legitimacy, free from narrative or ceremonial influence.  

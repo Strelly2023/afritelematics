@@ -40,14 +40,24 @@ jobs:
           pip install pyyaml
 
       # ---------------------------------------------------
-      # Constitutional Guard (NON-OPTIONAL)
+      # Constitutional Guard — Runtime Enforcement (LAW)
       # ---------------------------------------------------
-      - name: Run Constitutional Guard
+      - name: Verify Constitutional Sovereignty
         shell: bash
         run: |
-          python - << 'EOF'
+          set -e
+          python << 'EOF'
           from afritech.guards.engine import verify_sovereignty
 
           verify_sovereignty()
-          print("✅ Constitutional integrity verified")
+          print("✅ Constitutional runtime integrity verified")
           EOF
+
+      # ---------------------------------------------------
+      # Constitutional Replay Verification — LEGITIMACY
+      # ---------------------------------------------------
+      - name: Verify Constitutional Replay Validity
+        shell: bash
+        run: |
+          set -e
+          python -m afritech.verify.replay

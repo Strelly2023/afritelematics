@@ -25,9 +25,15 @@ import yaml
 
 @dataclass(frozen=True)
 class ConstitutionalRequest:
+    """
+    Immutable wrapper for a constitutional request payload.
+    """
     payload: dict[str, Any]
 
     def canonical_hash(self) -> str:
+        """
+        Canonical hash of the request payload.
+        """
         return _sha256(_canonical_json(self.payload))
 
 
@@ -44,38 +50,52 @@ class ReplayTranscriptGenerator:
     - construct TruthPacket payload (internal only)
     - emit replay-valid transcript (hash-authoritative)
 
-    Phase-2A invariant:
+    Phase-2A Invariant:
     - Authority identity MUST be explicit and replay-bound
     """
 
     def generate(
         self,
         request: ConstitutionalRequest,
-        output_path: str
+        output_path: str,
     ) -> dict[str, Any]:
+        """
+        Generate and persist a replay transcript.
+        """
 
+        # ----------------------------
+        # Authority binding (Phase-2A)
+        # ----------------------------
         authority_profile = (
-            request.payload["constitutional_request"]
-            ["authority_profile"]
+            request.payload["constitutional_request"]["authority_profile"]
         )
 
+        # ----------------------------
+        # Deterministic execution trace
+        # ----------------------------
         execution_trace = self._build_execution_trace(request)
 
+        # ----------------------------
+        # TruthPacket payload (internal)
+        # ----------------------------
         truthpacket_payload = self._build_truthpacket_payload(
-            request,
-            execution_trace,
-            authority_profile,
+            request=request,
+            trace=execution_trace,
+            authority_profile=authority_profile,
         )
 
         truth_packet_hash = _sha256(
             _canonical_json(truthpacket_payload)
         )
 
+        # ----------------------------
+        # Final transcript
+        # ----------------------------
         transcript = {
-            # ---------- Phase‑2A authority binding ----------
+            # Phase-2A authority binding
             "authority_profile": authority_profile,
 
-            # ---------- Phase‑1 invariants ----------
+            # Phase-1 invariants
             "request_hash": request.canonical_hash(),
             "replay_environment": self._replay_environment(),
             "execution_trace": execution_trace,
@@ -96,8 +116,12 @@ class ReplayTranscriptGenerator:
 
     def _build_execution_trace(
         self,
-        request: ConstitutionalRequest
+        request: ConstitutionalRequest,
     ) -> list[dict[str, str]]:
+        """
+        Construct a deterministic execution trace based solely
+        on the canonical request hash.
+        """
 
         h = request.canonical_hash()
 
@@ -130,6 +154,9 @@ class ReplayTranscriptGenerator:
         trace: list[dict[str, str]],
         authority_profile: str,
     ) -> dict[str, Any]:
+        """
+        Build the internal TruthPacket payload.
+        """
 
         return {
             "claims": ["deterministic constitutional execution"],
@@ -156,6 +183,9 @@ class ReplayTranscriptGenerator:
     # ========================================================
 
     def _replay_environment(self) -> dict[str, Any]:
+        """
+        Declare the replay execution environment.
+        """
         return {
             "runtime_version": "afritech-runtime-0.1.0",
             "model_version": "llm-stub-deterministic-v1",
@@ -173,6 +203,10 @@ class ReplayTranscriptGenerator:
         truthpacket_payload: dict[str, Any],
         trace: list[dict[str, str]],
     ) -> str:
+        """
+        Compute the terminal replay hash from TruthPacket
+        and execution trace.
+        """
 
         return _sha256(
             _canonical_json(
@@ -191,8 +225,11 @@ class ReplayTranscriptGenerator:
     def _write_transcript(
         self,
         transcript: dict[str, Any],
-        output_path: str
+        output_path: str,
     ) -> None:
+        """
+        Persist transcript to disk deterministically.
+        """
 
         path = Path(output_path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -211,6 +248,9 @@ class ReplayTranscriptGenerator:
 # ============================================================
 
 def _canonical_json(obj: Any) -> str:
+    """
+    Canonical JSON serialization for hashing.
+    """
     return json.dumps(
         obj,
         sort_keys=True,
@@ -220,4 +260,7 @@ def _canonical_json(obj: Any) -> str:
 
 
 def _sha256(value: str) -> str:
+    """
+    SHA-256 hex digest helper.
+    """
     return hashlib.sha256(value.encode("utf-8")).hexdigest()

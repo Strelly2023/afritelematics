@@ -1,10 +1,54 @@
+schema: afritech.kernel.manifest.v1
+
+# ---------------------------------------------------------------------
+# Kernel location (legacy lineage)
+# ---------------------------------------------------------------------
+
 kernel_root: afritech_v1/kernel
 
+# ---------------------------------------------------------------------
+# Inclusion rules (historical reference only)
+# ---------------------------------------------------------------------
+
 include:
-  - .py
-  - .md
+  - "*.py"
+  - "*.md"
+
+# ---------------------------------------------------------------------
+# Exclusion rules
+# ---------------------------------------------------------------------
 
 exclude:
-  - __pycache__
-  - .pyc
-  - .git
+  - "__pycache__"
+  - "*.pyc"
+  - ".git"
+  - ".gitignore"
+
+# ---------------------------------------------------------------------
+# Lineage & authority notes
+# ---------------------------------------------------------------------
+
+lineage:
+  namespace: afritech_v1
+  status: FROZEN
+  executable: false
+  authority: HISTORICAL_REFERENCE_ONLY
+
+# ---------------------------------------------------------------------
+# Attestation status
+# ---------------------------------------------------------------------
+
+attestation:
+  participates_in_registry: false
+  participates_in_runtime: false
+  included_in_hash_chain: false
+
+# ---------------------------------------------------------------------
+# Constitutional notice
+# ---------------------------------------------------------------------
+
+notice: >
+  This kernel manifest belongs to the legacy afritech_v1 lineage.
+  It is frozen and preserved for historical and documentary purposes
+  only. It does not participate in runtime execution, registry
+  attestation, replay verification, or constitutional enforcement.

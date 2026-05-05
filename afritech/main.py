@@ -1,100 +1,134 @@
 """
 AfriTech Sovereign Entry Point
+==============================
 
 Post-migration constitutional authority root.
 
 afritech_v1 is frozen historical lineage only.
 No runtime authority may be imported from it.
+
+This file is the exclusive lawful execution gateway for AfriTech.
 """
+
+from __future__ import annotations
 
 from pathlib import Path
 
+from afritech.guards.engine import (
+    verify_sovereignty,
+    ConstitutionalViolation,
+)
+from afritech.audit.emitter import emit_event
 
-def constitutional_halt(message: str):
+# ---------------------------------------------------------------------
+# Constitutional halt
+# ---------------------------------------------------------------------
+
+def constitutional_halt(message: str) -> None:
     raise SystemExit(f"\n❌ CONSTITUTIONAL HALT\n{message}\n")
 
 
-print("🏛️ AFRITECH SOVEREIGN BOOT SEQUENCE STARTING")
+# ---------------------------------------------------------------------
+# Sovereign boot
+# ---------------------------------------------------------------------
 
-ROOT = Path(__file__).resolve()
+def boot() -> None:
+    print("🏛️ AFRITECH SOVEREIGN BOOT SEQUENCE STARTING")
 
-if "afritech_v1" in str(ROOT):
-    constitutional_halt(
-        "Execution attempted from frozen namespace."
-    )
+    root_file = Path(__file__).resolve()
 
-print("🔐 Verifying constitutional lineage...")
+    if "afritech_v1" in str(root_file):
+        constitutional_halt(
+            "Execution attempted from frozen namespace."
+        )
 
-# ------------------------------------------------------------
-# Historical lineage check
-# ------------------------------------------------------------
+    print("🔐 Verifying constitutional lineage...")
 
-v1_root = ROOT.parent.parent / "afritech_v1"
+    # ------------------------------------------------------------
+    # Historical lineage verification
+    # ------------------------------------------------------------
 
-required_legacy = [
-    "main.py",
-    "architecture/kernel_manifest.yaml",
-    "registry/registry.yaml",
-]
+    project_root = root_file.parent.parent
+    v1_root = project_root / "afritech_v1"
 
-missing_legacy = [
-    f for f in required_legacy
-    if not (v1_root / f).exists()
-]
+    required_legacy = [
+        "main.py",
+        "architecture/kernel_manifest.yaml",
+        "registry/registry.yaml",
+    ]
 
-if missing_legacy:
-    constitutional_halt(
-        f"Historical lineage broken:\n{missing_legacy}"
-    )
+    missing_legacy = [
+        artifact
+        for artifact in required_legacy
+        if not (v1_root / artifact).exists()
+    ]
 
-print("✅ Historical lineage preserved")
+    if missing_legacy:
+        constitutional_halt(
+            "Historical lineage broken:\n"
+            f"{missing_legacy}"
+        )
 
-# ------------------------------------------------------------
-# Lean constitutional layer
-# ------------------------------------------------------------
+    print("✅ Historical lineage preserved")
 
-lean_dir = ROOT.parent / "lean"
+    # ------------------------------------------------------------
+    # Formal + registry + kernel sovereignty verification
+    # ------------------------------------------------------------
 
-required_lean = [
-    "Kernel.lean",
-    "State.lean",
-    "Production.lean",
-    "Executable.lean",
-    "Preservation.lean",
-    "Refinement.lean",
-    "KernelIntegration.lean",
-]
+    try:
+        verify_sovereignty()
+    except ConstitutionalViolation as e:
+        constitutional_halt(str(e))
 
-missing_lean = [
-    f for f in required_lean
-    if not (lean_dir / f).exists()
-]
+    print("✅ Formal constitutional layer verified")
+    print("✅ Runtime sovereignty verified")
+    print("✅ Registry seal verified")
 
-if missing_lean:
-    constitutional_halt(
-        f"Formal constitutional layer incomplete:\n{missing_lean}"
-    )
+    # ------------------------------------------------------------
+    # Runtime execution authority (EXISTENCE first, IMPORT second)
+    # ------------------------------------------------------------
 
-print("✅ Formal constitutional layer verified")
+    executor_path = project_root / "afritech" / "runtime" / "guard_executor.py"
 
-# ------------------------------------------------------------
-# Runtime sovereignty
-# ------------------------------------------------------------
+    if not executor_path.exists():
+        constitutional_halt(
+            "Runtime execution layer missing:\n"
+            "afritech/runtime/guard_executor.py"
+        )
 
-runtime_executor = ROOT.parent / "runtime" / "guard_executor.py"
+    try:
+        from afritech.runtime.guard_executor import run
+    except Exception as exc:
+        constitutional_halt(
+            "Runtime execution layer present but failed to load:\n"
+            f"{exc}"
+        )
 
-if not runtime_executor.exists():
-    constitutional_halt(
-        "Runtime execution layer missing:\n"
-        "afritech/runtime/guard_executor.py"
-    )
+    # ------------------------------------------------------------
+    # Sovereign declaration
+    # ------------------------------------------------------------
 
-print("✅ Runtime sovereignty verified")
+    print("🏛️ Authority root: /afritech")
+    print("📜 Legacy lineage: preserved (/afritech_v1 frozen)")
+    print("🟢 AfriTech RUNNING (STATE: SOVEREIGN)")
 
-# ------------------------------------------------------------
-# Sovereign declaration
-# ------------------------------------------------------------
+    emit_event(
+    event_type="RUNTIME_BOOT_SUCCESS",
+    severity_class="C_DOCUMENTARY",
+    epoch=1,  # or registry-derived current epoch
+    adr=None,
+    description=(
+        "Sovereign runtime boot completed successfully. "
+        "All constitutional surfaces verified."
+    ),
+)
 
-print("🏛️ Authority root: /afritech")
-print("📜 Legacy lineage: preserved (/afritech_v1 frozen)")
-print("🟢 AfriTech RUNNING (STATE: SOVEREIGN)")
+    run()
+
+
+# ---------------------------------------------------------------------
+# Module execution
+# ---------------------------------------------------------------------
+
+if __name__ == "__main__":
+    boot()

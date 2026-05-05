@@ -1,0 +1,243 @@
+# afritech/truth/epistemic_confidence.yaml
+#
+# STATUS: CANONICAL EPISTEMIC CONFIDENCE SPECIFICATION
+#
+# This file defines the ONLY admissible epistemic confidence
+# structure permitted in a TruthPacket during the
+# FIRST_EXECUTABLE_PROOF phase.
+#
+# Confidence is treated as a constitutional artifact.
+# It must be decomposed, normalized, auditable, and replayable.
+#
+# Any TruthPacket containing confidence information that
+# deviates from this schema is constitutionally invalid.
+
+version: EPISTEMIC_CONFIDENCE_V1
+
+applicability:
+  phase: FIRST_EXECUTABLE_PROOF
+  enforced_by:
+    - TruthPacketConstructor
+    - ConstitutionalAgent
+    - ReplayVerifier
+
+# -------------------------------------------------------------------
+# GLOBAL EPISTEMIC INVARIANTS
+# -------------------------------------------------------------------
+
+global_invariants:
+
+  - id: NO_SCALAR_CONFIDENCE
+    description: >
+      Scalar or collapsed confidence values are forbidden.
+      Confidence MUST be decomposed into explicit dimensions.
+
+  - id: EVIDENCE_BOUND_ONLY
+    description: >
+      Confidence MUST derive exclusively from attestable,
+      replayable inputs.
+      Model self-assessed confidence is forbidden.
+
+  - id: REPLAY_REPRODUCIBILITY_REQUIRED
+    description: >
+      Every confidence dimension MUST be recomputable
+      during replay under identical conditions.
+
+  - id: NORMALIZATION_REQUIRED
+    description: >
+      All confidence dimensions MUST be normalized
+      onto a common numeric scale.
+
+  - id: UNCERTAINTY_IS_LEGITIMATE
+    description: >
+      Low confidence values are acceptable.
+      Absence of confidence inflation is not a failure.
+
+# -------------------------------------------------------------------
+# NORMALIZATION RULES
+# -------------------------------------------------------------------
+
+normalization:
+
+  scale:
+    min: 0.0
+    max: 1.0
+
+  semantics:
+    "0.0": >
+      No admissible epistemic support.
+      Dimension is effectively unsatisfied.
+    "0.5": >
+      Partial, weak, or incomplete epistemic support.
+    "1.0": >
+      Fully satisfied epistemic condition
+      under declared constitutional constraints.
+
+  rounding:
+    precision: 4
+    deterministic: true
+
+# -------------------------------------------------------------------
+# EPISTEMIC CONFIDENCE DIMENSIONS
+# -------------------------------------------------------------------
+
+epistemic_confidence:
+
+  # ===============================================================
+  # EVIDENTIARY CONFIDENCE
+  # ===============================================================
+
+  evidentiary:
+    description: >
+      Measures whether claims are supported by
+      identifiable, citable evidence.
+    inputs:
+      - provenance_chain
+      - citation_count
+    constraints:
+      min_citations: 1
+    replay_dependencies:
+      - provenance_chain_hash
+    normalization_rule: >
+      f(citation_count, evidence_uniqueness)
+
+  # ===============================================================
+  # SOURCE CONSENSUS CONFIDENCE
+  # ===============================================================
+
+  source_consensus:
+    description: >
+      Measures agreement across independent sources.
+      Disagreement lowers confidence but does not
+      invalidate claims.
+    inputs:
+      - provenance_chain
+      - source_overlap
+    constraints:
+      independence_required: true
+    replay_dependencies:
+      - provenance_chain_hash
+    normalization_rule: >
+      f(independent_source_count, contradiction_ratio)
+
+  # ===============================================================
+  # REPLAY DETERMINISM CONFIDENCE
+  # ===============================================================
+
+  replay_determinism:
+    description: >
+      Measures whether execution is deterministically
+      reproducible under replay.
+    inputs:
+      - execution_trace
+      - replay_hash
+    constraints:
+      deterministic_required: true
+    replay_dependencies:
+      - execution_trace_hash
+    normalization_rule: >
+      1.0 if replay_hash matches exactly
+      else 0.0
+
+  # ===============================================================
+  # ATTESTATION STRENGTH
+  # ===============================================================
+
+  attestation_strength:
+    description: >
+      Measures support from required attestations.
+      During FIRST_EXECUTABLE_PROOF, this dimension
+      may be minimal but must be explicit.
+    inputs:
+      - attestations
+    constraints:
+      min_attestations: 0
+    replay_dependencies:
+      - attestation_hashes
+    normalization_rule: >
+      f(attestation_count, attestation_weight)
+
+  # ===============================================================
+  # TEMPORAL STABILITY
+  # ===============================================================
+
+  temporal_stability:
+    description: >
+      Measures whether claims remain stable over
+      constitutional time.
+      Cross-epoch evaluation is optional at this phase.
+    inputs:
+      - epoch_id
+      - prior_claim_hashes
+    constraints:
+      requires_cross_epoch_check: false
+    replay_dependencies:
+      - epoch_id
+    normalization_rule: >
+      1.0 if no known prior contradiction
+      else value < 1.0
+
+# -------------------------------------------------------------------
+# OPTIONAL AGGREGATION (STRICTLY CONTROLLED)
+# -------------------------------------------------------------------
+#
+# Aggregation is optional and MUST NOT replace or
+# obscure decomposed confidence dimensions.
+
+aggregation:
+
+  allowed: true
+
+  produces:
+    - optional_summary_metric
+
+  constraints:
+    method_must_be_declared: true
+    aggregation_must_reference_dimensions: true
+    aggregation_must_be_replayable: true
+    aggregation_must_not_be_decision_authoritative: true
+
+# -------------------------------------------------------------------
+# PROHIBITED CONFIDENCE PRACTICES
+# -------------------------------------------------------------------
+
+forbidden_practices:
+
+  - scalar_confidence
+  - model_self_confidence
+  - narrative_confidence_labels
+  - undocumented_aggregation
+  - non_normalized_values
+  - confidence_without_provenance
+  - confidence_without_causal_trace
+
+# -------------------------------------------------------------------
+# FAILURE CONDITIONS
+# -------------------------------------------------------------------
+
+failure_conditions:
+
+  - missing_required_dimension
+  - non_normalized_value
+  - irreproducible_computation
+  - scalar_confidence_detected
+  - confidence_without_evidence
+  - confidence_without_causality
+
+failure_response:
+  type: HARD_FAILURE
+  effect: >
+    TruthPacket legitimacy is invalidated and
+    execution proof fails.
+
+# -------------------------------------------------------------------
+# CONSTITUTIONAL ASSERTION
+# -------------------------------------------------------------------
+
+constitutional_assertion: >
+  AfriTech treats epistemic confidence as a
+  constitutional computation, not an expression
+  of belief.
+  What cannot be decomposed, normalized, and replayed
+  is epistemically illegitimate.
+

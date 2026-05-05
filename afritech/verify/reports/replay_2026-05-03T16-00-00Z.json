@@ -1,0 +1,37 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-05-03T16:00:00Z",
+    "tool_version": "afritech.verify.replay v1.0.0",
+    "ci_run_id": "github-actions-12493012"
+  },
+
+  "replay_result": {
+    "valid": true
+  },
+
+  "epoch_verification": {
+    "verified_from": 0,
+    "verified_to": 5
+  },
+
+  "registry_alignment": {
+    "registry_epoch": 5,
+    "matches_terminal_epoch": true
+  },
+
+  "adr_legitimacy": {
+    "verified": true,
+    "missing_adrs": []
+  },
+
+  "hash_chain_verification": {
+    "verified": true
+  },
+
+  "invariants_verified": [
+    "epoch_monotonicity",
+    "sealed_finalization",
+    "registry_sovereignty",
+    "replay_validity"
+  ]
+}

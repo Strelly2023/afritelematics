@@ -1,0 +1,289 @@
+===== ./.github/workflows/architecture.yml =====
+name: AfriTech Constitutional Guard
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  enforce:
+    name: Enforce Constitutional Sovereignty
+    runs-on: ubuntu-latest
+
+    steps:
+      # ---------------------------------------------------
+      # Checkout source
+      # ---------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------
+      # Setup Python
+      # ---------------------------------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ---------------------------------------------------
+      # Install minimal dependencies
+      # ---------------------------------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      # ---------------------------------------------------
+      # Constitutional Guard (NON-OPTIONAL)
+      # ---------------------------------------------------
+      - name: Run Constitutional Guard
+        run: |
+          python - << 'EOF'
+          from afritech.guards.engine import verify_sovereignty
+          verify_sovereignty()
+          print("✅ Constitutional integrity verified")
+          EOF
+
+===== ./afritech/governance/epoch/rules.yaml =====
+schema: afritech.epoch.rules.v1
+
+advance_requires:
+  - approved_adr
+  - invariants_verified
+  - kernel_hash_verified
+  - registry_currently_sealed
+  - reseal_after_advance
+
+properties:
+  monotonic: true
+  rollback: forbidden
+  silent_advance: forbidden
+
+===== ./afritech/registry/history/epoch_1.yaml =====
+schema: afritech.registry.history.v1
+
+epoch:
+  number: 1
+  parent: 0
+  status: FINAL
+  monotonic: true
+
+authority:
+  adr: ADR-0002
+  decision: Registry Schema v2, Multi-Surface Attestation, and Proof Promotion
+
+timestamp:
+  proposed_at: 2026-05-01T11:58:00Z
+  enacted_at: 2026-05-01T12:12:00Z
+  resealed_at: 2026-05-01T12:13:00Z
+
+registry_transition:
+  from_schema: afritech.registry.v1
+  to_schema: afritech.registry.v2
+  from_version: 1
+  to_version: 2
+
+attestation_transition:
+  previous:
+    type: monolithic
+    fields:
+      - kernel_hash
+  current:
+    type: multi_surface
+    fields:
+      - kernel_hashes.lean
+      - kernel_hashes.kernel
+      - kernel_hashes.state
+      - kernel_hashes.guards
+      - kernel_hashes.runtime
+
+proof_status_transition:
+  formal:
+    from: DECLARED
+    to: VERIFIED
+  runtime_binding:
+    from: DECLARED
+    to: VERIFIED
+
+sealing:
+  pre_state: SEALED
+  unsealed_for_mutation: true
+  resealed: true
+  seal_integrity: VERIFIED
+
+hashes:
+  registry_hash: d4de5dfad5c2de8c7fe5d8058e381936203b28cd36cbda0f8024c2f3af58784f
+  kernel_hashes:
+    lean:   3b7f2fa5325efe6cafb4b2500cbd8aee60ed5f5934f003cba60d9fe4906301e1
+    kernel: 1207f4981ef87ae3564dfe4dc13b89ffb0f13bb6dcaae60a243e4ccc5cc1e69a
+    state:  5a5b6294ae563d3b644df1d02be7c695d5240549fe9bdf1bda538527d674e4e3
+    guards: 749f08f0567a579cd0434f894b332b7237241e52b56db48aca8816133e644602
+    runtime: f2aca8a64e044022864378e37426489b4f4b678e0a060499ca92ec9d03b8d1ff
+
+invariants:
+  preserved:
+    - kernel_immutability
+    - registry_sovereignty
+    - epoch_monotonicity
+    - silent_mutation_forbidden
+    - runtime_subordination
+    - no_dual_sovereignty
+
+violations:
+  detected: false
+
+notes:
+  - This epoch represents the first lawful evolution after sovereign establishment.
+  - No authority was added, removed, or weakened.
+  - Evolution was executed strictly via ADR, epoch advancement, and resealing.
+
+final_assertion: >
+  Epoch 1 is a valid constitutional successor to Epoch 0.
+  All changes were executed lawfully, sealed cryptographically,
+  and are binding on all future execution and governance.
+
+
+
+===== ./afritech/registry/registry.yaml =====
+schema: afritech.registry.v2
+registry:
+  id: AFRITECH-CONSTITUTIONAL-REGISTRY
+  version: 2
+  status: ACTIVE
+  authority: SOVEREIGN
+identity:
+  namespace: afritech
+  canonical_root: /afritech
+  constitutional_epoch: 0
+  state: SOVEREIGN
+lineage:
+  predecessor: afritech_v1
+  predecessor_status: FROZEN
+  predecessor_tag: afritech-v1-constitutional-freeze
+  transfer_mode: CONSTITUTIONAL_MIGRATION
+authority:
+  source_of_truth: registry
+  precedence:
+  - registry
+  - kernel_manifest
+  - lean
+  - runtime
+kernel:
+  manifest: architecture/kernel_manifest.yaml
+  mutable: false
+  change_policy: ADR_REQUIRED
+formal:
+  lean_root: lean/
+  proof_status: VERIFIED
+  runtime_binding: VERIFIED
+invariants:
+  source: architecture/INVARIANTS.yaml
+  enforcement: REQUIRED
+  mutable: false
+epoch:
+  current: 0
+  monotonic: true
+  advancement_policy: ADR_REQUIRED
+mutation:
+  allowed: false
+  unlock_condition:
+  - approved_adr
+  - epoch_advance
+  - registry_reseal
+security:
+  silent_mutation: FORBIDDEN
+  dual_sovereignty: FORBIDDEN
+  runtime_authority_override: FORBIDDEN
+historical_record:
+  preserve_v1: true
+  executable_v1: false
+  reference_only: true
+attestation:
+  registry_hash: d4de5dfad5c2de8c7fe5d8058e381936203b28cd36cbda0f8024c2f3af58784f
+  kernel_hashes:
+    lean: 3b7f2fa5325efe6cafb4b2500cbd8aee60ed5f5934f003cba60d9fe4906301e1
+    kernel: 1207f4981ef87ae3564dfe4dc13b89ffb0f13bb6dcaae60a243e4ccc5cc1e69a
+    state: 5a5b6294ae563d3b644df1d02be7c695d5240549fe9bdf1bda538527d674e4e3
+    guards: 749f08f0567a579cd0434f894b332b7237241e52b56db48aca8816133e644602
+    runtime: f2aca8a64e044022864378e37426489b4f4b678e0a060499ca92ec9d03b8d1ff
+  seal_status: SEALED
+constitutional_assertions:
+- afritech is sole active authority
+- afritech_v1 is frozen lineage only
+- all runtime legitimacy derives from registry
+- mutation requires constitutional procedure
+- registry sealing is cryptographically enforced
+- constitutional surfaces must hash-match at boot
+
+
+===== ./afritech_v1/architecture/dependency_rules.yaml =====
+layers:
+  architecture:
+    path: architecture
+    may_import: []  
+  kernel:
+    path: kernel
+    may_import: []
+
+  proof:
+    path: proof
+    may_import: [kernel]
+
+  security:
+    path: security
+    may_import: [kernel, proof]
+
+  governance:
+    path: governance
+    may_import: [kernel, security, proof]
+
+  vm:
+    path: vm
+    may_import: [kernel, proof, security]
+
+  compiler:
+    path: compiler
+    may_import: [kernel, proof]
+
+  runtime:
+    path: runtime
+    may_import: [vm, compiler, kernel, proof, security]
+
+  epoch:
+    path: epoch
+    may_import: [kernel]
+
+  registry:
+    path: registry
+    may_import: [kernel]
+
+  audit:
+    path: audit
+    may_import: [kernel, proof]
+
+  api:
+    path: api
+    may_import: [runtime, registry]
+
+
+===== ./afritech_v1/architecture/kernel_manifest.yaml =====
+kernel_root: afritech_v1/kernel
+
+include:
+  - .py
+  - .md
+
+exclude:
+  - __pycache__
+  - .pyc
+  - .git
+
+===== ./afritech_v1/registry/registry.yaml =====
+schema_version: 1
+status: BOOTSTRAP
+

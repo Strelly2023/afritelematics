@@ -1,0 +1,177 @@
+schema: afritech.audit.events.v1
+metadata:
+  ledger_type: CONSTITUTIONAL_AUDIT
+  append_only: true
+  mutable: false
+  authoritative: false
+  timezone: UTC
+events:
+- id: EVT-0001
+  type: CONSTITUTIONAL_ACTIVATION
+  severity_class: A_FATAL
+  epoch: 0
+  authority:
+    adr: ADR-0001
+  description: 'AfriTech constitutional sovereignty activated. Registry declared as
+    the sole source of authority. Predecessor lineage frozen.
+
+    '
+  timestamp: '2026-05-01T11:58:00Z'
+- id: EVT-0002
+  type: REGISTRY_RESEAL
+  severity_class: A_FATAL
+  epoch: 0
+  authority:
+    adr: ADR-0001
+  description: 'Initial registry sealed under the sovereign constitution.
+
+    '
+  timestamp: '2026-05-01T12:03:00Z'
+- id: EVT-0003
+  type: EPOCH_ADVANCE
+  severity_class: A_FATAL
+  epoch: 1
+  authority:
+    adr: ADR-0002
+  description: 'Epoch advanced following registry schema v2 adoption and multi-surface
+    attestation introduction.
+
+    '
+  timestamp: '2026-05-02T20:27:08Z'
+- id: EVT-0004
+  type: REGISTRY_RESEAL
+  severity_class: A_FATAL
+  epoch: 1
+  authority:
+    adr: ADR-0002
+  description: 'Registry resealed after lawful epoch advancement. Manifest-driven
+    identity enforced.
+
+    '
+  timestamp: '2026-05-02T20:28:10Z'
+- id: EVT-0005
+  type: BOOKKEEPING_CORRECTION
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority:
+    adr: ADR-0005
+  description: 'Non-temporal registry identity correction applied. No epoch advancement
+    was performed.
+
+    '
+  timestamp: '2026-05-03T09:14:32Z'
+- id: EVT-09137E41
+  type: EPOCH_ADVANCE
+  severity_class: A_FATAL
+  epoch: 4
+  authority:
+    adr: ADR-0002
+  description: 'Epoch advanced from 3 to 4 under ADR-0002 authority. Registry resealed
+    under the new epoch identity.
+
+    '
+  timestamp: '2026-05-03T08:06:23Z'
+- id: EVT-6ED71FBC
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 4
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T08:06:58Z'
+- id: EVT-62D59EDC
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 5
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully following constitutional
+    normalization epoch.
+
+    '
+  timestamp: '2026-05-03T10:39:50Z'
+- id: EVT-967B538C
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T11:48:18Z'
+- id: EVT-7CD7E5E8
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T12:22:42Z'
+- id: EVT-97481176
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T12:31:35Z'
+- id: EVT-C18EB83D
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T15:31:55Z'
+- id: EVT-0F33D016
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully. All constitutional
+    surfaces verified.
+
+    '
+  timestamp: '2026-05-03T15:35:55Z'
+- id: EVT-REPLAY-CANONICAL-0001
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 5
+  authority: {}
+  description: 'Sovereign runtime boot completed successfully after replay verification
+    and CI constitutional validation.
+
+    '
+  timestamp: '2026-05-03T16:00:00Z'
+- id: EVT-D13B87E2
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-03T16:49:03Z'
+- id: EVT-06657172
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-03T23:50:58Z'
+- id: EVT-C9BEF0A2
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-04T10:07:21Z'

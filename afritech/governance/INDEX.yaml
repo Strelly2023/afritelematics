@@ -1,0 +1,204 @@
+schema: afritech.governance.index.v1
+
+# =====================================================================
+# HUMAN-READABLE GOVERNANCE INDEX (NON-AUTHORITATIVE)
+# =====================================================================
+# This file:
+#   - Has NO authority
+#   - Enforces NO rules
+#   - Executes NO logic
+#
+# It exists ONLY to summarize the constitutional, governance,
+# and temporal state of AfriTech for humans.
+#
+# Authority resides exclusively in:
+#   - ADRs
+#   - registry.yaml
+#   - epoch history
+# =====================================================================
+
+purpose: >
+  Human-readable index summarizing the constitutional, governance,
+  and temporal state of the AfriTech system.
+  This file is documentary only and carries no authority.
+
+# ---------------------------------------------------------------------
+# Constitutional status (foundational phase)
+# ---------------------------------------------------------------------
+
+constitutional_status:
+  bootstrap_phase: CLOSED
+  sovereignty: ACTIVE
+  authority_root: "/afritech"
+  registry_is_supreme: true
+
+# ---------------------------------------------------------------------
+# Current constitutional enforcement state
+# ---------------------------------------------------------------------
+
+constitutional_state:
+  registry_status: SEALED
+  runtime_status: VERIFIED
+  silent_mutation_allowed: false
+
+# ---------------------------------------------------------------------
+# Epoch summary
+# ---------------------------------------------------------------------
+
+epoch:
+  current: 5
+
+  established_by:
+    adr: ADR-0001
+    description: Constitutional Activation and Sovereign Authority Establishment
+
+  last_advanced_by:
+    adr: ADR-0005
+    description: >
+      Constitutional normalization epoch recording bookkeeping
+      corrections and replay-legitimacy alignment without
+      substantive identity or authority change.
+
+  classification:
+    evolution_epochs:
+      - 1
+      - 2
+      - 3
+      - 4
+    normalization_epochs:
+      - 5
+
+# ---------------------------------------------------------------------
+# Mutation & correction summary
+# ---------------------------------------------------------------------
+
+mutation_summary:
+  mutation_allowed_by_default: false
+
+  lawful_mutation_path:
+    - approved_adr
+    - epoch_advance
+    - registry_reseal
+
+  last_mutation:
+    adr: ADR-0002
+    epoch: 4
+    type: CONSTITUTIONAL_EVOLUTION
+    description: Registry schema v2 upgrade and multi-surface attestation
+
+  last_correction:
+    adr: ADR-0005
+    type: BOOKKEEPING
+    epoch: 5
+    epoch_advanced: true
+    description: >
+      Non-substantive normalization epoch ensuring explicit
+      reseal metadata, replay-verifiable lineage, and registry
+      alignment without changing constitutional meaning.
+
+# ---------------------------------------------------------------------
+# Registry & identity overview
+# ---------------------------------------------------------------------
+
+registry_overview:
+  schema: afritech.registry.v2
+  identity_model: MANIFEST_DRIVEN
+  sealed: true
+  hash_enforced: true
+
+  constitutional_surfaces:
+    - lean
+    - kernel
+    - state
+    - guards
+    - runtime
+
+# ---------------------------------------------------------------------
+# Lineage summary
+# ---------------------------------------------------------------------
+
+lineage:
+  predecessor:
+    namespace: afritech_v1
+    status: FROZEN
+    executable: false
+    purpose: HISTORICAL_REFERENCE_ONLY
+
+# ---------------------------------------------------------------------
+# Bootstrap mechanics (historical, non-operative)
+# ---------------------------------------------------------------------
+
+bootstrap_status:
+  bootstrap_closed_at_epoch: 0
+  bootstrap_reopen_allowed: false
+
+# ---------------------------------------------------------------------
+# Formal proof boundary (non-executable)
+# ---------------------------------------------------------------------
+
+proofs:
+  scope:
+    - kernel invariants
+    - registry identity consistency
+    - manifest-to-hash determinism
+    - guard structural correctness
+
+  excluded:
+    - governance process logic
+    - ADR approval procedures
+    - epoch advancement decisions
+    - human intent and judgment
+    - emergency or social procedures
+
+  comment: >
+    Formal proofs apply strictly to functional and structural
+    properties of the system.
+    Governance processes, human decisions, and constitutional change
+    remain intentionally outside the scope of formal verification.
+
+# ---------------------------------------------------------------------
+# Human authority declaration (non-executable)
+# ---------------------------------------------------------------------
+
+human_authority:
+  exists: true
+  scope: ADR_APPROVAL_ONLY
+  runtime_override: false
+  emergency_powers: NONE
+  binding_effect: NONE
+
+  comment: >
+    Human actors participate exclusively in proposal and approval
+    of Architectural Decision Records (ADRs).
+    Humans possess no runtime authority, no execution override,
+    and no emergency powers.
+    All enforcement, execution, and mutation remain machine-enforced
+    according to the constitution.
+
+# ---------------------------------------------------------------------
+# Meta-invariant awareness (declarative only)
+# ---------------------------------------------------------------------
+
+meta_invariants:
+  declared:
+    - epoch_monotonicity_is_eternal
+    - reseal_required_for_all_mutation
+    - registry_is_single_source_of_truth
+  enforcement_level: DECLARATIVE_ONLY
+
+# ---------------------------------------------------------------------
+# Audit notes
+# ---------------------------------------------------------------------
+
+audit_notes:
+  - This file is NON-AUTHORITATIVE.
+  - Any inconsistency with registry.yaml or epoch history
+    MUST be resolved in their favor.
+  - This file may be regenerated or corrected without epoch advancement.
+
+# ---------------------------------------------------------------------
+# Status
+# ---------------------------------------------------------------------
+
+status: ACTIVE
+immutable: false

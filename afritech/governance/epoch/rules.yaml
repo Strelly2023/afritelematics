@@ -1,0 +1,13 @@
+schema: afritech.epoch.rules.v1
+
+advance_requires:
+  - approved_adr
+  - invariants_verified
+  - kernel_hash_verified
+  - registry_currently_sealed
+  - reseal_after_advance
+
+properties:
+  monotonic: true
+  rollback: forbidden
+  silent_advance: forbidden

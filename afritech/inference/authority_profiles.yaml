@@ -1,0 +1,178 @@
+# afritech/inference/authority_profiles.yaml
+#
+# STATUS: EXECUTION-AUTHORITY CANON
+#
+# This file defines the ONLY authority profiles permitted
+# to participate in runtime execution during the
+# FIRST_EXECUTABLE_PROOF phase.
+#
+# Authority profiles define:
+# - what an actor is allowed to cause
+# - what an actor is explicitly forbidden to cause
+# - how legitimacy is evaluated before intelligence acts
+#
+# Authority is NEVER inferred.
+# Authority is NEVER escalated at runtime.
+#
+# Any execution referencing an undeclared authority profile
+# is constitutionally invalid.
+
+version: AUTHORITY_PROFILES_V1
+
+applicability:
+  phase: FIRST_EXECUTABLE_PROOF
+  enforced_by:
+    - ConstitutionalAgent
+    - ReplayVerifier
+
+# -------------------------------------------------------------------
+# GLOBAL AUTHORITY INVARIANTS
+# -------------------------------------------------------------------
+
+global_invariants:
+
+  - id: NO_RUNTIME_AUTHORITY_CREATION
+    description: >
+      Authority profiles may not be created, derived,
+      delegated, or modified at runtime.
+
+  - id: NO_AUTHORITY_ESCALATION
+    description: >
+      An execution may never assume an authority
+      broader than the one explicitly bound to it.
+
+  - id: AUTHORITY_PRECEDES_INTELLIGENCE
+    description: >
+      Authority scope MUST be evaluated before any
+      inference, routing, or reasoning takes place.
+
+  - id: AUTHORITY_VIOLATION_IS_TERMINAL
+    description: >
+      Any authority violation MUST immediately halt
+      execution and invalidate proof.
+
+# -------------------------------------------------------------------
+# AUTHORITY PROFILES
+# -------------------------------------------------------------------
+
+authority_profiles:
+
+  # ===============================================================
+  # CONSTITUTIONAL RESEARCH AGENT AUTHORITY
+  # ===============================================================
+
+  - id: CONSTITUTIONAL_RESEARCH_AGENT
+    description: >
+      Minimal authority profile used exclusively to
+      demonstrate constitutional execution viability.
+      This authority exists ONLY for proof purposes.
+
+    domain:
+      - knowledge_generation
+      - constitutional_validation
+
+    permitted_operations:
+      - research_synthesis
+      - citation_analysis
+      - non_mutating_inference
+      - truth_artifact_emission
+
+    prohibited_operations:
+      - state_mutation
+      - external_write
+      - environment_interaction
+      - system_command
+      - registry_modification
+      - epoch_advancement
+      - authority_delegation
+      - authority_derivation
+      - federation_interaction
+
+    scope_constraints:
+      max_claims: 10
+      requires_citations: true
+      epistemic_confidence_required: true
+      causal_trace_required: true
+
+    replay_constraints:
+      deterministic_only: true
+      witnesses_required: 0
+      allows_federation_variance: false
+
+    failure_on_violation: true
+
+  # ===============================================================
+  # NULL / UNAUTHORIZED AUTHORITY (IMPLICIT DENIAL)
+  # ===============================================================
+
+  - id: UNAUTHORIZED
+    description: >
+      Implicit authority profile representing absence
+      of constitutional authorization.
+
+    domain: []
+
+    permitted_operations: []
+
+    prohibited_operations:
+      - "*"
+
+    scope_constraints: {}
+
+    replay_constraints:
+      deterministic_only: true
+
+    failure_on_violation: true
+
+# -------------------------------------------------------------------
+# AUTHORITY SELECTION RULES
+# -------------------------------------------------------------------
+
+authority_resolution:
+
+  binding_required: true
+
+  resolution_rules:
+    - rule: REQUEST_MUST_DECLARE_AUTHORITY
+      description: >
+        Every constitutional request MUST explicitly
+        declare an authority_profile ID.
+
+    - rule: IMPLICIT_AUTHORITY_FORBIDDEN
+      description: >
+        Absence of an explicit authority declaration
+        resolves to UNAUTHORIZED.
+
+    - rule: MULTIPLE_AUTHORITIES_FORBIDDEN
+      description: >
+        A request MUST reference exactly one authority
+        profile. Composed or combined authorities
+        are forbidden at this phase.
+
+# -------------------------------------------------------------------
+# EXECUTION ENFORCEMENT
+# -------------------------------------------------------------------
+
+enforcement:
+
+  evaluation_point: PRE_INFERENCE
+
+  violation_response:
+    type: HARD_FAILURE
+    effect: >
+      Authority violations terminate execution and
+      invalidate the constitutional proof.
+
+  audit_requirements:
+    - authority_profile_id MUST appear in replay transcript
+    - authority_scope evaluation MUST be replayable
+    - authority violation MUST be explicit in failure taxonomy
+
+# -------------------------------------------------------------------
+# CONSTITUTIONAL ASSERTION
+# -------------------------------------------------------------------
+
+constitutional_assertion: >
+  AfriTech recognizes no execution authority that is
+  not explicitly declared in this file.
+  Authority is finite, enumerable, and replay-verifiable.

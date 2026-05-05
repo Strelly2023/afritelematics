@@ -10,8 +10,9 @@ Phase‑2A:
 
 from afritech.replay.verify import ReplayVerifier
 from afritech.replay.transcript import ConstitutionalRequest
-import yaml
 from pathlib import Path
+from typing import NoReturn
+import yaml
 import sys
 
 
@@ -32,29 +33,39 @@ DEFAULT_TRANSCRIPT_PATH = Path(
 # ENTRYPOINT
 # ============================================================
 
-def main() -> None:
+def main() -> NoReturn:
     """
     Verify a replay transcript against a constitutional request.
 
     Usage:
       python3 -m afritech.replay.run_verify
       python3 -m afritech.replay.run_verify <request_path> <transcript_path>
+
+    Outputs are intentionally minimal and verbatim-friendly,
+    to allow direct inclusion as admissible runtime artifacts.
     """
 
-    # --------------------------------------------
+    # --------------------------------------------------------
     # Resolve CLI arguments
-    # --------------------------------------------
+    # --------------------------------------------------------
 
-    if len(sys.argv) == 3:
-        request_path = Path(sys.argv[1])
-        transcript_path = Path(sys.argv[2])
-    elif len(sys.argv) == 1:
+    if len(sys.argv) == 1:
         request_path = DEFAULT_REQUEST_PATH
         transcript_path = DEFAULT_TRANSCRIPT_PATH
+
+    elif len(sys.argv) == 3:
+        request_path = Path(sys.argv[1])
+        transcript_path = Path(sys.argv[2])
+
     else:
         raise SystemExit(
-            "Usage: run_verify.py [<request_path> <transcript_path>]"
+            "Usage: python3 -m afritech.replay.run_verify "
+            "[<request_path> <transcript_path>]"
         )
+
+    # --------------------------------------------------------
+    # Resolve filesystem inputs
+    # --------------------------------------------------------
 
     if not request_path.exists():
         raise FileNotFoundError(
@@ -66,18 +77,20 @@ def main() -> None:
             f"Transcript file not found: {transcript_path}"
         )
 
-    # --------------------------------------------
+    # --------------------------------------------------------
     # Load request
-    # --------------------------------------------
+    # --------------------------------------------------------
 
     with request_path.open("r", encoding="utf-8") as f:
-        request_data = yaml.safe_load(f)
+        request_payload = yaml.safe_load(f)
 
-    request = ConstitutionalRequest(payload=request_data)
+    request = ConstitutionalRequest(
+        payload=request_payload
+    )
 
-    # --------------------------------------------
+    # --------------------------------------------------------
     # Verify
-    # --------------------------------------------
+    # --------------------------------------------------------
 
     verifier = ReplayVerifier()
     verdict = verifier.verify(
@@ -85,9 +98,9 @@ def main() -> None:
         request=request,
     )
 
-    # --------------------------------------------
-    # Output (verbatim‑friendly)
-    # --------------------------------------------
+    # --------------------------------------------------------
+    # Output (verbatim, audit-safe)
+    # --------------------------------------------------------
 
     print("VERDICT:", verdict.status)
     print("REPLAY_HASH:", verdict.replay_hash)

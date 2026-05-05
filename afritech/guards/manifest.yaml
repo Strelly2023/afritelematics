@@ -1,0 +1,50 @@
+schema: afritech.constitutional.manifest.v1
+
+scope: guards
+
+description: >
+  Constitutional manifest defining the authoritative surface
+  of the AfriTech guards layer. Only files declared here participate
+  in constitutional identity and cryptographic attestation.
+
+# ------------------------------------------------------------------
+# Authoritative files
+# ------------------------------------------------------------------
+# These files, and ONLY these files, define the constitutional
+# identity of the guards surface.
+#
+# Adding or removing a file REQUIRES:
+#   ADR → Epoch advance → Registry reseal
+#
+files:
+  - guards/__init__.py
+  - guards/engine.py
+
+# ------------------------------------------------------------------
+# Explicit exclusions (documentation only)
+# ------------------------------------------------------------------
+# The enforcement engine ignores undeclared files by design;
+# these exclusions are listed for clarity and audit transparency.
+#
+exclude:
+  - guards/__pycache__/**
+  - guards/**/*.pyc
+  - guards/**/*.pyo
+  - guards/.DS_Store
+  - guards/**/*.swp
+  - guards/**/*.tmp
+
+# ------------------------------------------------------------------
+# Assertions
+# ------------------------------------------------------------------
+assertions:
+  - guards identity is defined exclusively by this manifest
+  - undeclared files are constitutionally irrelevant
+  - mutation of declared files requires constitutional procedure
+  - filesystem noise must not affect guard identity
+
+# ------------------------------------------------------------------
+# Status
+# ------------------------------------------------------------------
+status: ACTIVE
+immutable: true

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AfriTech Replay Verification Report",
+  "type": "object",
+  "required": [
+    "report_metadata",
+    "replay_result",
+    "epoch_verification",
+    "registry_alignment",
+    "adr_legitimacy",
+    "hash_chain_verification",
+    "invariants_verified"
+  ],
+  "properties": {
+    "report_metadata": {
+      "type": "object",
+      "required": ["generated_at", "tool_version"],
+      "properties": {
+        "generated_at": { "type": "string", "format": "date-time" },
+        "tool_version": { "type": "string" },
+        "ci_run_id": { "type": "string" }
+      }
+    },
+
+    "replay_result": {
+      "type": "object",
+      "required": ["valid"],
+      "properties": {
+        "valid": { "type": "boolean" },
+        "failure_reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "epoch_verification": {
+      "type": "object",
+      "required": ["verified_from", "verified_to"],
+      "properties": {
+        "verified_from": { "type": "integer" },
+        "verified_to": { "type": "integer" }
+      }
+    },
+
+    "registry_alignment": {
+      "type": "object",
+      "required": ["registry_epoch", "matches_terminal_epoch"],
+      "properties": {
+        "registry_epoch": { "type": "integer" },
+        "matches_terminal_epoch": { "type": "boolean" }
+      }
+    },
+
+    "adr_legitimacy": {
+      "type": "object",
+      "required": ["verified"],
+      "properties": {
+        "verified": { "type": "boolean" },
+        "missing_adrs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "hash_chain_verification": {
+      "type": "object",
+      "required": ["verified"],
+      "properties": {
+        "verified": { "type": "boolean" },
+        "broken_at_epoch": { "type": "integer" }
+      }
+    },
+
+    "invariants_verified": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

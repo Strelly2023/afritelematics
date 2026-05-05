@@ -1,0 +1,138 @@
+schema: afritech.governance.roles.v1
+
+# =====================================================================
+# GOVERNANCE ROLES & QUORUM SEMANTICS (DECLARATIVE, NON-AUTHORITATIVE)
+# =====================================================================
+# This file defines GOVERNANCE INTENT ONLY.
+#
+# It:
+#   - Grants NO authority
+#   - Enforces NO rules
+#   - Triggers NO behavior
+#   - Is NOT consulted by runtime or guards
+#
+# Authority remains exclusively with:
+#   - registry.yaml
+#   - epoch mechanics
+#   - ADR approval records
+#
+# This document exists to enable future institutional scalability
+# without retroactively redefining legitimacy.
+# =====================================================================
+
+purpose: >
+  Declarative description of governance roles and approval semantics
+  for AfriTech constitutional evolution.
+  This file documents how authority may be exercised by humans,
+  but does not enforce or grant that authority.
+
+# ---------------------------------------------------------------------
+# Governance roles
+# ---------------------------------------------------------------------
+
+governance_roles:
+
+  proposer:
+    description: >
+      Proposes Architectural Decision Records (ADRs).
+      May author and submit changes for consideration.
+    permissions:
+      - draft_adr
+      - submit_adr
+    restrictions:
+      - may_not_approve
+      - may_not_reseal
+      - may_not_advance_epoch
+
+  verifier:
+    description: >
+      Reviews proposed ADRs for constitutional correctness,
+      completeness, and invariant preservation.
+    permissions:
+      - review_adr
+      - request_changes
+    restrictions:
+      - may_not_approve
+      - may_not_execute
+      - may_not_override
+
+  approver:
+    description: >
+      Approves ADRs according to quorum rules.
+      Approval authorizes epoch advancement but does not execute it.
+    permissions:
+      - approve_adr
+    restrictions:
+      - may_not_execute
+      - may_not_override_runtime
+
+  attestor:
+    description: >
+      Attests that governance procedures were followed correctly.
+      Provides institutional confirmation only.
+    permissions:
+      - attest_process
+    restrictions:
+      - may_not_block
+      - may_not_execute
+      - may_not_override
+
+# ---------------------------------------------------------------------
+# Quorum semantics (declarative)
+# ---------------------------------------------------------------------
+
+quorum_rules:
+
+  adr_approval:
+    description: >
+      Rules defining how many approvers are required
+      to approve an ADR for constitutional evolution.
+    model: SIMPLE_MAJORITY
+    parameters:
+      minimum_approvers: 1
+      fraction_required: 0.50
+
+  epoch_advance_authorization:
+    description: >
+      An epoch may advance only after a valid ADR approval quorum
+      has been satisfied.
+    depends_on:
+      - adr_approval
+
+# ---------------------------------------------------------------------
+# Governance invariants (non-enforcing)
+# ---------------------------------------------------------------------
+
+governance_invariants:
+  - no_single_actor_may_hold_all_roles
+  - approval_and_execution_are_separate
+  - governance_does_not_override_runtime
+  - governance_never_bypasses_registry
+
+# ---------------------------------------------------------------------
+# Current operational mode
+# ---------------------------------------------------------------------
+
+operational_mode:
+  governance_model: CENTRALIZED
+  reason: >
+    Current governance is intentionally centralized.
+    These role definitions exist to support future
+    scaling without ambiguity.
+
+# ---------------------------------------------------------------------
+# Authority disclaimer
+# ---------------------------------------------------------------------
+
+authority_disclaimer: >
+  This file is documentary and non-authoritative.
+  It does not grant power, enforce behavior,
+  or supersede the registry, epochs, or runtime guards.
+  In any conflict, registry.yaml and epoch history prevail.
+
+# ---------------------------------------------------------------------
+# Status
+# ---------------------------------------------------------------------
+
+status: ACTIVE
+mutable: true
