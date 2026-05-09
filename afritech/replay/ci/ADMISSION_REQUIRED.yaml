@@ -1,0 +1,229 @@
+## ============================================================
+## AfriTech CI Rule
+## Runtime Admission Enforcement
+## ============================================================
+## Rule ID: CI-RUNTIME-ADMISSION-001
+## Purpose:
+## Ensure that no runtime execution can occur without
+## explicit constitutional admission via RuntimeCertificate.
+##
+## Scope:
+## - afritech/runtime/main.py
+## - afritech/runtime/admission/
+##
+## This rule is normative and enforced in CI.
+## ============================================================
+
+metadata:
+  rule_id: CI-RUNTIME-ADMISSION-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+## ============================================================
+## GOVERNANCE PRINCIPLE
+## ============================================================
+
+principle:
+  statement: >
+    No AfriTech runtime may exist or execute without
+    successful constitutional admission via a valid
+    RuntimeCertificate.
+
+  rationale: >
+    Runtime existence is not implicit. It must be explicitly
+    granted through cryptographically verifiable admission.
+    This prevents unauthorized execution, configuration drift,
+    and non-attested runtime behavior.
+
+  enforcement_mode: static_analysis_and_ci_execution
+  failure_action: ci_fail
+
+## ============================================================
+## REQUIRED RUNTIME BEHAVIOR
+## ============================================================
+
+required_behavior:
+
+  description: >
+    The runtime entrypoint MUST invoke the
+    RuntimeAdmissionEngine before any execution path is reachable.
+
+  admission_call:
+
+    required_file: afritech/runtime/main.py
+
+    required_import:
+      - 'from afritech\\.runtime\\.admission\\.admission_engine import RuntimeAdmissionEngine'
+
+    required_invocation:
+      - 'RuntimeAdmissionEngine\\('
+      - 'admit\\('
+
+    required_flow:
+      description: >
+        Admission MUST occur before any guarded or unguarded
+        execution is invoked.
+
+      ordering:
+        first:
+          - _admit_runtime
+        before:
+          - any_execution_call
+
+## ============================================================
+## PROHIBITED BEHAVIOR
+## ============================================================
+
+prohibited_behavior:
+
+  description: >
+    Any execution path that bypasses runtime admission
+    is constitutionally invalid.
+
+  forbidden_patterns:
+
+    - direct_execution_without_admission
+    - guard_execution_without_admission
+    - runtime_boot_without_certificate_check
+
+## ============================================================
+## TARGETED FILES
+## ============================================================
+
+targets:
+
+  runtime_entrypoint:
+    path: afritech/runtime/main.py
+
+  admission_engine:
+    path: afritech/runtime/admission/admission_engine.py
+
+## ============================================================
+## CI VALIDATION CHECKS
+## ============================================================
+
+ci_checks:
+
+  # ------------------------------------------------------------
+  # AE-R1: Ensure admission engine import exists
+  # ------------------------------------------------------------
+  - check_id: AE-R1
+
+    description: >
+      Verify that runtime entrypoint imports RuntimeAdmissionEngine.
+
+    target: afritech/runtime/main.py
+
+    pattern_required:
+      - 'from afritech\\.runtime\\.admission\\.admission_engine import RuntimeAdmissionEngine'
+
+    failure_message: >
+      Runtime entrypoint does not import RuntimeAdmissionEngine.
+
+  # ------------------------------------------------------------
+  # AE-R2: Ensure admission invocation exists
+  # ------------------------------------------------------------
+  - check_id: AE-R2
+
+    description: >
+      Verify that RuntimeAdmissionEngine is instantiated
+      and admit() is invoked.
+
+    target: afritech/runtime/main.py
+
+    pattern_required:
+      - 'RuntimeAdmissionEngine\\('
+      - '\\.admit\\('
+
+    failure_message: >
+      Runtime entrypoint does not invoke admission engine.
+
+  # ------------------------------------------------------------
+  # AE-R3: Ensure admission precedes execution
+  # ------------------------------------------------------------
+  - check_id: AE-R3
+
+    description: >
+      Verify that admission occurs before any execution call.
+
+    target: afritech/runtime/main.py
+
+    required_order:
+      first: _admit_runtime
+      before:
+        - run_guarded
+        - dispatch
+        - executor
+
+    failure_message: >
+      Runtime admission does not precede execution logic.
+
+  # ------------------------------------------------------------
+  # AE-R4: Ensure no direct execution without admission
+  # ------------------------------------------------------------
+  - check_id: AE-R4
+
+    description: >
+      Prevent direct execution bypassing admission.
+
+    target: afritech/runtime/main.py
+
+    pattern_forbidden:
+      - 'run_guarded\\(.*\\)$'
+      - 'dispatch\\('
+
+    enforce_context: absence_of_admission_call
+
+    failure_message: >
+      Direct execution detected without prior admission.
+
+  # ------------------------------------------------------------
+  # AE-R5: Certificate path enforcement
+  # ------------------------------------------------------------
+  - check_id: AE-R5
+
+    description: >
+      Ensure runtime references a RuntimeCertificate path.
+
+    target: afritech/runtime/main.py
+
+    pattern_required:
+      - 'certificates/runtime_epoch_'
+
+    failure_message: >
+      Runtime does not reference a valid certificate path.
+
+## ============================================================
+## RUNTIME GUARANTEE (ASSERTION)
+## ============================================================
+
+runtime_assertion:
+
+  statement: >
+    Any runtime execution without prior admission MUST be treated
+    as non-existent and constitutionally invalid.
+
+  enforcement_effect:
+    - execution_refused
+    - runtime_invalidated
+    - replay_rejected
+
+## ============================================================
+## CI OUTCOME
+## ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Runtime admission enforcement passed."
+
+  on_fail:
+    result: failure
+    message: >
+      Runtime violates constitutional admission requirements.
+      See CI logs for specific violations.

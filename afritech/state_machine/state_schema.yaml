@@ -1,0 +1,182 @@
+schema: afritech.state_machine.v1
+
+state_machine:
+
+  # -----------------------------------------------------------------
+  # STATE DEFINITIONS
+  # -----------------------------------------------------------------
+
+  states:
+
+    - UNINITIALIZED
+    - ADMITTED
+    - EXECUTING
+    - COMPLETED
+    - FAILED
+
+  initial_state: UNINITIALIZED
+
+  terminal_states:
+    - COMPLETED
+    - FAILED
+
+  # -----------------------------------------------------------------
+  # TRANSITION MODEL
+  # -----------------------------------------------------------------
+
+  transition_model:
+
+    type: TOTAL               # ALL transitions must be defined
+    enforcement: STRICT       # reject undefined transitions
+    determinism: REQUIRED     # replay must reproduce same state sequence
+
+  # -----------------------------------------------------------------
+  # TRANSITION DEFINITIONS (INLINE OPTIONAL)
+  # -----------------------------------------------------------------
+
+  transitions:
+
+    allowed:
+
+      - id: S1_ADMISSION
+        from: UNINITIALIZED
+        to: ADMITTED
+
+      - id: S2_EXECUTION
+        from: ADMITTED
+        to: EXECUTING
+
+      - id: S3_COMPLETION
+        from: EXECUTING
+        to: COMPLETED
+
+      - id: S4_FAILURE
+        from: EXECUTING
+        to: FAILED
+
+    forbidden:
+
+      - from: UNINITIALIZED
+        to: EXECUTING
+
+      - from: COMPLETED
+        to: EXECUTING
+
+      - from: FAILED
+        to: ADMITTED
+
+      - from: EXECUTING
+        to: ADMITTED
+
+  # -----------------------------------------------------------------
+  # STATE INVARIANTS
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I19_STATE_TRANSITION_TOTALITY
+      # ALL state transitions must be defined (allowed or forbidden)
+
+    - I19_1_ALLOWED_ONLY
+      # Only explicitly allowed transitions may occur
+
+    - I19_2_FORBIDDEN_ENFORCED
+      # Explicitly forbidden transitions MUST be rejected
+
+    - I19_3_NO_IMPLICIT_TRANSITIONS
+      # No transition may happen unless declared
+
+    - I19_4_REPLAY_MATCH
+      # Replay MUST produce identical state sequence
+
+    - I19_5_SINGLE_STATE_AT_TIME
+      # System MUST be in exactly one state
+
+    - I19_6_INITIAL_STATE_FIXED
+      # Execution MUST start in UNINITIALIZED
+
+    - I19_7_TERMINAL_STATE_FINAL
+      # No transition allowed after reaching terminal state
+
+    - I19_8_TRANSITION_IDENTITY
+      # Each transition MUST have unique id
+
+    - I19_9_TRANSITION_HASH_BINDING
+      # Each transition MUST be hashable and reproducible
+
+    - I19_10_STATE_SPACE_COMPLETENESS
+      # allowed ∪ forbidden MUST cover all state combinations
+
+  # -----------------------------------------------------------------
+  # VALIDATION CONTRACT
+  # -----------------------------------------------------------------
+
+  validation:
+
+    required_at_runtime: true
+    required_for_trace_binding: true
+    required_for_replay: true
+
+    enforce_totality: true
+    enforce_forbidden: true
+    enforce_determinism: true
+
+    failure_policy:
+
+      type: HARD_FAILURE
+      effect: EXECUTION_ABORT
+
+  # -----------------------------------------------------------------
+  # REPLAY CONTRACT
+  # -----------------------------------------------------------------
+
+  replay:
+
+    deterministic: true
+
+    requirements:
+
+      - identical_transition_sequence
+      - identical_final_state
+      - identical_transition_hashes
+
+  # -----------------------------------------------------------------
+  # TRACE INTEGRATION
+  # -----------------------------------------------------------------
+
+  trace_binding:
+
+    enabled: true
+
+    requirements:
+
+      - every transition MUST map to trace event
+      - event.step MUST match transition id
+      - event.output_hash MUST bind resulting state
+
+  # -----------------------------------------------------------------
+  # AUTHORITY INTEGRATION
+  # -----------------------------------------------------------------
+
+  authority_binding:
+
+    required: true
+
+    rule:
+
+      each_transition MUST be executed under valid authority_profile
+      derived from GENESIS → REGISTRY
+
+  # -----------------------------------------------------------------
+  # METADATA (NON-AUTHORITATIVE)
+  # -----------------------------------------------------------------
+
+  metadata:
+
+    description: "AfriTech deterministic state machine"
+    version: v1
+    environment: production
+
+    notes: >
+      This state machine enforces semantic closure.
+      No execution path exists outside of defined transitions.

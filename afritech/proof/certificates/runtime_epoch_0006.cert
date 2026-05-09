@@ -1,0 +1,167 @@
+schema: afritech.runtime.certificate.v1
+
+runtime_certificate:
+
+  id: RUNTIME-CERT-EPOCH-0006
+
+  status: CERTIFIED
+
+  issuance:
+    issued_at: "2026-05-07T00:05:00Z"
+    issued_by: CONSTITUTIONAL_ATTESTATION_AUTHORITY
+    issuance_reason: EPOCH_0006_RUNTIME_ACTIVATION
+
+  # -----------------------------------------------------------------
+  # CONSTITUTIONAL BINDING
+  # -----------------------------------------------------------------
+
+  constitutional_binding:
+
+    registry_hash: "<FINAL_REGISTRY_SHA256>"
+
+    epoch: 6
+    epoch_hash: "<EPOCH_0006_HASH>"
+
+    kernel_root_hash: "<MERKLE_ROOT_KERNEL_HASH>"
+
+    execution_surfaces_hash: "<SHA256_EXECUTION_SURFACES_V2>"
+
+    authority_profiles_hash: "<SHA256_authority_profiles.yaml>"
+
+    verifier_hash: "<SHA256_REPLAY_VERIFIER>"
+
+  # -----------------------------------------------------------------
+  # RUNTIME ADMISSION POLICY
+  # -----------------------------------------------------------------
+
+  admission:
+
+    runtime_admission: REQUIRED
+    execution_surfaces_required: true
+    replay_validation_required: true
+    authority_validation_required: true
+
+    admission_policy: STRICT
+
+    refusal_conditions:
+      - missing_certificate
+      - invalid_certificate
+      - epoch_mismatch
+      - epoch_hash_mismatch
+      - registry_hash_mismatch
+      - kernel_hash_mismatch
+      - execution_surface_hash_mismatch
+      - authority_profiles_mismatch
+      - replay_verifier_mismatch
+      - undeclared_surface_reference
+
+    refusal_response:
+      type: HARD_FAILURE
+      effect: RUNTIME_NON_EXISTENCE
+
+  # -----------------------------------------------------------------
+  # GUARANTEED PROPERTIES (CERTIFIED SYSTEM STATE)
+  # -----------------------------------------------------------------
+
+  guarantees:
+
+    registry_continuity: VERIFIED
+    epoch_integrity: VERIFIED
+    kernel_integrity: VERIFIED
+    execution_surface_admission: VERIFIED
+    authority_enforcement: VERIFIED
+    replay_validity: REQUIRED
+    observer_free_validation: VERIFIED
+
+  # -----------------------------------------------------------------
+  # EXECUTION CONSTRAINTS
+  # -----------------------------------------------------------------
+
+  execution_constraints:
+
+    closed_world_execution: true
+    authority_precedes_inference: true
+    deterministic_execution_only: true
+    mutation_at_runtime: FORBIDDEN
+
+  # -----------------------------------------------------------------
+  # NON-OBSERVABILITY
+  # -----------------------------------------------------------------
+
+  non_observability:
+
+    invariant: ENFORCED
+
+    description: >
+      Runtime legitimacy MUST be derivable solely from constitutional
+      artifacts, attested hashes, and replay transcripts.
+
+      No hidden runtime state, external observer, or discretionary
+      interpretation is permitted.
+
+  # -----------------------------------------------------------------
+  # SIGNATURE (CRYPTOGRAPHIC BINDING)
+  # -----------------------------------------------------------------
+
+  signature:
+
+    algorithm: SHA256_WITH_CONSTITUTIONAL_SIGNATURE
+
+    signature_scope:
+      includes:
+        - constitutional_binding
+        - admission
+        - guarantees
+        - execution_constraints
+        - non_observability
+
+    signed_payload_hash: "<SHA256_OF_SIGNED_PAYLOAD>"
+
+    signature: "<CRYPTOGRAPHIC_SIGNATURE_BLOB>"
+
+    signature_root: "<CONSTITUTIONAL_ROOT_KEY_HASH>"
+
+  # -----------------------------------------------------------------
+  # VALIDATION REQUIREMENTS
+  # -----------------------------------------------------------------
+
+  validation:
+
+    validation_required_at_boot: true
+    validation_required_per_request: true
+    replay_binding_required: true
+
+    validation_outcome_on_failure: HARD_FAILURE
+
+  # -----------------------------------------------------------------
+  # CONSTITUTIONAL ASSERTION
+  # -----------------------------------------------------------------
+
+  constitutional_assertion: >
+    This RuntimeCertificate certifies that AfriTech at Epoch 6
+    is constitutionally admissible for runtime execution.
+
+    Runtime existence is valid if and only if:
+
+      registry state matches
+      epoch state matches
+      kernel state matches
+      execution surfaces are admitted
+      authority is enforced
+      execution remains replay-valid
+
+    Any deviation results in:
+
+      runtime non-existence
+      execution invalidation
+      constitutional failure
+
+  # -----------------------------------------------------------------
+  # FINAL ASSERTION
+  # -----------------------------------------------------------------
+
+  final_assertion: >
+    No runtime without this certificate.
+    No execution without admission.
+    No legitimacy without replay.
+    No evolution outside constitutional mutation.

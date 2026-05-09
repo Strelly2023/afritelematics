@@ -1,0 +1,126 @@
+# ============================================================
+# Afritech CI Rule
+# Authority Isolation Must Precede Inference Validation
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUTH-ORDER-001
+#
+# Purpose:
+#   Ensure that authority isolation is enforced BEFORE any
+#   inference binding validation occurs in the replay verifier.
+#
+# Scope:
+#   Phase-2B (applies transitively to Phase-2A)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUTH-ORDER-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Authority isolation is a foundational replay invariant and
+    MUST be enforced before any inference-related validation.
+    Inference validation MUST NOT occur across authority domains.
+
+  rationale: >
+    Inference binding has meaning only within a single authority-
+    scoped replay domain. Validating inference prior to authority
+    isolation risks cross-authority contamination.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL ORDER REQUIREMENT
+# ============================================================
+
+required_validation_order:
+
+  description: >
+    The replay verifier MUST validate authority isolation
+    before validating inference bindings.
+
+  required_sequence:
+    - _validate_authority
+    - _validate_environment
+    - _validate_request
+    - _validate_inference_binding
+
+  forbidden_sequences:
+    - inference_validation_before_authority
+    - inference_validation_without_authority_validation
+
+# ============================================================
+# TARGETED FILES
+# ============================================================
+
+targets:
+
+  verifier:
+    path: afritech/replay/verify.py
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AO-F1
+    description: >
+      Verify that _validate_authority is invoked before
+      _validate_inference_binding in verify().
+    target: afritech/replay/verify.py
+    required_order:
+      first: _validate_authority
+      before: _validate_inference_binding
+    failure_message: >
+      Authority validation must occur before inference validation.
+
+  - check_id: AO-F2
+    description: >
+      Verify that inference binding validation is not reachable
+      unless authority validation has already executed.
+    target: afritech/replay/verify.py
+    pattern_forbidden:
+      - '_validate_inference_binding\\(.*\\).*_validate_authority'
+    failure_message: >
+      Inference validation appears reachable before authority validation.
+
+  - check_id: AO-F3
+    description: >
+      Verify that no inference-related failure modes are emitted
+      prior to authority mismatch handling.
+    target: afritech/replay/verify.py
+    forbidden_failure_modes_before_authority:
+      - inference_input_mismatch
+      - model_identity_mismatch
+      - nondeterministic_inference
+    failure_message: >
+      Inference failure emitted before authority isolation.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Authority isolation precedes inference validation."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier violates authority-first governance ordering.

@@ -1,0 +1,225 @@
+# ============================================================
+# Afritech Constitutional Replay Failure Taxonomy
+# ============================================================
+#
+# Purpose:
+#   Canonical, machine-readable specification of all replay
+#   failure modes, invariants, and divergence locations.
+#
+# Scope:
+#   Phase-1  : Deterministic replay
+#   Phase-2A : Authority-isolated replay domains
+#   Phase-2B : Real inference binding under replay law
+#
+# Consumption:
+#   - replay verifier
+#   - audit tooling
+#   - CI enforcement
+#   - governance documentation
+#
+# This file is normative.
+# Runtime code must NOT invent new failure strings.
+# ============================================================
+
+metadata:
+  taxonomy_version: "1.0.0"
+  last_updated: "2026-05-05"
+  scope:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+
+# ============================================================
+# FAILURE MODES
+# ============================================================
+
+failure_modes:
+
+  # -----------------------
+  # Transcript / I/O
+  # -----------------------
+
+  invalid_transcript_path:
+    phase: Phase-1
+    summary: Transcript file not found or unreadable
+    invariant: transcript_existence
+    divergence_location: transcript_load
+
+  invalid_transcript_schema:
+    phase: Phase-1
+    summary: Transcript missing required fields or malformed
+    invariant: transcript_integrity
+    divergence_location: transcript_schema
+
+  # -----------------------
+  # Authority (Phase-2A)
+  # -----------------------
+
+  missing_authority_binding:
+    phase: Phase-2A
+    summary: Transcript missing authority_profile
+    invariant: authority_identity
+    divergence_location: authority_binding
+
+  authority_mismatch:
+    phase: Phase-2A
+    summary: Request authority does not match transcript authority
+    invariant: isolated_replay_domains
+    divergence_location: authority_binding
+
+  # -----------------------
+  # Environment
+  # -----------------------
+
+  environment_mismatch:
+    phase: Phase-1
+    summary: Replay environment does not satisfy deterministic constraints
+    invariant: environment_identity
+    divergence_location: environment_validation
+
+  # -----------------------
+  # Request / Trace
+  # -----------------------
+
+  request_mismatch:
+    phase: Phase-1
+    summary: Request hash differs from transcript request_hash
+    invariant: request_identity
+    divergence_location: request_reconstruction
+
+  trace_divergence:
+    phase: Phase-1
+    summary: Deterministic execution trace mismatch
+    invariant: causal_reconstruction
+    divergence_location: execution_rerun
+
+  # -----------------------
+  # TruthPacket / Replay
+  # -----------------------
+
+  truthpacket_divergence:
+    phase: Phase-1
+    summary: Regenerated TruthPacket hash mismatch
+    invariant: truthpacket_identity
+    divergence_location: truthpacket_regeneration
+
+  hash_mismatch:
+    phase: Phase-1
+    summary: Replay hash mismatch after recomputation
+    invariant: deterministic_identity
+    divergence_location: hash_recomputation
+
+  # -----------------------
+  # Inference Binding (Phase-2B)
+  # -----------------------
+
+  missing_inference_binding:
+    phase: Phase-2B
+    summary: Transcript does not contain inference binding
+    invariant: inference_binding_required
+    divergence_location: inference_binding
+
+  inference_input_mismatch:
+    phase: Phase-2B
+    summary: Inference input hash does not match request
+    invariant: deterministic_inference_binding
+    divergence_location: inference_binding
+
+  model_identity_mismatch:
+    phase: Phase-2B
+    summary: Model ID or version differs from replay environment
+    invariant: model_identity
+    divergence_location: inference_binding
+
+  nondeterministic_inference:
+    phase: Phase-2B
+    summary: Inference output cannot be deterministically validated
+    invariant: deterministic_inference
+    divergence_location: inference_binding
+
+# ============================================================
+# INVARIANTS
+# ============================================================
+
+invariants:
+
+  transcript_existence:
+    phase: Phase-1
+    description: Replay requires an existing transcript
+
+  transcript_integrity:
+    phase: Phase-1
+    description: Transcript schema must be complete and valid
+
+  request_identity:
+    phase: Phase-1
+    description: Request identity must be preserved across replay
+
+  deterministic_identity:
+    phase: Phase-1
+    description: Replay output must be deterministic
+
+  truthpacket_identity:
+    phase: Phase-1
+    description: TruthPacket must regenerate identically
+
+  causal_reconstruction:
+    phase: Phase-1
+    description: Execution trace must replay exactly
+
+  authority_identity:
+    phase: Phase-2A
+    description: Authority identity must be explicit
+
+  isolated_replay_domains:
+    phase: Phase-2A
+    description: Replay domains must be authority-isolated
+
+  inference_binding_required:
+    phase: Phase-2B
+    description: Real inference must be bound into replay truth
+
+  deterministic_inference_binding:
+    phase: Phase-2B
+    description: Inference input must deterministically bind to request
+
+  model_identity:
+    phase: Phase-2B
+    description: Replay must bind to a single model identity
+
+  deterministic_inference:
+    phase: Phase-2B
+    description: Inference must be reproducible or deterministically refused
+
+# ============================================================
+# DIVERGENCE LOCATIONS
+# ============================================================
+
+divergence_locations:
+
+  transcript_load:
+    description: Transcript file access/loading
+
+  transcript_schema:
+    description: Transcript schema validation
+
+  authority_binding:
+    description: Authority identity validation
+
+  environment_validation:
+    description: Replay environment validation
+
+  request_reconstruction:
+    description: Request regeneration & hashing
+
+  execution_rerun:
+    description: Deterministic execution replay
+
+  truthpacket_regeneration:
+    description: TruthPacket reconstruction
+
+  hash_recomputation:
+    description: Final replay hash computation
+
+  inference_binding:
+    description: Real inference binding validation

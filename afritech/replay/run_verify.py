@@ -6,14 +6,19 @@ Constitutional replay verification entrypoint.
 Phase‑2A:
 - Supports authority‑scoped replay artifacts
 - Enables cross‑authority rejection tests
+
+Phase‑2B:
+- Emits structured replay failures
+- Preserves replay-law auditability
 """
+
+from pathlib import Path
+from typing import NoReturn
+import sys
+import yaml
 
 from afritech.replay.verify import ReplayVerifier
 from afritech.replay.transcript import ConstitutionalRequest
-from pathlib import Path
-from typing import NoReturn
-import yaml
-import sys
 
 
 # ============================================================
@@ -41,8 +46,8 @@ def main() -> NoReturn:
       python3 -m afritech.replay.run_verify
       python3 -m afritech.replay.run_verify <request_path> <transcript_path>
 
-    Outputs are intentionally minimal and verbatim-friendly,
-    to allow direct inclusion as admissible runtime artifacts.
+    Output is intentionally minimal, stable, and structured
+    so it can serve as admissible runtime evidence.
     """
 
     # --------------------------------------------------------
@@ -64,7 +69,7 @@ def main() -> NoReturn:
         )
 
     # --------------------------------------------------------
-    # Resolve filesystem inputs
+    # Resolve filesystem inputs (strict, evidence-safe)
     # --------------------------------------------------------
 
     if not request_path.exists():
@@ -84,9 +89,10 @@ def main() -> NoReturn:
     with request_path.open("r", encoding="utf-8") as f:
         request_payload = yaml.safe_load(f)
 
-    request = ConstitutionalRequest(
-        payload=request_payload
-    )
+    if not isinstance(request_payload, dict):
+        raise ValueError("Invalid request payload format")
+
+    request = ConstitutionalRequest(payload=request_payload)
 
     # --------------------------------------------------------
     # Verify
@@ -99,14 +105,21 @@ def main() -> NoReturn:
     )
 
     # --------------------------------------------------------
-    # Output (verbatim, audit-safe)
+    # Output (stdout = evidence, stable contract)
     # --------------------------------------------------------
 
     print("VERDICT:", verdict.status)
     print("REPLAY_HASH:", verdict.replay_hash)
-    print("FAILURE_MODE:", verdict.failure_mode)
-    print("DIVERGENCE_LOCATION:", verdict.divergence_location)
-    print("VIOLATED_INVARIANT:", verdict.violated_invariant)
+
+    if verdict.status == "REPLAY_INVALID":
+        print("FAILURE_MODE:", verdict.failure_mode)
+        print("VIOLATED_INVARIANT:", verdict.violated_invariant)
+        print("DIVERGENCE_LOCATION:", verdict.divergence_location)
+    else:
+        # Explicit nulls preserve invariant output shape
+        print("FAILURE_MODE:", None)
+        print("VIOLATED_INVARIANT:", None)
+        print("DIVERGENCE_LOCATION:", None)
 
 
 # ============================================================

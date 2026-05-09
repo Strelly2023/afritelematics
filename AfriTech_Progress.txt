@@ -241,6 +241,14 @@ events:
   description: Sovereign runtime boot completed successfully. All constitutional surfaces
     verified.
   timestamp: '2026-05-04T10:07:21Z'
+- id: EVT-848D723E
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 1
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-05T15:02:17Z'
 
 
 ===== ./afritech/governance/EXECUTION_SURFACES.yaml =====
@@ -1988,6 +1996,8 @@ hash_chain:
   # SHA256(canonical_yaml(epoch_5.yaml without hash_chain))
   epoch_hash: e8c3d4a91f2b5c0a6e79d18f4b3a2c9e5d7f0a6b1c8e2f9d4a3c7b5e6a0
 
+
+
 ===== ./afritech/registry/registry.yaml =====
 schema: afritech.registry.v2
 registry:
@@ -2098,6 +2108,1606 @@ status:
   runtime_sovereignty: VERIFIED
   lineage_integrity: PRESERVED
   invariants_preserved: VERIFIED
+
+
+
+
+
+
+===== ./afritech/replay/ci/AUDIT_EMISSION_ENFORCEMENT.yaml =====
+# ============================================================
+# Afritech CI Rule
+# Verifier Audit Emission Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUDIT-001
+#
+# Purpose:
+#   Ensure that every replay verifier run emits a JSON audit
+#   artifact via the audit side-channel.
+#
+# Scope:
+#   Phase-2B (and later)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUDIT-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Every invocation of the replay verifier MUST result in the
+    emission of a machine-readable audit artifact, regardless
+    of replay acceptance or refusal.
+
+  rationale: >
+    Audit artifacts provide an immutable, non-evidentiary record
+    of verifier behavior for CI, compliance, and archival purposes,
+    without contaminating stdout-based runtime evidence.
+
+  enforcement_mode: static_analysis_and_ci_execution
+  failure_action: ci_fail
+
+# ============================================================
+# REQUIRED AUDIT BEHAVIOR
+# ============================================================
+
+required_behavior:
+
+  description: >
+    The replay verification workflow MUST call the canonical
+    audit export function exactly once per verifier run.
+
+  audit_emission:
+    function: export_verifier_audit
+    module: afritech.replay.audit.export
+
+  emission_timing:
+    description: >
+      Audit emission MUST occur after verifier execution and
+      MUST reflect the final ReplayVerdict.
+
+# ============================================================
+# TARGETED FILES
+# ============================================================
+
+targets:
+
+  cli_entrypoint:
+    path: afritech/replay/run_verify.py
+
+  audit_export_module:
+    path: afritech/replay/audit/export.py
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AE-F1
+    description: >
+      Verify that run_verify.py imports the audit export function.
+    target: afritech/replay/run_verify.py
+    pattern_required:
+      - 'from afritech\\.replay\\.audit\\.export import export_verifier_audit'
+    failure_message: >
+      Replay verifier CLI does not import audit export function.
+
+  - check_id: AE-F2
+    description: >
+      Verify that export_verifier_audit is invoked in the
+      replay verification execution path.
+    target: afritech/replay/run_verify.py
+    pattern_required:
+      - 'export_verifier_audit\\('
+    failure_message: >
+      Replay verifier run does not emit an audit artifact.
+
+  - check_id: AE-F3
+    description: >
+      Verify audit emission is not routed to stdout.
+    target: afritech/replay/audit/export.py
+    pattern_forbidden:
+      - 'print\\('
+      - 'sys\\.stdout'
+    failure_message: >
+      Audit export must not write to stdout.
+
+  - check_id: AE-F4
+    description: >
+      Verify that audit export writes JSON files only.
+    target: afritech/replay/audit/export.py
+    pattern_required:
+      - 'json.dumps'
+    failure_message: >
+      Audit export does not produce canonical JSON output.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "All replay verifier runs emit audit artifacts."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier run missing mandatory audit emission.
+      See CI logs for details on the specific violation.
+
+===== ./afritech/replay/ci/AUDIT_SCHEMA_VALIDATION_ENFORCEMENT.yaml =====
+# ============================================================
+# Afritech CI Rule
+# Audit Schema Validation Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUDIT-SCHEMA-001
+#
+# Purpose:
+#   Ensure that every replay verifier audit artifact conforms
+#   exactly to the canonical JSON-Schema definition.
+#
+# Scope:
+#   Phase-2B (and later)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUDIT-SCHEMA-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    All replay verifier audit artifacts MUST conform to the
+    canonical JSON-Schema. Non-conforming audit output is
+    considered a governance failure.
+
+  rationale: >
+    Schema validation ensures structural consistency,
+    machine auditability, and prevents silent drift between
+    verifier behavior and governance documentation.
+
+  enforcement_mode: ci_execution
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL SCHEMA SOURCE
+# ============================================================
+
+canonical_schema:
+
+  path: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+  format: json-schema
+  versioned: true
+
+# ============================================================
+# AUDIT ARTIFACT TARGETS
+# ============================================================
+
+audit_artifacts:
+
+  directory:
+    description: >
+      Directory where replay verifier audit files are written.
+    path: afritech/replay/audit/logs
+    file_pattern: "replay_audit_*.json"
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AS-F1
+    description: >
+      Verify that at least one audit file is emitted during
+      replay verifier CI execution.
+    target_directory: afritech/replay/audit/logs
+    minimum_files: 1
+    failure_message: >
+      No replay verifier audit artifacts found.
+
+  - check_id: AS-F2
+    description: >
+      Validate every audit file against the canonical schema.
+    schema: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+    targets:
+      directory: afritech/replay/audit/logs
+      pattern: "replay_audit_*.json"
+    validator: json_schema_validator
+    failure_message: >
+      One or more replay verifier audit artifacts failed schema validation.
+
+  - check_id: AS-F3
+    description: >
+      Ensure audit artifacts contain no additional properties
+      beyond those defined in the schema.
+    enforcement: strict
+    failure_message: >
+      Audit artifact contains undefined or extra fields.
+
+# ============================================================
+# CI TOOLING ASSUMPTIONS
+# ============================================================
+
+tooling:
+
+  json_schema_validator:
+    acceptable_tools:
+      - ajv
+      - python-jsonschema
+      - spectral
+    invocation_mode: strict
+    allow_additional_properties: false
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Replay verifier audit artifacts conform to schema."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier audit schema validation failed.
+
+===== ./afritech/replay/ci/AUTHORITY_BEFORE_INFERENCE_ENFORCEMENT.yaml =====
+# ============================================================
+# Afritech CI Rule
+# Authority Isolation Must Precede Inference Validation
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUTH-ORDER-001
+#
+# Purpose:
+#   Ensure that authority isolation is enforced BEFORE any
+#   inference binding validation occurs in the replay verifier.
+#
+# Scope:
+#   Phase-2B (applies transitively to Phase-2A)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUTH-ORDER-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Authority isolation is a foundational replay invariant and
+    MUST be enforced before any inference-related validation.
+    Inference validation MUST NOT occur across authority domains.
+
+  rationale: >
+    Inference binding has meaning only within a single authority-
+    scoped replay domain. Validating inference prior to authority
+    isolation risks cross-authority contamination.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL ORDER REQUIREMENT
+# ============================================================
+
+required_validation_order:
+
+  description: >
+    The replay verifier MUST validate authority isolation
+    before validating inference bindings.
+
+  required_sequence:
+    - _validate_authority
+    - _validate_environment
+    - _validate_request
+    - _validate_inference_binding
+
+  forbidden_sequences:
+    - inference_validation_before_authority
+    - inference_validation_without_authority_validation
+
+# ============================================================
+# TARGETED FILES
+# ============================================================
+
+targets:
+
+  verifier:
+    path: afritech/replay/verify.py
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AO-F1
+    description: >
+      Verify that _validate_authority is invoked before
+      _validate_inference_binding in verify().
+    target: afritech/replay/verify.py
+    required_order:
+      first: _validate_authority
+      before: _validate_inference_binding
+    failure_message: >
+      Authority validation must occur before inference validation.
+
+  - check_id: AO-F2
+    description: >
+      Verify that inference binding validation is not reachable
+      unless authority validation has already executed.
+    target: afritech/replay/verify.py
+    pattern_forbidden:
+      - '_validate_inference_binding\\(.*\\).*_validate_authority'
+    failure_message: >
+      Inference validation appears reachable before authority validation.
+
+  - check_id: AO-F3
+    description: >
+      Verify that no inference-related failure modes are emitted
+      prior to authority mismatch handling.
+    target: afritech/replay/verify.py
+    forbidden_failure_modes_before_authority:
+      - inference_input_mismatch
+      - model_identity_mismatch
+      - nondeterministic_inference
+    failure_message: >
+      Inference failure emitted before authority isolation.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Authority isolation precedes inference validation."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier violates authority-first governance ordering.
+
+===== ./afritech/replay/ci/FAILURE_TAXONOMY_ENFORCEMENT.yaml =====
+# ============================================================
+# Afritech CI Rule
+# Failure Taxonomy Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-FAIL-001
+#
+# Purpose:
+#   Ensure that *every* replay verifier failure is mapped to
+#   the canonical failure taxonomy.
+#
+# Scope:
+#   - afritech/replay/verify.py
+#   - afritech/replay/failures.py
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-FAIL-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# ENFORCEMENT PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    The replay verifier MUST NOT emit any failure that is not
+    explicitly defined in the canonical failure taxonomy.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL SOURCES
+# ============================================================
+
+canonical_sources:
+
+  failure_definitions:
+    path: afritech/replay/failures.py
+    required_items:
+      - ReplayFailureMode
+      - ReplayInvariant
+      - DivergenceLocation
+
+  failure_taxonomy_doc:
+    path: afritech/replay/docs/FAILURE_TAXONOMY.yaml
+
+# ============================================================
+# REQUIRED VERIFIER CONTRACT
+# ============================================================
+
+verifier_contract:
+
+  allowed_failure_emission:
+
+    description: >
+      Replay verifier code MAY ONLY construct ReplayFailure
+      instances using values sourced from ReplayFailureMode,
+      ReplayInvariant, and DivergenceLocation enums.
+
+    disallowed_patterns:
+      - string literal failure modes
+      - ad-hoc invariant strings
+      - ad-hoc divergence locations
+
+  required_construction_pattern:
+
+    python:
+      allowed:
+        - ReplayFailure(
+            ReplayFailureMode.<ENUM>,
+            ReplayInvariant.<ENUM>,
+            DivergenceLocation.<ENUM>,
+            <details>
+          )
+
+      forbidden:
+        - ReplayFailure("...", "...", "...", "...")
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: CT-F1
+    description: >
+      Verify that verify.py imports ReplayFailureMode,
+      ReplayInvariant, and DivergenceLocation.
+    target: afritech/replay/verify.py
+    failure_message: >
+      Verifier does not import canonical failure enums.
+
+  - check_id: CT-F2
+    description: >
+      Verify that verify.py does not construct ReplayFailure
+      with string literals.
+    pattern_forbidden:
+      - 'ReplayFailure\(\s*"[a-zA-Z_]+"'
+    target: afritech/replay/verify.py
+    failure_message: >
+      Verifier constructs ReplayFailure using string literals.
+
+  - check_id: CT-F3
+    description: >
+      Verify that every ReplayFailureMode enum appears in
+      FAILURE_TAXONOMY.yaml.
+    target:
+      - afritech/replay/failures.py
+      - afritech/replay/docs/FAILURE_TAXONOMY.yaml
+    failure_message: >
+      Failure mode missing from canonical taxonomy document.
+
+  - check_id: CT-F4
+    description: >
+      Verify no failure modes appear in taxonomy that are not
+      defined in ReplayFailureMode.
+    target:
+      - afritech/replay/failures.py
+      - afritech/replay/docs/FAILURE_TAXONOMY.yaml
+    failure_message: >
+      Taxonomy references undefined failure mode.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Replay failure taxonomy enforcement passed."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier failure semantics violate canonical taxonomy.
+      See CI logs for details on the specific violation.
+
+===== ./afritech/replay/docs/AUTHORITY_ISOLATED_REAL_INFERENCE_GOVERNANCE.yaml =====
+# ============================================================
+# Afritech Constitutional Replay Law
+# Authority‑Isolated Real Inference Governance
+# ============================================================
+#
+# Purpose:
+#   Specify how authority isolation applies to real inference
+#   under replay law (Phase‑2B).
+#
+# Scope:
+#   Phase‑2B only
+#
+# This specification is normative.
+# Authority isolation is enforced through deterministic refusal,
+# not discretionary policy.
+# ============================================================
+
+metadata:
+  spec_name: authority_isolated_real_inference_governance
+  spec_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# DEFINITIONS
+# ============================================================
+
+definitions:
+
+  authority_profile:
+    description: >
+      A canonical identifier representing the constitutional
+      authority under which an inference is executed.
+
+  real_inference:
+    description: >
+      An inference produced by an actual model invocation
+      (local, remote, or hybrid) and bound into replay truth
+      via an inference_binding object.
+
+  replay_domain:
+    description: >
+      The closed validity space defined by an authority_profile.
+      Replay artifacts MAY NOT cross replay domains.
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+governance_principle:
+
+  statement: >
+    All real inference executions are scoped to exactly one
+    authority_profile, and replay validity is confined to
+    that authority’s replay domain.
+
+  enforcement_mechanism: deterministic_refusal
+  enforcement_phase: Phase-2B
+
+# ============================================================
+# AUTHORITY BINDING REQUIREMENTS
+# ============================================================
+
+authority_binding_requirements:
+
+  transcript_binding:
+    description: >
+      Every replay transcript that includes real inference
+      MUST declare an authority_profile at the top level.
+    failure_mode: missing_authority_binding
+
+  inference_binding_inheritance:
+    description: >
+      The inference_binding object MUST inherit the
+      transcript authority_profile implicitly and
+      MUST NOT introduce a second authority identifier.
+    failure_mode: authority_mismatch
+
+# ============================================================
+# REPLAY DOMAIN ISOLATION RULE
+# ============================================================
+
+replay_domain_isolation:
+
+  rule_id: DR-2B-AUTH-ISO-001
+
+  description: >
+    A real inference transcript generated under authority X
+    MUST be rejected when replay verification is attempted
+    under authority Y ≠ X.
+
+  enforcement:
+    when: authority_mismatch
+    action: deterministic_refusal
+
+  failure_characteristics:
+    failure_mode: authority_mismatch
+    violated_invariant: isolated_replay_domains
+    divergence_location: authority_binding
+
+# ============================================================
+# ACCEPTANCE CONDITION
+# ============================================================
+
+acceptance_condition:
+
+  description: >
+    Real inference replay MAY be accepted only when
+    request authority exactly matches transcript authority.
+
+  required_match:
+    request.authority_profile: transcript.authority_profile
+
+  outcome_on_match:
+    status: REPLAY_VALID
+
+  outcome_on_mismatch:
+    status: REPLAY_INVALID
+
+# ============================================================
+# NON-DISCRETIONARY BEHAVIOR
+# ============================================================
+
+non_discretion:
+
+  no_authority_coercion:
+    description: >
+      The verifier MUST NOT coerce, map, alias, or reinterpret
+      authority identities during replay.
+
+  no_cross_authority_import:
+    description: >
+      Inference bindings, outputs, or caches produced under
+      one authority MUST NOT be reused across authorities.
+
+# ============================================================
+# EXPLICIT NON-GOALS
+# ============================================================
+
+non_goals:
+
+  trust_equivalence:
+    description: >
+      This specification does not assume equivalence or
+      compatibility between different authorities.
+
+  semantic_authority_merging:
+    description: >
+      This specification does not permit authorities to be
+      merged, grouped, or federated at replay time.
+
+# ============================================================
+# CONSTITUTIONAL GUARANTEE
+# ============================================================
+
+guarantee:
+
+  statement: >
+    Authority‑isolated real inference governance guarantees
+    that no inference executed under one constitutional
+    authority can be replay‑validated under another,
+    regardless of model identity, inference determinism,
+    or semantic equivalence.
+
+  enforcement_location: replay_verifier
+  enforcement_phase: Phase-2B
+
+===== ./afritech/replay/docs/DETERMINISTIC_REPLAY_ACCEPTANCE.yaml =====
+# ============================================================ Afritech Constitutional Replay Law
+# Deterministic Replay Acceptance of Real Inference
+# ============================================================
+#
+# Purpose:
+#   Specify the exact conditions under which replay verification
+#   MUST accept a transcript that includes a real inference binding.
+#
+# Scope:
+#   Phase-2B only
+#
+# This specification is normative.
+# Acceptance conditions are deterministic and non-discretionary.
+# ============================================================
+
+metadata:
+  spec_name: deterministic_replay_acceptance
+  spec_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# DEFINITIONS
+# ============================================================
+
+definitions:
+
+  real_inference:
+    description: >
+      An inference produced by an actual model invocation
+      (local or remote) and bound into replay truth via an
+      inference_binding object.
+
+  replay_acceptance:
+    description: >
+      A verifier outcome with status REPLAY_VALID, indicating that
+      all constitutional replay invariants are satisfied.
+
+  inference_binding:
+    description: >
+      A structured, immutable record capturing the relationship
+      between inference input, inference output, and model identity.
+
+# ============================================================
+# PRECONDITIONS FOR ACCEPTANCE
+# ============================================================
+
+preconditions:
+
+  transcript_exists:
+    description: Transcript file must exist and be readable
+    failure_mode: invalid_transcript_path
+
+  transcript_schema_valid:
+    description: Transcript schema must be complete
+    failure_mode: invalid_transcript_schema
+
+  authority_binding_valid:
+    description: Request authority must match transcript authority
+    failure_mode: authority_mismatch
+
+  deterministic_environment:
+    description: Replay environment must declare deterministic_mode = true
+    failure_mode: environment_mismatch
+
+# ============================================================
+# INFERENCE BINDING REQUIREMENTS
+# ============================================================
+
+inference_binding_requirements:
+
+  presence_required:
+    description: >
+      Any transcript claiming real inference MUST contain
+      an inference_binding object.
+    failure_mode: missing_inference_binding
+
+  input_hash_binding:
+    description: >
+      inference_binding.input_hash MUST equal the canonical
+      request hash.
+    failure_mode: inference_input_mismatch
+
+  model_identity_binding:
+    description: >
+      inference_binding.model_id and model_version MUST match
+      replay_environment.model_id and model_version.
+    failure_mode: model_identity_mismatch
+
+# ============================================================
+# DETERMINISTIC ACCEPTANCE RULE
+# ============================================================
+
+acceptance_rule:
+
+  rule_id: DR-2B-ACCEPT-001
+  description: >
+    Replay verification MUST accept a transcript with real inference
+    if and only if all acceptance invariants are satisfied.
+
+  acceptance_conditions:
+    - transcript_exists
+    - transcript_schema_valid
+    - authority_binding_valid
+    - deterministic_environment
+    - presence_required
+    - input_hash_binding
+    - model_identity_binding
+    - truthpacket_identity
+    - deterministic_identity
+
+  outcome:
+    status: REPLAY_VALID
+    replay_hash: authoritative
+    refusal_allowed: false
+
+# ============================================================
+# NON-DISCRETIONARY BEHAVIOR
+# ============================================================
+
+non_discretion:
+
+  no_probabilistic_tolerance:
+    description: >
+      Replay acceptance MUST NOT depend on semantic similarity,
+      approximate matching, or statistical closeness.
+
+  refuse_on_any_violation:
+    description: >
+      Any violation of acceptance conditions MUST result in
+      deterministic replay refusal.
+
+# ============================================================
+# EXPLICIT NON-GOALS
+# ============================================================
+
+non_goals:
+
+  semantic_correctness:
+    description: >
+      This specification does not assert that model output
+      is correct, helpful, or truthful.
+
+  model_quality:
+    description: >
+      This specification does not evaluate model performance
+      or intelligence.
+
+  production_readiness:
+    description: >
+      This specification does not claim operational stability
+      or deployment readiness.
+
+# ============================================================
+# CONSTITUTIONAL GUARANTEE
+# ============================================================
+
+guarantee:
+
+  statement: >
+    If a real inference transcript is accepted under this rule,
+    replay law guarantees that the inference binding is authority-
+    scoped, deterministic at the replay boundary, and immune to
+    post-hoc reinterpretation.
+
+  enforcement_location: replay_verifier
+  enforcement_phase: Phase-2B
+
+
+
+===== ./afritech/replay/docs/FAILURE_TAXONOMY.yaml =====
+# ============================================================
+# Afritech Constitutional Replay Failure Taxonomy
+# ============================================================
+#
+# Purpose:
+#   Canonical, machine-readable specification of all replay
+#   failure modes, invariants, and divergence locations.
+#
+# Scope:
+#   Phase-1  : Deterministic replay
+#   Phase-2A : Authority-isolated replay domains
+#   Phase-2B : Real inference binding under replay law
+#
+# Consumption:
+#   - replay verifier
+#   - audit tooling
+#   - CI enforcement
+#   - governance documentation
+#
+# This file is normative.
+# Runtime code must NOT invent new failure strings.
+# ============================================================
+
+metadata:
+  taxonomy_version: "1.0.0"
+  last_updated: "2026-05-05"
+  scope:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+
+# ============================================================
+# FAILURE MODES
+# ============================================================
+
+failure_modes:
+
+  # -----------------------
+  # Transcript / I/O
+  # -----------------------
+
+  invalid_transcript_path:
+    phase: Phase-1
+    summary: Transcript file not found or unreadable
+    invariant: transcript_existence
+    divergence_location: transcript_load
+
+  invalid_transcript_schema:
+    phase: Phase-1
+    summary: Transcript missing required fields or malformed
+    invariant: transcript_integrity
+    divergence_location: transcript_schema
+
+  # -----------------------
+  # Authority (Phase-2A)
+  # -----------------------
+
+  missing_authority_binding:
+    phase: Phase-2A
+    summary: Transcript missing authority_profile
+    invariant: authority_identity
+    divergence_location: authority_binding
+
+  authority_mismatch:
+    phase: Phase-2A
+    summary: Request authority does not match transcript authority
+    invariant: isolated_replay_domains
+    divergence_location: authority_binding
+
+  # -----------------------
+  # Environment
+  # -----------------------
+
+  environment_mismatch:
+    phase: Phase-1
+    summary: Replay environment does not satisfy deterministic constraints
+    invariant: environment_identity
+    divergence_location: environment_validation
+
+  # -----------------------
+  # Request / Trace
+  # -----------------------
+
+  request_mismatch:
+    phase: Phase-1
+    summary: Request hash differs from transcript request_hash
+    invariant: request_identity
+    divergence_location: request_reconstruction
+
+  trace_divergence:
+    phase: Phase-1
+    summary: Deterministic execution trace mismatch
+    invariant: causal_reconstruction
+    divergence_location: execution_rerun
+
+  # -----------------------
+  # TruthPacket / Replay
+  # -----------------------
+
+  truthpacket_divergence:
+    phase: Phase-1
+    summary: Regenerated TruthPacket hash mismatch
+    invariant: truthpacket_identity
+    divergence_location: truthpacket_regeneration
+
+  hash_mismatch:
+    phase: Phase-1
+    summary: Replay hash mismatch after recomputation
+    invariant: deterministic_identity
+    divergence_location: hash_recomputation
+
+  # -----------------------
+  # Inference Binding (Phase-2B)
+  # -----------------------
+
+  missing_inference_binding:
+    phase: Phase-2B
+    summary: Transcript does not contain inference binding
+    invariant: inference_binding_required
+    divergence_location: inference_binding
+
+  inference_input_mismatch:
+    phase: Phase-2B
+    summary: Inference input hash does not match request
+    invariant: deterministic_inference_binding
+    divergence_location: inference_binding
+
+  model_identity_mismatch:
+    phase: Phase-2B
+    summary: Model ID or version differs from replay environment
+    invariant: model_identity
+    divergence_location: inference_binding
+
+  nondeterministic_inference:
+    phase: Phase-2B
+    summary: Inference output cannot be deterministically validated
+    invariant: deterministic_inference
+    divergence_location: inference_binding
+
+# ============================================================
+# INVARIANTS
+# ============================================================
+
+invariants:
+
+  transcript_existence:
+    phase: Phase-1
+    description: Replay requires an existing transcript
+
+  transcript_integrity:
+    phase: Phase-1
+    description: Transcript schema must be complete and valid
+
+  request_identity:
+    phase: Phase-1
+    description: Request identity must be preserved across replay
+
+  deterministic_identity:
+    phase: Phase-1
+    description: Replay output must be deterministic
+
+  truthpacket_identity:
+    phase: Phase-1
+    description: TruthPacket must regenerate identically
+
+  causal_reconstruction:
+    phase: Phase-1
+    description: Execution trace must replay exactly
+
+  authority_identity:
+    phase: Phase-2A
+    description: Authority identity must be explicit
+
+  isolated_replay_domains:
+    phase: Phase-2A
+    description: Replay domains must be authority-isolated
+
+  inference_binding_required:
+    phase: Phase-2B
+    description: Real inference must be bound into replay truth
+
+  deterministic_inference_binding:
+    phase: Phase-2B
+    description: Inference input must deterministically bind to request
+
+  model_identity:
+    phase: Phase-2B
+    description: Replay must bind to a single model identity
+
+  deterministic_inference:
+    phase: Phase-2B
+    description: Inference must be reproducible or deterministically refused
+
+# ============================================================
+# DIVERGENCE LOCATIONS
+# ============================================================
+
+divergence_locations:
+
+  transcript_load:
+    description: Transcript file access/loading
+
+  transcript_schema:
+    description: Transcript schema validation
+
+  authority_binding:
+    description: Authority identity validation
+
+  environment_validation:
+    description: Replay environment validation
+
+  request_reconstruction:
+    description: Request regeneration & hashing
+
+  execution_rerun:
+    description: Deterministic execution replay
+
+  truthpacket_regeneration:
+    description: TruthPacket reconstruction
+
+  hash_recomputation:
+    description: Final replay hash computation
+
+  inference_binding:
+    description: Real inference binding validation
+
+
+===== ./afritech/replay/docs/FAILURE_TAXONOMY_PHASE_3.yaml =====
+# ============================================================
+# Afritech Constitutional Replay Failure Taxonomy
+# Phase‑3 Extension — Multi‑Agent Governance
+# ============================================================
+#
+# Purpose:
+#   Extend the canonical replay failure taxonomy to support
+#   Phase‑3 multi‑agent governance, arbitration, and coordination.
+#
+# Scope:
+#   Phase‑3 only
+#
+# This file EXTENDS the base taxonomy defined in:
+#   afritech/replay/docs/FAILURE_TAXONOMY.yaml
+#
+# No Phase‑3 failure may overlap or redefine earlier phases.
+# ============================================================
+
+metadata:
+  taxonomy_extension: phase_3_multi_agent
+  extension_version: "1.0.0"
+  phase: Phase-3
+  last_updated: "2026-05-05"
+
+# ============================================================
+# PHASE‑3 FAILURE MODES
+# ============================================================
+
+failure_modes:
+
+  # ----------------------------------------------------------
+  # Agent Identity & Registration
+  # ----------------------------------------------------------
+
+  unregistered_agent:
+    phase: Phase-3
+    summary: >
+      An agent participated in execution but was not declared
+      in the multi-agent registry.
+    invariant: agent_identity
+    divergence_location: agent_registry
+
+  agent_identity_mismatch:
+    phase: Phase-3
+    summary: >
+      Agent identifier in execution does not match declared
+      agent identity or signature.
+    invariant: agent_identity
+    divergence_location: agent_binding
+
+  # ----------------------------------------------------------
+  # Authority Delegation
+  # ----------------------------------------------------------
+
+  unauthorized_agent_action:
+    phase: Phase-3
+    summary: >
+      Agent performed an action outside its delegated authority.
+    invariant: delegated_authority
+    divergence_location: authority_delegation
+
+  conflicting_authority_delegation:
+    phase: Phase-3
+    summary: >
+      Multiple agents received overlapping or contradictory
+      authority scopes.
+    invariant: non_overlapping_delegation
+    divergence_location: authority_delegation
+
+  # ----------------------------------------------------------
+  # Inter‑Agent Coordination
+  # ----------------------------------------------------------
+
+  coordination_protocol_violation:
+    phase: Phase-3
+    summary: >
+      Agent interaction violated the declared coordination
+      protocol or ordering rules.
+    invariant: coordination_protocol
+    divergence_location: coordination_layer
+
+  message_order_violation:
+    phase: Phase-3
+    summary: >
+      Inter-agent messages were replayed out of canonical order.
+    invariant: causal_ordering
+    divergence_location: coordination_layer
+
+  # ----------------------------------------------------------
+  # Arbitration & Conflict Resolution
+  # ----------------------------------------------------------
+
+  unresolved_agent_conflict:
+    phase: Phase-3
+    summary: >
+      Conflicting agent outputs were detected without a valid
+      arbitration outcome.
+    invariant: arbitration_required
+    divergence_location: arbitration_layer
+
+  invalid_arbitration_decision:
+    phase: Phase-3
+    summary: >
+      Arbitration result violates declared arbitration rules
+      or authority hierarchy.
+    invariant: arbitration_integrity
+    divergence_location: arbitration_layer
+
+  # ----------------------------------------------------------
+  # Collective Determinism
+  # ----------------------------------------------------------
+
+  nondeterministic_multi_agent_execution:
+    phase: Phase-3
+    summary: >
+      Collective agent execution cannot be deterministically
+      reproduced under replay.
+    invariant: collective_determinism
+    divergence_location: execution_rerun
+
+# ============================================================
+# PHASE‑3 INVARIANTS
+# ============================================================
+
+invariants:
+
+  agent_identity:
+    description: >
+      Every participating agent must have a unique,
+      declared, and verifiable identity.
+
+  delegated_authority:
+    description: >
+      Agents may act only within explicitly delegated
+      authority scopes.
+
+  non_overlapping_delegation:
+    description: >
+      Authority delegation between agents must not overlap
+      or conflict unless explicitly allowed.
+
+  coordination_protocol:
+    description: >
+      Agent coordination must obey declared protocols and
+      sequencing rules.
+
+  causal_ordering:
+    description: >
+      Inter-agent interactions must preserve causal order
+      during replay.
+
+  arbitration_required:
+    description: >
+      Conflicting agent outputs must be resolved through
+      a valid arbitration process.
+
+  arbitration_integrity:
+    description: >
+      Arbitration outcomes must be rule-compliant and
+      authority-consistent.
+
+  collective_determinism:
+    description: >
+      Multi-agent execution must be reproducible or
+      deterministically refused.
+
+# ============================================================
+# PHASE‑3 DIVERGENCE LOCATIONS
+# ============================================================
+
+divergence_locations:
+
+  agent_registry:
+    description: >
+      Agent declaration and registration stage.
+
+  agent_binding:
+    description: >
+      Runtime agent identity binding.
+
+  authority_delegation:
+    description: >
+      Delegation of authority scopes to agents.
+
+  coordination_layer:
+    description: >
+      Inter-agent message passing and protocol enforcement.
+
+  arbitration_layer:
+    description: >
+      Conflict resolution and arbitration processing.
+
+
+===== ./afritech/replay/docs/PHASE_2B_EVIDENCE_HARNESS.yaml =====
+# ============================================================
+# Afritech Constitutional Evidence Harness
+# Phase‑2B — Real Inference Binding Under Replay Law
+# ============================================================
+#
+# Purpose:
+#   Define the exact, constitutionally admissible procedure
+#   for evidencing Phase‑2B enforcement.
+#
+# Scope:
+#   Phase‑2B only
+#
+# This harness is normative.
+# It specifies how evidence MUST be produced, presented,
+# and evaluated. It does NOT assert ratification.
+# ============================================================
+
+metadata:
+  harness_name: phase_2b_evidence_harness
+  harness_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# CONSTITUTIONAL PRINCIPLES
+# ============================================================
+
+principles:
+
+  evidence_precedes_judgment:
+    description: >
+      Runtime evidence MUST be presented before any claim
+      of Phase‑2B acceptance or refusal is evaluated.
+
+  stdout_is_evidence:
+    description: >
+      Shell stdout constitutes admissible runtime evidence.
+      Side-channel audit files support CI and compliance,
+      but do NOT substitute for stdout evidence.
+
+  refusal_is_governance:
+    description: >
+      Phase‑2B enforcement is demonstrated by deterministic
+      refusal as much as by acceptance.
+
+# ============================================================
+# REQUIRED PRECONDITIONS
+# ============================================================
+
+preconditions:
+
+  phase_2a_frozen:
+    description: >
+      Phase‑2A MUST already be ratified and frozen prior
+      to Phase‑2B evidence submission.
+
+  real_inference_enabled:
+    description: >
+      Transcript generation MUST include an inference_binding
+      object produced by a real or stubbed inference runtime.
+
+# ============================================================
+# EVIDENCE CLASSES
+# ============================================================
+
+evidence_classes:
+
+  # ----------------------------------------------------------
+  # E‑B1: Real Inference Transcript Generation
+  # ----------------------------------------------------------
+
+  EB1_real_inference_transcript:
+    description: >
+      Demonstrates that a real inference has been executed
+      and bound into replay truth.
+
+    command:
+      shell: >
+        python3 -m afritech.replay.generate
+        <phase_2b_request.yaml>
+
+    required_stdout_contains:
+      - "Transcript written to"
+    
+    transcript_requirements:
+      must_contain:
+        - inference_binding
+        - authority_profile
+        - replay_environment.model_id
+        - replay_environment.model_version
+
+  # ----------------------------------------------------------
+  # E‑B2: Deterministic Replay Acceptance
+  # ----------------------------------------------------------
+
+  EB2_replay_acceptance:
+    description: >
+      Demonstrates deterministic replay acceptance of a real
+      inference under the same authority and model identity.
+
+    command:
+      shell: >
+        python3 -m afritech.replay.run_verify
+        <phase_2b_request.yaml>
+        <phase_2b_transcript.yaml>
+
+    required_stdout_exact:
+      verdict: REPLAY_VALID
+
+    required_fields:
+      - REPLAY_HASH
+      - FAILURE_MODE: null
+      - VIOLATED_INVARIANT: null
+      - DIVERGENCE_LOCATION: null
+
+  # ----------------------------------------------------------
+  # E‑B3: Deterministic Replay Refusal
+  # ----------------------------------------------------------
+
+  EB3_replay_refusal:
+    description: >
+      Demonstrates deterministic replay refusal when a
+      constitutionally relevant invariant is violated.
+
+    acceptable_variants:
+      - model_identity_mismatch
+      - inference_input_mismatch
+      - authority_mismatch
+      - nondeterministic_inference
+
+    command:
+      shell: >
+        python3 -m afritech.replay.run_verify
+        <modified_context>
+
+    required_stdout_exact:
+      verdict: REPLAY_INVALID
+
+    required_fields:
+      - FAILURE_MODE
+      - VIOLATED_INVARIANT
+      - DIVERGENCE_LOCATION
+
+# ============================================================
+# PRESENTATION RULES
+# ============================================================
+
+presentation_rules:
+
+  standalone_submission:
+    description: >
+      Each evidence artifact MUST be presented as a standalone
+      shell transcript, without surrounding interpretation.
+
+  no_interleaved_evaluation:
+    description: >
+      No evaluative commentary or judgment is allowed in the
+      same shell transcript as the evidence itself.
+
+===== ./afritech/replay/docs/PHASE_2B_PRE_FREEZE_CHECKLIST.yaml =====
+# ============================================================
+# Afritech Constitutional Checklist
+# Phase‑2B Pre‑Freeze Checklist
+# ============================================================
+#
+# Purpose:
+#   Define the mandatory conditions that MUST be satisfied
+#   before Phase‑2B can be frozen, tagged, or archived.
+#
+# Scope:
+#   Phase‑2B only
+#
+# This checklist is normative.
+# Passing the checklist does NOT imply ratification unless
+# evidence has been independently evaluated.
+# ============================================================
+
+metadata:
+  checklist_name: phase_2b_pre_freeze
+  checklist_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLES
+# ============================================================
+
+principles:
+
+  evidence_first:
+    description: >
+      All enforcement claims must be supported by
+      independently inspectable runtime evidence.
+
+  no_bootstrap:
+    description: >
+      Freeze, tagging, or archival MUST NOT be used
+      to bootstrap or imply ratification.
+
+  authority_before_inference:
+    description: >
+      Authority isolation is a prerequisite for
+      inference validation.
+
+# ============================================================
+# CHECKLIST SECTIONS
+# ============================================================
+
+sections:
+
+  # ----------------------------------------------------------
+  # SECTION 1 — IMPLEMENTATION COMPLETENESS
+  # ----------------------------------------------------------
+
+  implementation_completeness:
+
+    description: >
+      Verify that all Phase‑2B implementation surfaces are
+      present in the repository.
+
+    required_items:
+
+      replay_verifier_extended:
+        path: afritech/replay/verify.py
+        requirement: >
+          Verifier enforces inference binding and uses
+          canonical failure taxonomy exclusively.
+
+      inference_runtime_present:
+        path: afritech/inference/runtime.py
+        requirement: >
+          Real or stubbed inference runtime emits
+          inference_binding objects.
+
+      failure_taxonomy_present:
+        path: afritech/replay/failures.py
+        requirement: >
+          All verifier failures are enumerated canonically.
+
+      audit_export_present:
+        path: afritech/replay/audit/export.py
+        requirement: >
+          JSON audit export implemented as side‑channel.
+
+      audit_schema_present:
+        path: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+        requirement: >
+          Audit JSON schema exists and is authoritative.
+
+  # ----------------------------------------------------------
+  # SECTION 2 — CI ENFORCEMENT
+  # ----------------------------------------------------------
+
+  ci_enforcement:
+
+    description: >
+      Ensure all Phase‑2B governance rules are enforced in CI.
+
+    required_rules:
+
+      failure_taxonomy_enforced:
+        path: afritech/replay/ci/FAILURE_TAXONOMY_ENFORCEMENT.yaml
+
+      authority_order_enforced:
+        path: afritech/replay/ci/AUTHORITY_BEFORE_INFERENCE_ENFORCEMENT.yaml
+
+      audit_emission_enforced:
+        path: afritech/replay/ci/AUDIT_EMISSION_ENFORCEMENT.yaml
+
+      audit_schema_validation_enforced:
+        path: afritech/replay/ci/AUDIT_SCHEMA_VALIDATION_ENFORCEMENT.yaml
+
+  # ----------------------------------------------------------
+  # SECTION 3 — EVIDENCE HARNESS AVAILABILITY
+  # ----------------------------------------------------------
+
+  evidence_harness:
+
+    description: >
+      Confirm that a Phase‑2B evidence harness exists
+      and can be executed to produce admissible artifacts.
+
+    required_items:
+
+      harness_spec:
+        path: afritech/replay/docs/PHASE_2B_EVIDENCE_HARNESS.yaml
+
+      harness_runner:
+        path: afritech/replay/tools/run_phase_2b_evidence_harness.sh
+
+  # ----------------------------------------------------------
 
 
 ===== ./afritech/replay/transcript.yaml =====
@@ -2358,16 +3968,31 @@ execution_trace:
   output_hash: 15e2224fb85b01d4beddd4bb2b456d38c26c2dd0c79f472e3f33c5ce5b5d74ff
   step: routing_selection
 - input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
+  output_hash: d42d814bdab48c3b7dab1e5b28f4842f34fa046155ded879aeea45731afa3bd8
+  step: real_inference_invocation
+- input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
   output_hash: 01d9d992c54622afefa11f98ac3893756ad8ec5fd5eb42169cd712e7959b8941
   step: truth_emission
 replay_environment:
-  constitution_version: constitution-epoch-0001
+  _inference_binding:
+    emitted_at: 1777994934
+    input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
+    model_id: llm-stub-deterministic-v2
+    model_version: 2026-05
+    output_hash: da7c1df6dbf68aa8b42125672a2faf57632d3a978654980f364bf26e33ded215
+    parameters:
+      max_tokens: 256
+      temperature: 0.0
+      top_p: 1.0
+    provider: local-deterministic-stub
+  constitution_version: constitution-epoch-0002
   deterministic_mode: true
-  model_version: llm-stub-deterministic-v1
-  runtime_version: afritech-runtime-0.1.0
-replay_hash: f1a9778150e36c5fa84a0d1a0241649bad684fec2bd0e967d54e55ed468732cd
+  model_id: llm-stub-deterministic-v2
+  model_version: 2026-05
+  runtime_version: afritech-runtime-0.2.0
+replay_hash: a490e02f69a2e53b872b8e1564d6587963c2cde79a113c0e76b9c90eb9632a29
 request_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
-truth_packet_hash: 1881b285715c808d8099ea3c60b5f50a4d36e7cccc2df57ef0fd1139055e9592
+truth_packet_hash: 013ec4191649b640a372c80d5cd958bb9dab3a3f711b341cf59e2e4ea92be135
 
 
 ===== ./afritech/replay/transcripts/secondary_research_authority_v1.yaml =====

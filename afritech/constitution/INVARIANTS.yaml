@@ -1,0 +1,225 @@
+# =========================================================
+# AFRITECH CONSTITUTIONAL INVARIANTS
+# =========================================================
+
+schema: afritech.constitution.invariants.v1
+
+meta:
+  description: >
+    Immutable constitutional constraints governing system behavior.
+    These invariants define the fundamental laws that MUST NEVER be violated
+    by runtime, governance, or infrastructure layers.
+
+  authority: registry
+  enforcement: REQUIRED
+  mutability: FORBIDDEN
+
+
+# =========================================================
+# CORE CONSTITUTIONAL INVARIANTS
+# =========================================================
+
+invariants:
+
+  # ------------------------------------------------------
+  # I1 — SINGLE SOURCE OF TRUTH
+  # ------------------------------------------------------
+  - id: I1_REGISTRY_AUTHORITY
+    description: >
+      The registry is the sole source of truth for all constitutional state.
+      No other system component may override or bypass it.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I2 — SEALED EXECUTION SURFACE
+  # ------------------------------------------------------
+  - id: I2_SEALED_SURFACE
+    description: >
+      All execution surfaces must match registry-declared files and hashes.
+      Any mismatch must halt execution.
+    enforcement: REQUIRED
+    violation_class: B_STRUCTURAL
+
+
+  # ------------------------------------------------------
+  # I3 — NO SILENT MUTATION
+  # ------------------------------------------------------
+  - id: I3_NO_SILENT_MUTATION
+    description: >
+      System state must not change without explicit constitutional procedure
+      (ADR → epoch advance → registry reseal).
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I4 — DETERMINISTIC EXECUTION
+  # ------------------------------------------------------
+  - id: I4_DETERMINISTIC_EXECUTION
+    description: >
+      The same RuntimeContext must always produce the same ExecutionResult
+      including identical result_hash.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I5 — REPLAY VALIDITY
+  # ------------------------------------------------------
+  - id: I5_REPLAY_REQUIRED
+    description: >
+      Every execution must be replayable and produce identical output.
+      Non-replayable executions are invalid.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I6 — AUTHORITY-FIRST EXECUTION
+  # ------------------------------------------------------
+  - id: I6_AUTHORITY_DECLARATION
+    description: >
+      Authority must be declared before execution begins.
+      Execution without authority is forbidden.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I7 — NO AUTHORITY ESCALATION
+  # ------------------------------------------------------
+  - id: I7_NO_AUTHORITY_ESCALATION
+    description: >
+      Execution cannot derive, elevate, or infer authority beyond what is declared.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I8 — CLOSED EXECUTION WORLD
+  # ------------------------------------------------------
+  - id: I8_CLOSED_WORLD
+    description: >
+      Only explicitly declared execution surfaces may be accessed.
+      Undeclared code or resources are forbidden.
+    enforcement: REQUIRED
+    violation_class: B_STRUCTURAL
+
+
+  # ------------------------------------------------------
+  # I9 — PROOF REQUIRED
+  # ------------------------------------------------------
+  - id: I9_PROOF_REQUIRED
+    description: >
+      Every execution must produce a ProofSnapshot and RuntimeCertificate.
+      Execution without proof is invalid.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I10 — CONSENSUS CONSISTENCY
+  # ------------------------------------------------------
+  - id: I10_CONSENSUS_DETERMINISM
+    description: >
+      In distributed execution, all participating nodes must produce identical
+      result_hash values for consensus to succeed.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I11 — NODE TRUST VALIDATION
+  # ------------------------------------------------------
+  - id: I11_NODE_HEALTH_REQUIRED
+    description: >
+      Only healthy and registered nodes may participate in execution or consensus.
+    enforcement: REQUIRED
+    violation_class: B_STRUCTURAL
+
+
+  # ------------------------------------------------------
+  # I12 — HASH-BOUND IDENTITY
+  # ------------------------------------------------------
+  - id: I12_IDENTITY_INTEGRITY
+    description: >
+      Node identity must be deterministic and verifiable via identity_hash.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I13 — EPOCH MONOTONICITY
+  # ------------------------------------------------------
+  - id: I13_EPOCH_MONOTONIC
+    description: >
+      Constitutional epoch must increase monotonically and never decrease.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I14 — ADR GOVERNANCE REQUIRED
+  # ------------------------------------------------------
+  - id: I14_ADR_REQUIRED
+    description: >
+      All system mutations must be justified by an approved ADR.
+    enforcement: REQUIRED
+    violation_class: A_FATAL
+
+
+  # ------------------------------------------------------
+  # I15 — NON-EXECUTABLE SURFACE ISOLATION
+  # ------------------------------------------------------
+  - id: I15_NON_EXECUTABLE_ISOLATION
+    description: >
+      Non-executable artifacts (e.g. roles.yaml, INDEX.yaml)
+      must never be loaded or executed by runtime.
+    enforcement: REQUIRED
+    violation_class: B_STRUCTURAL
+
+
+# =========================================================
+# DOCUMENTARY INVARIANTS (NON-BLOCKING)
+# =========================================================
+
+documentary:
+
+  - id: D1_INDEX_NON_AUTHORITATIVE
+    description: >
+      INDEX.yaml is informational only and may lag registry state.
+    enforcement: DOCUMENTARY_ONLY
+
+  - id: D2_INFRASTRUCTURE_OUTSIDE_CONSTITUTION
+    description: >
+      External infrastructure (Docker, Redis, API gateways)
+      is not part of constitutional execution surface.
+    enforcement: DOCUMENTARY_ONLY
+
+
+# =========================================================
+# VALIDATION POLICY
+# =========================================================
+
+validation:
+
+  strict_mode: true
+  allow_partial_attestation: true   # tighten in future epoch
+  enforce_hash_match: true
+  enforce_replay: true
+  enforce_authority: true
+
+
+# =========================================================
+# FINAL ASSERTION
+# =========================================================
+
+assertion:
+
+  description: >
+    These invariants define the constitutional identity of AfriTech.
+    Any violation invalidates the system's sovereignty and execution legitimacy.
+
+  enforcement_mode: HARD

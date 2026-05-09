@@ -7,13 +7,28 @@ execution_trace:
   output_hash: 15e2224fb85b01d4beddd4bb2b456d38c26c2dd0c79f472e3f33c5ce5b5d74ff
   step: routing_selection
 - input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
+  output_hash: d42d814bdab48c3b7dab1e5b28f4842f34fa046155ded879aeea45731afa3bd8
+  step: real_inference_invocation
+- input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
   output_hash: 01d9d992c54622afefa11f98ac3893756ad8ec5fd5eb42169cd712e7959b8941
   step: truth_emission
 replay_environment:
-  constitution_version: constitution-epoch-0001
+  _inference_binding:
+    emitted_at: 1778026341
+    input_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
+    model_id: llm-stub-deterministic-v2
+    model_version: 2026-05
+    output_hash: da7c1df6dbf68aa8b42125672a2faf57632d3a978654980f364bf26e33ded215
+    parameters:
+      max_tokens: 256
+      temperature: 0.0
+      top_p: 1.0
+    provider: local-deterministic-stub
+  constitution_version: constitution-epoch-0002
   deterministic_mode: true
-  model_version: llm-stub-deterministic-v1
-  runtime_version: afritech-runtime-0.1.0
-replay_hash: f1a9778150e36c5fa84a0d1a0241649bad684fec2bd0e967d54e55ed468732cd
+  model_id: llm-stub-deterministic-v2
+  model_version: 2026-05
+  runtime_version: afritech-runtime-0.2.0
+replay_hash: b57c49c8868bcb64ec7fe7e30130e9470e98d49f54d6ff11d59ad398dea36724
 request_hash: eb89f010a24907b0773bc33966b817ae7e96b3de6b15663f47b33362cd3beb92
-truth_packet_hash: 1881b285715c808d8099ea3c60b5f50a4d36e7cccc2df57ef0fd1139055e9592
+truth_packet_hash: 763092539bd8cc87c9a96aac3a1e5052491753fe19d710da8b9c66a736dd6c5a

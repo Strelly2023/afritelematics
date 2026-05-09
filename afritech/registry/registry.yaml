@@ -1,166 +1,139 @@
 schema: afritech.registry.v2
-
 registry:
   id: AFRITECH-CONSTITUTIONAL-REGISTRY
   version: 2
   status: ACTIVE
   authority: SOVEREIGN
-
 identity:
   namespace: afritech
   canonical_root: /afritech
   constitutional_epoch: 0
   state: SOVEREIGN
-
 lineage:
   predecessor: afritech_v1
   predecessor_status: FROZEN
   predecessor_tag: afritech-v1-constitutional-freeze
   transfer_mode: CONSTITUTIONAL_MIGRATION
-
 authority:
   source_of_truth: registry
-
 precedence:
-  - registry
-  - kernel_manifest
-  - lean
-  - runtime
-
+- registry
+- kernel_manifest
+- lean
+- runtime
 kernel:
   manifest: architecture/kernel_manifest.yaml
   mutable: false
   change_policy: ADR_REQUIRED
-
 formal:
   lean_root: lean/
   proof_status: VERIFIED
   runtime_binding: VERIFIED
-
 invariants:
   source: architecture/INVARIANTS.yaml
   enforcement: REQUIRED
   mutable: false
-
 epoch:
   constitutional_epoch: 0
   current: 6
   monotonic: true
   advancement_policy: ADR_REQUIRED
   last_advanced_by: ADR-0009
-  advanced_at: "2026-05-07T00:00:00Z"
-
+  advanced_at: '2026-05-07T00:00:00Z'
 mutation:
   allowed: false
   unlock_condition:
-    - approved_adr
-    - epoch_advance
-    - registry_reseal
-
+  - approved_adr
+  - epoch_advance
+  - registry_reseal
 security:
   silent_mutation: FORBIDDEN
   dual_sovereignty: FORBIDDEN
   runtime_authority_override: FORBIDDEN
-
 historical_record:
   preserve_v1: true
   executable_v1: false
   reference_only: true
-
 attestation:
   version: 1
   algorithm: SHA256
-
   kernel_hashes:
-
     lean:
       files:
-        - lean/Kernel.lean
-        - lean/State.lean
-        - lean/Production.lean
-        - lean/Executable.lean
-        - lean/Preservation.lean
-        - lean/Refinement.lean
-        - lean/KernelIntegration.lean
-      hash: 6c3c1c87cb81a1de3540623a4b981d41e31c4f7d2844d5bdf5d048cf763d67a0
-
+      - lean/Kernel.lean
+      - lean/State.lean
+      - lean/Production.lean
+      - lean/Executable.lean
+      - lean/Preservation.lean
+      - lean/Refinement.lean
+      - lean/KernelIntegration.lean
+      hash: 1a97ddcefc5232affe6037b692dbdd4cff86956187cd1f672a8ea97bba980195
     kernel:
       files:
-        - kernel/__init__.py
-        - kernel/core.py
-        - kernel/types.py
-      hash: 977b4e49f82d8ac316941920e31be36de3e1f2a6021935794310624e4fc62433
-
+      - kernel/__init__.py
+      - kernel/core.py
+      - kernel/types.py
+      hash: b4950f889c616f9176b50f2895008099012c414ecc39a7b76515dbd8384b2024
     state:
       files:
-        - state/__init__.py
-        - state/state.py
-        - state/types.py
-      hash: 7094b2a439fca49f134a68b38414706ed737e0d1bbc22d8406cb6ffe511f8663
-
+      - state/__init__.py
+      - state/state.py
+      - state/types.py
+      hash: f6159635ff43ffdc790e23dd6f493742850a2dc441ba3499c7aac2a123e2a465
     guards:
       files:
-        - guards/__init__.py
-        - guards/engine.py
-      hash: 5435f4e0ff23b515141daced33332d7a3ed6d884179f30d4992f9fc63899c6d5
-
+      - guards/__init__.py
+      - guards/engine.py
+      hash: b3267005e700a63d7420fa2868f96d5c529d1d86c87663e8ef74d73e06e7203e
     runtime:
       files:
-        - runtime/__init__.py
-        - runtime/guard_executor.py
-        - runtime/main.py
-      hash: 6b0ae2e79d3a6b50829908d35207209bb07b58ef13c4335e11eeaee99e4e8e97
-
+      - runtime/__init__.py
+      - runtime/guard_executor.py
+      - runtime/main.py
+      hash: e508ee6cddc23aab9a81be36b3182e4d7046e3fe82acc874a8b2954be86142db
     runtime_activation:
       files:
-        - runtime/activation/activation_proof.py
-        - runtime/activation/runtime_admission.py
-        - runtime/activation/constitutional_boot.py
-      hash: <COMPUTE_SHA256>
-
+      - runtime/activation/activation_proof.py
+      - runtime/activation/runtime_admission.py
+      - runtime/activation/constitutional_boot.py
+      hash: cfa6176ad395c7d7c7686b6861c9308ddbdfaf28774cdfe96c695b329b454508
     runtime_engine:
       files:
-        - runtime/engine/dispatch.py
-        - runtime/engine/router.py
-        - runtime/engine/executor.py
-        - runtime/engine/verifier.py
-        - runtime/context/runtime_context.py
-      hash: <COMPUTE_SHA256>
-
+      - runtime/engine/dispatch.py
+      - runtime/engine/router.py
+      - runtime/engine/executor.py
+      - runtime/engine/verifier.py
+      - runtime/context/runtime_context.py
+      hash: 2386a5dec8543fd2d4511435d5d636984473c8abcbb00a64d99f66afac157f4a
     proof:
       files:
-        - proof/runtime_certificate.py
-        - proof/proof_snapshot.py
-      hash: <COMPUTE_SHA256>
-
+      - proof/runtime_certificate.py
+      - proof/proof_snapshot.py
+      hash: b2fad541ead67d904a6c992e3a9fb704dc3ef7958cb9ff9845cf36c856d35093
     evaluation:
       files:
-        - evaluation/telemetry/
-        - evaluation/replay_analysis/
-        - evaluation/drift_detection/
-        - evaluation/adr_trigger/
-      hash: <COMPUTE_SHA256>
-
-  registry_hash: <COMPUTE_SHA256>
+      - evaluation/telemetry/telemetry_engine.py
+      - evaluation/replay_analysis/replay_analysis_engine.py
+      - evaluation/drift_detection/drift_detection_engine.py
+      - evaluation/adr_trigger/adr_trigger_engine.py
+      hash: 4de1e5f7f685404813a18a2d99ee61eab708c200ff6d75692293cc519ec1e053
+  registry_hash: bb1c9e01d673377cf1f998cbd58a53eb6252624945de0a5cff0f38f7a3cacd29
   seal_status: SEALED
-
 seal_status: SEALED
-
 constitutional_assertions:
-  - afritech is sole active authority
-  - afritech_v1 is frozen lineage only
-  - all runtime legitimacy derives from registry
-  - mutation requires constitutional procedure
-  - registry sealing is cryptographically enforced
-  - constitutional history must remain replay-valid
-  - constitutional surfaces must hash-match at boot
-  - runtime admission requires RuntimeCertificate
-  - runtime validity is epoch-bound
-  - execution surfaces require explicit admission
-  - runtime legitimacy is observer-free
-  - replay divergence invalidates execution legitimacy
-  - no runtime exists without constitutional admission
-
+- afritech is sole active authority
+- afritech_v1 is frozen lineage only
+- all runtime legitimacy derives from registry
+- mutation requires constitutional procedure
+- registry sealing is cryptographically enforced
+- constitutional history must remain replay-valid
+- constitutional surfaces must hash-match at boot
+- runtime admission requires RuntimeCertificate
+- runtime validity is epoch-bound
+- execution surfaces require explicit admission
+- runtime legitimacy is observer-free
+- replay divergence invalidates execution legitimacy
+- no runtime exists without constitutional admission
 status:
   replay_validity: REQUIRED
   runtime_sovereignty: VERIFIED

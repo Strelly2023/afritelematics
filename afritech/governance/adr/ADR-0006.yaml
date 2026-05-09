@@ -1,0 +1,139 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0006
+  title: Runtime Surface Refinement and Introduction of Proof Layer
+  status: APPROVED
+  type: CONSTITUTIONAL_SURFACE_REFINEMENT
+
+  epoch: 6
+
+  approved_at: "2026-05-07T00:00:00Z"
+
+  context: >
+    The AfriTech system required a refinement of the runtime layer
+    to improve separation of concerns between activation control
+    and execution logic. Additionally, the system lacked a formalized
+    proof surface for verifiable execution outcomes.
+
+    Prior to this change, runtime execution and activation control
+    were tightly coupled, limiting clarity, traceability, and
+    enforceability of execution boundaries.
+
+  decision: >
+    The runtime layer is split into two explicit sub-surfaces:
+      - runtime.activation
+      - runtime.engine
+
+    The runtime.activation surface is responsible for:
+      - admission control
+      - authority validation
+      - execution readiness
+
+    The runtime.engine surface is responsible for:
+      - deterministic execution
+      - state transition orchestration
+      - integration with the state machine
+
+    A new proof surface is introduced to capture execution proof
+    artifacts, and an evaluation surface is introduced to support
+    validation, scoring, and verification of execution outcomes.
+
+    These surfaces MUST be:
+      - deterministic
+      - replay-verifiable
+      - registry-attested
+
+  implementation:
+    surfaces_added:
+      - proof
+      - evaluation
+
+    surfaces_refined:
+      - runtime.activation
+      - runtime.engine
+
+    breaking_changes: false
+
+  invariants:
+    - runtime_surface_is_partitioned
+    - runtime_activation_controls_admission
+    - runtime_engine_executes_deterministically
+    - proof_artifacts_are_deterministic
+    - evaluation_surface_does_not_modify_state
+    - all_surfaces_must_be_registry_attested
+    - all_surfaces_must_be_replay_verifiable
+
+  validation:
+    replay_required: true
+    guard_coverage_required: true
+    registry_reseal_required: true
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+
+  required_by:
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+  implementation_notes: >
+    Runtime refinement is implemented across:
+      - afritech.runtime.activation
+      - afritech.runtime.engine
+
+    Proof and evaluation surfaces are implemented in:
+      - afritech.proof
+      - afritech.evaluation
+
+    The system MUST enforce:
+      1. runtime.activation executes before runtime.engine
+      2. all execution passes guard validation before engine execution
+      3. proof artifacts are generated after execution
+      4. evaluation does not alter system state
+
+    Replay validation MUST:
+      - include proof artifacts
+      - validate execution consistency
+      - ensure evaluation output does not affect deterministic state
+
+  consequences:
+    positive:
+      - Improves separation of runtime responsibilities
+      - Enables deterministic and auditable execution flow
+      - Introduces formal execution proof generation
+      - Enables post-execution validation and scoring
+      - Strengthens replay verification fidelity
+
+    negative:
+      - Increases architectural complexity
+      - Requires updates to registry attestation surfaces
+      - Requires replay system awareness of new layers
+      - Introduces additional validation overhead
+
+  links:
+    epochs:
+      - EPOCH_0006
+
+    surfaces:
+      - runtime.activation
+      - runtime.engine
+      - proof
+      - evaluation
+
+  traceability:
+    related_files:
+      - afritech/runtime/activation.py
+      - afritech/runtime/engine.py
+      - afritech/proof/
+      - afritech/evaluation/
+      - afritech/guards/
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

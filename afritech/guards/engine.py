@@ -4,7 +4,7 @@ from pathlib import Path
 import hashlib
 import yaml
 from enum import Enum, auto
-
+#afritech/guards/engine.py
 
 # ---------------------------------------------------------
 # Constitutional root
@@ -14,25 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 # ---------------------------------------------------------
-# Runtime violation taxonomy (classification only)
+# Runtime violation taxonomy
 # ---------------------------------------------------------
 
 class ViolationClass(Enum):
-    """
-    Runtime constitutional violation classification.
-
-    This enumeration is DOCUMENTARY.
-    It does NOT alter enforcement behavior unless explicitly used.
-    """
-
     A_FATAL = auto()
-    """Fatal constitutional violations (hard invariant breach)."""
-
     B_STRUCTURAL = auto()
-    """Structural drift or undeclared identity surface change."""
-
     C_DOCUMENTARY = auto()
-    """Non-authoritative documentary divergence (warnings only)."""
 
 
 # ---------------------------------------------------------
@@ -55,31 +43,29 @@ def fail(
     msg: str,
     violation_class: ViolationClass = ViolationClass.A_FATAL,
 ) -> None:
-    """
-    Raise a classified constitutional violation.
-
-    Default classification = A_FATAL
-    (preserves existing behavior).
-    """
     raise ConstitutionalViolation(msg, violation_class)
 
 
 # ---------------------------------------------------------
-# Deterministic manifest-based hashing
+# Canonical manifest hashing
+# MUST MATCH registry/seal.py EXACTLY
 # ---------------------------------------------------------
 
 def sha256_manifest(root: Path, files: list[str]) -> str:
     """
-    Deterministic constitutional hash.
+    Deterministic constitutional hashing.
 
-    Hashes ONLY registry-declared files.
-    Hash domain = (relative path + file contents), order stable.
-
-    Filesystem noise is constitutionally irrelevant.
+    Rules:
+    - registry-declared order is authoritative
+    - file bytes only
+    - no path hashing
+    - no sorting
+    - no normalization
     """
+
     hasher = hashlib.sha256()
 
-    for rel_path in sorted(files):
+    for rel_path in files:
         path = root / rel_path
 
         if not path.exists():
@@ -88,16 +74,19 @@ def sha256_manifest(root: Path, files: list[str]) -> str:
                 ViolationClass.B_STRUCTURAL,
             )
 
-        hasher.update(rel_path.encode())
-        hasher.update(b"\0")
+        if not path.is_file():
+            fail(
+                f"Declared surface is not file: {rel_path}",
+                ViolationClass.B_STRUCTURAL,
+            )
+
         hasher.update(path.read_bytes())
-        hasher.update(b"\0")
 
     return hasher.hexdigest()
 
 
 # ---------------------------------------------------------
-# Kernel immutability (structural)
+# Kernel immutability
 # ---------------------------------------------------------
 
 def verify_kernel_immutability() -> None:
@@ -151,25 +140,16 @@ def verify_registry_authority() -> None:
 
 
 # ---------------------------------------------------------
-# Registry seal enforcement (manifest-driven)
+# Registry seal enforcement
 # ---------------------------------------------------------
 
 def verify_registry_seal() -> None:
-    """
-    FULL seal enforcement.
-    Used by runtime and CI.
-
-    Enforces:
-    ✅ registry is SEALED
-    ✅ each constitutional surface is declared
-    ✅ manifest-based hash equality for every surface
-    """
     registry_file = ROOT / "registry" / "registry.yaml"
 
     if not registry_file.exists():
         fail("registry.yaml missing", ViolationClass.A_FATAL)
 
-    with open(registry_file, "r") as f:
+    with open(registry_file, "r", encoding="utf-8") as f:
         registry = yaml.safe_load(f)
 
     att = registry.get("attestation", {})
@@ -186,13 +166,18 @@ def verify_registry_seal() -> None:
         )
 
     for scope, data in kernel_hashes.items():
-
         declared_files = data.get("files")
         expected_hash = data.get("hash")
 
-        if not declared_files or not expected_hash:
+        if not declared_files:
             fail(
-                f"Incomplete attestation for scope: {scope}",
+                f"No files declared for scope: {scope}",
+                ViolationClass.B_STRUCTURAL,
+            )
+
+        if not expected_hash:
+            fail(
+                f"Missing hash for scope: {scope}",
                 ViolationClass.B_STRUCTURAL,
             )
 
@@ -208,21 +193,10 @@ def verify_registry_seal() -> None:
 
 
 # ---------------------------------------------------------
-# Epoch‑advance authority verification
+# Epoch authority
 # ---------------------------------------------------------
 
 def verify_authority_for_epoch() -> None:
-    """
-    Pre‑epoch authority verification.
-
-    Enforces:
-    ✅ kernel immutability structure
-    ✅ dependency law
-    ✅ registry existence
-    ✅ registry is currently SEALED
-
-    Explicitly does NOT enforce surface hash equality.
-    """
     verify_kernel_immutability()
     verify_dependency_law()
     verify_registry_authority()
@@ -232,7 +206,7 @@ def verify_authority_for_epoch() -> None:
     if not registry_file.exists():
         fail("registry.yaml missing", ViolationClass.A_FATAL)
 
-    with open(registry_file, "r") as f:
+    with open(registry_file, "r", encoding="utf-8") as f:
         registry = yaml.safe_load(f)
 
     if registry.get("attestation", {}).get("seal_status") != "SEALED":
@@ -243,14 +217,10 @@ def verify_authority_for_epoch() -> None:
 
 
 # ---------------------------------------------------------
-# Sovereign verification (runtime + CI)
+# Sovereignty verification
 # ---------------------------------------------------------
 
 def verify_sovereignty() -> None:
-    """
-    Full constitutional enforcement.
-    Must be used by runtime and CI.
-    """
     verify_kernel_immutability()
     verify_dependency_law()
     verify_registry_authority()

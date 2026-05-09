@@ -1,0 +1,288 @@
+## ============================================================
+## AfriTech CI Rule
+## Attestation ↔ Certificate Binding Enforcement
+## ============================================================
+## Rule ID: CI-ATTEST-BIND-001
+## Purpose:
+## Ensure that RuntimeCertificates are strictly bound to
+## the current attested constitutional state.
+##
+## This rule guarantees:
+## - No drift between attestation and runtime
+## - No stale certificate usage
+## - No inconsistent system identity
+##
+## Scope:
+## - afritech/registry/attestation.yaml
+## - afritech/proof/certificates/
+##
+## This rule is normative and enforced in CI.
+## ============================================================
+
+metadata:
+  rule_id: CI-ATTEST-BIND-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+## ============================================================
+## GOVERNANCE PRINCIPLE
+## ============================================================
+
+principle:
+
+  statement: >
+    A RuntimeCertificate is valid ONLY if it is bound
+    to the currently attested constitutional state.
+
+  rationale: >
+    Attestation defines the authoritative identity of the system.
+    RuntimeCertificates derive their legitimacy from attestation.
+    Any mismatch invalidates runtime legitimacy entirely.
+
+  enforcement_mode: ci_execution
+  failure_action: ci_fail
+
+
+## ============================================================
+## REQUIRED BINDING CONDITIONS
+## ============================================================
+
+binding_requirements:
+
+  description: >
+    The RuntimeCertificate MUST match the attestation
+    across all constitutionally relevant hashes.
+
+  required_alignments:
+
+    - registry_hash
+    - epoch_hash
+    - kernel_root_hash
+    - execution_surfaces_hash
+    - authority_profiles_hash
+    - replay_verifier_hash
+
+  epoch_alignment_required: true
+  attestation_status_required: SEALED
+
+
+## ============================================================
+## TARGETED FILES
+## ============================================================
+
+targets:
+
+  attestation:
+    path: afritech/registry/attestation.yaml
+
+  certificates:
+    path: afritech/proof/certificates/
+    pattern: "*.cert"
+
+
+## ============================================================
+## CI VALIDATION CHECKS
+## ============================================================
+
+ci_checks:
+
+  # ------------------------------------------------------------
+  # AB-F1: Attestation must exist
+  # ------------------------------------------------------------
+  - check_id: AB-F1
+
+    description: >
+      Verify that attestation.yaml exists.
+
+    target: afritech/registry/attestation.yaml
+
+    must_exist: true
+
+    failure_message: >
+      Missing attestation.yaml — constitutional state undefined.
+
+
+  # ------------------------------------------------------------
+  # AB-F2: Attestation must be SEALED
+  # ------------------------------------------------------------
+  - check_id: AB-F2
+
+    description: >
+      Verify attestation is sealed.
+
+    target: afritech/registry/attestation.yaml
+
+    required_field:
+      path: attestation.status
+      value: SEALED
+
+    failure_message: >
+      Attestation is not SEALED — certificate invalid.
+
+
+  # ------------------------------------------------------------
+  # AB-F3: Certificate ↔ Attestation hash match
+  # ------------------------------------------------------------
+  - check_id: AB-F3
+
+    description: >
+      Verify all certificate bindings match attestation bindings.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: validate_attestation_certificate_binding
+
+    failure_message: >
+      RuntimeCertificate does not match attestation hashes.
+
+
+  # ------------------------------------------------------------
+  # AB-F4: Epoch consistency
+  # ------------------------------------------------------------
+  - check_id: AB-F4
+
+    description: >
+      Verify certificate epoch matches attestation epoch.
+
+    target_pattern: "afritech/proof/certificates/*.cert"
+
+    compare_fields:
+
+      - attestation.epoch
+      - runtime_certificate.epoch
+
+    failure_message: >
+      Certificate epoch does not match attested epoch.
+
+
+  # ------------------------------------------------------------
+  # AB-F5: Prevent stale certificate usage
+  # ------------------------------------------------------------
+  - check_id: AB-F5
+
+    description: >
+      Ensure certificate issued_at >= attestation issued_at.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: validate_certificate_freshness
+
+    failure_message: >
+      Certificate predates attestation — stale certificate detected.
+
+
+  # ------------------------------------------------------------
+  # AB-F6: Attestation hash binding must exist in certificate
+  # ------------------------------------------------------------
+  - check_id: AB-F6
+
+    description: >
+      Ensure certificate explicitly references attestation.
+
+    target_pattern: "afritech/proof/certificates/*.cert"
+
+    required_fields:
+      - runtime_certificate.constitutional_binding.attestation_hash
+
+    failure_message: >
+      Certificate missing attestation binding.
+
+
+  # ------------------------------------------------------------
+  # AB-F7: Prevent orphan certificates
+  # ------------------------------------------------------------
+  - check_id: AB-F7
+
+    description: >
+      Ensure no certificate exists without matching attestation.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: detect_orphan_certificates
+
+    failure_message: >
+      Orphan RuntimeCertificate detected.
+
+
+## ============================================================
+## VALIDATION FUNCTIONS (REFERENCE)
+## ============================================================
+
+validation_contract:
+
+  validate_attestation_certificate_binding:
+
+    description: >
+      Compare attestation.bindings with
+      certificate.constitutional_binding.
+
+    expected_result: >
+      Exact match across all binding fields.
+
+
+  validate_certificate_freshness:
+
+    description: >
+      Ensure:
+        certificate.issued_at >= attestation.issued_at
+
+    expected_result: >
+      Certificate must not predate attestation.
+
+
+  detect_orphan_certificates:
+
+    description: >
+      Ensure every certificate references an existing
+      attestation and matching epoch.
+
+    expected_result: >
+      No orphan certificates exist.
+
+
+## ============================================================
+## BINDING INVARIANT
+## ============================================================
+
+binding_invariant:
+
+  statement: >
+    Runtime existence is derived from attestation.
+
+    Therefore:
+      certificate MUST match attestation exactly.
+
+  violation_effect:
+
+    - runtime_invalidated
+    - certificate_invalidated
+    - execution_refused
+    - replay_invalidated
+    - trust_chain_broken
+
+
+## ============================================================
+## CI OUTCOME
+## ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Attestation binding validation passed."
+
+  on_fail:
+    result: failure
+    message: >
+      RuntimeCertificate is not correctly bound to
+      attested constitutional state. Execution is forbidden.

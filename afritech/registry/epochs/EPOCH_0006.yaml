@@ -1,0 +1,65 @@
+schema: afritech.registry.epoch.v1
+
+# ---------------------------------------------------------
+# RUNTIME-COMPATIBLE FIELDS (CRITICAL)
+# ---------------------------------------------------------
+
+epoch_id: EPOCH_0006
+instance_id: epoch-0006-instance-A
+version: 6
+parent_version: 5
+
+active: true
+sealed: false
+
+# ---------------------------------------------------------
+# GOVERNANCE / CONSTITUTIONAL BLOCK (YOUR ORIGINAL MODEL)
+# ---------------------------------------------------------
+
+epoch:
+  number: 6
+  parent: 5
+  status: FINAL
+  monotonic: true
+
+  authority:
+    adr:
+      - ADR-0006
+      - ADR-0007
+      - ADR-0008
+      - ADR-0009
+
+  timestamp:
+    enacted_at: "2026-05-07T00:00:00Z"
+
+  sealing:
+    pre_state: SEALED
+    unsealed_for_mutation: true
+    resealed: true
+    seal_status: SEALED
+
+  type: CONSTITUTIONAL_SURFACE_REFINEMENT
+
+  evolution: true
+  normalization: false
+
+  description: >
+    Refines constitutional runtime into admission and orchestration
+    sub-surfaces and introduces proof + evaluation surfaces.
+
+  constitutional_delta:
+    runtime_refined:
+      - runtime.activation
+      - runtime.engine
+
+    surfaces_added:
+      - proof
+      - evaluation
+
+# ---------------------------------------------------------
+# HASH CHAIN (IMMUTABILITY)
+# ---------------------------------------------------------
+
+hash_chain:
+  previous_epoch_hash: "<EPOCH_0005_HASH>"
+  epoch_hash: "<COMPUTED_SHA256>"

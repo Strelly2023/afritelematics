@@ -1,0 +1,41 @@
+## ============================================================
+## Rule: No Environment Dependency
+## ============================================================
+
+metadata:
+  rule_id: CI-INFRA-ENV-001
+  version: "1.0.0"
+
+principle:
+
+  statement: >
+    Runtime behavior MUST be identical regardless of environment.
+
+checks:
+
+  - check_id: ENV-1
+    target_dirs:
+      - afritech/runtime/
+      - afritech/inference/
+
+    forbidden_patterns:
+      - os.getenv
+      - os.environ
+
+    failure_message: >
+      Runtime uses environment variables — forbidden.
+
+  - check_id: ENV-2
+    target_dirs:
+      - afritech/runtime/
+
+    forbidden_patterns:
+      - ".env"
+      - "dotenv"
+
+    failure_message: >
+      External config injection detected.
+
+assertion:
+
+  guarantee: deterministic_execution_across_environments

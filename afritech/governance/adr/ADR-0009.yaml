@@ -1,0 +1,146 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0009
+  title: Replay Validity and Temporal Sovereignty Enforcement
+  status: APPROVED
+  type: CONSTITUTIONAL_VALIDITY_GUARANTEE
+
+  epoch: 6
+
+  approved_at: "2026-05-07T00:00:00Z"
+
+  context: >
+    Following the introduction of runtime refinement (ADR-0006),
+    proof and evaluation enforcement (ADR-0007), and admission and
+    orchestration control (ADR-0008), the system required a final
+    guarantee that every execution and evolution step is reproducible,
+    verifiable, and temporally consistent.
+
+    Without a formal replay validity constraint, the system could:
+      - diverge between runtime and registry
+      - allow non-reproducible states
+      - permit invalid temporal evolution
+
+  decision: >
+    A constitutional requirement is established:
+
+      "All system states and epochs MUST be replayable from history."
+
+    The system MUST enforce:
+
+      - replay must reconstruct the full execution history
+      - replay must reach the current registry epoch
+      - runtime state MUST match replay result
+      - epoch history is the single source of temporal truth
+      - no declared epoch is valid unless fully reconstructible
+
+    The execution and evolution model is finalized as:
+
+      admission → orchestration → state → transition → result
+      → proof → evaluation → epoch → replay_verification
+
+    Replay validation is the final authority gate for system truth.
+
+  implementation:
+    enforcement_layers:
+      - replay_verification
+      - epoch_sync_guard
+      - epoch_validator
+      - invariant_guard
+
+    runtime_requirements:
+      replay_must_succeed: true
+      terminal_epoch_must_match_registry: true
+      history_chain_must_be_complete: true
+
+    breaking_changes: false
+
+  invariants:
+    - replay_is_required_for_validity
+    - runtime_state_must_match_replay
+    - history_is_single_source_of_truth
+    - no_unreplayable_state_is_allowed
+    - epoch_lineage_must_be_complete
+    - registry_and_runtime_must_be_consistent
+
+  validation:
+    replay_required: true
+    epoch_consistency_required: true
+    registry_history_alignment_required: true
+    proof_chain_verification_required: true
+    guard_enforcement_required: true
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+
+  implementation_notes: >
+    Replay validation is implemented in:
+      - afritech.verify.replay
+      - afritech.epoch.epoch_manager
+      - afritech.epoch.epoch_transition
+      - afritech.epoch.epoch_validator
+      - afritech.guards.epoch_sync_guard
+      - afritech.guards.invariant_guard
+
+    The system MUST enforce:
+      1. Full reconstruction of execution history
+      2. Validation of epoch chain integrity
+      3. Validation of proof and evaluation outputs
+      4. Alignment between runtime and replay-derived state
+      5. Rejection of any inconsistent or incomplete history
+
+    Any failure in replay MUST invalidate system state.
+
+  consequences:
+    positive:
+      - Guarantees full system reproducibility
+      - Prevents hidden or unverifiable state transitions
+      - Enforces strict alignment between runtime and registry
+      - Establishes deterministic temporal consistency
+      - Enables complete auditability
+      - Finalizes computational authority model
+
+    negative:
+      - Requires strict maintenance of history chain
+      - Rejects any incomplete or inconsistent evolution
+      - Introduces hard failure on temporal divergence
+      - Increases validation overhead for replay enforcement
+
+  links:
+    epochs:
+      - EPOCH_0006
+
+    surfaces:
+      - runtime.admission
+      - runtime.orchestration
+      - runtime.engine
+      - proof
+      - evaluation
+      - replay_verification
+
+    related_adrs:
+      - ADR-0006
+      - ADR-0007
+      - ADR-0008
+
+  traceability:
+    related_files:
+      - afritech/verify/replay.py
+      - afritech/guards/epoch_sync_guard.py
+      - afritech/epoch/epoch_manager.py
+      - afritech/epoch/epoch_transition.py
+      - afritech/registry/history/
+      - afritech/proof/
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

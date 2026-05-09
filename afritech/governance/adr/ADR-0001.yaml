@@ -1,0 +1,59 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0001
+  title: Genesis Trust Root Establishment
+  status: APPROVED
+  type: ARCHITECTURAL
+
+  epoch: 0
+
+  date: "2026-01-01"
+
+  context: >
+    AfriTech requires a deterministic and verifiable trust root to anchor all
+    subsequent constitutional execution, registry sealing, epoch transitions,
+    and replay validation. Without a canonical genesis decision, all downstream
+    governance artifacts lack a stable origin reference.
+
+  decision: >
+    Establish a single immutable Genesis Trust Root that defines:
+    1. The initial authority baseline for all system execution
+    2. The cryptographic and structural origin of registry sealing
+    3. The canonical starting epoch (epoch-0)
+    4. The deterministic replay anchor for all future state transitions
+
+    This trust root is considered non-revisable once sealed and must be
+    referenced by all epochs, guards, and governance bindings.
+
+  consequences:
+    positive:
+      - Provides a deterministic origin for all system state
+      - Enables reproducible replay validation
+      - Establishes trust anchor for registry sealing
+      - Unifies epoch and governance lineage under a single root
+
+    negative:
+      - Introduces hard dependency on genesis correctness
+      - Any error in genesis requires full system reseal
+      - Reduces flexibility for retroactive structural changes
+
+  invariants:
+    - genesis_trust_root_is_immutable
+    - all_epochs_must_reference_ADR_0001
+    - registry_seal_derives_from_genesis
+    - replay_fails_if_genesis_missing_or_modified
+
+  links:
+    epochs:
+      - EPOCH_0000
+    dependencies: []
+    required_by:
+      - ADR-0002
+      - ADR-0003
+      - ADR-0004
+      - ADR-0005
+      - ADR-0006
+      - ADR-0007
+      - ADR-0008
+      - ADR-0009

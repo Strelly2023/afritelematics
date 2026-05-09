@@ -1,0 +1,132 @@
+schema: afritech.genesis.v1
+
+genesis:
+
+  # -----------------------------------------------------------------
+  # IDENTITY
+  # -----------------------------------------------------------------
+
+  id: "GENESIS-0001"                  # immutable system root identifier
+  issued_at: "ISO-8601 timestamp"    # creation time (deterministic or fixed)
+
+  constitutional_version: 1          # version of constitutional model
+  initial_epoch: 0                   # MUST be 0 (absolute start)
+
+  authority_seed: "REGISTRY"         # MUST be REGISTRY (anchor rule)
+
+  # -----------------------------------------------------------------
+  # ROOT BINDINGS (CORE SYSTEM STATE)
+  # -----------------------------------------------------------------
+
+  registry_origin_hash: sha256         # hash of registry.yaml
+  invariant_root_hash: sha256          # hash of INVARIANTS.yaml
+  constitutional_surface_hash: sha256  # hash of constitutional surfaces
+  execution_surface_hash: sha256       # hash of execution surfaces
+
+  # -----------------------------------------------------------------
+  # TRUST ROOT (CRITICAL)
+  # -----------------------------------------------------------------
+
+  trust_anchor: sha256
+  # MUST equal:
+  # sha256(
+  #   registry_origin_hash
+  # + invariant_root_hash
+  # + constitutional_surface_hash
+  # + execution_surface_hash
+  # )
+
+  # -----------------------------------------------------------------
+  # PROOF OF ORIGIN
+  # -----------------------------------------------------------------
+
+  issuance_proof: "genesis_proof.json"
+  # optional but recommended:
+  # proof of initial construction / governance approval
+
+  # -----------------------------------------------------------------
+  # SIGNATURE (EPOCH ZERO AUTHORITY)
+  # -----------------------------------------------------------------
+
+  epoch_zero_signature:
+
+    algorithm: ED25519
+
+    payload_hash: sha256
+    # hash of canonical genesis payload (excluding signature block)
+
+    signature: hex
+    public_key: hex
+
+    version: v1
+
+  # -----------------------------------------------------------------
+  # OPTIONAL METADATA (STRICTLY NON-AUTHORITATIVE)
+  # -----------------------------------------------------------------
+
+  metadata:
+
+    description: "AfriTech Genesis Root Artifact"
+    environment: "production | staging | test"
+
+    created_by: "system | authority"
+    notes: "optional human-readable context"
+
+  # -----------------------------------------------------------------
+  # INVARIANTS (ENFORCED CONTRACT)
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I17_GENESIS_ROOT_AUTHORITY
+      # All authority MUST derive from genesis
+
+    - I17_1_IMMUTABILITY
+      # Genesis MUST NOT change after issuance
+
+    - I17_2_AUTHORITY_SEED_FIXED
+      # authority_seed MUST equal REGISTRY
+
+    - I17_3_INITIAL_EPOCH_ZERO
+      # initial_epoch MUST be 0
+
+    - I17_4_HASH_BINDING_COMPLETE
+      # All root hashes MUST be present and valid
+
+    - I17_5_TRUST_ANCHOR_CORRECT
+      # trust_anchor MUST equal computed root hash
+
+    - I17_6_SIGNATURE_VALID
+      # signature MUST verify payload_hash
+
+    - I17_7_PAYLOAD_HASH_CORRECT
+      # payload_hash MUST match canonical genesis payload
+
+    - I17_8_REPLAY_STABLE
+      # canonical serialization MUST be deterministic
+
+    - I17_9_NO_EXTERNAL_STATE
+      # genesis must fully define authority without external inputs
+
+    - I17_10_SINGLE_ORIGIN
+      # only one genesis allowed per system identity
+
+  # -----------------------------------------------------------------
+  # VALIDATION CONTRACT
+  # -----------------------------------------------------------------
+
+  validation:
+
+    required_at_boot: true
+    required_for_runtime_admission: true
+    required_for_epoch_validation: true
+
+    enforce_signature: true
+    enforce_trust_anchor: true
+    enforce_hash_consistency: true
+
+    failure_response:
+
+      type: HARD_FAILURE
+      effect: SYSTEM_NON_EXISTENCE
+      description: "Genesis validation failure results in system non-existence"

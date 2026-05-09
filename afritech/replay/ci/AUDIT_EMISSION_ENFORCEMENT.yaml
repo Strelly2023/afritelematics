@@ -1,0 +1,133 @@
+# ============================================================
+# Afritech CI Rule
+# Verifier Audit Emission Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUDIT-001
+#
+# Purpose:
+#   Ensure that every replay verifier run emits a JSON audit
+#   artifact via the audit side-channel.
+#
+# Scope:
+#   Phase-2B (and later)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUDIT-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Every invocation of the replay verifier MUST result in the
+    emission of a machine-readable audit artifact, regardless
+    of replay acceptance or refusal.
+
+  rationale: >
+    Audit artifacts provide an immutable, non-evidentiary record
+    of verifier behavior for CI, compliance, and archival purposes,
+    without contaminating stdout-based runtime evidence.
+
+  enforcement_mode: static_analysis_and_ci_execution
+  failure_action: ci_fail
+
+# ============================================================
+# REQUIRED AUDIT BEHAVIOR
+# ============================================================
+
+required_behavior:
+
+  description: >
+    The replay verification workflow MUST call the canonical
+    audit export function exactly once per verifier run.
+
+  audit_emission:
+    function: export_verifier_audit
+    module: afritech.replay.audit.export
+
+  emission_timing:
+    description: >
+      Audit emission MUST occur after verifier execution and
+      MUST reflect the final ReplayVerdict.
+
+# ============================================================
+# TARGETED FILES
+# ============================================================
+
+targets:
+
+  cli_entrypoint:
+    path: afritech/replay/run_verify.py
+
+  audit_export_module:
+    path: afritech/replay/audit/export.py
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AE-F1
+    description: >
+      Verify that run_verify.py imports the audit export function.
+    target: afritech/replay/run_verify.py
+    pattern_required:
+      - 'from afritech\\.replay\\.audit\\.export import export_verifier_audit'
+    failure_message: >
+      Replay verifier CLI does not import audit export function.
+
+  - check_id: AE-F2
+    description: >
+      Verify that export_verifier_audit is invoked in the
+      replay verification execution path.
+    target: afritech/replay/run_verify.py
+    pattern_required:
+      - 'export_verifier_audit\\('
+    failure_message: >
+      Replay verifier run does not emit an audit artifact.
+
+  - check_id: AE-F3
+    description: >
+      Verify audit emission is not routed to stdout.
+    target: afritech/replay/audit/export.py
+    pattern_forbidden:
+      - 'print\\('
+      - 'sys\\.stdout'
+    failure_message: >
+      Audit export must not write to stdout.
+
+  - check_id: AE-F4
+    description: >
+      Verify that audit export writes JSON files only.
+    target: afritech/replay/audit/export.py
+    pattern_required:
+      - 'json.dumps'
+    failure_message: >
+      Audit export does not produce canonical JSON output.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "All replay verifier runs emit audit artifacts."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier run missing mandatory audit emission.
+      See CI logs for details on the specific violation.

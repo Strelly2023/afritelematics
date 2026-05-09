@@ -1,5 +1,7 @@
 schema: afritech.registry.history.correction.v1
 
+# afritech/registry/history/correction_2026_05_reseal.yaml
+
 correction:
   id: correction_2026_05_reseal
   type: CONSTITUTIONAL_BOOKKEEPING
@@ -19,7 +21,7 @@ scope:
   runtime_execution: false
   governance_rules: false
 
-description:
+description: >
   A constitutional bookkeeping inconsistency was identified where
   epochs 1–3 were marked FINAL without explicit reseal metadata,
   despite governance rules requiring reseal_after_advance.
@@ -28,11 +30,14 @@ description:
   identity attestation.
 
 actions_taken:
-  - Added explicit reseal metadata to epoch history records
+  - >
+    Added explicit reseal metadata to epoch history records
     (resealed: true, seal_status: SEALED)
-  - Recomputed the registry attestation hash from the canonical
+  - >
+    Recomputed the registry attestation hash from the canonical
     pre-seal registry snapshot
-  - Reapplied registry seal using sovereignty tooling
+  - >
+    Reapplied registry seal using sovereignty tooling
 
 non_actions:
   - No epoch counters were advanced
@@ -70,9 +75,9 @@ constitutional_assertions:
   - Registry reseal is required to restore cryptographic truthfulness
   - Replay validity requires sealed history continuity
 
-audit_notes:
-  - This record exists to preserve long-term traceability of
-    identity corrections that are orthogonal to temporal evolution.
-  - Future audits must treat this correction as a baseline identity
-    normalization event, not a governance action.
-    
+audit_notes: >
+  This record exists to preserve long-term traceability of
+  identity corrections that are orthogonal to temporal evolution.
+
+  Future audits must treat this correction as a baseline identity
+  normalization event, not a governance action.

@@ -1,0 +1,166 @@
+# ============================================================
+# Afritech Constitutional Replay Law
+# Authority‑Isolated Real Inference Governance
+# ============================================================
+#
+# Purpose:
+#   Specify how authority isolation applies to real inference
+#   under replay law (Phase‑2B).
+#
+# Scope:
+#   Phase‑2B only
+#
+# This specification is normative.
+# Authority isolation is enforced through deterministic refusal,
+# not discretionary policy.
+# ============================================================
+
+metadata:
+  spec_name: authority_isolated_real_inference_governance
+  spec_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# DEFINITIONS
+# ============================================================
+
+definitions:
+
+  authority_profile:
+    description: >
+      A canonical identifier representing the constitutional
+      authority under which an inference is executed.
+
+  real_inference:
+    description: >
+      An inference produced by an actual model invocation
+      (local, remote, or hybrid) and bound into replay truth
+      via an inference_binding object.
+
+  replay_domain:
+    description: >
+      The closed validity space defined by an authority_profile.
+      Replay artifacts MAY NOT cross replay domains.
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+governance_principle:
+
+  statement: >
+    All real inference executions are scoped to exactly one
+    authority_profile, and replay validity is confined to
+    that authority’s replay domain.
+
+  enforcement_mechanism: deterministic_refusal
+  enforcement_phase: Phase-2B
+
+# ============================================================
+# AUTHORITY BINDING REQUIREMENTS
+# ============================================================
+
+authority_binding_requirements:
+
+  transcript_binding:
+    description: >
+      Every replay transcript that includes real inference
+      MUST declare an authority_profile at the top level.
+    failure_mode: missing_authority_binding
+
+  inference_binding_inheritance:
+    description: >
+      The inference_binding object MUST inherit the
+      transcript authority_profile implicitly and
+      MUST NOT introduce a second authority identifier.
+    failure_mode: authority_mismatch
+
+# ============================================================
+# REPLAY DOMAIN ISOLATION RULE
+# ============================================================
+
+replay_domain_isolation:
+
+  rule_id: DR-2B-AUTH-ISO-001
+
+  description: >
+    A real inference transcript generated under authority X
+    MUST be rejected when replay verification is attempted
+    under authority Y ≠ X.
+
+  enforcement:
+    when: authority_mismatch
+    action: deterministic_refusal
+
+  failure_characteristics:
+    failure_mode: authority_mismatch
+    violated_invariant: isolated_replay_domains
+    divergence_location: authority_binding
+
+# ============================================================
+# ACCEPTANCE CONDITION
+# ============================================================
+
+acceptance_condition:
+
+  description: >
+    Real inference replay MAY be accepted only when
+    request authority exactly matches transcript authority.
+
+  required_match:
+    request.authority_profile: transcript.authority_profile
+
+  outcome_on_match:
+    status: REPLAY_VALID
+
+  outcome_on_mismatch:
+    status: REPLAY_INVALID
+
+# ============================================================
+# NON-DISCRETIONARY BEHAVIOR
+# ============================================================
+
+non_discretion:
+
+  no_authority_coercion:
+    description: >
+      The verifier MUST NOT coerce, map, alias, or reinterpret
+      authority identities during replay.
+
+  no_cross_authority_import:
+    description: >
+      Inference bindings, outputs, or caches produced under
+      one authority MUST NOT be reused across authorities.
+
+# ============================================================
+# EXPLICIT NON-GOALS
+# ============================================================
+
+non_goals:
+
+  trust_equivalence:
+    description: >
+      This specification does not assume equivalence or
+      compatibility between different authorities.
+
+  semantic_authority_merging:
+    description: >
+      This specification does not permit authorities to be
+      merged, grouped, or federated at replay time.
+
+# ============================================================
+# CONSTITUTIONAL GUARANTEE
+# ============================================================
+
+guarantee:
+
+  statement: >
+    Authority‑isolated real inference governance guarantees
+    that no inference executed under one constitutional
+    authority can be replay‑validated under another,
+    regardless of model identity, inference determinism,
+    or semantic equivalence.
+
+  enforcement_location: replay_verifier
+  enforcement_phase: Phase-2B

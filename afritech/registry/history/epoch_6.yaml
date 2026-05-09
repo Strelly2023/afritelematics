@@ -1,0 +1,66 @@
+schema: afritech.registry.epoch.v1
+
+# ---------------------------------------------------------
+# RUNTIME‑AUTHORITATIVE F: EPOCH_0006# RUNTIME‑AUTHORITATIVE FIELDS (USED BY REPLAY / SYNC)
+instance_id: epoch-0006-instance-A
+version: 6
+parent_version: 5
+
+active: false
+sealed: true
+
+# ---------------------------------------------------------
+# GOVERNANCE / CONSTITUTIONAL BLOCK
+# ---------------------------------------------------------
+
+epoch:
+  number: 6
+  parent: 5
+  status: FINAL
+  monotonic: true
+
+  authority:
+    adr:
+      - ADR-0006
+      - ADR-0007
+      - ADR-0008
+      - ADR-0009
+
+  timestamp:
+    enacted_at: "2026-05-07T00:00:00Z"
+
+  type: CONSTITUTIONAL_SURFACE_REFINEMENT
+  evolution: true
+  normalization: false
+
+  description: >
+    Refines constitutional runtime into admission and orchestration
+    sub-surfaces and introduces proof and evaluation surfaces.
+
+  constitutional_delta:
+    runtime_refined:
+      - runtime.activation
+      - runtime.engine
+    surfaces_added:
+      - proof
+      - evaluation
+
+# ---------------------------------------------------------
+# SEALING (AUTHORITATIVE — MUST MATCH RUNTIME FLAGS)
+# ---------------------------------------------------------
+
+sealing:
+  pre_state: SEALED
+  unsealed_for_mutation: true
+  resealed: true
+  seal_status: SEALED
+
+# ---------------------------------------------------------
+# CRYPTOGRAPHIC HASH CHAIN
+# ---------------------------------------------------------
+
+hash_chain:
+  previous_epoch_hash: c65e5557ee8af8a8826303d5a17e44543cd05a05e99e526624cb2a556b99893e
+  epoch_hash: 0111924dfe8fe4009c7bb192e636977206faf690a036f511fc102a8d26561288
+# ---------------------------------------------------------
+

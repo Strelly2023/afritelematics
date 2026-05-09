@@ -1,0 +1,260 @@
+schema: afritech.infrastructure.classification.v1
+
+infrastructure:
+
+  # -----------------------------------------------------------------
+  # PURPOSE
+  # -----------------------------------------------------------------
+
+  description: >
+    This file defines all non-constitutional infrastructure surfaces
+    within the AfriTech system.
+
+    These surfaces support deployment, orchestration, and operations
+    but MUST NOT influence:
+
+      - runtime legitimacy
+      - execution correctness
+      - replay outcomes
+      - constitutional state
+
+    They exist strictly outside the constitutional trust model.
+
+  classification: NON_CONSTITUTIONAL_SURFACE
+  role: SUPPORT_SYSTEM
+
+  # -----------------------------------------------------------------
+  # GLOBAL INVARIANTS
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - infrastructure_must_not_affect_execution
+    - infrastructure_must_not_participate_in_hash_chains
+    - infrastructure_must_not_be_replay_relevant
+    - infrastructure_must_not_define_authority
+    - infrastructure_must_not_modify_registry
+    - infrastructure_must_not_bypass_guards
+
+  enforcement:
+
+    violation_effect: HARD_FAILURE
+    detection_layer:
+      - CI
+      - Runtime Admission
+      - Replay Verification
+
+  # -----------------------------------------------------------------
+  # SURFACE CLASSIFICATION
+  # -----------------------------------------------------------------
+
+  surfaces:
+
+    # -------------------------------------------------------------
+    # Docker / Containerization
+    # -------------------------------------------------------------
+
+    docker:
+
+      path: afritech/docker/
+      type: DEPLOYMENT_ORCHESTRATION
+
+      includes:
+        - docker-compose.yml
+        - Dockerfile
+
+      constraints:
+
+        - must_not_define_runtime_logic
+        - must_not_override_runtime_identity
+        - must_not_embed_execution_rules
+
+    # -------------------------------------------------------------
+    # CI/CD Pipelines
+    # -------------------------------------------------------------
+
+    ci_cd:
+
+      path: .github/workflows/
+      type: PIPELINE_ORCHESTRATION
+
+      includes:
+        - architecture.yml
+
+      constraints:
+
+        - may_validate_but_not_define_truth
+        - must_not_modify_attestation
+        - must_not_generate_runtime_state
+
+    # -------------------------------------------------------------
+    # Environment Configuration
+    # -------------------------------------------------------------
+
+    environment:
+
+      type: RUNTIME_CONFIGURATION
+      scope: OPTIONAL
+
+      examples:
+
+        - ENV variables
+        - deployment configs
+        - secrets management
+
+      constraints:
+
+        - must_not_affect_determinism
+        - must_not_change_execution_semantics
+        - must_not influence_replay_results
+
+    # -------------------------------------------------------------
+    # Observability / Logging
+    # -------------------------------------------------------------
+
+    observability:
+
+      type: TELEMETRY
+
+      examples:
+
+        - logging systems
+        - metrics
+        - monitoring dashboards
+
+      constraints:
+
+        - write_only
+        - must_not influence_runtime_execution
+        - must_not modify_state
+
+    # -------------------------------------------------------------
+    # External Integrations
+    # -------------------------------------------------------------
+
+    integrations:
+
+      type: EXTERNAL_SYSTEM_INTERFACE
+
+      examples:
+
+        - APIs
+        - message queues
+        - third-party services
+
+      constraints:
+
+        - must_be_declarative
+        - must_not affect_constitutional_core
+        - must_not introduce_nondeterminism
+
+  # -----------------------------------------------------------------
+  # EXPLICITLY EXCLUDED FROM CONSTITUTION
+  # -----------------------------------------------------------------
+
+  excluded_from_constitution:
+
+    - docker
+    - ci_cd
+    - environment
+    - observability
+    - integrations
+
+  # -----------------------------------------------------------------
+  # RUNTIME CONSTRAINTS
+  # -----------------------------------------------------------------
+
+  runtime_constraints:
+
+    invariant: >
+      Runtime execution MUST be independent of infrastructure.
+
+    enforcement_rules:
+
+      - runtime_must_execute_identically_without_infrastructure
+      - no environment-dependent execution branches
+      - no runtime decisions based on deployment context
+      - infrastructure failure must not affect replay validity
+
+  # -----------------------------------------------------------------
+  # CI ENFORCEMENT
+  # -----------------------------------------------------------------
+
+  ci_enforcement:
+
+    required_rules:
+
+      - INFRASTRUCTURE_NON_INTERFERENCE
+      - NO_RUNTIME_DEPENDENCY_ON_ENV
+      - NO_INFRASTRUCTURE_HASH_BINDING
+
+    validation:
+
+      description: >
+        CI MUST ensure that:
+          - no infrastructure files are referenced in execution code
+          - no infrastructure surfaces are included in registry hashes
+          - runtime remains deterministic across environments
+
+  # -----------------------------------------------------------------
+  # NON-OBSERVABILITY EXTENSION
+  # -----------------------------------------------------------------
+
+  non_observability_extension:
+
+    invariant: >
+      Infrastructure surfaces MUST NOT introduce hidden state.
+
+    forbidden:
+
+      - hidden_config_flags
+      - environment-based branching logic
+      - runtime behavioral toggles via infrastructure
+
+  # -----------------------------------------------------------------
+  # PHASE COMPATIBILITY
+  # -----------------------------------------------------------------
+
+  lifecycle:
+
+    current_phase: PHASE_2B
+
+    readiness:
+
+      supports:
+        - local_runtime_execution
+        - CI_validation
+        - containerized_deployment
+
+      future_extensions:
+
+        - distributed_node_deployment
+        - multi-node orchestration
+        - consensus-aware infrastructure
+
+  # -----------------------------------------------------------------
+  # CONSTITUTIONAL ASSERTION
+  # -----------------------------------------------------------------
+
+  constitutional_assertion: >
+    Infrastructure surfaces exist solely to support execution,
+    not to define or influence it.
+
+    All constitutional guarantees MUST hold regardless of
+    deployment environment, orchestration layer, or external systems.
+
+    Any dependency of execution correctness on infrastructure
+    SHALL be considered a constitutional violation.
+
+  # -----------------------------------------------------------------
+  # FINAL ASSERTION
+  # -----------------------------------------------------------------
+
+  final_assertion: >
+    Infrastructure is replaceable.
+    Constitution is not.
+
+    Deployment may vary.
+    Execution truth must remain invariant.
+
+    AfriTech execution is independent of infrastructure.

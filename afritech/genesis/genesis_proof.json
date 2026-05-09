@@ -1,0 +1,107 @@
+{
+  "proof_schema": "afritech.genesis.proof.v1",
+
+  "genesis_id": "GENESIS-0001",
+
+  "proof_id": "GENESIS-PROOF-0001",
+
+  "issued_at": "2026-01-01T00:00:00Z",
+
+  "authority": {
+    "type": "CONSTITUTIONAL_AUTHORITY",
+    "source": "REGISTRY",
+    "binding": "GENESIS_ROOT"
+  },
+
+  "inputs": {
+    "registry_origin_hash": "<sha256>",
+    "invariant_root_hash": "<sha256>",
+    "constitutional_surface_hash": "<sha256>",
+    "execution_surface_hash": "<sha256>"
+  },
+
+  "derived": {
+    "trust_anchor": "<sha256>",
+    "extended_trust_root": "<sha256>",
+    "strong_trust_root": "<sha256>"
+  },
+
+  "constraints": [
+    {
+      "constraint_id": "C1_HASH_BINDING",
+      "rule": "trust_anchor = sha256(registry + invariants + surfaces)",
+      "status": "SATISFIED"
+    },
+    {
+      "constraint_id": "C2_AUTHORITY_SEED",
+      "rule": "authority_seed == REGISTRY",
+      "status": "SATISFIED"
+    },
+    {
+      "constraint_id": "C3_INITIAL_EPOCH",
+      "rule": "initial_epoch == 0",
+      "status": "SATISFIED"
+    },
+    {
+      "constraint_id": "C4_IMMUTABILITY",
+      "rule": "genesis fields immutable after issuance",
+      "status": "SATISFIED"
+    }
+  ],
+
+  "trace_binding": {
+    "trace_required": false,
+    "notes": "Genesis is root event (no prior trace)"
+  },
+
+  "signature_binding": {
+    "payload_hash": "<sha256>",
+    "signature": "<hex>",
+    "public_key": "<hex>",
+    "algorithm": "ED25519"
+  },
+
+  "replay_guarantee": {
+    "deterministic": true,
+    "recomputable": true,
+    "expected_result": "IDENTICAL_HASHES"
+  },
+
+  "verification_procedure": {
+    "steps": [
+      "recompute registry_origin_hash",
+      "recompute invariant_root_hash",
+      "recompute surface hashes",
+      "recompute trust_anchor",
+      "compare trust_anchor",
+      "verify payload hash",
+      "verify ed25519 signature"
+    ]
+  },
+
+  "invariants": [
+    "I17_GENESIS_ROOT_AUTHORITY",
+    "I17_1_IMMUTABILITY",
+    "I17_2_AUTHORITY_SEED_FIXED",
+    "I17_3_INITIAL_EPOCH_ZERO",
+    "I17_4_HASH_BINDING_COMPLETE",
+    "I17_5_TRUST_ANCHOR_CORRECT",
+    "I17_6_SIGNATURE_VALID",
+    "I17_7_PAYLOAD_HASH_CORRECT",
+    "I17_8_REPLAY_STABLE",
+    "I17_9_NO_EXTERNAL_STATE",
+    "I17_10_SINGLE_ORIGIN"
+  ],
+
+  "failure_policy": {
+    "on_violation": "REJECT_SYSTEM",
+    "severity": "CRITICAL"
+  },
+
+  "metadata": {
+    "environment": "production",
+    "generated_by": "afritech.genesis.compiler",
+    "version": "v1",
+    "notes": "Genesis proof artifact establishing root of authority"
+  }
+}

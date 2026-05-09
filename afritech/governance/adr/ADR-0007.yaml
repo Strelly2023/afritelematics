@@ -1,0 +1,134 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0007
+  title: Integration of Proof and Evaluation into Execution Lifecycle
+  status: APPROVED
+  type: CONSTITUTIONAL_EXECUTION_INTEGRATION
+
+  epoch: 6
+
+  approved_at: "2026-05-07T00:00:00Z"
+
+  context: >
+    Following the introduction of proof and evaluation surfaces
+    in ADR-0006, the AfriTech system required formal integration
+    of these surfaces into the execution lifecycle to ensure that
+    every state transition produces verifiable artifacts and can
+    be deterministically evaluated.
+
+    Prior to this ADR, execution produced results without a unified
+    guarantee of proof generation and evaluation consistency.
+
+  decision: >
+    The execution lifecycle is extended to mandate the generation
+    of proof artifacts and evaluation outputs for every transition.
+
+    Execution flow is defined as:
+
+      state → transition → result → proof → evaluation
+
+    This ensures:
+      - every execution is provable
+      - every result is evaluable
+      - replay can verify correctness end-to-end
+
+    Proof generation and evaluation are REQUIRED stages of execution,
+    not optional extensions.
+
+  implementation:
+    execution_pipeline_extended: true
+
+    lifecycle:
+      - state
+      - transition
+      - result
+      - proof
+      - evaluation
+
+    surfaces_affected:
+      - runtime.engine
+      - proof
+      - evaluation
+
+    breaking_changes: false
+
+  invariants:
+    - proof_generation_is_mandatory
+    - evaluation_is_mandatory
+    - execution_pipeline_is_fully_deterministic
+    - proof_outputs_are_replay_verifiable
+    - evaluation_outputs_do_not_modify_state
+    - every_transition_produces_proof_and_evaluation
+
+  validation:
+    replay_required: true
+    proof_required: true
+    evaluation_required: true
+    guard_coverage_required: true
+    registry_reseal_required: true
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+
+  required_by:
+    - ADR-0008
+    - ADR-0009
+
+  implementation_notes: >
+    The extended execution lifecycle is implemented across:
+      - afritech.runtime.engine
+      - afritech.proof
+      - afritech.evaluation
+
+    The system MUST enforce:
+      1. Proof artifacts are generated immediately after execution
+      2. Evaluation follows proof generation
+      3. Neither proof nor evaluation may alter system state
+      4. Guard enforcement applies before execution
+      5. Replay MUST validate proof and evaluation deterministically
+
+    Any execution missing proof or evaluation MUST be rejected.
+
+  consequences:
+    positive:
+      - Guarantees proof generation for all executions
+      - Enables deterministic verification during replay
+      - Introduces measurable evaluation layer
+      - Strengthens audit and traceability capabilities
+      - Ensures execution lifecycle completeness
+
+    negative:
+      - Introduces additional processing overhead
+      - Requires strict schema enforcement for proof and evaluation
+      - Increases coupling between runtime and validation layers
+
+  links:
+    epochs:
+      - EPOCH_0006
+
+    surfaces:
+      - runtime.engine
+      - proof
+      - evaluation
+
+    related_adrs:
+      - ADR-0006
+
+  traceability:
+    related_files:
+      - afritech/runtime/engine.py
+      - afritech/proof/
+      - afritech/evaluation/
+      - afritech/guards/invariant_guard.py
+      - afritech/guards/schema.py
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

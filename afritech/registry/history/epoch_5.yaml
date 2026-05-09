@@ -1,10 +1,29 @@
-schema: afritech.registry.epoch.v1
+schema: afritech.registry.history.v1
+
+# ---------------------------------------------------------
+# RUNTIME‑AUTHORITATIVE FIELDS (USED BY REPLAY / RESEAL)
+# ---------------------------------------------------------
+
+epoch_id: EPOCH_0005
+instance_id: epoch-0005-instance-A
+version: 5
+parent_version: 4
+
+active: false
+sealed: true
+
+# ---------------------------------------------------------
+# GOVERNANCE / CONSTITUTIONAL BLOCK
+# ---------------------------------------------------------
 
 epoch:
   number: 5
   parent: 4
+
   authority:
-    adr: ADR-0005
+    adr:
+      - ADR-0005
+
   advanced_at: "2026-05-03T09:14:32Z"
 
   type: CONSTITUTIONAL_NORMALIZATION_EPOCH
@@ -14,16 +33,19 @@ epoch:
   affects_authority: false
   affects_policy: false
 
-description: >
-  Epoch 5 records a non-substantive constitutional continuation
-  whose sole purpose is to normalize and clarify historical
-  registry lineage following bookkeeping corrections applied
-  in Epoch 4. No constitutional identity, authority, or policy
-  semantics are changed in this epoch.
+# ---------------------------------------------------------
+# DESCRIPTION
+# ---------------------------------------------------------
 
-# ---------------------------------------------------------------------
-# Sealing metadata
-# ---------------------------------------------------------------------
+description: >
+  Epoch 5 records a non-substantive constitutional continuation whose
+  sole purpose is to normalize and clarify historical registry lineage
+  following bookkeeping corrections applied in Epoch 4. No constitutional
+  identity, authority, or policy semantics are changed in this epoch.
+
+# ---------------------------------------------------------
+# SEALING (AUTHORITATIVE — MUST MATCH RUNTIME FLAGS)
+# ---------------------------------------------------------
 
 sealing:
   pre_state: SEALED
@@ -31,9 +53,9 @@ sealing:
   resealed: true
   seal_status: SEALED
 
-# ---------------------------------------------------------------------
-# Attestation continuity (unchanged)
-# ---------------------------------------------------------------------
+# ---------------------------------------------------------
+# ATTESTATION CONTINUITY
+# ---------------------------------------------------------
 
 attestation:
   registry_schema: afritech.registry.v2
@@ -47,9 +69,9 @@ attestation:
     runtime: ENABLED
     ci: ENABLED
 
-# ---------------------------------------------------------------------
-# Invariant confirmation
-# ---------------------------------------------------------------------
+# ---------------------------------------------------------
+# INVARIANT CONFIRMATION
+# ---------------------------------------------------------
 
 invariants_preserved:
   - epoch_monotonicity
@@ -58,9 +80,9 @@ invariants_preserved:
   - silent_mutation_forbidden
   - replay_validity
 
-# ---------------------------------------------------------------------
-# Correction record
-# ---------------------------------------------------------------------
+# ---------------------------------------------------------
+# CORRECTION RECORD
+# ---------------------------------------------------------
 
 correction:
   applied: true
@@ -81,12 +103,10 @@ correction:
     verification and audit tooling can reconstruct history without
     inference or ambiguity.
 
-# ---------------------------------------------------------------------
-# Cryptographic epoch hash chaining
-# ---------------------------------------------------------------------
+# ---------------------------------------------------------
+# CRYPTOGRAPHIC HASH CHAIN
+# ---------------------------------------------------------
 
 hash_chain:
-  # Must exactly equal epoch_4.yaml -> hash_chain.epoch_hash
-  previous_epoch_hash: 6a703041f9b5e8f12e657d9f4cc15f0c77f26cbb72c1e9376a1f43d0b3c1a92e
-  # SHA256(canonical_yaml(epoch_5.yaml without hash_chain))
-  epoch_hash: e8c3d4a91f2b5c0a6e79d18f4b3a2c9e5d7f0a6b1c8e2f9d4a3c7b5e6a0
+  previous_epoch_hash: 29b3191173bc65ec211be275d3b6a4429bf3fd2193d40b60f2ef9aed1525938e
+  epoch_hash: c65e5557ee8af8a8826303d5a17e44543cd05a05e99e526624cb2a556b99893e

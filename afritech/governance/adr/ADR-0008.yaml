@@ -1,0 +1,148 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0008
+  title: Introduction of Admission Control and Execution Orchestration Layer
+  status: APPROVED
+  type: CONSTITUTIONAL_EXECUTION_CONTROL
+
+  epoch: 6
+
+  approved_at: "2026-05-07T00:00:00Z"
+
+  context: >
+    Following the integration of proof and evaluation into the execution
+    lifecycle (ADR-0007), the system requires a mechanism to control
+    which operations are allowed to execute and how they are scheduled.
+
+    Without admission control and orchestration, the system risks:
+      - unauthorized execution
+      - inconsistent evaluation ordering
+      - violation of guard enforcement sequencing
+
+  decision: >
+    Introduce a formal admission and orchestration layer responsible for:
+
+      - validating execution requests before runtime execution
+      - enforcing deterministic guard sequencing
+      - coordinating execution flow across all subsystems
+
+    The execution lifecycle is updated to:
+
+      admission → orchestration → state → transition → result → proof → evaluation
+
+    Admission and orchestration are REQUIRED stages of execution and
+    MUST enforce deterministic and replay-consistent control of execution.
+
+  implementation:
+    new_layers:
+      - runtime.admission
+      - runtime.orchestration
+
+    execution_pipeline_updated: true
+
+    lifecycle:
+      - admission
+      - orchestration
+      - state
+      - transition
+      - result
+      - proof
+      - evaluation
+
+    surfaces_affected:
+      - runtime.activation
+      - runtime.engine
+      - runtime.admission
+      - runtime.orchestration
+      - guards
+      - schema_validation
+
+    breaking_changes: false
+
+  invariants:
+    - admission_is_mandatory_before_execution
+    - orchestration_controls_execution_order
+    - execution_pipeline_is_deterministic_and_replayable
+    - guard_sequencing_is_enforced
+    - unauthorized_execution_is_rejected
+    - orchestration_does_not_modify_state
+    - admission_and_orchestration_are_replay_verifiable
+
+  validation:
+    replay_required: true
+    admission_required: true
+    orchestration_required: true
+    guard_execution_order_enforced: true
+    registry_reseal_required: true
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+
+  required_by:
+    - ADR-0009
+
+  implementation_notes: >
+    Admission and orchestration layers are implemented in:
+      - afritech.runtime.admission
+      - afritech.runtime.orchestration
+
+    The system MUST enforce:
+      1. All execution requests pass admission validation
+      2. Orchestration defines deterministic execution ordering
+      3. Guard checks occur before state transition
+      4. Execution continues only if admission and guards succeed
+      5. Orchestration MUST NOT alter system state
+
+    Replay MUST:
+      - reconstruct admission decisions
+      - reconstruct orchestration ordering
+      - verify identical execution sequencing
+
+  consequences:
+    positive:
+      - Prevents unauthorized or invalid execution
+      - Ensures deterministic ordering of operations
+      - Centralizes execution control
+      - Strengthens enforcement of guard system
+      - Improves replay fidelity
+
+    negative:
+      - Adds additional layer to execution pipeline
+      - Requires strict integration with guard and state systems
+      - Introduces orchestration overhead
+
+  links:
+    epochs:
+      - EPOCH_0006
+
+    surfaces:
+      - runtime.admission
+      - runtime.orchestration
+      - runtime.engine
+      - proof
+      - evaluation
+
+    related_adrs:
+      - ADR-0006
+      - ADR-0007
+
+  traceability:
+    related_files:
+      - afritech/runtime/admission/
+      - afritech/runtime/orchestration/
+      - afritech/guards/
+      - afritech/state/
+      - afritech/proof/
+      - afritech/evaluation/
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

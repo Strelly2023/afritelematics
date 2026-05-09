@@ -1,0 +1,212 @@
+schema: afritech.binding.v1
+
+binding_manifest:
+
+  # -----------------------------------------------------------------
+  # SOURCE ARTIFACT ANCHORING (CRITICAL ROOT INPUTS)
+  # -----------------------------------------------------------------
+
+  source_artifacts:
+
+    genesis_hash: sha256
+    trace_schema_hash: sha256
+    state_schema_hash: sha256
+    invariants_hash: sha256
+
+    # OPTIONAL EXTENSIONS
+    proof_system_hash: sha256
+    runtime_surface_hash: sha256
+
+  # -----------------------------------------------------------------
+  # DERIVED BINDINGS (NO MANUAL DEFINITIONS)
+  # -----------------------------------------------------------------
+
+  bindings:
+
+    - id: string
+
+      type:
+        enum:
+          - TRACE_BINDING
+          - STATE_BINDING
+          - AUTHORITY_BINDING
+          - PROOF_BINDING
+          - RUNTIME_BINDING
+
+      target: string
+      constraint: string
+
+      derived_from:
+        - string
+
+      # -------------------------------------------------------------
+      # CRYPTOGRAPHIC IDENTITY
+      # -------------------------------------------------------------
+
+      binding_hash: sha256
+      binding_version: string
+
+      # -------------------------------------------------------------
+      # EXECUTION CONTEXT
+      # -------------------------------------------------------------
+
+      scope:
+
+        applies_to:
+          - TRACE
+          - STATE
+          - EXECUTION
+          - VALIDATION
+
+        enforcement_level:
+          enum:
+            - STRICT
+            - MANDATORY
+            - OPTIONAL
+
+      # -------------------------------------------------------------
+      # VALIDATION RULE
+      # -------------------------------------------------------------
+
+      validation:
+
+        required: true
+        failure_policy:
+
+          type: HARD_FAILURE
+          effect: SYSTEM_REJECTION
+
+  # -----------------------------------------------------------------
+  # ROOT BINDING COMMITMENT
+  # -----------------------------------------------------------------
+
+  root_binding_hash: sha256
+
+  # sha256 over:
+  #   ordered list of binding_hash values
+
+  # -----------------------------------------------------------------
+  # DETERMINISM + REPLAY GUARANTEE
+  # -----------------------------------------------------------------
+
+  determinism:
+
+    canonical_serialization: json_sorted_compact
+    hashing_algorithm: sha256
+
+    replay:
+
+      expected:
+
+        - identical_binding_list
+        - identical_binding_hashes
+        - identical_root_binding_hash
+
+  # -----------------------------------------------------------------
+  # SYSTEM INVARIANTS (AUTHORITY CLOSURE)
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I21_BINDING_DERIVATION
+      # all bindings MUST be machine-generated
+
+    - I21_1_NO_MANUAL_BINDINGS
+      # no human-authored bindings allowed
+
+    - I21_2_CANONICAL_DERIVATION
+      # identical inputs MUST produce identical bindings
+
+    - I21_3_BINDING_HASH_INTEGRITY
+      # each binding_hash MUST match canonical recomputation
+
+    - I21_4_ROOT_HASH_CORRECT
+      # root_binding_hash MUST match recomputed value
+
+    - I21_5_AUTHORITY_DERIVED_FROM_GENESIS
+      # authority MUST trace back to genesis_hash
+
+    - I21_6_NO_ORPHAN_BINDINGS
+      # every binding MUST derive from source artifacts
+
+    - I21_7_REPLAY_EQUALITY
+      # replay MUST regenerate identical manifest
+
+    - I21_8_BINDING_ENUM_EXHAUSTIVENESS
+      # all system layers MUST be covered by bindings
+
+    - I21_9_IMMUTABILITY
+      # bindings MUST NOT change after generation
+
+  # -----------------------------------------------------------------
+  # VALIDATION CONTRACT
+  # -----------------------------------------------------------------
+
+  validation:
+
+    required_at_system_boot: true
+    required_for_runtime_execution: true
+    required_for_proof_verification: true
+
+    enforce_hash_integrity: true
+    enforce_derivation: true
+    enforce_total_binding_coverage: true
+
+    failure_policy:
+
+      type: HARD_FAILURE
+      effect: SYSTEM_NON_EXISTENCE
+
+  # -----------------------------------------------------------------
+  # TRACE + STATE INTEGRATION
+  # -----------------------------------------------------------------
+
+  integration:
+
+    trace:
+
+      requirement:
+        trace.event.step MUST map to binding.target
+
+    state_machine:
+
+      requirement:
+        transitions MUST comply with binding constraints
+
+    proof:
+
+      requirement:
+        all proofs MUST validate against binding constraints
+
+  # -----------------------------------------------------------------
+  # SECURITY MODEL
+  # -----------------------------------------------------------------
+
+  security:
+
+    authority_model: DERIVED_ONLY
+    tamper_resistance: CRYPTOGRAPHIC
+
+    guarantees:
+
+      - no hidden authority paths
+      - no privilege escalation
+      - no drift in derived bindings
+      - no manual override possible
+
+  # -----------------------------------------------------------------
+  # METADATA (NON-AUTHORITATIVE)
+  # -----------------------------------------------------------------
+
+  metadata:
+
+    version: v1
+    environment: production
+
+    description: >
+      Binding manifest schema defining the deterministic derivation
+      of all authority relationships within AfriTech.
+
+    notes: >
+      This artifact MUST be generated automatically. Any manual
+      modification invalidates the entire system.

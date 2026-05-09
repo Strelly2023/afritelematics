@@ -1,0 +1,131 @@
+# ============================================================
+# Afritech Constitutional Checklist
+# Phase‑2B Pre‑Freeze Checklist
+# ============================================================
+#
+# Purpose:
+#   Define the mandatory conditions that MUST be satisfied
+#   before Phase‑2B can be frozen, tagged, or archived.
+#
+# Scope:
+#   Phase‑2B only
+#
+# This checklist is normative.
+# Passing the checklist does NOT imply ratification unless
+# evidence has been independently evaluated.
+# ============================================================
+
+metadata:
+  checklist_name: phase_2b_pre_freeze
+  checklist_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLES
+# ============================================================
+
+principles:
+
+  evidence_first:
+    description: >
+      All enforcement claims must be supported by
+      independently inspectable runtime evidence.
+
+  no_bootstrap:
+    description: >
+      Freeze, tagging, or archival MUST NOT be used
+      to bootstrap or imply ratification.
+
+  authority_before_inference:
+    description: >
+      Authority isolation is a prerequisite for
+      inference validation.
+
+# ============================================================
+# CHECKLIST SECTIONS
+# ============================================================
+
+sections:
+
+  # ----------------------------------------------------------
+  # SECTION 1 — IMPLEMENTATION COMPLETENESS
+  # ----------------------------------------------------------
+
+  implementation_completeness:
+
+    description: >
+      Verify that all Phase‑2B implementation surfaces are
+      present in the repository.
+
+    required_items:
+
+      replay_verifier_extended:
+        path: afritech/replay/verify.py
+        requirement: >
+          Verifier enforces inference binding and uses
+          canonical failure taxonomy exclusively.
+
+      inference_runtime_present:
+        path: afritech/inference/runtime.py
+        requirement: >
+          Real or stubbed inference runtime emits
+          inference_binding objects.
+
+      failure_taxonomy_present:
+        path: afritech/replay/failures.py
+        requirement: >
+          All verifier failures are enumerated canonically.
+
+      audit_export_present:
+        path: afritech/replay/audit/export.py
+        requirement: >
+          JSON audit export implemented as side‑channel.
+
+      audit_schema_present:
+        path: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+        requirement: >
+          Audit JSON schema exists and is authoritative.
+
+  # ----------------------------------------------------------
+  # SECTION 2 — CI ENFORCEMENT
+  # ----------------------------------------------------------
+
+  ci_enforcement:
+
+    description: >
+      Ensure all Phase‑2B governance rules are enforced in CI.
+
+    required_rules:
+
+      failure_taxonomy_enforced:
+        path: afritech/replay/ci/FAILURE_TAXONOMY_ENFORCEMENT.yaml
+
+      authority_order_enforced:
+        path: afritech/replay/ci/AUTHORITY_BEFORE_INFERENCE_ENFORCEMENT.yaml
+
+      audit_emission_enforced:
+        path: afritech/replay/ci/AUDIT_EMISSION_ENFORCEMENT.yaml
+
+      audit_schema_validation_enforced:
+        path: afritech/replay/ci/AUDIT_SCHEMA_VALIDATION_ENFORCEMENT.yaml
+
+  # ----------------------------------------------------------
+  # SECTION 3 — EVIDENCE HARNESS AVAILABILITY
+  # ----------------------------------------------------------
+
+  evidence_harness:
+
+    description: >
+      Confirm that a Phase‑2B evidence harness exists
+      and can be executed to produce admissible artifacts.
+
+    required_items:
+
+      harness_spec:
+        path: afritech/replay/docs/PHASE_2B_EVIDENCE_HARNESS.yaml
+
+      harness_runner:
+        path: afritech/replay/tools/run_phase_2b_evidence_harness.sh
+
+  # ----------------------------------------------------------

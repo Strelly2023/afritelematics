@@ -1,0 +1,143 @@
+schema: afritech.trace.v1
+
+trace:
+
+  # -----------------------------------------------------------------
+  # TRACE IDENTITY
+  # -----------------------------------------------------------------
+
+  trace_id: string                # UUIDv4 (externally assigned or deterministic)
+  request_hash: sha256           # Canonical hash of request payload
+
+  authority_profile: string      # MUST match registry authority
+  epoch_id: string               # MUST match active epoch
+
+  # -----------------------------------------------------------------
+  # TRACE EVENTS (ORDERED + PARTIAL DAG)
+  # -----------------------------------------------------------------
+
+  events:
+
+    - index: int                 # STRICT: 0..N-1 (no gaps)
+
+      step: string               # canonical step name (enum-bound)
+
+      # -------------------------
+      # CAUSAL STRUCTURE
+      # -------------------------
+
+      parent_event_hash: sha256  # previous event hash OR "GENESIS" if index=0
+      depends_on:                # optional DAG edges
+        - int                    # indices of prior events (must be < index)
+
+      # -------------------------
+      # AUTHORITY CONTEXT
+      # -------------------------
+
+      authority_context_hash: sha256
+      # derived from:
+      #   authority_profile
+      #   runtime_context
+      #   permissions snapshot
+
+      # -------------------------
+      # INPUT / OUTPUT BINDING
+      # -------------------------
+
+      input_hash: sha256         # canonical input
+      output_hash: sha256        # canonical output
+
+      # -------------------------
+      # EVENT HASH (CRITICAL)
+      # -------------------------
+
+      event_hash: sha256
+      # sha256 over:
+      #   index
+      #   step
+      #   parent_event_hash
+      #   depends_on
+      #   authority_context_hash
+      #   input_hash
+      #   output_hash
+
+  # -----------------------------------------------------------------
+  # TRACE ROOT (GLOBAL COMMITMENT)
+  # -----------------------------------------------------------------
+
+  trace_root_hash: sha256
+  # sha256(
+  #   canonical_list(event_hash)
+  # )
+
+  # -----------------------------------------------------------------
+  # OPTIONAL EXTENSIONS (STRICTLY CONTROLLED)
+  # -----------------------------------------------------------------
+
+  metadata:
+
+    version: int                 # trace versioning for compatibility
+
+    generation_mode:             # deterministic / replay / test
+      enum:
+        - deterministic
+        - replay
+        - test
+
+    origin:
+
+      runtime_id: string         # runtime instance id
+      certificate_id: string     # runtime certificate binding
+
+    integrity:
+
+      canonicalization: json_sorted_compact
+      hashing_algorithm: sha256
+      encoding: utf-8
+
+  # -----------------------------------------------------------------
+  # VALIDATION RULES (FULL CONTRACT)
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I16_CANONICAL_TRACE_BINDING
+
+    - I16_1_INDEX_CONTIGUITY
+      # index MUST be contiguous [0..N-1]
+
+    - I16_2_PARENT_CHAIN_VALID
+      # each event[i].parent_event_hash == event[i-1].event_hash
+
+    - I16_3_DEPENDENCY_VALIDITY
+      # depends_on ONLY references indices < index
+
+    - I16_4_DEPENDENCY_ACYCLIC
+      # DAG must contain no cycles
+
+    - I16_5_EVENT_HASH_CORRECT
+      # recomputed hash MUST match event_hash
+
+    - I16_6_ROOT_HASH_CORRECT
+      # recomputed root MUST match trace_root_hash
+
+    - I16_7_DETERMINISTIC_SERIALIZATION
+      # canonical JSON:
+      #   sorted keys
+      #   compact separators
+      #   UTF-8 encoding
+
+    - I16_8_AUTHORITY_BINDING
+      # authority_context_hash MUST be derivable and consistent
+
+    - I16_9_INPUT_OUTPUT_BINDING
+      # input/output hashes MUST match execution replay
+
+    - I16_10_REPLAY_EQUALITY
+      # replay(trace) MUST produce identical trace_root_hash
+
+    - I16_11_NO_EXTERNAL_STATE
+      # trace MUST encode all state required for replay
+
+    - I16_12_IMMUTABILITY
+      # any mutation MUST invalidate trace_root_hash

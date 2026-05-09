@@ -1,0 +1,127 @@
+# ============================================================
+# Afritech CI Rule
+# Audit Schema Validation Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-AUDIT-SCHEMA-001
+#
+# Purpose:
+#   Ensure that every replay verifier audit artifact conforms
+#   exactly to the canonical JSON-Schema definition.
+#
+# Scope:
+#   Phase-2B (and later)
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-AUDIT-SCHEMA-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# GOVERNANCE PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    All replay verifier audit artifacts MUST conform to the
+    canonical JSON-Schema. Non-conforming audit output is
+    considered a governance failure.
+
+  rationale: >
+    Schema validation ensures structural consistency,
+    machine auditability, and prevents silent drift between
+    verifier behavior and governance documentation.
+
+  enforcement_mode: ci_execution
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL SCHEMA SOURCE
+# ============================================================
+
+canonical_schema:
+
+  path: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+  format: json-schema
+  versioned: true
+
+# ============================================================
+# AUDIT ARTIFACT TARGETS
+# ============================================================
+
+audit_artifacts:
+
+  directory:
+    description: >
+      Directory where replay verifier audit files are written.
+    path: afritech/replay/audit/logs
+    file_pattern: "replay_audit_*.json"
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: AS-F1
+    description: >
+      Verify that at least one audit file is emitted during
+      replay verifier CI execution.
+    target_directory: afritech/replay/audit/logs
+    minimum_files: 1
+    failure_message: >
+      No replay verifier audit artifacts found.
+
+  - check_id: AS-F2
+    description: >
+      Validate every audit file against the canonical schema.
+    schema: afritech/replay/audit/schema/REPLAY_VERIFIER_AUDIT.schema.json
+    targets:
+      directory: afritech/replay/audit/logs
+      pattern: "replay_audit_*.json"
+    validator: json_schema_validator
+    failure_message: >
+      One or more replay verifier audit artifacts failed schema validation.
+
+  - check_id: AS-F3
+    description: >
+      Ensure audit artifacts contain no additional properties
+      beyond those defined in the schema.
+    enforcement: strict
+    failure_message: >
+      Audit artifact contains undefined or extra fields.
+
+# ============================================================
+# CI TOOLING ASSUMPTIONS
+# ============================================================
+
+tooling:
+
+  json_schema_validator:
+    acceptable_tools:
+      - ajv
+      - python-jsonschema
+      - spectral
+    invocation_mode: strict
+    allow_additional_properties: false
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Replay verifier audit artifacts conform to schema."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier audit schema validation failed.

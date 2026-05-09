@@ -1,0 +1,91 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0002
+  title: Epoch Governance and Temporal Authority Model
+  status: APPROVED
+  type: ARCHITECTURAL
+
+  epoch: 1
+
+  approved_at: "2026-01-02T00:00:00Z"
+
+  context: >
+    AfriTech requires a deterministic model for time-aware execution. Without
+    a formal epoch system, governance decisions, state transitions, and replay
+    validation cannot be consistently ordered or validated against a canonical
+    temporal structure.
+
+    Existing system components (state machine, guards, registry sealing)
+    depend on a consistent definition of "valid time window for execution".
+
+  decision: >
+    Introduce a formal Epoch Governance Model that defines:
+
+    1. Epochs as immutable temporal execution segments
+    2. Each epoch as a bounded container for state transitions and governance rules
+    3. Epoch transitions as deterministic, validator-approved operations
+    4. A strict requirement that all system actions must occur within a valid epoch
+    5. A single active epoch pointer enforced by epoch_manager
+
+    Epochs are sequential, non-overlapping, and strictly ordered. Once closed,
+    an epoch becomes read-only and replay-anchored.
+
+  structure:
+    epoch:
+      id: string
+      start_timestamp: int
+      end_timestamp: int_or_null
+      status: [ACTIVE, CLOSED, INVALIDATED]
+      parent_epoch: string_or_null
+      allowed_transitions: list[string]
+      governance_snapshot_hash: string
+
+  invariants:
+    - single_active_epoch_enforced
+    - closed_epochs_are_immutable
+    - all_transitions_require_valid_epoch
+    - epoch_lineage_must_be_acyclic
+    - epoch_closure_produces_hash_snapshot
+    - replay_reconstructs_epoch_order_exactly
+
+  dependencies:
+    - ADR-0001
+
+  required_by:
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+  consequences:
+    positive:
+      - Enables deterministic temporal replay of system state
+      - Prevents cross-time state corruption
+      - Provides clear boundaries for governance decisions
+      - Strengthens auditability of all system actions
+
+    negative:
+      - Adds strict coupling between execution and time model
+      - Requires careful epoch lifecycle management
+      - Failures in epoch transitions can halt system execution
+
+  implementation_notes: >
+    Epoch enforcement is delegated to:
+      - afritech.epoch.epoch_manager
+      - afritech.epoch.epoch_validator
+      - afritech.epoch.epoch_transition
+
+    Guards MUST reject any operation outside ACTIVE epoch scope.
+
+    Replay engine MUST reconstruct system state by:
+      1. Loading epoch chain
+      2. Validating epoch hashes
+      3. Replaying transitions in strict epoch order
+
+  links:
+    epochs:
+      - EPOCH_0001

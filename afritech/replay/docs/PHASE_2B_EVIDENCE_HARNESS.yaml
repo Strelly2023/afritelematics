@@ -1,0 +1,158 @@
+# ============================================================
+# Afritech Constitutional Evidence Harness
+# Phase‑2B — Real Inference Binding Under Replay Law
+# ============================================================
+#
+# Purpose:
+#   Define the exact, constitutionally admissible procedure
+#   for evidencing Phase‑2B enforcement.
+#
+# Scope:
+#   Phase‑2B only
+#
+# This harness is normative.
+# It specifies how evidence MUST be produced, presented,
+# and evaluated. It does NOT assert ratification.
+# ============================================================
+
+metadata:
+  harness_name: phase_2b_evidence_harness
+  harness_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# CONSTITUTIONAL PRINCIPLES
+# ============================================================
+
+principles:
+
+  evidence_precedes_judgment:
+    description: >
+      Runtime evidence MUST be presented before any claim
+      of Phase‑2B acceptance or refusal is evaluated.
+
+  stdout_is_evidence:
+    description: >
+      Shell stdout constitutes admissible runtime evidence.
+      Side-channel audit files support CI and compliance,
+      but do NOT substitute for stdout evidence.
+
+  refusal_is_governance:
+    description: >
+      Phase‑2B enforcement is demonstrated by deterministic
+      refusal as much as by acceptance.
+
+# ============================================================
+# REQUIRED PRECONDITIONS
+# ============================================================
+
+preconditions:
+
+  phase_2a_frozen:
+    description: >
+      Phase‑2A MUST already be ratified and frozen prior
+      to Phase‑2B evidence submission.
+
+  real_inference_enabled:
+    description: >
+      Transcript generation MUST include an inference_binding
+      object produced by a real or stubbed inference runtime.
+
+# ============================================================
+# EVIDENCE CLASSES
+# ============================================================
+
+evidence_classes:
+
+  # ----------------------------------------------------------
+  # E‑B1: Real Inference Transcript Generation
+  # ----------------------------------------------------------
+
+  EB1_real_inference_transcript:
+    description: >
+      Demonstrates that a real inference has been executed
+      and bound into replay truth.
+
+    command:
+      shell: >
+        python3 -m afritech.replay.generate
+        <phase_2b_request.yaml>
+
+    required_stdout_contains:
+      - "Transcript written to"
+    
+    transcript_requirements:
+      must_contain:
+        - inference_binding
+        - authority_profile
+        - replay_environment.model_id
+        - replay_environment.model_version
+
+  # ----------------------------------------------------------
+  # E‑B2: Deterministic Replay Acceptance
+  # ----------------------------------------------------------
+
+  EB2_replay_acceptance:
+    description: >
+      Demonstrates deterministic replay acceptance of a real
+      inference under the same authority and model identity.
+
+    command:
+      shell: >
+        python3 -m afritech.replay.run_verify
+        <phase_2b_request.yaml>
+        <phase_2b_transcript.yaml>
+
+    required_stdout_exact:
+      verdict: REPLAY_VALID
+
+    required_fields:
+      - REPLAY_HASH
+      - FAILURE_MODE: null
+      - VIOLATED_INVARIANT: null
+      - DIVERGENCE_LOCATION: null
+
+  # ----------------------------------------------------------
+  # E‑B3: Deterministic Replay Refusal
+  # ----------------------------------------------------------
+
+  EB3_replay_refusal:
+    description: >
+      Demonstrates deterministic replay refusal when a
+      constitutionally relevant invariant is violated.
+
+    acceptable_variants:
+      - model_identity_mismatch
+      - inference_input_mismatch
+      - authority_mismatch
+      - nondeterministic_inference
+
+    command:
+      shell: >
+        python3 -m afritech.replay.run_verify
+        <modified_context>
+
+    required_stdout_exact:
+      verdict: REPLAY_INVALID
+
+    required_fields:
+      - FAILURE_MODE
+      - VIOLATED_INVARIANT
+      - DIVERGENCE_LOCATION
+
+# ============================================================
+# PRESENTATION RULES
+# ============================================================
+
+presentation_rules:
+
+  standalone_submission:
+    description: >
+      Each evidence artifact MUST be presented as a standalone
+      shell transcript, without surrounding interpretation.
+
+  no_interleaved_evaluation:
+    description: >
+      No evaluative commentary or judgment is allowed in the
+      same shell transcript as the evidence itself.

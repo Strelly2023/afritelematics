@@ -1,0 +1,294 @@
+## ============================================================
+## AfriTech CI Rule
+## Runtime Certificate Signature Validation
+## ============================================================
+## Rule ID: CI-CERT-SIGNATURE-001
+## Purpose:
+## Ensure that every RuntimeCertificate is:
+## - structurally valid
+## - cryptographically signed
+## - bound to the attested constitutional state
+##
+## Scope:
+## - afritech/proof/certificates/
+## - afritech/proof/runtime_certificate.py
+##
+## This rule is normative and enforced in CI.
+## ============================================================
+
+metadata:
+  rule_id: CI-CERT-SIGNATURE-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+## ============================================================
+## GOVERNANCE PRINCIPLE
+## ============================================================
+
+principle:
+  statement: >
+    No RuntimeCertificate may authorize runtime execution
+    unless its signature, payload integrity, and constitutional
+    bindings are cryptographically valid.
+
+  rationale: >
+    The RuntimeCertificate is the sole authorization artifact
+    for runtime existence. If its integrity is not enforced,
+    the entire constitutional model collapses.
+
+  enforcement_mode: ci_execution
+  failure_action: ci_fail
+
+## ============================================================
+## REQUIRED CERTIFICATE PROPERTIES
+## ============================================================
+
+required_properties:
+
+  description: >
+    Every RuntimeCertificate MUST satisfy all structural,
+    cryptographic, and binding constraints prior to acceptance.
+
+  structural_requirements:
+
+    required_fields:
+      - certificate_id
+      - issued_at
+      - epoch
+      - constitutional_binding
+      - runtime_identity
+      - admission_guarantees
+      - execution_scope
+      - replay_constraints
+      - signature
+
+  cryptographic_requirements:
+
+    signature_required: true
+    payload_hash_required: true
+    certificate_root_required: true
+
+  binding_requirements:
+
+    - registry_hash_present
+    - epoch_hash_present
+    - kernel_root_hash_present
+    - execution_surfaces_hash_present
+    - authority_profiles_hash_present
+    - replay_verifier_hash_present
+
+## ============================================================
+## TARGETED FILES
+## ============================================================
+
+targets:
+
+  certificate_directory:
+    path: afritech/proof/certificates
+    pattern: "*.cert"
+
+  certificate_handler:
+    path: afritech/proof/runtime_certificate.py
+
+## ============================================================
+## CI VALIDATION CHECKS
+## ============================================================
+
+ci_checks:
+
+  # ------------------------------------------------------------
+  # CS-F1: Ensure certificate exists
+  # ------------------------------------------------------------
+  - check_id: CS-F1
+
+    description: >
+      Verify that at least one RuntimeCertificate exists.
+
+    target_directory: afritech/proof/certificates
+    minimum_files: 1
+
+    failure_message: >
+      No RuntimeCertificate found. Runtime cannot be admitted.
+
+  # ------------------------------------------------------------
+  # CS-F2: Validate certificate structure
+  # ------------------------------------------------------------
+  - check_id: CS-F2
+
+    description: >
+      Ensure certificate contains all required top-level fields.
+
+    target_pattern: "afritech/proof/certificates/*.cert"
+
+    required_fields:
+      - runtime_certificate.certificate_id
+      - runtime_certificate.epoch
+      - runtime_certificate.constitutional_binding
+      - runtime_certificate.runtime_identity
+      - runtime_certificate.signature
+
+    failure_message: >
+      RuntimeCertificate missing required fields.
+
+  # ------------------------------------------------------------
+  # CS-F3: Validate signature fields present
+  # ------------------------------------------------------------
+  - check_id: CS-F3
+
+    description: >
+      Ensure signature fields exist and are not placeholders.
+
+    target_pattern: "afritech/proof/certificates/*.cert"
+
+    required_fields:
+      - runtime_certificate.signature.payload_hash
+      - runtime_certificate.signature.signature
+      - runtime_certificate.signature.certificate_root
+
+    forbidden_values:
+      - "<SHA256(canonical serialization)>"
+      - "<CRYPTOGRAPHIC_SIGNATURE>"
+      - "<RUNTIME_ROOT_PUBLIC_KEY_HASH>"
+
+    failure_message: >
+      RuntimeCertificate contains unresolved or placeholder signature fields.
+
+  # ------------------------------------------------------------
+  # CS-F4: Payload hash integrity
+  # ------------------------------------------------------------
+  - check_id: CS-F4
+
+    description: >
+      Validate that payload_hash matches canonical serialization.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: validate_certificate_payload_hash
+
+    failure_message: >
+      RuntimeCertificate payload_hash does not match serialized content.
+
+  # ------------------------------------------------------------
+  # CS-F5: Signature verification
+  # ------------------------------------------------------------
+  - check_id: CS-F5
+
+    description: >
+      Verify cryptographic signature against certificate_root.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: verify_certificate_signature
+
+    failure_message: >
+      RuntimeCertificate signature verification failed.
+
+  # ------------------------------------------------------------
+  # CS-F6: Binding consistency check
+  # ------------------------------------------------------------
+  - check_id: CS-F6
+
+    description: >
+      Ensure certificate binding matches actual system state.
+
+    enforcement: semantic_validation
+
+    validation_method:
+      type: python_hook
+      function: validate_constitutional_binding
+
+    failure_message: >
+      RuntimeCertificate does not match registry, epoch, or surfaces.
+
+  # ------------------------------------------------------------
+  # CS-F7: Prevent unsigned certificate execution
+  # ------------------------------------------------------------
+  - check_id: CS-F7
+
+    description: >
+      Ensure runtime_certificate.py enforces signature verification.
+
+    target: afritech/proof/runtime_certificate.py
+
+    pattern_required:
+      - 'verify_signature'
+      - 'validate_payload_hash'
+
+    failure_message: >
+      Certificate handler does not enforce cryptographic validation.
+
+## ============================================================
+## VALIDATION FUNCTIONS (REFERENCE CONTRACT)
+## ============================================================
+
+validation_contract:
+
+  validate_certificate_payload_hash:
+
+    description: >
+      Canonically serialize certificate fields defined in
+      signature_scope and compute SHA256 hash.
+
+    expected_result: >
+      Computed hash must equal signature.payload_hash.
+
+  verify_certificate_signature:
+
+    description: >
+      Verify signature using certificate_root public key.
+
+    expected_result: >
+      Signature MUST validate against payload_hash.
+
+  validate_constitutional_binding:
+
+    description: >
+      Compare binding hashes against actual files:
+      - registry.yaml
+      - EXECUTION_SURFACES.yaml
+      - authority_profiles.yaml
+
+    expected_result: >
+      All hashes MUST match.
+
+## ============================================================
+## RUNTIME GUARANTEE (ASSERTION)
+## ============================================================
+
+runtime_assertion:
+
+  statement: >
+    No RuntimeCertificate with invalid signature,
+    mismatched payload_hash, or inconsistent binding
+    MAY authorize runtime execution.
+
+  enforcement_effect:
+    - runtime_invalidated
+    - execution_refused
+    - replay_rejected
+    - attestation_chain_broken
+
+## ============================================================
+## CI OUTCOME
+## ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "RuntimeCertificate validation passed."
+
+  on_fail:
+    result: failure
+    message: >
+      RuntimeCertificate failed integrity or signature validation.
+      Execution is constitutionally forbidden.
+      See CI logs for details.

@@ -35,10 +35,11 @@ class TruthPacket:
     """
     Replay-verifiable epistemic artifact.
 
-    This object:
+    Guarantees:
     - creates no authority
     - executes no intelligence
     - mutates no state
+    - deterministic under canonical replay
     """
     payload: Dict[str, Any]
     truth_packet_hash: str
@@ -51,6 +52,11 @@ class TruthPacket:
 class TruthPacketEmitter:
     """
     Deterministic constitutional TruthPacket constructor.
+
+    This component:
+    - assembles epistemic structure
+    - enforces constitutional invariants
+    - produces a terminal replay-hash
     """
 
     REQUIRED_AUTHORITY = "CONSTITUTIONAL_RESEARCH_AGENT"
@@ -70,18 +76,28 @@ class TruthPacketEmitter:
 
     def emit(
         self,
+        *,
         arbitration_result: Any,
         dispatch_artifact: Any,
         execution_trace: List[Dict[str, str]],
         epoch_id: str,
     ) -> TruthPacket:
+        """
+        Construct a TruthPacket from validated execution artifacts.
+
+        IMPORTANT:
+        - This method MUST NOT perform inference
+        - This method MUST NOT assert correctness
+        - This method MUST remain deterministic
+        """
 
         self._validate_arbitration(arbitration_result)
         self._validate_dispatch(dispatch_artifact)
 
         epistemic_confidence = self._epistemic_confidence()
+        self._validate_epistemic_confidence(epistemic_confidence)
 
-        payload = {
+        payload: Dict[str, Any] = {
             "claims": [
                 "deterministic constitutional execution"
             ],
@@ -114,37 +130,75 @@ class TruthPacketEmitter:
         self,
         arbitration_result: Any,
     ) -> None:
+        """
+        Validate arbitration result invariants.
+        """
 
-        if arbitration_result.permitted is not True:
+        if getattr(arbitration_result, "permitted", None) is not True:
             raise TruthPacketViolation(
                 "Arbitration denied execution"
             )
 
-        if arbitration_result.deterministic is not True:
+        if getattr(arbitration_result, "deterministic", None) is not True:
             raise TruthPacketViolation(
                 "Non-deterministic arbitration forbidden"
             )
 
-        if arbitration_result.authority_profile != self.REQUIRED_AUTHORITY:
+        if getattr(arbitration_result, "authority_profile", None) != self.REQUIRED_AUTHORITY:
             raise TruthPacketViolation(
                 "Invalid authority profile in arbitration result"
             )
+
+        for attr in ("arbitration_id", "reasoning_trace"):
+            if not hasattr(arbitration_result, attr):
+                raise TruthPacketViolation(
+                    f"Arbitration result missing required field: {attr}"
+                )
 
 
     def _validate_dispatch(
         self,
         dispatch_artifact: Any,
     ) -> None:
+        """
+        Validate dispatch artifact invariants.
+        """
 
-        if dispatch_artifact.authority_profile != self.REQUIRED_AUTHORITY:
+        if getattr(dispatch_artifact, "authority_profile", None) != self.REQUIRED_AUTHORITY:
             raise TruthPacketViolation(
                 "Invalid authority profile in dispatch artifact"
             )
 
-        if dispatch_artifact.deterministic is not True:
+        if getattr(dispatch_artifact, "deterministic", None) is not True:
             raise TruthPacketViolation(
                 "Non-deterministic dispatch forbidden"
             )
+
+        if not hasattr(dispatch_artifact, "dispatch_id"):
+            raise TruthPacketViolation(
+                "Dispatch artifact missing dispatch_id"
+            )
+
+
+    def _validate_epistemic_confidence(
+        self,
+        epistemic_confidence: Dict[str, float],
+    ) -> None:
+        """
+        Validate epistemic confidence vector structure.
+        """
+
+        missing = self.REQUIRED_EPISTEMIC_FIELDS - epistemic_confidence.keys()
+        if missing:
+            raise TruthPacketViolation(
+                f"Epistemic confidence missing fields: {sorted(missing)}"
+            )
+
+        for key, value in epistemic_confidence.items():
+            if not isinstance(value, (int, float)):
+                raise TruthPacketViolation(
+                    f"Epistemic confidence value for {key} is not numeric"
+                )
 
 
     # ========================================================
@@ -176,6 +230,9 @@ class TruthPacketEmitter:
         self,
         payload: Dict[str, Any],
     ) -> str:
+        """
+        Canonical terminal TruthPacket hash.
+        """
 
         canonical = json.dumps(
             payload,

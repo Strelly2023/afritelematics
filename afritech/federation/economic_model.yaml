@@ -1,0 +1,241 @@
+schema: afritech.federation.economic_model.v1
+
+economic_model:
+
+  # -----------------------------------------------------------------
+  # PURPOSE
+  # -----------------------------------------------------------------
+
+  description: >
+    Defines incentives and penalties for nodes and systems participating
+    in AfriTech federation.
+
+    Ensures:
+      - honest behavior is rewarded
+      - malicious behavior is penalized
+      - consensus remains economically stable
+
+  model: STAKE_BASED_CONSENSUS_SECURITY
+
+  # -----------------------------------------------------------------
+  # PARTICIPATION REQUIREMENTS
+  # -----------------------------------------------------------------
+
+  participation:
+
+    requirement: >
+      Every node/system must lock economic stake to participate
+      in consensus and execution validation.
+
+    minimum_stake:
+
+      node: 100
+      system: 1000
+
+  # -----------------------------------------------------------------
+  # STAKING MODEL
+  # -----------------------------------------------------------------
+
+  staking:
+
+    definition: >
+      Participants deposit stake to gain the right to:
+        - propose execution
+        - validate results
+        - participate in consensus
+
+    staking_units: AFR
+
+    lock_conditions:
+
+      - active_in_consensus
+      - not_quarantined
+      - no_unresolved_misconduct
+
+    release_conditions:
+
+      - voluntary_exit
+      - clean_reputation
+      - no_pending_penalties
+
+  # -----------------------------------------------------------------
+  # REWARD MODEL
+  # -----------------------------------------------------------------
+
+  rewards:
+
+    types:
+
+      execution_reward:
+        description: >
+          Nodes receive reward for participating in valid consensus.
+
+        conditions:
+
+          - agrees_with_consensus
+          - valid_replay
+          - valid_signature
+
+        amount: proportional_to_stake
+
+      verification_reward:
+        description: >
+          Systems validating cross-system proofs receive rewards.
+
+        conditions:
+
+          - correct_verification
+          - participation in quorum
+
+      governance_reward:
+        description: >
+          Nodes voting correctly on governance proposals.
+
+        conditions:
+
+          - vote_matches_final_consensus
+
+    distribution:
+
+      mechanism: proportional_weighting
+
+  # -----------------------------------------------------------------
+  # SLASHING MODEL
+  # -----------------------------------------------------------------
+
+  slashing:
+
+    definition: >
+      Stake is deducted for incorrect or malicious behavior.
+
+    penalties:
+
+      result_mismatch:
+        amount: 10%
+        trigger: node_result_disagrees_with_consensus
+
+      replay_failure:
+        amount: 20%
+        trigger: invalid_replay_proof
+
+      invalid_signature:
+        amount: 15%
+
+      byzantine_behavior:
+        amount: 50%
+        trigger: repeated_mismatch + invalid_signature
+
+    escalation:
+
+      repeated_offenses:
+
+        - increase_penalty_multiplier
+        - enforce_quarantine
+
+    invariant:
+
+      - penalty_must_exceed_reward_for_attack
+
+  # -----------------------------------------------------------------
+  # REPUTATION LINKAGE
+  # -----------------------------------------------------------------
+
+  reputation:
+
+    integration:
+
+      - reputation_score influences voting power
+      - reputation_score influences reward share
+
+    coupling:
+
+      low_reputation:
+
+        - reduced_rewards
+        - increased_slashing
+
+      high_reputation:
+
+        - priority_in_consensus
+        - bonus_rewards
+
+  # -----------------------------------------------------------------
+  # QUARANTINE ECONOMICS
+  # -----------------------------------------------------------------
+
+  quarantine:
+
+    consequences:
+
+      - participation_blocked
+      - reward_zeroed
+      - stake_partially_slashed
+
+    recovery:
+
+      required:
+
+        - consistent_correct_behavior
+        - stake_top_up
+
+  # -----------------------------------------------------------------
+  # INCENTIVE ALIGNMENT
+  # -----------------------------------------------------------------
+
+  incentive_alignment:
+
+    guarantees:
+
+      - honest_behavior_profitable
+      - dishonest_behavior_unprofitable
+      - long_term_participation_rewarded
+
+    attack_resistance:
+
+      cost_of_attack > potential_gain
+
+  # -----------------------------------------------------------------
+  # FEDERATION LEVEL
+  # -----------------------------------------------------------------
+
+  federation_layer:
+
+    cross_system_rewards:
+
+      - systems agreeing with federated consensus rewarded
+      - dissenting systems penalized
+
+    system_slashing:
+
+      trigger:
+
+        - cross_system_mismatch
+        - invalid_proof_submission
+
+  # -----------------------------------------------------------------
+  # GOVERNANCE ECONOMICS
+  # -----------------------------------------------------------------
+
+  governance:
+
+    participation:
+
+      - stake_required_for_voting
+      - higher stake → higher influence (bounded)
+
+    penalties:
+
+      - voting_against_consensus repeatedly → reputation loss
+
+  # -----------------------------------------------------------------
+  # FINAL ASSERTION
+  # -----------------------------------------------------------------
+
+  final_assertion: >
+    Truth is not only enforced by logic,
+    but protected by economics.
+
+    Honest actors profit.
+    Dishonest actors lose stake.
+
+    The system aligns incentives with correctness.

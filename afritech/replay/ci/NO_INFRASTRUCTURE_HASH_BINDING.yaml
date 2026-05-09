@@ -1,0 +1,39 @@
+## ============================================================
+## Rule: No Infrastructure in Hash Chains
+## ============================================================
+
+metadata:
+  rule_id: CI-INFRA-HASH-001
+  version: "1.0.0"
+
+principle:
+
+  statement: >
+    Infrastructure files MUST NOT be part of any hash
+    involved in attestation or certificate binding.
+
+checks:
+
+  - check_id: HASH-1
+
+    target_files:
+      - afritech/registry/registry.yaml
+
+    forbidden_patterns:
+      - docker
+      - workflows
+      - infrastructure
+
+  - check_id: HASH-2
+
+    target_files:
+      - afritech/registry/attestation.yaml
+
+    forbidden_patterns:
+      - docker
+      - workflows
+      - infrastructure
+
+assertion:
+
+  guarantee: hash_chain_purity

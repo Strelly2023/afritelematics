@@ -1,0 +1,7 @@
+{
+  "schema": "afritech.proof.certificate.v1",
+  "theorem": "execution_deterministic",
+  "input_hash": "abc123...",
+  "output_hash": "def456...",
+  "proof_hash": "789xyz..."
+}

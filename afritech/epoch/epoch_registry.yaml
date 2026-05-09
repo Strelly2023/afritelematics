@@ -1,0 +1,114 @@
+epoch_registry:
+
+  metadata:
+    version: v1
+    description: >
+      Canonical registry defining temporal evolution rules,
+      invariants, and lifecycle constraints for AfriTech epochs.
+
+  # -----------------------------------------------------------------
+  # CORE RULES (MANDATORY)
+  # -----------------------------------------------------------------
+
+  rules:
+
+    - id: EPOCH_MONOTONIC_VERSION
+      rule: "epoch.version MUST strictly increase across transitions"
+
+    - id: EPOCH_SEAL_REQUIRED
+      rule: "previous epoch MUST be sealed before transition"
+
+    - id: EPOCH_INSTANCE_UNIQUE
+      rule: "epoch.instance_id MUST be unique per epoch transition"
+
+    - id: EPOCH_ACTIVE_SINGLETON
+      rule: "only one epoch MAY be active at any time"
+
+    - id: EPOCH_SEALED_IMMUTABLE
+      rule: "sealed epochs MUST NOT change"
+
+    - id: EPOCH_NO_BACKWARD_TIME
+      rule: "time MUST NOT move backward under any condition"
+
+  # -----------------------------------------------------------------
+  # INVARIANTS (CONSTITUTIONAL TIME RULES)
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I30_EPOCH_MONOTONICITY
+    - I30_1_NO_BACKWARD_TIME
+    - I30_2_SEAL_BEFORE_TRANSITION
+    - I30_3_DETERMINISTIC_EVOLUTION
+    - I30_4_GLOBAL_EPOCH_CONSISTENCY
+
+  # -----------------------------------------------------------------
+  # TRANSITION POLICY
+  # -----------------------------------------------------------------
+
+  transition:
+
+    mode: STRICT
+
+    constraints:
+      require_sealed_previous: true
+      require_version_increment: true
+      require_instance_change: true
+      forbid_parallel_epochs: true
+
+  # -----------------------------------------------------------------
+  # STATE RULES
+  # -----------------------------------------------------------------
+
+  state:
+
+    active_rules:
+      only_one_active_epoch: true
+      active_epoch_must_not_be_sealed: true
+
+    sealed_rules:
+      sealed_epoch_is_immutable: true
+      sealed_epoch_is_not_active: true
+
+  # -----------------------------------------------------------------
+  # DETERMINISM
+  # -----------------------------------------------------------------
+
+  determinism:
+
+    ordering: strict
+    evaluation: deterministic
+    replay_consistency: enforced
+
+  # -----------------------------------------------------------------
+  # REGISTRY COMPATIBILITY
+  # -----------------------------------------------------------------
+
+  registry_alignment:
+
+    required_fields:
+      - epoch_id
+      - instance_id
+      - version
+      - active
+      - sealed
+
+    constraints:
+      runtime_must_match_registry: true
+      registry_is_source_of_truth: true
+
+  # -----------------------------------------------------------------
+  # SAFETY GUARANTEES
+  # -----------------------------------------------------------------
+
+  safety:
+
+    forbid:
+      - epoch_regression
+      - epoch_reuse
+      - unsealed_transition
+      - multiple_active_epochs
+      - hidden_epoch_mutation
+
+    enforcement:
+      violation_action: FAIL_FAST

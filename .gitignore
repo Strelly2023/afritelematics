@@ -1,1 +1,22 @@
+# OS
+.DS_Store
+
+# Python
 __pycache__/
+*.pyc
+
+# Env
+venv/
+
+# Log / temp
+*.log
+
+# Text files (docs only)
+*.txt
+
+# ✅ Allow requirements explicitly
+!requirements.txt
+
+# Screenshots
+*.jpg
+*.png

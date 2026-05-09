@@ -1,0 +1,191 @@
+# ============================================================
+# Afritech Constitutional Replay Failure Taxonomy
+# Phase‑3 Extension — Multi‑Agent Governance
+# ============================================================
+#
+# Purpose:
+#   Extend the canonical replay failure taxonomy to support
+#   Phase‑3 multi‑agent governance, arbitration, and coordination.
+#
+# Scope:
+#   Phase‑3 only
+#
+# This file EXTENDS the base taxonomy defined in:
+#   afritech/replay/docs/FAILURE_TAXONOMY.yaml
+#
+# No Phase‑3 failure may overlap or redefine earlier phases.
+# ============================================================
+
+metadata:
+  taxonomy_extension: phase_3_multi_agent
+  extension_version: "1.0.0"
+  phase: Phase-3
+  last_updated: "2026-05-05"
+
+# ============================================================
+# PHASE‑3 FAILURE MODES
+# ============================================================
+
+failure_modes:
+
+  # ----------------------------------------------------------
+  # Agent Identity & Registration
+  # ----------------------------------------------------------
+
+  unregistered_agent:
+    phase: Phase-3
+    summary: >
+      An agent participated in execution but was not declared
+      in the multi-agent registry.
+    invariant: agent_identity
+    divergence_location: agent_registry
+
+  agent_identity_mismatch:
+    phase: Phase-3
+    summary: >
+      Agent identifier in execution does not match declared
+      agent identity or signature.
+    invariant: agent_identity
+    divergence_location: agent_binding
+
+  # ----------------------------------------------------------
+  # Authority Delegation
+  # ----------------------------------------------------------
+
+  unauthorized_agent_action:
+    phase: Phase-3
+    summary: >
+      Agent performed an action outside its delegated authority.
+    invariant: delegated_authority
+    divergence_location: authority_delegation
+
+  conflicting_authority_delegation:
+    phase: Phase-3
+    summary: >
+      Multiple agents received overlapping or contradictory
+      authority scopes.
+    invariant: non_overlapping_delegation
+    divergence_location: authority_delegation
+
+  # ----------------------------------------------------------
+  # Inter‑Agent Coordination
+  # ----------------------------------------------------------
+
+  coordination_protocol_violation:
+    phase: Phase-3
+    summary: >
+      Agent interaction violated the declared coordination
+      protocol or ordering rules.
+    invariant: coordination_protocol
+    divergence_location: coordination_layer
+
+  message_order_violation:
+    phase: Phase-3
+    summary: >
+      Inter-agent messages were replayed out of canonical order.
+    invariant: causal_ordering
+    divergence_location: coordination_layer
+
+  # ----------------------------------------------------------
+  # Arbitration & Conflict Resolution
+  # ----------------------------------------------------------
+
+  unresolved_agent_conflict:
+    phase: Phase-3
+    summary: >
+      Conflicting agent outputs were detected without a valid
+      arbitration outcome.
+    invariant: arbitration_required
+    divergence_location: arbitration_layer
+
+  invalid_arbitration_decision:
+    phase: Phase-3
+    summary: >
+      Arbitration result violates declared arbitration rules
+      or authority hierarchy.
+    invariant: arbitration_integrity
+    divergence_location: arbitration_layer
+
+  # ----------------------------------------------------------
+  # Collective Determinism
+  # ----------------------------------------------------------
+
+  nondeterministic_multi_agent_execution:
+    phase: Phase-3
+    summary: >
+      Collective agent execution cannot be deterministically
+      reproduced under replay.
+    invariant: collective_determinism
+    divergence_location: execution_rerun
+
+# ============================================================
+# PHASE‑3 INVARIANTS
+# ============================================================
+
+invariants:
+
+  agent_identity:
+    description: >
+      Every participating agent must have a unique,
+      declared, and verifiable identity.
+
+  delegated_authority:
+    description: >
+      Agents may act only within explicitly delegated
+      authority scopes.
+
+  non_overlapping_delegation:
+    description: >
+      Authority delegation between agents must not overlap
+      or conflict unless explicitly allowed.
+
+  coordination_protocol:
+    description: >
+      Agent coordination must obey declared protocols and
+      sequencing rules.
+
+  causal_ordering:
+    description: >
+      Inter-agent interactions must preserve causal order
+      during replay.
+
+  arbitration_required:
+    description: >
+      Conflicting agent outputs must be resolved through
+      a valid arbitration process.
+
+  arbitration_integrity:
+    description: >
+      Arbitration outcomes must be rule-compliant and
+      authority-consistent.
+
+  collective_determinism:
+    description: >
+      Multi-agent execution must be reproducible or
+      deterministically refused.
+
+# ============================================================
+# PHASE‑3 DIVERGENCE LOCATIONS
+# ============================================================
+
+divergence_locations:
+
+  agent_registry:
+    description: >
+      Agent declaration and registration stage.
+
+  agent_binding:
+    description: >
+      Runtime agent identity binding.
+
+  authority_delegation:
+    description: >
+      Delegation of authority scopes to agents.
+
+  coordination_layer:
+    description: >
+      Inter-agent message passing and protocol enforcement.
+
+  arbitration_layer:
+    description: >
+      Conflict resolution and arbitration processing.

@@ -1,0 +1,123 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0005
+  title: Registry Seal Lifecycle and Authority Finalization Model
+  status: APPROVED
+  type: ARCHITECTURAL
+
+  epoch: 5
+
+  approved_at: "2026-01-05T00:00:00Z"
+
+  context: >
+    AfriTech now has:
+    - A trust root (ADR-0001)
+    - Temporal governance via epochs (ADR-0002)
+    - Deterministic state transitions (ADR-0003)
+    - Runtime enforcement via guards (ADR-0004)
+
+    However, there is no formal model defining how system-wide truth is
+    finalized, sealed, and made immutable for replay verification.
+
+    Without a registry sealing mechanism, system state remains mutable from a
+    governance perspective, breaking auditability guarantees.
+
+  decision: >
+    Introduce a Registry Seal Lifecycle Model that defines how system state,
+    governance decisions, and execution history are finalized into an immutable
+    canonical registry.
+
+    The registry seal acts as the authoritative snapshot of system truth at a
+    given epoch boundary.
+
+    The system MUST enforce:
+
+    1. Registry state is sealed per epoch boundary
+    2. A sealed registry is immutable and replay-verifiable
+    3. Any mutation requires a new seal cycle
+    4. Seal operations must be cryptographically hash-chained
+    5. Registry seals MUST reference:
+       - genesis trust root (ADR-0001)
+       - epoch state (ADR-0002)
+       - state hashes (ADR-0003)
+       - guard outcomes (ADR-0004)
+    6. Seal validation MUST occur before replay acceptance
+
+  registry_model:
+    components:
+      registry_state:
+        description: Current mutable system snapshot before sealing
+
+      registry_seal:
+        description: Immutable cryptographic snapshot of system state
+
+      seal_hash:
+        description: Deterministic hash of full system state at epoch closure
+
+      attestation:
+        description: Proof of validity of sealed state
+
+  lifecycle:
+    - collect_state
+    - validate_guards
+    - validate_epoch
+    - compute_state_hashes
+    - generate_seal_hash
+    - persist_registry_seal
+    - lock_registry_state
+
+  invariants:
+    - sealed_registry_is_immutable
+    - single_registry_seal_per_epoch
+    - replay_rejects_unsealed_states
+    - registry_hash_chain_is_continuous
+    - seal_validation_requires_all_dependencies
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+
+  required_by:
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+  implementation_notes: >
+    Registry sealing is implemented in:
+      - afritech.registry.seal
+      - afritech.registry.history
+      - afritech.verify.replay
+
+    The seal process MUST:
+      1. Freeze epoch state
+      2. Validate guard outcomes
+      3. Compute deterministic hash chain
+      4. Persist immutable snapshot
+
+    Any failure in sealing MUST invalidate the epoch for replay purposes.
+
+  consequences:
+    positive:
+      - Enables fully immutable system snapshots per epoch
+      - Provides cryptographic auditability
+      - Strengthens replay determinism guarantees
+      - Anchors all governance and execution layers into verifiable history
+
+    negative:
+      - Adds overhead at epoch boundaries
+      - Requires strict coordination between state, guards, and epoch systems
+      - Seal failure blocks epoch finalization
+
+  links:
+    dependencies:
+      - ADR-0001
+      - ADR-0002
+      - ADR-0003
+      - ADR-0004
+
+    epochs:
+      - EPOCH_0005

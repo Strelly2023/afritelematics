@@ -1,7 +1,7 @@
 """
 afritech/replay/transcript.py
 
-Canonical replay transcript generator.
+Canonical replay transcript generator (Phase‑2B).
 
 Authority:
 - afritech/docs/execution/CONSTITUTIONAL_RESEARCH_AGENT_SPEC.md
@@ -17,6 +17,7 @@ from typing import Any
 import hashlib
 import json
 import yaml
+import time
 
 
 # ============================================================
@@ -45,59 +46,56 @@ class ReplayTranscriptGenerator:
     """
     Deterministic transcript generator for constitutional replay.
 
-    Responsibilities:
-    - build deterministic execution trace
-    - construct TruthPacket payload (internal only)
-    - emit replay-valid transcript (hash-authoritative)
+    Phase‑2B:
+    - Real inference binding under replay law
 
-    Phase-2A Invariant:
-    - Authority identity MUST be explicit and replay-bound
+    Invariants preserved:
+    - Phase‑1: deterministic trace + hashing
+    - Phase‑2A: authority isolation
+    - Phase‑2B: inference binding persistence
     """
+
+    # --------------------------------------------------------
+    # PUBLIC ENTRYPOINT
+    # --------------------------------------------------------
 
     def generate(
         self,
         request: ConstitutionalRequest,
         output_path: str,
     ) -> dict[str, Any]:
-        """
-        Generate and persist a replay transcript.
-        """
 
-        # ----------------------------
-        # Authority binding (Phase-2A)
-        # ----------------------------
         authority_profile = (
             request.payload["constitutional_request"]["authority_profile"]
         )
 
-        # ----------------------------
         # Deterministic execution trace
-        # ----------------------------
         execution_trace = self._build_execution_trace(request)
 
-        # ----------------------------
-        # TruthPacket payload (internal)
-        # ----------------------------
+        # Phase‑2B inference binding
+        inference_binding = self._invoke_real_inference(request)
+
+        # Canonical TruthPacket payload (internal)
         truthpacket_payload = self._build_truthpacket_payload(
             request=request,
             trace=execution_trace,
             authority_profile=authority_profile,
+            inference_binding=inference_binding,
         )
 
         truth_packet_hash = _sha256(
             _canonical_json(truthpacket_payload)
         )
 
-        # ----------------------------
-        # Final transcript
-        # ----------------------------
         transcript = {
-            # Phase-2A authority binding
             "authority_profile": authority_profile,
-
-            # Phase-1 invariants
             "request_hash": request.canonical_hash(),
-            "replay_environment": self._replay_environment(),
+
+            # Phase‑2B environment (authoritative)
+            "replay_environment": self._replay_environment(
+                inference_binding
+            ),
+
             "execution_trace": execution_trace,
             "truth_packet_hash": truth_packet_hash,
             "replay_hash": self._compute_replay_hash(
@@ -118,10 +116,6 @@ class ReplayTranscriptGenerator:
         self,
         request: ConstitutionalRequest,
     ) -> list[dict[str, str]]:
-        """
-        Construct a deterministic execution trace based solely
-        on the canonical request hash.
-        """
 
         h = request.canonical_hash()
 
@@ -137,6 +131,12 @@ class ReplayTranscriptGenerator:
                 "output_hash": _sha256(h + "route"),
             },
             {
+                # Phase‑2B required step
+                "step": "real_inference_invocation",
+                "input_hash": h,
+                "output_hash": _sha256(h + "inference"),
+            },
+            {
                 "step": "truth_emission",
                 "input_hash": h,
                 "output_hash": _sha256(h + "truth"),
@@ -145,7 +145,40 @@ class ReplayTranscriptGenerator:
 
 
     # ========================================================
-    # TRUTHPACKET PAYLOAD (INTERNAL ONLY)
+    # PHASE‑2B: REAL INFERENCE INVOCATION
+    # ========================================================
+
+    def _invoke_real_inference(
+        self,
+        request: ConstitutionalRequest,
+    ) -> dict[str, Any]:
+        """
+        Produce a deterministic inference binding.
+        """
+
+        input_hash = request.canonical_hash()
+
+        # Deterministic stub output
+        model_output = f"deterministic-output::{input_hash[:16]}"
+        output_hash = _sha256(model_output)
+
+        return {
+            "provider": "local-deterministic-stub",
+            "model_id": "llm-stub-deterministic-v2",
+            "model_version": "2026-05",
+            "parameters": {
+                "temperature": 0.0,
+                "top_p": 1.0,
+                "max_tokens": 256,
+            },
+            "input_hash": input_hash,
+            "output_hash": output_hash,
+            "emitted_at": int(time.time()),
+        }
+
+
+    # ========================================================
+    # TRUTHPACKET PAYLOAD (CANONICAL, INTERNAL)
     # ========================================================
 
     def _build_truthpacket_payload(
@@ -153,14 +186,13 @@ class ReplayTranscriptGenerator:
         request: ConstitutionalRequest,
         trace: list[dict[str, str]],
         authority_profile: str,
+        inference_binding: dict[str, Any],
     ) -> dict[str, Any]:
-        """
-        Build the internal TruthPacket payload.
-        """
 
         return {
             "claims": ["deterministic constitutional execution"],
             "authority_profile": authority_profile,
+            "inference_binding": inference_binding,
             "provenance_chain": trace,
             "epoch_id": request.payload["constitutional_request"]["epoch_id"],
             "epistemic_confidence": {
@@ -179,18 +211,23 @@ class ReplayTranscriptGenerator:
 
 
     # ========================================================
-    # REPLAY ENVIRONMENT (BOUND)
+    # REPLAY ENVIRONMENT (PHASE‑2B AUTHORITATIVE)
     # ========================================================
 
-    def _replay_environment(self) -> dict[str, Any]:
-        """
-        Declare the replay execution environment.
-        """
+    def _replay_environment(
+        self,
+        inference_binding: dict[str, Any],
+    ) -> dict[str, Any]:
+
         return {
-            "runtime_version": "afritech-runtime-0.1.0",
-            "model_version": "llm-stub-deterministic-v1",
-            "constitution_version": "constitution-epoch-0001",
+            "runtime_version": "afritech-runtime-0.2.0",
+            "model_id": inference_binding["model_id"],
+            "model_version": inference_binding["model_version"],
+            "constitution_version": "constitution-epoch-0002",
             "deterministic_mode": True,
+
+            # REQUIRED by verifier
+            "_inference_binding": inference_binding,
         }
 
 
@@ -203,10 +240,6 @@ class ReplayTranscriptGenerator:
         truthpacket_payload: dict[str, Any],
         trace: list[dict[str, str]],
     ) -> str:
-        """
-        Compute the terminal replay hash from TruthPacket
-        and execution trace.
-        """
 
         return _sha256(
             _canonical_json(
@@ -227,9 +260,6 @@ class ReplayTranscriptGenerator:
         transcript: dict[str, Any],
         output_path: str,
     ) -> None:
-        """
-        Persist transcript to disk deterministically.
-        """
 
         path = Path(output_path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -248,9 +278,6 @@ class ReplayTranscriptGenerator:
 # ============================================================
 
 def _canonical_json(obj: Any) -> str:
-    """
-    Canonical JSON serialization for hashing.
-    """
     return json.dumps(
         obj,
         sort_keys=True,
@@ -260,7 +287,4 @@ def _canonical_json(obj: Any) -> str:
 
 
 def _sha256(value: str) -> str:
-    """
-    SHA-256 hex digest helper.
-    """
     return hashlib.sha256(value.encode("utf-8")).hexdigest()

@@ -1,0 +1,228 @@
+## ============================================================
+## AfriTech CI Rule
+## Runtime Certificate Verification Enforcement
+## ============================================================
+## Rule ID: CI-CERT-VERIFY-001
+## Purpose:
+## Ensure that RuntimeCertificates are not only valid in CI,
+## but also actively verified at runtime via enforced logic.
+##
+## Scope:
+## - afritech/runtime/admission/admission_engine.py
+## - afritech/proof/runtime_certificate.py
+##
+## This rule is normative and enforced in CI.
+## ============================================================
+
+metadata:
+  rule_id: CI-CERT-VERIFY-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+
+## ============================================================
+## GOVERNANCE PRINCIPLE
+## ============================================================
+
+principle:
+
+  statement: >
+    RuntimeCertificate validation MUST be actively enforced
+    at runtime. Structural correctness alone is insufficient.
+
+  rationale: >
+    A valid certificate that is not verified during runtime
+    admission represents a broken security model.
+    Verification must be executed—not assumed.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+
+## ============================================================
+## REQUIRED VERIFICATION BEHAVIOR
+## ============================================================
+
+required_behavior:
+
+  description: >
+    The runtime must perform explicit verification of:
+      - payload_hash integrity
+      - cryptographic signature validity
+      - constitutional binding consistency
+
+  required_functions:
+
+    - verify_signature
+    - validate_payload_hash
+    - validate_constitutional_binding
+
+  enforcement_location:
+
+    admission_engine:
+      path: afritech/runtime/admission/admission_engine.py
+
+    certificate_handler:
+      path: afritech/proof/runtime_certificate.py
+
+
+## ============================================================
+## TARGETED FILES
+## ============================================================
+
+targets:
+
+  admission_engine:
+    path: afritech/runtime/admission/admission_engine.py
+
+  certificate_handler:
+    path: afritech/proof/runtime_certificate.py
+
+
+## ============================================================
+## CI VALIDATION CHECKS
+## ============================================================
+
+ci_checks:
+
+  # ------------------------------------------------------------
+  # CV-F1: Ensure signature verification exists
+  # ------------------------------------------------------------
+  - check_id: CV-F1
+
+    description: >
+      Verify that cryptographic signature validation logic is implemented.
+
+    targets:
+      - afritech/runtime/admission/admission_engine.py
+      - afritech/proof/runtime_certificate.py
+
+    pattern_required:
+      - 'verify_signature'
+      - 'signature'
+      - 'certificate_root'
+
+    failure_message: >
+      Signature verification logic is missing or incomplete.
+
+
+  # ------------------------------------------------------------
+  # CV-F2: Ensure payload hash validation exists
+  # ------------------------------------------------------------
+  - check_id: CV-F2
+
+    description: >
+      Verify that certificate payload hash integrity is validated.
+
+    targets:
+      - afritech/runtime/admission/admission_engine.py
+      - afritech/proof/runtime_certificate.py
+
+    pattern_required:
+      - 'payload_hash'
+      - 'compute_sha256'
+      - 'validate_payload'
+
+    failure_message: >
+      Certificate payload hash validation is missing.
+
+
+  # ------------------------------------------------------------
+  # CV-F3: Ensure binding validation logic exists
+  # ------------------------------------------------------------
+  - check_id: CV-F3
+
+    description: >
+      Ensure that constitutional binding hashes are checked
+      against actual system files.
+
+    target: afritech/runtime/admission/admission_engine.py
+
+    pattern_required:
+      - '_validate_constitutional_binding'
+      - 'registry_hash'
+      - 'epoch_hash'
+      - 'execution_surfaces_hash'
+
+    failure_message: >
+      Constitutional binding validation is incomplete.
+
+
+  # ------------------------------------------------------------
+  # CV-F4: Ensure verification occurs BEFORE admission succeeds
+  # ------------------------------------------------------------
+  - check_id: CV-F4
+
+    description: >
+      Ensure that verification is executed before admission returns success.
+
+    target: afritech/runtime/admission/admission_engine.py
+
+    required_order:
+      sequence:
+        - _validate_signature
+        - _validate_constitutional_binding
+        - _validate_admission_guarantees
+
+    failure_message: >
+      Verification steps are not executed in required order.
+
+
+  # ------------------------------------------------------------
+  # CV-F5: Prevent bypass of verification
+  # ------------------------------------------------------------
+  - check_id: CV-F5
+
+    description: >
+      Ensure that admission cannot succeed without running verification.
+
+    target: afritech/runtime/admission/admission_engine.py
+
+    pattern_forbidden:
+      - 'return True$'
+
+    enforce_context: absence_of_validation_calls
+
+    failure_message: >
+      Admission may return success without verification.
+
+
+## ============================================================
+## VERIFICATION INVARIANT
+## ============================================================
+
+verification_invariant:
+
+  statement: >
+    A RuntimeCertificate is valid ONLY if:
+      - payload integrity is verified
+      - signature is cryptographically confirmed
+      - constitutional bindings are consistent
+
+  violation_effect:
+
+    - runtime_invalidated
+    - execution_refused
+    - replay_rejected
+    - certificate_rejected
+
+
+## ============================================================
+## CI OUTCOME
+## ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Runtime certificate verification enforcement passed."
+
+  on_fail:
+    result: failure
+    message: >
+      Runtime certificate verification is incomplete or bypassed.
+      Execution is constitutionally invalid.

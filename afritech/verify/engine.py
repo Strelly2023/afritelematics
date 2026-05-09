@@ -23,9 +23,10 @@ import yaml
 # ---------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[1]
+
 REGISTRY_FILE = ROOT / "registry" / "registry.yaml"
 EPOCH_HISTORY_DIR = ROOT / "registry" / "history"
-ADR_DIR = ROOT / "adr"
+ADR_DIR = ROOT / "governance" / "adr"
 
 
 # ---------------------------------------------------------------------
@@ -58,9 +59,12 @@ def _load_epochs() -> List[dict]:
     epochs: List[dict] = []
     for path in epoch_files:
         data = _load_yaml(path)
+
         if "epoch" not in data or "number" not in data["epoch"]:
             raise ValueError(f"Invalid epoch file structure: {path}")
+
         epochs.append(data)
+
     return epochs
 
 
@@ -71,13 +75,14 @@ def _load_epochs() -> List[dict]:
 def verify_replay() -> ReplayResult:
     """
     Verify constitutional replay validity.
-
-    Returns:
-        ReplayResult(valid, terminal_epoch, violations)
     """
+
     violations: List[str] = []
 
+    # -----------------------------------------------------------------
     # Load artifacts
+    # -----------------------------------------------------------------
+
     try:
         epochs = _load_epochs()
         registry = _load_yaml(REGISTRY_FILE)
@@ -105,7 +110,7 @@ def verify_replay() -> ReplayResult:
             )
 
     # -----------------------------------------------------------------
-    # Seal continuity (finalized epochs must end SEALED)
+    # Seal continuity
     # -----------------------------------------------------------------
 
     for e in epochs:
@@ -132,22 +137,50 @@ def verify_replay() -> ReplayResult:
         )
 
     # -----------------------------------------------------------------
-    # ADR legitimacy (each advancement must reference an existing ADR)
+    # ADR legitimacy (FIXED VERSION)
     # -----------------------------------------------------------------
 
-    for e in epochs[1:]:  # epoch 0 has no parent to authorize
+    for e in epochs[1:]:  # skip genesis
         num = e["epoch"]["number"]
-        adr = e.get("epoch", {}).get("authority", {}).get("adr")
 
-        if not adr:
+        adr_list = (
+            e.get("epoch", {})
+             .get("authority", {})
+             .get("adr")
+        )
+
+        if not adr_list:
             violations.append(f"Epoch {num} missing ADR authority")
             continue
 
-        adr_path = ADR_DIR / f"{adr}.md"
-        if not adr_path.exists():
-            violations.append(
-                f"Epoch {num} references missing ADR '{adr}'"
-            )
+        # Normalize to list
+        if not isinstance(adr_list, list):
+            adr_list = [adr_list]
+
+        for adr_id in adr_list:
+            adr_path = ADR_DIR / f"{adr_id}.yaml"
+
+            if not adr_path.exists():
+                violations.append(
+                    f"Epoch {num} references missing ADR '{adr_id}'"
+                )
+                continue
+
+            try:
+                adr_data = _load_yaml(adr_path)
+
+                parsed_id = adr_data.get("adr", {}).get("id")
+
+                if parsed_id != adr_id:
+                    violations.append(
+                        f"ADR ID mismatch in {adr_path}: "
+                        f"expected {adr_id}, got {parsed_id}"
+                    )
+
+            except Exception as exc:
+                violations.append(
+                    f"Failed to load ADR {adr_id}: {exc}"
+                )
 
     # -----------------------------------------------------------------
     # Final result

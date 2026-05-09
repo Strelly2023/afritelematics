@@ -1,0 +1,265 @@
+## ============================================================
+## AfriTech CI Rule
+## Surface Registry Validation Enforcement
+## ============================================================
+## Rule ID: CI-SURFACE-VALIDATION-001
+## Purpose:
+## Enforce that all system surfaces are explicitly declared
+## in surface_registry.yaml and comply with their classification.
+##
+## This rule guarantees:
+## - No undeclared execution surfaces
+## - No invalid executable flags
+## - No rogue or hidden system files
+##
+## Scope:
+## - Entire afritech/ system tree
+##
+## ============================================================
+
+metadata:
+  rule_id: CI-SURFACE-VALIDATION-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+# ============================================================
+# PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Only surfaces explicitly declared in surface_registry.yaml
+    may exist, execute, or participate in the system.
+
+  rationale: >
+    Undeclared surfaces represent ungoverned computation paths,
+    violating constitutional guarantees.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+# ============================================================
+# TARGETS
+# ============================================================
+
+targets:
+
+  registry:
+    path: afritech/governance/surface_registry.yaml
+
+  system_root:
+    path: afritech/
+
+# ============================================================
+# CORE VALIDATION RULES
+# ============================================================
+
+rules:
+
+  # ------------------------------------------------------------
+  # SV-1: All surfaces must be declared
+  # ------------------------------------------------------------
+  - check_id: SV-1
+
+    description: >
+      Every top-level directory and file in afritech/
+      must be declared in surface_registry.yaml.
+
+    validation_method:
+      type: python_hook
+      function: validate_all_surfaces_declared
+
+    failure_message: >
+      Undeclared surface detected in repository.
+
+
+  # ------------------------------------------------------------
+  # SV-2: Executable surfaces must be explicitly marked
+  # ------------------------------------------------------------
+  - check_id: SV-2
+
+    description: >
+      Any file or directory containing executable code
+      must have executable: true.
+
+    validation_method:
+      type: python_hook
+      function: validate_executable_flag
+
+    failure_message: >
+      Executable surface is not properly declared.
+
+
+  # ------------------------------------------------------------
+  # SV-3: Non-executable surfaces must not contain logic
+  # ------------------------------------------------------------
+  - check_id: SV-3
+
+    description: >
+      Surfaces marked executable: false must not contain
+      Python execution logic.
+
+    target_patterns:
+      - "*.py"
+
+    validation_method:
+      type: pattern_analysis
+
+    forbidden_patterns:
+      - "def "
+      - "class "
+      - "import "
+
+    failure_message: >
+      Non-executable surface contains executable code.
+
+
+  # ------------------------------------------------------------
+  # SV-4: Hash inclusion consistency
+  # ------------------------------------------------------------
+  - check_id: SV-4
+
+    description: >
+      Only surfaces marked hash_included: true may appear
+      in attestation or certificate bindings.
+
+    target_files:
+      - afritech/registry/attestation.yaml
+      - afritech/proof/certificates/*.cert
+
+    validation_method:
+      type: python_hook
+      function: validate_hash_surface_membership
+
+    failure_message: >
+      Non-declared surface used in hash binding.
+
+
+  # ------------------------------------------------------------
+  # SV-5: Infrastructure surfaces must be excluded
+  # ------------------------------------------------------------
+  - check_id: SV-5
+
+    description: >
+      NON_CONSTITUTIONAL surfaces must not:
+        - be executable
+        - be hashed
+        - appear in bindings
+
+    validation_method:
+      type: python_hook
+      function: validate_infrastructure_isolation
+
+    failure_message: >
+      Infrastructure surface violates isolation rules.
+
+
+  # ------------------------------------------------------------
+  # SV-6: Authority scope enforcement
+  # ------------------------------------------------------------
+  - check_id: SV-6
+
+    description: >
+      Executable surfaces must respect authority scope.
+
+    validation_method:
+      type: python_hook
+      function: validate_surface_authority_scope
+
+    failure_message: >
+      Surface violates authority constraints.
+
+
+# ============================================================
+# VALIDATION CONTRACTS
+# ============================================================
+
+validation_contracts:
+
+  validate_all_surfaces_declared:
+
+    description: >
+      Walk afritech/ directory tree and ensure each top-level
+      directory or file is declared in surface_registry.
+
+    expected_result: >
+      No undeclared surfaces.
+
+
+  validate_executable_flag:
+
+    description: >
+      Ensure all .py files in execution paths are declared
+      with executable: true.
+
+    expected_result: >
+      All executable files correctly declared.
+
+
+  validate_hash_surface_membership:
+
+    description: >
+      Compare attestation bindings with surface_registry entries.
+
+    expected_result: >
+      All hashed surfaces must have hash_included: true.
+
+
+  validate_infrastructure_isolation:
+
+    description: >
+      Ensure NON_CONSTITUTIONAL surfaces are excluded from:
+        - executable surfaces
+        - hash chains
+        - authority scope
+
+    expected_result: >
+      Infrastructure fully isolated.
+
+
+  validate_surface_authority_scope:
+
+    description: >
+      Ensure executable surfaces have valid authority_scope.
+
+    expected_result: >
+      authority_scope must be one of:
+        - GLOBAL
+        - GUARDED
+        - AUTHORITY_BOUND
+        - VALIDATION_ONLY
+
+# ============================================================
+# EXECUTION ASSERTION
+# ============================================================
+
+execution_assertion:
+
+  statement: >
+    Execution is only permitted for declared surfaces
+    with executable: true and valid authority scope.
+
+  violation_effect:
+
+    - runtime_refused
+    - replay_invalidated
+    - constitutional_failure
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Surface registry validation passed."
+
+  on_fail:
+    result: failure
+    message: >
+      Surface registry validation failed.
+      Undeclared or unauthorized surfaces detected.

@@ -1,0 +1,147 @@
+# ============================================================
+# Afritech CI Rule
+# Failure Taxonomy Enforcement
+# ============================================================
+#
+# Rule ID: CI-REPLAY-FAIL-001
+#
+# Purpose:
+#   Ensure that *every* replay verifier failure is mapped to
+#   the canonical failure taxonomy.
+#
+# Scope:
+#   - afritech/replay/verify.py
+#   - afritech/replay/failures.py
+#
+# This rule is normative and enforced in CI.
+# ============================================================
+
+metadata:
+  rule_id: CI-REPLAY-FAIL-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-1
+    - Phase-2A
+    - Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# ENFORCEMENT PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    The replay verifier MUST NOT emit any failure that is not
+    explicitly defined in the canonical failure taxonomy.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+# ============================================================
+# CANONICAL SOURCES
+# ============================================================
+
+canonical_sources:
+
+  failure_definitions:
+    path: afritech/replay/failures.py
+    required_items:
+      - ReplayFailureMode
+      - ReplayInvariant
+      - DivergenceLocation
+
+  failure_taxonomy_doc:
+    path: afritech/replay/docs/FAILURE_TAXONOMY.yaml
+
+# ============================================================
+# REQUIRED VERIFIER CONTRACT
+# ============================================================
+
+verifier_contract:
+
+  allowed_failure_emission:
+
+    description: >
+      Replay verifier code MAY ONLY construct ReplayFailure
+      instances using values sourced from ReplayFailureMode,
+      ReplayInvariant, and DivergenceLocation enums.
+
+    disallowed_patterns:
+      - string literal failure modes
+      - ad-hoc invariant strings
+      - ad-hoc divergence locations
+
+  required_construction_pattern:
+
+    python:
+      allowed:
+        - ReplayFailure(
+            ReplayFailureMode.<ENUM>,
+            ReplayInvariant.<ENUM>,
+            DivergenceLocation.<ENUM>,
+            <details>
+          )
+
+      forbidden:
+        - ReplayFailure("...", "...", "...", "...")
+
+# ============================================================
+# CI VALIDATION CHECKS
+# ============================================================
+
+ci_checks:
+
+  - check_id: CT-F1
+    description: >
+      Verify that verify.py imports ReplayFailureMode,
+      ReplayInvariant, and DivergenceLocation.
+    target: afritech/replay/verify.py
+    failure_message: >
+      Verifier does not import canonical failure enums.
+
+  - check_id: CT-F2
+    description: >
+      Verify that verify.py does not construct ReplayFailure
+      with string literals.
+    pattern_forbidden:
+      - 'ReplayFailure\(\s*"[a-zA-Z_]+"'
+    target: afritech/replay/verify.py
+    failure_message: >
+      Verifier constructs ReplayFailure using string literals.
+
+  - check_id: CT-F3
+    description: >
+      Verify that every ReplayFailureMode enum appears in
+      FAILURE_TAXONOMY.yaml.
+    target:
+      - afritech/replay/failures.py
+      - afritech/replay/docs/FAILURE_TAXONOMY.yaml
+    failure_message: >
+      Failure mode missing from canonical taxonomy document.
+
+  - check_id: CT-F4
+    description: >
+      Verify no failure modes appear in taxonomy that are not
+      defined in ReplayFailureMode.
+    target:
+      - afritech/replay/failures.py
+      - afritech/replay/docs/FAILURE_TAXONOMY.yaml
+    failure_message: >
+      Taxonomy references undefined failure mode.
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Replay failure taxonomy enforcement passed."
+
+  on_fail:
+    result: failure
+    message: >
+      Replay verifier failure semantics violate canonical taxonomy.
+      See CI logs for details on the specific violation.

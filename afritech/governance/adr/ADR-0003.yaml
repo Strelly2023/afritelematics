@@ -1,0 +1,99 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0003
+  title: Deterministic State Transition and Execution Contract
+  status: APPROVED
+  type: ARCHITECTURAL
+
+  epoch: 1
+
+  approved_at: "2026-01-03T00:00:00Z"
+
+  context: >
+    AfriTech operates a stateful execution system where all mutations must be
+    reproducible, verifiable, and replayable. While ADR-0002 defines epoch
+    boundaries for time governance, there is no formal contract defining how
+    state transitions occur within those epochs.
+
+    Without a deterministic transition model, replay validation and registry
+    sealing cannot guarantee identical reconstruction of system state.
+
+  decision: >
+    Define a Deterministic State Transition Contract that governs all system
+    state changes within an active epoch.
+
+    This contract enforces:
+
+    1. All state transitions are pure functions of (state, event, epoch)
+    2. No hidden side effects are permitted during transitions
+    3. Every transition must produce a verifiable state hash
+    4. Transitions must be validated before execution by state_validator
+    5. Transition outputs must be identical across replay executions
+    6. Invalid transitions MUST be rejected before state mutation
+
+    The state machine is the only permitted mechanism for mutating system state.
+
+  model:
+    inputs:
+      - current_state
+      - event
+      - epoch_context
+    output:
+      - new_state
+      - state_hash
+      - transition_proof
+
+  invariants:
+    - state_transitions_are_deterministic
+    - state_mutation_restricted_to_state_engine
+    - transitions_must_be_epoch_bound
+    - transition_outputs_are_cryptographically_verifiable
+    - replay_produces_identical_state_hashes
+
+  validation_pipeline:
+    - state_validator
+    - epoch_validator
+    - guard_engine
+    - registry_seal_check
+
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+
+  required_by:
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+  implementation_notes: >
+    The deterministic execution model is implemented in:
+      - afritech.state_machine.state_engine
+      - afritech.state_machine.state_validator
+      - afritech.state_machine.state_transition_proof
+
+    All transitions MUST be replayable using the same input sequence and epoch
+    context. Any divergence in state hash MUST result in replay failure.
+
+    Guards MAY block transitions before execution but MUST NOT alter outputs.
+
+  consequences:
+    positive:
+      - Guarantees full replay determinism of system state
+      - Strengthens audit and verification capabilities
+      - Prevents hidden side-effect execution paths
+      - Enables cryptographic traceability of all mutations
+
+    negative:
+      - Strict limitation on runtime flexibility
+      - Requires full validation overhead per transition
+      - Failure in validator pipeline halts state progression
+
+  links:
+    epochs:
+      - EPOCH_0001
+    genesis:
+      - ADR-0001

@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# ============================================================
+# Afritech Phase‑2B Evidence Harness Runner
+# ============================================================
+#
+# Purpose:
+#   Execute the Phase‑2B evidence harness in a way that produces
+#   constitutionally admissible shell artifacts.
+#
+# IMPORTANT:
+#   - This script PRODUCES evidence when RUN.
+#   - It does NOT declare evidence exists a priori.
+#   - Stdout MUST be preserved verbatim.
+#
+# Scope:
+#   Phase‑2B only
+# ============================================================
+
+set -euo pipefail
+
+# ------------------------------------------------------------
+# Configuration (edit paths only if necessary)
+# ------------------------------------------------------------
+
+REQUEST_PATH="afritech/inference/instances/phase_2b_real_inference_request.yaml"
+TRANSCRIPT_PATH="afritech/replay/transcripts/phase_2b_real_inference.yaml"
+
+AUDIT_DIR="afritech/replay/audit/logs"
+
+# ------------------------------------------------------------
+# Preconditions
+# ------------------------------------------------------------
+
+echo "=== Phase‑2B Evidence Harness ==="
+echo "Checking preconditions..."
+
+if [[ ! -f "$REQUEST_PATH" ]]; then
+  echo "ERROR: Request file not found: $REQUEST_PATH"
+  exit 1
+fi
+
+mkdir -p "$(dirname "$TRANSCRIPT_PATH")"
+mkdir -p "$AUDIT_DIR"
+
+echo "OK: Preconditions satisfied."
+echo
+
+# ------------------------------------------------------------
+# E‑B1: Real inference transcript generation
+# ------------------------------------------------------------
+
+echo "=== E‑B1: Real inference transcript generation ==="
+
+python3 -m afritech.replay.generate \
+  "$REQUEST_PATH" \
+  "$TRANSCRIPT_PATH"
+
+echo
+
+# ------------------------------------------------------------
+# E‑B2: Deterministic replay acceptance
+# ------------------------------------------------------------
+
+echo "=== E‑B2: Deterministic replay acceptance ==="
+
+python3 -m afritech.replay.run_verify \
+  "$REQUEST_PATH" \
+  "$TRANSCRIPT_PATH"
+
+echo
+
+# ------------------------------------------------------------
+# E‑B3: Deterministic replay refusal (model identity mismatch)
+# ------------------------------------------------------------
+# NOTE:
+#   This step assumes the operator modifies context intentionally,
+#   e.g. by copying the transcript and changing model_version.
+#   The refusal must be demonstrated, not simulated.
+
+echo "=== E‑B3: Deterministic replay refusal ==="
+echo "ACTION REQUIRED:"
+echo "  Copy the transcript and modify a governing field"
+echo "  (e.g. replay_environment.model_version), then run:"
+echo
+echo "  python3 -m afritech.replay.run_verify \\"
+echo "    $REQUEST_PATH \\"
+echo "    <modified_transcript.yaml>"
+echo
+echo "This MUST result in:"
+echo "  VERDICT: REPLAY_INVALID"
+echo "  FAILURE_MODE: model_identity_mismatch (or equivalent)"
+echo
+
+echo "=== Phase‑2B Evidence Harness RUN COMPLETE ==="

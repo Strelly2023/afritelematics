@@ -1,29 +1,37 @@
-from __future__ import annotations
+# afritech/registry/seal.py
 
 """
 AfriTech Registry Reseal Tool
-============================
+=============================
 
-Performs a lawful cryptographic reseal of the registry after
-authorized mutation.
+Lawfully reseals the constitutional registry after an approved mutation.
 
-This tool:
-- DOES NOT advance epochs
-- DOES NOT change authority
-- DOES NOT modify history
-- ONLY recomputes the registry hash and reseals
+Guarantees
+----------
+- Deterministic canonical hashing
+- Surface hash recomputation
+- Registry identity stability
+- Validator-compatible output
+- Structural integrity enforcement
+- TRACE causality binding
 
-Execution of this tool is REQUIRED before runtime boot
-after any registry-affecting change.
+Execution Law
+-------------
+Must be executed AFTER lawful registry mutation
+and BEFORE runtime boot.
 """
 
+from __future__ import annotations
+
 import hashlib
-import yaml
 from pathlib import Path
+from typing import Dict, Any, List, Optional
+
+import yaml
 
 
 # ---------------------------------------------------------------------
-# Paths
+# PATHS
 # ---------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,16 +39,92 @@ REGISTRY_PATH = ROOT / "registry" / "registry.yaml"
 
 
 # ---------------------------------------------------------------------
-# Canonical hashing
+# EXCEPTIONS
 # ---------------------------------------------------------------------
 
-def canonical_registry_bytes(registry: dict) -> bytes:
-    """
-    Produce canonical bytes for registry hashing.
+class RegistrySealError(RuntimeError):
+    """Raised when registry resealing cannot complete."""
 
-    Excludes seal metadata so the hash is stable and reproducible.
+
+# ---------------------------------------------------------------------
+# FILE HASHING (DETERMINISTIC)
+# ---------------------------------------------------------------------
+
+def sha256_manifest(root: Path, files: List[str]) -> str:
     """
-    data = registry.copy()
+    Deterministically hash a declared surface.
+
+    File order is authoritative and preserved exactly.
+    """
+
+    hasher = hashlib.sha256()
+
+    for rel in files:
+        path = root / rel
+
+        if not path.exists():
+            raise RegistrySealError(
+                f"Declared surface missing: {rel}"
+            )
+
+        if not path.is_file():
+            raise RegistrySealError(
+                f"Declared surface is not a file: {rel}"
+            )
+
+        hasher.update(path.read_bytes())
+
+    return hasher.hexdigest()
+
+
+# ---------------------------------------------------------------------
+# SURFACE HASH RECOMPUTATION
+# ---------------------------------------------------------------------
+
+def recompute_surface_hashes(registry: Dict[str, Any]) -> None:
+    """
+    Recompute all attested surface hashes.
+    """
+
+    attestation = registry.get("attestation")
+    if not attestation:
+        raise RegistrySealError("Missing attestation block")
+
+    surfaces = attestation.get("kernel_hashes")
+    if not surfaces:
+        raise RegistrySealError("Missing kernel_hashes")
+
+    print("🔄 Recomputing constitutional surface hashes...\n")
+
+    for surface_name, surface in surfaces.items():
+        files = surface.get("files")
+
+        if not files:
+            raise RegistrySealError(
+                f"Surface '{surface_name}' has no declared files"
+            )
+
+        digest = sha256_manifest(ROOT, files)
+        surface["hash"] = digest
+
+        print(f"✅ {surface_name:<20} {digest}")
+
+
+# ---------------------------------------------------------------------
+# CANONICAL REGISTRY HASHING
+# ---------------------------------------------------------------------
+
+def canonical_registry_bytes(registry: Dict[str, Any]) -> bytes:
+    """
+    Produce canonical registry bytes.
+
+    MUST match validator logic exactly.
+    """
+
+    # Defensive deep copy via YAML roundtrip
+    data = yaml.safe_load(
+        yaml.safe_dump(registry, sort_keys=True)
+    )
 
     # Remove documentary / mutable fields
     data.pop("seal_status", None)
@@ -58,45 +142,136 @@ def canonical_registry_bytes(registry: dict) -> bytes:
     ).encode("utf-8")
 
 
+def compute_registry_hash(registry: Dict[str, Any]) -> str:
+    """
+    Compute canonical registry digest.
+    """
+
+    canonical = canonical_registry_bytes(registry)
+    return hashlib.sha256(canonical).hexdigest()
+
+
 # ---------------------------------------------------------------------
-# Reseal operation
+# LOAD / WRITE
 # ---------------------------------------------------------------------
 
-def reseal_registry() -> None:
+def load_registry() -> Dict[str, Any]:
     if not REGISTRY_PATH.exists():
-        raise RuntimeError("registry.yaml not found")
+        raise RegistrySealError(
+            f"registry.yaml not found at {REGISTRY_PATH}"
+        )
 
     with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
         registry = yaml.safe_load(f)
 
-    # Compute canonical hash
-    canonical_bytes = canonical_registry_bytes(registry)
-    digest = hashlib.sha256(canonical_bytes).hexdigest()
+    if not isinstance(registry, dict):
+        raise RegistrySealError("Invalid registry format")
 
-    # -----------------------------------------------------------------
-    # Authoritative seal location (enforced by runtime)
-    # -----------------------------------------------------------------
-    registry.setdefault("attestation", {})
-    registry["attestation"]["registry_hash"] = digest
-    registry["attestation"]["seal_status"] = "SEALED"
+    return registry
 
-    # -----------------------------------------------------------------
-    # Documentary mirror (non-authoritative)
-    # -----------------------------------------------------------------
-    registry["seal_status"] = "SEALED"
 
-    # Write back
+def write_registry(registry: Dict[str, Any]) -> None:
     with open(REGISTRY_PATH, "w", encoding="utf-8") as f:
-        yaml.safe_dump(registry, f, sort_keys=False)
-
-    print("🔏 REGISTRY RESEALED")
-    print("✅ attestation.seal_status = SEALED")
-    print("✅ attestation.registry_hash updated")
-    print(f"🔐 sha256 = {digest}")
+        yaml.safe_dump(
+            registry,
+            f,
+            sort_keys=False,
+        )
 
 
 # ---------------------------------------------------------------------
-# CLI entrypoint
+# RESEAL OPERATION
+# ---------------------------------------------------------------------
+
+def reseal_registry(
+    *,
+    trace_hash: Optional[str] = None,
+    replay_hash: Optional[str] = None,
+) -> None:
+    """
+    Perform lawful constitutional reseal.
+
+    Optional bindings:
+    - trace_hash: binds causality proof
+    - replay_hash: binds replay oracle
+    """
+
+    registry = load_registry()
+
+    # -------------------------------------------------------------
+    # Recompute all surface hashes
+    # -------------------------------------------------------------
+
+    recompute_surface_hashes(registry)
+
+    # -------------------------------------------------------------
+    # Compute registry canonical digest
+    # -------------------------------------------------------------
+
+    digest = compute_registry_hash(registry)
+
+    # -------------------------------------------------------------
+    # Update authoritative attestation
+    # -------------------------------------------------------------
+
+    registry.setdefault("attestation", {})
+
+    registry["attestation"]["registry_hash"] = digest
+    registry["attestation"]["seal_status"] = "SEALED"
+
+    # Optional causal bindings
+    if trace_hash:
+        registry["attestation"]["trace_hash"] = trace_hash
+
+    if replay_hash:
+        registry["attestation"]["replay_hash"] = replay_hash
+
+    # Documentary mirror
+    registry["seal_status"] = "SEALED"
+
+    # -------------------------------------------------------------
+    # Persist
+    # -------------------------------------------------------------
+
+    write_registry(registry)
+
+    # -------------------------------------------------------------
+    # Output
+    # -------------------------------------------------------------
+
+    print("\n🔏 REGISTRY RESEALED")
+    print("✅ surface hashes updated")
+    print("✅ attestation.seal_status = SEALED")
+    print("✅ registry_hash updated")
+
+    if trace_hash:
+        print(f"✅ trace_hash bound: {trace_hash}")
+
+    if replay_hash:
+        print(f"✅ replay_hash bound: {replay_hash}")
+
+    print(f"🔐 sha256 = {digest}\n")
+
+
+# ---------------------------------------------------------------------
+# VALIDATION
+# ---------------------------------------------------------------------
+
+def verify_registry_consistency() -> bool:
+    """
+    Recompute registry hash and compare with stored value.
+    """
+
+    registry = load_registry()
+
+    stored = registry.get("attestation", {}).get("registry_hash")
+    computed = compute_registry_hash(registry)
+
+    return stored == computed
+
+
+# ---------------------------------------------------------------------
+# CLI ENTRYPOINT
 # ---------------------------------------------------------------------
 
 if __name__ == "__main__":

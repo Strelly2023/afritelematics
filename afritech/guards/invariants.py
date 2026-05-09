@@ -1,15 +1,30 @@
-from __future__ import annotations
+# afritech/guards/invariants.py
 
-from afritech.state.state import State
-from afritech.guards.engine import GuardResult, Guard
+"""
+Functional invariant guards for state-level validation
+
+Design:
+- PURE functions (no side effects)
+- Deterministic
+- Return GuardResult ONLY (no fail())
+- Enforcement handled externally
+"""
+
+from typing import Callable
+
+from afritech.guards.guard_core import GuardResult
 
 
-# ---------------------------------------------------------------------
-# Guard: Kernel hash must not change
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------
+# Kernel hash invariant
+# -------------------------------------------------------------
 
-def kernel_hash_immutable(state: State, transition) -> GuardResult:
+def kernel_hash_immutable(state, transition) -> GuardResult:
+
     candidate = transition(state)
+
+    if not hasattr(state, "kernel_hash") or not hasattr(candidate, "kernel_hash"):
+        return GuardResult(False, "INVALID_KERNEL_HASH_STRUCTURE")
 
     if candidate.kernel_hash != state.kernel_hash:
         return GuardResult(False, "KERNEL_HASH_IMMUTABLE")
@@ -17,12 +32,16 @@ def kernel_hash_immutable(state: State, transition) -> GuardResult:
     return GuardResult(True)
 
 
-# ---------------------------------------------------------------------
-# Guard: Provenance must not be pre-modified by transition
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------
+# Provenance invariant
+# -------------------------------------------------------------
 
-def forbid_provenance_override(state: State, transition) -> GuardResult:
+def forbid_provenance_override(state, transition) -> GuardResult:
+
     candidate = transition(state)
+
+    if not hasattr(state, "provenance") or not hasattr(candidate, "provenance"):
+        return GuardResult(False, "INVALID_PROVENANCE_STRUCTURE")
 
     if candidate.provenance != state.provenance:
         return GuardResult(False, "PROVENANCE_OVERRIDE_FORBIDDEN")
@@ -30,12 +49,19 @@ def forbid_provenance_override(state: State, transition) -> GuardResult:
     return GuardResult(True)
 
 
-# ---------------------------------------------------------------------
-# Guard: Attestation must not be pre-set as verified
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------
+# Attestation invariant
+# -------------------------------------------------------------
 
-def forbid_preverified_attestation(state: State, transition) -> GuardResult:
+def forbid_preverified_attestation(state, transition) -> GuardResult:
+
     candidate = transition(state)
+
+    if not hasattr(candidate, "attestation"):
+        return GuardResult(False, "INVALID_ATTESTATION_STRUCTURE")
+
+    if not hasattr(candidate.attestation, "verified"):
+        return GuardResult(False, "INVALID_ATTESTATION_FIELD")
 
     if candidate.attestation.verified:
         return GuardResult(False, "PREVERIFIED_ATTESTATION_FORBIDDEN")
@@ -43,11 +69,11 @@ def forbid_preverified_attestation(state: State, transition) -> GuardResult:
     return GuardResult(True)
 
 
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------
 # Export invariant guards
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------
 
-INVARIANT_GUARDS: tuple[Guard, ...] = (
+INVARIANT_GUARDS = (
     kernel_hash_immutable,
     forbid_provenance_override,
     forbid_preverified_attestation,

@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://afritech.ai/schemas/replay/REPLAY_VERIFIER_AUDIT.schema.json",
+  "title": "Replay Verifier Audit Export",
+  "description": "Canonical JSON schema for replay verifier audit side-channel output.",
+  "type": "object",
+  "additionalProperties": false,
+
+  "required": [
+    "audit_version",
+    "generated_at",
+    "inputs",
+    "verdict"
+  ],
+
+  "properties": {
+
+    "audit_version": {
+      "type": "string",
+      "description": "Version of the audit export format",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+
+    "generated_at": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when the audit record was generated",
+      "minimum": 0
+    },
+
+    "inputs": {
+      "type": "object",
+      "description": "Inputs used during replay verification",
+      "additionalProperties": false,
+      "required": [
+        "transcript_path",
+        "request_hash"
+      ],
+      "properties": {
+
+        "transcript_path": {
+          "type": "string",
+          "description": "Filesystem path to the replay transcript under verification",
+          "minLength": 1
+        },
+
+        "request_hash": {
+          "type": "string",
+          "description": "Canonical SHA-256 hash of the constitutional request",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+
+    "verdict": {
+      "type": "object",
+      "description": "Structured replay verification result",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "replay_hash",
+        "failure_mode",
+        "violated_invariant",
+        "divergence_location"
+      ],
+      "properties": {
+
+        "status": {
+          "type": "string",
+          "enum": [
+            "REPLAY_VALID",
+            "REPLAY_INVALID"
+          ],
+          "description": "Replay verification outcome"
+        },
+
+        "replay_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Authoritative replay hash if replay accepted, otherwise null",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+
+        "failure_mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Canonical replay failure mode identifier"
+        },
+
+        "violated_invariant": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Canonical replay invariant violated, if any"
+        },
+
+        "divergence_location": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Canonical location where replay divergence occurred"
+        }
+      },
+
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "REPLAY_VALID"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "failure_mode": { "const": null },
+              "violated_invariant": { "const": null },
+              "divergence_location": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "REPLAY_INVALID"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "failure_mode": { "type": "string" },
+              "violated_invariant": { "type": "string" },
+              "divergence_location": { "type": "string" }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

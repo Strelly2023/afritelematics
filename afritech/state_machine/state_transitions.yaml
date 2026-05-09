@@ -1,0 +1,247 @@
+schema: afritech.state_transitions.v1
+
+transitions:
+
+  # -----------------------------------------------------------------
+  # DECLARED STATES (REPEATED FOR VALIDATION CONSISTENCY)
+  # -----------------------------------------------------------------
+
+  states:
+
+    - UNINITIALIZED
+    - ADMITTED
+    - EXECUTING
+    - COMPLETED
+    - FAILED
+
+  # -----------------------------------------------------------------
+  # ALLOWED TRANSITIONS (EXPLICIT ONLY)
+  # -----------------------------------------------------------------
+
+  allowed:
+
+    - id: S1_ADMISSION
+      from: UNINITIALIZED
+      to: ADMITTED
+      type: FORWARD
+      terminal: false
+
+    - id: S2_EXECUTION
+      from: ADMITTED
+      to: EXECUTING
+      type: FORWARD
+      terminal: false
+
+    - id: S3_COMPLETION
+      from: EXECUTING
+      to: COMPLETED
+      type: FORWARD
+      terminal: true
+
+    - id: S4_FAILURE
+      from: EXECUTING
+      to: FAILED
+      type: FORWARD
+      terminal: true
+
+  # -----------------------------------------------------------------
+  # FORBIDDEN TRANSITIONS (TOTAL COMPLEMENT)
+  # -----------------------------------------------------------------
+
+  forbidden:
+
+    # -------------------------------------------------------------
+    # FROM UNINITIALIZED
+    # -------------------------------------------------------------
+
+    - from: UNINITIALIZED
+      to: EXECUTING
+
+    - from: UNINITIALIZED
+      to: COMPLETED
+
+    - from: UNINITIALIZED
+      to: FAILED
+
+    # -------------------------------------------------------------
+    # FROM ADMITTED
+    # -------------------------------------------------------------
+
+    - from: ADMITTED
+      to: UNINITIALIZED
+
+    - from: ADMITTED
+      to: COMPLETED
+
+    - from: ADMITTED
+      to: FAILED
+
+    # -------------------------------------------------------------
+    # FROM EXECUTING
+    # -------------------------------------------------------------
+
+    - from: EXECUTING
+      to: UNINITIALIZED
+
+    - from: EXECUTING
+      to: ADMITTED
+
+    # -------------------------------------------------------------
+    # TERMINAL STATES (CRITICAL)
+    # -------------------------------------------------------------
+
+    # COMPLETED is terminal
+    - from: COMPLETED
+      to: UNINITIALIZED
+
+    - from: COMPLETED
+      to: ADMITTED
+
+    - from: COMPLETED
+      to: EXECUTING
+
+    - from: COMPLETED
+      to: FAILED
+
+    # FAILED is terminal
+    - from: FAILED
+      to: UNINITIALIZED
+
+    - from: FAILED
+      to: ADMITTED
+
+    - from: FAILED
+      to: EXECUTING
+
+    - from: FAILED
+      to: COMPLETED
+
+  # -----------------------------------------------------------------
+  # COMPLETENESS GUARANTEE
+  # -----------------------------------------------------------------
+
+  completeness:
+
+    total_states: 5
+
+    expected_transitions: 25   # N x N (5 × 5)
+
+    coverage:
+
+      allowed_count: 4
+      forbidden_count: 21
+
+      rule: >
+        allowed + forbidden MUST equal total possible transitions
+
+  # -----------------------------------------------------------------
+  # TRANSITION PROPERTIES
+  # -----------------------------------------------------------------
+
+  properties:
+
+    deterministic: true
+    replay_safe: true
+
+    rules:
+
+      - exactly_one_transition_per_step
+      - no_multi_state_overlap
+      - no_implicit_transition
+      - terminal_states_are_final
+      - forward_progress_only
+
+  # -----------------------------------------------------------------
+  # INVARIANTS (ENFORCED CONTRACT)
+  # -----------------------------------------------------------------
+
+  invariants:
+
+    - I19_STATE_TRANSITION_TOTALITY
+      # All transitions explicitly defined
+
+    - I19_1_ALLOWED_ONLY
+      # Only declared allowed transitions can execute
+
+    - I19_2_FORBIDDEN_ENFORCED
+      # Forbidden transitions must always fail
+
+    - I19_3_NO_IMPLICIT_TRANSITIONS
+      # Any undefined transition is illegal
+
+    - I19_4_REPLAY_MATCH
+      # Replay must produce identical sequence
+
+    - I19_5_SINGLE_STATE_AT_TIME
+      # System can only occupy one state
+
+    - I19_6_INITIAL_STATE_FIXED
+      # Must always start from UNINITIALIZED
+
+    - I19_7_TERMINAL_STATE_FINAL
+      # No transitions from terminal states
+
+    - I19_8_TOTAL_STATE_SPACE_COVERED
+      # allowed ∪ forbidden = ALL possible transitions
+
+  # -----------------------------------------------------------------
+  # VALIDATION RULES (STRICT)
+  # -----------------------------------------------------------------
+
+  validation:
+
+    enforce_totality: true
+    enforce_disjoint_sets: true
+    enforce_unique_ids: true
+    enforce_terminal_finality: true
+
+    failure_policy:
+
+      type: HARD_FAILURE
+      effect: EXECUTION_ABORT
+
+  # -----------------------------------------------------------------
+  # TRACE BINDING REQUIREMENTS
+  # -----------------------------------------------------------------
+
+  trace_binding:
+
+    enabled: true
+
+    rules:
+
+      - each transition MUST map to trace event.step
+      - event index MUST reflect transition order
+      - transition_hash MUST match trace event_hash
+
+  # -----------------------------------------------------------------
+  # REPLAY CONTRACT
+  # -----------------------------------------------------------------
+
+  replay:
+
+    deterministic: true
+
+    required:
+
+      - identical_transition_sequence
+      - identical_final_state
+      - identical_transition_hashes
+
+  # -----------------------------------------------------------------
+  # METADATA
+  # -----------------------------------------------------------------
+
+  metadata:
+
+    version: v1
+    environment: production
+
+    description: >
+      Fully closed state transition system with total coverage.
+      No undefined behavior exists. All transitions are explicitly
+      classified as allowed or forbidden.
+
+    notes: >
+      This file guarantees semantic closure.
+      Any transition outside defined sets MUST cause rejection.

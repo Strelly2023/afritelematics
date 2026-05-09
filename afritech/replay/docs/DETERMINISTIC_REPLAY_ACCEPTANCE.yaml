@@ -1,0 +1,168 @@
+# ============================================================ Afritech Constitutional Replay Law
+# Deterministic Replay Acceptance of Real Inference
+# ============================================================
+#
+# Purpose:
+#   Specify the exact conditions under which replay verification
+#   MUST accept a transcript that includes a real inference binding.
+#
+# Scope:
+#   Phase-2B only
+#
+# This specification is normative.
+# Acceptance conditions are deterministic and non-discretionary.
+# ============================================================
+
+metadata:
+  spec_name: deterministic_replay_acceptance
+  spec_version: "1.0.0"
+  phase: Phase-2B
+  last_updated: "2026-05-05"
+
+# ============================================================
+# DEFINITIONS
+# ============================================================
+
+definitions:
+
+  real_inference:
+    description: >
+      An inference produced by an actual model invocation
+      (local or remote) and bound into replay truth via an
+      inference_binding object.
+
+  replay_acceptance:
+    description: >
+      A verifier outcome with status REPLAY_VALID, indicating that
+      all constitutional replay invariants are satisfied.
+
+  inference_binding:
+    description: >
+      A structured, immutable record capturing the relationship
+      between inference input, inference output, and model identity.
+
+# ============================================================
+# PRECONDITIONS FOR ACCEPTANCE
+# ============================================================
+
+preconditions:
+
+  transcript_exists:
+    description: Transcript file must exist and be readable
+    failure_mode: invalid_transcript_path
+
+  transcript_schema_valid:
+    description: Transcript schema must be complete
+    failure_mode: invalid_transcript_schema
+
+  authority_binding_valid:
+    description: Request authority must match transcript authority
+    failure_mode: authority_mismatch
+
+  deterministic_environment:
+    description: Replay environment must declare deterministic_mode = true
+    failure_mode: environment_mismatch
+
+# ============================================================
+# INFERENCE BINDING REQUIREMENTS
+# ============================================================
+
+inference_binding_requirements:
+
+  presence_required:
+    description: >
+      Any transcript claiming real inference MUST contain
+      an inference_binding object.
+    failure_mode: missing_inference_binding
+
+  input_hash_binding:
+    description: >
+      inference_binding.input_hash MUST equal the canonical
+      request hash.
+    failure_mode: inference_input_mismatch
+
+  model_identity_binding:
+    description: >
+      inference_binding.model_id and model_version MUST match
+      replay_environment.model_id and model_version.
+    failure_mode: model_identity_mismatch
+
+# ============================================================
+# DETERMINISTIC ACCEPTANCE RULE
+# ============================================================
+
+acceptance_rule:
+
+  rule_id: DR-2B-ACCEPT-001
+  description: >
+    Replay verification MUST accept a transcript with real inference
+    if and only if all acceptance invariants are satisfied.
+
+  acceptance_conditions:
+    - transcript_exists
+    - transcript_schema_valid
+    - authority_binding_valid
+    - deterministic_environment
+    - presence_required
+    - input_hash_binding
+    - model_identity_binding
+    - truthpacket_identity
+    - deterministic_identity
+
+  outcome:
+    status: REPLAY_VALID
+    replay_hash: authoritative
+    refusal_allowed: false
+
+# ============================================================
+# NON-DISCRETIONARY BEHAVIOR
+# ============================================================
+
+non_discretion:
+
+  no_probabilistic_tolerance:
+    description: >
+      Replay acceptance MUST NOT depend on semantic similarity,
+      approximate matching, or statistical closeness.
+
+  refuse_on_any_violation:
+    description: >
+      Any violation of acceptance conditions MUST result in
+      deterministic replay refusal.
+
+# ============================================================
+# EXPLICIT NON-GOALS
+# ============================================================
+
+non_goals:
+
+  semantic_correctness:
+    description: >
+      This specification does not assert that model output
+      is correct, helpful, or truthful.
+
+  model_quality:
+    description: >
+      This specification does not evaluate model performance
+      or intelligence.
+
+  production_readiness:
+    description: >
+      This specification does not claim operational stability
+      or deployment readiness.
+
+# ============================================================
+# CONSTITUTIONAL GUARANTEE
+# ============================================================
+
+guarantee:
+
+  statement: >
+    If a real inference transcript is accepted under this rule,
+    replay law guarantees that the inference binding is authority-
+    scoped, deterministic at the replay boundary, and immune to
+    post-hoc reinterpretation.
+
+  enforcement_location: replay_verifier
+  enforcement_phase: Phase-2B
+

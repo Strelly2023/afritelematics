@@ -1,0 +1,304 @@
+schema: afritech.system.identity.v1
+
+system:
+
+  # -----------------------------------------------------------------
+  # CORE IDENTITY
+  # -----------------------------------------------------------------
+
+  name: AfriTech
+  canonical_namespace: afritech
+
+  status: ACTIVE
+  mode: CONSTITUTIONAL_RUNTIME
+
+  description: >
+    AfriTech is a constitutionally-governed execution system
+    where runtime legitimacy, execution validity, and system
+    evolution are strictly enforced through attested artifacts,
+    deterministic replay, and authority-bound inference.
+
+  # -----------------------------------------------------------------
+  # CONSTITUTIONAL ROOT
+  # -----------------------------------------------------------------
+
+  constitutional_root:
+
+    registry: afritech/registry/registry.yaml
+    attestation: afritech/registry/attestation.yaml
+
+    source_of_truth: registry
+    authority_precedence:
+      - registry
+      - attestation
+      - runtime_certificate
+      - replay_transcript
+
+  # -----------------------------------------------------------------
+  # CURRENT STATE SNAPSHOT
+  # -----------------------------------------------------------------
+
+  state:
+
+    constitutional_epoch: 6
+    registry_status: SEALED
+    attestation_status: SEALED
+
+    runtime_admission_required: true
+    replay_required: true
+
+    deterministic_execution_only: true
+    authority_required_for_all_requests: true
+
+  # -----------------------------------------------------------------
+  # EXECUTION MODEL
+  # -----------------------------------------------------------------
+
+  execution_model:
+
+    type: CLOSED_WORLD
+
+    requirements:
+
+      runtime_certificate_required: true
+      execution_surfaces_declared: true
+      authority_binding_required: true
+      replay_verification_required: true
+
+    forbidden:
+
+      - undeclared_execution_surfaces
+      - runtime_mutation
+      - authority_escalation
+      - nondeterministic_execution
+
+  # -----------------------------------------------------------------
+  # ARCHITECTURAL LAYERS
+  # -----------------------------------------------------------------
+
+  architecture:
+
+    layers:
+
+      - name: constitutional_core
+        path: afritech/registry/
+        role: SOURCE_OF_TRUTH
+
+      - name: governance
+        path: afritech/governance/
+        role: RULE_DEFINITION
+
+      - name: runtime
+        path: afritech/runtime/
+        role: EXECUTION_ENGINE
+
+      - name: inference
+        path: afritech/inference/
+        role: AUTHORITY_BOUND_REASONING
+
+      - name: replay
+        path: afritech/replay/
+        role: EXECUTION_PROOF
+
+      - name: proof
+        path: afritech/proof/
+        role: CERTIFICATION
+
+      - name: evaluation
+        path: afritech/evaluation/
+        role: DRIFT_DETECTION
+
+      - name: truth
+        path: afritech/truth/
+        role: EPISTEMIC_MODEL
+
+      - name: guards
+        path: afritech/guards/
+        role: EXECUTION_GATING
+
+      - name: audit
+        path: afritech/audit/
+        role: EVENT_LOGGING
+
+      - name: infrastructure
+        path: afritech/infrastructure/
+        role: NON_CONSTITUTIONAL_SUPPORT
+
+  # -----------------------------------------------------------------
+  # AUTHORITY SYSTEM
+  # -----------------------------------------------------------------
+
+  authority:
+
+    registry_source: afritech/registry/authority_profiles.yaml
+    execution_source: afritech/inference/authority_profiles.yaml
+
+    invariants:
+
+      - no_runtime_authority_creation
+      - no_authority_escalation
+      - authority_precedes_inference
+      - authority_violation_is_terminal
+
+  # -----------------------------------------------------------------
+  # RUNTIME ADMISSION
+  # -----------------------------------------------------------------
+
+  runtime_admission:
+
+    required: true
+
+    certificate:
+
+      schema: afritech.runtime.certificate.v1
+      path: afritech/proof/certificates/
+
+    admission_engine:
+      path: afritech/runtime/admission/admission_engine.py
+
+    invariant: >
+      No runtime exists without a valid RuntimeCertificate.
+
+  # -----------------------------------------------------------------
+  # REPLAY SYSTEM
+  # -----------------------------------------------------------------
+
+  replay:
+
+    required: true
+
+    transcript_schema: afritech/replay/transcript.yaml
+
+    verifier:
+      path: afritech/replay/verify.py
+
+    invariants:
+
+      - deterministic_only
+      - replay_hash_terminal
+      - transcript_required
+
+  # -----------------------------------------------------------------
+  # ATTESTATION BINDING
+  # -----------------------------------------------------------------
+
+  attestation_binding:
+
+    required: true
+
+    invariant: >
+      RuntimeCertificate MUST match attestation across all
+      constitutional bindings.
+
+    enforced_by:
+      - CI-ATTEST-BIND-001
+      - CI-CERT-SIGNATURE-001
+
+  # -----------------------------------------------------------------
+  # CI ENFORCEMENT LAYER
+  # -----------------------------------------------------------------
+
+  ci_enforcement:
+
+    location: afritech/replay/ci/
+
+    enforced_rules:
+
+      - CI-RUNTIME-ADMISSION-001
+      - CI-CERT-SIGNATURE-001
+      - CI-CERT-VERIFY-001
+      - CI-ATTEST-BIND-001
+      - CI-REPLAY-FAIL-001
+      - CI-REPLAY-AUTH-ORDER-001
+
+    required_for_execution_legitimacy: true
+
+  # -----------------------------------------------------------------
+  # NON-OBSERVABILITY INVARIANT
+  # -----------------------------------------------------------------
+
+  non_observability:
+
+    enforced: true
+
+    definition: >
+      System legitimacy MUST be derivable solely from
+      attested artifacts, replay transcripts, and
+      deterministic execution.
+
+      No hidden state, observer, or implicit context
+      is permitted.
+
+  # -----------------------------------------------------------------
+  # GOVERNANCE MODEL
+  # -----------------------------------------------------------------
+
+  governance:
+
+    model: CENTRALIZED_CONSTITUTIONAL
+
+    mutation_path:
+
+      - ADR_APPROVAL
+      - EPOCH_ADVANCE
+      - REGISTRY_RESEAL
+
+    mutation_constraints:
+
+      - silent_mutation_forbidden
+      - epoch_monotonicity_required
+      - replay_validity_preserved
+
+  # -----------------------------------------------------------------
+  # PHASE CLASSIFICATION
+  # -----------------------------------------------------------------
+
+  lifecycle:
+
+    current_phase: PHASE_2B
+
+    completed_phases:
+
+      - PHASE_1_DETERMINISTIC_REPLAY
+      - PHASE_2A_AUTHORITY_ISOLATION
+      - PHASE_2B_REAL_INFERENCE_BINDING
+
+    next_phase: PHASE_3_MULTI_AGENT
+
+  # -----------------------------------------------------------------
+  # SYSTEM GUARANTEES
+  # -----------------------------------------------------------------
+
+  guarantees:
+
+    - execution_requires_admission
+    - authority_required_for_all_actions
+    - deterministic_execution_only
+    - replay_verification_required
+    - attestation_binding_required
+    - no_implicit_behavior
+
+  # -----------------------------------------------------------------
+  # CONSTITUTIONAL ASSERTION
+  # -----------------------------------------------------------------
+
+  constitutional_assertion: >
+    AfriTech operates as a closed constitutional system
+    in which all execution, authority, and runtime existence
+    are explicitly declared, cryptographically bound,
+    and replay-verifiable.
+
+    Any behavior not defined within constitutional artifacts
+    is considered non-existent.
+
+  # -----------------------------------------------------------------
+  # FINAL ASSERTION
+  # -----------------------------------------------------------------
+
+  final_assertion: >
+    AfriTech is a constitutionally bounded execution system.
+
+    No runtime exists without admission.
+    No execution exists without authority.
+    No truth exists without replay.
+    No legitimacy exists outside the constitution.

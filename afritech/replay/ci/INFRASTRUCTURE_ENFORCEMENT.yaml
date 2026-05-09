@@ -1,0 +1,208 @@
+## ============================================================
+## AfriTech CI Rule
+## Infrastructure Non-Interference Enforcement
+## ============================================================
+## Rule ID: CI-INFRA-ENFORCE-001
+## Purpose:
+## Ensure infrastructure surfaces remain strictly
+## non-constitutional and cannot influence runtime execution.
+##
+## Scope:
+## - afritech/docker/
+## - .github/workflows/
+## - environment configs
+##
+## ============================================================
+
+metadata:
+  rule_id: CI-INFRA-ENFORCE-001
+  rule_version: "1.0.0"
+  applies_to:
+    - Phase-2B
+  last_updated: "2026-05-08"
+
+# ============================================================
+# PRINCIPLE
+# ============================================================
+
+principle:
+
+  statement: >
+    Infrastructure MUST NOT influence runtime execution,
+    replay outcomes, or constitutional validity.
+
+  enforcement_mode: static_analysis
+  failure_action: ci_fail
+
+
+# ============================================================
+# TARGETS
+# ============================================================
+
+targets:
+
+  infrastructure_dirs:
+
+    - afritech/docker/
+    - .github/workflows/
+
+  runtime_dirs:
+
+    - afritech/runtime/
+    - afritech/inference/
+    - afritech/replay/
+
+
+# ============================================================
+# CORE RULES
+# ============================================================
+
+rules:
+
+  # ------------------------------------------------------------
+  # INF-1: No infrastructure imports in runtime
+  # ------------------------------------------------------------
+  - check_id: INF-1
+
+    description: >
+      Runtime must not import infrastructure modules.
+
+    target_dirs: 
+      - afritech/runtime/
+      - afritech/inference/
+
+    forbidden_patterns:
+
+      - "docker"
+      - "os\\.environ"
+      - "subprocess"
+      - "dotenv"
+
+    failure_message: >
+      Runtime depends on infrastructure or environment.
+
+
+  # ------------------------------------------------------------
+  # INF-2: No environment-driven execution
+  # ------------------------------------------------------------
+  - check_id: INF-2
+
+    description: >
+      Prevent execution logic based on environment variables.
+
+    target_dirs:
+      - afritech/runtime/
+      - afritech/inference/
+
+    forbidden_patterns:
+
+      - "os\\.getenv"
+      - "os\\.environ\\["
+      - "env\\."
+
+    failure_message: >
+      Environment-based execution detected.
+
+
+  # ------------------------------------------------------------
+  # INF-3: No infrastructure paths in registry/certificate
+  # ------------------------------------------------------------
+  - check_id: INF-3
+
+    description: >
+      Infrastructure must not appear in constitutional bindings.
+
+    target_files:
+
+      - afritech/registry/registry.yaml
+      - afritech/registry/attestation.yaml
+      - afritech/proof/certificates/*.cert
+
+    forbidden_patterns:
+
+      - "docker"
+      - ".github"
+      - "workflow"
+
+    failure_message: >
+      Infrastructure detected in constitutional binding.
+
+
+  # ------------------------------------------------------------
+  # INF-4: Replay determinism enforcement
+  # ------------------------------------------------------------
+  - check_id: INF-4
+
+    description: >
+      Ensure infrastructure cannot affect replay output.
+
+    target_dirs:
+
+      - afritech/runtime/
+
+    forbidden_patterns:
+
+      - "time\\."
+      - "random\\."
+      - "uuid\\."
+      - "datetime\\.now"
+
+    failure_message: >
+      Non-deterministic dependency detected.
+
+
+  # ------------------------------------------------------------
+  # INF-5: No execution logic inside infrastructure
+  # ------------------------------------------------------------
+  - check_id: INF-5
+
+    description: >
+      Infrastructure files must not contain runtime logic.
+
+    target_dirs:
+
+      - afritech/docker/
+      - .github/workflows/
+
+    forbidden_patterns:
+
+      - "def run"
+      - "execute"
+      - "engine"
+
+    failure_message: >
+      Execution logic found in infrastructure.
+
+
+# ============================================================
+# RUNTIME ASSERTION
+# ============================================================
+
+runtime_assertion:
+
+  statement: >
+    Runtime execution must be fully independent
+    from all infrastructure layers.
+
+  violations:
+
+    - runtime_invalidated
+    - replay_invalidated
+    - certificate_rejected
+
+
+# ============================================================
+# CI OUTCOME
+# ============================================================
+
+ci_outcome:
+
+  on_pass:
+    result: success
+    message: "Infrastructure isolation verified."
+
+  on_fail:
+    result: failure
+    message: >
+      Infrastructure is influencing execution.
+      This violates constitutional invariants.

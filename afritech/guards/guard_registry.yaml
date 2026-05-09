@@ -1,0 +1,92 @@
+guard_registry:
+
+  metadata:
+    version: v1
+    description: >
+      Canonical registry of all runtime guards enforcing
+      constitutional invariants, authority, state, trace,
+      schema, and runtime correctness.
+
+  guards:
+
+    # ---------------------------------------------------------
+    # CORE INVARIANT GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-INVARIANT-001
+      type: INVARIANT_GUARD
+      target: SYSTEM_RUNTIME
+      rule: "Enforce deterministic execution, replay validity, authority presence, closed world, and proof requirement"
+
+    # ---------------------------------------------------------
+    # AUTHORITY GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-AUTHORITY-001
+      type: AUTHORITY_GUARD
+      target: AUTHORITY_CONTEXT
+      rule: "All actions must be authorized and derived from genesis root"
+
+    # ---------------------------------------------------------
+    # EPOCH GUARDS (TIME CONSISTENCY)
+    # ---------------------------------------------------------
+
+    - id: GUARD-EPOCH-001
+      type: EPOCH_GUARD
+      target: TIME_LAYER
+      rule: "Epoch must be active and immutable unless explicitly authorized"
+
+    # ---------------------------------------------------------
+    # STATE MACHINE GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-STATE-001
+      type: STATE_GUARD
+      target: STATE_TRANSITIONS
+      rule: "Only allowed transitions may execute; illegal transitions are rejected"
+
+    # ---------------------------------------------------------
+    # TRACE INTEGRITY GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-TRACE-001
+      type: TRACE_GUARD
+      target: TRACE_EVENTS
+      rule: "Trace events must match computed hashes and execution steps"
+
+    # ---------------------------------------------------------
+    # SCHEMA VALIDATION GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-SCHEMA-001
+      type: RUNTIME_GUARD
+      target: STRUCTURED_PAYLOADS
+      rule: "All payloads must conform to defined JSON schemas"
+
+    # ---------------------------------------------------------
+    # RUNTIME SAFETY GUARDS
+    # ---------------------------------------------------------
+
+    - id: GUARD-RUNTIME-001
+      type: RUNTIME_GUARD
+      target: EXECUTION_CONTEXT
+      rule: "No undefined behavior or malformed context allowed at runtime"
+
+  invariants:
+
+    - I23_GUARD_MANDATORY
+    - I23_1_NO_BYPASS
+    - I23_2_FAIL_FAST
+    - I23_3_FULL_COVERAGE
+    - I23_4_DETERMINISTIC_ENFORCEMENT
+
+  enforcement:
+
+    mode: STRICT
+    failure_action: REJECT
+
+  determinism:
+
+    ordering: defined
+    evaluation: deterministic
+    side_effects: disallowed
