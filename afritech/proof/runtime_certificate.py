@@ -1,21 +1,19 @@
 """
-afritech/proof/runtime_certificate.py
-
-Runtime Certificate
-===================
+AfriTech Runtime Certificate
+============================
 
 Represents the highest level of execution legitimacy.
 
-Binds:
-- Registry state
-- Execution context
-- Execution result
-- Proof snapshot
+A RuntimeCertificate is valid iff:
+- constitutional artifacts are cryptographically bound
+- internal structure is self-consistent
+- certificate hash is stable and verifiable
 
-Responsibilities:
-- Certify that execution is constitutionally valid
-- Provide audit-grade verification artifact
-- Enable replay validation
+IMPORTANT:
+This module MUST NOT import runtime execution machinery.
+Execution binding is OPTIONAL and occurs only at runtime.
+
+FAIL-CLOSED.
 """
 
 from __future__ import annotations
@@ -25,16 +23,13 @@ from datetime import datetime
 import hashlib
 import json
 
-from runtime.context.runtime_context import RuntimeContext
-from runtime.engine.executor import ExecutionResult
-from proof.proof_snapshot import ProofSnapshot
-
 
 # -----------------------------------------------------------------
 # CERTIFICATE ERROR
 # -----------------------------------------------------------------
 
 class RuntimeCertificateError(Exception):
+    """Raised when a runtime certificate is invalid"""
     pass
 
 
@@ -43,52 +38,111 @@ class RuntimeCertificateError(Exception):
 # -----------------------------------------------------------------
 
 class RuntimeCertificate:
+    """
+    Canonical runtime legitimacy artifact.
+
+    This object may exist in two modes:
+    - Constitutional-only (Phase 5)
+    - Execution-bound (Phase 6+)
+
+    Both modes are valid.
+    """
 
     def __init__(
         self,
+        *,
+        # -------------------------------------------------------------
+        # EXECUTION BINDINGS (OPTIONAL)
+        # -------------------------------------------------------------
         registry_hash: str,
-        context: RuntimeContext,
-        execution_result: ExecutionResult,
-        proof_snapshot: ProofSnapshot,
+        context: Optional[Any],
+        execution_result: Optional[Any],
+        proof_snapshot: Optional[Any],
+
+        # -------------------------------------------------------------
+        # CONSTITUTIONAL BINDINGS (REQUIRED)
+        # -------------------------------------------------------------
+        semantic_compiler_hash: str,
+        invariant_ir_hash: str,
+        invariant_index_hash: str,
+
+        lean_invariant_hash: str,
+        lean_epoch_hash: str,
+
+        epoch_ir_hash: str,
+        ci_completeness_hash: str,
+
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """
-        :param registry_hash: cryptographic identity of registry
-        :param context: execution context
-        :param execution_result: execution output
-        :param proof_snapshot: proof snapshot object
-        :param metadata: optional additional metadata
+        Construct a runtime certificate.
+
+        Constitutional bindings are REQUIRED.
+        Execution bindings are OPTIONAL (Phase 6+).
         """
 
-        if not context or not execution_result or not proof_snapshot:
-            raise RuntimeCertificateError("Missing required components")
+        # -------------------------------------------------------------
+        # EXECUTION VALIDATION (OPTIONAL)
+        # -------------------------------------------------------------
 
-        if not isinstance(context, RuntimeContext):
-            raise RuntimeCertificateError("Invalid RuntimeContext")
+        if context is not None:
+            if not hasattr(context, "context_hash"):
+                raise RuntimeCertificateError(
+                    "Invalid execution context (missing context_hash)"
+                )
 
-        if not isinstance(execution_result, ExecutionResult):
-            raise RuntimeCertificateError("Invalid ExecutionResult")
+        if execution_result is not None:
+            if not hasattr(execution_result, "result_hash"):
+                raise RuntimeCertificateError(
+                    "Invalid execution result (missing result_hash)"
+                )
+            if hasattr(execution_result, "verify"):
+                if not execution_result.verify():
+                    raise RuntimeCertificateError(
+                        "ExecutionResult integrity failed"
+                    )
 
-        if not isinstance(proof_snapshot, ProofSnapshot):
-            raise RuntimeCertificateError("Invalid ProofSnapshot")
+        if proof_snapshot is not None:
+            if not hasattr(proof_snapshot, "proof_hash"):
+                raise RuntimeCertificateError(
+                    "Invalid proof snapshot (missing proof_hash)"
+                )
+            if hasattr(proof_snapshot, "verify"):
+                if not proof_snapshot.verify():
+                    raise RuntimeCertificateError(
+                        "ProofSnapshot integrity failed"
+                    )
 
-        if not execution_result.verify():
-            raise RuntimeCertificateError("ExecutionResult integrity failed")
+        if context is not None and proof_snapshot is not None:
+            if (
+                hasattr(proof_snapshot, "context")
+                and proof_snapshot.context.context_hash != context.context_hash
+            ):
+                raise RuntimeCertificateError(
+                    "Context mismatch between execution and proof snapshot"
+                )
 
-        if not proof_snapshot.verify():
-            raise RuntimeCertificateError("ProofSnapshot integrity failed")
-
-        if context.context_hash != proof_snapshot.context.context_hash:
-            raise RuntimeCertificateError(
-                "Context mismatch between execution and proof snapshot"
-            )
+        # -------------------------------------------------------------
+        # ASSIGN
+        # -------------------------------------------------------------
 
         self.registry_hash = registry_hash
         self.context = context
         self.execution_result = execution_result
         self.proof_snapshot = proof_snapshot
-        self.metadata = metadata or {}
 
+        # Constitutional bindings
+        self.semantic_compiler_hash = semantic_compiler_hash
+        self.invariant_ir_hash = invariant_ir_hash
+        self.invariant_index_hash = invariant_index_hash
+
+        self.lean_invariant_hash = lean_invariant_hash
+        self.lean_epoch_hash = lean_epoch_hash
+
+        self.epoch_ir_hash = epoch_ir_hash
+        self.ci_completeness_hash = ci_completeness_hash
+
+        self.metadata = metadata or {}
         self.created_at = datetime.utcnow().isoformat() + "Z"
 
         # Deterministic certificate identity
@@ -100,11 +154,26 @@ class RuntimeCertificate:
     # -----------------------------------------------------------------
 
     def _canonical_form(self) -> Dict[str, Any]:
+        """
+        Canonical certificate form for hashing.
+        """
         return {
+            # Execution (optional)
             "registry_hash": self.registry_hash,
-            "context_hash": self.context.context_hash,
-            "result_hash": self.execution_result.result_hash,
-            "proof_hash": self.proof_snapshot.proof_hash,
+            "context_hash": getattr(self.context, "context_hash", None),
+            "result_hash": getattr(self.execution_result, "result_hash", None),
+            "proof_hash": getattr(self.proof_snapshot, "proof_hash", None),
+
+            # Constitutional
+            "semantic_compiler_hash": self.semantic_compiler_hash,
+            "invariant_ir_hash": self.invariant_ir_hash,
+            "invariant_index_hash": self.invariant_index_hash,
+            "lean_invariant_hash": self.lean_invariant_hash,
+            "lean_epoch_hash": self.lean_epoch_hash,
+            "epoch_ir_hash": self.epoch_ir_hash,
+            "ci_completeness_hash": self.ci_completeness_hash,
+
+            # Metadata
             "metadata": self.metadata,
         }
 
@@ -112,7 +181,8 @@ class RuntimeCertificate:
     # HASH
     # -----------------------------------------------------------------
 
-    def _canonical_json(self, data: Dict[str, Any]) -> str:
+    @staticmethod
+    def _canonical_json(data: Dict[str, Any]) -> str:
         return json.dumps(
             data,
             sort_keys=True,
@@ -121,7 +191,7 @@ class RuntimeCertificate:
 
     def _compute_hash(self) -> str:
         return hashlib.sha256(
-            self._canonical_json(self.canonical).encode()
+            self._canonical_json(self.canonical).encode("utf-8")
         ).hexdigest()
 
     # -----------------------------------------------------------------
@@ -129,13 +199,30 @@ class RuntimeCertificate:
     # -----------------------------------------------------------------
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Export certificate for storage or audit.
+        """
         return {
             "certificate_hash": self.certificate_hash,
             "created_at": self.created_at,
             "registry_hash": self.registry_hash,
-            "context": self.context.to_dict(),
-            "execution_result": self.execution_result.to_dict(),
-            "proof_snapshot": self.proof_snapshot.to_dict(),
+
+            "execution": {
+                "context_hash": getattr(self.context, "context_hash", None),
+                "result_hash": getattr(self.execution_result, "result_hash", None),
+                "proof_hash": getattr(self.proof_snapshot, "proof_hash", None),
+            },
+
+            "constitutional": {
+                "semantic_compiler_hash": self.semantic_compiler_hash,
+                "invariant_ir_hash": self.invariant_ir_hash,
+                "invariant_index_hash": self.invariant_index_hash,
+                "lean_invariant_hash": self.lean_invariant_hash,
+                "lean_epoch_hash": self.lean_epoch_hash,
+                "epoch_ir_hash": self.epoch_ir_hash,
+                "ci_completeness_hash": self.ci_completeness_hash,
+            },
+
             "metadata": self.metadata,
         }
 
@@ -145,22 +232,11 @@ class RuntimeCertificate:
 
     def verify(self) -> bool:
         """
-        Full certificate integrity check
+        Full certificate integrity check.
         """
 
-        # Check internal integrity
-        if not self.execution_result.verify():
-            return False
-
-        if not self.proof_snapshot.verify():
-            return False
-
-        if not self.context.verify():
-            return False
-
-        # Recompute hash
         recomputed = hashlib.sha256(
-            self._canonical_json(self.canonical).encode()
+            self._canonical_json(self.canonical).encode("utf-8")
         ).hexdigest()
 
         return recomputed == self.certificate_hash
@@ -171,9 +247,8 @@ class RuntimeCertificate:
 
     def sign(self, signer_id: str) -> Dict[str, Any]:
         """
-        Placeholder for cryptographic signing
+        Placeholder for cryptographic signing.
         """
-
         return {
             "signer": signer_id,
             "certificate_hash": self.certificate_hash,
@@ -184,8 +259,11 @@ class RuntimeCertificate:
     # STRING REPRESENTATION
     # -----------------------------------------------------------------
 
-    def __repr__(self):
-        return f"<RuntimeCertificate hash={self.certificate_hash[:10]}...>"
+    def __repr__(self) -> str:
+        return (
+            f"<RuntimeCertificate "
+            f"hash={self.certificate_hash[:10]}...>"
+        )
 
 
 # -----------------------------------------------------------------
@@ -193,14 +271,26 @@ class RuntimeCertificate:
 # -----------------------------------------------------------------
 
 def build_runtime_certificate(
+    *,
     registry_hash: str,
-    context: RuntimeContext,
-    execution_result: ExecutionResult,
-    proof_snapshot: ProofSnapshot,
+    context: Optional[Any],
+    execution_result: Optional[Any],
+    proof_snapshot: Optional[Any],
+
+    semantic_compiler_hash: str,
+    invariant_ir_hash: str,
+    invariant_index_hash: str,
+
+    lean_invariant_hash: str,
+    lean_epoch_hash: str,
+
+    epoch_ir_hash: str,
+    ci_completeness_hash: str,
+
     metadata: Optional[Dict[str, Any]] = None,
 ) -> RuntimeCertificate:
     """
-    Convenience builder
+    Authoritative runtime certificate builder.
     """
 
     return RuntimeCertificate(
@@ -208,5 +298,16 @@ def build_runtime_certificate(
         context=context,
         execution_result=execution_result,
         proof_snapshot=proof_snapshot,
+
+        semantic_compiler_hash=semantic_compiler_hash,
+        invariant_ir_hash=invariant_ir_hash,
+        invariant_index_hash=invariant_index_hash,
+
+        lean_invariant_hash=lean_invariant_hash,
+        lean_epoch_hash=lean_epoch_hash,
+
+        epoch_ir_hash=epoch_ir_hash,
+        ci_completeness_hash=ci_completeness_hash,
+
         metadata=metadata,
     )

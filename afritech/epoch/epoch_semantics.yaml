@@ -1,0 +1,348 @@
+schema: afritech.epoch.semantics.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTIONAL
+  mutability: CONTROLLED
+  compiled_target: afritech/epoch/compiled/semantic_epoch.py
+  generated_ir: afritech/epoch/compiled/epoch_ir.json
+  enforcement_mode: HARD
+
+description: >
+  Canonical semantic source for AfriTech epoch meaning.
+
+  This file defines the complete and exclusive constitutional
+  semantics of epoch identity, evolution, transition legality,
+  reseal obligations, replay admissibility, and registry continuity.
+
+  No runtime, replay, CI, or proof component may interpret
+  epoch meaning outside artifacts compiled from this source.
+
+# ============================================================
+# GLOBAL EPOCH LAW (APPLIES TO ALL EPOCHS)
+# ============================================================
+
+global_law:
+
+  monotonicity:
+    required: true
+    rule: STRICTLY_INCREASING
+    description: Epoch numbers must strictly increase.
+    violation_class: B_TEMPORAL
+
+  parent_lineage:
+    required: true
+    root_epoch_parent: null
+    description: Every epoch (except genesis) must reference exactly one parent.
+    violation_class: B_LINEAGE
+
+  replay_determinism:
+    required: true
+    rule: CANONICAL_REPLAY_REQUIRED
+    description: Epoch state must be reconstructible deterministically under replay.
+    violation_class: B_REPLAY
+
+  registry_continuity:
+    required: true
+    rule: NO_EPOCH_GAPS
+    description: Epoch history must be continuous and gap-free.
+    violation_class: B_REGISTRY
+
+  attestation_binding:
+    required: true
+    rule: RECEIPT_AND_REGISTRY_HASH_MATCH
+    description: Epoch legitimacy requires receipt, replay, and registry hash alignment.
+    violation_class: B_ATTESTATION
+
+  temporal_finality:
+    resealed_epochs_mutable: false
+    description: Resealed epochs are immutable forever.
+    violation_class: B_FINALITY
+
+# ============================================================
+# EPOCH TYPES (ONTOLOGY)
+# ============================================================
+
+epoch_types:
+
+  GENESIS:
+    description: >
+      Foundational epoch establishing the constitutional root
+      and trust anchor of the system.
+
+    permits:
+      - constitutional_initialization
+      - root_attestation
+      - baseline_receipt_generation
+
+    prohibits:
+      - parent_reference
+      - replay_fork
+      - authority_derivation
+
+    reseal_required: true
+
+  EVOLUTION:
+    description: >
+      Epoch introducing constitutional capability expansion
+      while preserving backward lineage continuity.
+
+    permits:
+      - invariant_extension
+      - runtime_surface_expansion
+      - proof_extension
+      - registry_evolution
+
+    prohibits:
+      - lineage_rewrite
+      - replay_reset
+      - authority_escalation
+
+    reseal_required: true
+
+  NORMALIZATION:
+    description: >
+      Structural reorganization epoch with no semantic expansion
+      or authority change.
+
+    permits:
+      - internal_refactor
+      - artifact_relayout
+      - receipt_schema_stabilization
+      - replay_alignment
+
+    prohibits:
+      - invariant_addition
+      - authority_change
+      - execution_surface_change
+
+    reseal_required: true
+
+  CORRECTION:
+    description: >
+      Epoch repairing semantic or historical inconsistency
+      without expanding constitutional capability.
+
+    permits:
+      - semantic_repair
+      - attestation_fix
+      - replay_consistency_repair
+
+    prohibits:
+      - capability_addition
+      - authority_broadening
+      - surface_extension
+
+    reseal_required: true
+
+  TERMINAL:
+    description: >
+      Final immutable constitutional epoch.
+      No further evolution is permitted.
+
+    permits:
+      - proof_discharge
+      - terminal_attestation
+
+    prohibits:
+      - further_transition
+      - mutation
+      - reseal_after_final
+
+    reseal_required: true
+
+# ============================================================
+# TRANSITION LAW
+# ============================================================
+
+transition_rules:
+
+  GENESIS:
+    allowed_successors:
+      - EVOLUTION
+
+  EVOLUTION:
+    allowed_successors:
+      - EVOLUTION
+      - NORMALIZATION
+      - CORRECTION
+      - TERMINAL
+
+  NORMALIZATION:
+    allowed_successors:
+      - EVOLUTION
+      - NORMALIZATION
+      - CORRECTION
+      - TERMINAL
+
+  CORRECTION:
+    allowed_successors:
+      - EVOLUTION
+      - NORMALIZATION
+      - TERMINAL
+
+  TERMINAL:
+    allowed_successors: []
+
+# ============================================================
+# RESEAL REQUIREMENTS (MANDATORY)
+# ============================================================
+
+reseal_requirements:
+
+  mandatory_fields:
+    - epoch_number
+    - parent_epoch
+    - epoch_type
+    - semantic_hash
+    - registry_hash
+    - receipt_hash
+    - replay_hash
+    - attestation_hash
+
+  validation:
+
+    semantic_hash:
+      required: true
+      description: Hash of compiled epoch semantic IR.
+
+    receipt_hash:
+      required: true
+      description: Hash of constitutional receipt proving lawful execution.
+
+    replay_hash:
+      required: true
+      description: Hash proving deterministic replay validity.
+
+    attestation_hash:
+      required: true
+      description: Hash binding epoch to registry attestation.
+
+# ============================================================
+# REPLAY ADMISSIBILITY LAW
+# ============================================================
+
+replay_admissibility:
+
+  required_conditions:
+    - canonical_trace_order
+    - receipt_present
+    - receipt_hash_matches
+    - registry_hash_matches
+    - parent_lineage_verified
+    - semantic_epoch_match
+
+  refusal_on_failure: true
+  refusal_mode: DETERMINISTIC_REFUSAL
+
+# ============================================================
+# COMPILATION CONTRACT
+# ============================================================
+
+compiler_contract:
+
+  emit:
+    - SemanticEpoch
+    - EpochType
+    - EpochTransitionRule
+    - EpochSemanticManifest
+
+  output_validation:
+    require_hash_stability: true
+    require_schema_validation: true
+    require_transition_validation: true
+
+# ============================================================
+# MIGRATION POLICY
+# ============================================================
+
+migration:
+
+  legacy_epoch_registry:
+    path: afritech/epoch/epoch_registry.yaml
+    status: DEPRECATED
+
+  migration_required: true
+
+  rules:
+    - legacy_epochs_must_map_exactly
+    - no_epoch_number_reassignment
+    - no_parent_rewrite
+    - semantic_hash_recomputation_required
+
+# ============================================================
+# ACTIVE EPOCH LINEAGE (DECLARATIVE SNAPSHOT)
+# ============================================================
+
+lineage:
+
+  current_epoch: 6
+
+  epochs:
+
+    - number: 0
+      type: GENESIS
+      parent: null
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 1
+      type: EVOLUTION
+      parent: 0
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 2
+      type: EVOLUTION
+      parent: 1
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 3
+      type: NORMALIZATION
+      parent: 2
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 4
+      type: EVOLUTION
+      parent: 3
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 5
+      type: CORRECTION
+      parent: 4
+      constitutional_status: SEALED
+      semantic_hash: null
+
+    - number: 6
+      type: EVOLUTION
+      parent: 5
+      constitutional_status: ACTIVE
+      semantic_hash: null
+
+# ============================================================
+# CONSTITUTIONAL ACCEPTANCE CRITERIA
+# ============================================================
+
+acceptance:
+
+  semantic_epoch_required: true
+
+  raw_yaml_runtime_access_forbidden: true
+
+  compiled_epoch_only: true
+
+  direct_registry_epoch_interpretation_forbidden: true
+
+  replay_must_validate_epoch_semantics: true
+
+  receipt_must_bind_epoch_hash: true
+
+  violation_effect:
+    - runtime_refusal
+    - receipt_non_emission
+    - replay_invalid
+    - attestation_rejection

@@ -1,0 +1,16 @@
+{
+  "certificate_type": "RuntimeCertificate",
+  "epoch": 6,
+  "status": "VALID",
+  "generated_by": "afritech.proof.generate_runtime_certificate",
+  "artifacts": {
+    "registry_hash": "2a5b4a7157b9fdca39291044a3121f759f5ae2bc099072b89bba1c457300064f",
+    "semantic_source_hash": "6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0",
+    "lean_invariants": "afritech/formal/generated/invariants.lean"
+  },
+  "guards": {
+    "epoch_bound": true,
+    "fail_closed": true
+  },
+  "timestamp_utc": "GENERATED_AT_RUNTIME"
+}

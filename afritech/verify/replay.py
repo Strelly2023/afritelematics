@@ -1,23 +1,19 @@
 # afritech/verify/replay.py
 
-from __future__ import annotations
-
 """
 AfriTech Constitutional Replay Verifier
-=======================================
+======================================
 
 CLI entrypoint for machine-checkable constitutional replay verification.
 
-This verifier proves that the current AfriTech sovereign state is the
-lawful result of its entire constitutional history.
+Replay verification is AUTHORITATIVE in afritech.verify.engine.verify_replay.
+This file is an observer and reporter only.
 
-IMPORTANT CONSTITUTIONAL GUARANTEES:
-- Read-only
-- Non-authoritative
-- No runtime or guard coupling
-- No mutation of registry, epochs, or audit logs
-- Failure indicates UNLAWFUL HISTORY, not enforcement
+Replay is law.
+If replay fails, legitimacy does not exist.
 """
+
+from __future__ import annotations
 
 import sys
 from typing import Optional
@@ -25,9 +21,8 @@ from typing import Optional
 from afritech.verify.engine import verify_replay
 from afritech.verify.report import print_report
 
-from afritech.trace.trace_reconstructor import reconstruct_trace
-from afritech.trace.trace_validator import validate_trace
 from afritech.registry.loader import load_registry
+from afritech.guards.engine import fail, ViolationClass
 
 
 # ---------------------------------------------------------------------
@@ -39,98 +34,73 @@ def main() -> None:
     Execute constitutional replay verification.
 
     Exit codes:
-      0 -> Replay valid
-      1 -> Replay invalid
+      0 -> Replay VALID (constitutional history lawful)
+      1 -> Replay INVALID (constitutional legitimacy void)
     """
 
-    print("🔁 AFRITECH CONSTITUTIONAL REPLAY")
-    print("Loading epoch history...")
-    print("Verifying epoch chain...")
-    print("Verifying reseal continuity...")
-    print("Verifying registry attestation...")
-    print("Verifying invariant preservation...")
-    print("Verifying ADR legitimacy...")
-    print("Reconstructing execution trace...")
-    print("Verifying causal trace integrity...")
+    print("🔁 AFRITECH CONSTITUTIONAL REPLAY VERIFIER")
+    print("--------------------------------------------------")
 
     # -------------------------------------------------------------
-    # CORE REPLAY VERIFICATION (AUTHORITATIVE)
+    # LOAD REGISTRY (SINGULAR AUTHORITY)
     # -------------------------------------------------------------
 
+    print("• Loading sealed registry...")
+    registry = load_registry()
+
+    attestation = registry.get("attestation")
+    if not attestation:
+        fail(
+            "missing_registry_attestation",
+            ViolationClass.A_FATAL,
+        )
+
+    if attestation.get("seal_status") != "SEALED":
+        fail(
+            "registry_not_sealed",
+            ViolationClass.A_FATAL,
+        )
+
+    print("• Registry is sealed")
+
+    # -------------------------------------------------------------
+    # AUTHORITATIVE REPLAY VERIFICATION
+    # -------------------------------------------------------------
+
+    print("• Verifying constitutional history via replay engine...")
+    print("--------------------------------------------------")
+
+    # IMPORTANT:
+    # verify_replay() is the SOLE authority on replay validity.
     result = verify_replay()
 
-    # -------------------------------------------------------------
-    # NORMALIZE RESULT OBJECT (DEFENSIVE)
-    # -------------------------------------------------------------
-
+    # Normalize error list
     if not hasattr(result, "errors"):
         result.errors = []
 
-    trace_error: Optional[str] = None
-
     # -------------------------------------------------------------
-    # TRACE VERIFICATION (OPTIONAL, NON-AUTHORITATIVE)
-    # -------------------------------------------------------------
-
-    try:
-        if result.valid and hasattr(result, "epoch_history") and result.epoch_history:
-
-            registry = load_registry()
-
-            trace = reconstruct_trace(
-                epoch_history=result.epoch_history,
-                registry=registry,
-            )
-
-            validate_trace(trace)
-
-            # -----------------------------------------------------
-            # TRACE ↔ REGISTRY BINDING (OPTIONAL)
-            # -----------------------------------------------------
-
-            attestation = registry.get("attestation", {})
-            expected_trace_hash = attestation.get("trace_hash")
-
-            if expected_trace_hash:
-                actual_trace_hash = trace.get("trace_root_hash")
-
-                if actual_trace_hash != expected_trace_hash:
-                    raise RuntimeError(
-                        "trace_hash_mismatch: "
-                        f"{actual_trace_hash} != {expected_trace_hash}"
-                    )
-
-    except Exception as e:
-        trace_error = str(e)
-        result.valid = False
-        result.errors.append(
-            f"TRACE VERIFICATION FAILED: {trace_error}"
-        )
-
-    # -------------------------------------------------------------
-    # REPORT
+    # REPORT (NON-AUTHORITATIVE)
     # -------------------------------------------------------------
 
     print_report(result)
 
     # -------------------------------------------------------------
-    # EXIT CODE
+    # FINAL VERDICT
     # -------------------------------------------------------------
 
     if result.valid:
-       # print("✅ Replay valid")
-        #print("✅ Constitutional lineage intact")
-
-        if trace_error is None:
-            print("✅ Trace integrity verified")
-
+        print("✅ REPLAY VALID")
+        print("✅ Constitutional history is lawful")
         sys.exit(0)
 
     else:
-        print("❌ Replay invalid")
+        print("❌ REPLAY INVALID")
+        print("❌ Constitutional legitimacy is void")
 
-        if trace_error:
-            print(f"❌ Trace error: {trace_error}")
+        if result.errors:
+            print("❌ REPLAY VIOLATIONS DETECTED")
+            for i, err in enumerate(result.errors, start=1):
+                print(f"  {i}. {err}")
 
         sys.exit(1)
 

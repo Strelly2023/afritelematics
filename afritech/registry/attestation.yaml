@@ -36,6 +36,14 @@ attestation:
     kernel_root_hash: "<MERKLE_ROOT(kernel_hashes ordered)>"
 
   # -----------------------------------------------------------------
+  # CLOSED-WORLD EXECUTION WITNESSES (REQUIRED BY I8)
+  # -----------------------------------------------------------------
+
+  execution_surface_hash: "<SHA256(afritech/governance/EXECUTION_SURFACES.yaml)>"
+
+  kernel_surface_hash: "<MERKLE_ROOT(kernel_hashes ordered)>"
+
+  # -----------------------------------------------------------------
   # BINDING ORDER (DETERMINISTIC HASH COMPOSITION)
   # -----------------------------------------------------------------
 
@@ -46,6 +54,8 @@ attestation:
     - execution_surfaces_hash
     - authority_profiles_hash
     - replay_verifier_hash
+    - execution_surface_hash
+    - kernel_surface_hash
 
   # -----------------------------------------------------------------
   # KERNEL SURFACE HASH ATTESTATION
@@ -81,12 +91,13 @@ attestation:
       hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
   # -----------------------------------------------------------------
-  # MERKLE ROOT COMPUTATION (NEW — REQUIRED FOR PHASE 4)
+  # MERKLE ROOT COMPUTATION
   # -----------------------------------------------------------------
 
   merkle_root:
 
     algorithm: SHA256_MERKLE_TREE
+
     leaf_order:
       - lean
       - kernel
@@ -170,7 +181,7 @@ attestation:
       is permitted.
 
   # -----------------------------------------------------------------
-  # REPLAY BINDING (NEW — CRITICAL FOR PHASE 2B+)
+  # REPLAY BINDING
   # -----------------------------------------------------------------
 
   replay_binding:
@@ -198,6 +209,8 @@ attestation:
       includes:
         - bindings
         - binding_order
+        - execution_surface_hash
+        - kernel_surface_hash
         - kernel_hashes
         - merkle_root
         - guarantees
@@ -228,6 +241,8 @@ attestation:
       - epoch_hash
       - kernel_root_hash
       - execution_surfaces_hash
+      - execution_surface_hash
+      - kernel_surface_hash
       - authority_profiles_hash
       - replay_verifier_hash
 
@@ -244,7 +259,6 @@ attestation:
     is cryptographically sealed and constitutionally valid.
 
     All runtime execution MUST derive legitimacy from:
-
       - registry continuity
       - epoch integrity
       - kernel hash integrity
@@ -255,7 +269,6 @@ attestation:
       - replay-verifiable execution
 
     Any deviation SHALL result in:
-
       - execution refusal
       - replay invalidation
       - constitutional failure

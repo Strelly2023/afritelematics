@@ -1,0 +1,97 @@
+name: Constitutional Enforcement
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  constitutional:
+    name: Enforce Constitutional Law & Legitimacy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------------
+      # CHECKOUT
+      # ------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # PYTHON
+      # ------------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # ------------------------------------------------------------
+      # CONSTITUTIONAL SEMANTICS
+      # ------------------------------------------------------------
+
+      - name: Compile constitutional invariants
+        run: python3 -m afritech.constitution.compiler.compile_invariants
+
+      - name: Verify semantic coverage
+        run: python3 -m afritech.constitution.verify_semantic_coverage
+
+      # ------------------------------------------------------------
+      # FORMAL INVARIANTS (LEAN)
+      # ------------------------------------------------------------
+
+      - name: Generate Lean invariant artifacts
+        run: python3 -m afritech.proof.formal.generate_invariants_lean
+
+      - name: Check Lean invariant proof presence
+        run: python3 -m afritech.proof.formal.check_proofs
+
+      # ------------------------------------------------------------
+      # EPOCH FORMALIZATION
+      # ------------------------------------------------------------
+
+      - name: Generate Lean epoch artifacts
+        run: python3 -m afritech.proof.formal.generate_epoch_lean
+
+      - name: Check Lean epoch proof presence
+        run: python3 -m afritech.proof.formal.check_epoch_proofs
+
+      # ------------------------------------------------------------
+      # CONSTITUTIONAL COMPLETENESS
+      # ------------------------------------------------------------
+
+      - name: Generate constitutional completeness
+        run: python3 -m afritech.proof.generate_completeness
+
+      - name: Enforce constitutional completeness
+        run: python3 -m afritech.ci.completeness_guard
+
+      # ------------------------------------------------------------
+      # RUNTIME LEGITIMACY
+      # ------------------------------------------------------------
+
+      - name: Generate runtime certificate
+        run: python3 -m afritech.proof.generate_runtime_certificate
+
+      # ------------------------------------------------------------
+      # REPLAY LEGITIMACY
+      # ------------------------------------------------------------
+
+      - name: Generate replay witness
+        run: python3 -m afritech.proof.generate_replay_witness
+
+      - name: Verify replay witness
+        run: python3 -m afritech.verify.verify_replay_witness
+
+      # ------------------------------------------------------------
+      # FINAL CONFIRMATION
+      # ------------------------------------------------------------
+
+      - name: Constitutional enforcement complete
+        run: echo "✅ Constitution enforced — semantic, formal, runtime, and replay legitimacy verified"

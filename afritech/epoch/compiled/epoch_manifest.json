@@ -1,0 +1,11 @@
+{
+  "epoch_type_count": 5,
+  "generated_at": "2026-05-09T18:41:40.719814Z",
+  "outputs": {
+    "ir": "afritech/epoch/compiled/epoch_ir.json",
+    "python": "afritech/epoch/compiled/semantic_epoch.py"
+  },
+  "schema": "afritech.epoch.semantic.manifest.v1",
+  "semantic_version": 1,
+  "source_hash": "01696207f05d87fa372752c722444d8ad52d5d87fd4071d139c7af026b544d3d"
+}

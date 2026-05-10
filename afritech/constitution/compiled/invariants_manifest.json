@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-05-10T17:03:35.578380Z",
+  "invariant_count": 6,
+  "outputs": {
+    "index": "afritech/constitution/compiled/invariants_index.py",
+    "ir": "afritech/constitution/compiled/invariants_ir.json"
+  },
+  "semantic_version": 1,
+  "source_hash": "6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0"
+}

@@ -1,0 +1,12 @@
+{
+  "witness_type": "ReplayWitness",
+  "status": "VALID",
+  "terminal_epoch": 6,
+  "verified_by": "afritech.verify.verify_replay_witness",
+  "bindings": {
+    "registry_hash": "2a5b4a7157b9fdca39291044a3121f759f5ae2bc099072b89bba1c457300064f",
+    "runtime_certificate": "afritech/proof/runtime_certificate.json"
+  },
+  "lineage": "INTACT",
+  "timestamp_utc": "GENERATED_AT_REPLAY"
+}

@@ -13,6 +13,7 @@ Responsibilities:
 - verify event hash integrity
 - support replay consistency checks
 - expose causal views (sequence, graph, lineage)
+- emit replay witnesses required by constitutional law
 
 This is the runtime bridge between:
 TRACE → REPLAY → PROOF
@@ -97,6 +98,7 @@ class TraceReconstructor:
             "depends_on": event.get("depends_on", []),
             "authority_context_hash": event["authority_context_hash"],
             "event_hash": event["event_hash"],
+            "surface": event.get("surface"),
         }
 
     # =============================================================
@@ -111,19 +113,6 @@ class TraceReconstructor:
     ) -> bool:
         """
         Deterministically replay execution against a provided pure function.
-
-        Args:
-            trace:
-                Full TRACE dictionary
-
-            execution_fn:
-                Pure deterministic function(payload) -> result
-
-        Returns:
-            True if replay matches TRACE results
-
-        Raises:
-            TraceReconstructionError on mismatch
         """
 
         cls._basic_validate(trace)
@@ -158,9 +147,6 @@ class TraceReconstructor:
     ) -> Dict[int, List[int]]:
         """
         Build dependency graph from TRACE.
-
-        Returns:
-            adjacency list: event_index -> [dependency_indices]
         """
 
         cls._basic_validate(trace)
@@ -267,9 +253,6 @@ class TraceReconstructor:
     ) -> Dict[str, Any]:
         """
         Perform full strict replay and return comparison summary.
-
-        Returns:
-            Dict with reconstructed outputs and status
         """
 
         cls.verify_replay(trace, execution_fn)
@@ -296,8 +279,9 @@ class TraceReconstructor:
             "status": "MATCH",
             "reconstructed": reconstructed,
         }
-    
-    # -----------------------------------------------------------------
+
+
+# -----------------------------------------------------------------
 # FUNCTION EXPORT (REPLAY COMPATIBILITY)
 # -----------------------------------------------------------------
 
@@ -309,15 +293,15 @@ def reconstruct_trace(
     """
     Public replay entrypoint.
 
-    NOTE:
     This reconstructs a TRACE object (not just steps)
     for replay verification.
 
     This bridges:
-    EPOCH → TRACE → VALIDATION
+    EPOCH → TRACE → VALIDATION → TRANSCRIPT
     """
 
-    events = []
+    events: List[Dict[str, Any]] = []
+    surface_set: Set[str] = set()
 
     for epoch in epoch_history:
         trace_events = epoch.get("trace_events", [])
@@ -327,17 +311,30 @@ def reconstruct_trace(
                 "invalid trace_events structure"
             )
 
-        events.extend(trace_events)
+        for event in trace_events:
+            events.append(event)
+
+            # -----------------------------------------------------
+            # CLOSED-WORLD REPLAY WITNESS (I8)
+            # -----------------------------------------------------
+            surface = event.get("surface")
+            if surface is not None:
+                surface_set.add(surface)
 
     if not events:
         raise TraceReconstructionError("no_trace_events_found")
 
-    # Build reconstructed trace
-    trace = {
+    # Build reconstructed trace / transcript
+    trace: Dict[str, Any] = {
         "trace_id": "REPLAY_TRACE",
         "epoch_id": registry.get("epoch", {}).get("current"),
         "request_hash": "REPLAY_RECONSTRUCTION",
         "events": events,
+
+        # ---------------------------------------------------------
+        # REPLAY WITNESSES (REQUIRED BY SEMANTIC LAW)
+        # ---------------------------------------------------------
+        "execution_trace_surface_set": sorted(surface_set),
     }
 
     # Compute root
@@ -346,10 +343,3 @@ def reconstruct_trace(
     trace["trace_root_hash"] = compute_trace_root(events)
 
     return trace
-
-    # =============================================================
-    # DEBUG
-    # =============================================================
-
-    def __repr__(self) -> str:
-        return "<TraceReconstructor deterministic>"

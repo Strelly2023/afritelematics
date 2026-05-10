@@ -1,0 +1,22 @@
+{
+  "certificate_hash": "2b5631846555d77e152e29c0ca9be1ae9152adef2822ca247772ade9dac5c6c9",
+  "constitutional": {
+    "ci_completeness_hash": "be9f18141b50a8cf7415da511f7f5b40aacb41c5059c86b48e927a73cf1cebc9",
+    "epoch_ir_hash": "52d6ca7cc9b96cb86ddf0925ce0f32e8b70506bf1e9b453d60faabfaba059d10",
+    "invariant_index_hash": "9374346132e4444d84e75d12af915342d1de39a6b0e10c8ee3a5feb0d25f9a77",
+    "invariant_ir_hash": "f513ee076683613cda7ad9016b306d836c61523ab9a2423a50c1481d0ec1abda",
+    "lean_epoch_hash": "cf932c61cafa64062c9c67f69fe64840ed6d665965723406df879aab76708584",
+    "lean_invariant_hash": "2b4b825d2042758044195bdadfdf52450ba4c8b25a2df403b8af6b69aafe0b50",
+    "semantic_compiler_hash": "f513ee076683613cda7ad9016b306d836c61523ab9a2423a50c1481d0ec1abda"
+  },
+  "created_at": "2026-05-10T17:07:24.813476Z",
+  "execution": {
+    "context_hash": null,
+    "proof_hash": null,
+    "result_hash": null
+  },
+  "metadata": {
+    "phase": "PHASE_5_STRUCTURAL"
+  },
+  "registry_hash": "UNBOUND"
+}

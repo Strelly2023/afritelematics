@@ -1,7 +1,17 @@
 """
 afritech/replay/verify.py
 
-Constitutional Replay Verifier (Phase‑2B).
+Constitutional Replay Verifier (Phase‑2B)
+
+RULES:
+- Replay is VERIFICATION, not EXECUTION
+- Replay must NOT mutate state
+- Replay must NOT admit runtime
+- Replay must NOT parse epoch YAML
+- Replay must consume ONLY:
+    • replay transcript (YAML)
+    • sealed registry attestation
+    • compiled epoch semantics
 """
 
 from __future__ import annotations
@@ -11,6 +21,8 @@ from pathlib import Path
 from typing import Any, Optional
 import hashlib
 import json
+
+# ✅ YAML is allowed ONLY for replay transcripts
 import yaml
 
 from afritech.replay.failures import (
@@ -19,6 +31,10 @@ from afritech.replay.failures import (
     ReplayInvariant,
     DivergenceLocation,
 )
+
+from afritech.registry.loader import load_registry
+from afritech.epoch.epoch_snapshot import EpochSnapshot
+from afritech.epoch.compiled.semantic_epoch import SemanticEpoch
 
 
 # ============================================================
@@ -92,6 +108,17 @@ class ReplayVerificationError(Exception):
 class ReplayVerifier:
     """
     Deterministic constitutional replay verifier (Phase‑2B).
+
+    Replay verifies:
+    - authority binding
+    - deterministic trace reproduction
+    - truth packet identity
+    - replay hash identity
+
+    Replay MUST NOT:
+    - read epoch YAML
+    - infer epoch meaning
+    - mutate state
     """
 
     # --------------------------------------------------------
@@ -106,6 +133,43 @@ class ReplayVerifier:
 
         try:
             transcript = self._load_transcript(transcript_path)
+
+            # ✅ Load sealed registry (NO YAML epoch parsing)
+            registry = load_registry()
+            attestation = registry.get("attestation")
+
+            if not attestation or attestation.get("status") != "SEALED":
+                raise ReplayVerificationError(
+                    ReplayFailure(
+                        ReplayFailureMode.ENVIRONMENT_MISMATCH,
+                        ReplayInvariant.ENVIRONMENT_IDENTITY,
+                        DivergenceLocation.REGISTRY_ATTESTATION,
+                        "Registry attestation not SEALED",
+                    )
+                )
+
+            # ✅ Epoch must be provided as snapshot, not YAML
+            epoch_snapshot = transcript.get("epoch_snapshot")
+            if not isinstance(epoch_snapshot, EpochSnapshot):
+                raise ReplayVerificationError(
+                    ReplayFailure(
+                        ReplayFailureMode.ENVIRONMENT_MISMATCH,
+                        ReplayInvariant.EPOCH_IDENTITY,
+                        DivergenceLocation.EPOCH_BINDING,
+                        "EpochSnapshot missing or invalid in transcript",
+                    )
+                )
+
+            semantic_epoch: SemanticEpoch = epoch_snapshot.semantic_epoch
+            if not isinstance(semantic_epoch, SemanticEpoch):
+                raise ReplayVerificationError(
+                    ReplayFailure(
+                        ReplayFailureMode.ENVIRONMENT_MISMATCH,
+                        ReplayInvariant.EPOCH_IDENTITY,
+                        DivergenceLocation.EPOCH_BINDING,
+                        "Compiled SemanticEpoch required",
+                    )
+                )
 
             self._validate_authority(request, transcript)
             self._validate_environment(transcript)
@@ -152,7 +216,7 @@ class ReplayVerifier:
             return ReplayVerdict.invalid(e.failure)
 
     # ============================================================
-    # LOAD TRANSCRIPT  ✅ RESTORED
+    # LOAD TRANSCRIPT (YAML ALLOWED — TRANSCRIPT ONLY)
     # ============================================================
 
     def _load_transcript(self, path: str) -> dict[str, Any]:
@@ -178,6 +242,7 @@ class ReplayVerifier:
             "execution_trace",
             "truth_packet_hash",
             "replay_hash",
+            "epoch_snapshot",  # ✅ compiled epoch, not YAML
         }
 
         if not isinstance(transcript, dict) or not required.issubset(transcript):
@@ -240,6 +305,10 @@ class ReplayVerifier:
                     "Inference input mismatch",
                 )
             )
+
+    # ============================================================
+    # DETERMINISTIC RERUN (PURE)
+    # ============================================================
 
     def _rerun_execution(self, request):
         h = request.canonical_hash()

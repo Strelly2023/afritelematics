@@ -57,6 +57,7 @@ historical_record:
 attestation:
   version: 1
   algorithm: SHA256
+  status: SEALED
   kernel_hashes:
     lean:
       files:
@@ -84,19 +85,19 @@ attestation:
       files:
       - guards/__init__.py
       - guards/engine.py
-      hash: b3267005e700a63d7420fa2868f96d5c529d1d86c87663e8ef74d73e06e7203e
+      hash: 5813e8bf3e4727efac5c5c24808457a3a570b3e5648eea19ca536311be63dd43
     runtime:
       files:
       - runtime/__init__.py
       - runtime/guard_executor.py
       - runtime/main.py
-      hash: e508ee6cddc23aab9a81be36b3182e4d7046e3fe82acc874a8b2954be86142db
+      hash: 3972b4493668031fab3fa5c4051fd238bdf1f32df4d7ee0f8cf0ec1941c8cfd0
     runtime_activation:
       files:
       - runtime/activation/activation_proof.py
       - runtime/activation/runtime_admission.py
       - runtime/activation/constitutional_boot.py
-      hash: cfa6176ad395c7d7c7686b6861c9308ddbdfaf28774cdfe96c695b329b454508
+      hash: 2e0a84e8539b64b266591fad9db10e167ba918b661ca58b14c6b1ebb2e826a74
     runtime_engine:
       files:
       - runtime/engine/dispatch.py
@@ -109,7 +110,7 @@ attestation:
       files:
       - proof/runtime_certificate.py
       - proof/proof_snapshot.py
-      hash: b2fad541ead67d904a6c992e3a9fb704dc3ef7958cb9ff9845cf36c856d35093
+      hash: a5b048f68534db415bbe3f449c7510258e72bf071e5d63594ce9a705bcb86cb6
     evaluation:
       files:
       - evaluation/telemetry/telemetry_engine.py
@@ -117,9 +118,8 @@ attestation:
       - evaluation/drift_detection/drift_detection_engine.py
       - evaluation/adr_trigger/adr_trigger_engine.py
       hash: 4de1e5f7f685404813a18a2d99ee61eab708c200ff6d75692293cc519ec1e053
-  registry_hash: bb1c9e01d673377cf1f998cbd58a53eb6252624945de0a5cff0f38f7a3cacd29
+  registry_hash: 2a5b4a7157b9fdca39291044a3121f759f5ae2bc099072b89bba1c457300064f
   seal_status: SEALED
-seal_status: SEALED
 constitutional_assertions:
 - afritech is sole active authority
 - afritech_v1 is frozen lineage only
@@ -143,3 +143,4 @@ status:
   certificate_binding: VERIFIED
   observer_free_validation: VERIFIED
   constitutional_runtime: ACTIVE
+seal_status: SEALED

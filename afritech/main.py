@@ -1,31 +1,96 @@
+# afritech/main.py
+
 """
 AfriTech Sovereign Entry Point
 ==============================
 
-Post-migration constitutional authority root.
+Canonical constitutional boot surface.
 
-afritech_v1 is frozen historical lineage only.
-No runtime authority may be imported from it.
+This is the exclusive lawful execution gateway for AfriTech.
 
-This file is the exclusive lawful execution gateway for AfriTech.
+Boot sequence:
+
+    1. Verify deterministic constitutional replay
+    2. Recover terminal epoch
+    3. Materialize authoritative EpochSnapshot
+    4. Verify runtime sovereignty
+    5. Emit boot attestation
+    6. Delegate execution to runtime
+
+Constitutional guarantees:
+- Fail closed
+- Replay-first admission
+- No speculative runtime authority
+- Deferred runtime import
 """
 
 from __future__ import annotations
 
-from pathlib import Path
+from afritech.verify.engine import verify_replay
+
+from afritech.epoch.epoch_snapshot import EpochSnapshot
+from afritech.epoch.compiled.semantic_epoch import (
+    SemanticEpoch,
+    EpochType,
+)
 
 from afritech.guards.engine import (
     verify_sovereignty,
     ConstitutionalViolation,
 )
+
 from afritech.audit.emitter import emit_event
+
 
 # ---------------------------------------------------------------------
 # Constitutional halt
 # ---------------------------------------------------------------------
 
 def constitutional_halt(message: str) -> None:
-    raise SystemExit(f"\n❌ CONSTITUTIONAL HALT\n{message}\n")
+    raise SystemExit(
+        f"\n❌ CONSTITUTIONAL HALT\n{message}\n"
+    )
+
+
+# ---------------------------------------------------------------------
+# Epoch derivation
+# ---------------------------------------------------------------------
+
+def _derive_epoch_snapshot(
+    replay_result,
+) -> EpochSnapshot:
+    """
+    Materialize authoritative epoch state from replay.
+    """
+
+    terminal = replay_result.terminal_epoch
+
+    if terminal is None:
+        constitutional_halt(
+            "Replay produced no terminal epoch"
+        )
+
+    if not isinstance(terminal, int):
+        constitutional_halt(
+            "Replay terminal epoch must be int"
+        )
+
+    semantic_epoch = SemanticEpoch(
+        number=terminal,
+        parent=None if terminal == 0 else terminal - 1,
+        epoch_type=(
+            EpochType.GENESIS
+            if terminal == 0
+            else EpochType.EVOLUTION
+        ),
+        reseal_required=False,
+    )
+
+    return EpochSnapshot.from_replay(
+        epoch_number=terminal,
+        semantic_epoch=semantic_epoch,
+        epoch_hash=f"epoch-{terminal}",
+    )
 
 
 # ---------------------------------------------------------------------
@@ -34,96 +99,98 @@ def constitutional_halt(message: str) -> None:
 
 def boot() -> None:
     print("🏛️ AFRITECH SOVEREIGN BOOT SEQUENCE STARTING")
-
-    root_file = Path(__file__).resolve()
-
-    if "afritech_v1" in str(root_file):
-        constitutional_halt(
-            "Execution attempted from frozen namespace."
-        )
-
     print("🔐 Verifying constitutional lineage...")
 
     # ------------------------------------------------------------
-    # Historical lineage verification
+    # Replay authority
     # ------------------------------------------------------------
 
-    project_root = root_file.parent.parent
-    v1_root = project_root / "afritech_v1"
+    replay_result = verify_replay()
 
-    required_legacy = [
-        "main.py",
-        "architecture/kernel_manifest.yaml",
-        "registry/registry.yaml",
-    ]
-
-    missing_legacy = [
-        artifact
-        for artifact in required_legacy
-        if not (v1_root / artifact).exists()
-    ]
-
-    if missing_legacy:
+    if not replay_result.valid:
         constitutional_halt(
-            "Historical lineage broken:\n"
-            f"{missing_legacy}"
+            "Constitutional replay invalid"
         )
 
     print("✅ Historical lineage preserved")
 
     # ------------------------------------------------------------
-    # Formal + registry + kernel sovereignty verification
+    # Epoch authority
+    # ------------------------------------------------------------
+
+    epoch_snapshot = _derive_epoch_snapshot(
+        replay_result
+    )
+
+    print(
+        f"🕒 Terminal epoch: "
+        f"{epoch_snapshot.number}"
+    )
+
+    # ------------------------------------------------------------
+    # Sovereignty verification
     # ------------------------------------------------------------
 
     try:
-        verify_sovereignty()
-    except ConstitutionalViolation as e:
-        constitutional_halt(str(e))
+        verify_sovereignty(epoch_snapshot)
 
-    print("✅ Formal constitutional layer verified")
+    except ConstitutionalViolation as exc:
+        constitutional_halt(str(exc))
+
     print("✅ Runtime sovereignty verified")
     print("✅ Registry seal verified")
 
     # ------------------------------------------------------------
-    # Runtime execution authority (EXISTENCE first, IMPORT second)
+    # Deferred runtime admission
     # ------------------------------------------------------------
 
-    executor_path = project_root / "afritech" / "runtime" / "guard_executor.py"
-
-    if not executor_path.exists():
-        constitutional_halt(
-            "Runtime execution layer missing:\n"
-            "afritech/runtime/guard_executor.py"
+    try:
+        from afritech.runtime.main import (
+            main as runtime_main,
         )
 
-    try:
-        from afritech.runtime.guard_executor import run
     except Exception as exc:
         constitutional_halt(
-            "Runtime execution layer present but failed to load:\n"
+            "Runtime surface failed admission:\n"
             f"{exc}"
         )
+
+    # ------------------------------------------------------------
+    # Boot attestation
+    # ------------------------------------------------------------
+
+    emit_event(
+        event_type="RUNTIME_BOOT_SUCCESS",
+        severity_class="C_DOCUMENTARY",
+        epoch=epoch_snapshot.number,
+        adr=None,
+        description=(
+            "Sovereign runtime boot completed "
+            "successfully. "
+            "All constitutional surfaces verified."
+        ),
+    )
 
     # ------------------------------------------------------------
     # Sovereign declaration
     # ------------------------------------------------------------
 
     print("🏛️ Authority root: /afritech")
-    print("📜 Legacy lineage: preserved (/afritech_v1 frozen)")
-    print("🟢 AfriTech RUNNING (STATE: SOVEREIGN)")
+    print(f"📜 Epoch: {epoch_snapshot.number}")
+    print(
+        "🟢 AfriTech RUNNING "
+        "(STATE: SOVEREIGN)"
+    )
 
-    emit_event(
-    event_type="RUNTIME_BOOT_SUCCESS",
-    severity_class="C_DOCUMENTARY",
-    epoch=1,  # or registry-derived current epoch
-    adr=None,
-    description=(
-        "Sovereign runtime boot completed successfully. "
-        "All constitutional surfaces verified."
-    ),
-)
+    runtime_main()
 
-    run()
+
+# ---------------------------------------------------------------------
+# Canonical module surface
+# ---------------------------------------------------------------------
+
+def main() -> None:
+    boot()
 
 
 # ---------------------------------------------------------------------
@@ -131,4 +198,4 @@ def boot() -> None:
 # ---------------------------------------------------------------------
 
 if __name__ == "__main__":
-    boot()
+    main()

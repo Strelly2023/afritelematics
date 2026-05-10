@@ -1,0 +1,55 @@
+{
+  "schema": "afritech.proof.completeness.v1",
+  "generated_at": "2026-05-10T17:07:24.584581+00:00",
+  "constitution": {
+    "declared": 15,
+    "semantically_defined": 6,
+    "compiled": 6,
+    "indexed": 6
+  },
+  "formal": {
+    "lean_generated": 6,
+    "lean_proven": 1,
+    "proof_generation_complete": true,
+    "proof_discharge_complete": false
+  },
+  "runtime": {
+    "runtime_enforced": 6,
+    "semantic_coverage_verified": true,
+    "fail_closed": true
+  },
+  "epoch": {
+    "runtime_monotonicity_enforced": true,
+    "parent_continuity_enforced": true,
+    "genesis_legality_enforced": true,
+    "anti_fork_enforced": true,
+    "formal_epoch_generated": false,
+    "formal_epoch_proven": false
+  },
+  "replay": {
+    "replay_verified": 1,
+    "proof_bound": false,
+    "epoch_bound": false
+  },
+  "certificate": {
+    "semantic_compiler_hash_bound": false,
+    "proof_hash_bound": false,
+    "epoch_hash_bound": false,
+    "runtime_certificate_complete": false
+  },
+  "coverage": {
+    "semantic_closure": true,
+    "runtime_closure": true,
+    "formal_closure": false,
+    "temporal_closure": false,
+    "certificate_closure": false,
+    "constitutional_saturation": false
+  },
+  "integrity": {
+    "self_consistent": true
+  },
+  "progress": {
+    "phase": "PHASE_1_EXPANDED",
+    "maturity": "PARTIAL_MECHANICAL_CONSTITUTIONAL_ENFORCEMENT"
+  }
+}

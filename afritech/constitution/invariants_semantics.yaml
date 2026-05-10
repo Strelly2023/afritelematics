@@ -1,0 +1,523 @@
+schema: afritech.constitution.semantics.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  mutability: FORBIDDEN
+  enforcement_mode: HARD
+  description: >
+    Canonical semantic definitions of AfriTech constitutional invariants.
+    This file defines invariant meaning only.
+    No executable logic, enforcement code, or implementation paths
+    may appear here.
+
+invariants:
+
+  # ============================================================
+  # I1 — REGISTRY AUTHORITY
+  # ============================================================
+
+  I1_REGISTRY_AUTHORITY:
+
+    formal_name: REGISTRY_AUTHORITY_EXCLUSIVE
+
+    category: AUTHORITY_ROOT
+
+    intent:
+      description: >
+        The registry is the sole authoritative source of
+        constitutional state. No runtime, replay, inference,
+        or external component may override, bypass, or
+        reinterpret registry declarations.
+
+    scope:
+      applies_to:
+        - registry
+        - runtime_admission
+        - replay_verification
+      excludes:
+        - documentary_artifacts
+        - speculative_models
+
+    preconditions:
+      - registry_loaded
+      - registry_attestation_present
+
+    prohibited_actions:
+      - registry_override
+      - dynamic_authority_injection
+      - runtime_registry_shadowing
+      - replay_registry_substitution
+
+    required_postconditions:
+      - registry_hash_bound
+      - authority_lineage_verified
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - registry_authority_guard
+        timing: PRE_EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      replay:
+        validators:
+          - registry_consistency_verifier
+        timing: PRE_REPLAY
+        refusal_mode: REPLAY_INVALID
+
+      ci:
+        validators:
+          - ast_import_validator
+        timing: STATIC_ANALYSIS
+        refusal_mode: CI_FAIL
+
+    witnesses:
+
+      registry:
+        required:
+          - registry_hash
+
+      runtime:
+        required:
+          - receipt.registry_hash
+
+      replay:
+        required:
+          - transcript.registry_hash
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+      class: A_FATAL
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - replay_invalid
+          - constitutional_invalid
+
+    constitutional_assertion: >
+      AfriTech recognizes exactly one source of constitutional truth:
+      the sealed registry. Any attempt to bypass, override, or
+      reinterpret the registry is constitutionally forbidden.
+
+
+  # ============================================================
+  # I2 — SEALED EXECUTION SURFACE
+  # ============================================================
+
+  I2_SEALED_SURFACE:
+
+    formal_name: SEALED_EXECUTION_SURFACE
+
+    category: EXECUTION_BOUNDARY
+
+    intent:
+      description: >
+        All execution surfaces must be explicitly declared,
+        hash-attested, and sealed prior to runtime admission.
+        No execution may occur on unsealed surfaces.
+
+    scope:
+      applies_to:
+        - runtime_execution
+        - runtime_admission
+      excludes:
+        - non_executable_artifacts
+
+    preconditions:
+      - execution_surfaces_declared
+      - execution_surface_hash_verified
+
+    prohibited_actions:
+      - unsealed_execution
+      - surface_mutation_post_seal
+      - dynamic_surface_extension
+
+    required_postconditions:
+      - surface_hash_bound
+      - execution_surface_integrity_verified
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - surface_admission_guard
+        timing: PRE_EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      ci:
+        validators:
+          - forbid_speculative_runtime_access
+        timing: STATIC_ANALYSIS
+        refusal_mode: CI_FAIL
+
+    witnesses:
+
+      registry:
+        required:
+          - attestation.execution_surface_hash
+
+      runtime:
+        required:
+          - receipt.execution_surface_hash
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+      class: B_STRUCTURAL
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - receipt_non_emission
+
+    constitutional_assertion: >
+      AfriTech executes only upon sealed surfaces.
+      Unsealed computation is constitutionally invalid.
+
+
+  # ============================================================
+  # I3 — NO SILENT MUTATION
+  # ============================================================
+
+  I3_NO_SILENT_MUTATION:
+
+    formal_name: NO_SILENT_STATE_MUTATION
+
+    category: STATE_INTEGRITY
+
+    intent:
+      description: >
+        All state mutation must occur through constitutionally
+        defined mutation paths. Silent, implicit, or
+        side-channel mutation is forbidden.
+
+    scope:
+      applies_to:
+        - state_transition
+        - epoch_transition
+      excludes:
+        - observational_read_only_operations
+
+    preconditions:
+      - mutation_request_declared
+      - mutation_path_authorized
+
+    prohibited_actions:
+      - implicit_state_change
+      - undocumented_mutation
+      - side_effect_mutation
+
+    required_postconditions:
+      - mutation_trace_recorded
+      - mutation_receipt_emitted
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - mutation_guard
+        timing: EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      ci:
+        validators:
+          - import_topology_enforcement
+        timing: STATIC_ANALYSIS
+        refusal_mode: CI_FAIL
+
+    witnesses:
+
+      runtime:
+        required:
+          - receipt.mutation_trace_hash
+
+      replay:
+        required:
+          - transcript.mutation_trace
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+      class: A_FATAL
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - state_invalid
+
+    constitutional_assertion: >
+      AfriTech forbids silent state change.
+      All mutation must be explicit, traceable, and provable.
+
+
+  # ============================================================
+  # I4 — DETERMINISTIC EXECUTION
+  # ============================================================
+
+  I4_DETERMINISTIC_EXECUTION:
+
+    formal_name: DETERMINISTIC_RUNTIME_EXECUTION
+
+    category: EXECUTION_DETERMINISM
+
+    intent:
+      description: >
+        Given identical inputs, authority, and state,
+        execution must produce identical results.
+        Non-determinism is constitutionally forbidden.
+
+    scope:
+      applies_to:
+        - runtime_execution
+        - replay_verification
+
+    preconditions:
+      - deterministic_environment
+      - replay_capability_enabled
+
+    prohibited_actions:
+      - nondeterministic_input
+      - time_dependent_execution
+      - randomness_without_attestation
+
+    required_postconditions:
+      - execution_hash_stable
+      - replay_equivalence_verified
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - determinism_guard
+        timing: EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      replay:
+        validators:
+          - replay_equivalence_verifier
+        timing: REPLAY
+        refusal_mode: REPLAY_INVALID
+
+    witnesses:
+
+      runtime:
+        required:
+          - receipt.execution_result_hash
+
+      replay:
+        required:
+          - transcript.execution_trace_hash
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+      class: B_STRUCTURAL
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - replay_invalid
+
+    constitutional_assertion: >
+      AfriTech executes deterministically.
+      Divergent execution constitutes constitutional failure.
+
+
+  # ============================================================
+  # I13 — EPOCH MONOTONICITY
+  # ============================================================
+
+  I13_EPOCH_MONOTONIC:
+
+    formal_name: EPOCH_STRICT_MONOTONICITY
+
+    category: TEMPORAL_INTEGRITY
+
+    intent:
+      description: >
+        Epochs must advance strictly monotonically.
+        Rollback, branching, or parallel active epochs
+        are constitutionally forbidden.
+
+    scope:
+      applies_to:
+        - epoch_transition
+        - replay_continuity
+
+    preconditions:
+      - previous_epoch_sealed
+
+    prohibited_actions:
+      - epoch_rollback
+      - parallel_epoch_activation
+      - epoch_reuse
+
+    required_postconditions:
+      - epoch_number_increased
+      - lineage_continuity_verified
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - epoch_transition_guard
+        timing: PRE_EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      replay:
+        validators:
+          - epoch_lineage_verifier
+        timing: REPLAY
+        refusal_mode: REPLAY_INVALID
+
+    witnesses:
+
+      registry:
+        required:
+          - epoch_hash
+
+      replay:
+        required:
+          - transcript.epoch_lineage
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+      class: A_FATAL
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - replay_invalid
+          - constitutional_invalid
+
+    constitutional_assertion: >
+      AfriTech time advances strictly forward.
+      Epoch rollback or duplication is constitutionally impossible.
+
+
+  # ============================================================
+  # I8 — CLOSED WORLD (UNCHANGED, AUTHORITATIVE)
+  # ============================================================
+
+  I8_CLOSED_WORLD:
+
+    formal_name: CLOSED_EXECUTION_WORLD
+
+    category: EXECUTION_BOUNDARY
+
+    intent:
+      description: >
+        Execution may only access constitutionally admitted
+        execution surfaces. Any interaction with undeclared,
+        dynamically resolved, or non-attested surfaces
+        is constitutionally forbidden.
+
+    scope:
+      applies_to:
+        - runtime_execution
+        - replay_verification
+        - constitutional_ci
+      excludes:
+        - documentary_artifacts
+        - speculative_models
+        - non_executable_surfaces
+
+    preconditions:
+      - runtime_certificate_valid
+      - admitted_surface_registry_loaded
+      - execution_surface_hash_verified
+
+    prohibited_actions:
+      - undeclared_import
+      - runtime_surface_extension
+      - dynamic_module_resolution
+      - filesystem_execution_outside_registry
+      - reflection_based_surface_discovery
+
+    required_postconditions:
+      - surface_subset_verified
+      - no_undeclared_surface_touched
+
+    enforcement_points:
+
+      runtime:
+        validators:
+          - admission_guard
+        timing: PRE_EXECUTION
+        refusal_mode: HARD_FAILURE
+
+      replay:
+        validators:
+          - surface_trace_verifier
+        timing: TRACE_RECONSTRUCTION
+        refusal_mode: DETERMINISTIC_REFUSAL
+
+      ci:
+        validators:
+          - ast_import_validator
+          - ast_surface_validator
+        timing: STATIC_ANALYSIS
+        refusal_mode: CI_FAIL
+
+    witnesses:
+
+      runtime:
+        required:
+          - receipt.surface_validation_hash
+          - receipt.execution_surface_hash
+
+      replay:
+        required:
+          - transcript.admitted_surfaces_hash
+          - transcript.execution_trace_surface_set
+
+      registry:
+        required:
+          - attestation.execution_surface_hash
+          - attestation.kernel_surface_hash
+
+    evidence_requirements:
+      replayable: true
+      deterministic: true
+      observer_free: true
+
+    failure:
+
+      class: B_STRUCTURAL
+
+      response:
+        mode: HARD_FAILURE
+        effects:
+          - runtime_refusal
+          - receipt_non_emission
+          - replay_invalid
+          - attestation_rejection
+
+    constitutional_assertion: >
+      AfriTech recognizes no execution surface
+      that is not explicitly declared, hash-attested,
+      and constitutionally admitted.
+      Undeclared computation is constitutionally invisible.
+      The AfriTech execution world is closed by design,
+      and any breach of this closure is a fundamental constitutional violation.

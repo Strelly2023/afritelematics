@@ -1,0 +1,244 @@
+{
+  "epoch_types": {
+    "CORRECTION": {
+      "description": "Epoch repairing semantic or historical inconsistency without expanding constitutional capability.\n",
+      "permits": [
+        "semantic_repair",
+        "attestation_fix",
+        "replay_consistency_repair"
+      ],
+      "prohibits": [
+        "capability_addition",
+        "authority_broadening",
+        "surface_extension"
+      ],
+      "reseal_required": true
+    },
+    "EVOLUTION": {
+      "description": "Epoch introducing constitutional capability expansion while preserving backward lineage continuity.\n",
+      "permits": [
+        "invariant_extension",
+        "runtime_surface_expansion",
+        "proof_extension",
+        "registry_evolution"
+      ],
+      "prohibits": [
+        "lineage_rewrite",
+        "replay_reset",
+        "authority_escalation"
+      ],
+      "reseal_required": true
+    },
+    "GENESIS": {
+      "description": "Foundational epoch establishing the constitutional root and trust anchor of the system.\n",
+      "permits": [
+        "constitutional_initialization",
+        "root_attestation",
+        "baseline_receipt_generation"
+      ],
+      "prohibits": [
+        "parent_reference",
+        "replay_fork",
+        "authority_derivation"
+      ],
+      "reseal_required": true
+    },
+    "NORMALIZATION": {
+      "description": "Structural reorganization epoch with no semantic expansion or authority change.\n",
+      "permits": [
+        "internal_refactor",
+        "artifact_relayout",
+        "receipt_schema_stabilization",
+        "replay_alignment"
+      ],
+      "prohibits": [
+        "invariant_addition",
+        "authority_change",
+        "execution_surface_change"
+      ],
+      "reseal_required": true
+    },
+    "TERMINAL": {
+      "description": "Final immutable constitutional epoch. No further evolution is permitted.\n",
+      "permits": [
+        "proof_discharge",
+        "terminal_attestation"
+      ],
+      "prohibits": [
+        "further_transition",
+        "mutation",
+        "reseal_after_final"
+      ],
+      "reseal_required": true
+    }
+  },
+  "generated_at": "2026-05-09T18:41:40.719814Z",
+  "global_law": {
+    "attestation_binding": {
+      "description": "Epoch legitimacy requires receipt, replay, and registry hash alignment.",
+      "required": true,
+      "rule": "RECEIPT_AND_REGISTRY_HASH_MATCH",
+      "violation_class": "B_ATTESTATION"
+    },
+    "monotonicity": {
+      "description": "Epoch numbers must strictly increase.",
+      "required": true,
+      "rule": "STRICTLY_INCREASING",
+      "violation_class": "B_TEMPORAL"
+    },
+    "parent_lineage": {
+      "description": "Every epoch (except genesis) must reference exactly one parent.",
+      "required": true,
+      "root_epoch_parent": null,
+      "violation_class": "B_LINEAGE"
+    },
+    "registry_continuity": {
+      "description": "Epoch history must be continuous and gap-free.",
+      "required": true,
+      "rule": "NO_EPOCH_GAPS",
+      "violation_class": "B_REGISTRY"
+    },
+    "replay_determinism": {
+      "description": "Epoch state must be reconstructible deterministically under replay.",
+      "required": true,
+      "rule": "CANONICAL_REPLAY_REQUIRED",
+      "violation_class": "B_REPLAY"
+    },
+    "temporal_finality": {
+      "description": "Resealed epochs are immutable forever.",
+      "resealed_epochs_mutable": false,
+      "violation_class": "B_FINALITY"
+    }
+  },
+  "lineage": {
+    "current_epoch": 6,
+    "epochs": [
+      {
+        "constitutional_status": "SEALED",
+        "number": 0,
+        "parent": null,
+        "semantic_hash": null,
+        "type": "GENESIS"
+      },
+      {
+        "constitutional_status": "SEALED",
+        "number": 1,
+        "parent": 0,
+        "semantic_hash": null,
+        "type": "EVOLUTION"
+      },
+      {
+        "constitutional_status": "SEALED",
+        "number": 2,
+        "parent": 1,
+        "semantic_hash": null,
+        "type": "EVOLUTION"
+      },
+      {
+        "constitutional_status": "SEALED",
+        "number": 3,
+        "parent": 2,
+        "semantic_hash": null,
+        "type": "NORMALIZATION"
+      },
+      {
+        "constitutional_status": "SEALED",
+        "number": 4,
+        "parent": 3,
+        "semantic_hash": null,
+        "type": "EVOLUTION"
+      },
+      {
+        "constitutional_status": "SEALED",
+        "number": 5,
+        "parent": 4,
+        "semantic_hash": null,
+        "type": "CORRECTION"
+      },
+      {
+        "constitutional_status": "ACTIVE",
+        "number": 6,
+        "parent": 5,
+        "semantic_hash": null,
+        "type": "EVOLUTION"
+      }
+    ]
+  },
+  "replay_admissibility": {
+    "refusal_mode": "DETERMINISTIC_REFUSAL",
+    "refusal_on_failure": true,
+    "required_conditions": [
+      "canonical_trace_order",
+      "receipt_present",
+      "receipt_hash_matches",
+      "registry_hash_matches",
+      "parent_lineage_verified",
+      "semantic_epoch_match"
+    ]
+  },
+  "reseal_requirements": {
+    "mandatory_fields": [
+      "epoch_number",
+      "parent_epoch",
+      "epoch_type",
+      "semantic_hash",
+      "registry_hash",
+      "receipt_hash",
+      "replay_hash",
+      "attestation_hash"
+    ],
+    "validation": {
+      "attestation_hash": {
+        "description": "Hash binding epoch to registry attestation.",
+        "required": true
+      },
+      "receipt_hash": {
+        "description": "Hash of constitutional receipt proving lawful execution.",
+        "required": true
+      },
+      "replay_hash": {
+        "description": "Hash proving deterministic replay validity.",
+        "required": true
+      },
+      "semantic_hash": {
+        "description": "Hash of compiled epoch semantic IR.",
+        "required": true
+      }
+    }
+  },
+  "schema": "afritech.epoch.semantic.ir.v1",
+  "source_hash": "01696207f05d87fa372752c722444d8ad52d5d87fd4071d139c7af026b544d3d",
+  "transition_rules": {
+    "CORRECTION": {
+      "allowed_successors": [
+        "EVOLUTION",
+        "NORMALIZATION",
+        "TERMINAL"
+      ]
+    },
+    "EVOLUTION": {
+      "allowed_successors": [
+        "EVOLUTION",
+        "NORMALIZATION",
+        "CORRECTION",
+        "TERMINAL"
+      ]
+    },
+    "GENESIS": {
+      "allowed_successors": [
+        "EVOLUTION"
+      ]
+    },
+    "NORMALIZATION": {
+      "allowed_successors": [
+        "EVOLUTION",
+        "NORMALIZATION",
+        "CORRECTION",
+        "TERMINAL"
+      ]
+    },
+    "TERMINAL": {
+      "allowed_successors": []
+    }
+  }
+}

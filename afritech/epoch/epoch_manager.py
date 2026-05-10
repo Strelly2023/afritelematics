@@ -1,47 +1,95 @@
-# afritech/epoch/epoch_manager.py
-
 """
 AfriTech Epoch Manager
 
 Purpose:
-Control lifecycle and transitions of system epochs.
+Authoritative controller for epoch lifecycle and temporal legitimacy.
 
-Guarantees:
-- single active epoch
-- deterministic time progression
+Constitutional Guarantees:
+- single active epoch authority
+- deterministic epoch progression
 - strict monotonic versioning
-- sealed history enforcement
-- no invalid transitions
+- sealed-history enforcement
+- parent continuity
+- genesis legality
+- anti-fork protection
+
+PHASE-1 STATUS:
+This module enforces runtime epoch constitutional constraints.
+
+Formal discharge is delegated to:
+
+    afritech/proof/formal/generate_epoch_lean.py
+    afritech/proof/formal/check_epoch_proofs.py
 """
 
 from __future__ import annotations
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
-from afritech.epoch.epoch import Epoch
-from afritech.epoch.epoch_validator import EpochValidator
-from afritech.epoch.epoch_transition import validate_epoch_transition
+from afritech.epoch.compiled.semantic_epoch import SemanticEpoch, EpochType
+from afritech.epoch.epoch_snapshot import EpochSnapshot
 from afritech.guards.engine import fail, ViolationClass
 
+from afritech.constitution.compiled.invariants_index import (
+    I13_EPOCH_MONOTONIC,
+)
 
-# -----------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CONSTITUTIONAL INVARIANT DECLARATION
+# ---------------------------------------------------------------------
+
+ENFORCED_INVARIANTS = {
+    I13_EPOCH_MONOTONIC,
+}
+
+# ---------------------------------------------------------------------
+# GLOBAL EPOCH AUTHORITY REGISTRATION
+# ---------------------------------------------------------------------
+
+_ACTIVE_MANAGER: Optional["EpochManager"] = None
+
+
+# ---------------------------------------------------------------------
 # EPOCH MANAGER
-# -----------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 class EpochManager:
+    """
+    Authoritative epoch lifecycle controller.
+
+    Guarantees:
+        - singleton authority
+        - temporal continuity
+        - monotonic advancement
+        - replay-safe history
+    """
 
     def __init__(self):
-        self._current_epoch: Optional[Epoch] = None
-        self._history: list[Epoch] = []
+        global _ACTIVE_MANAGER
 
-    # -------------------------------------------------------------
+        if _ACTIVE_MANAGER is not None:
+            fail(
+                "duplicate_epoch_manager_authority",
+                ViolationClass.B_STRUCTURAL,
+            )
+
+        _ACTIVE_MANAGER = self
+
+        self._current_epoch: Optional[EpochSnapshot] = None
+        self._history: List[EpochSnapshot] = []
+        self._epoch_hashes = set()
+
+    # -----------------------------------------------------------------
     # INITIALIZATION
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
 
-    def initialize(self, epoch: Epoch) -> None:
+    def initialize(self, epoch: EpochSnapshot) -> None:
         """
-        Set initial epoch (genesis time).
-        Can only be called once.
+        Initialize epoch authority.
+
+        Constitutional rules:
+        - may only occur once
+        - must be genesis epoch
         """
 
         if self._current_epoch is not None:
@@ -50,124 +98,127 @@ class EpochManager:
                 ViolationClass.B_STRUCTURAL,
             )
 
-        EpochValidator.validate(epoch)
+        self._validate_epoch_snapshot(epoch)
+        self._validate_genesis(epoch)
 
         self._current_epoch = epoch
         self._history.append(epoch)
+        self._epoch_hashes.add(epoch.epoch_hash)
 
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
     # CURRENT EPOCH
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
 
-    def current(self) -> Epoch:
+    def current(self) -> EpochSnapshot:
         """
         Return active epoch.
         """
 
-        if not self._current_epoch:
-            fail("no_active_epoch", ViolationClass.A_FATAL)
+        if self._current_epoch is None:
+            fail(
+                "no_active_epoch",
+                ViolationClass.A_FATAL,
+            )
 
         return self._current_epoch
 
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
     # TRANSITION
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
 
-    def transition(self, next_epoch: Epoch) -> Epoch:
+    def transition(self, next_epoch: EpochSnapshot) -> EpochSnapshot:
         """
-        Transition to a new epoch.
+        Transition to next epoch.
 
-        Rules:
-        - must have current epoch
+        Constitutional rules:
+        - current epoch required
         - current must be sealed
-        - version must increase
-        - instance_id must change
+        - strict monotonic progression
+        - parent continuity required
+        - no epoch reuse
         """
 
-        if not self._current_epoch:
+        if self._current_epoch is None:
             fail(
                 "cannot_transition_without_current_epoch",
                 ViolationClass.A_FATAL,
             )
 
+        self._validate_epoch_snapshot(next_epoch)
+
         current = self._current_epoch
 
-        # Validate both epochs structurally
-        EpochValidator.validate(next_epoch)
+        # -------------------------------------------------------------
+        # I13 — STRICT MONOTONICITY
+        # -------------------------------------------------------------
 
-        # Validate transition logic
-        validate_epoch_transition(current, next_epoch)
+        if next_epoch.semantic_epoch.number <= current.semantic_epoch.number:
+            fail(
+                "epoch_monotonicity_violation",
+                ViolationClass.A_FATAL,
+            )
 
-        # Enforce current epoch is sealed
-        if not current.sealed:
+        # -------------------------------------------------------------
+        # SEALED HISTORY
+        # -------------------------------------------------------------
+
+        if not current.semantic_epoch.sealed:
             fail(
                 "current_epoch_not_sealed",
                 ViolationClass.A_FATAL,
             )
 
-        # Apply transition
+        # -------------------------------------------------------------
+        # PARENT CONTINUITY
+        # -------------------------------------------------------------
+
+        if next_epoch.parent_hash != current.epoch_hash:
+            fail(
+                "epoch_parent_continuity_violation",
+                ViolationClass.A_FATAL,
+            )
+
+        # -------------------------------------------------------------
+        # ANTI-FORK / REUSE
+        # -------------------------------------------------------------
+
+        if next_epoch.epoch_hash in self._epoch_hashes:
+            fail(
+                "epoch_reuse_detected",
+                ViolationClass.A_FATAL,
+            )
+
         self._current_epoch = next_epoch
         self._history.append(next_epoch)
+        self._epoch_hashes.add(next_epoch.epoch_hash)
 
         return next_epoch
 
-    # -------------------------------------------------------------
-    # SEAL CURRENT EPOCH
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
+    # HISTORY
+    # -----------------------------------------------------------------
 
-    def seal_current(self) -> Epoch:
+    def history(self) -> List[EpochSnapshot]:
         """
-        Seal the current epoch (make immutable).
-        """
-
-        if not self._current_epoch:
-            fail("no_active_epoch", ViolationClass.A_FATAL)
-
-        sealed_epoch = self._current_epoch.seal()
-
-        # Replace current with sealed version
-        self._current_epoch = sealed_epoch
-        self._history[-1] = sealed_epoch
-
-        return sealed_epoch
-
-    # -------------------------------------------------------------
-    # HISTORY ACCESS
-    # -------------------------------------------------------------
-
-    def history(self) -> list[Epoch]:
-        """
-        Return immutable snapshot of epoch history.
+        Return immutable epoch history.
         """
 
         return list(self._history)
 
-    # -------------------------------------------------------------
-    # GET BY VERSION
-    # -------------------------------------------------------------
-
-    def get_by_version(self, version: int) -> Optional[Epoch]:
-        """
-        Retrieve epoch by version.
-        """
-
-        for epoch in self._history:
-            if epoch.version == version:
-                return epoch
-
-        return None
-
-    # -------------------------------------------------------------
-    # CONSISTENCY CHECK
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
+    # CONSISTENCY CHECKS
+    # -----------------------------------------------------------------
 
     def validate_monotonicity(self) -> bool:
         """
-        Ensure epoch versions strictly increase.
+        Verify strictly increasing epoch sequence.
         """
 
         for i in range(1, len(self._history)):
-            if self._history[i].version <= self._history[i - 1].version:
+            prev = self._history[i - 1]
+            curr = self._history[i]
+
+            if curr.semantic_epoch.number <= prev.semantic_epoch.number:
                 fail(
                     "epoch_history_not_monotonic",
                     ViolationClass.A_FATAL,
@@ -175,9 +226,26 @@ class EpochManager:
 
         return True
 
-    # -------------------------------------------------------------
-    # EXPORT (REGISTRY SYNC)
-    # -------------------------------------------------------------
+    def validate_parent_chain(self) -> bool:
+        """
+        Verify epoch lineage continuity.
+        """
+
+        for i in range(1, len(self._history)):
+            prev = self._history[i - 1]
+            curr = self._history[i]
+
+            if curr.parent_hash != prev.epoch_hash:
+                fail(
+                    "epoch_history_parent_break",
+                    ViolationClass.A_FATAL,
+                )
+
+        return True
+
+    # -----------------------------------------------------------------
+    # EXPORT
+    # -----------------------------------------------------------------
 
     def export_current(self) -> Dict[str, Any]:
         """
@@ -186,50 +254,86 @@ class EpochManager:
 
         epoch = self.current()
 
-        return epoch.to_dict()
+        return {
+            "epoch_number": epoch.semantic_epoch.number,
+            "epoch_type": epoch.semantic_epoch.epoch_type.name,
+            "sealed": epoch.semantic_epoch.sealed,
+            "epoch_hash": epoch.epoch_hash,
+            "parent_hash": epoch.parent_hash,
+        }
 
-    # -------------------------------------------------------------
-    # RELOAD FROM REGISTRY
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
+    # INTERNAL VALIDATION
+    # -----------------------------------------------------------------
 
-    def load_from_registry(self, record: Dict[str, Any]) -> Epoch:
+    @staticmethod
+    def _validate_epoch_snapshot(epoch: EpochSnapshot) -> None:
         """
-        Load epoch from registry record.
-
-        Ensures deterministic reconstruction.
+        Structural epoch validation.
         """
 
-        if not isinstance(record, dict):
+        if not isinstance(epoch, EpochSnapshot):
             fail(
-                "invalid_registry_epoch_record",
+                "invalid_epoch_snapshot_type",
                 ViolationClass.B_STRUCTURAL,
             )
 
-        required = ["epoch_id", "instance_id", "version", "active", "sealed"]
+        semantic = epoch.semantic_epoch
 
-        for field in required:
-            if field not in record:
-                fail(
-                    f"missing_registry_field:{field}",
-                    ViolationClass.B_STRUCTURAL,
-                )
+        if not isinstance(semantic, SemanticEpoch):
+            fail(
+                "epoch_missing_compiled_semantics",
+                ViolationClass.B_STRUCTURAL,
+            )
 
-        epoch = Epoch.create(
-            id=record["epoch_id"],
-            instance_id=record["instance_id"],
-            version=record["version"],
-            active=record["active"],
-            sealed=record["sealed"],
-        )
+        if not isinstance(semantic.number, int):
+            fail(
+                "epoch_number_not_int",
+                ViolationClass.B_STRUCTURAL,
+            )
 
-        return epoch
+    @staticmethod
+    def _validate_genesis(epoch: EpochSnapshot) -> None:
+        """
+        Validate genesis legality.
+        """
 
-    # -------------------------------------------------------------
+        semantic = epoch.semantic_epoch
+
+        if semantic.number != 0:
+            fail(
+                "invalid_genesis_epoch_number",
+                ViolationClass.A_FATAL,
+            )
+
+        if semantic.epoch_type != EpochType.GENESIS:
+            fail(
+                "invalid_genesis_epoch_type",
+                ViolationClass.A_FATAL,
+            )
+
+    # -----------------------------------------------------------------
+    # AUTHORITY RELEASE
+    # -----------------------------------------------------------------
+
+    @staticmethod
+    def release_authority() -> None:
+        """
+        Release singleton authority.
+
+        Intended for controlled testing only.
+        """
+
+        global _ACTIVE_MANAGER
+        _ACTIVE_MANAGER = None
+
+    # -----------------------------------------------------------------
     # DEBUG
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
-            f"<EpochManager current={self._current_epoch} "
+            f"<EpochManager "
+            f"current={self._current_epoch} "
             f"history_len={len(self._history)}>"
         )

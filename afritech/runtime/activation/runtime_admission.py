@@ -1,26 +1,35 @@
-# afritech/runtime/activation/runtime_admission.py
-
 """
+afritech/runtime/activation/runtime_admission.py
+
 AfriTech Runtime Admission Validator
 
 Purpose:
 Constitutionally admit the runtime under a specific epoch by validating
-registry, epoch, kernel, authority, replay, and certificate bindings.
+registry, attestation, epoch semantics, kernel integrity, authority,
+replay verifier binding, and runtime certificate.
 
-IMPORTANT:
+CONSTITUTIONAL RULES:
 - Admission ONLY (no execution, no state mutation)
-- Deterministic, replay-safe, seal-safe
-- Any modification requires ADR → Epoch → Registry reseal
+- MUST NOT parse epoch YAML
+- MUST NOT parse semantic YAML
+- MUST consume only:
+    • sealed registry (loader)
+    • registry attestation (sealed)
+    • EpochSnapshot
+    • compiled SemanticEpoch
+    • runtime certificate
 """
 
 from __future__ import annotations
 
 import hashlib
-import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional
 
 from afritech.trace.trace_engine import TraceEngine
+from afritech.registry.loader import load_registry
+from afritech.epoch.epoch_snapshot import EpochSnapshot
+from afritech.epoch.compiled.semantic_epoch import SemanticEpoch
 
 
 # -----------------------------------------------------------------
@@ -39,6 +48,9 @@ class RuntimeAdmissionError(Exception):
 class RuntimeAdmissionValidator:
     """
     Constitutional runtime admission validator.
+
+    NOTE:
+    This validator performs NO execution and NO mutation.
     """
 
     # =============================================================
@@ -48,21 +60,14 @@ class RuntimeAdmissionValidator:
     def __init__(self, base_path: str):
         self.base_path = Path(base_path).resolve()
 
-        # Core artifacts (ABSOLUTE, CANONICAL PATHS)
-        self.registry_path = self.base_path / "registry/registry.yaml"
-        self.attestation_path = self.base_path / "registry/attestation.yaml"
-        self.surfaces_path = self.base_path / "governance/EXECUTION_SURFACES.yaml"
-        self.authority_path = self.base_path / "inference/authority_profiles.yaml"
+        # Runtime certificate is the ONLY file read directly
         self.certificate_path = (
             self.base_path
             / "proof/certificates/runtime_epoch_0006.cert"
         )
 
-        # Loaded data
         self.registry: Optional[Dict[str, Any]] = None
         self.attestation: Optional[Dict[str, Any]] = None
-        self.surfaces: Optional[Dict[str, Any]] = None
-        self.authority: Optional[Dict[str, Any]] = None
         self.certificate: Optional[Dict[str, Any]] = None
 
     # =============================================================
@@ -77,135 +82,37 @@ class RuntimeAdmissionValidator:
             )
 
     # =============================================================
-    # YAML LOADING (SAFE)
+    # CERTIFICATE LOADING (ONLY ALLOWED YAML)
     # =============================================================
 
-    @staticmethod
-    def _load_yaml(path: Path) -> Dict[str, Any]:
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except Exception as e:
-            raise RuntimeAdmissionError(
-                f"Failed to load YAML {path}: {e}"
-            )
-
-        if not isinstance(data, dict):
-            raise RuntimeAdmissionError(
-                f"Invalid YAML structure in {path}"
-            )
-
-        return data
-
-    def _load_all(self) -> None:
-        self._assert_exists(self.registry_path, "registry.yaml")
-        self._assert_exists(self.attestation_path, "attestation.yaml")
-        self._assert_exists(self.surfaces_path, "EXECUTION_SURFACES.yaml")
-        self._assert_exists(self.authority_path, "authority_profiles.yaml")
+    def _load_certificate(self) -> None:
         self._assert_exists(self.certificate_path, "runtime certificate")
 
-        self.registry = self._load_yaml(self.registry_path)
-        self.attestation = self._load_yaml(self.attestation_path)
-        self.surfaces = self._load_yaml(self.surfaces_path)
-        self.authority = self._load_yaml(self.authority_path)
-        self.certificate = self._load_yaml(self.certificate_path)
+        # Certificate loader is assumed to be safe & deterministic
+        from afritech.proof.certificates.loader import load_runtime_certificate
+
+        self.certificate = load_runtime_certificate(self.certificate_path)
+
+        if not isinstance(self.certificate, dict):
+            raise RuntimeAdmissionError("Invalid runtime certificate format")
 
     # =============================================================
-    # CANONICAL HASHING
+    # REGISTRY & ATTESTATION (SEALED ONLY)
     # =============================================================
 
-    @staticmethod
-    def _canonical_yaml(data: Dict[str, Any]) -> str:
-        """
-        Strict deterministic YAML serialization.
-        Prevents cross-environment drift.
-        """
-        return yaml.dump(
-            data,
-            sort_keys=True,
-            allow_unicode=False,
-            default_flow_style=False,
-            width=4096,
-        )
+    def _load_registry_and_attestation(self) -> None:
+        self.registry = load_registry()
 
-    def _sha256_yaml(self, path: Path) -> str:
-        data = self._load_yaml(path)
-        canonical = self._canonical_yaml(data)
-        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        if not self.registry:
+            raise RuntimeAdmissionError("Registry missing")
 
-    # =============================================================
-    # HASH COMPUTATION
-    # =============================================================
+        self.attestation = self.registry.get("attestation")
 
-    def _compute_registry_hash(self) -> str:
-        return self._sha256_yaml(self.registry_path)
+        if not self.attestation:
+            raise RuntimeAdmissionError("Registry attestation missing")
 
-    def _compute_surfaces_hash(self) -> str:
-        return self._sha256_yaml(self.surfaces_path)
-
-    def _compute_authority_hash(self) -> str:
-        return self._sha256_yaml(self.authority_path)
-
-    def _compute_epoch_hash(self) -> str:
-        epoch_num = self.registry["epoch"]["current"]
-        epoch_file = (
-            self.base_path
-            / f"registry/epochs/EPOCH_000{epoch_num}.yaml"
-        )
-        self._assert_exists(epoch_file, "epoch file")
-        return self._sha256_yaml(epoch_file)
-
-    # =============================================================
-    # KERNEL ROOT HASH (ORDERED, STRICT)
-    # =============================================================
-
-    def _compute_kernel_root_hash(self) -> str:
-        kernel_hashes = self.attestation["attestation"]["kernel_hashes"]
-
-        order = [
-            "lean",
-            "kernel",
-            "state",
-            "guards",
-            "runtime",
-            "runtime_activation",
-            "runtime_engine",
-            "proof",
-            "evaluation",
-        ]
-
-        try:
-            joined = "".join(
-                kernel_hashes[k]["hash"] for k in order
-            ).encode("utf-8")
-        except KeyError as e:
-            raise RuntimeAdmissionError(
-                f"Missing kernel hash entry: {e}"
-            )
-
-        return hashlib.sha256(joined).hexdigest()
-
-    # =============================================================
-    # REPLAY VERIFIER HASH
-    # =============================================================
-
-    def _compute_replay_verifier_hash(self) -> str:
-        verifier_root = self.base_path / "verify"
-
-        if not verifier_root.exists():
-            raise RuntimeAdmissionError(
-                "Missing replay verifier directory"
-            )
-
-        hasher = hashlib.sha256()
-
-        for path in sorted(verifier_root.glob("**/*.py")):
-            if "tests" in path.parts:
-                continue
-            with open(path, "rb") as f:
-                hasher.update(f.read())
-
-        return hasher.hexdigest()
+        if self.attestation.get("status") != "SEALED":
+            raise RuntimeAdmissionError("Registry attestation is not SEALED")
 
     # =============================================================
     # CERTIFICATE VALIDATION
@@ -244,47 +151,66 @@ class RuntimeAdmissionValidator:
         ]
 
         if set(expected_scope) != set(actual_scope):
-            raise RuntimeAdmissionError(
-                "Signature scope mismatch"
-            )
+            raise RuntimeAdmissionError("Signature scope mismatch")
 
         payload = {k: cert[k] for k in actual_scope}
 
         computed = hashlib.sha256(
-            self._canonical_yaml(payload).encode("utf-8")
+            _canonical_json(payload).encode("utf-8")
         ).hexdigest()
 
         if computed != sig["signed_payload_hash"]:
-            raise RuntimeAdmissionError(
-                "Signature payload hash mismatch"
-            )
+            raise RuntimeAdmissionError("Signature payload hash mismatch")
 
     # =============================================================
-    # CONSTITUTIONAL BINDINGS
+    # CONSTITUTIONAL BINDINGS (NO YAML)
     # =============================================================
 
-    def _validate_bindings(self) -> None:
+    def _validate_bindings(
+        self,
+        epoch_snapshot: EpochSnapshot,
+    ) -> None:
         binding = self.certificate["runtime_certificate"]["constitutional_binding"]
 
-        if binding["epoch"] != self.registry["epoch"]["current"]:
-            raise RuntimeAdmissionError("Epoch mismatch")
+        if not isinstance(epoch_snapshot, EpochSnapshot):
+            raise RuntimeAdmissionError("EpochSnapshot required")
 
-        if binding["registry_hash"] != self._compute_registry_hash():
+        semantic_epoch: SemanticEpoch = epoch_snapshot.semantic_epoch
+
+        if not isinstance(semantic_epoch, SemanticEpoch):
+            raise RuntimeAdmissionError("Compiled SemanticEpoch required")
+
+        # Epoch identity
+        if binding["epoch"] != semantic_epoch.number:
+            raise RuntimeAdmissionError("Epoch number mismatch")
+
+        # Registry binding
+        if binding["registry_hash"] != self.registry.get("registry_hash"):
             raise RuntimeAdmissionError("Registry hash mismatch")
 
-        if binding["epoch_hash"] != self._compute_epoch_hash():
+        # Attested epoch binding (NO YAML)
+        if binding["epoch_hash"] != epoch_snapshot.epoch_hash:
             raise RuntimeAdmissionError("Epoch hash mismatch")
 
-        if binding["execution_surfaces_hash"] != self._compute_surfaces_hash():
+        # Execution surfaces
+        if (
+            binding["execution_surfaces_hash"]
+            != self.attestation.get("execution_surface_hash")
+        ):
             raise RuntimeAdmissionError("Execution surfaces hash mismatch")
 
-        if binding["authority_profiles_hash"] != self._compute_authority_hash():
-            raise RuntimeAdmissionError("Authority profiles mismatch")
+        # Kernel surface
+        if (
+            binding["kernel_root_hash"]
+            != self.attestation.get("kernel_surface_hash")
+        ):
+            raise RuntimeAdmissionError("Kernel surface hash mismatch")
 
-        if binding["kernel_root_hash"] != self._compute_kernel_root_hash():
-            raise RuntimeAdmissionError("Kernel hash mismatch")
-
-        if binding["verifier_hash"] != self._compute_replay_verifier_hash():
+        # Replay verifier
+        if (
+            binding["verifier_hash"]
+            != self.attestation.get("replay_verifier_hash")
+        ):
             raise RuntimeAdmissionError("Replay verifier mismatch")
 
     # =============================================================
@@ -292,20 +218,10 @@ class RuntimeAdmissionValidator:
     # =============================================================
 
     def _validate_execution_surfaces(self) -> None:
-        allowed = self.surfaces.get("allowed_execution_surfaces", {})
-
-        required = [
-            "runtime_activation",
-            "runtime_engine",
-            "proof",
-            "evaluation",
-        ]
-
-        for surface in required:
-            if surface not in allowed:
-                raise RuntimeAdmissionError(
-                    f"Undeclared execution surface: {surface}"
-                )
+        if not self.attestation.get("execution_surface_hash"):
+            raise RuntimeAdmissionError(
+                "Attestation missing execution_surface_hash"
+            )
 
     # =============================================================
     # PUBLIC ENTRY
@@ -313,22 +229,25 @@ class RuntimeAdmissionValidator:
 
     def validate(
         self,
+        *,
+        epoch_snapshot: EpochSnapshot,
         trace: Optional[TraceEngine] = None,
     ) -> bool:
         """
         Perform full constitutional runtime admission.
 
-        TRACE:
-        - Admission events MAY be traced
-        - Execution MUST NOT occur here
+        Admission ONLY:
+        - no execution
+        - no mutation
         """
 
         if trace:
             trace.record("runtime_admission", {"status": "begin"})
 
-        self._load_all()
+        self._load_registry_and_attestation()
+        self._load_certificate()
         self._validate_certificate()
-        self._validate_bindings()
+        self._validate_bindings(epoch_snapshot)
         self._validate_execution_surfaces()
 
         if trace:
@@ -339,27 +258,11 @@ class RuntimeAdmissionValidator:
 
         return True
 
-    # =============================================================
-    # REQUEST VALIDATION (OPTIONAL)
-    # =============================================================
 
-    def validate_request(self, request: Dict[str, Any]) -> bool:
-        """
-        Validate execution request metadata (pre-admission).
-        """
+# =============================================================
+# UTILITIES
+# =============================================================
 
-        if "authority_profile" not in request:
-            raise RuntimeAdmissionError("Missing authority_profile")
-
-        if "replay_requirements" not in request:
-            raise RuntimeAdmissionError("Missing replay_requirements")
-
-        if request["authority_profile"] not in self.authority["authority_profiles"]:
-            raise RuntimeAdmissionError("Invalid authority profile")
-
-        if not request["replay_requirements"].get("deterministic", False):
-            raise RuntimeAdmissionError(
-                "Non-deterministic request forbidden"
-            )
-
-        return True
+def _canonical_json(obj: Any) -> str:
+    import json
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)

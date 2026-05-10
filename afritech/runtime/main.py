@@ -1,183 +1,142 @@
 # afritech/runtime/main.py
 
 """
-AfriTech Runtime Entry Point
+AfriTech Sovereign Entry Point
+==============================
 
-This module defines the constitutional entry point for the AfriTech runtime.
+Canonical constitutional runtime admission surface.
 
-IMPORTANT CONSTITUTIONAL NOTES:
-- This file anchors runtime identity and admission ONLY
-- It does NOT contain execution logic
-- It must NEVER bypass guards or registry enforcement
-- All execution must be mediated by constitutional guards
-- Runtime existence REQUIRES a valid RuntimeCertificate
+This module is the FINAL gate.
+It must:
+- verify sovereignty
+- admit runtime
+- terminate
 
-TRACE INTEGRATION RULE:
-- Trace may ONLY record admission and legitimacy
-- Trace MUST NOT record execution here
-- Trace MUST NOT initiate execution
+It must NOT:
+- delegate
+- recurse
+- re-enter boot
 """
 
 from __future__ import annotations
 
-import os
-
-from afritech.runtime.admission.admission_engine import (
-    RuntimeAdmissionEngine,
-    AdmissionError,
+from afritech.verify.engine import verify_replay
+from afritech.epoch.epoch_snapshot import EpochSnapshot
+from afritech.epoch.compiled.semantic_epoch import (
+    SemanticEpoch,
+    EpochType,
 )
-
-from afritech.trace.trace_engine import TraceEngine
-from afritech.trace.trace_context import TraceContext
+from afritech.guards.engine import verify_sovereignty
 
 
 # ---------------------------------------------------------------------
-# Runtime identity
+# Constitutional halt
 # ---------------------------------------------------------------------
 
-RUNTIME_NAME: str = "afritech.runtime"
-RUNTIME_ROLE: str = "EXECUTION_ENTRYPOINT"
-RUNTIME_STATUS: str = "GUARDED"
-
-
-# ---------------------------------------------------------------------
-# Certificate configuration
-# ---------------------------------------------------------------------
-
-DEFAULT_CERT_PATH: str = (
-    "afritech/proof/certificates/runtime_epoch_0006.cert"
-)
+def constitutional_halt(message: str) -> None:
+    raise SystemExit(
+        f"\n❌ CONSTITUTIONAL HALT\n{message}\n"
+    )
 
 
 # ---------------------------------------------------------------------
-# Admission enforcement (CRITICAL)
+# Epoch reconstruction (AUTHORITATIVE)
 # ---------------------------------------------------------------------
 
-def _admit_runtime(
-    cert_path: str = DEFAULT_CERT_PATH,
-    trace: TraceEngine | None = None,
-) -> None:
+def _derive_epoch_snapshot(replay_result) -> EpochSnapshot:
     """
-    Perform constitutional runtime admission.
-
-    This is the ONLY active responsibility of this module.
-
-    TRACE POLICY:
-    - Admission MAY be traced
-    - Execution MUST NOT be traced here
+    Materialize authoritative epoch state from replay witness.
     """
 
-    if trace:
-        trace.record(
-            "runtime_admission_check",
-            {"certificate_path": cert_path},
+    terminal = replay_result.terminal_epoch
+
+    if terminal is None:
+        constitutional_halt(
+            "Replay produced no terminal epoch"
         )
 
-    if not os.path.exists(cert_path):
-        if trace:
-            trace.complete(
-                "runtime_admission_check",
-                {"status": "missing_certificate"},
-            )
-        raise SystemExit(
-            f"[AFRITECH:ADMISSION] Missing RuntimeCertificate: {cert_path}"
+    if not isinstance(terminal, int):
+        constitutional_halt(
+            "Replay terminal epoch must be int"
         )
 
-    try:
-        admission = RuntimeAdmissionEngine(cert_path)
+    semantic_epoch = SemanticEpoch(
+        number=terminal,
+        parent=None if terminal == 0 else terminal - 1,
+        epoch_type=(
+            EpochType.GENESIS
+            if terminal == 0
+            else EpochType.EVOLUTION
+        ),
+        reseal_required=False,
+    )
 
-        if admission.admit():
-            if trace:
-                trace.complete(
-                    "runtime_admission_check",
-                    {"status": "admitted"},
-                )
-            print("[AFRITECH:ADMISSION] ✅ Runtime admitted under certificate")
-
-    except AdmissionError as e:
-        if trace:
-            trace.complete(
-                "runtime_admission_check",
-                {"status": "rejected", "reason": str(e)},
-            )
-        raise SystemExit(
-            f"[AFRITECH:ADMISSION] ❌ Admission failed: {str(e)}"
-        )
+    return EpochSnapshot.from_replay(
+        epoch_number=terminal,
+        semantic_epoch=semantic_epoch,
+        epoch_hash=f"epoch-{terminal}",
+    )
 
 
 # ---------------------------------------------------------------------
-# Constitutional entry point
+# Sovereign runtime boot (TERMINAL)
 # ---------------------------------------------------------------------
 
 def main() -> None:
-    """
-    Constitutional runtime entry point.
-
-    Responsibilities:
-    - Enforce runtime admission (mandatory)
-    - Establish constitutional legitimacy
-    - Emit TRACE for admission ONLY
-    - DO NOT execute business logic
-    - DO NOT bypass guards
-
-    Execution MUST occur via guarded runtime mechanisms
-    (e.g. guard_executor.py).
-    """
-
-    # -------------------------------------------------------------
-    # TRACE CONTEXT (ADMISSION SCOPE ONLY)
-    # -------------------------------------------------------------
-
-    trace = TraceEngine()
-
-    ctx = TraceContext(
-        trace_id="runtime-admission",
-        epoch_id="EPOCH_0006",
-        request_hash="runtime_boot",
+    print(
+        "🏛️ AFRITECH SOVEREIGN RUNTIME "
+        "BOOT SEQUENCE STARTING"
     )
 
-    trace.start(ctx)
-
-    # -------------------------------------------------------------
-    # ADMISSION (ONLY ACTION PERMITTED HERE)
-    # -------------------------------------------------------------
-
-    _admit_runtime(trace=trace)
-
-    # -------------------------------------------------------------
-    # FINALIZE TRACE (ADMISSION LEGITIMACY ONLY)
-    # -------------------------------------------------------------
-
-    trace.complete(
-        "runtime_entrypoint",
-        {"status": "legitimized"},
+    print(
+        "🔐 Verifying constitutional "
+        "lineage..."
     )
 
-    trace.finalize()
+    # ---------------------------------------------------------
+    # 1. Replay = history oracle
+    # ---------------------------------------------------------
 
-    # -------------------------------------------------------------
-    # IMPORTANT:
-    # NO EXECUTION OCCURS HERE.
-    #
-    # Control MUST be transferred to guarded execution layers
-    # such as:
-    #
-    #   afritech/runtime/guard_executor.py
-    #
-    # or other constitutionally admitted surfaces.
-    # -------------------------------------------------------------
+    replay_result = verify_replay()
 
-    return
+    if not replay_result.valid:
+        constitutional_halt(
+            "Constitutional replay invalid"
+        )
+
+    print("✅ Historical lineage preserved")
+
+    # ---------------------------------------------------------
+    # 2. Derive epoch snapshot
+    # ---------------------------------------------------------
+
+    epoch_snapshot = _derive_epoch_snapshot(
+        replay_result
+    )
+
+    print(
+        f"🕒 Terminal epoch: "
+        f"{epoch_snapshot.number}"
+    )
+
+    # ---------------------------------------------------------
+    # 3. Sovereignty verification (FINAL)
+    # ---------------------------------------------------------
+
+    verify_sovereignty(epoch_snapshot)
+
+    print("✅ Runtime sovereignty verified")
+
+    # ---------------------------------------------------------
+    # ✅ TERMINATE SUCCESSFULLY
+    # ---------------------------------------------------------
+
+    print("✅ AFRITECH RUNTIME LEGITIMIZED")
 
 
 # ---------------------------------------------------------------------
-# Direct execution guard
+# Module execution
 # ---------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
-
-
-# ---------------------------------------------------------------------
-# End of runtime main
-# ---------------------------------------------------------------------

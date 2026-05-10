@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 import hashlib
-import yaml
 from enum import Enum, auto
-#afritech/guards/engine.py
+
+from afritech.epoch.epoch_snapshot import EpochSnapshot
+from afritech.epoch.compiled.semantic_epoch import SemanticEpoch
+from afritech.registry.loader import load_registry
+
 
 # ---------------------------------------------------------
 # Constitutional root
@@ -48,7 +51,7 @@ def fail(
 
 # ---------------------------------------------------------
 # Canonical manifest hashing
-# MUST MATCH registry/seal.py EXACTLY
+# (MUST MATCH registry/seal.py EXACTLY)
 # ---------------------------------------------------------
 
 def sha256_manifest(root: Path, files: list[str]) -> str:
@@ -132,39 +135,43 @@ def verify_dependency_law() -> None:
 # Registry authority
 # ---------------------------------------------------------
 
-def verify_registry_authority() -> None:
-    registry = ROOT / "registry"
+def verify_registry_authority() -> dict:
+    """
+    Load and return the sealed registry.
 
-    if not registry.exists():
+    Guards are allowed to READ the registry,
+    but never to mutate or reinterpret it.
+    """
+    registry = load_registry()
+
+    if not registry:
         fail("Registry authority absent", ViolationClass.A_FATAL)
+
+    return registry
 
 
 # ---------------------------------------------------------
 # Registry seal enforcement
 # ---------------------------------------------------------
 
-def verify_registry_seal() -> None:
-    registry_file = ROOT / "registry" / "registry.yaml"
+def verify_registry_seal() -> dict:
+    registry = verify_registry_authority()
 
-    if not registry_file.exists():
-        fail("registry.yaml missing", ViolationClass.A_FATAL)
+    attestation = registry.get("attestation")
+    if not attestation:
+        fail("Registry attestation missing", ViolationClass.A_FATAL)
 
-    with open(registry_file, "r", encoding="utf-8") as f:
-        registry = yaml.safe_load(f)
-
-    att = registry.get("attestation", {})
-
-    if att.get("seal_status") != "SEALED":
+    if attestation.get("status") != "SEALED":
         fail("Registry is not SEALED", ViolationClass.A_FATAL)
 
-    kernel_hashes = att.get("kernel_hashes")
-
+    kernel_hashes = attestation.get("kernel_hashes")
     if not kernel_hashes:
         fail(
             "Registry kernel attestation missing",
             ViolationClass.A_FATAL,
         )
 
+    # Verify kernel hashes deterministically
     for scope, data in kernel_hashes.items():
         declared_files = data.get("files")
         expected_hash = data.get("hash")
@@ -191,28 +198,44 @@ def verify_registry_seal() -> None:
                 ViolationClass.B_STRUCTURAL,
             )
 
+    return registry
+
 
 # ---------------------------------------------------------
-# Epoch authority
+# Epoch authority (COMPILED ONLY)
 # ---------------------------------------------------------
 
-def verify_authority_for_epoch() -> None:
+def verify_authority_for_epoch(
+    epoch_snapshot: EpochSnapshot,
+) -> None:
+    """
+    Guards MUST receive an EpochSnapshot.
+    They must never load or parse epoch YAML.
+    """
+
+    if not isinstance(epoch_snapshot, EpochSnapshot):
+        fail(
+            "EpochSnapshot required for epoch authority verification",
+            ViolationClass.A_FATAL,
+        )
+
+    semantic_epoch: SemanticEpoch = epoch_snapshot.semantic_epoch
+
+    if not isinstance(semantic_epoch, SemanticEpoch):
+        fail(
+            "Compiled SemanticEpoch required",
+            ViolationClass.A_FATAL,
+        )
+
     verify_kernel_immutability()
     verify_dependency_law()
-    verify_registry_authority()
+    verify_registry_seal()
 
-    registry_file = ROOT / "registry" / "registry.yaml"
-
-    if not registry_file.exists():
-        fail("registry.yaml missing", ViolationClass.A_FATAL)
-
-    with open(registry_file, "r", encoding="utf-8") as f:
-        registry = yaml.safe_load(f)
-
-    if registry.get("attestation", {}).get("seal_status") != "SEALED":
+    # Epoch structural sanity only
+    if semantic_epoch.number < 0:
         fail(
-            "Registry must be SEALED before epoch advancement",
-            ViolationClass.A_FATAL,
+            "Invalid epoch number",
+            ViolationClass.B_STRUCTURAL,
         )
 
 
@@ -220,8 +243,17 @@ def verify_authority_for_epoch() -> None:
 # Sovereignty verification
 # ---------------------------------------------------------
 
-def verify_sovereignty() -> None:
-    verify_kernel_immutability()
-    verify_dependency_law()
-    verify_registry_authority()
-    verify_registry_seal()
+
+
+
+def verify_sovereignty(epoch_snapshot: EpochSnapshot) -> None:
+    """
+    Top-level guard for constitutional sovereignty.
+
+    Requires:
+    - sealed registry
+    - immutable kernel
+    - compiled epoch semantics
+    """
+
+    verify_authority_for_epoch(epoch_snapshot)
