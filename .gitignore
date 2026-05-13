@@ -5,18 +5,31 @@
 __pycache__/
 *.pyc
 
-# Env
+# Virtual environments
 venv/
 
-# Log / temp
+# Logs / temp
 *.log
 
-# Text files (docs only)
-*.txt
+# Legacy scratch documents (explicit)
+AfriTech_Progress.txt
+AfriTech_V*.txt
+Architecture_H.txt
+Law_v1.txt
+afritech_v1.txt
 
-# ✅ Allow requirements explicitly
-!requirements.txt
+# Build / packaging artifacts
+afritech.egg-info/
+*.egg-info/
 
-# Screenshots
+# Generated proof artifacts
+*institutional_proof_packet.zip
+*institutional_proof_packet.zip.sha256
+*institutional_proof_file_manifest.sha256
+
+# Screenshots / images (optional – keep only if intentional)
 *.jpg
 *.png
+
+# Explicit allowlist
+!requirements.txt
