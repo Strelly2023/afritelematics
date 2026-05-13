@@ -1,0 +1,132 @@
+
+#ecosystems/afriride/core/constitutional/determinism.yaml
+determinism_contract:
+  domain: afriride
+
+  version: "0.1"
+  status: enforced
+
+  # --------------------------------------------------
+  # ✅ WHAT IS GUARANTEED
+  # --------------------------------------------------
+  scope: decision_causality
+
+  guarantees:
+    - identical_inputs_produce_identical_decisions
+    - identical_event_streams_produce_identical_state
+    - execution_trace_is_deterministically_hashable
+
+  # --------------------------------------------------
+  # ✅ DETERMINISTIC DECISIONS (MUST BE PURE)
+  # --------------------------------------------------
+  deterministic_decisions:
+    - ride_request_admission
+    - authority_validation
+    - guard_evaluation
+    - driver_assignment
+    - dispatch_retry_policy
+    - trip_state_transition
+    - fare_policy_application
+
+  # --------------------------------------------------
+  # ✅ NON-DETERMINISTIC INPUTS (MUST BE NORMALIZED)
+  # --------------------------------------------------
+  nondeterministic_inputs:
+    - gps_noise
+    - driver_location_latency
+    - network_delay
+    - timestamp_variability
+    - driver_availability_fluctuation
+
+  # --------------------------------------------------
+  # ✅ NORMALIZATION RULES (MANDATORY)
+  # --------------------------------------------------
+  normalization_rules:
+    driver_selection:
+      - driver_list_sorted_by_id
+      - stable_priority_ordering
+
+    time_handling:
+      - timestamps_truncated_to_seconds
+      - no wall_clock_dependency_in_decisions
+
+    geo_handling:
+      - geo_positions_rounded_5dp
+      - distance_calculated_with_fixed_precision
+
+    collections:
+      - unordered_sets_must_be_sorted_before_iteration
+
+    randomness:
+      - randomness_forbidden
+      - if_required_must_use_fixed_seed
+
+  # --------------------------------------------------
+  # ✅ EVENT & TRACE CONSISTENCY
+  # --------------------------------------------------
+  event_constraints:
+    - events_must_be_emitted_in_deterministic_order
+    - event_payloads_must_be_serialization_stable
+    - event_ids_must_not_depend_on_runtime_entropy
+
+  trace_constraints:
+    - decision_trace_structure_is_static
+    - serialization_must_use_sorted_keys
+    - hash_function_must_be_sha256
+
+  # --------------------------------------------------
+  # ✅ REPLAY CLAIM (CRITICAL)
+  # --------------------------------------------------
+  replay_claim:
+    guarantees_decision_trace_identity: true
+    guarantees_event_sequence_identity: true
+    guarantees_state_reconstruction_equivalence: true
+
+    does_not_claim_physical_identity: true
+    does_not_claim_real_time_equivalence: true
+
+  # --------------------------------------------------
+  # ✅ VIOLATION POLICY (STRICT)
+  # --------------------------------------------------
+  violation_policy:
+    on_nondeterminism_detected: reject_execution
+    on_trace_mismatch: fail_replay
+    on_event_divergence: invalidate_state
+    on_unstable_sort_detected: halt_dispatch
+
+  # --------------------------------------------------
+  # ✅ OBSERVABILITY (MINIMAL BUT CRITICAL)
+  # --------------------------------------------------
+  observability:
+    required_metrics:
+      - decision_hash
+      - replay_hash
+      - determinism_match (boolean)
+
+    kpi:
+      decision_determinism_rate:
+        description: "Percentage of executions where decision hash == replay hash"
+        target: 1.0
+
+  # --------------------------------------------------
+  # ✅ EXPLICIT NON-GOALS (PREVENT SCOPE CREEP)
+  # --------------------------------------------------
+  non_goals:
+    - real_time_prediction_accuracy
+    - optimal_driver_matching
+    - economic_optimization
+    - fairness_scoring
+    - machine_learning_decisions
+
+  # --------------------------------------------------
+  # ✅ ENFORCEMENT NOTE
+  # --------------------------------------------------
+  enforcement:
+    enforced_by:
+      - runtime_adapter
+      - admission_layer
+      - guard_layer
+      - replay_tests
+
+    invariant:
+      - any_non_deterministic_execution_is_invalid

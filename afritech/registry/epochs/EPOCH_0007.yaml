@@ -1,0 +1,137 @@
+# afritech/registry/epochs/EPOCH_0007.yaml
+
+schema: afritech.registry.epoch.v1
+
+epoch:
+  id: EPOCH_0007
+  number: 7
+  status: ACTIVE
+  type: CONSTITUTIONAL_EVOLUTION
+
+  parent_epoch: EPOCH_0006
+  enacted_at: 2026-05-13
+
+  description: >
+    Epoch 7 introduces AfriRide v0.2 as an expanded
+    Proof-of-Continuity surface. This epoch extends the
+    validated failure space of AfriRide from a single
+    deterministic scenario (v0.1) to a bounded, explicitly
+    declared set of deterministic failure scenarios (v0.2),
+    while preserving all prior guarantees and frozen
+    artifacts from earlier epochs.
+
+  # -----------------------------------------------------
+  # ✅ AUTHORITY
+  # -----------------------------------------------------
+
+  authority:
+    basis:
+      - ADR-0010-afriride-v0-2
+    scope:
+      - Proof-of-Continuity expansion
+      - Deterministic failure-space validation
+
+  # -----------------------------------------------------
+  # ✅ AFFECTED SURFACES
+  # -----------------------------------------------------
+
+  surfaces:
+
+    added:
+      - path: ecosystems/afriride/v0_2
+        classification: PROOF_SURFACE
+        version: v0.2
+        status: ACTIVE
+        mutable: true
+
+    preserved:
+      - path: ecosystems/afriride
+        version: v0.1
+        status: FROZEN
+        mutable: false
+
+      - path: afritech/core/constitutional
+        status: FROZEN
+        mutable: false
+
+  # -----------------------------------------------------
+  # ✅ DETERMINISM & REPLAY GUARANTEES
+  # -----------------------------------------------------
+
+  determinism:
+    envelope:
+      - ecosystems/afriride/v0_2/determinism_envelope.yaml
+    guarantees:
+      - identical inputs produce identical traces
+      - identical traces produce identical hashes
+      - deterministic refusal on exhaustion or timeout
+      - no nondeterministic execution paths permitted
+
+  replay:
+    required: true
+    verifier: afritech.verify.replay
+    acceptance_criteria:
+      - replay hash equality
+      - trace sequence equality
+      - absence of undeclared behavior
+
+  # -----------------------------------------------------
+  # ✅ FAILURE TAXONOMY BINDING
+  # -----------------------------------------------------
+
+  failure_taxonomy:
+    path: ecosystems/afriride/v0_2/failure_taxonomy.yaml
+    enforcement:
+      - all failures must be explicitly declared
+      - all failures must map to declared handling modes
+      - undeclared failures invalidate proof surface
+
+  # -----------------------------------------------------
+  # ✅ METRICS (DECLARATIVE ONLY)
+  # -----------------------------------------------------
+
+  metrics:
+    allowed:
+      - Decision Determinism Rate (DDR)
+      - Continuity Coverage (CC)
+      - Deterministic Refusal Rate (DRR)
+    forbidden:
+      - performance metrics
+      - optimization metrics
+      - economic or product metrics
+
+  # -----------------------------------------------------
+  # ✅ INVARIANTS (NON-NEGOTIABLE)
+  # -----------------------------------------------------
+
+  invariants:
+    - no mutation of AfriRide v0.1 artifacts
+    - no modification of constitutional core
+    - v0.2 execution must be layered externally
+    - determinism envelope violations invalidate epoch claims
+    - replay failure invalidates proof surface
+    - partial correctness is not permitted
+
+  # -----------------------------------------------------
+  # ✅ CONSEQUENCES
+  # -----------------------------------------------------
+
+  consequences:
+    positive:
+      - expands AfriRide Proof-of-Continuity to multiple scenarios
+      - strengthens institutional trust and auditability
+      - preserves replay-verifiable historical lineage
+    negative:
+      - increases governance surface area
+      - requires continued audit discipline for v0.2 artifacts
+
+  # -----------------------------------------------------
+  # ✅ FINAL ASSERTION
+  # -----------------------------------------------------
+
+  assertion: >
+    Epoch 7 lawfully extends AfriRide’s Proof-of-Continuity
+    surface to v0.2 without mutating or weakening any
+    prior guarantees. All behavior introduced in this epoch
+    is deterministic, replay-verifiable, and constitutionally
+    bounded.

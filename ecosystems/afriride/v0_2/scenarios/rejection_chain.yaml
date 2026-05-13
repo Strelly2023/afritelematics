@@ -1,0 +1,224 @@
+# ecosystems/afriride/v0_2/scenarios/rejection_chain.yaml
+
+schema: afriride.scenario.v0_2
+kind: failure_scenario
+
+scenario:
+  id: DRIVER_REJECTION_CHAIN
+  version: v0.2
+  classification: deterministic_failure_scenario
+  domain: afriride
+  status: ACTIVE
+
+  description: >
+    This scenario validates deterministic handling of sequential driver
+    rejections during ride assignment. Drivers reject assignments in a
+    fixed order, and the system must retry deterministically without
+    reordering, skipping, or introducing randomness, preserving replay
+    identity across all retries.
+
+  # -----------------------------------------------------
+  # ✅ TAXONOMY LINK (MANDATORY)
+  # -----------------------------------------------------
+
+  failure_mode: DRIVER_REJECTS
+  governed_by:
+    taxonomy: ecosystems/afriride/v0_2/failure_taxonomy.yaml
+    handling_mode: RETRY_NEXT_DRIVER
+
+  # -----------------------------------------------------
+  # ✅ INPUT PARAMETERS (FULLY DETERMINISTIC)
+  # -----------------------------------------------------
+
+  parameters:
+    initial_driver_count: 5
+
+    driver_definition:
+      format: list_of_dicts
+      required_fields:
+        - id
+        - available
+      id_constraints:
+        type: integer
+        uniqueness: required
+        mutation: forbidden
+
+    ordering_rule:
+      description: >
+        Drivers must be sorted in ascending order by id before any
+        assignment attempt.
+      key: id
+      order: ascending
+      requirement: strict
+
+    rejection_sequence:
+      description: >
+        Ordered list of driver ids that will deterministically reject
+        the assignment when selected.
+      type: ordered_list
+      example: [1, 2]
+
+  # -----------------------------------------------------
+  # ✅ DERIVED CONDITIONS (EXPLICIT)
+  # -----------------------------------------------------
+
+  derived_conditions:
+    rejection_count: 2
+    remaining_candidates: 3
+
+    rejection_handling:
+      description: >
+        Each rejection removes the driver from future consideration.
+      algorithm:
+        steps:
+          - step: select_next_driver
+            rule: ascending_order
+          - step: detect_rejection
+            rule: driver_id_in_rejection_sequence
+          - step: mark_driver_unavailable
+            effect: remove_from_candidate_pool
+
+      forbidden:
+        - reinsert_rejected_driver
+        - random_reselection
+        - non_sequential_iteration
+
+  # -----------------------------------------------------
+  # ✅ EXPECTED SYSTEM BEHAVIOR
+  # -----------------------------------------------------
+
+  expected_behavior:
+
+    assignment_strategy:
+      description: >
+        System must attempt assignment strictly in driver id order.
+      rules:
+        - select_first_available
+        - no_random_selection
+        - no_scoring
+        - no_weighting
+
+    rejection_behavior:
+      description: >
+        When a driver rejects, the system must deterministically move
+        to the next driver.
+      rules:
+        - strict_sequence
+        - preserve_rejection_order
+        - no_retry_of_rejected_driver
+
+    exhaustion_behavior:
+      description: >
+        If all drivers reject or are exhausted, the system must
+        deterministically refuse.
+      output:
+        type: refusal
+        reason: NO_DRIVER_AVAILABLE
+        refusal_classification: DETERMINISTIC_REFUSAL
+        retry_permitted: false
+
+  # -----------------------------------------------------
+  # ✅ TRACE REQUIREMENTS
+  # -----------------------------------------------------
+
+  trace_requirements:
+
+    required_events:
+      - DriverPoolInitialized
+      - DriverPoolOrdered
+      - AssignmentAttempted
+      - DriverRejected
+      - DriverSelected
+      - DeterministicRefusal
+
+    event_ordering:
+      requirement: strict
+      branching_allowed: false
+
+    trace_invariants:
+      - identical input yields identical event sequence
+      - rejection order must appear explicitly in trace
+      - identical trace yields identical hash
+      - no event omission
+      - no extra events
+
+  # -----------------------------------------------------
+  # ✅ REPLAY REQUIREMENTS
+  # -----------------------------------------------------
+
+  replay_requirements:
+
+    admissibility_conditions:
+      - identical scenario_id
+      - identical parameters
+      - identical rejection_sequence
+      - identical driver ordering
+      - identical authority scope
+
+    guarantees:
+      - identical trace reconstruction
+      - identical event ordering
+      - identical replay hash
+
+    invalidation_rule:
+      description: >
+        Any divergence in rejection order, event sequence, or hash
+        invalidates the scenario proof.
+
+  # -----------------------------------------------------
+  # ✅ VALIDATION RULES
+  # -----------------------------------------------------
+
+  validation:
+
+    must_hold:
+      - driver list sorted before processing
+      - rejection sequence honored strictly
+      - rejected drivers removed from pool
+      - no randomness introduced
+      - determinism contract honored
+
+    must_not_occur:
+      - implicit fallback
+      - silent failure
+      - driver reordering
+      - retry loops
+      - external_state_dependency
+
+  # -----------------------------------------------------
+  # ✅ KPI EXPECTATIONS (LIMITED — v0.2)
+  # -----------------------------------------------------
+
+  kpi_expectations:
+
+    determinism:
+      DDR: 1.0
+
+    continuity:
+      included_in_CC: true
+
+    refusal_behavior:
+      deterministic_refusal_if_exhausted: true
+
+  # -----------------------------------------------------
+  # ❌ FORBIDDEN BEHAVIOR
+  # -----------------------------------------------------
+
+  forbidden:
+
+    execution:
+      - random_driver_selection
+      - heuristic_assignment
+      - load_balancing_logic
+      - optimization_routines
+
+    determinism:
+      - unordered_iteration
+      - probabilistic_branching
+      - wall_clock_dependency
+      - entropy_sources
+
+    structure:
+      - modifying_driver_ids
+      - reinserting_rejected_drivers
+      - undeclared_failure_path

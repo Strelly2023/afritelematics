@@ -1,0 +1,187 @@
+# ecosystems/afriride/v0_2/failure_taxonomy.yaml
+
+failure_taxonomy:
+  domain: afriride
+  version: v0.2
+  classification: deterministic_failure_space
+
+  # -----------------------------------------------------
+  # ✅ PRINCIPLE
+  # -----------------------------------------------------
+
+  principle:
+    description: >
+      All coordination failures must be explicit, deterministic,
+      and replay-verifiable. No failure may occur implicitly,
+      probabilistically, or without trace representation.
+
+    guarantees:
+      - every failure must be declared in this taxonomy
+      - every failure must produce a deterministic outcome
+      - every outcome must be replay-identical
+      - no silent failure is permitted
+
+  # -----------------------------------------------------
+  # ✅ FAILURE MODES (EXHAUSTIVE FOR v0.2)
+  # -----------------------------------------------------
+
+  failure_modes:
+
+    DRIVER_DROPOUT:
+      description: >
+        One or more drivers become unavailable after initial
+        eligibility evaluation but before final assignment.
+
+      trigger_condition:
+        - driver_list_reduced_deterministically
+        - availability_flag_false
+
+      deterministic_handling: RETRY_OR_REFUSE
+
+      expected_outcomes:
+        - deterministic_driver_reselection
+        - fallback_to_next_available
+        - eventual_refusal_if_exhausted
+
+      invariants:
+        - driver ordering must remain stable
+        - retry sequence must be deterministic
+        - no randomness in fallback selection
+
+    DRIVER_REJECTS:
+      description: >
+        A driver explicitly rejects a ride assignment request.
+
+      trigger_condition:
+        - driver_response == REJECTED
+
+      deterministic_handling: RETRY_NEXT_DRIVER
+
+      expected_outcomes:
+        - ordered_driver_iteration
+        - rejection_chain is preserved in trace
+        - no reordering of candidates
+
+      invariants:
+        - rejection order must be preserved
+        - retry is strictly sequential
+        - no retry loops permitted
+
+    NO_DRIVER_AVAILABLE:
+      description: >
+        No drivers satisfy eligibility or availability constraints.
+
+      trigger_condition:
+        - driver_pool_empty
+        - all drivers unavailable
+
+      deterministic_handling: DETERMINISTIC_REFUSAL
+
+      expected_outcomes:
+        - explicit refusal result
+        - no partial assignment attempt
+
+      invariants:
+        - refusal must produce trace
+        - refusal must be replay-identical
+
+    TIMEOUT_EXCEEDED:
+      description: >
+        A coordination step exceeds its declared deterministic timeout.
+
+      trigger_condition:
+        - elapsed_steps > declared_threshold
+
+      deterministic_handling: DETERMINISTIC_REFUSAL
+
+      expected_outcomes:
+        - refusal due to timeout
+        - explicit trace entry
+
+      invariants:
+        - timeout threshold must be constant
+        - no real-time clocks allowed
+        - evaluation must remain replay-safe
+
+  # -----------------------------------------------------
+  # ✅ HANDLING TYPES (NORMALIZED)
+  # -----------------------------------------------------
+
+  handling_modes:
+
+    RETRY_OR_REFUSE:
+      description: >
+        System attempts deterministic reassignment until candidates
+        are exhausted, then produces a deterministic refusal.
+
+    RETRY_NEXT_DRIVER:
+      description: >
+        System selects the next driver in a deterministic order.
+
+    DETERMINISTIC_REFUSAL:
+      description: >
+        System produces a refusal outcome explicitly, with no retry.
+
+  # -----------------------------------------------------
+  # ✅ GLOBAL INVARIANTS
+  # -----------------------------------------------------
+
+  invariants:
+
+    determinism:
+      - no random selection
+      - no probabilistic branching
+      - no nondeterministic iteration
+
+    replay:
+      - identical inputs must yield identical outcomes
+      - failure traces must hash identically under replay
+
+    ordering:
+      - all collections must be explicitly ordered
+      - driver selection must be stable
+
+    traceability:
+      - every failure must produce a trace entry
+      - every decision must be auditable
+
+  # -----------------------------------------------------
+  # ❌ FORBIDDEN BEHAVIORS
+  # -----------------------------------------------------
+
+  forbidden:
+
+    execution:
+      - implicit_fallback
+      - silent_failure
+      - partial_execution_without_trace
+
+    determinism:
+      - random_selection
+      - probabilistic_branching
+      - time_based_entropy
+
+    structure:
+      - undeclared_failure_modes
+      - dynamic_behavior_not_defined_in_taxonomy
+
+  # -----------------------------------------------------
+  # ✅ VALIDATION CONTRACT
+  # -----------------------------------------------------
+
+  validation:
+
+    required:
+      - all scenarios must reference declared failure_modes
+      - all failures must map to handling_modes
+      - all outputs must be replay-verifiable
+
+    success_condition:
+      description: >
+        All declared failure scenarios produce deterministic,
+        reproducible, and traceable outcomes with identical replay hash.
+
+    failure_condition:
+      description: >
+        Any deviation from declared failure modes, nondeterministic
+        handling, or replay mismatch invalidates AfriRide v0.2 proof.

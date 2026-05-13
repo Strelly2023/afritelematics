@@ -1,66 +1,64 @@
 schema: afritech.registry.epoch.v1
-
-# ---------------------------------------------------------
-# RUNTIME‑AUTHORITATIVE F: EPOCH_0006# RUNTIME‑AUTHORITATIVE FIELDS (USED BY REPLAY / SYNC)
+epoch_id: 6
 instance_id: epoch-0006-instance-A
 version: 6
 parent_version: 5
-
 active: false
 sealed: true
-
-# ---------------------------------------------------------
-# GOVERNANCE / CONSTITUTIONAL BLOCK
-# ---------------------------------------------------------
-
 epoch:
   number: 6
   parent: 5
   status: FINAL
   monotonic: true
-
   authority:
     adr:
-      - ADR-0006
-      - ADR-0007
-      - ADR-0008
-      - ADR-0009
-
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
   timestamp:
-    enacted_at: "2026-05-07T00:00:00Z"
-
+    enacted_at: '2026-05-07T00:00:00Z'
   type: CONSTITUTIONAL_SURFACE_REFINEMENT
   evolution: true
   normalization: false
+  description: 'Refines the constitutional runtime into admission and orchestration
+    sub-surfaces and introduces proof and evaluation surfaces. This epoch formalizes
+    Kernel v1 execution law, determinism enforcement, and authoritative replay semantics.
 
-  description: >
-    Refines constitutional runtime into admission and orchestration
-    sub-surfaces and introduces proof and evaluation surfaces.
-
+    '
   constitutional_delta:
     runtime_refined:
-      - runtime.activation
-      - runtime.engine
+    - runtime.activation
+    - runtime.engine
     surfaces_added:
-      - proof
-      - evaluation
-
-# ---------------------------------------------------------
-# SEALING (AUTHORITATIVE — MUST MATCH RUNTIME FLAGS)
-# ---------------------------------------------------------
-
+    - proof
+    - evaluation
+    invariants_enforced:
+    - execution_authority_closure
+    - ast_level_determinism
+    - deterministic_context_contract
+    - authoritative_replay_equivalence
+  sealing:
+    seal_status: SEALED
+    resealed: true
 sealing:
   pre_state: SEALED
   unsealed_for_mutation: true
   resealed: true
   seal_status: SEALED
-
-# ---------------------------------------------------------
-# CRYPTOGRAPHIC HASH CHAIN
-# ---------------------------------------------------------
-
 hash_chain:
   previous_epoch_hash: c65e5557ee8af8a8826303d5a17e44543cd05a05e99e526624cb2a556b99893e
-  epoch_hash: 0111924dfe8fe4009c7bb192e636977206faf690a036f511fc102a8d26561288
-# ---------------------------------------------------------
+  epoch_hash: 8cbce6617649a22cc526dd698e214dcb257a97b00c5cfd32f5b56ab1a4448696
+constitutional_assertions:
+- This epoch establishes Kernel v1 as the sole execution authority
+- Determinism is enforced structurally, not conventionally
+- Replay validity requires recomputation and equality
+- No execution may occur outside kernel.EXECUTE
+- Epoch boundaries are legally binding and immutable once sealed
+audit_notes: 'Epoch 6 represents the first fully constitutional execution epoch. All
+  prior epochs were retroactively normalized to bind history explicitly to epoch law.
 
+  This epoch is the reference baseline for future replay, federation verification,
+  and governance evolution.
+
+  '

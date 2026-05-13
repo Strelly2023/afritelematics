@@ -1,0 +1,1 @@
+#ecosystems/afriride/domain/value_objects/rider_id.py

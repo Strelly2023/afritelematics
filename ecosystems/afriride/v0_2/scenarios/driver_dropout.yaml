@@ -1,0 +1,217 @@
+# ecosystems/afriride/v0_2/scenarios/driver_dropout.yaml
+
+schema: afriride.scenario.v0_2
+kind: failure_scenario
+
+scenario:
+  id: DRIVER_DROPOUT
+  version: v0.2
+  classification: deterministic_failure_scenario
+  domain: afriride
+  status: ACTIVE
+
+  description: >
+    This scenario validates deterministic handling of driver dropout,
+    where a subset of initially eligible drivers becomes unavailable.
+    The system must re-evaluate assignment deterministically without
+    introducing randomness or altering replay consistency.
+
+  # -----------------------------------------------------
+  # ✅ TAXONOMY LINK (MANDATORY)
+  # -----------------------------------------------------
+
+  failure_mode: DRIVER_DROPOUT
+  governed_by:
+    taxonomy: ecosystems/afriride/v0_2/failure_taxonomy.yaml
+    handling_mode: RETRY_OR_REFUSE
+
+  # -----------------------------------------------------
+  # ✅ INPUT PARAMETERS (FULLY DETERMINISTIC)
+  # -----------------------------------------------------
+
+  parameters:
+    initial_driver_count: 10
+    dropout_count: 5
+
+    driver_definition:
+      format: list_of_dicts
+      required_fields:
+        - id
+        - available
+      id_constraints:
+        type: integer
+        uniqueness: required
+        mutation: forbidden
+
+    ordering_rule:
+      description: >
+        Drivers must be sorted in ascending order by id before
+        any assignment or dropout logic is applied.
+      key: id
+      order: ascending
+      requirement: strict
+
+  # -----------------------------------------------------
+  # ✅ DERIVED CONDITIONS (EXPLICIT — NO RUNTIME INFERENCE)
+  # -----------------------------------------------------
+
+  derived_conditions:
+    remaining_driver_count: 5
+
+    dropout_strategy:
+      description: >
+        Dropout is applied deterministically by truncating
+        the ordered driver list.
+      algorithm:
+        steps:
+          - step: sort
+            rule: ascending_id
+          - step: truncate
+            rule: remove_last_N
+            parameter: dropout_count
+      forbidden:
+        - random_removal
+        - probabilistic_selection
+        - availability_sampling
+
+  # -----------------------------------------------------
+  # ✅ EXPECTED SYSTEM BEHAVIOR
+  # -----------------------------------------------------
+
+  expected_behavior:
+
+    assignment_strategy:
+      description: >
+        Assignment must always select the first available driver
+        from the deterministically ordered list.
+      rules:
+        - select_first_available
+        - no_random_selection
+        - no_scoring
+        - no_weighting
+        - no_reordering
+
+    fallback_behavior:
+      description: >
+        If the selected driver becomes unavailable,
+        the system must select the next driver in strict order.
+      rules:
+        - strictly_sequential_retry
+        - no_skipping
+        - no_reordering
+        - bounded_by_remaining_driver_count
+
+    exhaustion_behavior:
+      description: >
+        If all drivers are exhausted due to dropout,
+        the system must deterministically refuse.
+      output:
+        type: refusal
+        reason: NO_DRIVER_AVAILABLE
+        refusal_classification: DETERMINISTIC_REFUSAL
+        retry_permitted: false
+
+  # -----------------------------------------------------
+  # ✅ TRACE REQUIREMENTS
+  # -----------------------------------------------------
+
+  trace_requirements:
+
+    required_events:
+      - DriverPoolInitialized
+      - DriverPoolOrdered
+      - DriverDropoutApplied
+      - AssignmentAttempted
+      - DriverSelected
+      - DeterministicRefusal
+
+    event_ordering:
+      requirement: strict
+      branching_allowed: false
+
+    trace_invariants:
+      - identical input yields identical event sequence
+      - identical event sequence yields identical hash
+      - no event omission
+      - no extra events
+
+  # -----------------------------------------------------
+  # ✅ REPLAY REQUIREMENTS
+  # -----------------------------------------------------
+
+  replay_requirements:
+
+    admissibility_conditions:
+      - identical scenario_id
+      - identical parameters
+      - identical driver ordering
+      - identical dropout_count
+      - identical authority scope
+
+    guarantees:
+      - identical trace reconstruction
+      - identical event ordering
+      - identical replay hash
+
+    invalidation_rule:
+      description: >
+        Any divergence between original execution and replay,
+        including trace order or hash, invalidates this scenario proof.
+
+  # -----------------------------------------------------
+  # ✅ VALIDATION RULES
+  # -----------------------------------------------------
+
+  validation:
+
+    must_hold:
+      - driver list sorted before processing
+      - dropout applied exactly once
+      - assignment order preserved
+      - no randomness introduced
+      - determinism contract honored
+
+    must_not_occur:
+      - implicit_fallback
+      - silent_failure
+      - dynamic_reordering
+      - missing_trace_events
+      - external_state_dependency
+
+  # -----------------------------------------------------
+  # ✅ KPI EXPECTATIONS (LIMITED — v0.2)
+  # -----------------------------------------------------
+
+  kpi_expectations:
+
+    determinism:
+      DDR: 1.0
+
+    continuity:
+      included_in_CC: true
+
+    refusal_behavior:
+      deterministic_refusal_if_exhausted: true
+
+  # -----------------------------------------------------
+  # ❌ FORBIDDEN BEHAVIOR
+  # -----------------------------------------------------
+
+  forbidden:
+
+    execution:
+      - random_driver_selection
+      - heuristic_assignment
+      - load_balancing_logic
+      - optimization_routines
+
+    determinism:
+      - unordered_iteration
+      - probabilistic_branching
+      - wall_clock_dependency
+      - entropy_sources
+
+    structure:
+      - modifying_driver_ids
+      - injecting_dynamic_drivers
+      - undeclared_failure_path

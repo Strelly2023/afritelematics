@@ -1,0 +1,206 @@
+# ecosystems/afriride/v0_2/scenarios/timeout.yaml
+
+schema: afriride.scenario.v0_2
+kind: failure_scenario
+
+scenario:
+  id: TIMEOUT_EXCEEDED
+  version: v0.2
+  classification: deterministic_failure_scenario
+  domain: afriride
+  status: ACTIVE
+
+  description: >
+    This scenario validates deterministic handling of coordination
+    timeouts. When a coordination step exceeds its declared deterministic
+    threshold, the system must refuse explicitly and replay-identically,
+    without consulting wall-clock time or introducing nondeterminism.
+
+  # -----------------------------------------------------
+  # ✅ TAXONOMY LINK (MANDATORY)
+  # -----------------------------------------------------
+
+  failure_mode: TIMEOUT_EXCEEDED
+  governed_by:
+    taxonomy: ecosystems/afriride/v0_2/failure_taxonomy.yaml
+    handling_mode: DETERMINISTIC_REFUSAL
+
+  # -----------------------------------------------------
+  # ✅ INPUT PARAMETERS (FULLY DETERMINISTIC)
+  # -----------------------------------------------------
+
+  parameters:
+    timeout_threshold:
+      description: >
+        Maximum number of deterministic coordination steps
+        allowed before timeout is triggered.
+      unit: logical_steps
+      value: 10
+
+    coordination_step_definition:
+      description: >
+        A coordination step represents a single, deterministic
+        state transition attempt (e.g. assignment attempt).
+      counted_events:
+        - AssignmentAttempted
+        - DriverResponseEvaluated
+
+    clock_model:
+      description: >
+        Timeout is evaluated using logical step counting only.
+        Wall-clock time is explicitly forbidden.
+      type: logical_counter
+      wall_clock_usage: forbidden
+
+  # -----------------------------------------------------
+  # ✅ DERIVED CONDITIONS (EXPLICIT)
+  # -----------------------------------------------------
+
+  derived_conditions:
+    timeout_trigger_condition:
+      description: >
+        Timeout is triggered when the number of coordination
+        steps exceeds the declared threshold.
+      rule: coordination_steps > timeout_threshold
+
+    timeout_evaluation:
+      description: >
+        Timeout evaluation must occur at a deterministic
+        checkpoint in the execution flow.
+      evaluation_point: post_step_increment
+
+    forbidden:
+      - real_time_measurement
+      - system_clock_access
+      - sleep_based_delay
+
+  # -----------------------------------------------------
+  # ✅ EXPECTED SYSTEM BEHAVIOR
+  # -----------------------------------------------------
+
+  expected_behavior:
+
+    normal_behavior:
+      description: >
+        Coordination proceeds deterministically while the
+        step count remains within the threshold.
+      rules:
+        - step_counter_incremented_per_event
+        - no timeout evaluation before threshold
+
+    timeout_behavior:
+      description: >
+        When the threshold is exceeded, the system must
+        immediately produce a deterministic refusal.
+      output:
+        type: refusal
+        reason: TIMEOUT_EXCEEDED
+        refusal_classification: DETERMINISTIC_REFUSAL
+        retry_permitted: false
+
+    post_timeout_behavior:
+      description: >
+        No further coordination or retries are permitted
+        after timeout refusal.
+      rules:
+        - execution_terminates
+        - no state mutation
+        - no retry_attempts
+
+  # -----------------------------------------------------
+  # ✅ TRACE REQUIREMENTS
+  # -----------------------------------------------------
+
+  trace_requirements:
+
+    required_events:
+      - CoordinationStarted
+      - CoordinationStepIncremented
+      - TimeoutThresholdEvaluated
+      - DeterministicRefusal
+
+    event_ordering:
+      requirement: strict
+      branching_allowed: false
+
+    trace_invariants:
+      - coordination_step_count must be explicit in trace
+      - identical inputs yield identical step counts
+      - identical trace yields identical hash
+      - no missing or extra events
+
+  # -----------------------------------------------------
+  # ✅ REPLAY REQUIREMENTS
+  # -----------------------------------------------------
+
+  replay_requirements:
+
+    admissibility_conditions:
+      - identical scenario_id
+      - identical timeout_threshold
+      - identical coordination_step_definition
+      - identical authority scope
+
+    guarantees:
+      - identical step counter reconstruction
+      - identical event ordering
+      - identical replay hash
+
+    invalidation_rule:
+      description: >
+        Any divergence in step count, event order,
+        or replay hash invalidates the scenario proof.
+
+  # -----------------------------------------------------
+  # ✅ VALIDATION RULES
+  # -----------------------------------------------------
+
+  validation:
+
+    must_hold:
+      - timeout evaluated using logical steps only
+      - threshold constant across executions
+      - refusal occurs immediately after threshold breach
+      - determinism contract honored
+
+    must_not_occur:
+      - wall_clock_dependency
+      - time.sleep or delay logic
+      - probabilistic timeout
+      - implicit continuation after timeout
+      - external_state_dependency
+
+  # -----------------------------------------------------
+  # ✅ KPI EXPECTATIONS (LIMITED — v0.2)
+  # -----------------------------------------------------
+
+  kpi_expectations:
+
+    determinism:
+      DDR: 1.0
+
+    continuity:
+      included_in_CC: true
+
+    refusal_behavior:
+      deterministic_refusal_on_timeout: true
+
+  # -----------------------------------------------------
+  # ❌ FORBIDDEN BEHAVIOR
+  # -----------------------------------------------------
+
+  forbidden:
+
+    execution:
+      - retry_after_timeout
+      - partial_execution_post_refusal
+      - heuristic_grace_period
+
+    determinism:
+      - wall_clock_time
+      - entropy_sources
+      - probabilistic_thresholds
+
+    structure:
+      - dynamic_threshold_adjustment
+      - undeclared_timeout_paths

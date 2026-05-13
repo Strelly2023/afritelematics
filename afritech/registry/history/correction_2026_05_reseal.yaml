@@ -1,17 +1,29 @@
 schema: afritech.registry.history.correction.v1
 
-# afritech/registry/history/correction_2026_05_reseal.yaml
+# ------------------------------------------------------------
+# EPOCH BINDING (MANDATORY)
+# ------------------------------------------------------------
+epoch_id: 6
 
+# ------------------------------------------------------------
+# CORRECTION IDENTITY
+# ------------------------------------------------------------
 correction:
   id: correction_2026_05_reseal
   type: CONSTITUTIONAL_BOOKKEEPING
   status: FINAL
   immutable: true
 
+# ------------------------------------------------------------
+# TIMESTAMPS
+# ------------------------------------------------------------
 timestamp:
   detected_at: "2026-05-03T04:42:00Z"
   corrected_at: "2026-05-03T05:18:00Z"
 
+# ------------------------------------------------------------
+# SCOPE OF CORRECTION
+# ------------------------------------------------------------
 scope:
   affects_epochs:
     - 1
@@ -21,6 +33,9 @@ scope:
   runtime_execution: false
   governance_rules: false
 
+# ------------------------------------------------------------
+# DESCRIPTION
+# ------------------------------------------------------------
 description: >
   A constitutional bookkeeping inconsistency was identified where
   epochs 1–3 were marked FINAL without explicit reseal metadata,
@@ -29,6 +44,9 @@ description: >
   between declared epoch finality, registry sealing, and cryptographic
   identity attestation.
 
+# ------------------------------------------------------------
+# ACTIONS TAKEN
+# ------------------------------------------------------------
 actions_taken:
   - >
     Added explicit reseal metadata to epoch history records
@@ -39,12 +57,18 @@ actions_taken:
   - >
     Reapplied registry seal using sovereignty tooling
 
+# ------------------------------------------------------------
+# ACTIONS NOT TAKEN
+# ------------------------------------------------------------
 non_actions:
   - No epoch counters were advanced
   - No law or invariant definitions were modified
   - No runtime, guard, or kernel behavior changed
   - No authority boundaries were altered
 
+# ------------------------------------------------------------
+# CONSTITUTIONAL ASSESSMENT
+# ------------------------------------------------------------
 constitutional_assessment:
   law_changed: false
   epoch_advanced: false
@@ -52,12 +76,18 @@ constitutional_assessment:
   authority_modified: false
   replay_semantics_changed: false
 
+# ------------------------------------------------------------
+# VERIFICATION
+# ------------------------------------------------------------
 verification:
   reseal_method: afritech.registry.sovereignty.seal_registry
   registry_seal_status: SEALED
   runtime_boot_verified: true
   ci_validation_passed: true
 
+# ------------------------------------------------------------
+# REFERENCES
+# ------------------------------------------------------------
 references:
   adr:
     - afritech/governance/adr/ADR-0005.yaml
@@ -69,12 +99,18 @@ references:
   tooling:
     - afritech/registry/sovereignty.py
 
+# ------------------------------------------------------------
+# CONSTITUTIONAL ASSERTIONS
+# ------------------------------------------------------------
 constitutional_assertions:
   - This correction is non-temporal and does not constitute an epoch
   - Identity-domain corrections must not advance epoch counters
   - Registry reseal is required to restore cryptographic truthfulness
   - Replay validity requires sealed history continuity
 
+# ------------------------------------------------------------
+# AUDIT NOTES
+# ------------------------------------------------------------
 audit_notes: >
   This record exists to preserve long-term traceability of
   identity corrections that are orthogonal to temporal evolution.

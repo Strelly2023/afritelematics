@@ -1,23 +1,27 @@
-"""
-afritech/runtime/context/runtime_context.py
+# afritech/runtime/context/runtime_context.py
 
+"""
 Runtime Context Layer
 ====================
 
 Defines the execution context for the constitutional runtime.
 
 Responsibilities:
-- Carry execution metadata
+- Carry execution authority and payload
+- Embed deterministic execution contract
 - Maintain deterministic state reference
 - Support audit and replay systems
-- Provide context isolation per execution
+- Provide strict context isolation per execution
 """
 
 from __future__ import annotations
+
 from typing import Dict, Any, Optional
 from datetime import datetime
 import hashlib
 import json
+
+from afritech.runtime.context.deterministic_context import DeterministicContext
 
 
 class RuntimeContextError(Exception):
@@ -30,55 +34,80 @@ class RuntimeContextError(Exception):
 # -----------------------------------------------------------------
 
 class RuntimeContext:
+    """
+    Canonical runtime execution context.
+
+    RuntimeContext = Authority + Payload + ReplayRequirements
+                     + DeterministicContext
+    """
 
     def __init__(
         self,
+        *,
         authority_profile: str,
         payload: Dict[str, Any],
         replay_requirements: Optional[Dict[str, Any]] = None,
+        deterministic: DeterministicContext,
         metadata: Optional[Dict[str, Any]] = None,
     ):
-        """
-        Core execution context
-
-        :param authority_profile: RBAC or governance authority
-        :param payload: execution input
-        :param replay_requirements: replay/determinism constraints
-        :param metadata: optional execution metadata
-        """
-
         if not isinstance(payload, dict):
             raise RuntimeContextError("payload must be a dict")
+
+        if not isinstance(deterministic, DeterministicContext):
+            raise RuntimeContextError(
+                "deterministic must be a DeterministicContext"
+            )
 
         self.authority_profile = authority_profile
         self.payload = payload
         self.replay_requirements = replay_requirements or {}
+        self.deterministic = deterministic
         self.metadata = metadata or {}
 
         self.created_at = datetime.utcnow().isoformat() + "Z"
 
         # Deterministic identity
-        self.context_hash = self._compute_hash()
+        self.context_hash = self._compute_context_hash()
 
     # -----------------------------------------------------------------
-    # HASH (DETERMINISTIC IDENTITY)
+    # CANONICAL JSON
     # -----------------------------------------------------------------
 
-    def _canonical_json(self, data: Dict[str, Any]) -> str:
+    @staticmethod
+    def _canonical_json(data: Dict[str, Any]) -> str:
         return json.dumps(
             data,
             sort_keys=True,
-            separators=(",", ":")
+            separators=(",", ":"),
         )
 
-    def _compute_hash(self) -> str:
+    # -----------------------------------------------------------------
+    # CONTEXT HASH (AUTHORITATIVE IDENTITY)
+    # -----------------------------------------------------------------
+
+    def _compute_context_hash(self) -> str:
         canonical = self._canonical_json({
-            "authority": self.authority_profile,
+            "authority_profile": self.authority_profile,
             "payload": self.payload,
             "replay_requirements": self.replay_requirements,
+            "deterministic_hash": self.deterministic.deterministic_hash,
         })
 
-        return hashlib.sha256(canonical.encode()).hexdigest()
+        return hashlib.sha256(
+            canonical.encode("utf-8")
+        ).hexdigest()
+
+    # -----------------------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------------------
+
+    def verify(self) -> bool:
+        """
+        Verify internal integrity of the RuntimeContext.
+
+        Any mismatch indicates illegal mutation or construction.
+        """
+        return self.context_hash == self._compute_context_hash()
 
     # -----------------------------------------------------------------
     # EXPORT
@@ -89,29 +118,27 @@ class RuntimeContext:
             "authority_profile": self.authority_profile,
             "payload": self.payload,
             "replay_requirements": self.replay_requirements,
+            "deterministic": {
+                "time_snapshot": self.deterministic.time_snapshot,
+                "random_seed": self.deterministic.random_seed,
+                "environment_hash": self.deterministic.environment_hash,
+                "input_envelope_hash": self.deterministic.input_envelope_hash,
+                "deterministic_hash": self.deterministic.deterministic_hash,
+            },
             "metadata": self.metadata,
             "created_at": self.created_at,
             "context_hash": self.context_hash,
         }
 
     # -----------------------------------------------------------------
-    # VALIDATION
-    # -----------------------------------------------------------------
-
-    def verify(self) -> bool:
-        """
-        Ensure context integrity
-        """
-        recomputed = self._compute_hash()
-        return recomputed == self.context_hash
-
-    # -----------------------------------------------------------------
-    # MUTATION (CONTROLLED)
+    # CONTROLLED IMMUTABILITY
     # -----------------------------------------------------------------
 
     def with_metadata(self, extra: Dict[str, Any]) -> "RuntimeContext":
         """
-        Return new context with additional metadata (immutable pattern)
+        Return a new RuntimeContext with additional metadata.
+
+        Core execution fields remain immutable.
         """
         merged = {**self.metadata, **extra}
 
@@ -119,6 +146,7 @@ class RuntimeContext:
             authority_profile=self.authority_profile,
             payload=self.payload,
             replay_requirements=self.replay_requirements,
+            deterministic=self.deterministic,
             metadata=merged,
         )
 
@@ -126,27 +154,5 @@ class RuntimeContext:
     # STRING REPRESENTATION
     # -----------------------------------------------------------------
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<RuntimeContext hash={self.context_hash[:10]}...>"
-
-
-# -----------------------------------------------------------------
-# FACTORY FUNCTION (HELPER)
-# -----------------------------------------------------------------
-
-def build_runtime_context(request: Dict[str, Any]) -> RuntimeContext:
-    """
-    Build context from API request format
-    """
-
-    if not isinstance(request, dict):
-        raise RuntimeContextError("request must be dict")
-
-    return RuntimeContext(
-        authority_profile=request.get("authority_profile", "unknown"),
-        payload=request.get("payload", {}),
-        replay_requirements=request.get("replay_requirements", {}),
-        metadata={
-            "source": "api",
-        },
-    )

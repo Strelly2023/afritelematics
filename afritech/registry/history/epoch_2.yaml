@@ -31,5 +31,5 @@ constitutional_assertions:
 - replay validity depends on sealed history continuity
 - epoch lineage must remain monotonic
 hash_chain:
-  previous_epoch_hash: 67a66de9306e9df807899992f53c8fc4a48aed67a126e7dc8991aa2199721cae
-  epoch_hash: e4ef365724e220289d14a2f2e84f7b8b6a03330810030244cddfbb1c35fcec48
+  previous_epoch_hash: d852332b6aaa70a26190bf5e6bf6f7841720d133feaa149cda272886d75139fa
+  epoch_hash: ee57b1d54ed9cee483fa5ddcbc62f294f5cbbff4a0fc1c58ceb8fa038ab5c19b

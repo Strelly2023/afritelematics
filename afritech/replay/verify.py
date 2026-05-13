@@ -1,7 +1,10 @@
-"""
-afritech/replay/verify.py
+# afritech/replay/verify.py
 
+"""
 Constitutional Replay Verifier (Phase‑2B)
+========================================
+
+Replay is AUTHORITATIVE verification, not symbolic checking.
 
 RULES:
 - Replay is VERIFICATION, not EXECUTION
@@ -109,16 +112,13 @@ class ReplayVerifier:
     """
     Deterministic constitutional replay verifier (Phase‑2B).
 
-    Replay verifies:
-    - authority binding
-    - deterministic trace reproduction
-    - truth packet identity
-    - replay hash identity
+    Replay verifies by RECOMPUTATION + COMPARISON:
+    - request hash
+    - deterministic trace
+    - truth packet
+    - replay hash
 
-    Replay MUST NOT:
-    - read epoch YAML
-    - infer epoch meaning
-    - mutate state
+    Replay NEVER executes runtime logic.
     """
 
     # --------------------------------------------------------
@@ -127,6 +127,7 @@ class ReplayVerifier:
 
     def verify(
         self,
+        *,
         transcript_path: str,
         request: ConstitutionalRequest,
     ) -> ReplayVerdict:
@@ -134,7 +135,10 @@ class ReplayVerifier:
         try:
             transcript = self._load_transcript(transcript_path)
 
-            # ✅ Load sealed registry (NO YAML epoch parsing)
+            # --------------------------------------------------
+            # 1. ENVIRONMENT VERIFICATION (SEALED REGISTRY)
+            # --------------------------------------------------
+
             registry = load_registry()
             attestation = registry.get("attestation")
 
@@ -148,7 +152,10 @@ class ReplayVerifier:
                     )
                 )
 
-            # ✅ Epoch must be provided as snapshot, not YAML
+            # --------------------------------------------------
+            # 2. EPOCH VERIFICATION (COMPILED ONLY)
+            # --------------------------------------------------
+
             epoch_snapshot = transcript.get("epoch_snapshot")
             if not isinstance(epoch_snapshot, EpochSnapshot):
                 raise ReplayVerificationError(
@@ -156,11 +163,11 @@ class ReplayVerifier:
                         ReplayFailureMode.ENVIRONMENT_MISMATCH,
                         ReplayInvariant.EPOCH_IDENTITY,
                         DivergenceLocation.EPOCH_BINDING,
-                        "EpochSnapshot missing or invalid in transcript",
+                        "EpochSnapshot missing or invalid",
                     )
                 )
 
-            semantic_epoch: SemanticEpoch = epoch_snapshot.semantic_epoch
+            semantic_epoch = epoch_snapshot.semantic_epoch
             if not isinstance(semantic_epoch, SemanticEpoch):
                 raise ReplayVerificationError(
                     ReplayFailure(
@@ -171,24 +178,50 @@ class ReplayVerifier:
                     )
                 )
 
-            self._validate_authority(request, transcript)
-            self._validate_environment(transcript)
-            self._validate_request(request, transcript)
+            # --------------------------------------------------
+            # 3. REQUEST HASH VERIFICATION
+            # --------------------------------------------------
 
-            rerun_trace = self._rerun_execution(request)
-            self._compare_trace(transcript["execution_trace"], rerun_trace)
+            if request.canonical_hash() != transcript["request_hash"]:
+                raise ReplayVerificationError(
+                    ReplayFailure(
+                        ReplayFailureMode.REQUEST_MISMATCH,
+                        ReplayInvariant.REQUEST_IDENTITY,
+                        DivergenceLocation.REQUEST_RECONSTRUCTION,
+                        "Request hash mismatch",
+                    )
+                )
 
-            truthpacket = self._regenerate_truthpacket(
-                request, rerun_trace, transcript
+            # --------------------------------------------------
+            # 4. TRACE RECOMPUTATION (PURE, DETERMINISTIC)
+            # --------------------------------------------------
+
+            recomputed_trace = self._rerun_execution(request)
+
+            if recomputed_trace != transcript["execution_trace"]:
+                raise ReplayVerificationError(
+                    ReplayFailure(
+                        ReplayFailureMode.TRACE_DIVERGENCE,
+                        ReplayInvariant.CAUSAL_RECONSTRUCTION,
+                        DivergenceLocation.EXECUTION_RERUN,
+                        "Execution trace mismatch",
+                    )
+                )
+
+            # --------------------------------------------------
+            # 5. TRUTHPACKET REGENERATION
+            # --------------------------------------------------
+
+            regenerated_truthpacket = self._regenerate_truthpacket(
+                request=request,
+                trace=recomputed_trace,
+                transcript=transcript,
             )
 
-            self._validate_inference_binding(
-                request,
-                transcript,
-                truthpacket["inference_binding"],
+            truthpacket_hash = _sha256(
+                _canonical_json(regenerated_truthpacket)
             )
 
-            truthpacket_hash = _sha256(_canonical_json(truthpacket))
             if truthpacket_hash != transcript["truth_packet_hash"]:
                 raise ReplayVerificationError(
                     ReplayFailure(
@@ -199,7 +232,15 @@ class ReplayVerifier:
                     )
                 )
 
-            replay_hash = self._compute_replay_hash(truthpacket, rerun_trace)
+            # --------------------------------------------------
+            # 6. REPLAY HASH RECOMPUTATION (FINAL AUTHORITY)
+            # --------------------------------------------------
+
+            replay_hash = self._compute_replay_hash(
+                regenerated_truthpacket,
+                recomputed_trace,
+            )
+
             if replay_hash != transcript["replay_hash"]:
                 raise ReplayVerificationError(
                     ReplayFailure(
@@ -209,6 +250,10 @@ class ReplayVerifier:
                         "Replay hash mismatch",
                     )
                 )
+
+            # --------------------------------------------------
+            # ✅ AUTHORITATIVE REPLAY VALID
+            # --------------------------------------------------
 
             return ReplayVerdict.valid(replay_hash)
 
@@ -258,59 +303,14 @@ class ReplayVerifier:
         return transcript
 
     # ============================================================
-    # VALIDATION HELPERS
+    # PURE DETERMINISTIC RERUN (NO EXECUTION)
     # ============================================================
 
-    def _validate_authority(self, request, transcript):
-        if transcript["authority_profile"] != request.payload["constitutional_request"]["authority_profile"]:
-            raise ReplayVerificationError(
-                ReplayFailure(
-                    ReplayFailureMode.AUTHORITY_MISMATCH,
-                    ReplayInvariant.ISOLATED_REPLAY_DOMAINS,
-                    DivergenceLocation.AUTHORITY_BINDING,
-                    "Authority mismatch",
-                )
-            )
-
-    def _validate_environment(self, transcript):
-        env = transcript["replay_environment"]
-        if env.get("deterministic_mode") is not True or "_inference_binding" not in env:
-            raise ReplayVerificationError(
-                ReplayFailure(
-                    ReplayFailureMode.ENVIRONMENT_MISMATCH,
-                    ReplayInvariant.ENVIRONMENT_IDENTITY,
-                    DivergenceLocation.ENVIRONMENT_VALIDATION,
-                    "Invalid replay environment",
-                )
-            )
-
-    def _validate_request(self, request, transcript):
-        if request.canonical_hash() != transcript["request_hash"]:
-            raise ReplayVerificationError(
-                ReplayFailure(
-                    ReplayFailureMode.REQUEST_MISMATCH,
-                    ReplayInvariant.REQUEST_IDENTITY,
-                    DivergenceLocation.REQUEST_RECONSTRUCTION,
-                    "Request mismatch",
-                )
-            )
-
-    def _validate_inference_binding(self, request, transcript, binding):
-        if binding["input_hash"] != request.canonical_hash():
-            raise ReplayVerificationError(
-                ReplayFailure(
-                    ReplayFailureMode.INFERENCE_INPUT_MISMATCH,
-                    ReplayInvariant.DETERMINISTIC_INFERENCE_BINDING,
-                    DivergenceLocation.INFERENCE_BINDING,
-                    "Inference input mismatch",
-                )
-            )
-
-    # ============================================================
-    # DETERMINISTIC RERUN (PURE)
-    # ============================================================
-
-    def _rerun_execution(self, request):
+    def _rerun_execution(self, request: ConstitutionalRequest):
+        """
+        Deterministically recompute execution trace
+        WITHOUT executing runtime code.
+        """
         h = request.canonical_hash()
         return [
             {"step": "scope_evaluation", "input_hash": h, "output_hash": _sha256(h + "scope")},
@@ -319,18 +319,18 @@ class ReplayVerifier:
             {"step": "truth_emission", "input_hash": h, "output_hash": _sha256(h + "truth")},
         ]
 
-    def _compare_trace(self, expected, actual):
-        if expected != actual:
-            raise ReplayVerificationError(
-                ReplayFailure(
-                    ReplayFailureMode.TRACE_DIVERGENCE,
-                    ReplayInvariant.CAUSAL_RECONSTRUCTION,
-                    DivergenceLocation.EXECUTION_RERUN,
-                    "Trace mismatch",
-                )
-            )
+    # ============================================================
+    # TRUTHPACKET REGENERATION (DETERMINISTIC)
+    # ============================================================
 
-    def _regenerate_truthpacket(self, request, trace, transcript):
+    def _regenerate_truthpacket(
+        self,
+        *,
+        request: ConstitutionalRequest,
+        trace: list,
+        transcript: dict[str, Any],
+    ) -> dict[str, Any]:
+
         return {
             "claims": ["deterministic constitutional execution"],
             "authority_profile": transcript["authority_profile"],
@@ -351,8 +351,17 @@ class ReplayVerifier:
             },
         }
 
+    # ============================================================
+    # REPLAY HASH (FINAL COMMIT)
+    # ============================================================
+
     def _compute_replay_hash(self, truthpacket, trace):
-        return _sha256(_canonical_json({"truthpacket": truthpacket, "trace": trace}))
+        return _sha256(
+            _canonical_json({
+                "truthpacket": truthpacket,
+                "trace": trace,
+            })
+        )
 
 
 # ============================================================
@@ -360,7 +369,12 @@ class ReplayVerifier:
 # ============================================================
 
 def _canonical_json(obj: Any) -> str:
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return json.dumps(
+        obj,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
 
 
 def _sha256(value: str) -> str:

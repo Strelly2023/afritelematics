@@ -1,0 +1,248 @@
+# ecosystems/afriride/v0_2/determinism_envelope.yaml
+
+schema: afriride.determinism_envelope.v0_2
+kind: determinism_envelope
+
+envelope:
+  domain: afriride
+  version: v0.2
+  status: ACTIVE
+  classification: bounded_deterministic_execution
+
+  description: >
+    This determinism envelope defines the complete and exclusive
+    boundary of allowed variability for AfriRide v0.2.
+    All execution, failure handling, replay verification,
+    and continuity proofs MUST operate entirely within
+    this envelope. Any behavior outside this envelope
+    is constitutionally invalid.
+
+  # -----------------------------------------------------
+  # ✅ CORE DETERMINISM PRINCIPLE
+  # -----------------------------------------------------
+
+  core_principle:
+    statement: >
+      Given identical inputs, identical parameters, identical
+      authority scope, and identical envelope constraints,
+      AfriRide v0.2 MUST produce identical decision traces,
+      identical event sequences, and identical replay hashes.
+
+    applies_to:
+      - assignment decisions
+      - retry sequencing
+      - failure handling
+      - refusal outcomes
+      - trace generation
+
+  # -----------------------------------------------------
+  # ✅ ALLOWED VARIABILITY (EXPLICITLY BOUNDED)
+  # -----------------------------------------------------
+
+  allowed_variability:
+
+    scenario_parameters:
+      description: >
+        Scenario parameters may vary ONLY if explicitly
+        declared in scenario YAML files.
+      examples:
+        - initial_driver_count
+        - dropout_count
+        - rejection_sequence
+        - timeout_threshold
+
+      constraints:
+        - parameters must be scalar or ordered lists
+        - parameters must be replay-bound
+        - no implicit defaults permitted
+
+    ordered_collections:
+      description: >
+        Collections may vary in size but MUST be ordered
+        deterministically before use.
+      ordering_rules:
+        - explicit sort key required
+        - stable ordering guaranteed
+        - no runtime reordering
+
+    retry_depth:
+      description: >
+        Retry count may vary as a function of deterministic
+        exhaustion of ordered candidates.
+      constraints:
+        - retry is strictly sequential
+        - no backtracking
+        - no parallel attempts
+
+    logical_step_count:
+      description: >
+        Logical step counters may advance deterministically
+        and are used for timeout evaluation.
+      constraints:
+        - counter increments must be explicit
+        - counters must appear in trace
+        - no wall-clock dependency
+
+  # -----------------------------------------------------
+  # ❌ FORBIDDEN VARIABILITY (ABSOLUTE)
+  # -----------------------------------------------------
+
+  forbidden_variability:
+
+    randomness:
+      - random()
+      - sampling
+      - shuffle
+      - probabilistic_branching
+
+    time_sources:
+      - wall_clock_time
+      - system_time
+      - sleep
+      - async_delay
+
+    external_state:
+      - environment_variables
+      - network_state
+      - I/O side effects
+      - shared mutable globals
+
+    inference:
+      - heuristic_selection
+      - optimization
+      - scoring_functions
+      - ML_model_outputs
+
+  # -----------------------------------------------------
+  # ✅ NORMALIZATION RULES
+  # -----------------------------------------------------
+
+  normalization:
+
+    identifiers:
+      rule: >
+        Identifiers must be stable, immutable, and comparable.
+      constraints:
+        - no mutation of ids
+        - ids must be hash-stable
+
+    collections:
+      rule: >
+        All collections MUST be normalized before use.
+      normalization_steps:
+        - explicit sorting
+        - explicit truncation
+        - explicit filtering
+
+    state_transitions:
+      rule: >
+        State transitions must be atomic, ordered,
+        and traceable.
+      constraints:
+        - no partial mutation
+        - no implicit transitions
+
+  # -----------------------------------------------------
+  # ✅ TRACE & REPLAY BINDING
+  # -----------------------------------------------------
+
+  trace_binding:
+
+    requirements:
+      - every decision emits a trace event
+      - every failure emits a trace event
+      - trace order is strict
+      - trace content is deterministic
+
+    invariants:
+      - identical trace sequence → identical hash
+      - trace omission → invalid execution
+      - trace divergence → replay failure
+
+  replay_binding:
+
+    requirements:
+      - replay uses identical envelope
+      - replay forbids external inputs
+      - replay recomputes all decisions
+
+    acceptance_rule:
+      description: >
+        Replay is accepted ONLY if recomputed trace hash
+        exactly matches original execution hash.
+
+  # -----------------------------------------------------
+  # ✅ AUTHORITY & SCOPE BINDING
+  # -----------------------------------------------------
+
+  authority_binding:
+
+    requirements:
+      - authority must be explicit
+      - authority scope must be identical for replay
+      - no authority inference permitted
+
+    forbidden:
+      - implicit authority escalation
+      - authority mutation during execution
+
+  # -----------------------------------------------------
+  # ✅ FAILURE HANDLING CONSISTENCY
+  # -----------------------------------------------------
+
+  failure_handling:
+
+    rule: >
+      All failures MUST map to declared failure taxonomy
+      and handling modes.
+    constraints:
+      - no undeclared failure paths
+      - no silent failure
+      - refusal must be explicit
+
+  # -----------------------------------------------------
+  # ✅ VALIDATION & ENFORCEMENT
+  # -----------------------------------------------------
+
+  validation:
+
+    must_hold:
+      - execution conforms to envelope
+      - replay conforms to envelope
+      - trace and replay hashes identical
+      - no forbidden variability observed
+
+    violation_effect:
+      classification: CONSTITUTIONAL_INVALIDATION
+      consequence:
+        - scenario proof rejected
+        - continuity coverage reduced to zero
+        - v0.2 claim invalidated
+
+  # -----------------------------------------------------
+  # ✅ RELATIONSHIP TO v0.1
+  # -----------------------------------------------------
+
+  compatibility:
+
+    v0_1_status:
+      description: >
+        AfriRide v0.1 remains frozen and unaffected.
+      guarantees:
+        - no weakening of v0.1 determinism
+        - no reinterpretation of v0.1 proofs
+
+    v0_2_extension:
+      description: >
+        v0.2 extends proof coverage ONLY within this
+        determinism envelope.
+
+  # -----------------------------------------------------
+  # ✅ FINAL ASSERTION
+  # -----------------------------------------------------
+
+  final_assertion:
+    statement: >
+      AfriRide v0.2 is deterministic if and only if
+      all execution paths, failures, retries, and refusals
+      operate strictly within this determinism envelope.

@@ -1,0 +1,136 @@
+# afritech/governance/adr/ADR-000X-afriride-v0-2.yaml
+
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0010
+  title: AfriRide v0.2 Proof-of-Continuity Expansion
+  status: PROPOSED
+  type: CONSTITUTIONAL_EVOLUTION
+  proposed_epoch: 7
+  date: 2026-05-13
+
+  authors:
+    - AfriTech Governance
+
+  related_artifacts:
+    - ecosystems/afriride/v0_2/
+    - ecosystems/afriride/AFRIRIDE_V0_FREEZE.md
+
+  # -----------------------------------------------------
+  # ✅ CONTEXT
+  # -----------------------------------------------------
+
+  context: >
+    AfriRide v0.1 established deterministic, replay-verifiable
+    coordination under a single controlled failure scenario.
+    That version was constitutionally frozen under Epoch 6
+    as immutable Proof-of-Continuity evidence.
+
+    AfriRide v0.2 extends this proof to a bounded and explicitly
+    declared failure space, demonstrating that deterministic,
+    authority-governed coordination remains replay-sound across
+    multiple failure modes without mutating or weakening v0.1.
+
+  # -----------------------------------------------------
+  # ✅ DECISION
+  # -----------------------------------------------------
+
+  decision: >
+    Introduce AfriRide v0.2 as a new Proof-of-Continuity surface
+    that expands the validated failure space while preserving
+    all AfriRide v0.1 guarantees.
+
+    AfriRide v0.2 is introduced as an additive, layered system
+    operating under a new determinism envelope and execution
+    runtime, without modification of the frozen constitutional
+    core.
+
+  # -----------------------------------------------------
+  # ✅ SCOPE
+  # -----------------------------------------------------
+
+  scope:
+
+    added:
+      - DRIVER_DROPOUT deterministic failure scenario
+      - DRIVER_REJECTION_CHAIN deterministic failure scenario
+      - TIMEOUT_EXCEEDED deterministic failure scenario
+      - v0.2 deterministic failure taxonomy
+      - v0.2 determinism envelope
+      - multi-scenario continuity metrics:
+          - Continuity Coverage (CC)
+          - Deterministic Refusal Rate (DRR)
+      - v0.2 execution handlers and runtime wrapper
+
+    preserved:
+      - AfriRide v0.1 (constitutionally frozen)
+      - v0.1 determinism guarantees
+      - v0.1 replay identity guarantees
+      - v0.1 authority model and execution law
+
+  # -----------------------------------------------------
+  # ✅ INVARIANTS
+  # -----------------------------------------------------
+
+  invariants:
+    - v0.1 artifacts MUST NOT be modified
+    - v0.2 execution MUST be layered externally
+    - replay hash identity is mandatory
+    - deterministic refusal is required on exhaustion or timeout
+    - all failures MUST be declared in the failure taxonomy
+    - no nondeterministic behavior is permitted
+    - determinism envelope violations invalidate proof
+
+  # -----------------------------------------------------
+  # ✅ EVIDENCE
+  # -----------------------------------------------------
+
+  evidence:
+    executable:
+      - ecosystems/afriride/v0_2/run_multi_scenario_demo.py
+
+    scenarios:
+      - ecosystems/afriride/v0_2/scenarios/driver_dropout.yaml
+      - ecosystems/afriride/v0_2/scenarios/rejection_chain.yaml
+      - ecosystems/afriride/v0_2/scenarios/timeout.yaml
+
+    metrics:
+      - Decision Determinism Rate (DDR): 1.0 (all scenarios)
+      - Continuity Coverage (CC): 1.0
+      - Deterministic Refusal Rate (DRR): 1.0
+
+    replay:
+      - identical execution and replay hashes verified
+      - replay verifier status: VALID
+
+  # -----------------------------------------------------
+  # ✅ CONSEQUENCES
+  # -----------------------------------------------------
+
+  consequences:
+
+    positive:
+      - expands AfriRide continuity proof to multiple failure modes
+      - strengthens AfriTech institutional credibility
+      - demonstrates scalable governance without historical mutation
+      - preserves replay-verifiable lineage across epochs
+
+    negative:
+      - requires new constitutional epoch (Epoch 7)
+      - increases governance surface area
+      - introduces additional audit responsibilities
+
+  # -----------------------------------------------------
+  # ✅ STATUS & NEXT STEPS
+  # -----------------------------------------------------
+
+  status_notes:
+    - This ADR authorizes advancement to Epoch 7
+    - AfriRide v0.2 may be frozen after ratification
+    - No product, optimization, or performance claims are authorized
+
+  approval_requirements:
+    - governance review
+    - replay verifier confirmation
+    - epoch registry update
