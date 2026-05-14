@@ -31,7 +31,8 @@ Covers deterministic execution under:
 
 Frozen as:
 replay-determinism-phase-1
-
 git add afritech/internal/REPLAY_DETERMINISM_PHASE_1.md
 git commit -m "Freeze replay determinism constraints (phase 1)"
 
+git tag replay-determinism-phase-1
+git push origin replay-determinism-phase-1
