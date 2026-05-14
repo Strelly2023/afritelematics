@@ -1,0 +1,485 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0011
+
+  title: AfriRide Deterministic Retry Observation Formalization
+
+  status: PROPOSED
+
+  type: CONSTITUTIONAL_EVOLUTION
+
+  proposed_epoch: 7
+
+  date: 2026-05-14
+
+  authors:
+    - AfriTech Governance
+
+  related_artifacts:
+    - ecosystems/afriride/tests/test_retry_idempotence.py
+    - ecosystems/afriride/tests/test_observational_replay.py
+    - ecosystems/afriride/runtime/replay.py
+    - ecosystems/afriride/runtime/deterministic_executor.py
+
+  supersedes: []
+
+  depends_on:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+# =====================================================
+# CONTEXT
+# =====================================================
+
+  context: >
+
+    AfriRide Phase 1 established a deterministic execution model
+    where identical RuntimeContext produces identical ExecutionResult,
+    including replay-stable execution traces and deterministic
+    result hashes.
+
+    During Phase 2 observational analysis, an empirical runtime
+    behavior was consistently observed:
+
+      - re-submission of an identical intent (retry)
+        deterministically results in refusal
+
+    Replay verification confirmed that:
+
+      - refusal behavior is deterministic
+      - replay traces remain stable
+      - refusal hashes remain reproducible
+      - no hidden mutation occurs
+      - no semantic interpretation is required
+
+    This behavior already exists within the lawful runtime
+    execution surface and does not require additional runtime
+    capability.
+
+    However, the behavior is not presently declared within
+    AfriRide’s formal failure taxonomy.
+
+    This creates a constitutional ambiguity between:
+
+      - empirically observed deterministic runtime behavior
+      - formally declared proof-valid failure semantics
+
+    The absence of explicit declaration risks:
+
+      - replay interpretation inconsistency
+      - undocumented observational refusal semantics
+      - incomplete proof-of-continuity classification
+
+# =====================================================
+# PROBLEM STATEMENT
+# =====================================================
+
+  problem_statement: >
+
+    AfriRide currently lacks a formally declared classification
+    for deterministic refusal behavior arising from identical
+    retry observation.
+
+    Although runtime and replay behavior remain deterministic,
+    the failure taxonomy does not explicitly acknowledge this
+    observational refusal category.
+
+    Without formal declaration:
+
+      - replay auditors may treat refusal as undefined behavior
+      - proof surfaces remain semantically incomplete
+      - deterministic observational outcomes remain undocumented
+
+# =====================================================
+# DECISION
+# =====================================================
+
+  decision: >
+
+    Formally recognize deterministic refusal under duplicate
+    intent replay as part of AfriRide’s declared constitutional
+    failure surface.
+
+    This ADR does NOT:
+
+      - introduce new runtime logic
+      - modify deterministic executor behavior
+      - define intent equivalence
+      - introduce retry normalization
+      - implement semantic deduplication
+      - alter replay admissibility rules
+      - expand execution surfaces
+      - modify orchestration semantics
+      - change Phase 1 determinism guarantees
+
+    This ADR ONLY:
+
+      - elevates observed deterministic behavior into
+        declared constitutional taxonomy
+
+      - aligns replay-confirmed empirical evidence with
+        AfriRide’s proof-of-continuity surface
+
+      - formalizes observational refusal as a lawful
+        deterministic outcome
+
+# =====================================================
+# CLASSIFICATION
+# =====================================================
+
+  classification:
+
+    mutation_type: DECLARATIVE_ALIGNMENT
+
+    constitutional_scope: FAILURE_TAXONOMY_ALIGNMENT
+
+    runtime_effect: NONE
+
+    determinism_effect: NONE
+
+    replay_effect: NONE
+
+    semantic_effect: NONE
+
+    authority_effect: NONE
+
+    execution_surface_effect: NONE
+
+    mutation_visibility: EXPLICIT
+
+# =====================================================
+# OBSERVATIONAL BASIS
+# =====================================================
+
+  observational_basis:
+
+    evidence_type: EMPIRICAL_RUNTIME_OBSERVATION
+
+    validation_pipeline:
+      - deterministic_execution_verification
+      - replay_consistency_verification
+      - transcript_hash_validation
+      - refusal_stability_confirmation
+
+    observed_properties:
+      deterministic: true
+      replay_stable: true
+      hash_stable: true
+      observer_independent: true
+      non_mutating: true
+
+# =====================================================
+# INVARIANTS (PRESERVED)
+# =====================================================
+
+  invariants_preserved:
+
+    - I3_NO_SILENT_MUTATION
+    - I4_DETERMINISTIC_EXECUTION
+    - I5_REPLAY_REQUIRED
+    - I6_AUTHORITY_DECLARATION
+    - I7_NO_AUTHORITY_ESCALATION
+    - I8_CLOSED_WORLD
+    - I14_ADR_REQUIRED
+
+  invariant_assertions:
+
+    - identical inputs MUST produce identical outputs
+
+    - replay MUST yield identical traces and hashes
+
+    - deterministic refusal MUST remain replay-stable
+
+    - no runtime mutation is introduced
+
+    - no semantic equivalence is defined
+
+    - duplicate intent MUST NOT trigger normalization
+
+    - duplicate retry MUST NOT imply canonical identity
+
+    - deterministic refusal remains invariant-preserving
+
+# =====================================================
+# FAILURE SURFACE ALIGNMENT
+# =====================================================
+
+  failure_surface:
+
+    added_case:
+
+      id: DUPLICATE_INTENT_REFUSAL
+
+      failure_kind: OBSERVATIONAL_REFUSAL
+
+      classification: DETERMINISTIC_RUNTIME_REFUSAL
+
+      description: >
+
+        Deterministic refusal observed under replay-stable
+        re-execution of identical intent conditions.
+
+      trigger_condition: >
+
+        Runtime observes retry execution under identical
+        deterministic RuntimeContext conditions.
+
+      properties:
+
+        deterministic: true
+
+        replay_stable: true
+
+        hash_stable: true
+
+        observer_independent: true
+
+        non_semantic: true
+
+        non_normalizing: true
+
+        non_equivalence_bound: true
+
+        non_inferential: true
+
+        runtime_existing_behavior: true
+
+        replay_verified: true
+
+      prohibited_interpretations:
+
+        - semantic_equivalence
+        - retry_identity_inference
+        - canonicalization
+        - request_normalization
+        - deduplication_semantics
+        - behavioral_generalization
+
+# =====================================================
+# NON-GOALS
+# =====================================================
+
+  non_goals:
+
+    - defining intent equivalence
+
+    - introducing retry idempotence guarantees
+
+    - collapsing duplicate detection into runtime logic
+
+    - modifying executor or orchestration layers
+
+    - enabling semantic deduplication
+
+    - introducing canonical request identity
+
+    - creating retry normalization semantics
+
+    - enabling runtime inference expansion
+
+    - introducing observational-to-semantic promotion
+
+# =====================================================
+# CONSTITUTIONAL JUSTIFICATION
+# =====================================================
+
+  justification: >
+
+    This ADR satisfies constitutional constraints because
+    it introduces no executable behavioral mutation and
+    preserves all deterministic replay guarantees.
+
+    Constitutional preservation includes:
+
+      - No silent mutation occurs (I3 preserved)
+
+      - Deterministic execution remains unchanged
+        (I4 preserved)
+
+      - Replay validity remains unchanged
+        (I5 preserved)
+
+      - No authority expansion occurs
+        (I6 and I7 preserved)
+
+      - No new execution surface is introduced
+        (I8 preserved)
+
+      - Mutation remains ADR-governed
+        (I14 satisfied)
+
+    The mutation is strictly declarative and exists solely
+    to align replay-confirmed observational behavior with
+    formal constitutional taxonomy.
+
+# =====================================================
+# REPLAY ALIGNMENT
+# =====================================================
+
+  replay_alignment:
+
+    replay_behavior_changed: false
+
+    replay_hash_changed: false
+
+    transcript_structure_changed: false
+
+    replay_admissibility_changed: false
+
+    deterministic_refusal_preexisting: true
+
+    replay_interpretation_clarified: true
+
+# =====================================================
+# CLOSED-WORLD COMPLIANCE
+# =====================================================
+
+  closed_world_compliance:
+
+    new_execution_surfaces_introduced: false
+
+    undeclared_runtime_access: false
+
+    semantic_runtime_extension: false
+
+    dynamic_interpretation_introduced: false
+
+    equivalence_resolution_added: false
+    epistemic_status: OBSERVED_FACT
+    semantic_commitment: NONE
+    interpretation_required: false
+
+# =====================================================
+# CONSEQUENCES
+# =====================================================
+
+  consequences:
+
+    positive:
+
+      - aligns empirical behavior with declared failure taxonomy
+
+      - improves replay auditability
+
+      - strengthens proof-of-continuity semantics
+
+      - removes ambiguity from deterministic refusal interpretation
+
+      - formalizes observational refusal ontology
+
+      - preserves Phase-2b semantic boundary integrity
+
+    negative:
+
+      - expands declarative constitutional taxonomy surface
+
+      - introduces future taxonomy governance obligations
+
+      - requires continued observational/semantic separation discipline
+
+# =====================================================
+# PHASE-2 BOUNDARY ASSERTION
+# =====================================================
+
+  phase_boundary_assertion: >
+
+    This ADR does not activate Phase-2b equivalence-space logic.
+
+    No semantic equivalence model is introduced.
+
+    No retry identity semantics are defined.
+
+    No normalization or canonicalization behavior exists.
+
+    The ADR remains strictly observational and declarative.
+
+# =====================================================
+# STATUS & NEXT STEPS
+# =====================================================
+
+  status_notes:
+
+    - No executor changes are required
+
+    - No runtime deployment is triggered
+
+    - No replay engine changes are required
+
+    - No orchestration changes are required
+
+    - May be incorporated into AfriRide v0.2 taxonomy
+
+  approval_requirements:
+
+    - replay verification confirmation
+
+    - transcript hash consistency validation
+
+    - taxonomy alignment review
+
+    - constitutional replay audit
+
+    - epoch registry update if ratified
+
+# =====================================================
+# FUTURE GOVERNANCE CONSTRAINTS
+# =====================================================
+
+  future_constraints:
+
+    observational_refusal_must_not_imply_equivalence: true
+
+    replay_observation_must_not_enable_normalization: true
+
+    deterministic_refusal_must_remain_non_semantic: true
+
+    future_semantic_promotion_requires_new_adr: true
+
+    runtime_behavior_expansion_requires_epoch_transition: true
+
+# =====================================================
+# CANONICAL INTERPRETATION
+# =====================================================
+
+  canonical_interpretation: >
+
+    This ADR does not introduce new behavior.
+
+    It formally declares already-existing deterministic
+    observational refusal as part of AfriRide’s constitutional
+    proof surface.
+
+    Replay remains authoritative.
+
+    Runtime behavior remains unchanged.
+
+    No execution semantics are modified.
+
+    No invariants are weakened.
+
+    No equivalence logic is introduced.
+
+# =====================================================
+# FINAL ASSERTION
+# =====================================================
+
+  assertion: >
+
+    AfriRide does not reason about retry equivalence.
+
+    It merely declares that when replay-observed identical
+    deterministic conditions occur, deterministic refusal
+    is itself part of the lawful constitutional proof surface.
+
+    Observe → Prove → Replay → Declare.
+
+    No semantic interpretation is activated.
+

@@ -1,0 +1,1 @@
+from ecosystems.afriride.core.application.commands.start_trip import start_trip

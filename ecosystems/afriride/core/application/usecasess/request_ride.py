@@ -1,0 +1,1 @@
+from ecosystems.afriride.core.application.commands.request_ride import request_ride

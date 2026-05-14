@@ -1,0 +1,509 @@
+schema: afritech.governance.epoch.v1
+
+epoch:
+  id: EPOCH-0008
+
+  number: 8
+
+  title: Constitutional Observational Doctrine Ratification
+
+  status: RATIFIED
+
+  type: GOVERNANCE_DOCTRINE_EVOLUTION
+
+  parent_epoch: EPOCH-0007
+
+  effective_version: v0.2
+
+  ratification_date: 2026-05-14
+
+  enacted_at: 2026-05-14
+
+  governance_authority:
+    - AfriTech Governance
+    - AfriRide Constitutional Council
+
+  constitutional_transition:
+    from: PROOF_SURFACE_EXPANSION
+    to: OBSERVATIONAL_ADMISSIBILITY_GOVERNANCE
+
+  related_artifacts:
+    - ADR-0011-afriride-deterministic-retry.yaml
+    - ecosystems/afriride/v0_2/failure_taxonomy.yaml
+    - ecosystems/afriride/tests/test_retry_idempotence.py
+    - ecosystems/afriride/tests/test_observational_replay.py
+
+# =====================================================
+# PURPOSE
+# =====================================================
+
+  purpose: >
+
+    Establish a constitutional doctrine governing lawful
+    observational evolution within AfriRide while preserving:
+
+      - deterministic execution integrity
+      - replay authority
+      - closed-world runtime guarantees
+      - semantic boundary isolation
+
+    This epoch formally ratifies the admissibility model
+    for declarative constitutional expansion based exclusively
+    on replay-verified deterministic runtime observation.
+
+    The doctrine established in this epoch governs future
+    admissibility of constitutional declarations without
+    expanding executable runtime semantics.
+
+# =====================================================
+# CONSTITUTIONAL POSITION
+# =====================================================
+
+  constitutional_position: >
+
+    AfriRide records deterministic execution outcomes
+    as immutable replay-authoritative facts.
+
+    Governance may declare replay-verified observational
+    behavior as constitutional taxonomy only when:
+
+      - execution behavior already exists
+      - replay confirms determinism
+      - no semantic interpretation is introduced
+      - execution semantics remain unchanged
+
+    Observed behavior may be declared.
+
+    Interpreted behavior may not.
+
+# =====================================================
+# TRI-SURFACE INTEGRITY MODEL
+# =====================================================
+
+  tri_surface_integrity_model:
+
+    runtime_execution:
+      property: DETERMINISTIC
+      status: SEALED
+
+    replay_verification:
+      property: AUTHORITATIVE
+      status: BINDING
+
+    governance_declaration:
+      property: DESCRIPTIVE
+      status: EXTENSIBLE
+
+  tri_surface_constraints:
+
+    - runtime MUST NOT interpret
+
+    - replay MUST NOT infer
+
+    - governance MUST NOT mutate execution
+
+    - governance MUST NOT reinterpret replay evidence
+
+    - no surface may contaminate another
+
+# =====================================================
+# LAW OF OBSERVATIONAL EVOLUTION
+# =====================================================
+
+  law_of_observational_evolution: >
+
+    Declarative constitutional expansion is lawful only when:
+
+      - the behavior already exists
+      - replay confirms determinism
+      - no semantic interpretation is introduced
+      - execution semantics remain unchanged
+
+    Replay-confirmed deterministic observation is the sole
+    admissible basis for non-semantic constitutional expansion.
+
+# =====================================================
+# DIRECTIONAL ASYMMETRY
+# =====================================================
+
+  directional_asymmetry:
+
+    lawful_direction:
+
+      - runtime
+      - observation
+      - replay_verification
+      - constitutional_declaration
+
+    prohibited_direction:
+
+      - governance_interpretation
+      - semantic_inference
+      - runtime_expansion
+
+  directional_constraints:
+
+    - governance MUST remain descriptive
+
+    - replay MUST remain authoritative
+
+    - runtime MUST remain non-interpreting
+
+    - semantic inference MUST NOT mutate execution
+
+    - replay evidence MUST supersede governance interpretation
+
+# =====================================================
+# EPISTEMIC MODEL
+# =====================================================
+
+  epistemic_model:
+
+    admissible_fact_classification:
+
+      epistemic_status: OBSERVED_FACT
+
+      semantic_commitment: NONE
+
+      interpretation_required: false
+
+      replay_required: true
+
+      determinism_required: true
+
+      mutation_permitted: false
+
+    epistemic_constraints:
+
+      - replay-observed facts are immutable
+
+      - semantic interpretation is non-authoritative
+
+      - replay evidence supersedes governance interpretation
+
+      - future semantic overlays MUST NOT reinterpret
+        historical execution facts
+
+      - runtime outcomes MUST remain historically stable
+
+      - replay-confirmed outcomes constitute constitutional evidence
+
+# =====================================================
+# FAILURE ONTOLOGY
+# =====================================================
+
+  failure_ontology:
+
+    lawful_failure_classes:
+
+      - OBSERVATIONAL_REFUSAL
+      - DETERMINISTIC_REFUSAL
+      - REPLAY_STABLE_REFUSAL
+
+    prohibited_failure_collapses:
+
+      - semantic_refusal
+      - inferred_refusal
+      - normalized_refusal
+      - policy_refusal
+      - equivalence_refusal
+
+  ontology_constraints:
+
+    - observational refusal MUST remain non-semantic
+
+    - deterministic refusal MUST remain replay-bound
+
+    - runtime outcomes MUST NOT acquire retroactive meaning
+
+    - replay evidence MUST NOT be semantically elevated
+      without constitutional ratification
+
+# =====================================================
+# REPLAY AUTHORITY MODEL
+# =====================================================
+
+  replay_authority_model:
+
+    replay_status: AUTHORITATIVE
+
+    replay_constraints:
+
+      - replay hashes MUST remain stable
+
+      - replay traces MUST remain deterministic
+
+      - replay admissibility MUST remain invariant-preserving
+
+      - replay evidence MUST supersede interpretive overlays
+
+      - replay-confirmed outcomes are constitutionally binding
+
+      - replay divergence invalidates admissibility claims
+
+# =====================================================
+# CLOSED-WORLD ENFORCEMENT
+# =====================================================
+
+  closed_world_enforcement:
+
+    runtime_constraints:
+
+      undeclared_execution_surfaces: FORBIDDEN
+
+      semantic_runtime_extension: FORBIDDEN
+
+      dynamic_equivalence_resolution: FORBIDDEN
+
+      canonicalization_layers: FORBIDDEN
+
+      runtime_inference_expansion: FORBIDDEN
+
+      semantic_normalization: FORBIDDEN
+
+    governance_constraints:
+
+      governance MUST NOT introduce executable semantics
+
+      governance MUST NOT reinterpret replay evidence
+
+      governance MUST NOT inject semantic normalization
+
+      governance MUST NOT expand runtime meaning
+
+# =====================================================
+# SEMANTIC BOUNDARY PROTECTION
+# =====================================================
+
+  semantic_boundary_protection:
+
+    prohibited_operations:
+
+      - intent_equivalence_inference
+
+      - retry_identity_classification
+
+      - semantic_deduplication
+
+      - canonical_request_normalization
+
+      - similarity_interpretation
+
+      - behavioral_generalization
+
+      - semantic_retry_grouping
+
+      - equivalence_class_construction
+
+    semantic_boundary_assertion: >
+
+      AfriRide does not classify semantic identity,
+      construct equivalence, or normalize intent meaning
+      unless explicitly authorized by future constitutional
+      elevation and epoch transition.
+
+# =====================================================
+# OBSERVATIONAL DOCTRINE
+# =====================================================
+
+  observational_doctrine: >
+
+    AfriRide declares only replay-verified deterministic facts.
+
+    It does not:
+
+      - infer semantic identity
+      - construct equivalence
+      - normalize intent
+      - interpret similarity
+
+    Runtime execution produces observable outcomes.
+
+    Replay verifies deterministic continuity.
+
+    Governance may declare replay-confirmed observations,
+    but may not reinterpret execution meaning.
+
+    Observed behavior may be declared.
+
+    Interpreted behavior may not.
+
+    Observe → Prove → Replay → Declare.
+
+# =====================================================
+# CONSTITUTIONAL ADMISSIBILITY FILTER
+# =====================================================
+
+  constitutional_admissibility_filter:
+
+    lawful_admission_requirements:
+
+      replay_verified: true
+
+      deterministic: true
+
+      execution_preexisting: true
+
+      semantic_free: true
+
+      runtime_unchanged: true
+
+      replay_stable: true
+
+      non_interpretive: true
+
+    automatic_rejection_conditions:
+
+      - semantic_interpretation_required
+
+      - execution_behavior_mutation
+
+      - replay_divergence
+
+      - equivalence_activation
+
+      - normalization_dependency
+
+      - runtime_surface_expansion
+
+      - governance_driven_runtime_inference
+
+      - semantic_reclassification_of_history
+
+# =====================================================
+# FUTURE EPOCH CONSTRAINTS
+# =====================================================
+
+  future_epoch_constraints:
+
+    - future semantic systems REQUIRE new epoch ratification
+
+    - observational facts MUST remain historically immutable
+
+    - replay evidence MUST remain authoritative across epochs
+
+    - governance reinterpretation of historical replay is forbidden
+
+    - semantic promotion REQUIRES explicit constitutional elevation
+
+    - deterministic replay continuity MUST remain uninterrupted
+
+    - semantic evolution MUST remain isolated from observational doctrine
+
+# =====================================================
+# GOVERNANCE IMPLICATIONS
+# =====================================================
+
+  governance_implications:
+
+    lawful_governance_actions:
+
+      - declare replay-confirmed observations
+
+      - expand non-semantic taxonomy
+
+      - strengthen replay auditability
+
+      - formalize deterministic runtime evidence
+
+      - preserve replay-authoritative constitutional lineage
+
+    prohibited_governance_actions:
+
+      - reinterpret execution semantics
+
+      - inject runtime meaning
+
+      - normalize intent identity
+
+      - collapse equivalence classes
+
+      - mutate replay authority
+
+      - infer semantic continuity
+
+# =====================================================
+# RUNTIME PRESERVATION GUARANTEE
+# =====================================================
+
+  runtime_preservation_guarantee: >
+
+    This epoch introduces no runtime mutation.
+
+    No executor semantics are modified.
+
+    No orchestration semantics are modified.
+
+    No replay behavior is modified.
+
+    No deterministic guarantees are weakened.
+
+    No execution surfaces are expanded.
+
+    The constitutional surface expands descriptively
+    without expanding executable behavior.
+
+# =====================================================
+# CONSTITUTIONAL CONSEQUENCES
+# =====================================================
+
+  constitutional_consequences:
+
+    positive:
+
+      - establishes replay-authoritative governance doctrine
+
+      - formalizes lawful observational evolution
+
+      - prevents semantic contamination of replay evidence
+
+      - strengthens deterministic constitutional continuity
+
+      - creates admissibility jurisprudence for future ADRs
+
+    negative:
+
+      - increases governance doctrine surface area
+
+      - requires strict future semantic isolation discipline
+
+      - introduces higher constitutional review burden
+        for future semantic epochs
+
+# =====================================================
+# CANONICAL DOCTRINE STATEMENT
+# =====================================================
+
+  canonical_doctrine_statement: >
+
+    AfriRide records deterministic execution outcomes
+    as immutable facts and prohibits semantic interpretation
+    without explicit constitutional elevation.
+
+# =====================================================
+# FINAL ASSERTION
+# =====================================================
+
+  final_assertion: >
+
+    Epoch 8 formally establishes lawful observational evolution
+    as the sole admissible path for declarative constitutional
+    expansion within AfriRide’s deterministic governance model.
+
+    Replay remains authoritative.
+
+    Runtime remains sealed.
+
+    Governance remains descriptive.
+
+    Semantic interpretation remains constitutionally isolated.
+
+    No execution semantics are expanded.
+
+    No replay authority is weakened.
+
+    No equivalence-space is activated.
+
+    Historical execution truth remains immutable.
+
+    Observe → Prove → Replay → Declare.

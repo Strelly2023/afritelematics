@@ -1,5 +1,5 @@
 from ecosystems.afriride.runtime.commands import AssignDriver
-from ecosystems.afriride.runtime.deterministic_executor import DeterministicExecutor
+from ecosystems.afriride.runtime.execution.deterministic_executor import DeterministicExecutor
 from ecosystems.afriride.runtime.state import RideState
 
 

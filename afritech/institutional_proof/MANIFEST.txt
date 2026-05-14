@@ -1,0 +1,13 @@
+AFRIRIDE INSTITUTIONAL PROOF PACKET
+Epochs: 6 → 7
+ADR: ADR-0007-afriride-v0-2
+
+Integrity:
+- ZIP checksum: institutional_proof_packet.zip.sha256
+- File manifest: institutional_proof_file_manifest.sha256
+
+Invariant:
+hash(original_execution) == hash(replay_execution)
+
+All contents are constitutionally frozen.
+

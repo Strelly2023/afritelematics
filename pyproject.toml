@@ -8,6 +8,32 @@ version = "0.1.0"
 description = "AfriTech constitutional execution and replay verification system"
 requires-python = ">=3.10"
 
+# Optional but recommended
+dependencies = []
+
+# --------------------------------------------------
+# ✅ PACKAGE DISCOVERY
+# --------------------------------------------------
+
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["afritech*"]
+include = [
+    "afritech*",
+    "ecosystems*"
+]
+
+# --------------------------------------------------
+# ✅ PYTEST CONFIG (FIXES YOUR ORIGINAL ERROR)
+# --------------------------------------------------
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["ecosystems/afriride/tests"]
+addopts = "-ra -q"
+
+# --------------------------------------------------
+# ✅ OPTIONAL: TYPE CHECKING / FUTURE USE
+# --------------------------------------------------
+
+[tool.setuptools]
+zip-safe = false

@@ -1,13 +1,15 @@
-# ecosystems/afriride/v0_2/failure_taxonomy.yaml
-
 failure_taxonomy:
   domain: afriride
   version: v0.2
   classification: deterministic_failure_space
 
-  # -----------------------------------------------------
-  # ✅ PRINCIPLE
-  # -----------------------------------------------------
+  governing_epoch: EPOCH-0008
+
+  doctrine: OBSERVATIONAL_ADMISSIBILITY_GOVERNANCE
+
+# =====================================================
+# PRINCIPLE
+# =====================================================
 
   principle:
     description: >
@@ -21,16 +23,54 @@ failure_taxonomy:
       - every outcome must be replay-identical
       - no silent failure is permitted
 
-  # -----------------------------------------------------
-  # ✅ FAILURE MODES (EXHAUSTIVE FOR v0.2)
-  # -----------------------------------------------------
+# =====================================================
+# OBSERVATIONAL DOCTRINE BINDING
+# =====================================================
+
+  observational_doctrine:
+    rule: >
+      Taxonomy may declare only replay-verified deterministic
+      runtime behavior without introducing semantic interpretation.
+
+    admissibility_conditions:
+      - execution_preexisting: true
+      - deterministic: true
+      - replay_verified: true
+      - semantic_free: true
+      - runtime_unchanged: true
+
+    prohibited_actions:
+      - semantic_interpretation
+      - equivalence_inference
+      - normalization
+      - runtime_behavior_mutation
+
+# =====================================================
+# EPISTEMIC MODEL
+# =====================================================
+
+  epistemic:
+    base_classification:
+      epistemic_status: OBSERVED_FACT
+      semantic_commitment: NONE
+      interpretation_required: false
+
+    constraints:
+      - all failure classifications are replay-observed facts
+      - failures MUST NOT encode meaning or intent identity
+      - replay evidence supersedes all interpretation
+      - historical outcomes are immutable
+
+# =====================================================
+# FAILURE MODES
+# =====================================================
 
   failure_modes:
 
     DRIVER_DROPOUT:
       description: >
-        One or more drivers become unavailable after initial
-        eligibility evaluation but before final assignment.
+        A driver becomes unavailable after initial eligibility
+        evaluation but before final assignment.
 
       trigger_condition:
         - driver_list_reduced_deterministically
@@ -41,16 +81,16 @@ failure_taxonomy:
       expected_outcomes:
         - deterministic_driver_reselection
         - fallback_to_next_available
-        - eventual_refusal_if_exhausted
+        - deterministic_refusal_if_exhausted
 
       invariants:
-        - driver ordering must remain stable
-        - retry sequence must be deterministic
-        - no randomness in fallback selection
+        - driver ordering is stable
+        - retry sequence is deterministic
+        - no randomness in selection
 
     DRIVER_REJECTS:
       description: >
-        A driver explicitly rejects a ride assignment request.
+        A driver rejects an assignment request.
 
       trigger_condition:
         - driver_response == REJECTED
@@ -58,18 +98,17 @@ failure_taxonomy:
       deterministic_handling: RETRY_NEXT_DRIVER
 
       expected_outcomes:
-        - ordered_driver_iteration
-        - rejection_chain is preserved in trace
-        - no reordering of candidates
+        - sequential driver iteration
+        - rejection recorded in execution trace
 
       invariants:
-        - rejection order must be preserved
-        - retry is strictly sequential
-        - no retry loops permitted
+        - rejection ordering is preserved
+        - no reordering of candidates
+        - deterministic traversal only
 
     NO_DRIVER_AVAILABLE:
       description: >
-        No drivers satisfy eligibility or availability constraints.
+        No eligible driver exists at evaluation time.
 
       trigger_condition:
         - driver_pool_empty
@@ -78,53 +117,95 @@ failure_taxonomy:
       deterministic_handling: DETERMINISTIC_REFUSAL
 
       expected_outcomes:
-        - explicit refusal result
-        - no partial assignment attempt
+        - explicit refusal outcome
+        - complete trace emission
 
       invariants:
-        - refusal must produce trace
-        - refusal must be replay-identical
+        - refusal is replay-identical
+        - no partial assignment permitted
 
     TIMEOUT_EXCEEDED:
       description: >
-        A coordination step exceeds its declared deterministic timeout.
+        Execution exceeds declared deterministic step bound.
 
       trigger_condition:
-        - elapsed_steps > declared_threshold
+        - execution_steps > declared_threshold
 
       deterministic_handling: DETERMINISTIC_REFUSAL
 
       expected_outcomes:
-        - refusal due to timeout
-        - explicit trace entry
+        - deterministic timeout refusal
+        - trace record emission
 
       invariants:
-        - timeout threshold must be constant
-        - no real-time clocks allowed
-        - evaluation must remain replay-safe
+        - threshold is constant
+        - no real-time dependency
+        - no external clock influence
 
-  # -----------------------------------------------------
-  # ✅ HANDLING TYPES (NORMALIZED)
-  # -----------------------------------------------------
+# =====================================================
+# OBSERVATIONAL FAILURE OVERLAY
+# =====================================================
+
+  observational_failures:
+
+    DUPLICATE_INTENT_REFUSAL:
+      base_mode: DETERMINISTIC_REFUSAL
+      classification: OBSERVATIONAL_REFUSAL
+
+      epistemic_status: OBSERVED_FACT
+      semantic_commitment: NONE
+      interpretation_required: false
+
+      description: >
+        Deterministic refusal observed for execution traces with
+        identical replay hash signature.
+
+      properties:
+        deterministic: true
+        replay_stable: true
+        hash_stable: true
+        non_semantic: true
+        non_equivalence_bound: true
+        runtime_existing_behavior: true
+
+      replay_guarantees:
+        - identical replay hash signature MUST produce identical refusal
+        - refusal MUST produce identical replay hash signature
+        - transcript MUST remain unchanged
+
+      prohibited_interpretations:
+        - equivalence inference
+        - similarity inference
+        - normalization
+        - deduplication logic
+        - intent identity assignment
+
+      constitutional_basis:
+        - ADR-0011
+        - EPOCH-0008
+
+# =====================================================
+# HANDLING MODES
+# =====================================================
 
   handling_modes:
 
     RETRY_OR_REFUSE:
       description: >
-        System attempts deterministic reassignment until candidates
-        are exhausted, then produces a deterministic refusal.
+        Deterministic reassignment until candidates are exhausted,
+        then deterministic refusal.
 
     RETRY_NEXT_DRIVER:
       description: >
-        System selects the next driver in a deterministic order.
+        Sequential deterministic selection of next available driver.
 
     DETERMINISTIC_REFUSAL:
       description: >
-        System produces a refusal outcome explicitly, with no retry.
+        Explicit refusal outcome with full trace emission.
 
-  # -----------------------------------------------------
-  # ✅ GLOBAL INVARIANTS
-  # -----------------------------------------------------
+# =====================================================
+# GLOBAL INVARIANTS
+# =====================================================
 
   invariants:
 
@@ -134,54 +215,77 @@ failure_taxonomy:
       - no nondeterministic iteration
 
     replay:
-      - identical inputs must yield identical outcomes
-      - failure traces must hash identically under replay
+      - identical replay hash signature yields identical outcome
+      - all failure traces are replay-identical
 
     ordering:
-      - all collections must be explicitly ordered
-      - driver selection must be stable
+      - all collections are explicitly ordered
+      - driver traversal is stable
 
     traceability:
-      - every failure must produce a trace entry
-      - every decision must be auditable
+      - every failure produces a trace entry
+      - every decision is auditable
 
-  # -----------------------------------------------------
-  # ❌ FORBIDDEN BEHAVIORS
-  # -----------------------------------------------------
+    epistemic:
+      - all outcomes are observed facts
+      - no semantic interpretation permitted
+      - runtime outcomes are immutable across epochs
+
+# =====================================================
+# FORBIDDEN BEHAVIORS
+# =====================================================
 
   forbidden:
 
     execution:
       - implicit_fallback
       - silent_failure
-      - partial_execution_without_trace
+      - untraced_execution
 
     determinism:
       - random_selection
       - probabilistic_branching
-      - time_based_entropy
+      - time_based_variation
 
     structure:
       - undeclared_failure_modes
-      - dynamic_behavior_not_defined_in_taxonomy
+      - runtime_extension_without_epoch
 
-  # -----------------------------------------------------
-  # ✅ VALIDATION CONTRACT
-  # -----------------------------------------------------
+    semantics:
+      - equivalence inference
+      - similarity reasoning
+      - normalization
+      - deduplication
+      - intent classification
+
+# =====================================================
+# VALIDATION CONTRACT
+# =====================================================
 
   validation:
 
     required:
-      - all scenarios must reference declared failure_modes
-      - all failures must map to handling_modes
-      - all outputs must be replay-verifiable
+      - all scenarios reference declared failure_modes
+      - all failures map to handling_modes
+      - all outputs are replay-verifiable
 
-    success_condition:
-      description: >
-        All declared failure scenarios produce deterministic,
-        reproducible, and traceable outcomes with identical replay hash.
+    admissibility:
+      - replay_verified: true
+      - deterministic: true
+      - semantic_free: true
+      - runtime_unchanged: true
 
-    failure_condition:
-      description: >
-        Any deviation from declared failure modes, nondeterministic
-        handling, or replay mismatch invalidates AfriRide v0.2 proof.
+    rejection_conditions:
+      - replay divergence
+      - semantic dependency
+      - equivalence requirement
+      - runtime mutation
+      - normalization dependency
+
+    success_condition: >
+      All failure scenarios resolve into deterministic,
+      replay-identical outcomes without semantic interpretation.
+
+    failure_condition: >
+      Any deviation from declared modes, determinism,
+      or replay consistency invalidates v0.2 compliance.
