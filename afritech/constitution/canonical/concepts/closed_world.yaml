@@ -1,0 +1,285 @@
+schema: afritech.concept.closed_world.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of closed-world execution semantics within AfriTech.
+
+
+# ============================================================
+# ✅ CONCEPT (NORMALIZED + FULL)
+# ============================================================
+
+concept:
+
+  id: CONCEPT_CLOSED_WORLD
+  canonical_name: closed_world
+
+  # ✅ REQUIRED BY VALIDATOR
+  name: closed_world
+
+  # ✅ REQUIRED BY VALIDATOR
+  domain:
+    - runtime
+    - replay
+    - governance
+    - enforcement
+    - proof
+    - execution_surfaces
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - enforcement
+    - proof
+    - execution_surfaces
+
+
+# ============================================================
+# ✅ DEFINITION (NORMALIZED + FULL)
+# ============================================================
+
+definition:
+
+  # ✅ REQUIRED
+  summary: >
+    Closed-world semantics restrict execution to explicitly
+    declared and admissible surfaces only.
+
+  # ✅ REQUIRED
+  requires:
+    - canonical_surface_declaration
+    - deterministic_identity_resolution
+    - admissibility_alignment
+    - replay_legitimacy
+    - invariant_alignment
+
+  # ✅ REQUIRED
+  forbidden_when:
+    - undeclared_surface_execution_exists
+    - implicit_surface_discovery_exists
+    - reflection_based_execution_exists
+    - speculative_runtime_execution_exists
+    - dynamic_execution_aliasing_exists
+    - observer_relative_resolution_exists
+
+  canonical_statement: >
+    Closed-world semantics require all execution to derive
+    exclusively from declared constitutional surfaces.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION (CRITICAL)
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.import_topology_enforcement
+  - afritech.ci.execution_surface_validation
+  - afritech.ci.witness_validator
+  - afritech.ci.semantic_concept_validator
+
+witness_requirements:
+  - execution_witness
+  - replay_witness
+  - witness_bundle
+
+replay_requirements:
+  - deterministic_surface_reconstruction
+  - execution_trace_integrity
+  - no_hidden_dependencies
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTIC MODEL (PRESERVED)
+# ============================================================
+
+execution_surfaces:
+
+  runtime:
+    requires:
+      - declared_execution_surface
+      - invariant_alignment
+    forbidden:
+      - speculative_runtime_execution
+      - undeclared_runtime_surfaces
+
+  replay:
+    requires:
+      - deterministic_resolution
+      - canonical_identity
+    forbidden:
+      - replay_mutation
+      - observer_relative_reconstruction
+
+  governance:
+    requires:
+      - replay_verifiable_observation
+    forbidden:
+      - governance_runtime_execution
+      - speculative_authority
+
+  enforcement:
+    requires:
+      - canonical_enforcement_identity
+      - deterministic_resolution
+    forbidden:
+      - reflective_policy_loading
+      - ontology_self_modification
+
+  proof:
+    requires:
+      - deterministic_trace_alignment
+    forbidden:
+      - speculative_attestation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  runtime_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+
+# ============================================================
+# PATH ONGTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+    - deterministic_execution
+    - invariant_preservation
+
+  replay_invalidators:
+    - replay_divergence
+    - dynamic_surface_aliasing
+
+
+# ============================================================
+# IMPORT TOPOLOGY ALIGNMENT
+# ============================================================
+
+import_topology_alignment:
+
+  enforcement_surface:
+    - afritech.ci.import_topology_enforcement
+
+  guarantees:
+    - deterministic_import_validation
+    - execution_surface_isolation
+
+  forbidden:
+    - speculative_runtime_imports
+    - dynamic_import_reflection
+
+
+# ============================================================
+# GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - deterministic_execution_topology
+  - replay_safe_execution_boundaries
+  - observer_independent_resolution
+  - execution_surface_isolation
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  undeclared_surface_execution:
+    effect:
+      - runtime_rejection
+      - replay_invalid
+      - CI_failure
+
+  speculative_runtime_execution:
+    effect:
+      - runtime_rejection
+      - replay_invalid
+
+  dynamic_surface_aliasing:
+    effect:
+      - replay_divergence
+      - execution_non_determinism
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: CLOSED_WORLD_RULE_1
+    rule: >
+      All execution must derive from declared execution surfaces.
+
+  - id: CLOSED_WORLD_RULE_2
+    rule: >
+      Undeclared execution surfaces are inadmissible.
+
+  - id: CLOSED_WORLD_RULE_3
+    rule: >
+      Reflection-based execution is forbidden.
+
+  - id: CLOSED_WORLD_RULE_4
+    rule: >
+      Speculative execution is forbidden.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION (NORMALIZED + FULL)
+# ============================================================
+
+constitutional_assertion:
+
+  # ✅ REQUIRED FIELD
+  statement: >
+    Execution within AfriTech must occur strictly within
+    explicitly declared and admissible surfaces.
+
+  # ✅ PRESERVED DOCTRINE
+  description: >
+    AfriTech operates exclusively under closed-world
+    execution semantics. All execution and replay must derive
+    from explicitly declared, deterministic, and admissible
+    surfaces. No execution legitimacy may emerge from implicit
+    discovery, filesystem structure, or speculative reasoning.

@@ -1,0 +1,27 @@
+bootstrap_authority:
+
+  authoritative_entrypoints:
+
+    - afritech.bootstrap.engine.constitutional_bootstrap
+
+  responsibilities:
+
+    - constitutional_bootstrap
+    - runtime_initialization
+    - invariant_validation
+    - semantic_guard_loading
+    - replay_guard_loading
+    - authority_guard_loading
+
+  forbidden:
+
+    - direct_runtime_execution
+    - replay_mutation
+    - epoch_mutation
+    - speculative_runtime_loading
+
+  guarantees:
+
+    - deterministic_bootstrap_order
+    - invariant_prevalidation
+    - authority_before_execution

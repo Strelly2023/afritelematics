@@ -1,0 +1,292 @@
+schema: afritech.concept.replay_admissibility.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of replay admissibility.
+
+
+# ============================================================
+# ✅ CONCEPT (NORMALIZED + FULL)
+# ============================================================
+
+concept:
+
+  id: CONCEPT_REPLAY_ADMISSIBILITY
+  canonical_name: replay_admissibility
+
+  name: replay_admissibility
+
+  domain:
+    - runtime
+    - replay
+    - proof
+    - transcript
+    - enforcement
+    - governance   # ✅ FIXED (was admission)
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - proof
+    - transcript
+    - enforcement
+    - governance   # ✅ FIXED
+
+
+# ============================================================
+# ✅ DEFINITION
+# ============================================================
+
+definition:
+
+  summary: >
+    Replay admissibility determines whether an execution can be
+    fully and deterministically reconstructed under equivalent
+    constitutional conditions.
+
+  requires:
+    - deterministic_execution
+    - canonical_module_identity
+    - replay_safe_execution_surfaces
+    - invariant_preservation
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - admissible_execution_topology
+
+  forbidden_when:
+    - probabilistic_replay
+    - partial_reconstruction
+    - observer_dependent_replay
+    - replay_divergence
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+    - dynamic_surface_aliasing
+    - uncontrolled_mutation
+
+  canonical_statement: >
+    Replay admissibility ensures deterministic reconstruction
+    with invariant preservation and replay equivalence.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.replay_validation
+  - afritech.ci.import_topology_enforcement
+  - afritech.ci.execution_surface_validation
+  - afritech.ci.determinism_validation
+  - afritech.ci.witness_validator
+  - afritech.ci.semantic_concept_validator
+
+witness_requirements:
+  - replay_witness
+  - execution_witness
+  - transcript_witness
+  - mutation_witness
+  - witness_bundle
+  - constitutional_receipt
+
+replay_requirements:
+  - deterministic_trace_reconstruction
+  - invariant_preservation
+  - replay_equivalence
+  - bundle_hash_consistency
+  - receipt_hash_consistency
+  - full_trace_completeness
+  - observer_independence
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTIC MODEL
+# ============================================================
+
+domains:
+
+  runtime:
+    requires:
+      - admissible_execution_surfaces
+      - deterministic_runtime_execution
+      - invariant_preservation
+    forbidden:
+      - speculative_runtime_execution
+      - observer_relative_execution
+
+  replay:
+    requires:
+      - deterministic_trace_resolution
+      - canonical_surface_identity
+      - transcript_alignment
+    forbidden:
+      - probabilistic_reconstruction
+      - replay_divergence
+
+  proof:
+    requires:
+      - deterministic_receipt_generation
+      - replay_legitimacy
+    forbidden:
+      - speculative_attestation
+      - undocumented_execution_paths
+
+  enforcement:
+    requires:
+      - deterministic_validation
+      - canonical_identity_resolution
+    forbidden:
+      - reflective_policy_loading
+      - ontology_self_modification
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  replay_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+
+  forbidden:
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+
+
+# ============================================================
+# DETERMINISM ALIGNMENT
+# ============================================================
+
+determinism_alignment:
+
+  required:
+    - deterministic_execution
+    - deterministic_mutation_ordering
+    - deterministic_receipt_generation
+
+  forbidden:
+    - observer_relative_execution
+    - probabilistic_reconstruction
+
+
+# ============================================================
+# GUARANTEES
+# ============================================================
+
+guarantees:
+  - deterministic_reconstruction
+  - replay_safe_execution
+  - observer_independent_replay
+  - invariant_preserving_replay
+  - transcript_equivalence
+  - deterministic_receipt_generation
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+    effect:
+      - replay_invalid
+      - receipt_rejection
+
+  probabilistic_replay:
+    effect:
+      - replay_non_admissible
+      - proof_invalid
+
+  observer_dependent_replay:
+    effect:
+      - replay_invalid
+
+  uncontrolled_mutation:
+    effect:
+      - replay_invalid
+      - invariant_violation
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: REPLAY_RULE_1
+    rule: >
+      Replay must be fully deterministic and reproducible.
+
+  - id: REPLAY_RULE_2
+    rule: >
+      Partial replay reconstruction is forbidden.
+
+  - id: REPLAY_RULE_3
+    rule: >
+      Observer-dependent replay is forbidden.
+
+  - id: REPLAY_RULE_4
+    rule: >
+      Probabilistic replay is forbidden.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  statement: >
+    Only fully deterministic, invariant-preserving executions
+    are admissible for replay.
+
+  description: >
+    Replay admissibility defines the constitutional boundary
+    for lawful deterministic reconstruction.
+
+    Replay-valid execution must derive from canonical identity,
+    deterministic execution, admissible topology, invariant
+    preservation, and replay-safe mutation ordering.
+
+    No replay legitimacy may emerge from probabilistic,
+    partial, observer-relative, or speculative execution.

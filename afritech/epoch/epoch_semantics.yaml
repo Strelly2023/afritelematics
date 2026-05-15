@@ -1,156 +1,333 @@
-schema: afritech.epoch.semantics.v1
+# Upgraded Version — `afritech/epoch/epoch_semantics.yaml`
 
-version: 1
+schema: afritech.epoch.semantics.v2
+
+version: 2
 
 metadata:
-  authority: CONSTITUTIONAL
+
+  authority: CONSTITUTION
+  status: ACTIVE
   mutability: CONTROLLED
-  compiled_target: afritech/epoch/compiled/semantic_epoch.py
-  generated_ir: afritech/epoch/compiled/epoch_ir.json
+
+  compiled_target: afritech.epoch.compiled.semantic_epoch
+  generated_ir: afritech.epoch.compiled.epoch_ir
+
   enforcement_mode: HARD
 
-description: >
-  Canonical semantic source for AfriTech epoch meaning.
+  description: >
+    Canonical constitutional semantic source governing
+    epoch identity, epoch evolution, replay admissibility,
+    reseal semantics, registry continuity, execution
+    legitimacy, lineage determinism, and temporal finality
+    within AfriTech.
 
-  This file defines the complete and exclusive constitutional
-  semantics of epoch identity, evolution, transition legality,
-  reseal obligations, replay admissibility, and registry continuity.
+    This file is the authoritative semantic ontology for:
+      - epoch identity
+      - epoch transition legality
+      - replay admissibility
+      - reseal obligations
+      - lineage continuity
+      - registry integrity
+      - constitutional evolution
+      - temporal finality
 
-  No runtime, replay, CI, or proof component may interpret
-  epoch meaning outside artifacts compiled from this source.
+    No runtime, replay, governance, proof, CI, or
+    enforcement component may interpret epoch semantics
+    outside artifacts deterministically compiled from
+    this source.
+
 
 # ============================================================
-# GLOBAL EPOCH LAW (APPLIES TO ALL EPOCHS)
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Epoch semantic identity resolution requires canonical
+    module-path ontology alignment.
+
+
+# ============================================================
+# GLOBAL EPOCH LAW
 # ============================================================
 
 global_law:
 
   monotonicity:
+
     required: true
+
     rule: STRICTLY_INCREASING
-    description: Epoch numbers must strictly increase.
+
+    description: >
+      Epoch numbers must increase monotonically without
+      rollback or reuse.
+
     violation_class: B_TEMPORAL
 
+
   parent_lineage:
+
     required: true
+
     root_epoch_parent: null
-    description: Every epoch (except genesis) must reference exactly one parent.
+
+    description: >
+      Every epoch except genesis must reference exactly
+      one canonical parent epoch.
+
     violation_class: B_LINEAGE
 
+
   replay_determinism:
+
     required: true
+
     rule: CANONICAL_REPLAY_REQUIRED
-    description: Epoch state must be reconstructible deterministically under replay.
+
+    description: >
+      Epoch state must be deterministically reconstructible
+      under replay-safe constitutional conditions.
+
     violation_class: B_REPLAY
 
+
   registry_continuity:
+
     required: true
+
     rule: NO_EPOCH_GAPS
-    description: Epoch history must be continuous and gap-free.
+
+    description: >
+      Epoch registry lineage must remain continuous,
+      deterministic, and gap-free.
+
     violation_class: B_REGISTRY
 
+
   attestation_binding:
+
     required: true
+
     rule: RECEIPT_AND_REGISTRY_HASH_MATCH
-    description: Epoch legitimacy requires receipt, replay, and registry hash alignment.
+
+    description: >
+      Epoch legitimacy requires receipt, replay,
+      transcript, and registry alignment.
+
     violation_class: B_ATTESTATION
 
+
   temporal_finality:
+
     resealed_epochs_mutable: false
-    description: Resealed epochs are immutable forever.
+
+    description: >
+      Resealed epochs become constitutionally immutable.
+
     violation_class: B_FINALITY
 
+
+  closed_world_execution:
+
+    required: true
+
+    description: >
+      Epoch evolution must preserve declared execution
+      surfaces and deterministic execution topology.
+
+    violation_class: B_CLOSED_WORLD
+
+
+  deterministic_transition:
+
+    required: true
+
+    description: >
+      Equivalent constitutional epoch transitions must
+      produce replay-equivalent outcomes.
+
+    violation_class: B_DETERMINISM
+
+
 # ============================================================
-# EPOCH TYPES (ONTOLOGY)
+# EPOCH STATUS MODEL
+# ============================================================
+
+epoch_status_model:
+
+  constitutional_status:
+
+    SEALED:
+
+      immutable: true
+
+      replay_admissible: true
+
+      description: >
+        Constitutionally finalized epoch state.
+
+
+    ACTIVE:
+
+      immutable: false
+
+      replay_admissible: conditional
+
+      description: >
+        Runtime-active but not yet constitutionally sealed.
+
+
+  runtime_status:
+
+    ACTIVE:
+
+      execution_enabled: true
+
+      description: >
+        Epoch participates in runtime execution.
+
+
+    ARCHIVED:
+
+      execution_enabled: false
+
+      description: >
+        Historical epoch retained for replay and proof.
+
+
+# ============================================================
+# EPOCH TYPES
 # ============================================================
 
 epoch_types:
 
   GENESIS:
+
     description: >
-      Foundational epoch establishing the constitutional root
-      and trust anchor of the system.
+      Foundational epoch establishing constitutional root,
+      trust anchor, replay root, and initial authority.
 
     permits:
+
       - constitutional_initialization
       - root_attestation
       - baseline_receipt_generation
+      - initial_execution_surface_declaration
 
     prohibits:
+
       - parent_reference
       - replay_fork
       - authority_derivation
+      - prior_lineage_reference
 
     reseal_required: true
 
+
   EVOLUTION:
+
     description: >
       Epoch introducing constitutional capability expansion
-      while preserving backward lineage continuity.
+      while preserving deterministic lineage continuity.
 
     permits:
+
       - invariant_extension
       - runtime_surface_expansion
       - proof_extension
+      - replay_extension
       - registry_evolution
 
     prohibits:
+
       - lineage_rewrite
       - replay_reset
       - authority_escalation
+      - historical_mutation
 
     reseal_required: true
 
+
   NORMALIZATION:
+
     description: >
-      Structural reorganization epoch with no semantic expansion
-      or authority change.
+      Structural normalization epoch without constitutional
+      capability expansion.
 
     permits:
+
       - internal_refactor
       - artifact_relayout
-      - receipt_schema_stabilization
       - replay_alignment
+      - receipt_schema_stabilization
+      - ontology_normalization
 
     prohibits:
+
       - invariant_addition
       - authority_change
       - execution_surface_change
+      - replay_semantic_change
 
     reseal_required: true
 
+
   CORRECTION:
+
     description: >
-      Epoch repairing semantic or historical inconsistency
-      without expanding constitutional capability.
+      Epoch repairing semantic inconsistency while preserving
+      constitutional authority boundaries.
 
     permits:
+
       - semantic_repair
       - attestation_fix
       - replay_consistency_repair
+      - registry_consistency_repair
 
     prohibits:
+
       - capability_addition
       - authority_broadening
-      - surface_extension
+      - execution_surface_extension
+      - replay_semantic_expansion
 
     reseal_required: true
 
+
   TERMINAL:
+
     description: >
       Final immutable constitutional epoch.
-      No further evolution is permitted.
+      No further constitutional evolution permitted.
 
     permits:
+
       - proof_discharge
       - terminal_attestation
+      - replay_finalization
 
     prohibits:
+
       - further_transition
       - mutation
       - reseal_after_final
+      - runtime_expansion
 
     reseal_required: true
+
 
 # ============================================================
 # TRANSITION LAW
@@ -159,190 +336,306 @@ epoch_types:
 transition_rules:
 
   GENESIS:
-    allowed_successors:
+
+    allowed_next:
+
       - EVOLUTION
+      - NORMALIZATION
+
 
   EVOLUTION:
-    allowed_successors:
+
+    allowed_next:
+
       - EVOLUTION
       - NORMALIZATION
       - CORRECTION
       - TERMINAL
+
 
   NORMALIZATION:
-    allowed_successors:
+
+    allowed_next:
+
       - EVOLUTION
       - NORMALIZATION
       - CORRECTION
       - TERMINAL
 
+
   CORRECTION:
-    allowed_successors:
+
+    allowed_next:
+
       - EVOLUTION
       - NORMALIZATION
+      - CORRECTION
       - TERMINAL
 
+
   TERMINAL:
-    allowed_successors: []
+
+    allowed_next: []
+
 
 # ============================================================
-# RESEAL REQUIREMENTS (MANDATORY)
-# ============================================================
-
-reseal_requirements:
-
-  mandatory_fields:
-    - epoch_number
-    - parent_epoch
-    - epoch_type
-    - semantic_hash
-    - registry_hash
-    - receipt_hash
-    - replay_hash
-    - attestation_hash
-
-  validation:
-
-    semantic_hash:
-      required: true
-      description: Hash of compiled epoch semantic IR.
-
-    receipt_hash:
-      required: true
-      description: Hash of constitutional receipt proving lawful execution.
-
-    replay_hash:
-      required: true
-      description: Hash proving deterministic replay validity.
-
-    attestation_hash:
-      required: true
-      description: Hash binding epoch to registry attestation.
-
-# ============================================================
-# REPLAY ADMISSIBILITY LAW
+# REPLAY ADMISSIBILITY
 # ============================================================
 
 replay_admissibility:
 
-  required_conditions:
-    - canonical_trace_order
-    - receipt_present
-    - receipt_hash_matches
-    - registry_hash_matches
-    - parent_lineage_verified
-    - semantic_epoch_match
+  required: true
 
-  refusal_on_failure: true
-  refusal_mode: DETERMINISTIC_REFUSAL
+  replay_requirements:
 
-# ============================================================
-# COMPILATION CONTRACT
-# ============================================================
+    - deterministic_execution
+    - deterministic_transition
+    - canonical_identity_resolution
+    - replay_traceability
+    - invariant_preservation
+    - admissible_execution_surfaces
 
-compiler_contract:
+  replay_invalidators:
 
-  emit:
-    - SemanticEpoch
-    - EpochType
-    - EpochTransitionRule
-    - EpochSemanticManifest
+    - replay_divergence
+    - probabilistic_reconstruction
+    - observer_relative_replay
+    - speculative_execution
+    - undeclared_execution_surfaces
 
-  output_validation:
-    require_hash_stability: true
-    require_schema_validation: true
-    require_transition_validation: true
+  witness_requirements:
 
-# ============================================================
-# MIGRATION POLICY
-# ============================================================
+    - receipt_hash
+    - replay_hash
+    - execution_trace_hash
+    - mutation_trace_hash
+    - transcript_hash
 
-migration:
+  description: >
+    Replay admissibility governs whether epoch transitions
+    remain constitutionally reconstructible.
 
-  legacy_epoch_registry:
-    path: afritech/epoch/epoch_registry.yaml
-    status: DEPRECATED
-
-  migration_required: true
-
-  rules:
-    - legacy_epochs_must_map_exactly
-    - no_epoch_number_reassignment
-    - no_parent_rewrite
-    - semantic_hash_recomputation_required
 
 # ============================================================
-# ACTIVE EPOCH LINEAGE (DECLARATIVE SNAPSHOT)
+# RESEAL LAW
 # ============================================================
 
-lineage:
+reseal_law:
 
-  current_epoch: 6
+  reseal_required_for:
 
-  epochs:
+    - GENESIS
+    - EVOLUTION
+    - NORMALIZATION
+    - CORRECTION
+    - TERMINAL
 
-    - number: 0
-      type: GENESIS
-      parent: null
-      constitutional_status: SEALED
-      semantic_hash: null
+  reseal_requirements:
 
-    - number: 1
-      type: EVOLUTION
-      parent: 0
-      constitutional_status: SEALED
-      semantic_hash: null
+    - registry_hash_alignment
+    - replay_hash_alignment
+    - receipt_generation
+    - invariant_validation
+    - deterministic_trace_validation
 
-    - number: 2
-      type: EVOLUTION
-      parent: 1
-      constitutional_status: SEALED
-      semantic_hash: null
+  forbidden:
 
-    - number: 3
-      type: NORMALIZATION
-      parent: 2
-      constitutional_status: SEALED
-      semantic_hash: null
+    - reseal_without_attestation
+    - reseal_without_replay_alignment
+    - reseal_after_terminal_epoch
 
-    - number: 4
-      type: EVOLUTION
-      parent: 3
-      constitutional_status: SEALED
-      semantic_hash: null
+  description: >
+    Resealing finalizes constitutional epoch legitimacy.
 
-    - number: 5
-      type: CORRECTION
-      parent: 4
-      constitutional_status: SEALED
-      semantic_hash: null
-
-    - number: 6
-      type: EVOLUTION
-      parent: 5
-      constitutional_status: ACTIVE
-      semantic_hash: null
 
 # ============================================================
-# CONSTITUTIONAL ACCEPTANCE CRITERIA
+# LINEAGE GUARANTEES
 # ============================================================
 
-acceptance:
+lineage_guarantees:
 
-  semantic_epoch_required: true
+  guarantees:
 
-  raw_yaml_runtime_access_forbidden: true
+    - deterministic_epoch_ordering
+    - replay_safe_lineage
+    - gap_free_registry
+    - canonical_parent_resolution
+    - immutable_resealed_history
 
-  compiled_epoch_only: true
+  forbidden:
 
-  direct_registry_epoch_interpretation_forbidden: true
+    - lineage_rewrite
+    - replay_reset
+    - epoch_gap
+    - duplicate_epoch_identity
 
-  replay_must_validate_epoch_semantics: true
 
-  receipt_must_bind_epoch_hash: true
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
 
-  violation_effect:
-    - runtime_refusal
-    - receipt_non_emission
-    - replay_invalid
-    - attestation_rejection
+implementation_alignment:
+
+  admissible_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Epoch participation requires constitutionally admissible
+    implementation legitimacy.
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+
+    effect:
+
+      - replay_invalid
+      - receipt_non_admissible
+      - transcript_rejection
+
+
+  lineage_violation:
+
+    effect:
+
+      - epoch_rejection
+      - registry_invalid
+
+
+  attestation_mismatch:
+
+    effect:
+
+      - reseal_rejection
+      - proof_invalid
+
+
+  undeclared_execution_surface:
+
+    effect:
+
+      - runtime_rejection
+      - replay_invalid
+      - CI_failure
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: EPOCH_RULE_1
+    rule: >
+      Epoch evolution must preserve deterministic replay
+      admissibility.
+
+  - id: EPOCH_RULE_2
+    rule: >
+      Resealed epochs are constitutionally immutable.
+
+  - id: EPOCH_RULE_3
+    rule: >
+      Epoch identity resolution requires canonical module-path
+      ontology.
+
+  - id: EPOCH_RULE_4
+    rule: >
+      Replay legitimacy requires deterministic epoch lineage.
+
+  - id: EPOCH_RULE_5
+    rule: >
+      Epoch semantics must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - non-reflective
+
+  - id: EPOCH_RULE_6
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently define epoch legitimacy.
+
+  - id: EPOCH_RULE_7
+    rule: >
+      Speculative doctrine must never independently modify
+      epoch legality.
+
+  - id: EPOCH_RULE_8
+    rule: >
+      Epoch transition legality requires:
+        - invariant alignment
+        - replay admissibility
+        - deterministic execution
+        - canonical identity resolution
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.replay_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.epoch_validation
+
+  required_checks:
+
+    - deterministic_epoch_ordering
+    - replay_admissibility
+    - invariant_alignment
+    - canonical_identity_resolution
+    - reseal_alignment
+    - no_lineage_gaps
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Epoch semantics define the deterministic constitutional
+    evolution boundary of AfriTech.
+
+    Epoch legitimacy derives exclusively from:
+      - deterministic lineage continuity
+      - replay admissibility
+      - invariant preservation
+      - canonical identity resolution
+      - admissible execution topology
+      - constitutionally valid reseal semantics
+
+    No epoch legitimacy may emerge from:
+      - filesystem structure
+      - speculative interpretation
+      - observer-relative replay
+      - runtime activity alone
+      - undeclared execution surfaces
+      - probabilistic reconstruction
+
+    Epoch evolution must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - constitutionally bounded

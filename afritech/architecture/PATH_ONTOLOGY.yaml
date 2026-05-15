@@ -1,0 +1,354 @@
+schema: afritech.path_ontology.v1
+
+version: 1
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  description: >
+    Canonical path ontology for AfriTech constitutional identity,
+    execution topology, governance semantics, replay admissibility,
+    sealing, and architectural resolution.
+
+    This ontology defines the exclusive meaning of:
+      - module paths
+      - filesystem paths
+      - constitutional identities
+      - sealing identities
+      - runtime resolution identities
+
+    No component may reinterpret path semantics outside this ontology.
+
+
+# ============================================================
+# CANONICAL PATH FORMS
+# ============================================================
+
+canonical_forms:
+
+  module_path:
+
+    description: >
+      Canonical constitutional identity form.
+      Used for:
+        - semantic references
+        - governance references
+        - invariant references
+        - replay references
+        - implementation legitimacy
+        - execution topology enforcement
+
+    separator: "."
+
+    examples:
+      - afritech.runtime.engine
+      - afritech.runtime.activation
+      - afritech.proof.constitutional_receipt
+      - afritech.trace.trace_reconstructor
+
+    properties:
+
+      executable_identity: true
+      replay_addressable: true
+      constitutionally_authoritative: true
+      filesystem_stable: false
+
+
+  filesystem_path:
+
+    description: >
+      Physical filesystem artifact path.
+      Used exclusively for:
+        - hashing
+        - sealing
+        - manifest generation
+        - packaging
+        - artifact discovery
+
+    separator: "/"
+
+    examples:
+      - afritech/runtime/engine.py
+      - afritech/runtime/activation/
+      - afritech/proof/constitutional_receipt.py
+
+    properties:
+
+      executable_identity: false
+      replay_addressable: false
+      constitutionally_authoritative: false
+      filesystem_stable: true
+
+
+  conceptual_path:
+
+    description: >
+      Non-executable conceptual reference.
+      Used for:
+        - doctrine
+        - conceptual semantics
+        - architectural documentation
+        - explanatory mappings
+
+    separator: "::"
+
+    examples:
+      - CONCEPT::REPLAY_ADMISSIBILITY
+      - INVARIANT::I8_CLOSED_WORLD
+      - EPOCH::EVOLUTION
+
+    properties:
+
+      executable_identity: false
+      replay_addressable: false
+      constitutionally_authoritative: limited
+      filesystem_stable: false
+
+
+# ============================================================
+# GLOBAL PATH LAW
+# ============================================================
+
+global_rules:
+
+  - id: PATH_RULE_1
+    rule: >
+      Module paths are the exclusive constitutional identity form
+      for executable and replay-participating surfaces.
+
+  - id: PATH_RULE_2
+    rule: >
+      Filesystem paths must never be treated as constitutional
+      execution identities.
+
+  - id: PATH_RULE_3
+    rule: >
+      Conceptual paths must never participate in runtime execution,
+      replay execution, or implementation legitimacy enforcement.
+
+  - id: PATH_RULE_4
+    rule: >
+      All implementation legitimacy enforcement must resolve
+      against module paths only.
+
+  - id: PATH_RULE_5
+    rule: >
+      Hash sealing operations may use filesystem paths only.
+
+  - id: PATH_RULE_6
+    rule: >
+      Replay verification must resolve execution surfaces
+      through canonical module paths.
+
+  - id: PATH_RULE_7
+    rule: >
+      Filesystem extensions (.py, .yaml, .json) are physical
+      artifact details and are not constitutional identities.
+
+  - id: PATH_RULE_8
+    rule: >
+      Path identity resolution must be deterministic,
+      prefix-safe, and observer-independent.
+
+
+# ============================================================
+# PATH RESOLUTION POLICY
+# ============================================================
+
+resolution:
+
+  module_identity:
+
+    canonicalization:
+
+      strip_extensions: true
+      normalize_separators: true
+      preserve_case: true
+
+    forbidden:
+
+      - implicit_relative_resolution
+      - dynamic_import_resolution
+      - filesystem_backtracking
+      - reflection_based_discovery
+
+  filesystem_identity:
+
+    canonicalization:
+
+      normalize_separators: true
+      preserve_extensions: true
+      preserve_case: true
+
+    forbidden:
+
+      - runtime_identity_binding
+      - replay_surface_identity
+      - constitutional_execution_resolution
+
+
+# ============================================================
+# IMPLEMENTATION REGISTRY ALIGNMENT
+# ============================================================
+
+implementation_registry:
+
+  canonical_form: module_path
+
+  examples:
+
+    correct:
+
+      - afritech.runtime.engine
+      - afritech.proof.constitutional_receipt
+      - afritech.trace.trace_reconstructor
+
+    forbidden:
+
+      - afritech/runtime/engine.py
+      - afritech/proof/constitutional_receipt.py
+      - runtime.engine
+
+
+# ============================================================
+# GOVERNANCE ALIGNMENT
+# ============================================================
+
+governance_alignment:
+
+  required_form: module_path
+
+  applies_to:
+
+    - EXECUTION_SURFACES.yaml
+    - ENFORCEMENT_MAP.yaml
+    - invariants_semantics.yaml
+    - epoch_semantics.yaml
+    - implementation_registry.yaml
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  execution_trace_identity: module_path
+
+  receipt_surface_identity: module_path
+
+  transcript_surface_identity: module_path
+
+  forbidden:
+
+    - filesystem_identity_replay
+    - extension_sensitive_replay
+    - dynamic_surface_aliasing
+
+
+# ============================================================
+# HASHING ALIGNMENT
+# ============================================================
+
+hashing_alignment:
+
+  sealing_identity: filesystem_path
+
+  manifest_identity: filesystem_path
+
+  artifact_identity: filesystem_path
+
+  forbidden:
+
+    - module_path_hashing
+    - conceptual_path_hashing
+
+
+# ============================================================
+# PATH SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_resolution
+    - replay_stability
+    - observer_independence
+    - prefix_safe_matching
+    - closed_world_compatibility
+    - implementation_legitimacy_consistency
+
+  forbidden:
+
+    - ambiguous_identity_resolution
+    - mixed_path_ontology
+    - extension_based_authority
+    - filesystem_authority_inference
+    - conceptual_execution_binding
+
+
+# ============================================================
+# CI ENFORCEMENT
+# ============================================================
+
+ci_enforcement:
+
+  validators:
+
+    - path_ontology_validator
+    - implementation_registry_validator
+    - replay_surface_validator
+    - execution_surface_validator
+
+  failure_mode: CI_FAIL
+
+  required_checks:
+
+    - no_filesystem_paths_in_semantics
+    - no_module_paths_in_hash_manifests
+    - no_extension_based_identities
+    - no_mixed_resolution_modes
+
+
+# ============================================================
+# REPLAY ASSERTION
+# ============================================================
+
+replay_assertion:
+
+  description: >
+    Replay legitimacy requires stable constitutional identity.
+    All replay-participating execution surfaces must resolve
+    exclusively through canonical module paths.
+
+  violation_effects:
+
+    - replay_invalid
+    - receipt_non_admissible
+    - execution_surface_mismatch
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    AfriTech recognizes exactly three path classes:
+      - module identity
+      - filesystem artifact
+      - conceptual reference
+
+    These classes are constitutionally distinct and must never
+    be conflated.
+
+    Execution identity derives exclusively from canonical
+    module paths.
+
+    Filesystem artifacts are physical witnesses only,
+    not constitutional execution identities.

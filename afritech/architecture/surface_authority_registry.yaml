@@ -1,0 +1,642 @@
+schema: afritech.execution_surfaces.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_EXECUTION_SURFACES
+
+  description: >
+    Canonical constitutional execution-surface registry
+    governing deterministic execution authority,
+    replay participation semantics, mutation authority,
+    proof participation, runtime activation legitimacy,
+    and closed-world execution topology within AfriTech.
+
+    Execution surfaces define:
+      - constitutional execution authority
+      - replay participation semantics
+      - mutation authority boundaries
+      - proof participation boundaries
+      - deterministic execution legitimacy
+      - ontology-safe surface identity
+      - closed-world execution participation
+      - invariant-preserving operational authority
+
+    Execution surfaces are constitutional operational
+    boundaries only.
+
+    Surface legitimacy does NOT independently confer:
+      - governance sovereignty
+      - constitutional supremacy
+      - unrestricted mutation authority
+      - observer-relative execution authority
+
+    Execution participation remains bounded by:
+      - admissibility law
+      - invariant preservation
+      - deterministic execution
+      - replay-safe semantics
+      - canonical ontology resolution
+      - closed-world execution semantics
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+ontology_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - relative_identity
+    - symbolic_short_name
+    - reflection_based_identity
+
+  deterministic_resolution_required: true
+
+  replay_safe_resolution_required: true
+
+  observer_independent_required: true
+
+  description: >
+    Execution surface identity resolution requires
+    deterministic canonical module-path ontology semantics.
+
+
+# ============================================================
+# IMPLEMENTATION STATES
+# ============================================================
+
+implementation_states:
+
+  PLANNED:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+
+  PARTIAL:
+
+    executable: constrained
+
+    runtime_admissible: conditional
+
+    replay_participating: conditional
+
+    proof_admissible: conditional
+
+    replay_safe: conditional
+
+    deterministic_execution: conditional
+
+
+  IMPLEMENTED:
+
+    executable: true
+
+    runtime_admissible: true
+
+    replay_participating: true
+
+    proof_admissible: true
+
+    replay_safe: true
+
+    deterministic_execution: true
+
+
+  DOCUMENTARY:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+
+  FORBIDDEN_ALIAS:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+
+# ============================================================
+# EXECUTION SURFACES
+# ============================================================
+
+surfaces:
+
+  # ----------------------------------------------------------
+  # RUNTIME ACTIVATION
+  # ----------------------------------------------------------
+
+  runtime_activation:
+
+    canonical_identity:
+      afritech.runtime.activation
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      RUNTIME
+
+    replay_significance:
+      CRITICAL
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    replay_participating:
+      true
+
+    authority_owner:
+
+      - afritech.runtime.activation
+      - afritech.runtime.admission
+      - afritech.runtime.replay
+
+    mutation_authority:
+
+      - epoch_evolution_only
+
+    mutation_constraints:
+
+      - invariant_preservation_required
+      - deterministic_transition_required
+      - replay_traceability_required
+      - closed_world_execution_required
+
+    authority_scope:
+
+      - runtime_activation
+      - execution_admission
+      - replay_execution
+      - execution_surface_binding
+      - deterministic_runtime_control
+
+    witness_dependencies:
+
+      - afritech.proof.constitutional_receipt
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.witness_bundle
+
+    enforced_by:
+
+      - afritech.ci.execution_surface_validation
+      - afritech.ci.replay_validation
+      - afritech.runtime.admission
+
+    guarantees:
+
+      - deterministic_runtime_activation
+      - replay_safe_execution
+      - invariant_preserving_execution
+      - closed_world_execution
+
+    forbidden:
+
+      - observer_relative_activation
+      - probabilistic_execution
+      - undeclared_execution_surfaces
+      - reflection_based_runtime_binding
+      - speculative_runtime_execution
+
+    description: >
+      Canonical deterministic runtime activation surface
+      governing replay-safe operational execution within
+      AfriTech.
+
+
+  # ----------------------------------------------------------
+  # PROOF
+  # ----------------------------------------------------------
+
+  proof:
+
+    canonical_identity:
+      afritech.proof
+
+    implementation_state:
+      PARTIAL
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      PROOF
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      conditional
+
+    proof_admissible:
+      true
+
+    replay_participating:
+      true
+
+    authority_owner:
+
+      - afritech.proof
+      - afritech.proof.witness
+      - afritech.proof.formal
+
+    mutation_authority:
+
+      - proof_artifact_generation_only
+
+    mutation_constraints:
+
+      - replay_traceability_required
+      - invariant_preservation_required
+      - deterministic_proof_generation_required
+
+    authority_scope:
+
+      - witness_generation
+      - replay_attestation
+      - constitutional_receipt_generation
+      - transcript_validation
+      - mutation_trace_validation
+      - deterministic_proof_binding
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+      - afritech.proof.witness.mutation_witness
+      - afritech.proof.witness.witness_bundle
+
+    enforced_by:
+
+      - afritech.ci.witness_validation
+      - afritech.ci.replay_validation
+
+    guarantees:
+
+      - deterministic_proof_generation
+      - replay_safe_attestation
+      - invariant_preserving_validation
+      - deterministic_receipt_generation
+
+    missing_capabilities:
+
+      - global_replay_equivalence_validation
+      - full_execution_lineage_attestation
+      - multi_epoch_replay_validation
+
+    forbidden:
+
+      - observer_relative_proof
+      - speculative_proof_generation
+      - probabilistic_reconstruction
+      - undeclared_witness_generation
+
+    description: >
+      Deterministic constitutional proof surface governing
+      replay attestation and witness admissibility.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  replay_requirements:
+
+    - deterministic_execution
+    - replay_traceability
+    - witness_admissibility
+    - invariant_preservation
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - observer_relative_execution
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+
+  description: >
+    Replay participation requires constitutionally
+    admissible deterministic execution surfaces.
+
+
+# ============================================================
+# MUTATION AUTHORITY POLICY
+# ============================================================
+
+mutation_authority_policy:
+
+  allowed_mutation_scopes:
+
+    - epoch_evolution_only
+    - proof_artifact_generation_only
+    - deterministic_state_transition
+    - replay_trace_generation
+
+  forbidden_mutation_scopes:
+
+    - unrestricted_runtime_mutation
+    - observer_relative_mutation
+    - hidden_mutation
+    - probabilistic_mutation
+    - undeclared_state_transition
+
+  mutation_requirements:
+
+    - invariant_preservation
+    - deterministic_ordering
+    - replay_traceability
+    - witness_generation
+
+  description: >
+    Mutation authority is constitutionally bounded and
+    replay-traceable.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - canonical_identity_resolution
+    - deterministic_surface_binding
+    - replay_safe_execution
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - dynamic_runtime_aliasing
+    - undeclared_execution_binding
+
+  description: >
+    Execution surface admissibility requires closed-world
+    execution semantics.
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_surface_resolution
+    - replay_safe_execution
+    - observer_independent_evaluation
+    - invariant_preserving_mutation
+    - ontology_safe_execution
+
+  forbid:
+
+    - implicit_runtime_legitimacy
+    - filesystem_authority_inference
+    - speculative_execution_authority
+    - observer_relative_execution
+    - ambiguous_surface_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+
+    effect:
+
+      - replay_invalid
+      - proof_rejection
+      - execution_refusal
+
+
+  closed_world_violation:
+
+    effect:
+
+      - runtime_refusal
+      - ontology_failure
+
+
+  forbidden_mutation_scope:
+
+    effect:
+
+      - mutation_rejection
+      - replay_invalid
+
+
+  observer_relative_execution:
+
+    effect:
+
+      - proof_non_admissible
+      - replay_rejection
+
+
+  forbidden_alias_resolution:
+
+    effect:
+
+      - identity_rejection
+      - CI_failure
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: EXECUTION_SURFACE_RULE_1
+    rule: >
+      Execution surface identity must resolve exclusively
+      through canonical module-path ontology semantics.
+
+  - id: EXECUTION_SURFACE_RULE_2
+    rule: >
+      Runtime activation requires:
+        - deterministic execution
+        - replay-safe semantics
+        - invariant preservation
+        - closed-world execution alignment
+
+  - id: EXECUTION_SURFACE_RULE_3
+    rule: >
+      Mutation authority must remain constitutionally bounded
+      and replay-traceable.
+
+  - id: EXECUTION_SURFACE_RULE_4
+    rule: >
+      Filesystem artifacts must never independently define
+      execution-surface legitimacy.
+
+  - id: EXECUTION_SURFACE_RULE_5
+    rule: >
+      Replay participation requires deterministic replay-safe
+      execution semantics.
+
+  - id: EXECUTION_SURFACE_RULE_6
+    rule: >
+      Reflection-based execution binding is constitutionally
+      forbidden.
+
+  - id: EXECUTION_SURFACE_RULE_7
+    rule: >
+      Observer-relative execution evaluation is constitutionally
+      forbidden.
+
+  - id: EXECUTION_SURFACE_RULE_8
+    rule: >
+      Execution surface resolution must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - ontology-safe
+        - constitutionally bounded
+
+
+# ============================================================
+# CI ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.replay_validation
+    - afritech.ci.witness_validation
+
+  required_checks:
+
+    - canonical_identity_validation
+    - replay_safe_surface_validation
+    - deterministic_resolution_validation
+    - mutation_authority_validation
+    - closed_world_validation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional execution surfaces govern deterministic
+    replay-safe operational participation within AfriTech.
+
+    Surface legitimacy derives exclusively from:
+      - canonical ontology resolution
+      - deterministic execution
+      - replay-safe semantics
+      - invariant preservation
+      - closed-world execution semantics
+
+    Surface legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - speculative interpretation
+      - observer-relative execution
+      - semantic inference
+
+    Execution surface resolution must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - ontology-safe
+      - constitutionally bounded

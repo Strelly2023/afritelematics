@@ -1,0 +1,29 @@
+authority:
+
+  afritech/guards:
+    role: SYSTEM_SAFETY_COORDINATION
+
+    responsibilities:
+      - escalation
+      - quarantine
+      - rollback
+      - halt_management
+      - incident_classification
+
+    forbidden:
+      - replay_validation
+      - semantic_interpretation
+      - runtime_admission
+
+  afritech/runtime/guards:
+    role: CONSTITUTIONAL_RUNTIME_ENFORCEMENT
+
+    responsibilities:
+      - runtime_admission
+      - determinism_validation
+      - invariant_enforcement
+      - proof_validation
+
+    forbidden:
+      - rollback_orchestration
+      - operational_incident_management

@@ -1,0 +1,8 @@
+witnesses:
+
+  receipt.execution_result_hash:
+    supported: true
+
+  transcript.execution_trace_surface_set:
+    supported: false
+    planned_epoch: 7

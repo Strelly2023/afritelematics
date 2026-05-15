@@ -355,3 +355,14 @@ final_assertion: >
   No execution without admission.
   No legitimacy without replay.
   No evolution outside constitutional mutation.
+CONCEPT_REPLAY_ADMISSIBILITY:
+
+  enforced_by:
+    - runtime/replay/
+    - proof/
+    - runtime/activation/
+
+  witnesses:
+    - replay_hash
+    - receipt_hash
+    - execution_trace_hash

@@ -1,0 +1,684 @@
+schema: afritech.proof.witness_policy.v2
+
+version: 2
+
+metadata:
+
+  authority: PROOF
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_WITNESS_POLICY
+
+  description: >
+    Canonical constitutional witness policy governing
+    replay admissibility, witness generation, witness
+    validation, deterministic proof semantics, execution
+    trace attestation, mutation traceability, transcript
+    reconstruction, and closed-world witness enforcement
+    within AfriTech.
+
+    This policy defines:
+      - witness legitimacy
+      - witness admissibility
+      - replay-safe witness semantics
+      - deterministic witness construction
+      - witness bundle admissibility
+      - proof-bound execution semantics
+      - witness lineage continuity
+      - transcript reconstruction legality
+
+    Witnesses are constitutional proof artifacts only.
+
+    Witness generation does NOT independently confer:
+      - runtime sovereignty
+      - governance authority
+      - execution legitimacy
+      - constitutional authority
+
+    Witness participation remains bounded by:
+      - replay admissibility
+      - invariant preservation
+      - deterministic execution
+      - canonical ontology resolution
+      - closed-world execution semantics
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - symbolic_short_name
+    - relative_identity
+
+  description: >
+    Witness identity resolution requires canonical
+    module-path ontology semantics.
+
+
+# ============================================================
+# WITNESS TYPES
+# ============================================================
+
+witness_types:
+
+  REPLAY:
+
+    canonical_surface:
+      afritech.proof.witness.replay_witness
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    admissible_required: true
+
+    witness_hash_required: true
+
+    description: >
+      Canonical replay admissibility witness.
+
+
+  MUTATION:
+
+    canonical_surface:
+      afritech.proof.witness.mutation_witness
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    admissible_required: true
+
+    invariant_preserving_required: true
+
+    description: >
+      Canonical deterministic mutation trace witness.
+
+
+  TRANSCRIPT:
+
+    canonical_surface:
+      afritech.proof.witness.transcript_witness
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    admissible_required: true
+
+    transcript_reconstructible: true
+
+    description: >
+      Canonical replay transcript reconstruction witness.
+
+
+  EXECUTION:
+
+    canonical_surface:
+      afritech.proof.witness.execution_witness
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    admissible_required: true
+
+    closed_world_required: true
+
+    description: >
+      Canonical deterministic execution witness.
+
+
+  BUNDLE:
+
+    canonical_surface:
+      afritech.proof.witness.witness_bundle
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    admissible_required: true
+
+    consistency_validation_required: true
+
+    description: >
+      Canonical aggregated witness bundle.
+
+
+# ============================================================
+# REQUIRED WITNESS HASHES
+# ============================================================
+
+required_hashes:
+
+  replay:
+
+    - replay_hash
+    - receipt_hash
+    - registry_hash
+    - invariant_hash
+
+
+  mutation:
+
+    - mutation_hash
+    - mutation_trace_hash
+    - execution_trace_hash
+
+
+  transcript:
+
+    - transcript_hash
+    - execution_trace_hash
+    - mutation_trace_hash
+
+
+  execution:
+
+    - execution_hash
+    - execution_trace_hash
+    - transcript_hash
+
+
+  bundle:
+
+    - bundle_hash
+    - replay_hash
+    - transcript_hash
+    - mutation_trace_hash
+    - execution_trace_hash
+
+
+# ============================================================
+# WITNESS ADMISSIBILITY
+# ============================================================
+
+admissibility:
+
+  required:
+
+    - deterministic_execution
+    - replay_safe_execution
+    - invariant_preservation
+    - canonical_identity_resolution
+    - closed_world_alignment
+    - observer_independence
+
+  forbidden:
+
+    - probabilistic_execution
+    - observer_relative_execution
+    - reflection_based_execution
+    - undeclared_execution_surfaces
+    - ambiguous_identity_resolution
+    - speculative_execution
+
+  admissibility_failures:
+
+    probabilistic_execution:
+
+      action: REPLAY_INVALID
+
+
+    invariant_violation:
+
+      action: PROOF_REJECTION
+
+
+    ontology_violation:
+
+      action: IDENTITY_REJECTION
+
+
+    replay_divergence:
+
+      action: REPLAY_REJECTION
+
+
+# ============================================================
+# REPLAY ADMISSIBILITY
+# ============================================================
+
+replay_admissibility:
+
+  required: true
+
+  replay_requirements:
+
+    - deterministic_reconstruction
+    - replay_traceability
+    - transcript_reconstruction
+    - mutation_traceability
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - transcript_divergence
+    - mutation_ordering_divergence
+    - observer_relative_execution
+    - probabilistic_transition
+
+  replay_guarantees:
+
+    - deterministic_reconstruction
+    - invariant_preservation
+    - lineage_continuity
+    - replay_safe_execution
+
+
+# ============================================================
+# MUTATION TRACEABILITY
+# ============================================================
+
+mutation_traceability:
+
+  required: true
+
+  mutation_requirements:
+
+    - deterministic_mutation_ordering
+    - mutation_gateway_authorization
+    - mutation_trace_hash_generation
+    - replay_safe_mutation_semantics
+
+  authorized_gateways:
+
+    - afritech.kernel.constitutional_gateway
+
+  forbidden:
+
+    - hidden_mutation
+    - unordered_mutation
+    - probabilistic_mutation
+    - observer_relative_mutation
+
+  description: >
+    Mutation traceability requires deterministic mutation
+    ordering and replay-safe trace generation.
+
+
+# ============================================================
+# TRANSCRIPT RECONSTRUCTION
+# ============================================================
+
+transcript_reconstruction:
+
+  required: true
+
+  transcript_requirements:
+
+    - deterministic_event_ordering
+    - transcript_hash_generation
+    - replay_safe_event_semantics
+    - invariant_preserving_events
+
+  forbidden:
+
+    - non_monotonic_event_ordering
+    - observer_relative_transcripts
+    - probabilistic_event_reconstruction
+    - hidden_transcript_events
+
+  guarantees:
+
+    - deterministic_reconstruction
+    - replay_safe_transcripts
+    - invariant_preserving_lineage
+
+
+# ============================================================
+# EXECUTION WITNESS POLICY
+# ============================================================
+
+execution_policy:
+
+  deterministic_execution_required: true
+
+  closed_world_alignment_required: true
+
+  invariant_preservation_required: true
+
+  authorized_execution_surfaces:
+
+    - afritech.runtime.admission
+    - afritech.runtime.replay
+    - afritech.kernel.constitutional_gateway
+
+  forbidden:
+
+    - undeclared_execution_surfaces
+    - reflection_based_execution
+    - speculative_runtime_execution
+    - probabilistic_execution
+
+  guarantees:
+
+    - deterministic_execution
+    - replay_safe_execution
+    - observer_independent_execution
+    - invariant_preserving_execution
+
+
+# ============================================================
+# WITNESS BUNDLE POLICY
+# ============================================================
+
+bundle_policy:
+
+  consistency_validation_required: true
+
+  deterministic_bundle_generation: true
+
+  replay_safe_bundle_generation: true
+
+  closed_world_alignment_required: true
+
+  required_consistency_checks:
+
+    - replay_hash_alignment
+    - transcript_hash_alignment
+    - mutation_trace_hash_alignment
+    - execution_trace_hash_alignment
+    - registry_hash_alignment
+    - invariant_hash_alignment
+
+  forbidden:
+
+    - inconsistent_bundle_hashes
+    - mixed_epoch_bundles
+    - observer_relative_bundles
+    - probabilistic_bundle_generation
+
+  guarantees:
+
+    - deterministic_bundle_identity
+    - replay_safe_bundle_consistency
+    - invariant_preserving_aggregation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  admissible_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  runtime_safe_states:
+
+    - IMPLEMENTED
+
+  description: >
+    Witness participation requires constitutionally
+    admissible implementation legitimacy.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+    - replay_safe_execution
+    - canonical_identity_resolution
+
+  forbidden:
+
+    - implicit_execution_surfaces
+    - reflection_based_discovery
+    - dynamic_runtime_aliasing
+    - undeclared_execution_binding
+
+  description: >
+    Witness admissibility requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# DETERMINISM ALIGNMENT
+# ============================================================
+
+determinism_alignment:
+
+  deterministic_required: true
+
+  observer_independence_required: true
+
+  replay_safe_required: true
+
+  forbidden:
+
+    - probabilistic_execution
+    - observer_relative_reconstruction
+    - runtime_dynamic_resolution
+    - ambiguous_identity_resolution
+
+  guarantees:
+
+    - deterministic_reconstruction
+    - replay_safe_execution
+    - invariant_preserving_replay
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_witness_generation
+    - replay_safe_witness_reconstruction
+    - observer_independent_validation
+    - invariant_preserving_attestation
+    - canonical_identity_alignment
+
+  forbid:
+
+    - implicit_runtime_legitimacy
+    - filesystem_authority_inference
+    - speculative_execution_authority
+    - observer_relative_attestation
+    - ambiguous_witness_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    proof_violation_action: PROOF_REJECTION
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+
+    effect:
+
+      - replay_invalid
+      - proof_non_admissible
+      - transcript_rejection
+
+
+  transcript_divergence:
+
+    effect:
+
+      - replay_rejection
+      - witness_invalid
+
+
+  mutation_ordering_violation:
+
+    effect:
+
+      - mutation_trace_invalid
+      - deterministic_failure
+
+
+  closed_world_violation:
+
+    effect:
+
+      - execution_refusal
+      - proof_rejection
+
+
+  ontology_violation:
+
+    effect:
+
+      - identity_rejection
+      - CI_failure
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: WITNESS_POLICY_RULE_1
+    rule: >
+      Witness legitimacy requires deterministic replay-safe
+      execution semantics.
+
+  - id: WITNESS_POLICY_RULE_2
+    rule: >
+      Witnesses must never independently confer constitutional
+      authority.
+
+  - id: WITNESS_POLICY_RULE_3
+    rule: >
+      Replay admissibility requires:
+        - deterministic reconstruction
+        - transcript traceability
+        - mutation traceability
+        - invariant preservation
+
+  - id: WITNESS_POLICY_RULE_4
+    rule: >
+      Witness identity resolution requires canonical module-path
+      ontology alignment.
+
+  - id: WITNESS_POLICY_RULE_5
+    rule: >
+      Closed-world execution semantics are mandatory for witness
+      admissibility.
+
+  - id: WITNESS_POLICY_RULE_6
+    rule: >
+      Observer-relative witness generation is constitutionally
+      forbidden.
+
+  - id: WITNESS_POLICY_RULE_7
+    rule: >
+      Filesystem artifacts must never independently define
+      witness legitimacy.
+
+  - id: WITNESS_POLICY_RULE_8
+    rule: >
+      Witness validation must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - constitutionally bounded
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.replay_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.witness_validation
+
+  required_checks:
+
+    - canonical_identity_resolution
+    - deterministic_witness_validation
+    - replay_alignment_validation
+    - invariant_alignment_validation
+    - closed_world_validation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Witnesses are deterministic constitutional proof artifacts
+    governing replay admissibility, execution traceability,
+    mutation traceability, and transcript reconstruction
+    within AfriTech.
+
+    Witness legitimacy derives exclusively from:
+      - deterministic reconstruction
+      - replay-safe execution semantics
+      - invariant preservation
+      - canonical identity resolution
+      - constitutionally declared execution surfaces
+
+    Witness legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - speculative interpretation
+      - observer-relative reconstruction
+      - semantic inference
+
+    Witness validation must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - constitutionally bounded
+      - closed-world aligned

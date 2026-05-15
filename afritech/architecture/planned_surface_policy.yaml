@@ -1,0 +1,628 @@
+schema: afritech.planned_surfaces_policy.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_PLANNED_SURFACES_POLICY
+
+  description: >
+    Canonical constitutional policy governing PLANNED
+    execution surfaces, speculative implementation
+    containment, replay admissibility boundaries,
+    proof admissibility boundaries, runtime loading
+    restrictions, and deterministic ontology-safe
+    execution semantics within AfriTech.
+
+    Planned surfaces define:
+      - declared architectural intent
+      - non-operational execution boundaries
+      - replay participation restrictions
+      - proof participation restrictions
+      - deterministic containment semantics
+      - closed-world isolation guarantees
+      - ontology-safe declaration semantics
+      - implementation legitimacy boundaries
+
+    Planned surfaces are declarative constitutional
+    artifacts only.
+
+    Planned surfaces do NOT independently confer:
+      - runtime legitimacy
+      - replay admissibility
+      - proof admissibility
+      - execution authority
+      - governance authority
+      - mutation authority
+
+    Planned-surface participation remains bounded by:
+      - admissibility law
+      - deterministic ontology resolution
+      - replay-safe containment
+      - invariant preservation
+      - closed-world execution semantics
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+ontology_alignment:
+
+  canonical_identity_form: module_path
+
+  deterministic_resolution_required: true
+
+  replay_safe_resolution_required: true
+
+  observer_independent_required: true
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - relative_identity
+    - symbolic_short_name
+    - reflection_based_identity
+
+  description: >
+    Planned-surface identity resolution requires canonical
+    deterministic module-path ontology semantics.
+
+
+# ============================================================
+# PLANNED SURFACE POLICY
+# ============================================================
+
+planned_surfaces:
+
+  implementation_state:
+
+    PLANNED
+
+  executable:
+
+    false
+
+  runtime_admissible:
+
+    false
+
+  replay_participating:
+
+    false
+
+  proof_admissible:
+
+    false
+
+  mutation_authority:
+
+    false
+
+  deterministic_execution:
+
+    false
+
+  replay_safe:
+
+    false
+
+  closed_world_admissible:
+
+    false
+
+  governance_visible:
+
+    true
+
+  architectural_visibility:
+
+    declared_only
+
+  description: >
+    PLANNED surfaces are constitutionally declared but
+    operationally non-admissible.
+
+
+# ============================================================
+# RUNTIME RESTRICTIONS
+# ============================================================
+
+runtime_policy:
+
+  runtime_loading_forbidden:
+
+    true
+
+  runtime_execution_forbidden:
+
+    true
+
+  runtime_activation_forbidden:
+
+    true
+
+  runtime_binding_forbidden:
+
+    true
+
+  dynamic_runtime_discovery_forbidden:
+
+    true
+
+  runtime_import_forbidden:
+
+    true
+
+  runtime_registration_forbidden:
+
+    true
+
+  runtime_capabilities:
+
+    none
+
+  forbidden:
+
+    - runtime_execution
+    - runtime_admission
+    - runtime_binding
+    - runtime_activation
+    - runtime_mutation
+    - execution_surface_registration
+    - runtime_service_discovery
+
+  description: >
+    Planned surfaces must never participate in runtime
+    execution or runtime activation semantics.
+
+
+# ============================================================
+# REPLAY RESTRICTIONS
+# ============================================================
+
+replay_policy:
+
+  replay_dependency_forbidden:
+
+    true
+
+  replay_participation_forbidden:
+
+    true
+
+  replay_trace_generation_forbidden:
+
+    true
+
+  replay_witness_generation_forbidden:
+
+    true
+
+  replay_admissibility_forbidden:
+
+    true
+
+  replay_equivalence_participation_forbidden:
+
+    true
+
+  replay_capabilities:
+
+    none
+
+  forbidden:
+
+    - replay_execution
+    - replay_traceability
+    - replay_reconstruction
+    - replay_attestation
+    - replay_consistency_validation
+    - replay_witness_generation
+    - replay_hash_generation
+
+  replay_invalidators:
+
+    - planned_surface_execution
+    - planned_surface_replay_binding
+    - planned_surface_witness_generation
+
+  description: >
+    Planned surfaces must never participate in replay
+    execution or replay admissibility semantics.
+
+
+# ============================================================
+# PROOF RESTRICTIONS
+# ============================================================
+
+proof_policy:
+
+  proof_dependency_forbidden:
+
+    true
+
+  proof_generation_forbidden:
+
+    true
+
+  proof_attestation_forbidden:
+
+    true
+
+  witness_generation_forbidden:
+
+    true
+
+  constitutional_receipt_generation_forbidden:
+
+    true
+
+  proof_validation_forbidden:
+
+    true
+
+  proof_capabilities:
+
+    none
+
+  forbidden:
+
+    - witness_generation
+    - proof_attestation
+    - constitutional_receipt_generation
+    - proof_validation
+    - transcript_generation
+    - mutation_trace_generation
+    - execution_trace_generation
+
+  description: >
+    Planned surfaces must never participate in proof
+    generation or constitutional attestation semantics.
+
+
+# ============================================================
+# MUTATION RESTRICTIONS
+# ============================================================
+
+mutation_policy:
+
+  mutation_authority_forbidden:
+
+    true
+
+  state_transition_forbidden:
+
+    true
+
+  deterministic_transition_forbidden:
+
+    true
+
+  replay_trace_mutation_forbidden:
+
+    true
+
+  mutation_capabilities:
+
+    none
+
+  forbidden:
+
+    - state_mutation
+    - runtime_mutation
+    - replay_mutation
+    - hidden_mutation
+    - observer_relative_mutation
+    - probabilistic_mutation
+
+  description: >
+    Planned surfaces possess no constitutional mutation
+    authority.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  isolation_required:
+
+    true
+
+  execution_surface_registration_forbidden:
+
+    true
+
+  implicit_surface_discovery_forbidden:
+
+    true
+
+  reflection_based_binding_forbidden:
+
+    true
+
+  dynamic_runtime_aliasing_forbidden:
+
+    true
+
+  undeclared_execution_binding_forbidden:
+
+    true
+
+  guarantees:
+
+    - deterministic_containment
+    - replay_safe_isolation
+    - observer_independent_resolution
+    - ontology_safe_declaration
+
+  description: >
+    Planned surfaces must remain isolated from admissible
+    execution topology.
+
+
+# ============================================================
+# IMPLEMENTATION TRANSITION POLICY
+# ============================================================
+
+transition_policy:
+
+  allowed_transitions:
+
+    - PLANNED -> PARTIAL
+    - PLANNED -> DOCUMENTARY
+
+  forbidden_transitions:
+
+    - PLANNED -> IMPLEMENTED
+    - PLANNED -> RUNTIME_ACTIVE
+    - PLANNED -> REPLAY_ACTIVE
+
+  transition_requirements:
+
+    - explicit_implementation_registration
+    - deterministic_surface_validation
+    - replay_safety_validation
+    - invariant_alignment_validation
+    - canonical_identity_validation
+
+  description: >
+    Planned surfaces require explicit constitutional
+    transition validation before operational participation.
+
+
+# ============================================================
+# DETERMINISM ALIGNMENT
+# ============================================================
+
+determinism_alignment:
+
+  deterministic_runtime_execution:
+
+    forbidden
+
+  deterministic_replay_execution:
+
+    forbidden
+
+  observer_independent_required:
+
+    true
+
+  replay_safe_required:
+
+    true
+
+  forbidden:
+
+    - probabilistic_execution
+    - observer_relative_execution
+    - runtime_dynamic_resolution
+    - speculative_execution
+
+  guarantees:
+
+    - deterministic_containment
+    - ontology_safe_isolation
+    - replay_safe_non_execution
+
+  description: >
+    Planned surfaces must remain operationally inert and
+    replay-safe through deterministic containment.
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_surface_containment
+    - replay_safe_non_execution
+    - observer_independent_declaration
+    - ontology_safe_resolution
+    - closed_world_isolation
+
+  forbid:
+
+    - implicit_runtime_legitimacy
+    - speculative_execution_authority
+    - filesystem_authority_inference
+    - observer_relative_execution
+    - ambiguous_surface_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  planned_runtime_execution:
+
+    effect:
+
+      - runtime_refusal
+      - replay_invalid
+      - CI_failure
+
+
+  planned_replay_participation:
+
+    effect:
+
+      - replay_rejection
+      - witness_rejection
+
+
+  planned_proof_generation:
+
+    effect:
+
+      - proof_non_admissible
+      - constitutional_receipt_rejection
+
+
+  reflection_based_binding:
+
+    effect:
+
+      - ontology_failure
+      - execution_refusal
+
+
+  observer_relative_resolution:
+
+    effect:
+
+      - replay_invalid
+      - deterministic_failure
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: PLANNED_SURFACE_RULE_1
+    rule: >
+      Planned surfaces are constitutionally declarative and
+      operationally non-admissible.
+
+  - id: PLANNED_SURFACE_RULE_2
+    rule: >
+      Planned surfaces must never participate in:
+        - runtime execution
+        - replay execution
+        - proof generation
+        - witness generation
+        - constitutional attestation
+
+  - id: PLANNED_SURFACE_RULE_3
+    rule: >
+      Planned surfaces possess no mutation authority.
+
+  - id: PLANNED_SURFACE_RULE_4
+    rule: >
+      Planned surfaces must remain isolated under
+      closed-world execution semantics.
+
+  - id: PLANNED_SURFACE_RULE_5
+    rule: >
+      Filesystem artifacts must never independently define
+      planned-surface legitimacy.
+
+  - id: PLANNED_SURFACE_RULE_6
+    rule: >
+      Reflection-based execution binding is constitutionally
+      forbidden.
+
+  - id: PLANNED_SURFACE_RULE_7
+    rule: >
+      Observer-relative execution evaluation is constitutionally
+      forbidden.
+
+  - id: PLANNED_SURFACE_RULE_8
+    rule: >
+      Planned-surface resolution must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - ontology-safe
+        - constitutionally bounded
+
+
+# ============================================================
+# CI ENFORCEMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.replay_validation
+    - afritech.ci.witness_validation
+
+  required_checks:
+
+    - no_planned_runtime_execution
+    - no_planned_replay_participation
+    - no_planned_proof_generation
+    - deterministic_identity_validation
+    - closed_world_isolation_validation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Planned surfaces are deterministic declarative
+    constitutional artifacts representing architectural
+    intent only.
+
+    Planned-surface legitimacy derives exclusively from:
+      - canonical ontology declaration
+      - deterministic containment semantics
+      - replay-safe non-execution
+      - closed-world isolation
+      - observer-independent resolution
+
+    Planned surfaces must never derive operational legitimacy
+    from:
+      - filesystem structure
+      - runtime activity
+      - speculative interpretation
+      - observer-relative execution
+      - semantic inference
+
+    Planned-surface evaluation must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - ontology-safe
+      - constitutionally bounded

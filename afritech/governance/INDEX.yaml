@@ -46,7 +46,7 @@ constitutional_state:
 # ---------------------------------------------------------------------
 
 epoch:
-  current: 5
+  current: 6
 
   established_by:
     adr: ADR-0001

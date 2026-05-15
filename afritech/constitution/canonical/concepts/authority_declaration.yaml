@@ -1,0 +1,256 @@
+schema: afritech.concept.authority_declaration.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of authority declaration.
+
+
+# ============================================================
+# ✅ CONCEPT (NORMALIZED + FULL)
+# ============================================================
+
+concept:
+  id: CONCEPT_AUTHORITY_DECLARATION
+  canonical_name: authority_declaration
+
+  # ✅ REQUIRED BY VALIDATOR
+  name: authority_declaration
+
+  # ✅ REQUIRED BY VALIDATOR
+  domain:
+    - runtime
+    - replay
+    - governance
+    - enforcement
+    - proof
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+    - epoch
+
+
+# ============================================================
+# ✅ DEFINITION (NORMALIZED + FULL)
+# ============================================================
+
+definition:
+
+  # ✅ REQUIRED
+  summary: >
+    Authority declaration defines how constitutional authority
+    is explicitly established, constrained, and validated.
+
+  # ✅ REQUIRED
+  requires:
+    - canonical_identity_resolution
+    - admissibility_alignment
+    - deterministic_resolution
+    - replay_legitimacy
+    - invariant_alignment
+
+  # ✅ REQUIRED
+  forbidden_when:
+    - implicit_authority
+    - filesystem_identity_as_authority
+    - speculative_authority
+    - identity_ambiguity
+
+  canonical_statement: >
+    Authority declaration is the constitutional mechanism by
+    which authority is explicitly defined and bounded.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION (CRITICAL)
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.witness_validator
+  - afritech.ci.semantic_concept_validator
+  - afritech.ci.import_topology_enforcement
+  - afritech.ci.replay_validation
+
+witness_requirements:
+  - execution_witness
+  - mutation_witness
+  - transcript_witness
+
+replay_requirements:
+  - authority_traceability
+  - deterministic_authority_resolution
+  - replay_consistency
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTICS (UNCHANGED STRUCTURE)
+# ============================================================
+
+domains:
+
+  runtime:
+    allowed:
+      - deterministic_execution
+    forbidden:
+      - speculative_execution
+      - governance_runtime_override
+
+  replay:
+    allowed:
+      - deterministic_reconstruction
+    forbidden:
+      - replay_mutation
+      - speculative_replay
+
+  governance:
+    allowed:
+      - replay_bound_observation
+    forbidden:
+      - runtime_execution_control
+
+  enforcement:
+    allowed:
+      - validation
+    forbidden:
+      - runtime_policy_mutation
+
+  proof:
+    allowed:
+      - receipt_generation
+    forbidden:
+      - speculative_proof
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  authority_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  authority_forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+
+# ============================================================
+# PATH ALIGNMENT
+# ============================================================
+
+path_alignment:
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  undeclared_surface_effect: HARD_FAIL
+
+  forbidden:
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+    - deterministic_resolution
+    - replay_safe_execution
+
+  replay_invalidators:
+    - replay_divergence
+    - observer_relative_execution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  runtime:
+    authority_violation_effect:
+      - runtime_rejection
+
+  replay:
+    authority_violation_effect:
+      - replay_invalid
+
+  governance:
+    authority_violation_effect:
+      - governance_invalid
+
+  enforcement:
+    authority_violation_effect:
+      - CI_failure
+
+  proof:
+    authority_violation_effect:
+      - proof_invalid
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: AUTHORITY_RULE_1
+    rule: >
+      Authority must always be explicitly declared.
+
+  - id: AUTHORITY_RULE_2
+    rule: >
+      Filesystem artifacts must never confer authority.
+
+  - id: AUTHORITY_RULE_3
+    rule: >
+      Governance authority is declarative, not operational.
+
+  - id: AUTHORITY_RULE_4
+    rule: >
+      Runtime authority is bounded by admissibility.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION (NORMALIZED + FULL)
+# ============================================================
+
+constitutional_assertion:
+
+  # ✅ REQUIRED
+  statement: >
+    Authority must be explicit, deterministic, and admissible
+    under constitutional execution rules.
+
+  # ✅ FULL DOCTRINE
+  description: >
+    Authority derives only from canonical declaration,
+    admissible execution surfaces, deterministic replay
+    legitimacy, and invariant alignment.

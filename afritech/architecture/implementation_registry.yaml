@@ -1,0 +1,646 @@
+schema: afritech.implementation_registry.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+
+  status: ACTIVE
+
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_IMPLEMENTATION_REGISTRY
+
+  description: >
+    Canonical implementation registry governing deterministic
+    implementation legitimacy, replay admissibility,
+    proof admissibility, ontology-safe identity resolution,
+    and closed-world execution participation within AfriTech.
+
+    Filesystem paths must never independently define
+    constitutional identity.
+
+    Canonical identity resolution derives exclusively from:
+      - canonical module-path ontology
+      - deterministic identity resolution
+      - replay-safe implementation semantics
+      - invariant-preserving execution semantics
+
+
+# ============================================================
+# IMPLEMENTATION STATES
+# ============================================================
+
+implementation_states:
+
+  PLANNED:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_admissible: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    closed_world_aligned: false
+
+    description: >
+      Constitutionally declared but operationally
+      non-admissible implementation state.
+
+
+  PARTIAL:
+
+    executable: constrained
+
+    runtime_admissible: conditional
+
+    replay_admissible: true
+
+    proof_admissible: true
+
+    deterministic_execution: true
+
+    closed_world_aligned: true
+
+    description: >
+      Partially implemented deterministic replay-safe
+      implementation state.
+
+
+  IMPLEMENTED:
+
+    executable: true
+
+    runtime_admissible: true
+
+    replay_admissible: true
+
+    proof_admissible: true
+
+    deterministic_execution: true
+
+    closed_world_aligned: true
+
+    description: >
+      Fully implemented deterministic replay-safe
+      implementation state.
+
+
+  DOCUMENTARY:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_admissible: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    closed_world_aligned: false
+
+    description: >
+      Documentation-only implementation surface.
+
+
+  FORBIDDEN_ALIAS:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_admissible: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    closed_world_aligned: false
+
+    description: >
+      Constitutionally forbidden alias identity.
+
+
+# ============================================================
+# IMPLEMENTATIONS
+# ============================================================
+
+implementations:
+
+  # ----------------------------------------------------------
+  # CONSTITUTIONAL RECEIPT
+  # ----------------------------------------------------------
+
+  afritech.proof.constitutional_receipt:
+
+    implementation_state:
+      PARTIAL
+
+    category:
+      PROOF
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/constitutional_receipt.py
+
+    authority_scope:
+
+      - receipt_generation
+      - replay_attestation
+      - seal_validation
+      - invariant_binding
+      - witness_binding
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+      - afritech.proof.witness.mutation_witness
+      - afritech.proof.witness.witness_bundle
+
+    enforced_by:
+
+      - afritech.ci.witness_validation
+      - afritech.ci.replay_validation
+      - afritech.runtime.admission
+
+    generated_artifacts:
+
+      - constitutional_receipt
+      - replay_hash
+      - invariant_hash
+      - execution_surface_hash
+
+    missing_capabilities:
+
+      - transcript_hash_generation
+      - mutation_trace_hash_generation
+      - full_execution_trace_reconstruction
+      - global_replay_equivalence_validation
+
+    forbidden_behaviors:
+
+      - observer_relative_receipts
+      - probabilistic_reconstruction
+      - filesystem_identity_resolution
+      - undeclared_execution_surfaces
+
+    description: >
+      Deterministic constitutional receipt generation surface.
+
+      Replay admissible and proof admissible under
+      constrained witness completeness semantics.
+
+      Classified as PARTIAL because:
+        - transcript lineage remains incomplete
+        - mutation trace completeness is partial
+        - full replay equivalence reconstruction
+          is not yet implemented
+
+
+  # ----------------------------------------------------------
+  # REPLAY WITNESS
+  # ----------------------------------------------------------
+
+  afritech.proof.witness.replay_witness:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      WITNESS
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/witness/replay_witness.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    description: >
+      Deterministic replay witness generation surface.
+
+
+  # ----------------------------------------------------------
+  # EXECUTION WITNESS
+  # ----------------------------------------------------------
+
+  afritech.proof.witness.execution_witness:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      WITNESS
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/witness/execution_witness.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    description: >
+      Deterministic execution witness generation surface.
+
+
+  # ----------------------------------------------------------
+  # TRANSCRIPT WITNESS
+  # ----------------------------------------------------------
+
+  afritech.proof.witness.transcript_witness:
+
+    implementation_state:
+      PARTIAL
+
+    category:
+      WITNESS
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/witness/transcript_witness.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: conditional
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    missing_capabilities:
+
+      - full_transcript_lineage
+      - replay_equivalence_validation
+
+    description: >
+      Partially implemented transcript witness surface.
+
+
+  # ----------------------------------------------------------
+  # MUTATION WITNESS
+  # ----------------------------------------------------------
+
+  afritech.proof.witness.mutation_witness:
+
+    implementation_state:
+      PARTIAL
+
+    category:
+      WITNESS
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/witness/mutation_witness.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: conditional
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    missing_capabilities:
+
+      - deterministic_mutation_lineage
+      - mutation_equivalence_reconstruction
+
+    description: >
+      Partially implemented mutation witness surface.
+
+
+  # ----------------------------------------------------------
+  # WITNESS BUNDLE
+  # ----------------------------------------------------------
+
+  afritech.proof.witness.witness_bundle:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      WITNESS
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/proof/witness/witness_bundle.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    description: >
+      Deterministic witness aggregation and validation surface.
+
+
+  # ----------------------------------------------------------
+  # TRACE RECONSTRUCTION
+  # ----------------------------------------------------------
+
+  afritech.trace.trace_reconstructor:
+
+    implementation_state:
+      PLANNED
+
+    category:
+      TRACE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      CRITICAL
+
+    canonical_path:
+      afritech/trace/trace_reconstructor.py
+
+    semantic_properties:
+
+      deterministic_execution: false
+
+      replay_admissible: false
+
+      proof_admissible: false
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: false
+
+    forbidden_behaviors:
+
+      - runtime_execution
+      - replay_participation
+      - witness_generation
+      - constitutional_attestation
+
+    description: >
+      Planned deterministic replay trace reconstruction
+      surface.
+
+      Intentionally non-operational until replay-equivalence
+      semantics are constitutionally stabilized.
+
+
+# ============================================================
+# GLOBAL RULES
+# ============================================================
+
+rules:
+
+  - id: IMPLEMENTATION_RULE_1
+
+    rule: >
+      Canonical implementation identity must resolve
+      exclusively through deterministic module-path ontology.
+
+
+  - id: IMPLEMENTATION_RULE_2
+
+    rule: >
+      Filesystem paths must never independently define
+      constitutional implementation identity.
+
+
+  - id: IMPLEMENTATION_RULE_3
+
+    rule: >
+      Replay admissibility requires:
+        - deterministic execution
+        - replay-safe semantics
+        - invariant preservation
+        - closed-world alignment
+
+
+  - id: IMPLEMENTATION_RULE_4
+
+    rule: >
+      PLANNED implementations must never participate in:
+        - runtime execution
+        - replay execution
+        - proof generation
+        - witness generation
+
+
+  - id: IMPLEMENTATION_RULE_5
+
+    rule: >
+      PARTIAL implementations may participate in replay-safe
+      constrained execution only when explicitly declared.
+
+
+  - id: IMPLEMENTATION_RULE_6
+
+    rule: >
+      Observer-relative implementation semantics are
+      constitutionally forbidden.
+
+
+  - id: IMPLEMENTATION_RULE_7
+
+    rule: >
+      Reflection-based implementation identity resolution
+      is constitutionally forbidden.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  replay_requirements:
+
+    - deterministic_execution
+    - replay_safe_semantics
+    - invariant_preservation
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_execution_surfaces
+    - filesystem_identity_resolution
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_identity_resolution
+    - replay_safe_execution
+    - invariant_preservation
+
+  forbidden:
+
+    - implicit_runtime_discovery
+    - reflection_based_execution
+    - dynamic_runtime_aliasing
+    - undeclared_surface_binding
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_implementation_resolution
+    - replay_safe_execution
+    - observer_independent_identity
+    - ontology_safe_binding
+    - invariant_preserving_execution
+
+  forbid:
+
+    - filesystem_authority_inference
+    - speculative_runtime_authority
+    - observer_relative_execution
+    - probabilistic_execution
+    - ambiguous_identity_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Implementation legitimacy derives exclusively from:
+      - canonical module-path ontology
+      - deterministic execution semantics
+      - replay-safe operational behavior
+      - invariant preservation
+      - closed-world execution semantics
+
+    Implementation legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - observer-relative interpretation
+      - speculative inference
+      - symbolic naming shortcuts

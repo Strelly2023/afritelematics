@@ -1,0 +1,2829 @@
+===== afritech/constitution/canonical/concepts/admissibility.yaml =====
+schema: afritech.concept.admissibility.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of admissibility within
+    AfriTech.
+
+    Admissibility governs whether a surface, execution artifact,
+    replay artifact, transcript, receipt, mutation, or runtime
+    action may constitutionally participate in:
+      - runtime execution
+      - replay verification
+      - governance evaluation
+      - constitutional enforcement
+      - proof generation
+
+    Admissibility is a constitutional validation property.
+    It is not equivalent to:
+      - implementation existence
+      - filesystem presence
+      - execution success
+      - operational liveness
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_ADMISSIBILITY
+
+  canonical_name: admissibility
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+
+  authoritative_sources:
+    - afritech.constitution.invariants_semantics
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.enforcement_matrix
+    - afritech.architecture.implementation_registry
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Admissibility is the constitutional determination that an
+    artifact, execution surface, runtime action, replay trace,
+    governance declaration, or enforcement surface may lawfully
+    participate within the AfriTech constitutional system.
+
+  admissibility_requires:
+
+    - canonical_identity_resolution
+    - deterministic_resolution
+    - execution_surface_declaration
+    - implementation_legitimacy
+    - replay_legitimacy
+    - invariant_alignment
+    - authority_alignment
+
+  admissibility_forbidden_when:
+
+    - identity_is_ambiguous
+    - execution_surface_is_undeclared
+    - replay_legitimacy_fails
+    - invariant_violation_exists
+    - forbidden_alias_detected
+    - authority_boundary_violated
+    - speculative_surface_used_operationally
+
+
+# ============================================================
+# ADMISSIBILITY DOMAINS
+# ============================================================
+
+domains:
+
+  runtime:
+
+    description: >
+      Runtime admissibility governs whether execution surfaces
+      may participate in sovereign runtime execution.
+
+    requires:
+
+      - implementation_state_admissible
+      - execution_surface_declared
+      - invariant_alignment
+      - replay_safe_operation
+
+    forbidden:
+
+      - speculative_execution
+      - forbidden_alias_resolution
+      - undocumented_execution_surfaces
+      - ambiguous_identity_resolution
+
+
+  replay:
+
+    description: >
+      Replay admissibility governs whether replay artifacts,
+      transcripts, traces, and execution surfaces may
+      constitutionally participate in deterministic replay.
+
+    requires:
+
+      - deterministic_trace_resolution
+      - canonical_module_identity
+      - replay_safe_implementation_state
+      - execution_surface_alignment
+
+    forbidden:
+
+      - observer_relative_resolution
+      - speculative_replay
+      - dynamic_surface_aliasing
+      - replay_execution_divergence
+
+
+  governance:
+
+    description: >
+      Governance admissibility governs whether governance
+      declarations and observations are constitutionally valid.
+
+    requires:
+
+      - replay_verifiable_observation
+      - canonical_identity_resolution
+      - invariant_alignment
+
+    forbidden:
+
+      - semantic_reinterpretation
+      - runtime_execution_control
+      - speculative_authority_derivation
+      - replay_mutation
+
+
+  enforcement:
+
+    description: >
+      Enforcement admissibility governs whether enforcement
+      surfaces may constitutionally participate in validation
+      and execution-boundary enforcement.
+
+    requires:
+
+      - canonical_enforcement_identity
+      - implementation_legitimacy
+      - deterministic_enforcement_resolution
+
+    forbidden:
+
+      - reflective_policy_loading
+      - runtime_policy_mutation
+      - ontology_self_modification
+      - filesystem_identity_resolution
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  admissible_states:
+
+    runtime:
+      - PARTIAL
+      - IMPLEMENTED
+
+    replay:
+      - PARTIAL
+      - IMPLEMENTED
+
+    enforcement:
+      - PARTIAL
+      - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Implementation legitimacy contributes to admissibility,
+    but does not independently confer constitutional authority.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - relative_identity
+    - conceptual_identity
+
+  description: >
+    Constitutional admissibility requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_resolution
+    - replay_safe_execution
+    - canonical_surface_identity
+    - invariant_preservation
+
+  replay_invalidators:
+
+    - ambiguous_surface_resolution
+    - observer_relative_execution
+    - speculative_runtime_dependency
+    - dynamic_execution_aliasing
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  undeclared_surface_effect: HARD_FAIL
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - undocumented_runtime_imports
+    - speculative_runtime_execution
+
+  description: >
+    Admissibility requires closed-world execution semantics.
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  runtime:
+
+    inadmissible_effect:
+      - runtime_rejection
+      - execution_block
+
+  replay:
+
+    inadmissible_effect:
+      - replay_invalid
+      - transcript_rejection
+      - receipt_non_admissible
+
+  governance:
+
+    inadmissible_effect:
+      - governance_declaration_invalid
+
+  enforcement:
+
+    inadmissible_effect:
+      - enforcement_rejection
+      - CI_failure
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: ADMISSIBILITY_RULE_1
+    rule: >
+      Constitutional admissibility requires canonical identity
+      resolution through module-path ontology.
+
+  - id: ADMISSIBILITY_RULE_2
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently confer admissibility.
+
+  - id: ADMISSIBILITY_RULE_3
+    rule: >
+      Replay admissibility requires deterministic,
+      observer-independent execution semantics.
+
+  - id: ADMISSIBILITY_RULE_4
+    rule: >
+      Speculative surfaces are constitutionally inadmissible
+      for runtime and replay participation.
+
+  - id: ADMISSIBILITY_RULE_5
+    rule: >
+      Admissibility must remain:
+        - deterministic
+        - prefix-safe
+        - observer-independent
+        - non-reflective
+
+  - id: ADMISSIBILITY_RULE_6
+    rule: >
+      Constitutional admissibility does not derive from:
+        - filesystem presence
+        - implementation existence
+        - execution success
+        - runtime activity
+
+  - id: ADMISSIBILITY_RULE_7
+    rule: >
+      Governance admissibility does not confer runtime control
+      authority.
+
+  - id: ADMISSIBILITY_RULE_8
+    rule: >
+      Replay legitimacy and admissibility are constitutionally
+      coupled but semantically distinct.
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+
+  required_checks:
+
+    - canonical_identity_resolution
+    - deterministic_resolution
+    - replay_legitimacy_alignment
+    - implementation_state_alignment
+    - no_filesystem_identity_execution
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional admissibility is the deterministic and
+    observer-independent validation boundary governing lawful
+    participation within the AfriTech constitutional system.
+
+    Admissibility derives from:
+      - canonical identity
+      - deterministic execution semantics
+      - replay legitimacy
+      - invariant alignment
+      - constitutional authority boundaries
+
+    No artifact, runtime action, replay trace, governance
+    declaration, or enforcement surface may constitutionally
+    participate outside admissibility law.
+
+===== afritech/constitution/canonical/concepts/authority_declaration.yaml =====
+schema: afritech.concept.authority_declaration.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of authority declaration
+    within AfriTech.
+
+    Authority declaration governs how constitutional authority
+    is:
+      - established
+      - constrained
+      - recognized
+      - inherited
+      - enforced
+
+    across:
+      - runtime execution
+      - replay verification
+      - governance evaluation
+      - enforcement systems
+      - proof generation
+      - epoch evolution
+
+    Authority declaration is constitutionally deterministic and
+    observer-independent.
+
+    Authority must never emerge implicitly from:
+      - filesystem presence
+      - execution success
+      - implementation existence
+      - runtime activity
+      - speculative interpretation
+      - semantic inference
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_AUTHORITY_DECLARATION
+
+  canonical_name: authority_declaration
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+    - epoch
+
+  authoritative_sources:
+    - afritech.constitution.invariants_semantics
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.implementation_registry
+    - afritech.architecture.enforcement_matrix
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Authority declaration is the constitutional mechanism by
+    which execution, replay, governance, enforcement, mutation,
+    and proof authority are explicitly recognized, constrained,
+    and admitted within AfriTech.
+
+  authority_requires:
+
+    - canonical_identity_resolution
+    - execution_surface_declaration
+    - admissibility_alignment
+    - invariant_alignment
+    - replay_legitimacy
+    - deterministic_resolution
+
+  authority_forbidden_when:
+
+    - authority_is_implicit
+    - identity_is_ambiguous
+    - execution_surface_is_undeclared
+    - replay_legitimacy_fails
+    - speculative_authority_derivation_exists
+    - governance_attempts_runtime_control
+    - filesystem_identity_used_as_authority
+
+
+# ============================================================
+# AUTHORITY DOMAINS
+# ============================================================
+
+domains:
+
+  runtime:
+
+    description: >
+      Runtime authority governs sovereign execution behavior.
+
+    allowed:
+
+      - deterministic_execution
+      - admitted_runtime_mutation
+      - invariant_enforcement
+      - runtime_admission
+
+    forbidden:
+
+      - speculative_execution
+      - undeclared_surface_execution
+      - observer_relative_execution
+      - governance_runtime_override
+
+
+  replay:
+
+    description: >
+      Replay authority governs deterministic replay
+      reconstruction and replay verification.
+
+    allowed:
+
+      - deterministic_reconstruction
+      - transcript_validation
+      - receipt_verification
+      - replay_attestation
+
+    forbidden:
+
+      - replay_mutation
+      - runtime_execution_control
+      - speculative_replay
+      - governance_override
+
+
+  governance:
+
+    description: >
+      Governance authority governs replay-verifiable
+      declaration and constitutional observation.
+
+    allowed:
+
+      - replay_bound_observation
+      - invariant_evaluation
+      - constitutional_declaration
+      - admissibility_review
+
+    forbidden:
+
+      - runtime_execution_control
+      - replay_mutation
+      - speculative_authority_creation
+      - semantic_reinterpretation
+
+
+  enforcement:
+
+    description: >
+      Enforcement authority governs constitutional validation
+      and execution-boundary enforcement.
+
+    allowed:
+
+      - topology_validation
+      - implementation_legitimacy_validation
+      - replay_validation
+      - execution_surface_validation
+
+    forbidden:
+
+      - runtime_policy_mutation
+      - ontology_self_modification
+      - reflective_policy_generation
+      - speculative_runtime_binding
+
+
+  proof:
+
+    description: >
+      Proof authority governs replay receipts, attestation,
+      and deterministic execution witness generation.
+
+    allowed:
+
+      - receipt_generation
+      - replay_attestation
+      - seal_validation
+      - deterministic_proof_generation
+
+    forbidden:
+
+      - runtime_execution_control
+      - replay_override
+      - speculative_attestation
+      - observer_relative_proof
+
+
+# ============================================================
+# AUTHORITY SOURCES
+# ============================================================
+
+authority_sources:
+
+  canonical_sources:
+
+    - constitution
+    - epoch_evolution
+    - execution_surface_declaration
+    - replay_admissibility
+    - invariant_alignment
+
+  forbidden_sources:
+
+    - filesystem_presence
+    - implementation_existence
+    - runtime_activity
+    - speculative_interpretation
+    - observer_inference
+    - semantic_assumption
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  authority_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  authority_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Implementation legitimacy contributes to authority
+    admissibility but does not independently grant
+    constitutional authority.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Authority declaration requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  undeclared_surface_effect: HARD_FAIL
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - dynamic_authority_resolution
+    - reflection_based_execution
+    - speculative_runtime_execution
+
+  description: >
+    Authority declaration requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# MUTATION ALIGNMENT
+# ============================================================
+
+mutation_alignment:
+
+  mutation_authority:
+
+    admitted_surface:
+      - afritech.kernel.constitutional_gateway
+
+  forbidden:
+
+    - silent_mutation
+    - observer_relative_mutation
+    - undeclared_mutation
+    - speculative_mutation
+
+  description: >
+    Constitutional mutation authority is explicitly bounded
+    and gateway-constrained.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_resolution
+    - replay_safe_execution
+    - canonical_surface_identity
+    - invariant_preservation
+
+  replay_invalidators:
+
+    - replay_divergence
+    - speculative_replay
+    - dynamic_surface_aliasing
+    - observer_relative_execution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  runtime:
+
+    authority_violation_effect:
+      - runtime_rejection
+      - execution_block
+
+  replay:
+
+    authority_violation_effect:
+      - replay_invalid
+      - transcript_rejection
+      - receipt_non_admissible
+
+  governance:
+
+    authority_violation_effect:
+      - governance_declaration_invalid
+
+  enforcement:
+
+    authority_violation_effect:
+      - CI_failure
+      - enforcement_rejection
+
+  proof:
+
+    authority_violation_effect:
+      - proof_non_admissible
+      - attestation_invalid
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: AUTHORITY_RULE_1
+    rule: >
+      Constitutional authority must always be explicitly
+      declared and canonically resolvable.
+
+  - id: AUTHORITY_RULE_2
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently confer authority.
+
+  - id: AUTHORITY_RULE_3
+    rule: >
+      Governance authority is observational and declarative,
+      not operational.
+
+  - id: AUTHORITY_RULE_4
+    rule: >
+      Replay authority is verification authority,
+      not execution authority.
+
+  - id: AUTHORITY_RULE_5
+    rule: >
+      Runtime authority is sovereign execution authority
+      constrained by admissibility and invariants.
+
+  - id: AUTHORITY_RULE_6
+    rule: >
+      Authority declaration must remain:
+        - deterministic
+        - prefix-safe
+        - observer-independent
+        - non-reflective
+
+  - id: AUTHORITY_RULE_7
+    rule: >
+      Speculative doctrine must never independently create
+      constitutional authority.
+
+  - id: AUTHORITY_RULE_8
+    rule: >
+      Implementation legitimacy does not independently confer:
+        - runtime sovereignty
+        - replay authority
+        - governance authority
+        - proof authority
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.authority_validation
+
+  required_checks:
+
+    - canonical_identity_resolution
+    - deterministic_authority_resolution
+    - no_filesystem_authority_inference
+    - replay_legitimacy_alignment
+    - implementation_state_alignment
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional authority within AfriTech derives only
+    from:
+      - canonical declaration
+      - admissible execution surfaces
+      - deterministic replay legitimacy
+      - invariant alignment
+      - constitutionally bounded authority domains
+
+    Authority must never emerge implicitly from:
+      - filesystem structure
+      - execution success
+      - runtime activity
+      - speculative interpretation
+      - semantic inference
+
+    All authority resolution must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - constitutionally bounded
+
+===== afritech/constitution/canonical/concepts/closed_world.yaml =====
+schema: afritech.concept.closed_world.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of closed-world execution
+    semantics within AfriTech.
+
+    Closed-world semantics govern the constitutional boundary
+    of admissible execution, replay participation, runtime
+    admission, governance observation, proof generation,
+    and enforcement resolution.
+
+    Only explicitly declared and constitutionally admissible
+    execution surfaces may participate in:
+      - runtime execution
+      - replay verification
+      - governance evaluation
+      - proof generation
+      - enforcement operations
+
+    Undeclared execution participation is constitutionally
+    forbidden.
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_CLOSED_WORLD
+
+  canonical_name: closed_world
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - enforcement
+    - proof
+    - execution_surfaces
+
+  authoritative_sources:
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.path_ontology
+    - afritech.architecture.implementation_registry
+    - afritech.architecture.enforcement_matrix
+    - afritech.constitution.invariants_semantics
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Closed-world semantics require that all constitutional
+    execution participation derive exclusively from explicitly
+    declared, canonically identifiable, and admissible execution
+    surfaces.
+
+  closed_world_requires:
+
+    - canonical_surface_declaration
+    - deterministic_identity_resolution
+    - admissibility_alignment
+    - replay_legitimacy
+    - invariant_alignment
+    - execution_surface_registration
+
+  closed_world_forbidden_when:
+
+    - undeclared_surface_execution_exists
+    - implicit_surface_discovery_exists
+    - reflection_based_execution_exists
+    - speculative_runtime_execution_exists
+    - dynamic_execution_aliasing_exists
+    - observer_relative_resolution_exists
+
+
+# ============================================================
+# EXECUTION SURFACE DOMAINS
+# ============================================================
+
+execution_surfaces:
+
+  runtime:
+
+    description: >
+      Sovereign execution surfaces participating in admitted
+      runtime execution.
+
+    requires:
+
+      - declared_execution_surface
+      - runtime_admissibility
+      - invariant_alignment
+
+    forbidden:
+
+      - speculative_runtime_execution
+      - undeclared_runtime_surfaces
+      - dynamic_runtime_resolution
+      - filesystem_identity_execution
+
+
+  replay:
+
+    description: >
+      Deterministic replay verification surfaces.
+
+    requires:
+
+      - replay_safe_execution_surface
+      - canonical_module_identity
+      - deterministic_resolution
+
+    forbidden:
+
+      - replay_mutation
+      - speculative_replay_execution
+      - runtime_execution_override
+      - observer_relative_reconstruction
+
+
+  governance:
+
+    description: >
+      Replay-bound governance observation surfaces.
+
+    requires:
+
+      - replay_verifiable_observation
+      - canonical_identity_resolution
+      - admissibility_alignment
+
+    forbidden:
+
+      - governance_runtime_execution
+      - speculative_governance_authority
+      - semantic_reinterpretation
+      - replay_override
+
+
+  enforcement:
+
+    description: >
+      Constitutional validation and topology enforcement
+      surfaces.
+
+    requires:
+
+      - canonical_enforcement_identity
+      - deterministic_resolution
+      - implementation_legitimacy
+
+    forbidden:
+
+      - reflective_policy_loading
+      - ontology_self_modification
+      - dynamic_policy_generation
+      - speculative_execution_binding
+
+
+  proof:
+
+    description: >
+      Deterministic proof and replay receipt surfaces.
+
+    requires:
+
+      - replay_legitimacy
+      - deterministic_trace_alignment
+      - canonical_identity_resolution
+
+    forbidden:
+
+      - speculative_attestation
+      - replay_override
+      - observer_relative_proof
+      - undeclared_proof_surfaces
+
+
+# ============================================================
+# EXECUTION SURFACE DECLARATION
+# ============================================================
+
+surface_declaration:
+
+  authoritative_registry:
+    - afritech.architecture.execution_surfaces
+
+  declaration_requirements:
+
+    - canonical_module_identity
+    - implementation_legitimacy
+    - admissibility_alignment
+    - replay_alignment
+
+  forbidden:
+
+    - implicit_execution_surfaces
+    - reflection_discovered_surfaces
+    - filesystem_inferred_surfaces
+    - speculative_runtime_surfaces
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  runtime_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Closed-world participation requires constitutionally
+    admissible implementation legitimacy.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Closed-world execution requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_execution
+    - canonical_surface_identity
+    - invariant_preservation
+    - replay_safe_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - speculative_replay_execution
+    - observer_relative_execution
+    - dynamic_surface_aliasing
+
+
+# ============================================================
+# IMPORT TOPOLOGY ALIGNMENT
+# ============================================================
+
+import_topology_alignment:
+
+  enforcement_surface:
+    - afritech.ci.import_topology_enforcement
+
+  guarantees:
+
+    - boundary_safe_resolution
+    - deterministic_import_validation
+    - execution_surface_isolation
+    - replay_safe_imports
+
+  forbidden:
+
+    - speculative_runtime_imports
+    - undeclared_execution_imports
+    - filesystem_identity_imports
+    - dynamic_import_reflection
+
+
+# ============================================================
+# CLOSED-WORLD GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - deterministic_execution_topology
+  - replay_safe_execution_boundaries
+  - observer_independent_resolution
+  - execution_surface_isolation
+  - canonical_identity_resolution
+  - prefix_safe_matching
+  - admissibility_bounded_execution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  undeclared_surface_execution:
+    effect:
+      - runtime_rejection
+      - replay_invalid
+      - CI_failure
+
+  speculative_runtime_execution:
+    effect:
+      - runtime_rejection
+      - replay_non_admissible
+
+  filesystem_identity_resolution:
+    effect:
+      - enforcement_failure
+      - replay_invalid
+
+  dynamic_surface_aliasing:
+    effect:
+      - replay_divergence
+      - execution_non_determinism
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: CLOSED_WORLD_RULE_1
+    rule: >
+      All execution participation must derive exclusively from
+      explicitly declared constitutional execution surfaces.
+
+  - id: CLOSED_WORLD_RULE_2
+    rule: >
+      Undeclared execution surfaces are constitutionally
+      inadmissible.
+
+  - id: CLOSED_WORLD_RULE_3
+    rule: >
+      Reflection-based execution discovery is constitutionally
+      forbidden.
+
+  - id: CLOSED_WORLD_RULE_4
+    rule: >
+      Speculative doctrine must never participate in runtime
+      or replay execution.
+
+  - id: CLOSED_WORLD_RULE_5
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently confer execution legitimacy.
+
+  - id: CLOSED_WORLD_RULE_6
+    rule: >
+      Closed-world execution semantics must remain:
+        - deterministic
+        - prefix-safe
+        - observer-independent
+        - non-reflective
+
+  - id: CLOSED_WORLD_RULE_7
+    rule: >
+      Replay legitimacy requires closed-world execution
+      boundaries.
+
+  - id: CLOSED_WORLD_RULE_8
+    rule: >
+      Governance observation must remain replay-bound and
+      execution-isolated.
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.closed_world_validation
+
+  required_checks:
+
+    - declared_surface_validation
+    - canonical_identity_resolution
+    - deterministic_import_validation
+    - no_reflection_execution
+    - no_speculative_runtime_imports
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    AfriTech operates exclusively under closed-world
+    constitutional execution semantics.
+
+    Runtime execution, replay verification, governance
+    observation, proof generation, and enforcement operations
+    may only derive from:
+      - explicitly declared execution surfaces
+      - canonical module identities
+      - deterministic admissibility semantics
+      - replay-safe operational boundaries
+
+    No execution legitimacy may emerge from:
+      - implicit discovery
+      - filesystem structure
+      - speculative interpretation
+      - runtime observation
+      - semantic inference
+
+    Closed-world execution semantics are:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - constitutionally bounded
+
+===== afritech/constitution/canonical/concepts/deterministic_execution.yaml =====
+schema: afritech.concept.deterministic_execution.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of deterministic
+    execution semantics within AfriTech.
+
+    Deterministic execution governs the requirement that
+    constitutionally admissible execution produces replay-safe,
+    observer-independent, and reproducible outcomes under
+    equivalent constitutional conditions.
+
+    Deterministic execution is foundational to:
+      - replay legitimacy
+      - proof generation
+      - transcript admissibility
+      - invariant preservation
+      - runtime sovereignty
+      - governance verification
+      - enforcement reproducibility
+
+    Execution behavior must never depend on:
+      - observer identity
+      - non-declared execution surfaces
+      - speculative interpretation
+      - uncontrolled mutation
+      - ambiguous identity resolution
+      - runtime reflection
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_DETERMINISTIC_EXECUTION
+
+  canonical_name: deterministic_execution
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+    - transcript
+
+  authoritative_sources:
+    - afritech.constitution.invariants_semantics
+    - afritech.architecture.path_ontology
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.implementation_registry
+    - afritech.architecture.enforcement_matrix
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Deterministic execution is the constitutional requirement
+    that admissible execution produces equivalent replay-safe
+    outcomes under equivalent constitutional inputs,
+    declarations, execution surfaces, and invariant conditions.
+
+  deterministic_execution_requires:
+
+    - canonical_identity_resolution
+    - deterministic_import_resolution
+    - invariant_preservation
+    - replay_safe_execution
+    - admissible_execution_surfaces
+    - observer_independent_resolution
+    - controlled_mutation_boundaries
+
+  deterministic_execution_invalidators:
+
+    - observer_relative_execution
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+    - dynamic_surface_aliasing
+    - reflection_based_execution
+    - uncontrolled_mutation
+    - ambiguous_identity_resolution
+
+
+# ============================================================
+# DETERMINISM DOMAINS
+# ============================================================
+
+domains:
+
+  runtime:
+
+    description: >
+      Runtime determinism governs sovereign runtime execution
+      reproducibility.
+
+    requires:
+
+      - deterministic_runtime_admission
+      - invariant_preservation
+      - canonical_surface_resolution
+      - controlled_mutation
+
+    forbidden:
+
+      - speculative_runtime_execution
+      - undeclared_runtime_imports
+      - dynamic_execution_resolution
+      - observer_relative_execution
+
+
+  replay:
+
+    description: >
+      Replay determinism governs deterministic replay
+      reconstruction and replay equivalence.
+
+    requires:
+
+      - deterministic_trace_resolution
+      - replay_safe_execution
+      - canonical_module_identity
+      - invariant_preservation
+
+    forbidden:
+
+      - replay_mutation
+      - speculative_replay_execution
+      - replay_divergence
+      - observer_relative_reconstruction
+
+
+  governance:
+
+    description: >
+      Governance determinism governs replay-verifiable and
+      observer-independent governance evaluation.
+
+    requires:
+
+      - replay_bound_observation
+      - deterministic_resolution
+      - invariant_alignment
+
+    forbidden:
+
+      - semantic_reinterpretation
+      - governance_runtime_control
+      - speculative_governance_derivation
+      - replay_override
+
+
+  enforcement:
+
+    description: >
+      Enforcement determinism governs reproducible topology,
+      admissibility, and replay validation behavior.
+
+    requires:
+
+      - deterministic_validation
+      - canonical_identity_resolution
+      - implementation_legitimacy_alignment
+
+    forbidden:
+
+      - reflective_policy_generation
+      - dynamic_enforcement_mutation
+      - ontology_self_modification
+      - speculative_runtime_binding
+
+
+  proof:
+
+    description: >
+      Proof determinism governs reproducible replay receipts,
+      transcript validation, and attestation semantics.
+
+    requires:
+
+      - deterministic_trace_alignment
+      - replay_legitimacy
+      - canonical_identity_resolution
+
+    forbidden:
+
+      - speculative_attestation
+      - observer_relative_proof
+      - replay_override
+      - dynamic_proof_generation
+
+
+# ============================================================
+# EXECUTION INPUT DETERMINISM
+# ============================================================
+
+execution_inputs:
+
+  deterministic_inputs:
+
+    - canonical_module_identity
+    - invariant_state
+    - epoch_state
+    - implementation_legitimacy
+    - replay_surface_identity
+    - declared_execution_surfaces
+
+  forbidden_inputs:
+
+    - observer_identity
+    - filesystem_ordering
+    - runtime_discovery
+    - speculative_context
+    - reflection_discovery
+    - uncontrolled_environment_state
+
+
+# ============================================================
+# MUTATION ALIGNMENT
+# ============================================================
+
+mutation_alignment:
+
+  mutation_requirements:
+
+    - declared_mutation_gateway
+    - replay_traceability
+    - deterministic_mutation_ordering
+    - invariant_preservation
+
+  authorized_mutation_surface:
+
+    - afritech.kernel.constitutional_gateway
+
+  forbidden:
+
+    - silent_mutation
+    - observer_relative_mutation
+    - undeclared_mutation
+    - speculative_mutation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  deterministic_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Deterministic execution requires constitutionally
+    admissible implementation legitimacy.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Deterministic execution requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+    - replay_safe_import_topology
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+    - dynamic_surface_aliasing
+
+  description: >
+    Deterministic execution requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_execution
+    - invariant_preservation
+    - canonical_surface_identity
+    - replay_safe_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - observer_relative_execution
+    - speculative_replay_execution
+    - dynamic_execution_aliasing
+
+
+# ============================================================
+# DETERMINISM GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - replay_safe_execution
+  - observer_independent_resolution
+  - deterministic_topology_validation
+  - deterministic_receipt_generation
+  - deterministic_replay_reconstruction
+  - invariant_preserving_execution
+  - canonical_identity_resolution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+    effect:
+      - replay_invalid
+      - transcript_non_admissible
+      - receipt_rejection
+
+  observer_relative_execution:
+    effect:
+      - determinism_failure
+      - replay_invalid
+
+  undeclared_execution_surface:
+    effect:
+      - runtime_rejection
+      - CI_failure
+
+  speculative_runtime_execution:
+    effect:
+      - runtime_non_admissible
+      - replay_invalid
+
+  uncontrolled_mutation:
+    effect:
+      - invariant_violation
+      - replay_divergence
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: DETERMINISM_RULE_1
+    rule: >
+      Equivalent constitutional inputs must produce
+      replay-equivalent execution outcomes.
+
+  - id: DETERMINISM_RULE_2
+    rule: >
+      Deterministic execution requires canonical module-path
+      identity resolution.
+
+  - id: DETERMINISM_RULE_3
+    rule: >
+      Observer-relative execution is constitutionally forbidden.
+
+  - id: DETERMINISM_RULE_4
+    rule: >
+      Reflection-based execution discovery is constitutionally
+      forbidden.
+
+  - id: DETERMINISM_RULE_5
+    rule: >
+      Speculative doctrine must never participate in runtime
+      or replay execution.
+
+  - id: DETERMINISM_RULE_6
+    rule: >
+      Deterministic execution must remain:
+        - replay-safe
+        - observer-independent
+        - prefix-safe
+        - non-reflective
+
+  - id: DETERMINISM_RULE_7
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently influence execution semantics.
+
+  - id: DETERMINISM_RULE_8
+    rule: >
+      Deterministic mutation requires constitutionally bounded
+      mutation gateways and replay traceability.
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.determinism_validation
+
+  required_checks:
+
+    - deterministic_import_resolution
+    - canonical_identity_resolution
+    - replay_safe_execution
+    - invariant_preservation
+    - no_reflection_execution
+    - no_speculative_runtime_execution
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    AfriTech execution semantics are constitutionally
+    deterministic.
+
+    Runtime execution, replay reconstruction, governance
+    evaluation, proof generation, and enforcement validation
+    must produce replay-safe and observer-independent outcomes
+    under equivalent constitutional conditions.
+
+    Deterministic execution derives from:
+      - canonical identity resolution
+      - invariant preservation
+      - replay-safe execution boundaries
+      - admissible execution surfaces
+      - controlled mutation semantics
+
+    Deterministic execution must never depend on:
+      - observer identity
+      - filesystem structure
+      - speculative interpretation
+      - runtime reflection
+      - undeclared execution surfaces
+      - uncontrolled mutation
+
+===== afritech/constitution/canonical/concepts/mutation_traceability.yaml =====
+schema: afritech.concept.mutation_traceability.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of mutation traceability
+    within AfriTech.
+
+    Mutation traceability governs the constitutional requirement
+    that all admissible state mutation be:
+      - explicitly declared
+      - replay-traceable
+      - deterministically ordered
+      - constitutionally bounded
+      - invariant-preserving
+      - observer-independent
+
+    Mutation semantics are foundational to:
+      - replay legitimacy
+      - deterministic execution
+      - runtime sovereignty
+      - proof admissibility
+      - transcript reconstruction
+      - invariant preservation
+
+    No mutation may constitutionally occur through:
+      - undeclared mutation surfaces
+      - speculative mutation
+      - observer-relative mutation
+      - silent mutation
+      - uncontrolled runtime mutation
+      - reflection-based mutation
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_MUTATION_TRACEABILITY
+
+  canonical_name: mutation_traceability
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - proof
+    - enforcement
+    - transcript
+    - state_management
+
+  authoritative_sources:
+    - afritech.constitution.invariants_semantics
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.path_ontology
+    - afritech.architecture.implementation_registry
+    - afritech.architecture.enforcement_matrix
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Mutation traceability is the constitutional requirement
+    that all admissible mutation be explicitly attributable,
+    deterministically ordered, replay-traceable, and
+    constitutionally bounded.
+
+  mutation_traceability_requires:
+
+    - canonical_mutation_identity
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - invariant_preservation
+    - admissible_mutation_surface
+    - observer_independent_resolution
+    - mutation_gateway_authorization
+
+  mutation_traceability_invalidators:
+
+    - silent_mutation
+    - undeclared_mutation_surface
+    - speculative_mutation
+    - observer_relative_mutation
+    - uncontrolled_runtime_mutation
+    - reflection_based_mutation
+    - ambiguous_identity_resolution
+
+
+# ============================================================
+# MUTATION DOMAINS
+# ============================================================
+
+domains:
+
+  runtime:
+
+    description: >
+      Runtime mutation governs constitutionally admissible
+      sovereign state evolution.
+
+    requires:
+
+      - declared_mutation_gateway
+      - replay_traceability
+      - deterministic_ordering
+      - invariant_preservation
+
+    forbidden:
+
+      - silent_runtime_mutation
+      - speculative_runtime_mutation
+      - undeclared_mutation_surfaces
+      - observer_relative_mutation
+
+
+  replay:
+
+    description: >
+      Replay mutation semantics govern deterministic replay
+      reconstruction and mutation equivalence validation.
+
+    requires:
+
+      - deterministic_mutation_reconstruction
+      - canonical_mutation_identity
+      - replay_safe_ordering
+      - transcript_alignment
+
+    forbidden:
+
+      - replay_mutation_override
+      - speculative_replay_mutation
+      - replay_divergence
+      - observer_relative_reconstruction
+
+
+  proof:
+
+    description: >
+      Proof mutation semantics govern deterministic replay
+      receipts, mutation attestation, and transcript witness
+      generation.
+
+    requires:
+
+      - deterministic_mutation_trace
+      - replay_legitimacy
+      - invariant_alignment
+
+    forbidden:
+
+      - speculative_attestation
+      - observer_relative_proof
+      - replay_override
+      - undocumented_mutation_paths
+
+
+  enforcement:
+
+    description: >
+      Enforcement mutation semantics govern mutation-boundary
+      validation and mutation topology enforcement.
+
+    requires:
+
+      - deterministic_validation
+      - canonical_mutation_identity
+      - mutation_legitimacy_alignment
+
+    forbidden:
+
+      - reflective_policy_mutation
+      - ontology_self_modification
+      - speculative_runtime_binding
+      - uncontrolled_mutation_generation
+
+
+# ============================================================
+# MUTATION AUTHORITY
+# ============================================================
+
+mutation_authority:
+
+  canonical_mutation_gateway:
+
+    - afritech.kernel.constitutional_gateway
+
+  mutation_requirements:
+
+    - explicit_mutation_declaration
+    - replay_traceability
+    - invariant_preservation
+    - deterministic_ordering
+
+  forbidden:
+
+    - implicit_mutation
+    - undeclared_mutation_authority
+    - speculative_mutation_authority
+    - observer_relative_mutation_authority
+
+
+# ============================================================
+# MUTATION TRACE REQUIREMENTS
+# ============================================================
+
+trace_requirements:
+
+  required_trace_fields:
+
+    - mutation_identity
+    - execution_surface
+    - deterministic_order
+    - replay_trace_reference
+    - invariant_alignment_state
+    - epoch_reference
+
+  forbidden_trace_properties:
+
+    - observer_relative_state
+    - speculative_context
+    - undocumented_mutation_origin
+    - filesystem_identity_resolution
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  mutation_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Mutation participation requires constitutionally
+    admissible implementation legitimacy.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Mutation traceability requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_mutation_surfaces
+    - deterministic_mutation_resolution
+    - replay_safe_mutation_boundaries
+
+  forbidden:
+
+    - implicit_mutation_discovery
+    - reflection_based_mutation
+    - speculative_runtime_mutation
+    - dynamic_mutation_aliasing
+
+  description: >
+    Mutation traceability requires closed-world mutation
+    semantics.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - canonical_mutation_identity
+    - invariant_preservation
+
+  replay_invalidators:
+
+    - replay_divergence
+    - observer_relative_mutation
+    - speculative_replay_mutation
+    - undocumented_mutation_path
+
+
+# ============================================================
+# MUTATION GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - replay_traceable_mutation
+  - deterministic_mutation_ordering
+  - invariant_preserving_mutation
+  - observer_independent_mutation
+  - canonical_mutation_identity
+  - replay_safe_state_evolution
+  - constitutionally_bounded_mutation
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  silent_mutation:
+    effect:
+      - replay_invalid
+      - invariant_violation
+      - transcript_non_admissible
+
+  undeclared_mutation_surface:
+    effect:
+      - runtime_rejection
+      - CI_failure
+
+  speculative_runtime_mutation:
+    effect:
+      - replay_invalid
+      - runtime_non_admissible
+
+  replay_divergence:
+    effect:
+      - replay_rejection
+      - receipt_non_admissible
+
+  uncontrolled_mutation:
+    effect:
+      - determinism_failure
+      - invariant_violation
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: MUTATION_RULE_1
+    rule: >
+      All admissible mutation must be replay-traceable and
+      deterministically ordered.
+
+  - id: MUTATION_RULE_2
+    rule: >
+      Mutation authority must derive exclusively from declared
+      constitutional mutation gateways.
+
+  - id: MUTATION_RULE_3
+    rule: >
+      Silent mutation is constitutionally forbidden.
+
+  - id: MUTATION_RULE_4
+    rule: >
+      Reflection-based mutation discovery is constitutionally
+      forbidden.
+
+  - id: MUTATION_RULE_5
+    rule: >
+      Speculative mutation must never participate in runtime
+      or replay execution.
+
+  - id: MUTATION_RULE_6
+    rule: >
+      Mutation traceability must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - non-reflective
+
+  - id: MUTATION_RULE_7
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently confer mutation authority.
+
+  - id: MUTATION_RULE_8
+    rule: >
+      Mutation legitimacy requires:
+        - canonical identity resolution
+        - replay traceability
+        - invariant preservation
+        - admissible mutation boundaries
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.mutation_validation
+
+  required_checks:
+
+    - canonical_mutation_identity
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - invariant_preservation
+    - no_silent_mutation
+    - no_reflection_mutation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    AfriTech mutation semantics are constitutionally
+    replay-traceable, deterministic, and bounded.
+
+    All admissible mutation must derive from:
+      - canonical mutation identity
+      - declared mutation gateways
+      - deterministic ordering
+      - replay-safe execution boundaries
+      - invariant-preserving state evolution
+
+    No mutation legitimacy may emerge from:
+      - implicit mutation
+      - filesystem structure
+      - speculative interpretation
+      - observer-relative behavior
+      - runtime reflection
+      - undeclared mutation surfaces
+
+    Mutation traceability is foundational to:
+      - replay legitimacy
+      - deterministic execution
+      - transcript admissibility
+      - proof validity
+      - runtime sovereignty
+
+===== afritech/constitution/canonical/concepts/replay_admissibility.yaml =====
+schema: afritech.concept.replay_admissibility.v1
+
+version: 1
+
+metadata:
+
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  concept_class: CANONICAL_CONCEPT
+
+  description: >
+    Canonical constitutional definition of replay admissibility
+    within AfriTech.
+
+    Replay admissibility governs whether an execution,
+    transcript, mutation sequence, replay receipt,
+    execution trace, or runtime transition may be
+    constitutionally reconstructed under deterministic,
+    replay-safe, and observer-independent constraints.
+
+    Replay admissibility is foundational to:
+      - deterministic replay
+      - proof admissibility
+      - transcript validation
+      - runtime sovereignty
+      - invariant preservation
+      - constitutional attestation
+
+    Replay admissibility must never depend on:
+      - observer-relative interpretation
+      - probabilistic reconstruction
+      - partial replay semantics
+      - speculative execution
+      - ambiguous identity resolution
+      - undeclared execution surfaces
+
+
+# ============================================================
+# CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+
+  id: CONCEPT_REPLAY_ADMISSIBILITY
+
+  canonical_name: replay_admissibility
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - proof
+    - transcript
+    - enforcement
+    - admission
+
+  authoritative_sources:
+
+    - afritech.constitution.INVARIANTS:I5_REPLAY_REQUIRED
+    - afritech.constitution.invariants_semantics:I4_DETERMINISTIC_EXECUTION
+    - afritech.epoch.epoch_semantics:replay_admissibility
+    - afritech.architecture.path_ontology
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.implementation_registry
+    - afritech.architecture.enforcement_matrix
+
+
+# ============================================================
+# CORE DEFINITION
+# ============================================================
+
+definition:
+
+  canonical_statement: >
+    Replay admissibility is the constitutional determination
+    that an execution may be deterministically reconstructed
+    under equivalent constitutional conditions while preserving:
+      - invariant alignment
+      - replay equivalence
+      - canonical identity resolution
+      - observer independence
+      - execution topology integrity
+
+  replay_admissibility_requires:
+
+    - deterministic_execution
+    - canonical_module_identity
+    - replay_safe_execution_surfaces
+    - invariant_preservation
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - admissible_execution_topology
+
+  replay_admissibility_invalidators:
+
+    - probabilistic_replay
+    - partial_reconstruction
+    - observer_dependent_replay
+    - replay_divergence
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+    - dynamic_surface_aliasing
+    - uncontrolled_mutation
+
+
+# ============================================================
+# REPLAY DOMAINS
+# ============================================================
+
+domains:
+
+  runtime:
+
+    description: >
+      Runtime replay admissibility governs whether sovereign
+      runtime execution may constitutionally participate in
+      deterministic replay reconstruction.
+
+    requires:
+
+      - admissible_execution_surfaces
+      - deterministic_runtime_execution
+      - invariant_preservation
+      - replay_safe_mutation_boundaries
+
+    forbidden:
+
+      - speculative_runtime_execution
+      - undeclared_runtime_surfaces
+      - observer_relative_execution
+      - uncontrolled_runtime_mutation
+
+
+  replay:
+
+    description: >
+      Replay replay-admissibility governs deterministic replay
+      reconstruction and transcript equivalence.
+
+    requires:
+
+      - deterministic_trace_resolution
+      - canonical_surface_identity
+      - replay_safe_execution
+      - transcript_alignment
+
+    forbidden:
+
+      - probabilistic_reconstruction
+      - replay_override
+      - replay_divergence
+      - observer_relative_reconstruction
+
+
+  proof:
+
+    description: >
+      Proof replay-admissibility governs replay receipts,
+      attestation validity, and transcript witness generation.
+
+    requires:
+
+      - deterministic_receipt_generation
+      - replay_legitimacy
+      - canonical_identity_resolution
+
+    forbidden:
+
+      - speculative_attestation
+      - observer_relative_proof
+      - undocumented_execution_paths
+      - replay_override
+
+
+  enforcement:
+
+    description: >
+      Enforcement replay-admissibility governs replay validation,
+      execution-topology enforcement, and transcript integrity.
+
+    requires:
+
+      - deterministic_validation
+      - canonical_identity_resolution
+      - implementation_legitimacy_alignment
+
+    forbidden:
+
+      - reflective_policy_loading
+      - ontology_self_modification
+      - speculative_runtime_binding
+      - filesystem_identity_resolution
+
+
+# ============================================================
+# ENFORCEMENT POINTS
+# ============================================================
+
+enforcement_points:
+
+  runtime:
+
+    - afritech.runtime.replay
+    - afritech.runtime.admission
+
+  proof:
+
+    - afritech.proof.constitutional_receipt
+    - afritech.proof.replay_attestation
+
+  replay:
+
+    - afritech.replay.validation
+    - afritech.trace.trace_reconstructor
+
+  enforcement:
+
+    - afritech.ci.replay_validation
+    - afritech.ci.import_topology_enforcement
+
+
+# ============================================================
+# WITNESS REQUIREMENTS
+# ============================================================
+
+witness_requirements:
+
+  required_witnesses:
+
+    - receipt_hash
+    - replay_hash
+    - execution_trace_hash
+    - transcript_hash
+    - mutation_trace_hash
+
+  witness_properties:
+
+    deterministic: true
+    replay_safe: true
+    observer_independent: true
+    canonically_resolved: true
+
+  forbidden_witness_properties:
+
+    - probabilistic_resolution
+    - observer_relative_state
+    - undocumented_execution_origin
+    - speculative_trace_generation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Replay admissibility requires constitutionally admissible
+    implementation legitimacy.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Replay admissibility requires canonical module-path
+    identity resolution.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+    - replay_safe_import_topology
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+    - dynamic_surface_aliasing
+
+  description: >
+    Replay admissibility requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# DETERMINISM ALIGNMENT
+# ============================================================
+
+determinism_alignment:
+
+  required:
+
+    - deterministic_execution
+    - deterministic_mutation_ordering
+    - deterministic_receipt_generation
+    - deterministic_trace_resolution
+
+  forbidden:
+
+    - observer_relative_execution
+    - replay_divergence
+    - probabilistic_reconstruction
+    - uncontrolled_mutation
+
+  description: >
+    Replay admissibility requires deterministic execution
+    semantics.
+
+
+# ============================================================
+# REPLAY GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - deterministic_reconstruction
+  - replay_safe_execution
+  - observer_independent_replay
+  - invariant_preserving_replay
+  - canonical_identity_resolution
+  - transcript_equivalence
+  - deterministic_receipt_generation
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+    effect:
+      - replay_invalid
+      - transcript_non_admissible
+      - receipt_rejection
+
+  probabilistic_replay:
+    effect:
+      - replay_non_admissible
+      - proof_invalid
+
+  observer_dependent_replay:
+    effect:
+      - replay_invalid
+      - determinism_failure
+
+  undeclared_execution_surface:
+    effect:
+      - runtime_rejection
+      - replay_rejection
+      - CI_failure
+
+  uncontrolled_mutation:
+    effect:
+      - invariant_violation
+      - replay_invalid
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: REPLAY_ADMISSIBILITY_RULE_1
+    rule: >
+      Replay admissibility requires deterministic replay
+      reconstruction under equivalent constitutional conditions.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_2
+    rule: >
+      Replay admissibility requires canonical module-path
+      identity resolution.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_3
+    rule: >
+      Probabilistic replay is constitutionally forbidden.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_4
+    rule: >
+      Partial replay reconstruction is constitutionally
+      inadmissible.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_5
+    rule: >
+      Observer-dependent replay is constitutionally forbidden.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_6
+    rule: >
+      Replay admissibility must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - non-reflective
+
+  - id: REPLAY_ADMISSIBILITY_RULE_7
+    rule: >
+      Filesystem artifacts are physical witnesses only and
+      must never independently confer replay legitimacy.
+
+  - id: REPLAY_ADMISSIBILITY_RULE_8
+    rule: >
+      Replay admissibility requires:
+        - invariant preservation
+        - replay traceability
+        - admissible execution topology
+        - deterministic mutation ordering
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.replay_validation
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.determinism_validation
+
+  required_checks:
+
+    - deterministic_reconstruction
+    - canonical_identity_resolution
+    - replay_traceability
+    - invariant_preservation
+    - no_probabilistic_replay
+    - no_partial_reconstruction
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Replay admissibility is the constitutional boundary
+    governing lawful deterministic reconstruction within
+    AfriTech.
+
+    Replay-admissible execution must derive from:
+      - deterministic execution semantics
+      - replay-safe mutation ordering
+      - canonical identity resolution
+      - admissible execution topology
+      - invariant-preserving execution boundaries
+
+    No replay legitimacy may emerge from:
+      - probabilistic reconstruction
+      - partial replay semantics
+      - observer-relative interpretation
+      - speculative execution
+      - undeclared execution surfaces
+      - uncontrolled mutation
+
+    Replay admissibility is foundational to:
+      - replay legitimacy
+      - proof admissibility
+      - transcript validation
+      - deterministic execution
+      - runtime sovereignty
+

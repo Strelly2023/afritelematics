@@ -3,7 +3,7 @@ failure_taxonomy:
   version: v0.2
   classification: deterministic_failure_space
 
-  governing_epoch: EPOCH-0008
+  governing_epoch: EPOCH_0008
 
   doctrine: OBSERVATIONAL_ADMISSIBILITY_GOVERNANCE
 
@@ -182,7 +182,7 @@ failure_taxonomy:
 
       constitutional_basis:
         - ADR-0011
-        - EPOCH-0008
+        - EPOCH_0008
 
 # =====================================================
 # HANDLING MODES

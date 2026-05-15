@@ -9,7 +9,7 @@ Source:
   afritech/constitution/compiled/invariants_ir.json
 
 Generation time:
-  2026-05-10T17:03:35.738056Z
+  2026-05-15T08:23:33.440794Z
 
 Source hash:
   6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0

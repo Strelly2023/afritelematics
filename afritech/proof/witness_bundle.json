@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "canonical_identity": "afritech.proof.witness.witness_bundle",
+  "implementation_state": "PARTIAL",
+  "references": [
+    {
+      "canonical_identity": "afritech.proof.witness.execution_witness",
+      "witness_hash": "8ce77438a0998c2452e4cd4b5f741f241e8505720dc6b62e199fa91617066369",
+      "witness_type": "EXECUTION"
+    },
+    {
+      "canonical_identity": "afritech.proof.witness.mutation_witness",
+      "witness_hash": "71e33d9f79d943d023022e3afa35dbe979b8f20d2a3dde347ca645535202bd28",
+      "witness_type": "MUTATION"
+    },
+    {
+      "canonical_identity": "afritech.proof.witness.replay_witness",
+      "witness_hash": "c2fbdc69959ee36134e03a328f69736724466fbfd2579e455b2e0a9764f14461",
+      "witness_type": "REPLAY"
+    },
+    {
+      "canonical_identity": "afritech.proof.witness.transcript_witness",
+      "witness_hash": "a2da4396a7be4eb20442c41f326551533da903efae098e4a1c0dd5fd2cacdd79",
+      "witness_type": "TRANSCRIPT"
+    }
+  ],
+  "replay_hash": "690ef1d1f364da702686cd8c03b663b0e6203fcb375f120f25f566a561f23d8e",
+  "execution_trace_hash": "690ef1d1f364da702686cd8c03b663b0e6203fcb375f120f25f566a561f23d8e",
+  "deterministic": true,
+  "replay_safe": true,
+  "closed_world_aligned": true,
+  "observer_independent": true,
+  "bundle_hash": "ccd8fec7c84ab23cd7a6a48e2ea3131f21ad1593fb132c38f5232d422a5cab8d"
+}

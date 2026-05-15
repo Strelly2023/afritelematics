@@ -1,0 +1,597 @@
+schema: afritech.identity_rules.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+
+  status: ACTIVE
+
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_IDENTITY_RULES
+
+  description: >
+    Canonical identity ontology governing deterministic
+    identity resolution, replay-safe module identity,
+    ontology-safe canonical naming, closed-world execution
+    identity semantics, and constitutional identity
+    admissibility within AfriTech.
+
+    Identity legitimacy derives exclusively from:
+      - canonical module-path ontology
+      - deterministic identity resolution
+      - replay-safe semantics
+      - invariant-preserving execution
+      - closed-world execution semantics
+
+    Identity legitimacy must never derive from:
+      - filesystem structure
+      - symbolic shortcuts
+      - runtime reflection
+      - extension-based naming
+      - observer-relative interpretation
+
+
+# ============================================================
+# CANONICAL IDENTITY MODEL
+# ============================================================
+
+canonical_identity:
+
+  canonical_identity_form:
+    module_path
+
+  canonical_separator:
+    "."
+
+  root_namespace:
+    afritech
+
+  deterministic_resolution:
+    true
+
+  replay_safe_resolution:
+    true
+
+  observer_independent:
+    true
+
+  ontology_safe:
+    true
+
+  canonical_examples:
+
+    - afritech.runtime.activation
+    - afritech.runtime.admission
+    - afritech.proof.constitutional_receipt
+    - afritech.proof.witness.replay_witness
+    - afritech.trace.trace_reconstructor
+    - afritech.ci.identity_validator
+
+  description: >
+    Canonical constitutional identity must resolve
+    exclusively through deterministic module-path ontology.
+
+
+# ============================================================
+# FORBIDDEN IDENTITY FORMS
+# ============================================================
+
+forbidden_identity_forms:
+
+  # ----------------------------------------------------------
+  # FILESYSTEM IDENTITY
+  # ----------------------------------------------------------
+
+  filesystem_identity:
+
+    forbidden:
+      true
+
+    severity:
+      CRITICAL
+
+    examples:
+
+      - afritech/proof/constitutional_receipt.py
+      - afritech/runtime/admission.py
+      - ./runtime/replay.py
+      - ../proof/witness.py
+
+    reason: >
+      Filesystem structure must never independently define
+      constitutional identity.
+
+    effects:
+
+      - replay_invalid
+      - ontology_violation
+      - identity_rejection
+      - CI_failure
+
+    forbidden_operations:
+
+      - runtime_binding
+      - replay_binding
+      - proof_binding
+      - constitutional_attestation
+
+
+  # ----------------------------------------------------------
+  # SYMBOLIC RUNTIME IDENTITY
+  # ----------------------------------------------------------
+
+  symbolic_runtime_identity:
+
+    forbidden:
+      true
+
+    severity:
+      CRITICAL
+
+    examples:
+
+      - runtime
+      - replay
+      - receipt
+      - witness
+      - engine
+      - activation_surface
+      - current_runtime
+      - active_receipt
+
+    reason: >
+      Symbolic runtime identities are ambiguous and violate
+      deterministic ontology resolution.
+
+    effects:
+
+      - deterministic_failure
+      - replay_invalid
+      - identity_ambiguity
+      - ontology_violation
+
+    forbidden_operations:
+
+      - runtime_resolution
+      - replay_resolution
+      - witness_binding
+      - proof_resolution
+
+
+  # ----------------------------------------------------------
+  # REFLECTION IDENTITY
+  # ----------------------------------------------------------
+
+  reflection_identity:
+
+    forbidden:
+      true
+
+    severity:
+      CRITICAL
+
+    examples:
+
+      - getattr(runtime, name)
+      - __import__(module_name)
+      - dynamic_import(name)
+      - eval(module_name)
+      - exec(identity_code)
+
+    reason: >
+      Reflection-based identity resolution violates:
+        - deterministic execution
+        - replay safety
+        - closed-world semantics
+        - observer-independent evaluation
+
+    effects:
+
+      - replay_invalid
+      - execution_refusal
+      - closed_world_violation
+      - deterministic_failure
+
+    forbidden_operations:
+
+      - runtime_discovery
+      - replay_discovery
+      - dynamic_binding
+      - speculative_resolution
+
+
+  # ----------------------------------------------------------
+  # EXTENSION-BASED IDENTITY
+  # ----------------------------------------------------------
+
+  extension_based_identity:
+
+    forbidden:
+      true
+
+    severity:
+      HIGH
+
+    examples:
+
+      - receipt.py
+      - witness.yaml
+      - runtime.json
+      - replay.yml
+
+    reason: >
+      File extensions are implementation artifacts and must
+      never independently define constitutional identity.
+
+    effects:
+
+      - ontology_violation
+      - replay_ambiguity
+      - identity_rejection
+
+    forbidden_operations:
+
+      - runtime_binding
+      - proof_binding
+      - replay_binding
+
+
+# ============================================================
+# ALLOWED IDENTITY FORMS
+# ============================================================
+
+allowed_identity_forms:
+
+  canonical_module_path:
+
+    allowed:
+      true
+
+    deterministic:
+      true
+
+    replay_safe:
+      true
+
+    closed_world_aligned:
+      true
+
+    observer_independent:
+      true
+
+    examples:
+
+      - afritech.proof.constitutional_receipt
+      - afritech.runtime.activation
+      - afritech.ci.witness_validator
+
+    description: >
+      Canonical module-path ontology identity.
+
+
+# ============================================================
+# IDENTITY RESOLUTION
+# ============================================================
+
+identity_resolution:
+
+  deterministic_resolution:
+    required
+
+  replay_safe_resolution:
+    required
+
+  observer_independent:
+    required
+
+  ontology_safe_resolution:
+    required
+
+  closed_world_alignment:
+    required
+
+  resolution_strategy:
+
+    - canonical_module_path_only
+    - explicit_registration_only
+    - deterministic_ordering
+    - invariant_preserving_resolution
+
+  forbidden_resolution_modes:
+
+    - filesystem_discovery
+    - runtime_reflection
+    - symbolic_resolution
+    - extension_resolution
+    - probabilistic_resolution
+    - observer_relative_resolution
+
+  guarantees:
+
+    - deterministic_identity_resolution
+    - replay_safe_binding
+    - invariant_preserving_resolution
+    - ontology_safe_execution
+
+  description: >
+    Identity resolution must remain deterministic,
+    replay-safe, and closed-world aligned.
+
+
+# ============================================================
+# IDENTITY CATEGORIES
+# ============================================================
+
+identity_categories:
+
+  RUNTIME:
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    examples:
+
+      - afritech.runtime.activation
+      - afritech.runtime.admission
+
+
+  PROOF:
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    examples:
+
+      - afritech.proof.constitutional_receipt
+      - afritech.proof.witness.replay_witness
+
+
+  WITNESS:
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    examples:
+
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+
+
+  TRACE:
+
+    replay_significance:
+      CRITICAL
+
+    deterministic_required:
+      true
+
+    examples:
+
+      - afritech.trace.trace_reconstructor
+
+
+  CI:
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    examples:
+
+      - afritech.ci.identity_validator
+      - afritech.ci.witness_validator
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_identity_resolution
+    - replay_safe_binding
+    - invariant_preservation
+    - canonical_module_path_resolution
+
+  replay_invalidators:
+
+    - filesystem_identity
+    - symbolic_runtime_identity
+    - reflection_identity
+    - extension_based_identity
+    - probabilistic_resolution
+
+  replay_guarantees:
+
+    - deterministic_reconstruction
+    - ontology_safe_resolution
+    - replay_safe_execution
+
+  description: >
+    Replay admissibility requires deterministic ontology-safe
+    identity resolution.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - explicit_identity_registration
+    - deterministic_resolution
+    - replay_safe_binding
+    - invariant_preserving_resolution
+
+  forbidden:
+
+    - implicit_runtime_discovery
+    - reflection_based_resolution
+    - filesystem_scanning
+    - dynamic_runtime_aliasing
+
+  description: >
+    Closed-world execution semantics require explicit
+    deterministic identity resolution.
+
+
+# ============================================================
+# ENFORCEMENT
+# ============================================================
+
+enforcement:
+
+  enforced_by:
+
+    - afritech.ci.identity_validator
+    - afritech.ci.alias_validator
+    - afritech.ci.import_topology_validator
+    - afritech.ci.execution_surface_validation
+
+  required_checks:
+
+    - canonical_module_path_validation
+    - no_filesystem_identity
+    - no_symbolic_runtime_identity
+    - no_reflection_identity
+    - no_extension_based_identity
+    - deterministic_resolution_validation
+
+  failure_mode:
+    FAIL_FAST
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_identity_resolution
+    - replay_safe_identity_binding
+    - observer_independent_resolution
+    - ontology_safe_execution
+    - invariant_preserving_resolution
+
+  forbid:
+
+    - filesystem_authority_inference
+    - symbolic_runtime_authority
+    - reflection_based_execution
+    - extension_based_resolution
+    - observer_relative_resolution
+
+  enforcement:
+
+    violation_action:
+      FAIL_FAST
+
+    replay_violation_action:
+      REPLAY_INVALID
+
+    runtime_violation_action:
+      EXECUTION_REFUSAL
+
+
+# ============================================================
+# GLOBAL RULES
+# ============================================================
+
+rules:
+
+  - id: IDENTITY_RULE_1
+
+    rule: >
+      Canonical identity must resolve exclusively through
+      deterministic module-path ontology semantics.
+
+
+  - id: IDENTITY_RULE_2
+
+    rule: >
+      Filesystem paths must never independently define
+      constitutional identity.
+
+
+  - id: IDENTITY_RULE_3
+
+    rule: >
+      Symbolic runtime identities are constitutionally
+      forbidden.
+
+
+  - id: IDENTITY_RULE_4
+
+    rule: >
+      Reflection-based identity resolution is
+      constitutionally forbidden.
+
+
+  - id: IDENTITY_RULE_5
+
+    rule: >
+      Extension-based naming must never independently define
+      constitutional identity.
+
+
+  - id: IDENTITY_RULE_6
+
+    rule: >
+      Replay admissibility requires deterministic
+      ontology-safe identity resolution.
+
+
+  - id: IDENTITY_RULE_7
+
+    rule: >
+      Closed-world execution semantics require explicit
+      deterministic identity registration.
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional identity derives exclusively from:
+      - canonical module-path ontology
+      - deterministic resolution semantics
+      - replay-safe identity binding
+      - invariant-preserving execution
+      - closed-world execution semantics
+
+    Constitutional identity must never derive from:
+      - filesystem structure
+      - symbolic runtime shortcuts
+      - reflection-based execution
+      - extension-based naming
+      - observer-relative interpretation
+
+    Identity evaluation must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - ontology-safe
+      - constitutionally bounded

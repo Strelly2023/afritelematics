@@ -1,0 +1,602 @@
+schema: afritech.implementation_states.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+
+  status: ACTIVE
+
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_IMPLEMENTATION_STATES
+
+  description: >
+    Canonical implementation-state registry governing
+    deterministic implementation legitimacy,
+    replay admissibility, proof admissibility,
+    runtime admissibility, and closed-world execution
+    semantics within AfriTech.
+
+    Implementation states define:
+      - operational admissibility
+      - replay participation
+      - proof participation
+      - runtime execution legitimacy
+      - deterministic execution guarantees
+      - closed-world execution guarantees
+      - ontology-safe implementation semantics
+
+    Implementation states are constitutional metadata only.
+
+    Implementation-state legitimacy does NOT independently
+    confer:
+      - governance sovereignty
+      - replay authority
+      - unrestricted runtime authority
+      - proof supremacy
+
+    Filesystem paths must never independently define
+    implementation legitimacy.
+
+
+# ============================================================
+# IMPLEMENTATION STATES
+# ============================================================
+
+states:
+
+  # ----------------------------------------------------------
+  # PLANNED
+  # ----------------------------------------------------------
+
+  PLANNED:
+
+    executable:
+      false
+
+    runtime_admissible:
+      false
+
+    replay_admissible:
+      false
+
+    proof_admissible:
+      false
+
+    deterministic_execution:
+      false
+
+    closed_world_aligned:
+      false
+
+    replay_safe:
+      false
+
+    observer_independent:
+      true
+
+    witness_generation:
+      false
+
+    mutation_authority:
+      false
+
+    replay_participation:
+      false
+
+    proof_participation:
+      false
+
+    runtime_participation:
+      false
+
+    allowed_operations:
+
+      - declarative_registration
+      - ontology_visibility
+      - architectural_planning
+
+    forbidden_operations:
+
+      - runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - constitutional_attestation
+      - mutation_execution
+
+    replay_significance:
+      DECLARATIVE_ONLY
+
+    enforcement_level:
+      HARD_BLOCKED
+
+    description: >
+      Constitutionally declared but operationally
+      non-admissible implementation state.
+
+      PLANNED surfaces exist only as architectural intent
+      and must remain non-operational.
+
+
+  # ----------------------------------------------------------
+  # PARTIAL
+  # ----------------------------------------------------------
+
+  PARTIAL:
+
+    executable:
+      constrained
+
+    runtime_admissible:
+      conditional
+
+    replay_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    deterministic_execution:
+      true
+
+    closed_world_aligned:
+      true
+
+    replay_safe:
+      true
+
+    observer_independent:
+      true
+
+    witness_generation:
+      conditional
+
+    mutation_authority:
+      constrained
+
+    replay_participation:
+      constrained
+
+    proof_participation:
+      constrained
+
+    runtime_participation:
+      conditional
+
+    allowed_operations:
+
+      - constrained_runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - deterministic_validation
+      - invariant_enforcement
+
+    forbidden_operations:
+
+      - probabilistic_execution
+      - observer_relative_execution
+      - undeclared_surface_binding
+      - unrestricted_mutation
+      - speculative_runtime_execution
+
+    replay_significance:
+      ADMISSIBLE_WITH_CONSTRAINTS
+
+    enforcement_level:
+      STRICT_VALIDATION
+
+    required_constraints:
+
+      - deterministic_execution
+      - replay_safe_semantics
+      - invariant_preservation
+      - witness_validation
+      - closed_world_alignment
+
+    description: >
+      Partially implemented deterministic replay-safe
+      implementation state.
+
+      PARTIAL surfaces may participate in constrained
+      replay-safe execution under explicit constitutional
+      validation.
+
+
+  # ----------------------------------------------------------
+  # IMPLEMENTED
+  # ----------------------------------------------------------
+
+  IMPLEMENTED:
+
+    executable:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    deterministic_execution:
+      true
+
+    closed_world_aligned:
+      true
+
+    replay_safe:
+      true
+
+    observer_independent:
+      true
+
+    witness_generation:
+      true
+
+    mutation_authority:
+      constrained
+
+    replay_participation:
+      true
+
+    proof_participation:
+      true
+
+    runtime_participation:
+      true
+
+    allowed_operations:
+
+      - runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - constitutional_attestation
+      - deterministic_validation
+      - invariant_enforcement
+
+    forbidden_operations:
+
+      - observer_relative_execution
+      - probabilistic_execution
+      - undeclared_execution_surfaces
+      - reflection_based_binding
+
+    replay_significance:
+      FULLY_ADMISSIBLE
+
+    enforcement_level:
+      FULL_ENFORCEMENT
+
+    required_constraints:
+
+      - deterministic_execution
+      - replay_equivalence
+      - invariant_preservation
+      - witness_consistency
+      - closed_world_alignment
+
+    description: >
+      Fully implemented deterministic replay-safe
+      operational implementation state.
+
+
+  # ----------------------------------------------------------
+  # DOCUMENTARY
+  # ----------------------------------------------------------
+
+  DOCUMENTARY:
+
+    executable:
+      false
+
+    runtime_admissible:
+      false
+
+    replay_admissible:
+      false
+
+    proof_admissible:
+      false
+
+    deterministic_execution:
+      false
+
+    closed_world_aligned:
+      false
+
+    replay_safe:
+      false
+
+    observer_independent:
+      true
+
+    witness_generation:
+      false
+
+    mutation_authority:
+      false
+
+    replay_participation:
+      false
+
+    proof_participation:
+      false
+
+    runtime_participation:
+      false
+
+    allowed_operations:
+
+      - documentation
+      - semantic_description
+      - architectural_reference
+
+    forbidden_operations:
+
+      - runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - constitutional_attestation
+
+    replay_significance:
+      NONE
+
+    enforcement_level:
+      NON_OPERATIONAL
+
+    description: >
+      Documentation-only implementation state.
+
+      DOCUMENTARY surfaces possess no runtime or replay
+      admissibility.
+
+
+  # ----------------------------------------------------------
+  # FORBIDDEN_ALIAS
+  # ----------------------------------------------------------
+
+  FORBIDDEN_ALIAS:
+
+    executable:
+      false
+
+    runtime_admissible:
+      false
+
+    replay_admissible:
+      false
+
+    proof_admissible:
+      false
+
+    deterministic_execution:
+      false
+
+    closed_world_aligned:
+      false
+
+    replay_safe:
+      false
+
+    observer_independent:
+      false
+
+    witness_generation:
+      false
+
+    mutation_authority:
+      false
+
+    replay_participation:
+      false
+
+    proof_participation:
+      false
+
+    runtime_participation:
+      false
+
+    allowed_operations: []
+
+    forbidden_operations:
+
+      - runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - constitutional_attestation
+      - identity_resolution
+      - runtime_binding
+
+    replay_significance:
+      FORBIDDEN
+
+    enforcement_level:
+      HARD_REJECTION
+
+    description: >
+      Constitutionally forbidden alias implementation state.
+
+      FORBIDDEN_ALIAS identities must never participate in:
+        - runtime execution
+        - replay execution
+        - proof generation
+        - witness generation
+        - constitutional attestation
+
+
+# ============================================================
+# GLOBAL RULES
+# ============================================================
+
+rules:
+
+  - id: IMPLEMENTATION_STATE_RULE_1
+
+    rule: >
+      Replay admissibility requires:
+        - deterministic execution
+        - replay-safe semantics
+        - invariant preservation
+        - closed-world alignment
+
+
+  - id: IMPLEMENTATION_STATE_RULE_2
+
+    rule: >
+      PLANNED implementations must remain operationally inert.
+
+
+  - id: IMPLEMENTATION_STATE_RULE_3
+
+    rule: >
+      PARTIAL implementations may participate in constrained
+      replay-safe execution only when explicitly validated.
+
+
+  - id: IMPLEMENTATION_STATE_RULE_4
+
+    rule: >
+      IMPLEMENTED surfaces require deterministic replay-safe
+      operational behavior.
+
+
+  - id: IMPLEMENTATION_STATE_RULE_5
+
+    rule: >
+      FORBIDDEN_ALIAS identities must never participate in:
+        - runtime execution
+        - replay execution
+        - proof generation
+        - witness generation
+
+
+  - id: IMPLEMENTATION_STATE_RULE_6
+
+    rule: >
+      Observer-relative execution semantics are
+      constitutionally forbidden.
+
+
+  - id: IMPLEMENTATION_STATE_RULE_7
+
+    rule: >
+      Reflection-based identity resolution is
+      constitutionally forbidden.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  replay_requirements:
+
+    - deterministic_execution
+    - replay_safe_semantics
+    - invariant_preservation
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - probabilistic_execution
+    - observer_relative_execution
+    - undeclared_execution_surfaces
+    - filesystem_identity_resolution
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_identity_resolution
+    - replay_safe_execution
+    - invariant_preservation
+
+  forbidden:
+
+    - implicit_runtime_discovery
+    - reflection_based_execution
+    - dynamic_runtime_aliasing
+    - undeclared_surface_binding
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_state_evaluation
+    - replay_safe_execution
+    - ontology_safe_resolution
+    - observer_independent_validation
+    - invariant_preserving_execution
+
+  forbid:
+
+    - speculative_runtime_authority
+    - filesystem_authority_inference
+    - observer_relative_execution
+    - ambiguous_state_resolution
+    - probabilistic_execution
+
+  enforcement:
+
+    violation_action:
+      FAIL_FAST
+
+    replay_violation_action:
+      REPLAY_INVALID
+
+    runtime_violation_action:
+      EXECUTION_REFUSAL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Implementation-state legitimacy derives exclusively from:
+      - deterministic execution semantics
+      - replay-safe operational behavior
+      - invariant preservation
+      - canonical ontology resolution
+      - closed-world execution semantics
+
+    Implementation-state legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - speculative interpretation
+      - observer-relative evaluation
+      - symbolic naming shortcuts

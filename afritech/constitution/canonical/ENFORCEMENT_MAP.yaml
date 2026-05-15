@@ -1,0 +1,12 @@
+CONCEPT_DETERMINISTIC_EXECUTION:
+
+  enforced_by:
+    - bootstrap/validators/invariant_validator.py
+    - runtime/replay/replay_engine.py
+
+  witnesses:
+    - execution_result_hash
+    - replay_hash
+
+  tests:
+    - tests/replay/test_determinism.py

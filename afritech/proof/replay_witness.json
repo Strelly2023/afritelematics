@@ -1,9 +1,11 @@
 {
-  "epoch_ir_hash": "52d6ca7cc9b96cb86ddf0925ce0f32e8b70506bf1e9b453d60faabfaba059d10",
-  "generated_at": "2026-05-10T17:07:24.856369+00:00",
-  "invariant_ir_hash": "f513ee076683613cda7ad9016b306d836c61523ab9a2423a50c1481d0ec1abda",
-  "replay_trace_hash": "dcb96a8c2fbdbe36cee841768c39872bcc46f96cee0d3ca1279cd7507de287d1",
-  "runtime_certificate_hash": "b0f5ab05835b233a1bd4fb09dd78cffb9629281db0677fce6da2e9854672e6e9",
-  "schema": "afritech.proof.replay_witness.v1",
-  "valid": true
+  "schema_version": 1,
+  "canonical_identity": "afritech.proof.witness.replay_witness",
+  "implementation_state": "PARTIAL",
+  "hash_algorithm": "sha256",
+  "deterministic": true,
+  "replay_safe": true,
+  "closed_world_aligned": true,
+  "observer_independent": true,
+  "witness_hash": "c2fbdc69959ee36134e03a328f69736724466fbfd2579e455b2e0a9764f14461"
 }

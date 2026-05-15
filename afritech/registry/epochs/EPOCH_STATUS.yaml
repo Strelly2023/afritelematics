@@ -1,0 +1,16 @@
+epochs:
+
+  EPOCH_0006:
+    status: ACTIVE
+
+  EPOCH_0007:
+    status: DRAFT
+
+  EPOCH_0008:
+    status: DRAFT
+
+  EPOCH_0008:
+    status: DEPRECATED_ALIAS
+
+current_authoritative_epoch:
+  - EPOCH_0006

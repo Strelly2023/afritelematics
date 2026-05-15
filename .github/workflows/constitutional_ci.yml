@@ -1,97 +1,444 @@
 name: Constitutional Enforcement
 
 on:
+
   push:
+
     branches:
+
       - main
       - develop
+
   pull_request:
 
+  workflow_dispatch:
+
+
+# ============================================================
+# GLOBAL PERMISSIONS
+# ============================================================
+
+permissions:
+
+  contents: read
+
+
+# ============================================================
+# CONCURRENCY
+# ============================================================
+
+concurrency:
+
+  group: constitutional-enforcement-${{ github.ref }}
+
+  cancel-in-progress: true
+
+
+# ============================================================
+# ENVIRONMENT
+# ============================================================
+
+env:
+
+  PYTHON_VERSION: "3.11"
+
+  AFRITECH_ENV: CI
+
+  AFRITECH_REPLAY_SAFE: "true"
+
+  AFRITECH_DETERMINISTIC: "true"
+
+  AFRITECH_CLOSED_WORLD: "true"
+
+  PYTHONHASHSEED: "0"
+
+
+# ============================================================
+# JOBS
+# ============================================================
+
 jobs:
+
   constitutional:
+
     name: Enforce Constitutional Law & Legitimacy
+
     runs-on: ubuntu-latest
 
+    timeout-minutes: 45
+
+    strategy:
+
+      fail-fast: true
+
+    # --------------------------------------------------------
+    # STEPS
+    # --------------------------------------------------------
+
     steps:
-      # ------------------------------------------------------------
+
+      # ======================================================
       # CHECKOUT
-      # ------------------------------------------------------------
+      # ======================================================
+
       - name: Checkout repository
+
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------
-      # PYTHON
-      # ------------------------------------------------------------
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+
+          fetch-depth: 0
+
+
+      # ======================================================
+      # PYTHON
+      # ======================================================
+
+      - name: Set up Python
+
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version: ${{ env.PYTHON_VERSION }}
+
+          cache: pip
+
+
+      - name: Upgrade pip
+
+        run: |
+
+          python -m pip install --upgrade pip
+
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # ------------------------------------------------------------
+        run: |
+
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          fi
+
+
+      # ======================================================
+      # BASIC STRUCTURAL VALIDATION
+      # ======================================================
+
+      - name: Verify repository structure
+
+        run: |
+
+          test -d afritech
+          test -f afritech/__init__.py
+
+
+      - name: Compile all Python sources
+
+        run: |
+
+          python -m compileall afritech
+
+
+      # ======================================================
+      # ONTOLOGY VALIDATION
+      # ======================================================
+
+      - name: Validate canonical path ontology
+
+        run: |
+
+          python -m afritech.architecture.validators.path_validator
+
+
+      - name: Validate implementation registry
+
+        run: |
+
+          python -m afritech.ci.implementation_state_validation
+
+
+      - name: Validate execution surfaces
+
+        run: |
+
+          python -m afritech.ci.execution_surface_validation
+
+
+      - name: Enforce import topology
+
+        run: |
+
+          python -m afritech.ci.import_topology_enforcement
+
+
+      # ======================================================
       # CONSTITUTIONAL SEMANTICS
-      # ------------------------------------------------------------
+      # ======================================================
 
       - name: Compile constitutional invariants
-        run: python3 -m afritech.constitution.compiler.compile_invariants
+
+        run: |
+
+          python -m afritech.constitution.compiler.compile_invariants
+
 
       - name: Verify semantic coverage
-        run: python3 -m afritech.constitution.verify_semantic_coverage
 
-      # ------------------------------------------------------------
+        run: |
+
+          python -m afritech.constitution.verify_semantic_coverage
+
+
+      - name: Verify admissibility semantics
+
+        run: |
+
+          python -m afritech.constitution.verify_admissibility
+
+
+      - name: Verify closed-world semantics
+
+        run: |
+
+          python -m afritech.constitution.verify_closed_world
+
+
+      - name: Verify deterministic execution semantics
+
+        run: |
+
+          python -m afritech.constitution.verify_deterministic_execution
+
+
+      # ======================================================
       # FORMAL INVARIANTS (LEAN)
-      # ------------------------------------------------------------
+      # ======================================================
 
       - name: Generate Lean invariant artifacts
-        run: python3 -m afritech.proof.formal.generate_invariants_lean
+
+        run: |
+
+          python -m afritech.proof.formal.generate_invariants_lean
+
 
       - name: Check Lean invariant proof presence
-        run: python3 -m afritech.proof.formal.check_proofs
 
-      # ------------------------------------------------------------
+        run: |
+
+          python -m afritech.proof.formal.check_proofs
+
+
+      # ======================================================
       # EPOCH FORMALIZATION
-      # ------------------------------------------------------------
+      # ======================================================
 
       - name: Generate Lean epoch artifacts
-        run: python3 -m afritech.proof.formal.generate_epoch_lean
+
+        run: |
+
+          python -m afritech.proof.formal.generate_epoch_lean
+
 
       - name: Check Lean epoch proof presence
-        run: python3 -m afritech.proof.formal.check_epoch_proofs
 
-      # ------------------------------------------------------------
+        run: |
+
+          python -m afritech.proof.formal.check_epoch_proofs
+
+
+      # ======================================================
       # CONSTITUTIONAL COMPLETENESS
-      # ------------------------------------------------------------
+      # ======================================================
 
       - name: Generate constitutional completeness
-        run: python3 -m afritech.proof.generate_completeness
+
+        run: |
+
+          python -m afritech.proof.generate_completeness
+
 
       - name: Enforce constitutional completeness
-        run: python3 -m afritech.ci.completeness_guard
 
-      # ------------------------------------------------------------
-      # RUNTIME LEGITIMACY
-      # ------------------------------------------------------------
+        run: |
 
-      - name: Generate runtime certificate
-        run: python3 -m afritech.proof.generate_runtime_certificate
+          python -m afritech.ci.completeness_guard
 
-      # ------------------------------------------------------------
-      # REPLAY LEGITIMACY
-      # ------------------------------------------------------------
+
+      # ======================================================
+      # REPLAY VALIDATION
+      # ======================================================
 
       - name: Generate replay witness
-        run: python3 -m afritech.proof.generate_replay_witness
+
+        run: |
+
+          python -m afritech.proof.generate_replay_witness
+
+
+      - name: Generate execution witness
+
+        run: |
+
+          python -m afritech.proof.generate_execution_witness
+
+
+      - name: Generate mutation witness
+
+        run: |
+
+          python -m afritech.proof.generate_mutation_witness
+
+
+      - name: Generate transcript witness
+
+        run: |
+
+          python -m afritech.proof.generate_transcript_witness
+
+
+      - name: Generate witness bundle
+
+        run: |
+
+          python -m afritech.proof.generate_witness_bundle
+
 
       - name: Verify replay witness
-        run: python3 -m afritech.verify.verify_replay_witness
 
-      # ------------------------------------------------------------
+        run: |
+
+          python -m afritech.verify.verify_replay_witness
+
+
+      - name: Verify execution witness
+
+        run: |
+
+          python -m afritech.verify.verify_execution_witness
+
+
+      - name: Verify mutation witness
+
+        run: |
+
+          python -m afritech.verify.verify_mutation_witness
+
+
+      - name: Verify transcript witness
+
+        run: |
+
+          python -m afritech.verify.verify_transcript_witness
+
+
+      - name: Verify witness bundle
+
+        run: |
+
+          python -m afritech.verify.verify_witness_bundle
+
+
+      # ======================================================
+      # CONSTITUTIONAL RECEIPTS
+      # ======================================================
+
+      - name: Generate constitutional receipt
+
+        run: |
+
+          python -m afritech.proof.generate_constitutional_receipt
+
+
+      - name: Verify constitutional receipt
+
+        run: |
+
+          python -m afritech.verify.verify_constitutional_receipt
+
+
+      # ======================================================
+      # RUNTIME LEGITIMACY
+      # ======================================================
+
+      - name: Generate runtime certificate
+
+        run: |
+
+          python -m afritech.proof.generate_runtime_certificate
+
+
+      - name: Verify runtime certificate
+
+        run: |
+
+          python -m afritech.verify.verify_runtime_certificate
+
+
+      # ======================================================
+      # REPLAY CONSISTENCY
+      # ======================================================
+
+      - name: Validate replay admissibility
+
+        run: |
+
+          python -m afritech.ci.replay_validation
+
+
+      - name: Validate deterministic replay consistency
+
+        run: |
+
+          python -m afritech.verify.verify_replay_consistency
+
+
+      # ======================================================
+      # TESTS
+      # ======================================================
+
+      - name: Run constitutional tests
+
+        run: |
+
+          if [ -d tests ]; then
+            pytest -q
+          fi
+
+
+      # ======================================================
+      # SECURITY VALIDATION
+      # ======================================================
+
+      - name: Verify no forbidden alias execution
+
+        run: |
+
+          python -m afritech.ci.verify_forbidden_aliases
+
+
+      - name: Verify closed-world enforcement
+
+        run: |
+
+          python -m afritech.ci.verify_closed_world
+
+
+      # ======================================================
       # FINAL CONFIRMATION
-      # ------------------------------------------------------------
+      # ======================================================
 
       - name: Constitutional enforcement complete
-        run: echo "✅ Constitution enforced — semantic, formal, runtime, and replay legitimacy verified"
+
+        run: |
+
+          echo "✅ Constitution enforced"
+          echo "✅ Deterministic execution verified"
+          echo "✅ Replay admissibility verified"
+          echo "✅ Witness integrity verified"
+          echo "✅ Closed-world semantics verified"
+          echo "✅ Constitutional legitimacy preserved"

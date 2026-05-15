@@ -1,0 +1,306 @@
+schema: afritech.concept.mutation_traceability.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of mutation traceability.
+
+
+# ============================================================
+# ✅ CONCEPT (NORMALIZED + FULL)
+# ============================================================
+
+concept:
+
+  id: CONCEPT_MUTATION_TRACEABILITY
+  canonical_name: mutation_traceability
+
+  name: mutation_traceability
+
+  # ✅ ✅ FIX APPLIED HERE
+  domain:
+    - runtime
+    - replay
+    - proof
+    - enforcement
+    - transcript
+    - state   # ✅ corrected
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - proof
+    - enforcement
+    - transcript
+    - state   # ✅ corrected
+
+
+# ============================================================
+# ✅ DEFINITION
+# ============================================================
+
+definition:
+
+  summary: >
+    Mutation traceability ensures all state changes are explicitly
+    declared, deterministically ordered, and replay-reconstructable.
+
+  requires:
+    - canonical_mutation_identity
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - invariant_preservation
+    - admissible_mutation_surface
+    - observer_independent_resolution
+    - mutation_gateway_authorization
+
+  forbidden_when:
+    - silent_mutation
+    - undeclared_mutation_surface
+    - speculative_mutation
+    - observer_relative_mutation
+    - uncontrolled_runtime_mutation
+    - reflection_based_mutation
+    - ambiguous_identity_resolution
+
+  canonical_statement: >
+    Mutation traceability requires all mutation to be explicitly
+    attributable, deterministically ordered, and replay-reconstructable.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.mutation_validation
+  - afritech.ci.replay_validation
+  - afritech.ci.witness_validator
+  - afritech.ci.semantic_concept_validator
+  - afritech.ci.import_topology_enforcement
+
+witness_requirements:
+  - mutation_witness
+  - transcript_witness
+  - execution_witness
+  - witness_bundle
+
+replay_requirements:
+  - deterministic_mutation_ordering
+  - replay_trace_reconstruction
+  - invariant_preservation
+  - mutation_equivalence
+  - no_missing_mutation_steps
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTIC MODEL (UNCHANGED)
+# ============================================================
+
+domains:
+
+  runtime:
+    requires:
+      - declared_mutation_gateway
+      - replay_traceability
+      - deterministic_ordering
+      - invariant_preservation
+    forbidden:
+      - silent_runtime_mutation
+      - speculative_runtime_mutation
+      - observer_relative_mutation
+
+  replay:
+    requires:
+      - deterministic_mutation_reconstruction
+      - canonical_mutation_identity
+      - transcript_alignment
+    forbidden:
+      - replay_mutation_override
+      - replay_divergence
+
+  proof:
+    requires:
+      - deterministic_mutation_trace
+      - invariant_alignment
+    forbidden:
+      - speculative_attestation
+      - undocumented_mutation_paths
+
+  enforcement:
+    requires:
+      - deterministic_validation
+      - mutation_legitimacy_alignment
+    forbidden:
+      - reflective_policy_mutation
+      - uncontrolled_mutation_generation
+
+
+# ============================================================
+# MUTATION AUTHORITY
+# ============================================================
+
+mutation_authority:
+
+  canonical_mutation_gateway:
+    - afritech.kernel.constitutional_gateway
+
+  mutation_requirements:
+    - explicit_mutation_declaration
+    - replay_traceability
+    - invariant_preservation
+    - deterministic_ordering
+
+  forbidden:
+    - implicit_mutation
+    - undeclared_mutation_authority
+    - speculative_mutation_authority
+
+
+# ============================================================
+# TRACE REQUIREMENTS
+# ============================================================
+
+trace_requirements:
+
+  required_trace_fields:
+    - mutation_identity
+    - execution_surface
+    - deterministic_order
+    - replay_trace_reference
+    - invariant_alignment_state
+    - epoch_reference
+
+  forbidden_trace_properties:
+    - observer_relative_state
+    - speculative_context
+    - undocumented_mutation_origin
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  mutation_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+    - declared_mutation_surfaces
+    - deterministic_mutation_resolution
+
+  forbidden:
+    - implicit_mutation_discovery
+    - reflection_based_mutation
+    - speculative_runtime_mutation
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+    - deterministic_mutation_ordering
+    - replay_traceability
+    - invariant_preservation
+
+  replay_invalidators:
+    - replay_divergence
+    - observer_relative_mutation
+
+
+# ============================================================
+# GUARANTEES
+# ============================================================
+
+guarantees:
+  - replay_traceable_mutation
+  - deterministic_mutation_ordering
+  - invariant_preserving_mutation
+  - observer_independent_mutation
+  - replay_safe_state_evolution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  silent_mutation:
+    effect:
+      - replay_invalid
+      - invariant_violation
+
+  undeclared_mutation_surface:
+    effect:
+      - runtime_rejection
+      - CI_failure
+
+  replay_divergence:
+    effect:
+      - replay_rejection
+      - receipt_non_admissible
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: MUTATION_RULE_1
+    rule: >
+      All mutation must be replay-traceable and deterministically ordered.
+
+  - id: MUTATION_RULE_2
+    rule: >
+      Mutation must derive from declared mutation gateways.
+
+  - id: MUTATION_RULE_3
+    rule: >
+      Silent mutation is forbidden.
+
+  - id: MUTATION_RULE_4
+    rule: >
+      Reflection-based mutation is forbidden.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  statement: >
+    All mutation must be deterministic, traceable, and replay-reconstructable.
+
+  description: >
+    Mutation traceability ensures that all state transitions are
+    explicitly declared, deterministically ordered, and fully
+    reconstructable under replay conditions.
+
+    Mutation must never emerge from implicit, speculative, or
+    observer-relative sources. All mutation must preserve invariants
+    and maintain constitutional execution boundaries.

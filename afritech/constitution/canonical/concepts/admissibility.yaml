@@ -1,0 +1,284 @@
+schema: afritech.concept.admissibility.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of admissibility within AfriTech.
+
+    Admissibility governs whether a surface, execution artifact,
+    replay artifact, transcript, receipt, mutation, or runtime
+    action may constitutionally participate in:
+      - runtime execution
+      - replay verification
+      - governance evaluation
+      - constitutional enforcement
+      - proof generation
+
+    Admissibility is a constitutional validation property.
+
+
+# ============================================================
+# ✅ CANONICAL CONCEPT IDENTITY
+# ============================================================
+
+concept:
+  id: CONCEPT_ADMISSIBILITY
+  canonical_name: admissibility
+
+  # ✅ REQUIRED NORMALIZED FIELD
+  name: admissibility
+
+  # ✅ REQUIRED NORMALIZED FIELD
+  domain:
+    - runtime
+    - replay
+    - governance
+    - enforcement
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+
+  authoritative_sources:
+    - afritech.constitution.invariants_semantics
+    - afritech.architecture.execution_surfaces
+    - afritech.architecture.enforcement_matrix
+    - afritech.architecture.implementation_registry
+    - afritech.epoch.epoch_semantics
+
+
+# ============================================================
+# ✅ CORE DEFINITION
+# ============================================================
+
+definition:
+
+  # ✅ REQUIRED NORMALIZED FIELD
+  summary: >
+    Admissibility defines whether an entity may constitutionally
+    participate in execution, replay, governance, or enforcement.
+
+  # ✅ REQUIRED NORMALIZED FIELD
+  requires:
+    - canonical_identity_resolution
+    - deterministic_execution
+    - execution_surface_declaration
+    - invariant_alignment
+    - replay_legitimacy
+    - authority_alignment
+
+  # ✅ REQUIRED NORMALIZED FIELD
+  forbidden_when:
+    - identity_is_ambiguous
+    - execution_surface_is_undeclared
+    - replay_legitimacy_fails
+    - invariant_violation_exists
+    - forbidden_alias_detected
+    - authority_boundary_violated
+    - speculative_surface_used_operationally
+
+  canonical_statement: >
+    Admissibility is the constitutional determination that an
+    artifact, execution surface, runtime action, replay trace,
+    governance declaration, or enforcement surface may lawfully
+    participate within the AfriTech constitutional system.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION (CRITICAL)
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.witness_validator
+  - afritech.ci.import_topology_enforcement
+  - afritech.ci.semantic_concept_validator
+
+witness_requirements:
+  - replay_witness
+  - execution_witness
+  - transcript_witness
+  - mutation_witness
+
+replay_requirements:
+  - deterministic_reconstruction
+  - invariant_preservation
+  - canonical_identity_resolution
+  - replay_traceability
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTIC MODEL (UNCHANGED STRUCTURE)
+# ============================================================
+
+domains:
+
+  runtime:
+    requires:
+      - implementation_state_admissible
+      - execution_surface_declared
+      - invariant_alignment
+      - replay_safe_operation
+    forbidden:
+      - speculative_execution
+      - forbidden_alias_resolution
+
+  replay:
+    requires:
+      - deterministic_trace_resolution
+      - canonical_module_identity
+      - replay_safe_implementation_state
+    forbidden:
+      - observer_relative_resolution
+      - speculative_replay
+
+  governance:
+    requires:
+      - replay_verifiable_observation
+      - canonical_identity_resolution
+      - invariant_alignment
+    forbidden:
+      - semantic_reinterpretation
+      - runtime_execution_control
+
+  enforcement:
+    requires:
+      - canonical_enforcement_identity
+      - deterministic_enforcement_resolution
+    forbidden:
+      - reflective_policy_loading
+      - runtime_policy_mutation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  admissible_states:
+    runtime:
+      - PARTIAL
+      - IMPLEMENTED
+    replay:
+      - PARTIAL
+      - IMPLEMENTED
+
+  forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Implementation legitimacy contributes to admissibility
+    but does not independently confer constitutional authority.
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+    - filesystem_path
+    - extension_identity
+    - relative_identity
+    - conceptual_identity
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  undeclared_surface_effect: HARD_FAIL
+
+  forbidden:
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  runtime:
+    inadmissible_effect:
+      - runtime_rejection
+      - execution_block
+
+  replay:
+    inadmissible_effect:
+      - replay_invalid
+      - transcript_rejection
+
+  governance:
+    inadmissible_effect:
+      - governance_declaration_invalid
+
+  enforcement:
+    inadmissible_effect:
+      - enforcement_rejection
+      - CI_failure
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: ADMISSIBILITY_RULE_1
+    rule: >
+      Admissibility requires canonical identity resolution.
+
+  - id: ADMISSIBILITY_RULE_2
+    rule: >
+      Filesystem artifacts must never confer admissibility.
+
+  - id: ADMISSIBILITY_RULE_3
+    rule: >
+      Replay admissibility requires deterministic semantics.
+
+  - id: ADMISSIBILITY_RULE_4
+    rule: >
+      Speculative surfaces are constitutionally inadmissible.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  # ✅ REQUIRED FIELD FOR VALIDATOR
+  statement: >
+    Only canonically identified, deterministic, and
+    replay-admissible entities may participate in AfriTech.
+
+  # ✅ FULL DOCTRINAL DESCRIPTION PRESERVED
+  description: >
+    Constitutional admissibility is the deterministic and
+    observer-independent validation boundary governing lawful
+    participation within the AfriTech constitutional system.
+
+    Admissibility derives from:
+      - canonical identity
+      - deterministic execution semantics
+      - replay legitimacy
+      - invariant alignment
+      - constitutional authority boundaries

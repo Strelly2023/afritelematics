@@ -1,0 +1,315 @@
+schema: afritech.concept.deterministic_execution.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of deterministic execution semantics.
+
+
+# ============================================================
+# ✅ CONCEPT (NORMALIZED + FULL)
+# ============================================================
+
+concept:
+
+  id: CONCEPT_DETERMINISTIC_EXECUTION
+  canonical_name: deterministic_execution
+
+  # ✅ REQUIRED BY VALIDATOR
+  name: deterministic_execution
+
+  # ✅ REQUIRED BY VALIDATOR
+  domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+    - transcript
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - governance
+    - proof
+    - enforcement
+    - transcript
+
+
+# ============================================================
+# ✅ DEFINITION (NORMALIZED + FULL)
+# ============================================================
+
+definition:
+
+  # ✅ REQUIRED
+  summary: >
+    Deterministic execution guarantees identical results under
+    identical constitutional inputs and declared execution conditions.
+
+  # ✅ REQUIRED
+  requires:
+    - canonical_identity_resolution
+    - deterministic_import_resolution
+    - invariant_preservation
+    - replay_safe_execution
+    - admissible_execution_surfaces
+    - observer_independent_resolution
+    - controlled_mutation_boundaries
+
+  # ✅ REQUIRED
+  forbidden_when:
+    - observer_relative_execution
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+    - dynamic_surface_aliasing
+    - reflection_based_execution
+    - uncontrolled_mutation
+    - ambiguous_identity_resolution
+
+  canonical_statement: >
+    Deterministic execution requires replay-equivalent outcomes
+    under equivalent constitutional conditions.
+
+
+# ============================================================
+# ✅ NORMALIZED CI PROJECTION (CRITICAL)
+# ============================================================
+
+enforcement_points:
+  - afritech.ci.witness_validator
+  - afritech.ci.replay_validation
+  - afritech.ci.import_topology_enforcement
+  - afritech.ci.determinism_validation
+  - afritech.ci.semantic_concept_validator
+
+witness_requirements:
+  - replay_witness
+  - execution_witness
+  - transcript_witness
+  - mutation_witness
+  - witness_bundle
+
+replay_requirements:
+  - identical_witness_hashes
+  - deterministic_trace_reconstruction
+  - invariant_preservation
+  - observer_independence
+  - replay_equivalence
+
+
+# ============================================================
+# ✅ EXTENDED SEMANTIC MODEL (UNCHANGED STRUCTURE)
+# ============================================================
+
+domains:
+
+  runtime:
+    requires:
+      - deterministic_runtime_admission
+      - invariant_preservation
+      - canonical_surface_resolution
+      - controlled_mutation
+    forbidden:
+      - speculative_runtime_execution
+      - observer_relative_execution
+
+  replay:
+    requires:
+      - deterministic_trace_resolution
+      - replay_safe_execution
+      - invariant_preservation
+    forbidden:
+      - replay_divergence
+      - observer_relative_reconstruction
+
+  governance:
+    requires:
+      - replay_bound_observation
+      - deterministic_resolution
+    forbidden:
+      - semantic_reinterpretation
+      - governance_runtime_control
+
+  enforcement:
+    requires:
+      - deterministic_validation
+      - canonical_identity_resolution
+    forbidden:
+      - dynamic_enforcement_mutation
+      - speculative_runtime_binding
+
+  proof:
+    requires:
+      - deterministic_trace_alignment
+    forbidden:
+      - observer_relative_proof
+      - speculative_attestation
+
+
+# ============================================================
+# EXECUTION INPUTS
+# ============================================================
+
+execution_inputs:
+
+  deterministic_inputs:
+    - canonical_module_identity
+    - invariant_state
+    - epoch_state
+    - implementation_legitimacy
+    - declared_execution_surfaces
+
+  forbidden_inputs:
+    - observer_identity
+    - runtime_discovery
+    - speculative_context
+    - uncontrolled_environment_state
+
+
+# ============================================================
+# MUTATION ALIGNMENT
+# ============================================================
+
+mutation_alignment:
+
+  mutation_requirements:
+    - declared_mutation_gateway
+    - replay_traceability
+    - deterministic_mutation_ordering
+
+  authorized_mutation_surface:
+    - afritech.kernel.constitutional_gateway
+
+  forbidden:
+    - silent_mutation
+    - undeclared_mutation
+    - speculative_mutation
+
+
+# ============================================================
+# IMPLEMENTATION ALIGNMENT
+# ============================================================
+
+implementation_alignment:
+
+  deterministic_safe_states:
+    - PARTIAL
+    - IMPLEMENTED
+
+  forbidden_states:
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+
+# ============================================================
+# CLOSED WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+
+  forbidden:
+    - implicit_surface_discovery
+    - reflection_based_execution
+    - speculative_runtime_execution
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+    - deterministic_execution
+    - invariant_preservation
+
+  replay_invalidators:
+    - replay_divergence
+    - observer_relative_execution
+
+
+# ============================================================
+# GUARANTEES
+# ============================================================
+
+guarantees:
+
+  - replay_safe_execution
+  - observer_independent_resolution
+  - deterministic_replay_reconstruction
+  - invariant_preserving_execution
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  replay_divergence:
+    effect:
+      - replay_invalid
+      - receipt_rejection
+
+  observer_relative_execution:
+    effect:
+      - determinism_failure
+      - replay_invalid
+
+  uncontrolled_mutation:
+    effect:
+      - invariant_violation
+      - replay_divergence
+
+
+# ============================================================
+# RULES
+# ============================================================
+
+rules:
+
+  - id: DETERMINISM_RULE_1
+    rule: >
+      Equivalent inputs must produce identical outputs.
+
+  - id: DETERMINISM_RULE_2
+    rule: >
+      Observer-relative execution is forbidden.
+
+  - id: DETERMINISM_RULE_3
+    rule: >
+      Reflection-based execution is forbidden.
+
+
+# ============================================================
+# ✅ CONSTITUTIONAL ASSERTION (NORMALIZED + FULL)
+# ============================================================
+
+constitutional_assertion:
+
+  # ✅ REQUIRED
+  statement: >
+    Execution must be deterministic, replay-safe, and invariant-preserving.
+
+  # ✅ FULL DOCTRINE
+  description: >
+    Deterministic execution defines the constitutional requirement
+    that all admissible execution produces replay-equivalent,
+    observer-independent results under equivalent conditions.
+
+    Determinism derives from canonical identity, invariant
+    preservation, replay-safe execution, and controlled mutation.
+
+    Execution must never depend on observer identity, filesystem
+    structure, speculative behavior, or undeclared surfaces.

@@ -1,0 +1,742 @@
+schema: afritech.binding_registry.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_BINDING_REGISTRY
+
+  description: >
+    Canonical constitutional binding registry governing
+    replay-safe implementation bindings, execution
+    admissibility bindings, runtime activation semantics,
+    proof participation semantics, evaluation semantics,
+    speculative doctrine containment, and deterministic
+    binding resolution within AfriTech.
+
+    Bindings define:
+      - implementation legitimacy
+      - execution admissibility
+      - replay participation
+      - proof participation
+      - runtime activation authority
+      - speculative containment semantics
+      - deterministic binding resolution
+      - closed-world binding alignment
+
+    Binding legitimacy is constitutional metadata only.
+
+    Binding legitimacy does NOT independently confer:
+      - runtime sovereignty
+      - governance authority
+      - replay authority
+      - execution legitimacy
+      - constitutional authority
+
+    Binding participation remains bounded by:
+      - admissibility law
+      - replay admissibility
+      - invariant preservation
+      - deterministic execution
+      - canonical ontology resolution
+      - closed-world execution semantics
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+ontology_alignment:
+
+  canonical_identity_form: module_path
+
+  deterministic_resolution_required: true
+
+  replay_safe_resolution_required: true
+
+  observer_independent_required: true
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - relative_identity
+    - symbolic_short_name
+    - reflection_based_identity
+
+  description: >
+    Binding resolution requires canonical module-path
+    ontology semantics.
+
+
+# ============================================================
+# IMPLEMENTATION STATES
+# ============================================================
+
+implementation_states:
+
+  PLANNED:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    replay_safe: false
+
+    description: >
+      Constitutionally declared but operationally
+      non-admissible implementation state.
+
+
+  PARTIAL:
+
+    executable: constrained
+
+    runtime_admissible: conditional
+
+    replay_participating: conditional
+
+    proof_admissible: conditional
+
+    deterministic_execution: conditional
+
+    replay_safe: conditional
+
+    description: >
+      Constitutionally constrained partially implemented
+      operational state.
+
+
+  IMPLEMENTED:
+
+    executable: true
+
+    runtime_admissible: true
+
+    replay_participating: true
+
+    proof_admissible: true
+
+    deterministic_execution: true
+
+    replay_safe: true
+
+    description: >
+      Fully operational replay-safe deterministic
+      implementation state.
+
+
+  DOCUMENTARY:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    replay_safe: false
+
+    description: >
+      Documentation-only non-operational implementation
+      state.
+
+
+  FORBIDDEN_ALIAS:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    deterministic_execution: false
+
+    replay_safe: false
+
+    description: >
+      Constitutionally forbidden non-canonical alias state.
+
+
+# ============================================================
+# BINDINGS
+# ============================================================
+
+bindings:
+
+  # ----------------------------------------------------------
+  # RUNTIME ACTIVATION
+  # ----------------------------------------------------------
+
+  runtime_activation:
+
+    canonical_identity:
+      afritech.runtime.activation
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - runtime_activation
+      - execution_admission
+      - replay_activation
+      - execution_surface_binding
+
+    enforced_by:
+
+      - afritech.runtime.admission
+      - afritech.ci.execution_surface_validation
+      - afritech.ci.replay_validation
+
+    witness_dependencies:
+
+      - afritech.proof.constitutional_receipt
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+
+    guarantees:
+
+      - deterministic_runtime_activation
+      - replay_safe_execution
+      - invariant_preserving_execution
+      - closed_world_execution
+
+    forbidden:
+
+      - probabilistic_activation
+      - undeclared_execution_surfaces
+      - observer_relative_activation
+      - reflection_based_runtime_binding
+
+    description: >
+      Canonical deterministic runtime activation binding.
+
+
+  # ----------------------------------------------------------
+  # PROOF
+  # ----------------------------------------------------------
+
+  proof:
+
+    canonical_identity:
+      afritech.proof
+
+    implementation_state:
+      PARTIAL
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      PROOF
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      conditional
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      conditional
+
+    authority_scope:
+
+      - replay_attestation
+      - witness_generation
+      - constitutional_receipt_generation
+      - transcript_validation
+
+    enforced_by:
+
+      - afritech.ci.witness_validation
+      - afritech.ci.replay_validation
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+      - afritech.proof.witness.mutation_witness
+
+    guarantees:
+
+      - deterministic_proof_generation
+      - replay_safe_attestation
+      - invariant_preserving_proof
+
+    missing_capabilities:
+
+      - full_execution_chain_attestation
+      - full_transcript_lineage_validation
+      - global_replay_equivalence_validation
+
+    forbidden:
+
+      - observer_relative_proof
+      - speculative_proof_generation
+      - probabilistic_reconstruction
+
+    description: >
+      Partially implemented deterministic proof-binding
+      surface.
+
+
+  # ----------------------------------------------------------
+  # EVALUATION
+  # ----------------------------------------------------------
+
+  evaluation:
+
+    canonical_identity:
+      afritech.evaluation
+
+    implementation_state:
+      PARTIAL
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EVALUATION
+
+    replay_significance:
+      CONDITIONAL
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      conditional
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      conditional
+
+    replay_participating:
+      conditional
+
+    proof_admissible:
+      conditional
+
+    authority_scope:
+
+      - execution_evaluation
+      - invariant_evaluation
+      - replay_consistency_analysis
+      - deterministic_metric_evaluation
+
+    enforced_by:
+
+      - afritech.ci.replay_validation
+      - afritech.ci.execution_surface_validation
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+
+    guarantees:
+
+      - deterministic_evaluation
+      - replay_safe_metric_analysis
+      - invariant_preserving_assessment
+
+    missing_capabilities:
+
+      - global_equivalence_analysis
+      - multi-epoch_replay_validation
+      - full_execution_lineage_scoring
+
+    forbidden:
+
+      - probabilistic_evaluation
+      - observer_relative_analysis
+      - undeclared_metric_surfaces
+
+    description: >
+      Partially implemented deterministic evaluation binding.
+
+
+  # ----------------------------------------------------------
+  # SPECULATIVE
+  # ----------------------------------------------------------
+
+  speculative:
+
+    canonical_identity:
+      afritech.speculative
+
+    implementation_state:
+      PLANNED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      SPECULATIVE
+
+    replay_significance:
+      FORBIDDEN
+
+    deterministic_required:
+      false
+
+    replay_safe_required:
+      false
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      false
+
+    replay_participating:
+      false
+
+    proof_admissible:
+      false
+
+    authority_scope:
+
+      - speculative_research
+      - doctrine_exploration
+      - theoretical_modeling
+
+    enforced_by:
+
+      - afritech.ci.execution_surface_validation
+
+    witness_dependencies: []
+
+    guarantees:
+
+      - containment_only
+
+    forbidden:
+
+      - runtime_execution
+      - replay_participation
+      - proof_generation
+      - constitutional_authority
+      - execution_surface_admission
+
+    containment_rules:
+
+      - speculative_surfaces_must_not_execute
+      - speculative_surfaces_must_not_bind_runtime
+      - speculative_surfaces_must_not_generate_receipts
+      - speculative_surfaces_must_not_generate_witnesses
+
+    description: >
+      Constitutionally contained speculative doctrine space
+      with no runtime or replay legitimacy.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  replay_requirements:
+
+    - deterministic_execution
+    - replay_traceability
+    - invariant_preservation
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - observer_relative_execution
+    - speculative_runtime_execution
+    - undeclared_execution_surfaces
+
+  description: >
+    Replay participation requires constitutionally admissible
+    deterministic bindings.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - canonical_identity_resolution
+    - deterministic_binding_resolution
+    - replay_safe_execution
+
+  forbidden:
+
+    - implicit_surface_discovery
+    - reflection_based_binding
+    - dynamic_runtime_aliasing
+    - undeclared_execution_binding
+
+  description: >
+    Binding admissibility requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_binding_resolution
+    - replay_safe_binding_semantics
+    - observer_independent_binding
+    - invariant_preserving_execution
+    - ontology_safe_resolution
+
+  forbid:
+
+    - implicit_runtime_legitimacy
+    - filesystem_authority_inference
+    - speculative_execution_authority
+    - observer_relative_binding
+    - ambiguous_binding_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  speculative_runtime_execution:
+
+    effect:
+
+      - runtime_refusal
+      - replay_invalid
+      - proof_rejection
+
+
+  forbidden_alias_resolution:
+
+    effect:
+
+      - ontology_failure
+      - identity_rejection
+
+
+  replay_divergence:
+
+    effect:
+
+      - replay_invalid
+      - deterministic_failure
+
+
+  closed_world_violation:
+
+    effect:
+
+      - execution_refusal
+      - proof_non_admissible
+
+
+  observer_relative_binding:
+
+    effect:
+
+      - replay_rejection
+      - proof_rejection
+
+
+# ============================================================
+# GLOBAL CONSTITUTIONAL RULES
+# ============================================================
+
+rules:
+
+  - id: BINDING_RULE_1
+    rule: >
+      Binding identity must resolve exclusively through
+      canonical module-path ontology semantics.
+
+  - id: BINDING_RULE_2
+    rule: >
+      Runtime activation requires:
+        - deterministic execution
+        - replay-safe semantics
+        - invariant preservation
+        - closed-world execution alignment
+
+  - id: BINDING_RULE_3
+    rule: >
+      Speculative bindings must never participate in:
+        - runtime execution
+        - replay execution
+        - witness generation
+        - proof generation
+        - constitutional attestation
+
+  - id: BINDING_RULE_4
+    rule: >
+      Filesystem artifacts must never independently define
+      binding legitimacy.
+
+  - id: BINDING_RULE_5
+    rule: >
+      Replay admissibility requires deterministic replay-safe
+      binding semantics.
+
+  - id: BINDING_RULE_6
+    rule: >
+      Reflection-based binding resolution is constitutionally
+      forbidden.
+
+  - id: BINDING_RULE_7
+    rule: >
+      Observer-relative binding evaluation is constitutionally
+      forbidden.
+
+  - id: BINDING_RULE_8
+    rule: >
+      Binding resolution must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - ontology-safe
+        - constitutionally bounded
+
+
+# ============================================================
+# CI ENFORCEMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.witness_validation
+
+  required_checks:
+
+    - canonical_identity_validation
+    - replay_safe_binding_validation
+    - deterministic_resolution_validation
+    - no_speculative_runtime_execution
+    - closed_world_validation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional bindings govern deterministic replay-safe
+    participation semantics within AfriTech.
+
+    Binding legitimacy derives exclusively from:
+      - canonical ontology resolution
+      - deterministic evaluation
+      - replay-safe semantics
+      - invariant preservation
+      - closed-world execution semantics
+
+    Binding legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - speculative interpretation
+      - observer-relative evaluation
+      - semantic inference
+
+    Binding resolution must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - ontology-safe
+      - constitutionally bounded

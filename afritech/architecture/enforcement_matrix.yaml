@@ -1,0 +1,755 @@
+schema: afritech.enforcement_matrix.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: CONSTITUTIONAL_ENFORCEMENT_MATRIX
+
+  description: >
+    Canonical constitutional enforcement matrix governing
+    replay-safe enforcement participation, runtime admission
+    enforcement, deterministic topology enforcement,
+    proof-bound execution validation, witness admissibility,
+    and closed-world execution enforcement within AfriTech.
+
+    This matrix defines:
+      - enforcement legitimacy
+      - implementation admissibility
+      - replay participation
+      - runtime blocking semantics
+      - proof enforcement semantics
+      - witness enforcement participation
+      - deterministic execution enforcement
+      - ontology-safe enforcement identity
+
+    Enforcement legitimacy is constitutional metadata only.
+
+    Enforcement legitimacy does NOT independently confer:
+      - runtime sovereignty
+      - governance authority
+      - replay authority
+      - execution legitimacy
+      - constitutional authority
+
+    Enforcement participation remains bounded by:
+      - admissibility law
+      - replay admissibility
+      - invariant preservation
+      - deterministic execution
+      - canonical ontology resolution
+      - closed-world execution semantics
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+ontology_alignment:
+
+  implementation_registry: required
+
+  implementation_states: required
+
+  witness_policy: required
+
+  path_ontology: required
+
+  replay_semantics: required
+
+  execution_surfaces: required
+
+  canonical_identity_form: module_path
+
+  forbidden_identity_forms:
+
+    - filesystem_path
+    - extension_identity
+    - relative_path
+    - conceptual_identity
+    - symbolic_short_name
+
+  description: >
+    Enforcement identity resolution requires canonical
+    module-path ontology semantics.
+
+
+# ============================================================
+# IMPLEMENTATION ADMISSIBILITY
+# ============================================================
+
+implementation_states:
+
+  PLANNED:
+
+    executable: false
+
+    replay_participating: false
+
+    runtime_admissible: false
+
+    enforcement_admissible: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+    description: >
+      Constitutionally declared enforcement capability
+      not yet operationally implemented.
+
+
+  PARTIAL:
+
+    executable: constrained
+
+    replay_participating: limited
+
+    runtime_admissible: conditional
+
+    enforcement_admissible: conditional
+
+    proof_admissible: conditional
+
+    replay_safe: conditional
+
+    deterministic_execution: conditional
+
+    description: >
+      Partially operational enforcement surface with
+      constitutionally constrained admissibility.
+
+
+  IMPLEMENTED:
+
+    executable: true
+
+    replay_participating: true
+
+    runtime_admissible: true
+
+    enforcement_admissible: true
+
+    proof_admissible: true
+
+    replay_safe: true
+
+    deterministic_execution: true
+
+    description: >
+      Fully operational deterministic constitutional
+      enforcement surface.
+
+
+  DOCUMENTARY:
+
+    executable: false
+
+    replay_participating: false
+
+    runtime_admissible: false
+
+    enforcement_admissible: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+    description: >
+      Documentation-only enforcement artifact.
+
+
+  FORBIDDEN_ALIAS:
+
+    executable: false
+
+    replay_participating: false
+
+    runtime_admissible: false
+
+    enforcement_admissible: false
+
+    proof_admissible: false
+
+    replay_safe: false
+
+    deterministic_execution: false
+
+    description: >
+      Constitutionally forbidden non-canonical identity alias.
+
+
+# ============================================================
+# ENFORCEMENT SURFACES
+# ============================================================
+
+enforcement:
+
+  # ----------------------------------------------------------
+  # TRANSCRIPT ENFORCEMENT
+  # ----------------------------------------------------------
+
+  afritech.transcript.execution_trace_surface_set:
+
+    implementation_state: PLANNED
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: false
+
+    runtime_blocking: false
+
+    proof_blocking: false
+
+    category: TRANSCRIPT
+
+    replay_significance: OPTIONAL
+
+    deterministic_required: false
+
+    replay_safe_required: false
+
+    authority_scope:
+
+      - transcript_surface_tracking
+      - execution_trace_indexing
+
+    enforced_by: []
+
+    witness_dependencies: []
+
+    missing_capabilities:
+
+      - transcript_trace_binding
+      - execution_trace_admission
+      - replay_trace_validation
+
+    description: >
+      Reserved transcript execution trace surface-set
+      enforcement capability not yet operationally implemented.
+
+
+  # ----------------------------------------------------------
+  # CONSTITUTIONAL RECEIPT ENFORCEMENT
+  # ----------------------------------------------------------
+
+  afritech.proof.constitutional_receipt:
+
+    implementation_state: PARTIAL
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: true
+
+    runtime_blocking: false
+
+    proof_blocking: true
+
+    category: PROOF
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    authority_scope:
+
+      - replay_attestation
+      - constitutional_receipt_generation
+      - seal_validation
+      - replay_admissibility_validation
+
+    enforced_by:
+
+      - afritech.ci.replay_validation
+      - afritech.runtime.admission
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+      - afritech.proof.witness.mutation_witness
+
+    witness_generation:
+
+      - registry_hash
+      - replay_hash
+      - receipt_hash
+      - invariant_hash
+
+    missing_witnesses:
+
+      - mutation_trace_hash
+      - transcript_hash
+      - deterministic_execution_chain
+
+    description: >
+      Deterministic constitutional replay receipt and
+      replay-admissibility enforcement surface.
+
+
+  # ----------------------------------------------------------
+  # REPLAY VALIDATION
+  # ----------------------------------------------------------
+
+  afritech.ci.replay_validation:
+
+    implementation_state: IMPLEMENTED
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: true
+
+    runtime_blocking: true
+
+    proof_blocking: true
+
+    category: REPLAY
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    authority_scope:
+
+      - replay_validation
+      - replay_admissibility
+      - replay_consistency_enforcement
+      - replay_divergence_detection
+
+    enforced_by:
+
+      - afritech.runtime.replay
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.witness_bundle
+
+    description: >
+      Deterministic replay admissibility validation surface.
+
+
+  # ----------------------------------------------------------
+  # EXECUTION SURFACE VALIDATION
+  # ----------------------------------------------------------
+
+  afritech.ci.execution_surface_validation:
+
+    implementation_state: IMPLEMENTED
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: true
+
+    runtime_blocking: true
+
+    proof_blocking: false
+
+    category: EXECUTION
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    authority_scope:
+
+      - execution_surface_validation
+      - closed_world_enforcement
+      - execution_admission_validation
+
+    enforced_by:
+
+      - afritech.runtime.admission
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+
+    description: >
+      Closed-world execution surface validation enforcement.
+
+
+  # ----------------------------------------------------------
+  # IMPORT TOPOLOGY ENFORCEMENT
+  # ----------------------------------------------------------
+
+  afritech.ci.import_topology_enforcement:
+
+    implementation_state: IMPLEMENTED
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: true
+
+    runtime_blocking: true
+
+    proof_blocking: false
+
+    category: TOPOLOGY
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    authority_scope:
+
+      - topology_validation
+      - ontology_validation
+      - import_boundary_enforcement
+      - deterministic_dependency_validation
+
+    enforced_by:
+
+      - afritech.runtime.admission
+
+    witness_dependencies: []
+
+    description: >
+      Canonical deterministic topology and ontology
+      enforcement surface.
+
+
+  # ----------------------------------------------------------
+  # WITNESS VALIDATION
+  # ----------------------------------------------------------
+
+  afritech.ci.witness_validation:
+
+    implementation_state: IMPLEMENTED
+
+    ontology: CANONICAL_MODULE_PATH
+
+    replay_blocking: true
+
+    runtime_blocking: false
+
+    proof_blocking: true
+
+    category: WITNESS
+
+    replay_significance: REQUIRED
+
+    deterministic_required: true
+
+    replay_safe_required: true
+
+    authority_scope:
+
+      - witness_validation
+      - witness_bundle_validation
+      - witness_hash_alignment
+      - transcript_consistency_validation
+
+    enforced_by:
+
+      - afritech.proof.witness.witness_bundle
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+      - afritech.proof.witness.mutation_witness
+
+    description: >
+      Deterministic constitutional witness validation surface.
+
+
+# ============================================================
+# GLOBAL ENFORCEMENT RULES
+# ============================================================
+
+rules:
+
+  - id: ENFORCEMENT_RULE_1
+    rule: >
+      Enforcement identities must resolve exclusively through
+      canonical module-path ontology.
+
+  - id: ENFORCEMENT_RULE_2
+    rule: >
+      Filesystem paths must never participate in constitutional
+      enforcement identity resolution.
+
+  - id: ENFORCEMENT_RULE_3
+    rule: >
+      Replay-blocking enforcement surfaces must possess
+      constitutionally admissible implementation legitimacy.
+
+  - id: ENFORCEMENT_RULE_4
+    rule: >
+      PLANNED enforcement surfaces are constitutionally declared
+      but operationally non-blocking.
+
+  - id: ENFORCEMENT_RULE_5
+    rule: >
+      PARTIAL enforcement surfaces may participate in constrained
+      replay and runtime validation contexts.
+
+  - id: ENFORCEMENT_RULE_6
+    rule: >
+      FORBIDDEN_ALIAS surfaces must never participate in:
+        - replay enforcement
+        - runtime enforcement
+        - receipt generation
+        - execution admission
+        - governance validation
+        - witness validation
+
+  - id: ENFORCEMENT_RULE_7
+    rule: >
+      Enforcement legitimacy does not independently confer
+      runtime sovereignty or governance authority.
+
+  - id: ENFORCEMENT_RULE_8
+    rule: >
+      Enforcement resolution must remain:
+        - deterministic
+        - replay-safe
+        - observer-independent
+        - non-reflective
+        - closed-world aligned
+
+  - id: ENFORCEMENT_RULE_9
+    rule: >
+      Replay admissibility requires:
+        - deterministic execution
+        - invariant preservation
+        - replay traceability
+        - witness admissibility
+
+  - id: ENFORCEMENT_RULE_10
+    rule: >
+      Closed-world execution semantics are mandatory for
+      runtime-blocking enforcement surfaces.
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_safe_states:
+
+    - PARTIAL
+    - IMPLEMENTED
+
+  replay_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  replay_requirements:
+
+    - deterministic_execution
+    - replay_traceability
+    - witness_alignment
+    - canonical_identity_resolution
+
+  replay_invalidators:
+
+    - replay_divergence
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_execution_surfaces
+
+  description: >
+    Replay legitimacy requires constitutionally admissible
+    deterministic enforcement participation.
+
+
+# ============================================================
+# RUNTIME ALIGNMENT
+# ============================================================
+
+runtime_alignment:
+
+  runtime_safe_states:
+
+    - IMPLEMENTED
+
+  conditionally_runtime_safe_states:
+
+    - PARTIAL
+
+  runtime_forbidden_states:
+
+    - PLANNED
+    - DOCUMENTARY
+    - FORBIDDEN_ALIAS
+
+  description: >
+    Runtime admission requires constitutionally admissible
+    enforcement participation.
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+
+  required:
+
+    - declared_execution_surfaces
+    - deterministic_surface_resolution
+    - replay_safe_execution
+    - canonical_identity_resolution
+
+  forbidden:
+
+    - implicit_execution_surfaces
+    - reflection_based_discovery
+    - dynamic_runtime_aliasing
+    - undeclared_execution_binding
+
+  description: >
+    Enforcement admissibility requires closed-world execution
+    semantics.
+
+
+# ============================================================
+# FAILURE MODES
+# ============================================================
+
+failure_modes:
+
+  replay_enforcement_violation:
+
+    effect: HARD_FAIL
+
+
+  runtime_enforcement_violation:
+
+    effect: HARD_FAIL
+
+
+  forbidden_alias_resolution:
+
+    effect: HARD_FAIL
+
+
+  filesystem_identity_resolution:
+
+    effect: HARD_FAIL
+
+
+  replay_divergence:
+
+    effect: REPLAY_INVALID
+
+
+  witness_consistency_failure:
+
+    effect: PROOF_REJECTION
+
+
+  deterministic_execution_failure:
+
+    effect: EXECUTION_REFUSAL
+
+
+  undocumented_enforcement_surface:
+
+    effect: SOFT_FAIL
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_enforcement_resolution
+    - replay_safe_enforcement
+    - observer_independent_validation
+    - invariant_preserving_enforcement
+    - canonical_identity_alignment
+
+  forbid:
+
+    - implicit_runtime_legitimacy
+    - filesystem_authority_inference
+    - speculative_execution_authority
+    - observer_relative_validation
+    - ambiguous_enforcement_resolution
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# CI ENFORCEMENT
+# ============================================================
+
+ci_enforcement:
+
+  enforced_by:
+
+    - afritech.ci.import_topology_enforcement
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.witness_validation
+
+  required_checks:
+
+    - no_filesystem_identity_resolution
+    - no_extension_based_enforcement_identity
+    - deterministic_prefix_resolution
+    - implementation_state_alignment
+    - replay_admissibility_alignment
+    - witness_consistency_validation
+    - closed_world_validation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Constitutional enforcement participation requires:
+      - canonical identity resolution
+      - admissible implementation legitimacy
+      - deterministic enforcement semantics
+      - replay-safe operational behavior
+      - witness admissibility
+      - invariant preservation
+      - closed-world execution semantics
+
+    Enforcement metadata is constitutionally descriptive and
+    must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - topology-safe
+      - constitutionally bounded

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "canonical_identity": "afritech.proof.witness.execution_witness",
+  "implementation_state": "PARTIAL",
+  "hash_algorithm": "sha256",
+  "deterministic": true,
+  "replay_safe": true,
+  "closed_world_aligned": true,
+  "observer_independent": true,
+  "witness_hash": "8ce77438a0998c2452e4cd4b5f741f241e8505720dc6b62e199fa91617066369"
+}

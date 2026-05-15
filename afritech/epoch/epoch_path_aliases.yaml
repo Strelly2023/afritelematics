@@ -1,0 +1,423 @@
+schema: afritech.epoch.path_aliases.v2
+
+version: 2
+
+metadata:
+
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  registry_class: EPOCH_ALIAS_REGISTRY
+
+  description: >
+    Canonical epoch path alias registry governing deterministic
+    epoch filename normalization, canonical identity mapping,
+    replay-safe alias resolution, and filesystem-to-canonical
+    transition semantics within AfriTech.
+
+    This registry exists exclusively to:
+      - normalize historical epoch filenames
+      - preserve replay-safe epoch lineage continuity
+      - support deterministic migration semantics
+      - prevent ambiguous epoch identity resolution
+      - enforce canonical epoch naming doctrine
+
+    Alias mappings are filesystem compatibility artifacts only.
+
+    Constitutional epoch identity derives exclusively from:
+      - epoch semantic identity
+      - canonical epoch registry lineage
+      - deterministic replay admissibility
+      - canonical module-path ontology
+
+    Filesystem aliases must never independently define:
+      - epoch legitimacy
+      - replay authority
+      - runtime authority
+      - constitutional identity
+
+
+# ============================================================
+# PATH ONTOLOGY ALIGNMENT
+# ============================================================
+
+path_alignment:
+
+  canonical_identity_form: module_path
+
+  alias_resolution_form: filesystem_path
+
+  forbidden_identity_forms:
+
+    - extension_identity
+    - conceptual_identity
+    - relative_identity
+
+  description: >
+    Alias mappings are compatibility-layer filesystem
+    artifacts only and must never override canonical
+    constitutional identity semantics.
+
+
+# ============================================================
+# ALIAS STATUS MODEL
+# ============================================================
+
+alias_status_model:
+
+  CANONICAL:
+
+    replay_safe: true
+
+    mutable: false
+
+    redirect_required: false
+
+    description: >
+      Canonical epoch filename recognized as the authoritative
+      filesystem representation.
+
+
+  MIGRATING:
+
+    replay_safe: conditional
+
+    mutable: true
+
+    redirect_required: true
+
+    description: >
+      Transitional compatibility alias pending deterministic
+      normalization toward canonical naming semantics.
+
+
+  DEPRECATED:
+
+    replay_safe: false
+
+    mutable: false
+
+    redirect_required: true
+
+    description: >
+      Historical compatibility alias retained temporarily for
+      deterministic replay continuity only.
+
+
+  FORBIDDEN:
+
+    replay_safe: false
+
+    mutable: false
+
+    redirect_required: false
+
+    description: >
+      Constitutionally forbidden alias identity.
+
+
+# ============================================================
+# ALIAS REGISTRY
+# ============================================================
+
+aliases:
+
+  EPOCH_0008.yaml:
+
+    canonical: EPOCH_0008.yaml
+
+    status: MIGRATING
+
+    replay_admissible: true
+
+    redirect_required: true
+
+    migration_target:
+
+      canonical_filename: EPOCH_0008.yaml
+
+      migration_required: true
+
+      deterministic_resolution_required: true
+
+    description: >
+      Transitional hyphenated epoch filename retained
+      temporarily for replay-safe lineage continuity.
+
+
+  EPOCH_0006.yaml:
+
+    canonical: EPOCH_0006.yaml
+
+    status: CANONICAL
+
+    replay_admissible: true
+
+    redirect_required: false
+
+    description: >
+      Canonical replay-safe epoch filename.
+
+
+  EPOCH_0007.yaml:
+
+    canonical: EPOCH_0007.yaml
+
+    status: CANONICAL
+
+    replay_admissible: true
+
+    redirect_required: false
+
+    description: >
+      Canonical replay-safe epoch filename.
+
+
+# ============================================================
+# GLOBAL ALIAS RULES
+# ============================================================
+
+rules:
+
+  - id: EPOCH_ALIAS_RULE_1
+    rule: >
+      Canonical epoch filenames must use deterministic
+      underscore-separated normalization semantics.
+
+  - id: EPOCH_ALIAS_RULE_2
+    rule: >
+      Hyphenated epoch filenames are transitional compatibility
+      aliases only.
+
+  - id: EPOCH_ALIAS_RULE_3
+    rule: >
+      Alias resolution must remain deterministic,
+      replay-safe, and observer-independent.
+
+  - id: EPOCH_ALIAS_RULE_4
+    rule: >
+      Alias mappings must never independently define
+      constitutional epoch identity.
+
+  - id: EPOCH_ALIAS_RULE_5
+    rule: >
+      Filesystem aliases are compatibility witnesses only and
+      must never independently confer replay legitimacy.
+
+  - id: EPOCH_ALIAS_RULE_6
+    rule: >
+      Replay reconstruction must resolve aliases through
+      canonical deterministic mappings.
+
+  - id: EPOCH_ALIAS_RULE_7
+    rule: >
+      Deprecated aliases must never become canonical without
+      deterministic reseal validation.
+
+  - id: EPOCH_ALIAS_RULE_8
+    rule: >
+      Alias normalization must preserve:
+        - lineage continuity
+        - replay admissibility
+        - deterministic epoch ordering
+        - canonical registry integrity
+
+
+# ============================================================
+# DETERMINISTIC RESOLUTION
+# ============================================================
+
+resolution:
+
+  ordering: DETERMINISTIC
+
+  canonical_precedence: REQUIRED
+
+  observer_independence: REQUIRED
+
+  resolution_requirements:
+
+    - canonical_mapping_required
+    - replay_safe_resolution
+    - deterministic_alias_lookup
+    - no_ambiguous_aliasing
+
+  forbidden:
+
+    - probabilistic_alias_resolution
+    - dynamic_alias_generation
+    - observer_relative_resolution
+    - ambiguous_epoch_mapping
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+
+  replay_requirements:
+
+    - deterministic_alias_resolution
+    - canonical_epoch_mapping
+    - replay_safe_lineage
+    - invariant_preservation
+
+  replay_invalidators:
+
+    - ambiguous_alias_resolution
+    - conflicting_epoch_mapping
+    - dynamic_alias_generation
+    - observer_relative_resolution
+
+  description: >
+    Replay legitimacy requires deterministic canonical alias
+    normalization.
+
+
+# ============================================================
+# REGISTRY ALIGNMENT
+# ============================================================
+
+registry_alignment:
+
+  authoritative_registry:
+
+    - afritech.epoch.epoch_registry
+    - afritech.epoch.epoch_semantics
+
+  constraints:
+
+    canonical_registry_precedence: true
+
+    alias_must_not_override_registry: true
+
+    replay_alignment_required: true
+
+    deterministic_resolution_required: true
+
+    no_duplicate_epoch_identity: true
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+
+  guarantees:
+
+    - deterministic_alias_resolution
+    - replay_safe_lineage
+    - canonical_epoch_mapping
+    - observer_independent_resolution
+    - lineage_preservation
+
+  forbidden:
+
+    - alias_identity_override
+    - ambiguous_epoch_resolution
+    - duplicate_epoch_mapping
+    - probabilistic_aliasing
+    - hidden_alias_mutation
+
+  enforcement:
+
+    violation_action: FAIL_FAST
+
+    replay_violation_action: REPLAY_INVALID
+
+    registry_violation_action: REGISTRY_REJECTION
+
+
+# ============================================================
+# FAILURE EFFECTS
+# ============================================================
+
+failure_effects:
+
+  ambiguous_alias_resolution:
+
+    effect:
+
+      - replay_invalid
+      - epoch_resolution_failure
+      - registry_rejection
+
+
+  duplicate_epoch_mapping:
+
+    effect:
+
+      - deterministic_failure
+      - lineage_invalid
+
+
+  canonical_override_violation:
+
+    effect:
+
+      - CI_failure
+      - alias_rejection
+
+
+  observer_relative_resolution:
+
+    effect:
+
+      - replay_invalid
+      - determinism_failure
+
+
+# ============================================================
+# CI ENFORCEMENT ALIGNMENT
+# ============================================================
+
+ci_alignment:
+
+  enforced_by:
+
+    - afritech.ci.epoch_validation
+    - afritech.ci.replay_validation
+    - afritech.ci.alias_validation
+
+  required_checks:
+
+    - deterministic_alias_resolution
+    - canonical_mapping_validation
+    - replay_safe_lineage
+    - no_duplicate_epoch_identity
+    - no_ambiguous_aliases
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+
+  description: >
+    Epoch alias mappings are deterministic compatibility
+    artifacts only.
+
+    Canonical epoch legitimacy derives exclusively from:
+      - deterministic registry lineage
+      - replay admissibility
+      - canonical epoch semantics
+      - invariant preservation
+      - constitutionally valid reseal semantics
+
+    Filesystem aliases must never independently define:
+      - epoch authority
+      - replay legitimacy
+      - runtime sovereignty
+      - constitutional identity
+
+    Alias resolution must remain:
+      - deterministic
+      - replay-safe
+      - observer-independent
+      - constitutionally bounded

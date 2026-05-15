@@ -1,7 +1,7 @@
 schema: afritech.governance.epoch.v1
 
 epoch:
-  id: EPOCH-0008
+  id: EPOCH_0008
 
   number: 8
 
