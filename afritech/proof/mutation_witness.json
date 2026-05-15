@@ -1,11 +1,23 @@
-{
-  "schema_version": 1,
-  "canonical_identity": "afritech.proof.witness.mutation_witness",
-  "implementation_state": "PARTIAL",
-  "hash_algorithm": "sha256",
-  "deterministic": true,
-  "replay_safe": true,
-  "closed_world_aligned": true,
-  "observer_independent": true,
-  "witness_hash": "71e33d9f79d943d023022e3afa35dbe979b8f20d2a3dde347ca645535202bd28"
-}
+[
+  {
+    "action": "DELETE_EXECUTABLE_SURFACE",
+    "deterministic": true,
+    "mutation_type": "REMOVE_SPECULATIVE_EXECUTION_SURFACE",
+    "order": 1,
+    "target": "afritech/speculative/civilization/civilization_engine.py"
+  },
+  {
+    "action": "REGISTER_CANONICAL_RUNTIME_SURFACE",
+    "deterministic": true,
+    "mutation_type": "DECLARE_RUNTIME_SURFACE",
+    "order": 2,
+    "target": "afritech/runtime/orchestration/civilization_engine.py"
+  },
+  {
+    "action": "REMOVE_ALIAS_INVERSION",
+    "deterministic": true,
+    "mutation_type": "NORMALIZE_EPOCH_IDENTITY",
+    "order": 3,
+    "target": "EPOCH_0008"
+  }
+]

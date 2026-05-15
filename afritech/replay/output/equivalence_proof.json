@@ -1,0 +1,12 @@
+{
+  "deterministic": true,
+  "equivalence": "execution == replay",
+  "execution_hash": "8ce77438a0998c2452e4cd4b5f741f241e8505720dc6b62e199fa91617066369",
+  "mutation_hash": "b4476cc59085b7aae22397ef099538901960c34075cc87a7bc0508de59332690",
+  "observer_independent": true,
+  "replay_hash": "c2fbdc69959ee36134e03a328f69736724466fbfd2579e455b2e0a9764f14461",
+  "replay_safe": true,
+  "status": "EQUIVALENT",
+  "trace_replay_hash": "9071dc95949506fa6f244a765e67b7b92bfb94e085ddf93c283ccef87fb016c4",
+  "transcript_hash": "b0e1f51ca6d11710337600336735f53a25a51f75a4fecb3a03d637670bfc7df1"
+}

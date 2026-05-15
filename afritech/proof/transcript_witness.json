@@ -1,11 +1,22 @@
-{
-  "schema_version": 1,
-  "canonical_identity": "afritech.proof.witness.transcript_witness",
-  "implementation_state": "PARTIAL",
-  "hash_algorithm": "sha256",
-  "deterministic": true,
-  "replay_safe": true,
-  "closed_world_aligned": true,
-  "observer_independent": true,
-  "witness_hash": "a2da4396a7be4eb20442c41f326551533da903efae098e4a1c0dd5fd2cacdd79"
-}
+[
+  {
+    "deterministic": true,
+    "event": "EXECUTION_STARTED",
+    "order": 1
+  },
+  {
+    "deterministic": true,
+    "event": "TOPOLOGY_VALIDATED",
+    "order": 2
+  },
+  {
+    "deterministic": true,
+    "event": "REPLAY_VALIDATED",
+    "order": 3
+  },
+  {
+    "deterministic": true,
+    "event": "EXECUTION_COMPLETED",
+    "order": 4
+  }
+]
