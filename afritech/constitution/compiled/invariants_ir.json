@@ -1,76 +1,8 @@
 {
-  "generated_at": "2026-05-15T08:23:33.263067Z",
+  "closed_world_aligned": true,
+  "deterministic": true,
+  "invariant_count": 6,
   "invariants": {
-    "I13_EPOCH_MONOTONIC": {
-      "category": "TEMPORAL_INTEGRITY",
-      "constitutional_assertion": "AfriTech time advances strictly forward. Epoch rollback or duplication is constitutionally impossible.\n",
-      "enforcement_points": {
-        "replay": {
-          "refusal_mode": "REPLAY_INVALID",
-          "timing": "REPLAY",
-          "validators": [
-            "epoch_lineage_verifier"
-          ]
-        },
-        "runtime": {
-          "refusal_mode": "HARD_FAILURE",
-          "timing": "PRE_EXECUTION",
-          "validators": [
-            "epoch_transition_guard"
-          ]
-        }
-      },
-      "evidence_requirements": {
-        "deterministic": true,
-        "observer_free": true,
-        "replayable": true
-      },
-      "failure": {
-        "class": "A_FATAL",
-        "response": {
-          "effects": [
-            "runtime_refusal",
-            "replay_invalid",
-            "constitutional_invalid"
-          ],
-          "mode": "HARD_FAILURE"
-        }
-      },
-      "formal_name": "EPOCH_STRICT_MONOTONICITY",
-      "intent": {
-        "description": "Epochs must advance strictly monotonically. Rollback, branching, or parallel active epochs are constitutionally forbidden.\n"
-      },
-      "preconditions": [
-        "previous_epoch_sealed"
-      ],
-      "prohibited_actions": [
-        "epoch_rollback",
-        "parallel_epoch_activation",
-        "epoch_reuse"
-      ],
-      "required_postconditions": [
-        "epoch_number_increased",
-        "lineage_continuity_verified"
-      ],
-      "scope": {
-        "applies_to": [
-          "epoch_transition",
-          "replay_continuity"
-        ]
-      },
-      "witnesses": {
-        "registry": {
-          "required": [
-            "epoch_hash"
-          ]
-        },
-        "replay": {
-          "required": [
-            "transcript.epoch_lineage"
-          ]
-        }
-      }
-    },
     "I1_REGISTRY_AUTHORITY": {
       "category": "AUTHORITY_ROOT",
       "constitutional_assertion": "AfriTech recognizes exactly one source of constitutional truth: the sealed registry. Any attempt to bypass, override, or reinterpret the registry is constitutionally forbidden.\n",
@@ -162,7 +94,7 @@
     },
     "I2_SEALED_SURFACE": {
       "category": "EXECUTION_BOUNDARY",
-      "constitutional_assertion": "AfriTech executes only upon sealed surfaces. Unsealed computation is constitutionally invalid.\n",
+      "constitutional_assertion": "Only sealed and hash-attested execution surfaces may participate in constitutional runtime execution.\n",
       "enforcement_points": {
         "ci": {
           "refusal_mode": "CI_FAIL",
@@ -185,11 +117,12 @@
         "replayable": true
       },
       "failure": {
-        "class": "B_STRUCTURAL",
+        "class": "A_FATAL",
         "response": {
           "effects": [
-            "runtime_refusal",
-            "receipt_non_emission"
+            "execution_refused",
+            "replay_invalid",
+            "constitutional_invalid"
           ],
           "mode": "HARD_FAILURE"
         }
@@ -235,20 +168,27 @@
     },
     "I3_NO_SILENT_MUTATION": {
       "category": "STATE_INTEGRITY",
-      "constitutional_assertion": "AfriTech forbids silent state change. All mutation must be explicit, traceable, and provable.\n",
+      "constitutional_assertion": "Constitutional state transitions must always be explicit, ordered, replayable, and witness-verifiable.\n",
       "enforcement_points": {
         "ci": {
           "refusal_mode": "CI_FAIL",
           "timing": "STATIC_ANALYSIS",
           "validators": [
-            "import_topology_enforcement"
+            "witness_validator"
+          ]
+        },
+        "replay": {
+          "refusal_mode": "REPLAY_INVALID",
+          "timing": "REPLAY_VALIDATION",
+          "validators": [
+            "replay_equivalence_engine"
           ]
         },
         "runtime": {
           "refusal_mode": "HARD_FAILURE",
-          "timing": "EXECUTION",
+          "timing": "DURING_EXECUTION",
           "validators": [
-            "mutation_guard"
+            "mutation_trace_guard"
           ]
         }
       },
@@ -262,144 +202,70 @@
         "response": {
           "effects": [
             "runtime_refusal",
-            "state_invalid"
+            "replay_invalid",
+            "witness_invalid"
           ],
           "mode": "HARD_FAILURE"
         }
       },
       "formal_name": "NO_SILENT_STATE_MUTATION",
       "intent": {
-        "description": "All state mutation must occur through constitutionally defined mutation paths. Silent, implicit, or side-channel mutation is forbidden.\n"
+        "description": "All constitutional state mutations must be explicit, replayable, ordered, and witness-attested. Silent or hidden state transitions are forbidden.\n"
       },
       "preconditions": [
-        "mutation_request_declared",
-        "mutation_path_authorized"
+        "mutation_declared",
+        "witness_generation_enabled"
       ],
       "prohibited_actions": [
-        "implicit_state_change",
-        "undocumented_mutation",
-        "side_effect_mutation"
+        "hidden_mutation",
+        "unordered_mutation",
+        "witnessless_mutation",
+        "replay_opaque_transition"
       ],
       "required_postconditions": [
         "mutation_trace_recorded",
-        "mutation_receipt_emitted"
+        "replay_reconstructable",
+        "witness_hash_bound"
       ],
       "scope": {
         "applies_to": [
-          "state_transition",
-          "epoch_transition"
+          "state_mutation",
+          "replay_reconstruction",
+          "runtime_state"
         ],
         "excludes": [
-          "observational_read_only_operations"
+          "immutable_semantic_artifacts"
         ]
       },
       "witnesses": {
         "replay": {
           "required": [
-            "transcript.mutation_trace"
+            "equivalence_proof"
           ]
         },
         "runtime": {
           "required": [
-            "receipt.mutation_trace_hash"
+            "mutation_witness"
           ]
         }
       }
     },
-    "I4_DETERMINISTIC_EXECUTION": {
-      "category": "EXECUTION_DETERMINISM",
-      "constitutional_assertion": "AfriTech executes deterministically. Divergent execution constitutes constitutional failure.\n",
+    "I4_DETERMINISTIC_RUNTIME": {
+      "category": "REPLAY_INTEGRITY",
+      "constitutional_assertion": "Constitutional execution must always be replay-safe, deterministic, and observer-independent.\n",
       "enforcement_points": {
         "replay": {
           "refusal_mode": "REPLAY_INVALID",
-          "timing": "REPLAY",
+          "timing": "REPLAY_VALIDATION",
           "validators": [
-            "replay_equivalence_verifier"
-          ]
-        },
-        "runtime": {
-          "refusal_mode": "HARD_FAILURE",
-          "timing": "EXECUTION",
-          "validators": [
-            "determinism_guard"
-          ]
-        }
-      },
-      "evidence_requirements": {
-        "deterministic": true,
-        "observer_free": true,
-        "replayable": true
-      },
-      "failure": {
-        "class": "B_STRUCTURAL",
-        "response": {
-          "effects": [
-            "runtime_refusal",
-            "replay_invalid"
-          ],
-          "mode": "HARD_FAILURE"
-        }
-      },
-      "formal_name": "DETERMINISTIC_RUNTIME_EXECUTION",
-      "intent": {
-        "description": "Given identical inputs, authority, and state, execution must produce identical results. Non-determinism is constitutionally forbidden.\n"
-      },
-      "preconditions": [
-        "deterministic_environment",
-        "replay_capability_enabled"
-      ],
-      "prohibited_actions": [
-        "nondeterministic_input",
-        "time_dependent_execution",
-        "randomness_without_attestation"
-      ],
-      "required_postconditions": [
-        "execution_hash_stable",
-        "replay_equivalence_verified"
-      ],
-      "scope": {
-        "applies_to": [
-          "runtime_execution",
-          "replay_verification"
-        ]
-      },
-      "witnesses": {
-        "replay": {
-          "required": [
-            "transcript.execution_trace_hash"
-          ]
-        },
-        "runtime": {
-          "required": [
-            "receipt.execution_result_hash"
-          ]
-        }
-      }
-    },
-    "I8_CLOSED_WORLD": {
-      "category": "EXECUTION_BOUNDARY",
-      "constitutional_assertion": "AfriTech recognizes no execution surface that is not explicitly declared, hash-attested, and constitutionally admitted. Undeclared computation is constitutionally invisible. The AfriTech execution world is closed by design, and any breach of this closure is a fundamental constitutional violation.",
-      "enforcement_points": {
-        "ci": {
-          "refusal_mode": "CI_FAIL",
-          "timing": "STATIC_ANALYSIS",
-          "validators": [
-            "ast_import_validator",
-            "ast_surface_validator"
-          ]
-        },
-        "replay": {
-          "refusal_mode": "DETERMINISTIC_REFUSAL",
-          "timing": "TRACE_RECONSTRUCTION",
-          "validators": [
-            "surface_trace_verifier"
+            "replay_equivalence_engine"
           ]
         },
         "runtime": {
           "refusal_mode": "HARD_FAILURE",
           "timing": "PRE_EXECUTION",
           "validators": [
-            "admission_guard"
+            "execution_surface_validation"
           ]
         }
       },
@@ -409,71 +275,230 @@
         "replayable": true
       },
       "failure": {
-        "class": "B_STRUCTURAL",
+        "class": "A_FATAL",
         "response": {
           "effects": [
-            "runtime_refusal",
-            "receipt_non_emission",
+            "replay_divergence",
+            "equivalence_failure",
+            "constitutional_invalid"
+          ],
+          "mode": "REPLAY_INVALID"
+        }
+      },
+      "formal_name": "DETERMINISTIC_RUNTIME_EXECUTION",
+      "intent": {
+        "description": "Runtime execution must be deterministic and replay-safe. Equivalent inputs must produce equivalent outputs, witnesses, and replay traces.\n"
+      },
+      "preconditions": [
+        "deterministic_inputs",
+        "canonical_hashing_enabled"
+      ],
+      "prohibited_actions": [
+        "observer_relative_execution",
+        "nondeterministic_replay",
+        "unstable_hash_generation",
+        "entropy_based_execution"
+      ],
+      "required_postconditions": [
+        "replay_equivalence_verified",
+        "deterministic_hashes_generated",
+        "observer_independent_results"
+      ],
+      "scope": {
+        "applies_to": [
+          "runtime_execution",
+          "replay_equivalence",
+          "witness_generation"
+        ],
+        "excludes": [
+          "documentary_analysis"
+        ]
+      },
+      "witnesses": {
+        "replay": {
+          "required": [
+            "replay_witness",
+            "equivalence_proof"
+          ]
+        },
+        "runtime": {
+          "required": [
+            "execution_witness"
+          ]
+        }
+      }
+    },
+    "I5_EPOCH_MONOTONIC": {
+      "category": "TEMPORAL_INTEGRITY",
+      "constitutional_assertion": "Constitutional epochs must form a strictly monotonic, replay-safe governance lineage.\n",
+      "enforcement_points": {
+        "ci": {
+          "refusal_mode": "CI_FAIL",
+          "timing": "STATIC_ANALYSIS",
+          "validators": [
+            "identity_validator"
+          ]
+        },
+        "replay": {
+          "refusal_mode": "REPLAY_INVALID",
+          "timing": "PRE_REPLAY",
+          "validators": [
+            "replay_equivalence_engine"
+          ]
+        }
+      },
+      "evidence_requirements": {
+        "deterministic": true,
+        "observer_free": true,
+        "replayable": true
+      },
+      "failure": {
+        "class": "A_FATAL",
+        "response": {
+          "effects": [
+            "epoch_invalid",
             "replay_invalid",
-            "attestation_rejection"
+            "lineage_invalid"
+          ],
+          "mode": "HARD_FAILURE"
+        }
+      },
+      "formal_name": "EPOCH_STRICT_MONOTONICITY",
+      "intent": {
+        "description": "Constitutional epochs must advance monotonically. Epoch rollback, identity aliasing, or temporal ambiguity is constitutionally forbidden.\n"
+      },
+      "preconditions": [
+        "epoch_registry_loaded",
+        "canonical_epoch_identity_verified"
+      ],
+      "prohibited_actions": [
+        "epoch_rollback",
+        "epoch_aliasing",
+        "duplicate_epoch_identity",
+        "replay_temporal_divergence"
+      ],
+      "required_postconditions": [
+        "canonical_epoch_order_verified",
+        "replay_lineage_stable",
+        "governance_history_preserved"
+      ],
+      "scope": {
+        "applies_to": [
+          "epoch_registry",
+          "governance_history",
+          "replay_lineage"
+        ],
+        "excludes": [
+          "archived_documentation"
+        ]
+      },
+      "witnesses": {
+        "registry": {
+          "required": [
+            "epoch_registry_hash"
+          ]
+        },
+        "replay": {
+          "required": [
+            "transcript_witness"
+          ]
+        }
+      }
+    },
+    "I6_CLOSED_EXECUTION_WORLD": {
+      "category": "CLOSED_WORLD_ENFORCEMENT",
+      "constitutional_assertion": "AfriTech operates under a closed constitutional world. Only explicitly declared and admissible entities may participate in runtime, replay, or semantic execution.\n",
+      "enforcement_points": {
+        "ci": {
+          "refusal_mode": "CI_FAIL",
+          "timing": "STATIC_ANALYSIS",
+          "validators": [
+            "semantic_concept_validator",
+            "cross_concept_validator"
+          ]
+        },
+        "replay": {
+          "refusal_mode": "REPLAY_INVALID",
+          "timing": "REPLAY_VALIDATION",
+          "validators": [
+            "replay_equivalence_engine"
+          ]
+        },
+        "runtime": {
+          "refusal_mode": "HARD_FAILURE",
+          "timing": "PRE_EXECUTION",
+          "validators": [
+            "import_topology_enforcement"
+          ]
+        }
+      },
+      "evidence_requirements": {
+        "deterministic": true,
+        "observer_free": true,
+        "replayable": true
+      },
+      "failure": {
+        "class": "A_FATAL",
+        "response": {
+          "effects": [
+            "execution_refusal",
+            "ontology_invalid",
+            "replay_invalid",
+            "constitutional_invalid"
           ],
           "mode": "HARD_FAILURE"
         }
       },
       "formal_name": "CLOSED_EXECUTION_WORLD",
       "intent": {
-        "description": "Execution may only access constitutionally admitted execution surfaces. Any interaction with undeclared, dynamically resolved, or non-attested surfaces is constitutionally forbidden.\n"
+        "description": "Only explicitly declared constitutional entities, execution surfaces, witnesses, and semantic artifacts may participate in runtime or replay semantics.\n"
       },
       "preconditions": [
-        "runtime_certificate_valid",
-        "admitted_surface_registry_loaded",
-        "execution_surface_hash_verified"
+        "ontology_loaded",
+        "canonical_registry_verified"
       ],
       "prohibited_actions": [
-        "undeclared_import",
-        "runtime_surface_extension",
-        "dynamic_module_resolution",
-        "filesystem_execution_outside_registry",
-        "reflection_based_surface_discovery"
+        "undeclared_runtime_entity",
+        "implicit_semantic_resolution",
+        "undeclared_execution_surface",
+        "dynamic_runtime_expansion"
       ],
       "required_postconditions": [
-        "surface_subset_verified",
-        "no_undeclared_surface_touched"
+        "ontology_closure_verified",
+        "admissibility_verified",
+        "replay_boundary_preserved"
       ],
       "scope": {
         "applies_to": [
           "runtime_execution",
-          "replay_verification",
-          "constitutional_ci"
+          "replay_validation",
+          "semantic_compilation",
+          "witness_validation"
         ],
         "excludes": [
-          "documentary_artifacts",
-          "speculative_models",
-          "non_executable_surfaces"
+          "documentary_material"
         ]
       },
       "witnesses": {
-        "registry": {
-          "required": [
-            "attestation.execution_surface_hash",
-            "attestation.kernel_surface_hash"
-          ]
-        },
         "replay": {
           "required": [
-            "transcript.admitted_surfaces_hash",
-            "transcript.execution_trace_surface_set"
+            "equivalence_proof"
           ]
         },
         "runtime": {
           "required": [
-            "receipt.surface_validation_hash",
-            "receipt.execution_surface_hash"
+            "constitutional_receipt"
+          ]
+        },
+        "semantic": {
+          "required": [
+            "invariants_ir"
           ]
         }
       }
     }
   },
   "schema": "afritech.constitution.invariants.ir.v1",
-  "source_hash": "6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0"
+  "semantic_completeness_verified": true,
+  "source_hash": "89d4442ff2ab714798bd3d607e5559ba4a7d7838a38d2581006f31ef622f8b5a"
 }

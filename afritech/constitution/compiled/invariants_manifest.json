@@ -1,10 +1,13 @@
 {
-  "generated_at": "2026-05-15T08:23:33.263067Z",
+  "closed_world_aligned": true,
+  "deterministic": true,
+  "generated_at": "2026-05-15T18:20:17.226395Z",
   "invariant_count": 6,
   "outputs": {
     "index": "afritech/constitution/compiled/invariants_index.py",
     "ir": "afritech/constitution/compiled/invariants_ir.json"
   },
+  "semantic_completeness_verified": true,
   "semantic_version": 1,
-  "source_hash": "6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0"
+  "source_hash": "89d4442ff2ab714798bd3d607e5559ba4a7d7838a38d2581006f31ef622f8b5a"
 }
