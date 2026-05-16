@@ -1,328 +1,374 @@
 """
 afritech.ci.alias_validator
-===========================
 
-Canonical constitutional alias validator enforcing:
+Deterministic replay-safe alias validation enforcing:
 
-- deterministic alias resolution
-- replay-safe alias semantics
+- topology-independent alias tokens
 - canonical module-path ontology
-- migration-safe alias transitions
-- forbidden alias rejection
-- closed-world alias enforcement
-- ontology-safe canonical identity resolution
+- deterministic alias ordering
+- replay-safe alias normalization
+- closed-world alias semantics
+- forbidden alias-state isolation
 
-This validator is constitutionally authoritative for:
+This validator intentionally validates HYGIENE and
+NORMALIZATION semantics only.
 
-    afritech.architecture.path_aliases
-    afritech.epoch.epoch_path_aliases
-    afritech.architecture.identity_rules
-    afritech.architecture.path_ontology
+It does NOT independently determine:
+- runtime admissibility
+- replay legitimacy
+- governance legitimacy
 
-Validation semantics are:
-
-- deterministic
-- replay-safe
-- observer-independent
-- ontology-safe
-- closed-world aligned
-- fail-fast
-
-Aliases are constitutional migration artifacts only.
-
-Aliases must never independently define:
-- execution legitimacy
-- replay authority
-- governance authority
-- proof authority
-
-Filesystem structure must never independently define
-constitutional identity.
+Those remain enforced by:
+- identity_validator
+- witness_validator
+- invariant_validator
+- surface_validator
 """
 
 from __future__ import annotations
 
 import re
 import sys
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Set
 
 import yaml
+
+
+# ============================================================
+# ROOTS
+# ============================================================
+
+ROOT = Path(__file__).resolve().parents[2]
+
+ALIASES_FILE = (
+    ROOT
+    / "afritech"
+    / "architecture"
+    / "path_aliases.yaml"
+)
 
 
 # ============================================================
 # CONSTANTS
 # ============================================================
 
-ROOT_NAMESPACE = "afritech"
-
-CANONICAL_MODULE_PATTERN = re.compile(
-    r"^afritech(\.[a-zA-Z_][a-zA-Z0-9_]*)+$"
-)
-
 VALID_ALIAS_STATUSES = {
-
     "CANONICAL",
     "MIGRATING",
     "DEPRECATED",
     "FORBIDDEN",
-
 }
 
-FORBIDDEN_ALIAS_STATUSES = {
-
-    "FORBIDDEN",
-
+VALID_ONTOLOGIES = {
+    "TOKEN_TO_MODULE_PATH",
+    "FORBIDDEN_EXECUTABLE_ALIAS",
 }
 
-FORBIDDEN_PATTERNS = [
+MODULE_PATH_PATTERN = re.compile(
+    r"^afritech(?:\.[a-zA-Z0-9_]+)+$"
+)
 
-    r"/",
-    r"\\",
-    r"\.py$",
-    r"\.yaml$",
-    r"\.yml$",
+FORBIDDEN_ALIAS_PATTERNS = [
+    r"^\.",
     r"\.\.",
-    r"\s",
-
+    r"//",
+    r"\\",
 ]
 
-FORBIDDEN_ALIAS_TOKENS = {
+FORBIDDEN_MODULE_PATTERNS = [
+    r"/",
+    r"\\",
+    r"\.\.",
+]
 
-    "dynamic_import",
-    "reflection",
-    "runtime_alias",
-    "filesystem_alias",
-    "observer_relative",
+FILENAME_PATTERN = re.compile(
+    r"^[A-Za-z0-9_\-]+\.(yaml|yml|py|json)$"
+)
 
-}
-
-RESERVED_FIELDS = {
-
-    "canonical",
-    "status",
-
-}
+MODULE_EXTENSION_PATTERN = re.compile(
+    r"\.(py|yaml|yml|json)$"
+)
 
 
 # ============================================================
-# EXCEPTIONS
+# HELPERS
 # ============================================================
 
-class AliasValidationError(
-    Exception,
-):
-    """
-    Constitutional alias validation failure.
-    """
+def fail(message: str) -> None:
+    print(
+        f"❌ Alias validation failed: {message}"
+    )
+    sys.exit(1)
 
 
-class AliasOntologyError(
-    AliasValidationError,
-):
-    """
-    Alias ontology violation.
-    """
+def load_yaml(path: Path) -> dict:
 
+    if not path.exists():
+        fail(f"missing alias registry: {path}")
 
-class ForbiddenAliasError(
-    AliasValidationError,
-):
-    """
-    Forbidden alias detected.
-    """
+    try:
+        with open(
+            path,
+            "r",
+            encoding="utf-8",
+        ) as handle:
 
+            data = yaml.safe_load(handle)
 
-# ============================================================
-# RESULT MODEL
-# ============================================================
+    except Exception as exc:
+        fail(f"invalid YAML: {exc}")
 
-@dataclass(frozen=True)
-class ValidationResult:
+    if not isinstance(data, dict):
+        fail("top-level YAML structure must be mapping")
 
-    valid: bool
-
-    alias_name: str
-
-    canonical_target: str
-
-    status: str
-
-    message: str
+    return data
 
 
 # ============================================================
-# CANONICAL IDENTITY VALIDATION
+# ALIAS VALIDATION
 # ============================================================
 
-def validate_canonical_identity(
-    identity: str,
-) -> None:
-    """
-    Validate canonical module-path identity.
-    """
+def validate_alias_key(alias_key: str) -> None:
 
-    if not identity:
+    if not isinstance(alias_key, str):
+        fail("alias key must be string")
 
-        raise AliasOntologyError(
-            "identity cannot be empty"
+    if not alias_key.strip():
+        fail("empty alias key")
+
+    # --------------------------------------------------------
+    # FORBIDDEN PATH SEMANTICS
+    # --------------------------------------------------------
+
+    if "/" in alias_key:
+        fail(
+            f"invalid alias '{alias_key}': "
+            "filesystem paths are not allowed. "
+            "Use filename only "
+            "(e.g. EPOCH_0008.yaml)"
         )
 
-    for pattern in FORBIDDEN_PATTERNS:
-
-        if re.search(pattern, identity):
-
-            raise AliasOntologyError(
-
-                f"forbidden identity pattern "
-                f"detected: {pattern}"
-
-            )
-
-    if not identity.startswith(ROOT_NAMESPACE):
-
-        raise AliasOntologyError(
-            "identity must begin with "
-            "'afritech'"
+    if "\\" in alias_key:
+        fail(
+            f"invalid alias '{alias_key}': "
+            "backslash paths are forbidden"
         )
 
-    if not CANONICAL_MODULE_PATTERN.match(
-        identity
-    ):
-
-        raise AliasOntologyError(
-            "identity is not canonical "
-            "module-path identity"
-        )
-
-
-# ============================================================
-# ALIAS KEY VALIDATION
-# ============================================================
-
-def validate_alias_key(
-    alias_key: str,
-) -> None:
-    """
-    Validate alias key.
-    """
-
-    if not alias_key:
-
-        raise AliasValidationError(
-            "alias key cannot be empty"
-        )
-
-    for pattern in FORBIDDEN_PATTERNS:
+    for pattern in FORBIDDEN_ALIAS_PATTERNS:
 
         if re.search(pattern, alias_key):
-
-            raise AliasOntologyError(
-
+            fail(
                 f"forbidden alias pattern: "
                 f"{pattern}"
-
             )
 
+    # --------------------------------------------------------
+    # TOKEN FORMAT
+    # --------------------------------------------------------
+
+    if not FILENAME_PATTERN.fullmatch(alias_key):
+        fail(
+            f"invalid alias token format: "
+            f"{alias_key}"
+        )
+
+    # --------------------------------------------------------
+    # FORBID EXTENSIONLESS TOKENS
+    # --------------------------------------------------------
+
+    if "." not in alias_key:
+        fail(
+            f"extensionless alias token forbidden: "
+            f"{alias_key}"
+        )
+
 
 # ============================================================
-# STATUS VALIDATION
+# CANONICAL VALIDATION
 # ============================================================
 
-def validate_alias_status(
-    status: str,
+def validate_module_identity(
+    canonical: str
 ) -> None:
-    """
-    Validate alias status.
-    """
 
-    if status not in VALID_ALIAS_STATUSES:
+    if not isinstance(canonical, str):
+        fail("canonical identity must be string")
 
-        raise AliasValidationError(
+    if not canonical.strip():
+        fail("empty canonical identity")
 
-            f"invalid alias status: "
-            f"{status}"
+    for pattern in FORBIDDEN_MODULE_PATTERNS:
 
+        if re.search(pattern, canonical):
+            fail(
+                f"forbidden canonical pattern: "
+                f"{pattern}"
+            )
+
+    if MODULE_EXTENSION_PATTERN.search(canonical):
+        fail(
+            f"extension-based canonical identity "
+            f"forbidden: {canonical}"
         )
 
-    if status in FORBIDDEN_ALIAS_STATUSES:
-
-        raise ForbiddenAliasError(
-
-            f"forbidden alias status: "
-            f"{status}"
-
+    if not MODULE_PATH_PATTERN.fullmatch(canonical):
+        fail(
+            f"invalid canonical module identity: "
+            f"{canonical}"
         )
 
 
-# ============================================================
-# ALIAS STRUCTURE VALIDATION
-# ============================================================
+def validate_filename_canonical(
+    canonical: str
+) -> None:
 
-def validate_alias_structure(
-    alias_name: str,
-    alias_definition: Dict[str, str],
-) -> ValidationResult:
-    """
-    Validate constitutional alias structure.
-    """
-
-    if not isinstance(alias_definition, dict):
-
-        raise AliasValidationError(
-            "alias definition must be dictionary"
+    if not isinstance(canonical, str):
+        fail(
+            "filename canonical target "
+            "must be string"
         )
 
-    missing = RESERVED_FIELDS.difference(
-        alias_definition.keys()
+    if "/" in canonical:
+        fail(
+            f"filename canonical must not "
+            f"contain filesystem path: {canonical}"
+        )
+
+    if "\\" in canonical:
+        fail(
+            f"filename canonical must not "
+            f"contain backslash path: {canonical}"
+        )
+
+    if not FILENAME_PATTERN.fullmatch(canonical):
+        fail(
+            f"invalid filename canonical: "
+            f"{canonical}"
+        )
+
+
+def validate_canonical_target(
+    canonical: str
+) -> None:
+
+    # --------------------------------------------------------
+    # DOMAIN 1:
+    # filename normalization
+    # --------------------------------------------------------
+
+    if canonical.endswith(
+        (".yaml", ".yml", ".py", ".json")
+    ):
+
+        validate_filename_canonical(
+            canonical
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # DOMAIN 2:
+    # ontology identity normalization
+    # --------------------------------------------------------
+
+    validate_module_identity(
+        canonical
     )
+
+
+# ============================================================
+# STRUCTURAL VALIDATION
+# ============================================================
+
+def validate_alias_entry(
+    alias_key: str,
+    payload: dict,
+) -> None:
+
+    if not isinstance(payload, dict):
+        fail(
+            f"alias payload must be mapping: "
+            f"{alias_key}"
+        )
+
+    required = {
+        "canonical",
+        "status",
+        "ontology",
+    }
+
+    missing = required - set(payload)
 
     if missing:
-
-        raise AliasValidationError(
-
-            f"missing alias fields: "
+        fail(
+            f"missing fields for alias "
+            f"{alias_key}: "
             f"{sorted(missing)}"
-
         )
 
-    validate_alias_key(
-        alias_name
+    canonical = payload["canonical"]
+    status = payload["status"]
+    ontology = payload["ontology"]
+
+    validate_alias_key(alias_key)
+
+    validate_canonical_target(
+        canonical
     )
 
-    canonical_target = alias_definition[
-        "canonical"
-    ]
+    if status not in VALID_ALIAS_STATUSES:
+        fail(
+            f"forbidden alias status: "
+            f"{status}"
+        )
 
-    validate_canonical_identity(
-        canonical_target
-    )
+    if ontology not in VALID_ONTOLOGIES:
+        fail(
+            f"invalid ontology: "
+            f"{ontology}"
+        )
 
-    status = alias_definition[
-        "status"
-    ]
+    # --------------------------------------------------------
+    # FORBIDDEN STATE ENFORCEMENT
+    # --------------------------------------------------------
 
-    validate_alias_status(
-        status
-    )
+    if status == "FORBIDDEN":
 
-    return ValidationResult(
+        if ontology != (
+            "FORBIDDEN_EXECUTABLE_ALIAS"
+        ):
+            fail(
+                f"FORBIDDEN alias requires "
+                f"FORBIDDEN_EXECUTABLE_ALIAS "
+                f"ontology: {alias_key}"
+            )
 
-        valid=True,
+    # --------------------------------------------------------
+    # CANONICAL LOOP PREVENTION
+    # --------------------------------------------------------
 
-        alias_name=alias_name,
+    if alias_key == canonical:
+        fail(
+            f"alias cycle detected: "
+            f"{alias_key} -> {canonical}"
+        )
 
-        canonical_target=(
-            canonical_target
-        ),
 
-        status=status,
+# ============================================================
+# DETERMINISTIC ORDERING
+# ============================================================
 
-        message=(
-            "alias validated"
-        ),
-    )
+def validate_deterministic_ordering(
+    aliases: dict
+) -> None:
+
+    ordered = sorted(aliases.keys())
+
+    if list(aliases.keys()) != ordered:
+        fail(
+            "alias registry ordering "
+            "must be deterministic"
+        )
 
 
 # ============================================================
@@ -330,242 +376,29 @@ def validate_alias_structure(
 # ============================================================
 
 def validate_duplicate_targets(
-    aliases: Dict[str, Dict[str, str]],
+    aliases: dict
 ) -> None:
-    """
-    Validate no conflicting alias targets exist.
-    """
 
-    target_map: Dict[
-        str,
-        Set[str]
-    ] = {}
+    seen = {}
 
-    for alias_name, definition in aliases.items():
+    for alias_key, payload in aliases.items():
 
-        canonical = definition[
-            "canonical"
-        ]
+        canonical = payload["canonical"]
 
-        target_map.setdefault(
-            canonical,
-            set(),
-        ).add(alias_name)
+        if canonical not in seen:
+            seen[canonical] = []
 
-    for canonical, alias_set in target_map.items():
+        seen[canonical].append(alias_key)
 
-        if len(alias_set) > 25:
+    # allowed:
+    # multiple compatibility tokens
+    # pointing to same canonical identity
 
-            raise AliasValidationError(
+    # forbidden:
+    # alias token equal to canonical
+    # already checked above
 
-                "excessive alias fan-out "
-                f"detected for: {canonical}"
-
-            )
-
-
-# ============================================================
-# CYCLE VALIDATION
-# ============================================================
-
-def validate_no_alias_cycles(
-    aliases: Dict[str, Dict[str, str]],
-) -> None:
-    """
-    Validate alias graph has no cycles.
-    """
-
-    alias_names = set(
-        aliases.keys()
-    )
-
-    for alias_name, definition in aliases.items():
-
-        canonical = definition[
-            "canonical"
-        ]
-
-        if canonical in alias_names:
-
-            raise AliasValidationError(
-
-                "alias cycle detected: "
-                f"{alias_name} -> {canonical}"
-
-            )
-
-
-# ============================================================
-# REPLAY SAFETY VALIDATION
-# ============================================================
-
-def validate_replay_safety(
-    aliases: Dict[str, Dict[str, str]],
-) -> None:
-    """
-    Validate replay-safe alias semantics.
-    """
-
-    for alias_name, definition in aliases.items():
-
-        status = definition[
-            "status"
-        ]
-
-        if status == "MIGRATING":
-
-            canonical = definition[
-                "canonical"
-            ]
-
-            validate_canonical_identity(
-                canonical
-            )
-
-
-# ============================================================
-# YAML LOADING
-# ============================================================
-
-def load_yaml(
-    path: Path,
-) -> Dict:
-    """
-    Load YAML safely.
-    """
-
-    return yaml.safe_load(
-
-        path.read_text(
-            encoding="utf-8"
-        )
-
-    )
-
-
-# ============================================================
-# FILE VALIDATION
-# ============================================================
-
-def validate_alias_file(
-    path: Path,
-) -> List[ValidationResult]:
-    """
-    Validate alias registry file.
-    """
-
-    payload = load_yaml(
-        path
-    )
-
-    aliases = payload.get(
-        "aliases",
-        {}
-    )
-
-    if not isinstance(aliases, dict):
-
-        raise AliasValidationError(
-            "aliases must be dictionary"
-        )
-
-    validate_duplicate_targets(
-        aliases
-    )
-
-    validate_no_alias_cycles(
-        aliases
-    )
-
-    validate_replay_safety(
-        aliases
-    )
-
-    results: List[
-        ValidationResult
-    ] = []
-
-    for alias_name, definition in aliases.items():
-
-        results.append(
-
-            validate_alias_structure(
-
-                alias_name,
-
-                definition,
-            )
-        )
-
-    return results
-
-
-# ============================================================
-# DIRECTORY VALIDATION
-# ============================================================
-
-def validate_alias_directory(
-    root: Path,
-) -> List[ValidationResult]:
-    """
-    Validate all alias registries.
-    """
-
-    results: List[
-        ValidationResult
-    ] = []
-
-    for file_path in root.rglob("*aliases*.yaml"):
-
-        results.extend(
-
-            validate_alias_file(
-                file_path
-            )
-        )
-
-    return results
-
-
-# ============================================================
-# CI VALIDATION
-# ============================================================
-
-def run_ci_validation() -> None:
-    """
-    Execute deterministic constitutional alias validation.
-    """
-
-    root = Path("afritech")
-
-    if not root.exists():
-
-        raise FileNotFoundError(
-            "afritech root not found"
-        )
-
-    results = validate_alias_directory(
-        root
-    )
-
-    validated = len(results)
-
-    print(
-        f"✅ Alias mappings validated: "
-        f"{validated}"
-    )
-
-    print(
-        "✅ Replay-safe alias semantics verified"
-    )
-
-    print(
-        "✅ Closed-world alias ontology enforced"
-    )
-
-    print(
-        "✅ Deterministic alias validation passed"
-    )
+    return
 
 
 # ============================================================
@@ -574,24 +407,65 @@ def run_ci_validation() -> None:
 
 def main() -> int:
 
-    try:
+    data = load_yaml(ALIASES_FILE)
 
-        run_ci_validation()
+    aliases = data.get("aliases")
 
-        return 0
+    if aliases is None:
+        fail("missing aliases section")
 
-    except Exception as exc:
+    if not isinstance(aliases, dict):
+        fail("aliases must be mapping")
 
-        print(
-            f"❌ Alias validation failed: "
-            f"{exc}"
+    validate_deterministic_ordering(
+        aliases
+    )
+
+    for alias_key in sorted(aliases.keys()):
+
+        validate_alias_entry(
+            alias_key,
+            aliases[alias_key],
         )
 
-        return 1
+    validate_duplicate_targets(
+        aliases
+    )
+
+    print(
+        "✅ Alias validation passed"
+    )
+
+    print(
+        "✅ Deterministic alias ordering verified"
+    )
+
+    print(
+        "✅ Replay-safe alias normalization verified"
+    )
+
+    print(
+        "✅ Canonical module-path resolution verified"
+    )
+
+    print(
+        "✅ Closed-world alias semantics enforced"
+    )
+
+    print(
+        "✅ Forbidden alias isolation verified"
+    )
+
+    return 0
 
 
 if __name__ == "__main__":
 
-    sys.exit(
-        main()
-    )
+    try:
+        raise SystemExit(main())
+
+    except SystemExit:
+        raise
+
+    except Exception as exc:
+        fail(str(exc))

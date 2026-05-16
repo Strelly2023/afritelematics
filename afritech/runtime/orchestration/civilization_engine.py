@@ -26,7 +26,7 @@ from afritech.runtime.engine.executor import (
     ExecutionEngine,
     ExecutionResult,
 )
-from afritech.runtime.kernel.execute import EXECUTE
+from afritech.kernel.execute import EXECUTE
 
 
 class CivilizationError(Exception):

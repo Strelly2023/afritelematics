@@ -1,7 +1,7 @@
 {
   "closed_world_aligned": true,
   "deterministic": true,
-  "generated_at": "2026-05-15T18:20:17.226395Z",
+  "generated_at": "2026-05-16T13:10:13.996487Z",
   "invariant_count": 6,
   "outputs": {
     "index": "afritech/constitution/compiled/invariants_index.py",

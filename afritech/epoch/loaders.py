@@ -1,5 +1,3 @@
-# afritech/epoch/loaders.py
-
 """
 AfriTech Epoch Loaders
 =====================
@@ -46,15 +44,31 @@ def load_current_epoch_snapshot() -> EpochSnapshot:
 
     registry = load_registry()
 
-    epoch_data = registry.get("current_epoch")
-    if not epoch_data:
+    # ✅ Correct schema access
+    epoch_section = registry.get("epoch")
+
+    if not isinstance(epoch_section, dict):
         fail(
-            "missing_current_epoch",
+            "missing_epoch_section",
             ViolationClass.A_FATAL,
         )
 
+    if "current" not in epoch_section:
+        fail(
+            "missing_epoch_current",
+            ViolationClass.A_FATAL,
+        )
+
+    current_epoch = epoch_section["current"]
+
     try:
-        return EpochSnapshot.from_dict(epoch_data)
+        # ✅ Construct canonical snapshot
+        return EpochSnapshot(
+            number=current_epoch,
+            parent=epoch_section.get("constitutional_epoch"),
+            epoch_hash=registry.get("attestation", {}).get("registry_hash"),
+        )
+
     except Exception as e:
         fail(
             f"invalid_epoch_snapshot:{e}",
@@ -89,9 +103,10 @@ def load_epoch_snapshot_from_history(
     if not isinstance(data, dict):
         raise ValueError("Epoch history file must parse to a dict")
 
-    # Required top-level sections
+    # Required sections
     if "epoch" not in data:
         raise ValueError("Epoch history missing 'epoch' section")
+
     if "hash_chain" not in data:
         raise ValueError("Epoch history missing 'hash_chain' section")
 
@@ -100,12 +115,14 @@ def load_epoch_snapshot_from_history(
 
     if not isinstance(epoch_section, dict):
         raise ValueError("'epoch' section must be a dict")
+
     if not isinstance(hash_chain, dict):
         raise ValueError("'hash_chain' section must be a dict")
 
-    # Required epoch fields
+    # Required fields
     if "number" not in epoch_section:
         raise ValueError("Epoch history missing epoch.number")
+
     if "epoch_hash" not in hash_chain:
         raise ValueError("Epoch history missing hash_chain.epoch_hash")
 
@@ -142,6 +159,7 @@ def load_epoch_snapshot_from_runtime(
         number = epoch_obj.number
         parent = epoch_obj.parent
         epoch_hash = epoch_obj.epoch_hash
+
     except AttributeError as exc:
         raise ValueError(
             "Runtime epoch object must expose "

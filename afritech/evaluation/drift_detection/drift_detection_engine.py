@@ -20,8 +20,10 @@ from datetime import datetime
 import hashlib
 import json
 
-from runtime.engine.executor import ExecutionResult
-from runtime.context.runtime_context import RuntimeContext
+#from runtime.engine.executor import ExecutionResult
+from afritech.shared.types import ExecutionResult
+from afritech.shared.context import RuntimeContext
+
 
 
 # -----------------------------------------------------------------

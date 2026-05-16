@@ -447,3 +447,51 @@ events:
   description: Sovereign runtime boot completed successfully. All constitutional surfaces
     verified.
   timestamp: '2026-05-15T08:23:31Z'
+- id: EVT-9874E341
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T11:57:00Z'
+- id: EVT-254D5971
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T13:04:36Z'
+- id: EVT-6931162C
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T13:09:25Z'
+- id: EVT-C95EE712
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T13:31:59Z'
+- id: EVT-210D8731
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T13:45:31Z'
+- id: EVT-CF62BC13
+  type: RUNTIME_BOOT_SUCCESS
+  severity_class: C_DOCUMENTARY
+  epoch: 6
+  authority: {}
+  description: Sovereign runtime boot completed successfully. All constitutional surfaces
+    verified.
+  timestamp: '2026-05-16T14:35:49Z'

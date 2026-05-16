@@ -23,6 +23,10 @@ __all__ = [
 ]
 
 
+# ---------------------------------------------------------
+# Canonical replay harness (single authority)
+# ---------------------------------------------------------
+
 def _run_replay(commands: Iterable[Any]) -> Dict[str, Any]:
     """
     Execute a single replay run with a fresh canonical initial state.
@@ -30,20 +34,34 @@ def _run_replay(commands: Iterable[Any]) -> Dict[str, Any]:
     Guarantees:
     - identical initial conditions
     - deterministic canonicalization
+    - epoch‑bounded execution
     - replay‑stable trace and hash
+    - final_state reflects Δ‑composed reality
 
     This is the *only* execution harness used by all replay tests.
     """
 
-    state = RideState(
-        drivers_available={"A", "B"},
+    # ✅ Canonical replay epoch (sealed horizon)
+    epoch = 6
+
+    # ✅ Canonical immutable initial state
+    initial_state = RideState(
+        drivers_available=frozenset({"A", "B"}),
         ride_status="OPEN",
+        assigned_driver=None,
+        ride_a_assigned=None,
+        ride_b_assigned=None,
     )
 
-    trace = DeterministicExecutor.execute(state, commands)
+    # ✅ Correct API usage
+    trace, final_state = DeterministicExecutor.execute_with_state(
+        state=initial_state,
+        commands=commands,
+        epoch=epoch,
+    )
 
     return {
-        "final_state": state.snapshot(),
+        "final_state": final_state.snapshot(),
         "trace": trace,
         "hash": DeterministicExecutor.trace_hash(trace),
     }
@@ -56,14 +74,11 @@ def _run_replay(commands: Iterable[Any]) -> Dict[str, Any]:
 def run_replay() -> Dict[str, Any]:
     """
     Replay harness for concurrent admissible mutation.
-
-    Two conflicting ASSIGN commands are submitted without order.
-    DeterministicExecutor must serialize mutation canonically.
     """
 
     commands = [
-        AssignDriver("B"),
-        AssignDriver("A"),
+        AssignDriver("B", epoch=6),
+        AssignDriver("A", epoch=6),
     ]
 
     return _run_replay(commands)
@@ -75,17 +90,14 @@ def run_replay() -> Dict[str, Any]:
 
 def run_replay_variant_a() -> Dict[str, Any]:
     """
-    Variant A submission order:
-    - Read
-    - Audit emission
-    - Competing mutations
+    Variant A submission order.
     """
 
     commands = [
         ReadRideState("R1"),
         EmitAuditEvent("E1"),
-        AssignDriver("A"),
-        AssignDriver("B"),
+        AssignDriver("A", epoch=6),
+        AssignDriver("B", epoch=6),
     ]
 
     return _run_replay(commands)
@@ -93,20 +105,14 @@ def run_replay_variant_a() -> Dict[str, Any]:
 
 def run_replay_variant_b() -> Dict[str, Any]:
     """
-    Variant B submission order:
-    - Audit emission
-    - Mutation
-    - Read
-    - Competing mutation
-
-    Replay identity must match Variant A.
+    Variant B submission order.
     """
 
     commands = [
         EmitAuditEvent("E1"),
-        AssignDriver("B"),
+        AssignDriver("B", epoch=6),
         ReadRideState("R1"),
-        AssignDriver("A"),
+        AssignDriver("A", epoch=6),
     ]
 
     return _run_replay(commands)
@@ -119,13 +125,11 @@ def run_replay_variant_b() -> Dict[str, Any]:
 def run_independent_replay_variant_a() -> Dict[str, Any]:
     """
     Independent mutation variant A.
-
-    Two non‑conflicting mutations submitted in order A → B.
     """
 
     commands = [
-        AssignDriverToRideA("A"),
-        AssignDriverToRideB("B"),
+        AssignDriverToRideA("A", epoch=6),
+        AssignDriverToRideB("B", epoch=6),
     ]
 
     return _run_replay(commands)
@@ -134,14 +138,11 @@ def run_independent_replay_variant_a() -> Dict[str, Any]:
 def run_independent_replay_variant_b() -> Dict[str, Any]:
     """
     Independent mutation variant B.
-
-    Same mutations as variant A, submitted in reverse order.
-    Replay identity must remain canonical.
     """
 
     commands = [
-        AssignDriverToRideB("B"),
-        AssignDriverToRideA("A"),
+        AssignDriverToRideB("B", epoch=6),
+        AssignDriverToRideA("A", epoch=6),
     ]
 
     return _run_replay(commands)

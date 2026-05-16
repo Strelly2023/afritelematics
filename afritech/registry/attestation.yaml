@@ -1,288 +1,101 @@
-schema: afritech.registry.attestation.v1
+# afritech/registry/attestation.yaml
 
-attestation:
+schema: afritech.attestation.v1
 
-  version: 2
-  status: SEALED
-  epoch: 6
+status: SEALED
 
-  issued_at: "2026-05-07T00:10:00Z"
-  issued_by: CONSTITUTIONAL_ATTESTATION_AUTHORITY
+epoch: "6"
 
-  mutation_class: CONSTITUTIONAL_SURFACE_REFINEMENT
+attestation_id: ATT-0008-SEALED
 
-  activating_adrs:
-    - ADR-0006
-    - ADR-0007
-    - ADR-0008
-    - ADR-0009
+issued_by: CONSTITUTIONAL_AUTHORITY
 
-  # -----------------------------------------------------------------
-  # ROOT BINDINGS (CONSTITUTIONAL TRUST CHAIN)
-  # -----------------------------------------------------------------
+issued_at: DETERMINISTIC_TIMESTAMP
 
-  bindings:
+constitutional_mode: CLOSED_WORLD
 
-    registry_hash: "db5e83b24286e3c59856c48bb0e5bf94cb4ea76809c7192577c209b06390726a"
+deterministic_execution: true
 
-    epoch_hash: "<SHA256(EPOCH_0006 canonical yaml)>"
+replay_required: true
 
-    execution_surfaces_hash: "<SHA256(afritech/governance/EXECUTION_SURFACES.yaml)>"
+single_runtime_assumed: true
 
-    authority_profiles_hash: "<SHA256(afritech/inference/authority_profiles.yaml)>"
+environment_mutability: FORBIDDEN
 
-    replay_verifier_hash: "<SHA256(afritech/replay/verify.py + replay core surfaces)>"
+external_io_access: FORBIDDEN
 
-    kernel_root_hash: "<MERKLE_ROOT(kernel_hashes ordered)>"
+system_time_access: FORBIDDEN
 
-  # -----------------------------------------------------------------
-  # CLOSED-WORLD EXECUTION WITNESSES (REQUIRED BY I8)
-  # -----------------------------------------------------------------
+authority_isolation_enforced: true
 
-  execution_surface_hash: "<SHA256(afritech/governance/EXECUTION_SURFACES.yaml)>"
+witness_validation_required: true
 
-  kernel_surface_hash: "<MERKLE_ROOT(kernel_hashes ordered)>"
+runtime_certificate_required: true
 
-  # -----------------------------------------------------------------
-  # BINDING ORDER (DETERMINISTIC HASH COMPOSITION)
-  # -----------------------------------------------------------------
+proof_carrying_execution: true
 
-  binding_order:
-    - registry_hash
-    - epoch_hash
-    - kernel_root_hash
-    - execution_surfaces_hash
-    - authority_profiles_hash
-    - replay_verifier_hash
-    - execution_surface_hash
-    - kernel_surface_hash
+admission:
 
-  # -----------------------------------------------------------------
-  # KERNEL SURFACE HASH ATTESTATION
-  # -----------------------------------------------------------------
+  runtime_certificate_required: true
 
-  kernel_hashes:
+  witness_bundle_required: true
 
-    lean:
-      hash: "6c3c1c87cb81a1de3540623a4b981d41e31c4f7d2844d5bdf5d048cf763d67a0"
+  replay_validation_required: true
 
-    kernel:
-      hash: "977b4e49f82d8ac316941920e31be36de3e1f2a6021935794310624e4fc62433"
+  deterministic_execution_required: true
 
-    state:
-      hash: "7094b2a439fca49f134a68b38414706ed737e0d1bbc22d8406cb6ffe511f8663"
+  closed_world_required: true
 
-    guards:
-      hash: "5435f4e0ff23b515141daced33332d7a3ed6d884179f30d4992f9fc63899c6d5"
+replay_constraints:
 
-    runtime:
-      hash: "6b0ae2e79d3a6b50829908d35207209bb07b58ef13c4335e11eeaee99e4e8e97"
+  replay_required: true
 
-    runtime_activation:
-      hash: "2e21d0adae8b3e4aaddb5e9008e4d801da210cd89940c4f85d3ace1b7c8cd2cd"
+  deterministic_only: true
 
-    runtime_engine:
-      hash: "04892c7ae73f69033c80eaf54ffd3e53706b835865e4be691a828a261a0055cd"
+  transcript_required: true
 
-    proof:
-      hash: "1ad22f133a9a50a3265b5481a0bdbbbe49599830111903eafaa4ef97b231f158"
+  observational_consistency_required: true
 
-    evaluation:
-      hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+governance:
 
-  # -----------------------------------------------------------------
-  # MERKLE ROOT COMPUTATION
-  # -----------------------------------------------------------------
+  semantic_escalation_forbidden: true
 
-  merkle_root:
+  equivalence_inference_forbidden: true
 
-    algorithm: SHA256_MERKLE_TREE
+  identity_collapsing_forbidden: true
 
-    leaf_order:
-      - lean
-      - kernel
-      - state
-      - guards
-      - runtime
-      - runtime_activation
-      - runtime_engine
-      - proof
-      - evaluation
+  representation_authority_propagation_forbidden: true
 
-    computed_root: "<SHA256(Merkle tree root of kernel_hashes)>"
+proof_surfaces:
 
-  # -----------------------------------------------------------------
-  # GUARANTEES (SEALED CONSTITUTIONAL STATE)
-  # -----------------------------------------------------------------
+  replay_witness: REQUIRED
 
-  guarantees:
+  execution_witness: REQUIRED
 
-    registry_sealed: true
-    epoch_continuity_verified: true
-    monotonic_epoch_chain: true
+  mutation_witness: REQUIRED
 
-    kernel_integrity_verified: true
-    kernel_merkle_bound: true
+  transcript_witness: REQUIRED
 
-    execution_surfaces_bound: true
-    authority_profiles_bound: true
+  witness_bundle: REQUIRED
 
-    runtime_admission_required: true
-    certificate_binding_required: true
+certificate_policy:
 
-    authority_enforced_pre_inference: true
+  certificate_schema:
+    afritech.runtime.certificate.v1
 
-    deterministic_execution_only: true
-    nondeterminism_forbidden: true
+  signature_algorithm:
+    ED25519
 
-    replay_validity_required: true
-    replay_verifier_bound: true
+  deterministic_hashing_required: true
 
-    observer_free_validation: true
+  canonical_serialization_required: true
 
-  # -----------------------------------------------------------------
-  # EXECUTION LAW ENFORCEMENT
-  # -----------------------------------------------------------------
+validation:
 
-  enforcement:
+  attestation_integrity_verified: true
 
-    closed_world_execution: true
+  replay_admissibility_verified: true
 
-    undeclared_surface_effect: HARD_FAILURE
+  deterministic_constraints_verified: true
 
-    runtime_requires_certificate: true
-    certificate_type: RuntimeCertificate
-
-    execution_requires_surface_admission: true
-
-    replay_required_for_legitimacy: true
-
-    authority_precedes_inference: true
-
-    violation_response:
-      type: HARD_FAILURE
-      effect: RUNTIME_NON_EXISTENCE
-
-  # -----------------------------------------------------------------
-  # NON-OBSERVABILITY GUARANTEE
-  # -----------------------------------------------------------------
-
-  non_observability:
-
-    invariant: ENFORCED
-
-    definition: >
-      Runtime legitimacy MUST be derivable solely from
-      registry state, attested hashes, execution surfaces,
-      and replay transcripts.
-
-      No hidden runtime state, external observer,
-      implicit context, or non-attested dependency
-      is permitted.
-
-  # -----------------------------------------------------------------
-  # REPLAY BINDING
-  # -----------------------------------------------------------------
-
-  replay_binding:
-
-    required: true
-
-    constraints:
-      replay_hash_must_match: true
-      transcript_schema_required: true
-      deterministic_execution_required: true
-
-    enforcement:
-      mismatch_effect: REPLAY_INVALIDATION
-
-  # -----------------------------------------------------------------
-  # SIGNATURE (FINAL CONSTITUTIONAL SEAL)
-  # -----------------------------------------------------------------
-
-  signature:
-
-    algorithm: SHA256_WITH_CONSTITUTIONAL_SIGNATURE
-
-    signature_scope:
-
-      includes:
-        - bindings
-        - binding_order
-        - execution_surface_hash
-        - kernel_surface_hash
-        - kernel_hashes
-        - merkle_root
-        - guarantees
-        - enforcement
-        - replay_binding
-        - non_observability
-
-    payload_hash: "<SHA256(canonical serialized signature_scope)>"
-
-    signature: "<CRYPTOGRAPHIC_SIGNATURE>"
-
-    signature_root: "<CONSTITUTIONAL_ROOT_KEY_HASH>"
-
-    signature_version: v1
-
-  # -----------------------------------------------------------------
-  # VALIDATION RULES
-  # -----------------------------------------------------------------
-
-  validation:
-
-    required_at_boot: true
-    required_for_runtime_admission: true
-    required_for_each_execution: true
-
-    validation_scope:
-      - registry_hash
-      - epoch_hash
-      - kernel_root_hash
-      - execution_surfaces_hash
-      - execution_surface_hash
-      - kernel_surface_hash
-      - authority_profiles_hash
-      - replay_verifier_hash
-
-    failure_response:
-      type: HARD_FAILURE
-      effect: CONSTITUTIONAL_INVALIDATION
-
-  # -----------------------------------------------------------------
-  # CONSTITUTIONAL ASSERTION
-  # -----------------------------------------------------------------
-
-  constitutional_assertion: >
-    This attestation certifies that AfriTech at Epoch 6
-    is cryptographically sealed and constitutionally valid.
-
-    All runtime execution MUST derive legitimacy from:
-      - registry continuity
-      - epoch integrity
-      - kernel hash integrity
-      - Merkle-root kernel binding
-      - admitted execution surfaces
-      - authority-bound execution
-      - RuntimeCertificate validation
-      - replay-verifiable execution
-
-    Any deviation SHALL result in:
-      - execution refusal
-      - replay invalidation
-      - constitutional failure
-
-  # -----------------------------------------------------------------
-  # FINAL ASSERTION
-  # -----------------------------------------------------------------
-
-  final_assertion: >
-    AfriTech is constitutionally sealed at Epoch 6.
-
-    No state exists without attestation.
-    No runtime exists without certificate.
-    No execution exists without admission.
-    No legitimacy exists without replay.
-    No authority exists without explicit declaration.
-    No evolution exists outside constitutional mutation.
+  closed_world_constraints_verified: true

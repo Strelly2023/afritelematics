@@ -1,0 +1,156 @@
+schema: afritech.path.ontology.v2
+
+rules:
+
+  # =========================================================
+  # GLOBAL IGNORE
+  # =========================================================
+  ignore_patterns:
+    - "__pycache__"
+    - "*.pyc"
+    - ".DS_Store"
+    - "*.tmp"
+    - "*.bak"
+
+  # =========================================================
+  # EXPLICIT ALLOWED FILES
+  # =========================================================
+  allowed_exceptions:
+    - "__init__.py"
+
+  # =========================================================
+  # STRICT EXECUTION TOPOLOGY
+  #
+  # Runtime/core paths are constitutionally enforced.
+  # These must remain deterministic and machine-safe.
+  # =========================================================
+  strict_paths:
+    - "ecosystems/**/runtime/**"
+    - "ecosystems/**/core/**"
+    - "afritech/runtime/**"
+
+  strict_rules:
+
+    # ---------------------------------------------------------
+    # lowercase enforcement
+    # ---------------------------------------------------------
+    lowercase_only: true
+
+    # ---------------------------------------------------------
+    # snake_case enforcement
+    # ---------------------------------------------------------
+    snake_case_only: true
+
+    # ---------------------------------------------------------
+    # whitespace forbidden
+    # ---------------------------------------------------------
+    no_spaces: true
+
+    # ---------------------------------------------------------
+    # allowed file extensions
+    # ---------------------------------------------------------
+    allowed_extensions:
+      - ".py"
+      - ".yaml"
+      - ".yml"
+      - ".json"
+      - ".toml"
+      - ".md"
+
+    # ---------------------------------------------------------
+    # malformed / forbidden naming patterns
+    # ---------------------------------------------------------
+    forbidden_patterns:
+
+      # duplicated pluralization
+      - ".*usecasess.*"
+      - ".*casess$"
+      - ".*ssess$"
+
+      # double underscore forbidden
+      - ".*__.*"
+
+      # temporary artifacts
+      - ".*~$"
+      - ".*\\.tmp$"
+
+  # =========================================================
+  # GOVERNANCE / CONSTITUTION
+  #
+  # Governance artifacts are typed constitutional objects.
+  # =========================================================
+  governance_paths:
+    - "**/governance/**"
+    - "**/constitution/**"
+    - "**/registry/**"
+
+  governance_rules:
+
+    # ---------------------------------------------------------
+    # structured constitutional artifacts
+    # ---------------------------------------------------------
+    structured_patterns:
+
+      # RULE artifacts
+      - "^RULE-[0-9]{4}-[a-z0-9\\-]+\\.yaml$"
+
+      # ADR artifacts
+      - "^ADR-[0-9]{4}-[a-z0-9\\-]+\\.(md|yaml)$"
+
+      # epoch declarations
+      - "^EPOCH-[0-9]{4}-[a-z0-9\\-]+\\.yaml$"
+
+      # invariant declarations
+      - "^I[0-9]{1,4}_[a-z0-9_]+\\.yaml$"
+
+    # ---------------------------------------------------------
+    # registry-style governance artifacts
+    # ---------------------------------------------------------
+    registry_patterns:
+
+      - "^[a-z0-9_]+\\.yaml$"
+      - "^[a-z0-9_]+\\.yml$"
+
+    # ---------------------------------------------------------
+    # python tooling allowed
+    # ---------------------------------------------------------
+    allow_python: true
+
+    # ---------------------------------------------------------
+    # governance docs allowed
+    # ---------------------------------------------------------
+    allow_docs: true
+
+    # ---------------------------------------------------------
+    # directories always allowed
+    # ---------------------------------------------------------
+    allow_directories: true
+
+  # =========================================================
+  # DOCUMENTATION
+  #
+  # Documentation is intentionally relaxed.
+  # =========================================================
+  docs_paths:
+    - "**/docs/**"
+    - "*.md"
+
+  docs_rules:
+
+    allow_uppercase: true
+    allow_spaces: true
+    allow_hyphens: true
+
+  # =========================================================
+  # OPTIONAL FUTURE EXTENSIONS
+  # =========================================================
+  future_rules:
+
+    # enforce deterministic registry ordering
+    deterministic_registry_sorting: false
+
+    # enforce ontology checksum manifests
+    require_manifest_checksums: false
+
+    # enforce semantic naming lineage
+    semantic_lineage_validation: false

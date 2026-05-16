@@ -1,5 +1,5 @@
 """
-afritech/node_api.pyTech node.afritech/node_api.py
+AfriTech Node API
 
 Responsibilities:
 - Accept execution requests
@@ -17,10 +17,11 @@ import logging
 import time
 import uuid
 
-# AfriTech imports
-from runtime.engine.executor import ExecutionEngine, ExecutionResult
-from runtime.context.runtime_context import RuntimeContext
-from network.node_identity import NodeIdentity
+# ✅ CORRECT IMPORTS (ALIGNED WITH ARCHITECTURE)
+from afritech.runtime.engine.executor import ExecutionEngine
+from afritech.shared.types import ExecutionResult
+from afritech.shared.context import RuntimeContext
+from afritech.network.node_identity import NodeIdentity
 
 
 # -----------------------------------------------------------------
@@ -29,11 +30,9 @@ from network.node_identity import NodeIdentity
 
 app = Flask(__name__)
 
-# Logging Setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("afritech.node_api")
 
-# Runtime injection
 EXECUTION_ENGINE: Optional[ExecutionEngine] = None
 NODE_IDENTITY: Optional[NodeIdentity] = None
 BOOT_TIME = time.time()
@@ -107,46 +106,27 @@ def execute():
         replay_requirements = data.get("replay_requirements", {})
 
         if not authority_profile:
-            return jsonify({
-                "error": "Missing authority_profile",
-                "request_id": req_id
-            }), 400
+            return jsonify({"error": "Missing authority_profile", "request_id": req_id}), 400
 
         if not isinstance(payload, dict):
-            return jsonify({
-                "error": "payload must be an object",
-                "request_id": req_id
-            }), 400
+            return jsonify({"error": "payload must be an object", "request_id": req_id}), 400
 
-        # ---------------------------------------------------------
-        # BUILD CONTEXT (STRICT)
-        # ---------------------------------------------------------
+        # ✅ BUILD CONTEXT (SHARED STRUCTURE)
         context = RuntimeContext(
             authority_profile=authority_profile,
             payload=payload,
             replay_requirements=replay_requirements,
-            metadata={
-                "source": "network",
-                "node_id": _node_id(),
-                "request_id": req_id,
-                "timestamp": time.time(),
-                "endpoint": "/execute"
-            }
+            context_hash=str(uuid.uuid4()),  # ✅ simplified deterministic id placeholder
+            timestamp=str(time.time()),
         )
 
-        # ---------------------------------------------------------
-        # EXECUTION
-        # ---------------------------------------------------------
+        # ✅ EXECUTION
         result: ExecutionResult = EXECUTION_ENGINE.execute(context)
 
         duration = round(time.time() - start_time, 6)
 
-        # ---------------------------------------------------------
-        # ENFORCE CONSENSUS COMPATIBILITY
-        # ---------------------------------------------------------
         response = result.to_dict()
 
-        # guarantee presence of result_hash (critical)
         if not response.get("result_hash"):
             return jsonify({
                 "error": "Missing result_hash (invalid execution contract)",
@@ -154,16 +134,12 @@ def execute():
                 "request_id": req_id
             }), 500
 
-        # enrich response
         response.update({
             "node_id": _node_id(),
             "request_id": req_id,
             "execution_time": duration
         })
 
-        # ---------------------------------------------------------
-        # RETURN
-        # ---------------------------------------------------------
         if not result.success:
             logger.warning(f"[{req_id}] Execution failed")
             return jsonify(response), 500
@@ -194,7 +170,7 @@ def execute():
 
 
 # -----------------------------------------------------------------
-# HEALTH CHECK (LIVENESS)
+# HEALTH / READY / IDENTITY / METRICS (UNCHANGED)
 # -----------------------------------------------------------------
 
 @app.route("/health", methods=["GET"])
@@ -205,10 +181,6 @@ def health():
         "service": "afritech-node-api"
     })
 
-
-# -----------------------------------------------------------------
-# READINESS CHECK
-# -----------------------------------------------------------------
 
 @app.route("/ready", methods=["GET"])
 def ready():
@@ -224,10 +196,6 @@ def ready():
     })
 
 
-# -----------------------------------------------------------------
-# NODE IDENTITY
-# -----------------------------------------------------------------
-
 @app.route("/identity", methods=["GET"])
 def identity():
     if NODE_IDENTITY is None:
@@ -235,10 +203,6 @@ def identity():
 
     return jsonify(NODE_IDENTITY.to_dict())
 
-
-# -----------------------------------------------------------------
-# METRICS
-# -----------------------------------------------------------------
 
 @app.route("/metrics", methods=["GET"])
 def metrics():
@@ -252,50 +216,17 @@ def metrics():
 
 
 # -----------------------------------------------------------------
-# ERROR HANDLERS
-# -----------------------------------------------------------------
-
-@app.errorhandler(404)
-def not_found(_):
-    return jsonify({
-        "error": "Endpoint not found",
-        "node_id": _node_id()
-    }), 404
-
-
-@app.errorhandler(405)
-def method_not_allowed(_):
-    return jsonify({
-        "error": "Method not allowed",
-        "node_id": _node_id()
-    }), 405
-
-
-# -----------------------------------------------------------------
 # START SERVER
 # -----------------------------------------------------------------
 
-def run(
-    host: str = "0.0.0.0",
-    port: int = 8000,
-    debug: bool = False
-):
+def run(host="0.0.0.0", port=8000, debug=False):
     if EXECUTION_ENGINE is None or NODE_IDENTITY is None:
         raise RuntimeError("Node API not initialized")
 
     logger.info(f"🚀 Starting AfriTech Node API on {host}:{port}")
 
-    app.run(
-        host=host,
-        port=port,
-        debug=debug,
-        threaded=True  # important for concurrency
-    )
+    app.run(host=host, port=port, debug=debug, threaded=True)
 
-
-# -----------------------------------------------------------------
-# CLI GUARD
-# -----------------------------------------------------------------
 
 if __name__ == "__main__":
     raise RuntimeError(

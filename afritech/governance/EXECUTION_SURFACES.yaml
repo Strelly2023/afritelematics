@@ -1,10 +1,10 @@
-version: EXECUTION_SURFACES_V2
+version: EXECUTION_SURFACES_V3
 
 status: ACTIVE
 
 constitutional_scope:
   epoch: 6
-  mutation_class: CONSTITUTIONAL_SURFACE_REFINEMENT
+  mutation_class: CONSTITUTIONAL_SURFACE_NORMALIZATION
   activated_by:
     - ADR-0006
     - ADR-0007
@@ -41,328 +41,292 @@ global_execution_law:
 
 allowed_execution_surfaces:
 
+  # ==========================================================
+  # DEPRECATED AGGREGATE
+  # ==========================================================
+
+  runtime:
+    status: DEPRECATED_AGGREGATE
+
+    description: >
+      Historical aggregate runtime namespace retained only
+      for constitutional continuity and replay compatibility.
+
+      This surface MUST NOT be referenced for new runtime
+      admission, orchestration, proof binding, or execution
+      semantics.
+
+      Canonical execution surfaces are:
+      - runtime_activation
+      - runtime_engine
+      - proof
+      - evaluation
+
+    canonical_replacements:
+      - runtime_activation
+      - runtime_engine
+      - proof
+      - evaluation
+
+    admissibility:
+      new_runtime_usage: FORBIDDEN
+      replay_compatibility_only: true
+
+    forbidden_operations:
+      - runtime_admission
+      - orchestration
+      - execution
+      - replay_binding
+      - authority_resolution
+
+  # ==========================================================
+  # REGISTRY
+  # ==========================================================
+
   registry:
     description: >
-      Canonical constitutional identity and continuity registry.
+      Canonical constitutional identity and continuity
+      registry.
+
       Immutable source of runtime legitimacy.
+
     paths:
       - afritech/registry/registry.yaml
+
     allowed_operations:
       - read
       - hash
       - continuity_validation
+
     forbidden_operations:
       - mutation
       - extension
       - dynamic_resolution
 
+  # ==========================================================
+  # EPOCH STATE
+  # ==========================================================
+
   epoch_state:
     description: >
       Current constitutional epoch context.
+
       Read-only temporal legitimacy anchor.
+
     paths:
       - afritech/registry/epochs/
+
     allowed_operations:
       - read
       - hash
       - continuity_validation
+
     forbidden_operations:
       - advancement
       - rollback
       - reseal
 
+  # ==========================================================
+  # AUTHORITY PROFILES
+  # ==========================================================
+
   authority_profiles:
     description: >
-      Authority scope definitions used for pre-inference legality
-      evaluation.
+      Authority scope definitions used for pre-inference
+      legality evaluation.
+
     paths:
       - afritech/inference/authority_profiles.yaml
+
     allowed_operations:
       - scope_evaluation
       - authority_resolution
+
     forbidden_operations:
       - delegation_creation
       - authority_derivation
       - dynamic_override
 
+  # ==========================================================
+  # INVARIANTS
+  # ==========================================================
+
   invariants:
     description: >
-      Hard constitutional invariants enforced pre-execution.
+      Hard constitutional invariants enforced
+      pre-execution.
+
     paths:
-      - afritech/constitution/INVARIANTS.yaml
+      - afritech/constitution/invariants_semantics.yaml
+      - afritech/constitution/compiled/invariants_ir.json
+
     allowed_operations:
       - evaluation
       - validation
+      - replay_binding
+
     forbidden_operations:
       - interpretation_expansion
       - runtime_modification
 
+  # ==========================================================
+  # RULES
+  # ==========================================================
+
   rules:
     description: >
       Deterministic constitutional legality rules.
+
     paths:
       - afritech/governance/rules/
+
     allowed_operations:
       - evaluation
       - deterministic_resolution
+
     forbidden_operations:
       - discretionary_application
       - runtime_rule_selection
 
+  # ==========================================================
+  # EXECUTION SPECS
+  # ==========================================================
+
   execution_specs:
     description: >
-      Formal execution specifications defining proof-valid runtime.
+      Formal execution specifications defining
+      proof-valid runtime.
+
     paths:
       - afritech/docs/execution/CONSTITUTIONAL_RESEARCH_AGENT_SPEC.md
       - afritech/replay/REPLAY_VERIFIER_SPEC.md
+
     allowed_operations:
       - validation_reference
+
     forbidden_operations:
       - semantic_extension
       - implicit_behavior_inference
 
+  # ==========================================================
+  # INFERENCE REQUEST SCHEMA
+  # ==========================================================
+
   inference_request_schema:
     description: >
       Canonical constitutional request envelope.
+
     paths:
       - afritech/inference/constitutional_request.yaml
+
     allowed_operations:
       - schema_validation
+
     forbidden_operations:
       - schema_mutation
       - default_field_inference
 
+  # ==========================================================
+  # TRUTH PACKET SCHEMA
+  # ==========================================================
+
   truth_packet_schema:
     description: >
       Canonical epistemic output structure.
+
     paths:
       - afritech/truth/packet.py
       - afritech/truth/epistemic_confidence.yaml
+
     allowed_operations:
       - structure_validation
       - replay_binding
+
     forbidden_operations:
       - confidence_collapsing
       - non_normalized_metrics
 
-# -------------------------------------------------------------------
-# EPOCH 6 RUNTIME ADMISSION SURFACES
-# -------------------------------------------------------------------
+  # ==========================================================
+  # CANONICAL EXECUTION SURFACES
+  # ==========================================================
 
   runtime_activation:
+    status: CANONICAL
+
     description: >
       Runtime admission enforcement layer.
+
       Governs constitutional runtime instantiation.
+
     paths:
       - afritech/runtime/activation/
+
     allowed_operations:
       - certificate_validation
       - admission_control
       - runtime_boot_authorization
+
     forbidden_operations:
       - execution
       - inference
       - mutation
 
   runtime_engine:
+    status: CANONICAL
+
     description: >
       Constitutional runtime orchestration engine.
+
     paths:
       - afritech/runtime/engine/
       - afritech/runtime/context/
+
     allowed_operations:
       - dispatch
       - routing
       - execution
       - replay_binding
+
     forbidden_operations:
       - authority_escalation
       - surface_extension
       - certificate_generation
 
   proof:
+    status: CANONICAL
+
     description: >
-      Runtime certification artifact generation and validation.
+      Runtime certification artifact generation
+      and validation.
+
     paths:
       - afritech/proof/
+
     allowed_operations:
       - certificate_read
       - certificate_validation
       - proof_snapshot_read
+
     forbidden_operations:
       - runtime_execution
       - authority_override
 
   evaluation:
+    status: CANONICAL
+
     description: >
-      Replay-governed constitutional feedback surfaces.
+      Replay-governed constitutional feedback
+      surfaces.
+
     paths:
       - afritech/evaluation/
+
     allowed_operations:
       - telemetry_capture
       - replay_analysis
       - drift_detection
       - adr_triggering
+
     forbidden_operations:
       - autonomous_mutation
       - direct_runtime_modification
-
-# -------------------------------------------------------------------
-# RUNTIME ADMISSION LAW
-# -------------------------------------------------------------------
-
-runtime_admission:
-
-  required: true
-
-  credential: RuntimeCertificate
-
-  refusal_conditions:
-    - missing_certificate
-    - invalid_certificate
-    - epoch_mismatch
-    - registry_hash_mismatch
-    - execution_surface_hash_mismatch
-    - kernel_hash_mismatch
-    - replay_verifier_mismatch
-    - undeclared_surface_reference
-
-  refusal_response:
-    type: HARD_FAILURE
-    effect: RUNTIME_NON_EXISTENCE
-
-# -------------------------------------------------------------------
-# EXPLICITLY FORBIDDEN SURFACES
-# -------------------------------------------------------------------
-
-forbidden_execution_surfaces:
-
-  narrative_governance:
-    description: >
-      Visionary or explanatory constitutional text.
-    paths:
-      - afritech/docs/
-      - afritech/governance/narratives/
-    reason: non-deterministic
-
-  role_abstractions:
-    description: >
-      Non-authority-bound role semantics.
-    paths:
-      - afritech/governance/roles/
-    reason: replay ambiguity
-
-  delegation_frameworks:
-    description: >
-      Dynamic trust expansion systems.
-    paths:
-      - afritech/governance/delegation/
-    reason: constitutional scope violation
-
-  federation_logic:
-    description: >
-      Distributed witness or quorum systems.
-    paths:
-      - afritech/federation/
-    reason: out of scope for Epoch 6 runtime
-
-  environmental_domains:
-    description: >
-      Physical-world or environmental execution domains.
-    paths:
-      - afritech/environment/
-      - afritech/sustainability/
-    reason: unresolved ingress legitimacy
-
-  contradiction_algebra:
-    description: >
-      Semantic contradiction reconciliation systems.
-    paths:
-      - afritech/truth/contradiction/
-    reason: requires independent constitutional proof
-
-  self_mutation:
-    description: >
-      Runtime self-modification pathways.
-    paths:
-      - "**/self_modify/**"
-    reason: violates mutation law
-
-# -------------------------------------------------------------------
-# EXECUTION ENFORCEMENT
-# -------------------------------------------------------------------
-
-enforcement:
-
-  runtime_guard:
-    required: true
-    description: >
-      Runtime MUST assert only admitted surfaces are loaded.
-
-  admission_guard:
-    required: true
-    description: >
-      Runtime MUST validate RuntimeCertificate before boot.
-
-  replay_guard:
-    required: true
-    description: >
-      Runtime outputs MUST bind to replay verification.
-
-  violation_response:
-    type: HARD_FAILURE
-    effect: >
-      Immediate runtime refusal, transcript invalidation,
-      constitutional execution failure.
-
-  audit_requirement:
-    description: >
-      Replay transcript MUST demonstrate that no forbidden or
-      undeclared surface influenced execution.
-    enforced_by:
-      - ReplayVerifier
-
-# -------------------------------------------------------------------
-# NON-OBSERVABILITY INVARIANT
-# -------------------------------------------------------------------
-
-non_observability_invariant: >
-  Runtime legitimacy MUST be derivable solely from constitutional
-  artifacts, replay transcripts, and attested hashes.
-
-  No hidden runtime state, external observer, or discretionary
-  interpretation may be required.
-
-# -------------------------------------------------------------------
-# CONSTITUTIONAL ASSERTION
-# -------------------------------------------------------------------
-
-constitutional_assertion: >
-  AfriTech permits execution only through explicitly admitted,
-  hash-attested constitutional surfaces.
-
-  Runtime existence requires:
-
-    valid RuntimeCertificate
-    admitted execution surfaces
-    registry continuity
-    replay-valid execution
-
-  Anything else is constitutionally invisible.
-
-final_assertion: >
-  No runtime without proof.
-  No execution without admission.
-  No legitimacy without replay.
-  No evolution outside constitutional mutation.
-CONCEPT_REPLAY_ADMISSIBILITY:
-
-  enforced_by:
-    - runtime/replay/
-    - proof/
-    - runtime/activation/
-
-  witnesses:
-    - replay_hash
-    - receipt_hash
-    - execution_trace_hash

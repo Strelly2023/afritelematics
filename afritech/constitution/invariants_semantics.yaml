@@ -1,540 +1,234 @@
-# Corrected `afritech/constitution/invariants_semantics.yaml`
-schema: afritech.constitution.semantics.v1
+# ============================================================
+# AFRITECH SEMANTIC ENFORCEMENT REGISTRY
+# ============================================================
 
-version: 1
+schema: afritech.constitution.semantic_enforcement.v2
 
-metadata:
-  authority: CONSTITUTION
-  mutability: FORBIDDEN
-  enforcement_mode: HARD
+meta:
+
+  description: >
+    Semantic runtime enforcement projection for executable
+    constitutional invariants.
+
+  projection_model: runtime_subset_projection
+
+  canonical_registry: >
+    afritech/constitution/INVARIANTS.yaml
+
+  compiled_projection: >
+    afritech/constitution/compiled/invariants_ir.json
+
   deterministic: true
   replay_safe: true
   closed_world_aligned: true
-  description: >
-    Canonical semantic definitions of AfriTech constitutional invariants.
-    This file defines invariant meaning only.
-    No executable logic, enforcement code, or implementation paths
-    may appear here.
 
-invariants:
 
-  # ============================================================
-  # I1 — REGISTRY AUTHORITY
-  # ============================================================
+# ============================================================
+# SEMANTIC ENFORCEMENT REGISTRY
+# ============================================================
 
-  I1_REGISTRY_AUTHORITY:
+semantic_enforcement:
 
-    formal_name: REGISTRY_AUTHORITY_EXCLUSIVE
+  # ----------------------------------------------------------
+  # AFRIRIDE DETERMINISTIC RUNTIME
+  # ----------------------------------------------------------
 
-    category: AUTHORITY_ROOT
+  afriride_deterministic_runtime:
 
-    intent:
-      description: >
-        The registry is the sole authoritative source of
-        constitutional state. No runtime, replay, inference,
-        or external component may override, bypass, or
-        reinterpret registry declarations.
+    description: >
+      Deterministic, replay-safe, epoch-bounded,
+      closed-world execution enforced by the
+      AfriRide runtime execution kernel.
 
-    scope:
-      applies_to:
-        - registry
-        - runtime_admission
-        - replay_verification
-      excludes:
-        - documentary_artifacts
-        - speculative_models
+    runtime_projection: true
 
-    preconditions:
-      - registry_loaded
-      - registry_attestation_present
+    projection_of:
+      - I1_REGISTRY_AUTHORITY
+      - I2_SEALED_SURFACE
+      - I3_NO_SILENT_MUTATION
+      - I4_DETERMINISTIC_RUNTIME
+      - I5_EPOCH_MONOTONIC
+      - I6_CLOSED_EXECUTION_WORLD
 
-    prohibited_actions:
-      - registry_override
-      - dynamic_authority_injection
-      - runtime_registry_shadowing
-      - replay_registry_substitution
+    enforced_invariants:
 
-    required_postconditions:
-      - registry_hash_bound
-      - authority_lineage_verified
+      - I1_REGISTRY_AUTHORITY
+      - I2_SEALED_SURFACE
+      - I3_NO_SILENT_MUTATION
+      - I4_DETERMINISTIC_RUNTIME
+      - I5_EPOCH_MONOTONIC
+      - I6_CLOSED_EXECUTION_WORLD
 
-    enforcement_points:
+    # ========================================================
+    # ENFORCEMENT COMPONENTS
+    # ========================================================
 
-      runtime:
-        validators:
-          - registry_authority_guard
-        timing: PRE_EXECUTION
-        refusal_mode: HARD_FAILURE
+    enforced_by:
 
-      replay:
-        validators:
-          - registry_consistency_verifier
-        timing: PRE_REPLAY
-        refusal_mode: REPLAY_INVALID
+      # ------------------------------------------------------
+      # I1 — REGISTRY AUTHORITY
+      # ------------------------------------------------------
 
-      ci:
-        validators:
-          - ast_import_validator
-        timing: STATIC_ANALYSIS
-        refusal_mode: CI_FAIL
+      I1_REGISTRY_AUTHORITY:
 
-    witnesses:
+        components:
+          - afritech/registry/registry.yaml
+          - afritech/runtime/admission.py
+          - afritech/runtime/registry_authority_guard.py
 
-      registry:
-        required:
-          - registry_hash
+        guarantees:
+          - canonical registry authority
+          - registry hash binding
+          - replay-safe registry lineage
+          - prevention of registry shadowing
 
-      runtime:
-        required:
-          - receipt.registry_hash
-
-      replay:
-        required:
-          - transcript.registry_hash
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: HARD_FAILURE
-        effects:
+        refusal_modes:
           - runtime_refusal
           - replay_invalid
           - constitutional_invalid
 
-    constitutional_assertion: >
-      AfriTech recognizes exactly one source of constitutional truth:
-      the sealed registry. Any attempt to bypass, override, or
-      reinterpret the registry is constitutionally forbidden.
 
+      # ------------------------------------------------------
+      # I2 — SEALED EXECUTION SURFACE
+      # ------------------------------------------------------
 
-  # ============================================================
-  # I2 — SEALED EXECUTION SURFACE
-  # ============================================================
+      I2_SEALED_SURFACE:
 
-  I2_SEALED_SURFACE:
+        components:
+          - afritech/runtime/execution_surface.py
+          - afritech/runtime/admission.py
+          - ecosystems/afriride/runtime/execution/deterministic_executor.py
 
-    formal_name: SEALED_EXECUTION_SURFACE
+        guarantees:
+          - execution surface sealing
+          - hash-attested runtime admission
+          - immutable execution topology
+          - runtime boundary integrity
 
-    category: EXECUTION_BOUNDARY
-
-    intent:
-      description: >
-        All execution surfaces must be explicitly declared,
-        hash-attested, and sealed prior to runtime admission.
-        No execution may occur on unsealed surfaces.
-
-    scope:
-      applies_to:
-        - runtime_execution
-        - runtime_admission
-      excludes:
-        - non_executable_artifacts
-
-    preconditions:
-      - execution_surfaces_declared
-      - execution_surface_hash_verified
-
-    prohibited_actions:
-      - unsealed_execution
-      - surface_mutation_post_seal
-      - dynamic_surface_extension
-
-    required_postconditions:
-      - surface_hash_bound
-      - execution_surface_integrity_verified
-
-    enforcement_points:
-
-      runtime:
-        validators:
-          - surface_admission_guard
-        timing: PRE_EXECUTION
-        refusal_mode: HARD_FAILURE
-
-      ci:
-        validators:
-          - forbid_speculative_runtime_access
-        timing: STATIC_ANALYSIS
-        refusal_mode: CI_FAIL
-
-    witnesses:
-
-      registry:
-        required:
-          - attestation.execution_surface_hash
-
-      runtime:
-        required:
-          - receipt.execution_surface_hash
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: HARD_FAILURE
-        effects:
+        refusal_modes:
           - execution_refused
-          - replay_invalid
+          - surface_invalid
           - constitutional_invalid
 
-    constitutional_assertion: >
-      Only sealed and hash-attested execution surfaces may
-      participate in constitutional runtime execution.
 
+      # ------------------------------------------------------
+      # I3 — NO SILENT MUTATION
+      # ------------------------------------------------------
 
-  # ============================================================
-  # I3 — NO SILENT STATE MUTATION
-  # ============================================================
+      I3_NO_SILENT_MUTATION:
 
-  I3_NO_SILENT_MUTATION:
+        components:
+          - ecosystems/afriride/runtime/mutation.py
+          - ecosystems/afriride/runtime/state.py
+          - afritech/proof/witness_generator.py
 
-    formal_name: NO_SILENT_STATE_MUTATION
+        guarantees:
+          - explicit mutation tracing
+          - replay-safe state transitions
+          - witness-bound mutation lineage
+          - deterministic mutation ordering
 
-    category: STATE_INTEGRITY
-
-    intent:
-      description: >
-        All constitutional state mutations must be explicit,
-        replayable, ordered, and witness-attested.
-        Silent or hidden state transitions are forbidden.
-
-    scope:
-      applies_to:
-        - state_mutation
-        - replay_reconstruction
-        - runtime_state
-      excludes:
-        - immutable_semantic_artifacts
-
-    preconditions:
-      - mutation_declared
-      - witness_generation_enabled
-
-    prohibited_actions:
-      - hidden_mutation
-      - unordered_mutation
-      - witnessless_mutation
-      - replay_opaque_transition
-
-    required_postconditions:
-      - mutation_trace_recorded
-      - replay_reconstructable
-      - witness_hash_bound
-
-    enforcement_points:
-
-      runtime:
-        validators:
-          - mutation_trace_guard
-        timing: DURING_EXECUTION
-        refusal_mode: HARD_FAILURE
-
-      replay:
-        validators:
-          - replay_equivalence_engine
-        timing: REPLAY_VALIDATION
-        refusal_mode: REPLAY_INVALID
-
-      ci:
-        validators:
-          - witness_validator
-        timing: STATIC_ANALYSIS
-        refusal_mode: CI_FAIL
-
-    witnesses:
-
-      runtime:
-        required:
-          - mutation_witness
-
-      replay:
-        required:
-          - equivalence_proof
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: HARD_FAILURE
-        effects:
-          - runtime_refusal
-          - replay_invalid
+        refusal_modes:
+          - mutation_invalid
           - witness_invalid
-
-    constitutional_assertion: >
-      Constitutional state transitions must always be explicit,
-      ordered, replayable, and witness-verifiable.
+          - replay_invalid
 
 
-  # ============================================================
-  # I4 — DETERMINISTIC RUNTIME EXECUTION
-  # ============================================================
+      # ------------------------------------------------------
+      # I4 — DETERMINISTIC RUNTIME
+      # ------------------------------------------------------
 
-  I4_DETERMINISTIC_RUNTIME:
+      I4_DETERMINISTIC_RUNTIME:
 
-    formal_name: DETERMINISTIC_RUNTIME_EXECUTION
+        components:
+          - ecosystems/afriride/runtime/execution/deterministic_executor.py
+          - ecosystems/afriride/runtime/mutation.py
+          - ecosystems/afriride/runtime/state.py
 
-    category: REPLAY_INTEGRITY
+        guarantees:
+          - canonical command ordering
+          - immutable Δ-based transitions
+          - replay-stable trace hashing
+          - observer-independent execution
+          - deterministic witness generation
 
-    intent:
-      description: >
-        Runtime execution must be deterministic and replay-safe.
-        Equivalent inputs must produce equivalent outputs,
-        witnesses, and replay traces.
-
-    scope:
-      applies_to:
-        - runtime_execution
-        - replay_equivalence
-        - witness_generation
-      excludes:
-        - documentary_analysis
-
-    preconditions:
-      - deterministic_inputs
-      - canonical_hashing_enabled
-
-    prohibited_actions:
-      - observer_relative_execution
-      - nondeterministic_replay
-      - unstable_hash_generation
-      - entropy_based_execution
-
-    required_postconditions:
-      - replay_equivalence_verified
-      - deterministic_hashes_generated
-      - observer_independent_results
-
-    enforcement_points:
-
-      runtime:
-        validators:
-          - execution_surface_validation
-        timing: PRE_EXECUTION
-        refusal_mode: HARD_FAILURE
-
-      replay:
-        validators:
-          - replay_equivalence_engine
-        timing: REPLAY_VALIDATION
-        refusal_mode: REPLAY_INVALID
-
-    witnesses:
-
-      replay:
-        required:
-          - replay_witness
-          - equivalence_proof
-
-      runtime:
-        required:
-          - execution_witness
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: REPLAY_INVALID
-        effects:
+        refusal_modes:
           - replay_divergence
           - equivalence_failure
-          - constitutional_invalid
-
-    constitutional_assertion: >
-      Constitutional execution must always be replay-safe,
-      deterministic, and observer-independent.
+          - deterministic_violation
 
 
-  # ============================================================
-  # I5 — EPOCH STRICT MONOTONICITY
-  # ============================================================
+      # ------------------------------------------------------
+      # I5 — EPOCH MONOTONICITY
+      # ------------------------------------------------------
 
-  I5_EPOCH_MONOTONIC:
+      I5_EPOCH_MONOTONIC:
 
-    formal_name: EPOCH_STRICT_MONOTONICITY
+        components:
+          - ecosystems/afriride/runtime/execution/deterministic_executor.py
+          - afritech/registry/registry.yaml
+          - afritech/runtime/epoch_guard.py
 
-    category: TEMPORAL_INTEGRITY
+        guarantees:
+          - explicit epoch-bound execution
+          - future-epoch rejection
+          - replay-safe epoch lineage
+          - monotonic governance ordering
 
-    intent:
-      description: >
-        Constitutional epochs must advance monotonically.
-        Epoch rollback, identity aliasing, or temporal
-        ambiguity is constitutionally forbidden.
-
-    scope:
-      applies_to:
-        - epoch_registry
-        - governance_history
-        - replay_lineage
-      excludes:
-        - archived_documentation
-
-    preconditions:
-      - epoch_registry_loaded
-      - canonical_epoch_identity_verified
-
-    prohibited_actions:
-      - epoch_rollback
-      - epoch_aliasing
-      - duplicate_epoch_identity
-      - replay_temporal_divergence
-
-    required_postconditions:
-      - canonical_epoch_order_verified
-      - replay_lineage_stable
-      - governance_history_preserved
-
-    enforcement_points:
-
-      ci:
-        validators:
-          - identity_validator
-        timing: STATIC_ANALYSIS
-        refusal_mode: CI_FAIL
-
-      replay:
-        validators:
-          - replay_equivalence_engine
-        timing: PRE_REPLAY
-        refusal_mode: REPLAY_INVALID
-
-    witnesses:
-
-      registry:
-        required:
-          - epoch_registry_hash
-
-      replay:
-        required:
-          - transcript_witness
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: HARD_FAILURE
-        effects:
+        refusal_modes:
           - epoch_invalid
           - replay_invalid
           - lineage_invalid
 
-    constitutional_assertion: >
-      Constitutional epochs must form a strictly monotonic,
-      replay-safe governance lineage.
 
+      # ------------------------------------------------------
+      # I6 — CLOSED EXECUTION WORLD
+      # ------------------------------------------------------
 
-  # ============================================================
-  # I6 — CLOSED EXECUTION WORLD
-  # ============================================================
+      I6_CLOSED_EXECUTION_WORLD:
 
-  I6_CLOSED_EXECUTION_WORLD:
+        components:
+          - ecosystems/afriride/runtime/execution/deterministic_executor.py
+          - afritech/constitution/path_ontology.yaml
+          - afritech/ci/import_topology_validator.py
 
-    formal_name: CLOSED_EXECUTION_WORLD
+        guarantees:
+          - explicit runtime allowlists
+          - rejection of undeclared runtime entities
+          - closed mutation surface
+          - deterministic ontology boundaries
+          - replay-safe semantic closure
 
-    category: CLOSED_WORLD_ENFORCEMENT
-
-    intent:
-      description: >
-        Only explicitly declared constitutional entities,
-        execution surfaces, witnesses, and semantic artifacts
-        may participate in runtime or replay semantics.
-
-    scope:
-      applies_to:
-        - runtime_execution
-        - replay_validation
-        - semantic_compilation
-        - witness_validation
-      excludes:
-        - documentary_material
-
-    preconditions:
-      - ontology_loaded
-      - canonical_registry_verified
-
-    prohibited_actions:
-      - undeclared_runtime_entity
-      - implicit_semantic_resolution
-      - undeclared_execution_surface
-      - dynamic_runtime_expansion
-
-    required_postconditions:
-      - ontology_closure_verified
-      - admissibility_verified
-      - replay_boundary_preserved
-
-    enforcement_points:
-
-      runtime:
-        validators:
-          - import_topology_enforcement
-        timing: PRE_EXECUTION
-        refusal_mode: HARD_FAILURE
-
-      ci:
-        validators:
-          - semantic_concept_validator
-          - cross_concept_validator
-        timing: STATIC_ANALYSIS
-        refusal_mode: CI_FAIL
-
-      replay:
-        validators:
-          - replay_equivalence_engine
-        timing: REPLAY_VALIDATION
-        refusal_mode: REPLAY_INVALID
-
-    witnesses:
-
-      runtime:
-        required:
-          - constitutional_receipt
-
-      replay:
-        required:
-          - equivalence_proof
-
-      semantic:
-        required:
-          - invariants_ir
-
-    evidence_requirements:
-      replayable: true
-      deterministic: true
-      observer_free: true
-
-    failure:
-      class: A_FATAL
-      response:
-        mode: HARD_FAILURE
-        effects:
-          - execution_refusal
+        refusal_modes:
           - ontology_invalid
+          - execution_refusal
           - replay_invalid
-          - constitutional_invalid
 
-    constitutional_assertion: >
-      AfriTech operates under a closed constitutional world.
-      Only explicitly declared and admissible entities may
-      participate in runtime, replay, or semantic execution.
+
+# ============================================================
+# VALIDATION GUARANTEES
+# ============================================================
+
+validation:
+
+  deterministic_ordering: REQUIRED
+  replay_safe_projection: REQUIRED
+  closed_world_alignment: REQUIRED
+  runtime_projection_subset_only: true
+  canonical_registry_required: true
+  duplicate_invariant_ids_forbidden: true
+
+
+# ============================================================
+# GUARANTEES
+# ============================================================
+
+guarantees:
+
+  deterministic_execution: true
+  replay_safe_execution: true
+  witness_generation_required: true
+  constitutional_projection_verified: true
+  semantic_projection_verified: true
+  runtime_projection_verified: true
+  closed_world_execution: true

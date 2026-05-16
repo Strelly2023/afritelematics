@@ -17,13 +17,19 @@ def test_replay_equivalence_under_concurrent_admissible_mutation():
     r1 = run_replay()
     r2 = run_replay()
 
+    # -----------------------------------------------------
     # Replay identity must be stable
+    # -----------------------------------------------------
     assert r1["hash"] == r2["hash"]
 
-    # Canonical trace must be identical
+    # -----------------------------------------------------
+    # Canonical replay trace must be identical
+    # -----------------------------------------------------
     assert r1["trace"] == r2["trace"]
 
-    # Final canonical state must be deterministic and identical
+    # -----------------------------------------------------
+    # Final canonical state must be deterministic
+    # -----------------------------------------------------
     assert r1["final_state"] == {
         "drivers_available": ["B"],
         "ride_status": "OPEN",

@@ -18,9 +18,13 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 import traceback
 
-from afritech.runtime.context.runtime_context import RuntimeContext
-from afritech.runtime.engine.executor import ExecutionEngine, ExecutionResult
-from afritech.runtime.kernel.execute import EXECUTE
+from afritech.shared.context import RuntimeContext
+
+# ✅ FIX: use shared type instead of runtime import
+from afritech.shared.types import ExecutionResult
+
+# ✅ ONLY allowed execution path
+from afritech.kernel.execute import EXECUTE
 
 
 # -----------------------------------------------------------------
@@ -82,11 +86,11 @@ class ReplayAnalysisEngine:
     def __init__(
         self,
         *,
-        execution_engine: ExecutionEngine,
+        execution_engine: Any,  # ✅ decoupled from runtime type
         event_bus: Optional[Any] = None,
     ):
         """
-        :param execution_engine: ExecutionEngine (mechanism only)
+        :param execution_engine: runtime engine instance (opaque to evaluation)
         :param event_bus: optional telemetry / event streaming
         """
         self.execution_engine = execution_engine
@@ -126,7 +130,7 @@ class ReplayAnalysisEngine:
             })
 
             # ---------------------------------------------------------
-            # REPLAY EXECUTION (KERNEL‑ENFORCED)
+            # REPLAY EXECUTION (KERNEL-ENFORCED)
             # ---------------------------------------------------------
 
             replay_result: ExecutionResult = EXECUTE(
@@ -226,7 +230,7 @@ class ReplayAnalysisEngine:
     def _emit(self, event: Dict[str, Any]) -> None:
         """
         Best‑effort event emission.
-        Must NEVER affect replay validity.
+        MUST NOT affect replay determinism.
         """
 
         if not self.event_bus:

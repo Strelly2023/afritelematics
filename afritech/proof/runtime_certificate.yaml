@@ -1,290 +1,51 @@
 schema: afritech.runtime.certificate.v1
-
 runtime_certificate:
-
-  # -----------------------------------------------------------------
-  # CERTIFICATE IDENTITY
-  # -----------------------------------------------------------------
-
-  certificate_id: "RC-0006-0001"
-  issued_at: "2026-05-07T00:15:00Z"
-
-  issued_by: RUNTIME_CERTIFICATE_AUTHORITY
-
-  epoch: 6
+  certificate_id: RC-6-AUTO
+  issued_at: DETERMINISTIC_TIMESTAMP
+  issued_by: RUNTIME_CERTIFICATE_COMPILER
+  epoch: '6'
   status: VALID
-
-  # -----------------------------------------------------------------
-  # CONSTITUTIONAL BINDING (ABSOLUTE CORE)
-  # -----------------------------------------------------------------
-
   constitutional_binding:
-
-    attestation_hash: "TO_BE_COMPUTED_SHA256(attestation.yaml)"
-
-    registry_hash: "db5e83b24286e3c59856c48bb0e5bf94cb4ea76809c7192577c209b06390726a"
-
-    epoch_hash: "TO_BE_COMPUTED_SHA256(EPOCH_0006.yaml)"
-
-    kernel_root_hash: "TO_BE_COMPUTED_MERKLE_ROOT(kernel_hashes)"
-
-    execution_surfaces_hash: "TO_BE_COMPUTED_SHA256(EXECUTION_SURFACES.yaml)"
-
-    authority_profiles_hash: "TO_BE_COMPUTED_SHA256(authority_profiles.yaml)"
-
-    replay_verifier_hash: "TO_BE_COMPUTED_SHA256(afritech/replay/verify.py)"
-
-  # -----------------------------------------------------------------
-  # RUNTIME IDENTITY
-  # -----------------------------------------------------------------
-
+    registry_hash: 4d76c0b87b052e4f32c0faddafa9842933fc94baac15c0236dd3d03ee4a696eb
+    execution_surfaces_hash: 62914b614f5754f38953352aa2c3bc47b1fb33b1b7116831c85efef831a933e5
+    authority_profiles_hash: 79f1c8fd0b0002a9c77ac11e070c3df119b1a8481a8d2188e89b042155ef3433
+    replay_verifier_hash: 647deeffa4deefb5b3ac0957022306a6162703f03ddc19e4121af186f29b6d6a
   runtime_identity:
-
-    runtime_version: "afritech-runtime-0.3.0"
-
-    execution_context_hash: "TO_BE_COMPUTED_SHA256(runtime_context)"
-
+    runtime_version: afritech-auto
+    execution_context_hash: DETERMINISTIC_CONTEXT
     environment:
-
       deterministic_mode: true
       single_runtime_assumed: true
       excludes_federation_variance: true
-
       environment_mutability: FORBIDDEN
       system_time_access: FORBIDDEN
       external_io_access: FORBIDDEN
-
-  # -----------------------------------------------------------------
-  # ADMISSION GUARANTEES
-  # -----------------------------------------------------------------
-
   admission_guarantees:
-
-    attestation_validated: true
     registry_verified: true
-    epoch_matched: true
-
-    kernel_hashes_verified: true
-    kernel_merkle_root_verified: true
-
     execution_surfaces_verified: true
     authority_profiles_verified: true
-
     replay_verifier_verified: true
     invariant_validation_passed: true
-
-    surface_registry_enforced: true
-    infrastructure_isolated: true
-
-    # ✅ CRITICAL ADDITION (ELITE++++)
     proof_carrying_execution: true
-
-  # -----------------------------------------------------------------
-  # EXECUTION SCOPE
-  # -----------------------------------------------------------------
-
   execution_scope:
-
-    allowed_execution_surfaces:
-
-      - runtime_entry
-      - runtime_engine
-      - runtime_context
-      - runtime_admission
-      - inference_requests
-      - replay_core
-      - proof_snapshot
-
+    allowed_execution_surfaces: []
     forbidden_surfaces_enforced: true
-
-    authority_profiles_allowed:
-
-      - CONSTITUTIONAL_RESEARCH_AGENT
-      - SECONDARY_RESEARCH_AUTHORITY
-
-    undeclared_surface_execution: HARD_FAILURE
-
-  # -----------------------------------------------------------------
-  # PROOF TEMPLATE (LEAN EXPORT COMPATIBILITY)
-  # -----------------------------------------------------------------
-
-  proof_template:
-
-    theorem: "execution_deterministic"
-
-    input_hash: "TO_BE_COMPUTED_SHA256(input_payload)"
-    output_hash: "TO_BE_COMPUTED_SHA256(output_payload)"
-
-    proof_hash: "TO_BE_COMPUTED_SHA256(theorem+input+output)"
-
-    metadata:
-
-      source: "lean_export"
-      proof_type: "deterministic_execution"
-
-  # -----------------------------------------------------------------
-  # REPLAY CONSTRAINTS
-  # -----------------------------------------------------------------
-
   replay_constraints:
-
     replay_required: true
     deterministic_only: true
     transcript_required: true
-
-    transcript_schema: REPLAY_TRANSCRIPT_SCHEMA_V1
-
-    replay_hash_must_match: true
     authority_isolation_enforced: true
-
-    failure_effect: REPLAY_INVALIDATION
-
-  # -----------------------------------------------------------------
-  # EPISTEMIC CONSTRAINTS
-  # -----------------------------------------------------------------
-
-  epistemic_requirements:
-
-    schema: EPISTEMIC_CONFIDENCE_V1
-
-    constraints:
-
-      - no_scalar_confidence
-      - evidence_bound_outputs
-      - replay_reproducible_confidence
-      - normalized_confidence_required
-
-  # -----------------------------------------------------------------
-  # VALIDATION RULES
-  # -----------------------------------------------------------------
-
-  validation:
-
-    required_at_boot: true
-    required_for_runtime_admission: true
-    required_for_each_execution: true
-
-    validation_scope:
-
-      - registry_hash
-      - epoch_hash
-      - kernel_root_hash
-      - execution_surfaces_hash
-      - authority_profiles_hash
-      - replay_verifier_hash
-
-    drift_detection_required: true
-    system_health_required: true
-
-    failure_response:
-
-      type: HARD_FAILURE
-      effect: RUNTIME_NON_EXISTENCE
-
-  # -----------------------------------------------------------------
-  # VALIDITY WINDOW
-  # -----------------------------------------------------------------
-
-  validity:
-
-    valid_from: "2026-05-07T00:15:00Z"
-    valid_until: "INDEFINITE"
-
-    renewal_required: false
-
-    revocation:
-
-      supported: true
-
-      revocation_conditions:
-
-        - attestation_invalidated
-        - epoch_advanced
-        - registry_resealed
-        - kernel_hash_changed
-        - authority_profiles_changed
-        - surface_registry_changed
-
-  # -----------------------------------------------------------------
-  # SIGNATURE
-  # -----------------------------------------------------------------
-
+  proof_template:
+    theorem: execution_deterministic
+    input_hash: DETERMINISTIC_INPUT
+    output_hash: DETERMINISTIC_OUTPUT
+    proof_hash: ee9636356e83b8481c87cee09e873216f0ce59d380775077424d74ef5b0d693d
+    metadata:
+      source: compiler
+      type: deterministic_proof
   signature:
-
-    algorithm: SHA256_WITH_RUNTIME_SIGNATURE
-
-    signature_scope:
-
-      includes:
-
-        - constitutional_binding
-        - runtime_identity
-        - admission_guarantees
-        - execution_scope
-        - replay_constraints
-        - epistemic_requirements
-        - proof_template
-
-    payload_hash: "TO_BE_COMPUTED_CANONICAL_HASH"
-
-    signature: "TO_BE_COMPUTED_CRYPTO_SIGNATURE"
-
-    certificate_root: "TO_BE_COMPUTED_ROOT_KEY_HASH"
-
-    signature_version: "v1"
-
-  # -----------------------------------------------------------------
-  # NON-OBSERVABILITY GUARANTEE
-  # -----------------------------------------------------------------
-
-  non_observability:
-
-    enforced: true
-
-    invariant: >
-      Runtime legitimacy MUST be provable solely from:
-        - attested state
-        - certificate
-        - replay transcript
-        - proof artifacts
-
-      No hidden state, implicit environment, or external observer
-      may influence execution.
-
-  # -----------------------------------------------------------------
-  # CONSTITUTIONAL ASSERTION
-  # -----------------------------------------------------------------
-
-  constitutional_assertion: >
-    This RuntimeCertificate certifies that the AfriTech runtime
-    instance is constitutionally admitted under Epoch 6.
-
-    Execution is permitted ONLY if:
-
-      - system is healthy and drift-free
-      - bindings match attestation
-      - surfaces are declared and enforced
-      - authority constraints are enforced
-      - runtime is deterministic
-      - replay verification is possible
-      - execution carries valid proof artifacts
-
-    Any violation SHALL result in:
-
-      - runtime invalidation
-      - execution refusal
-      - replay rejection
-      - constitutional failure
-
-  # -----------------------------------------------------------------
-  # FINAL ASSERTION
-  # -----------------------------------------------------------------
-
-  final_assertion: >
-    The runtime exists only through constitutional admission.
-
-    No certificate → no runtime.
-    No runtime → no execution.
-    No execution → no proof.
-    No proof → no truth.
-    No truth → no system.
+    algorithm: ED25519
+    payload_hash: 492da0745e5fea0b880c627a81533f3daec36554b55d471a091e00d8e2fa8775
+    signature: 24728306ba110afbbdf820ef814912341ec4903786581c141ca51b5d121fb1252897a6bfbb627a0fc0e4b1d641823d1a5e6d023bb31e8feace55073fb51fc003
+    certificate_root: a8ae6e6ee929abea3afcfc5258c8ccd6f85273e0d4626d26c7279f3250f77c8e
+    signature_version: v1

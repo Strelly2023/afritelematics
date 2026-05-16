@@ -9,10 +9,10 @@ Source:
   afritech/constitution/compiled/invariants_ir.json
 
 Generation time:
-  2026-05-15T08:23:33.440794Z
+  2026-05-16T14:35:54.677300Z
 
 Source hash:
-  6c66e1c17398ca0a1b282ea7d7a926d3c2cfb3015dd9d23cee43dcc7b3227fc0
+  89d4442ff2ab714798bd3d607e5559ba4a7d7838a38d2581006f31ef622f8b5a
 
 Constitutional rule:
   All invariant semantics originate in Semantic IR.
@@ -26,29 +26,26 @@ namespace AfriTech
 constant Invariant : Type
 
 /-- Canonical constitutional invariants (generated). -/
-constant I13_EPOCH_MONOTONIC : Invariant
 constant I1_REGISTRY_AUTHORITY : Invariant
 constant I2_SEALED_SURFACE : Invariant
 constant I3_NO_SILENT_MUTATION : Invariant
-constant I4_DETERMINISTIC_EXECUTION : Invariant
-constant I8_CLOSED_WORLD : Invariant
+constant I4_DETERMINISTIC_RUNTIME : Invariant
+constant I5_EPOCH_MONOTONIC : Invariant
+constant I6_CLOSED_EXECUTION_WORLD : Invariant
 
 /-- Set of all declared constitutional invariants. -/
 def AllInvariants : Set Invariant :=
   {
-    I13_EPOCH_MONOTONIC,
     I1_REGISTRY_AUTHORITY,
     I2_SEALED_SURFACE,
     I3_NO_SILENT_MUTATION,
-    I4_DETERMINISTIC_EXECUTION,
-    I8_CLOSED_WORLD,
+    I4_DETERMINISTIC_RUNTIME,
+    I5_EPOCH_MONOTONIC,
+    I6_CLOSED_EXECUTION_WORLD,
   }
 
 /-- Formal theorem stubs for constitutional invariants.
 These are placeholders and MUST be discharged in later phases. -/
-theorem i13_epoch_monotonic : True := by
-  trivial
-
 theorem i1_registry_authority : True := by
   trivial
 
@@ -58,10 +55,13 @@ theorem i2_sealed_surface : True := by
 theorem i3_no_silent_mutation : True := by
   trivial
 
-theorem i4_deterministic_execution : True := by
+theorem i4_deterministic_runtime : True := by
   trivial
 
-theorem i8_closed_world : True := by
+theorem i5_epoch_monotonic : True := by
+  trivial
+
+theorem i6_closed_execution_world : True := by
   trivial
 
 

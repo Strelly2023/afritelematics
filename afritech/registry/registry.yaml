@@ -105,7 +105,7 @@ attestation:
       - runtime/engine/executor.py
       - runtime/engine/verifier.py
       - runtime/context/runtime_context.py
-      hash: 46f3bae5be9d91b0893173921f2cd87d209589a4df19202bb6e58659effcc8dd
+      hash: 43d51f1360fb219d9cb95c9a0c1f48d26b6f41a4ba42f2aa4f9bccc90b5830a1
     proof:
       files:
       - proof/runtime_certificate.py
@@ -117,8 +117,8 @@ attestation:
       - evaluation/replay_analysis/replay_analysis_engine.py
       - evaluation/drift_detection/drift_detection_engine.py
       - evaluation/adr_trigger/adr_trigger_engine.py
-      hash: 9705e13ba553e4966e971201c058c6d830dedbe590919f482e71fe73a4f6501b
-  registry_hash: eb90bf68d44d93dd8988fe58b356b406896365e13ac4ee3cf0ea40f3d12efee1
+      hash: c52c3a46162b23eb63acece47b9bccee0b8e23d2f9e2bfd91ff8568dafca51ba
+  registry_hash: 617d6f2710c43786b2a4df6970519e96a0ed25e2edfc9b2497269ee106285727
   seal_status: SEALED
 constitutional_assertions:
 - afritech is sole active authority

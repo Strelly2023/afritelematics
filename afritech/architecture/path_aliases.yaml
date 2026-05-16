@@ -1,68 +1,113 @@
-schema: afritech.architecture.path_aliases.v1
+schema: afritech.architecture.path_aliases.v3
 
-version: 1
+version: 3
 
 metadata:
 
   authority: ARCHITECTURE
+
   status: ACTIVE
+
   mutability: CONTROLLED
 
   registry_class: PATH_ALIAS_REGISTRY
 
+  replay_safe: true
+
+  deterministic: true
+
+  closed_world_aligned: true
+
   description: >
-    Canonical path alias registry governing deterministic
-    filesystem-to-module-path normalization within AfriTech.
+    Replay-safe alias normalization registry governing
+    compatibility-token resolution toward canonical
+    ontology identities.
+
+    Alias keys are compatibility tokens only.
+
+    Alias keys MUST NOT:
+      - encode filesystem topology
+      - encode runtime paths
+      - encode repository structure
+      - define constitutional identity
+
+    Canonical targets MAY represent:
+      - ontology module identities
+      - replay-safe filename normalization targets
 
     This registry exists exclusively to:
-      - preserve replay-safe migration continuity
-      - normalize historical filesystem identities
-      - support deterministic ontology convergence
-      - eliminate ambiguous identity resolution
-      - preserve closed-world replay guarantees
+      - preserve migration continuity
+      - normalize historical identifiers
+      - maintain replay-safe resolution semantics
+      - support deterministic canonicalization
 
-    Path aliases are compatibility-layer artifacts only.
-
-    Constitutional identity derives exclusively from:
-      - canonical module-path ontology
-      - deterministic replay-safe resolution
-      - invariant-preserving execution semantics
-      - constitutionally declared execution surfaces
-
-    Filesystem aliases must never independently define:
-      - runtime authority
-      - replay legitimacy
-      - execution legitimacy
-      - constitutional identity
+    Runtime legitimacy derives exclusively from:
+      - canonical ontology identity
+      - replay admissibility
+      - invariant legality
+      - execution surface governance
 
 
 # ============================================================
-# PATH ONTOLOGY ALIGNMENT
+# ONTOLOGY
 # ============================================================
 
-path_alignment:
+ontology:
 
-  canonical_identity_form: module_path
+  alias_key_semantics:
 
-  compatibility_identity_form: filesystem_path
+    definition: COMPATIBILITY_TOKEN
 
-  forbidden_identity_forms:
+    topology_independent: true
 
-    - conceptual_identity
-    - relative_identity
-    - symbolic_short_name
-    - extensionless_identity
+    replay_safe: true
 
-  description: >
-    Canonical constitutional identity resolution requires
-    deterministic module-path ontology semantics.
+    filesystem_paths_forbidden: true
+
+    examples:
+
+      valid:
+
+        - constitutional_receipt.py
+        - trace_reconstructor.py
+        - attestation.yaml
+        - EPOCH_0008.yaml
+
+      invalid:
+
+        - afritech/proof/constitutional_receipt.py
+        - afritech/trace/trace_reconstructor.py
+        - registry/attestation.yaml
+
+
+  canonical_target_semantics:
+
+    ontology_identity:
+
+      definition: CANONICAL_MODULE_PATH
+
+      examples:
+
+        - afritech.proof.constitutional_receipt
+        - afritech.trace.trace_reconstructor
+        - afritech.registry.attestation
+
+
+    filename_normalization:
+
+      definition: REPLAY_SAFE_FILENAME_TARGET
+
+      examples:
+
+        - EPOCH_0008.yaml
+        - EPOCH_0009.yaml
 
 
 # ============================================================
-# ALIAS STATUS MODEL
+# STATUS MODEL
 # ============================================================
 
-alias_status_model:
+status_model:
 
   CANONICAL:
 
@@ -70,439 +115,172 @@ alias_status_model:
 
     admissible: true
 
-    redirect_required: false
-
-    mutable: false
-
     description: >
-      Canonical identity recognized as authoritative.
+      Canonical replay-safe identity target.
 
 
   MIGRATING:
 
     replay_safe: true
 
-    admissible: conditional
-
-    redirect_required: true
-
-    mutable: true
+    admissible: true
 
     description: >
-      Transitional compatibility alias pending deterministic
-      ontology convergence.
+      Transitional compatibility alias retained for
+      deterministic replay continuity and migration
+      normalization.
 
 
   DEPRECATED:
 
-    replay_safe: limited
+    replay_safe: conditional
 
     admissible: false
 
-    redirect_required: true
-
-    mutable: false
-
     description: >
-      Historical compatibility alias retained temporarily
-      for replay continuity only.
+      Historical compatibility alias retained only
+      for replay reconstruction visibility.
 
 
   FORBIDDEN:
 
-    replay_safe: false
+    replay_safe: true
 
     admissible: false
 
-    redirect_required: false
-
-    mutable: false
-
     description: >
-      Constitutionally forbidden identity form.
+      Explicitly forbidden executable alias retained
+      solely for governance visibility and replay-safe
+      ontology completeness.
 
 
 # ============================================================
-# CANONICAL PATH ALIASES
+# ALIASES
 # ============================================================
 
 aliases:
 
-  afritech/proof/constitutional_receipt.py:
-
-    canonical: afritech.proof.constitutional_receipt
-
-    status: MIGRATING
-
-    replay_admissible: true
-
-    redirect_required: true
-
-    ontology: FILESYSTEM_TO_MODULE_PATH
-
-    description: >
-      Transitional filesystem compatibility alias for
-      constitutional receipt implementation surface.
-
-
-  afritech/trace/trace_reconstructor.py:
-
-    canonical: afritech.trace.trace_reconstructor
-
-    status: MIGRATING
-
-    replay_admissible: true
-
-    redirect_required: true
-
-    ontology: FILESYSTEM_TO_MODULE_PATH
-
-    description: >
-      Transitional filesystem compatibility alias for
-      deterministic replay trace reconstruction surface.
-
-
-  afritech/registry/attestation.yaml:
-
-    canonical: afritech.registry.attestation
-
-    status: MIGRATING
-
-    replay_admissible: true
-
-    redirect_required: true
-
-    ontology: FILESYSTEM_TO_MODULE_PATH
-
-    description: >
-      Transitional filesystem compatibility alias for
-      registry attestation semantic surface.
-
-
-  afritech/registry/attestation.py:
+  attestation.py:
 
     canonical: afritech.registry.attestation
 
     status: FORBIDDEN
 
-    replay_admissible: false
-
-    redirect_required: false
-
     ontology: FORBIDDEN_EXECUTABLE_ALIAS
 
+    replay_safe: true
+
     description: >
-      Constitutionally forbidden executable alias attempting
-      to shadow attestation semantic identity.
+      Executable attestation aliases are constitutionally
+      forbidden. Attestation authority must derive from
+      canonical registry ontology only.
+
+
+  attestation.yaml:
+
+    canonical: afritech.registry.attestation
+
+    status: MIGRATING
+
+    ontology: TOKEN_TO_MODULE_PATH
+
+    replay_safe: true
+
+    description: >
+      Historical registry compatibility token preserved
+      for deterministic replay continuity.
+
+
+  constitutional_receipt.py:
+
+    canonical: afritech.proof.constitutional_receipt
+
+    status: MIGRATING
+
+    ontology: TOKEN_TO_MODULE_PATH
+
+    replay_safe: true
+
+    description: >
+      Compatibility alias preserved for deterministic
+      ontology migration normalization.
+
+
+  trace_reconstructor.py:
+
+    canonical: afritech.trace.trace_reconstructor
+
+    status: MIGRATING
+
+    ontology: TOKEN_TO_MODULE_PATH
+
+    replay_safe: true
+
+    description: >
+      Historical replay-trace compatibility alias
+      preserved for deterministic canonicalization.
 
 
 # ============================================================
-# DETERMINISTIC RESOLUTION
-# ============================================================
-
-resolution:
-
-  ordering: DETERMINISTIC
-
-  canonical_precedence: REQUIRED
-
-  observer_independence: REQUIRED
-
-  replay_safe_resolution: REQUIRED
-
-  resolution_requirements:
-
-    - canonical_mapping_required
-    - deterministic_lookup_required
-    - replay_safe_normalization
-    - invariant_preservation
-
-  forbidden:
-
-    - ambiguous_alias_resolution
-    - probabilistic_resolution
-    - runtime_dynamic_aliasing
-    - observer_relative_resolution
-    - reflection_based_alias_discovery
-
-  guarantees:
-
-    - canonical_identity_convergence
-    - replay_safe_alias_resolution
-    - deterministic_path_normalization
-    - closed_world_alignment
-
-
-# ============================================================
-# IMPLEMENTATION ALIGNMENT
-# ============================================================
-
-implementation_alignment:
-
-  admissible_states:
-
-    - PARTIAL
-    - IMPLEMENTED
-
-  transitional_states:
-
-    - MIGRATING
-
-  forbidden_states:
-
-    - FORBIDDEN
-    - FORBIDDEN_ALIAS
-
-  description: >
-    Alias participation requires deterministic replay-safe
-    implementation legitimacy alignment.
-
-
-# ============================================================
-# CLOSED-WORLD ALIGNMENT
-# ============================================================
-
-closed_world_alignment:
-
-  required:
-
-    - declared_execution_surfaces
-    - deterministic_surface_resolution
-    - replay_safe_alias_normalization
-
-  forbidden:
-
-    - implicit_alias_discovery
-    - reflection_based_resolution
-    - dynamic_runtime_aliasing
-    - undeclared_surface_aliasing
-
-  description: >
-    Alias resolution must preserve closed-world execution
-    semantics.
-
-
-# ============================================================
-# REPLAY ALIGNMENT
-# ============================================================
-
-replay_alignment:
-
-  replay_requirements:
-
-    - deterministic_alias_resolution
-    - canonical_identity_mapping
-    - invariant_preservation
-    - replay_safe_lineage
-
-  replay_invalidators:
-
-    - ambiguous_aliasing
-    - duplicate_identity_mapping
-    - observer_relative_resolution
-    - runtime_dynamic_aliasing
-
-  description: >
-    Replay legitimacy requires deterministic canonical
-    alias normalization semantics.
-
-
-# ============================================================
-# REGISTRY ALIGNMENT
-# ============================================================
-
-registry_alignment:
-
-  authoritative_registries:
-
-    - afritech.architecture.PATH_ONTOLOGY
-    - afritech.architecture.implementation_registry
-    - afritech.architecture.enforcement_matrix
-    - afritech.epoch.epoch_registry
-
-  constraints:
-
-    canonical_registry_precedence: true
-
-    alias_must_not_override_registry: true
-
-    deterministic_resolution_required: true
-
-    replay_alignment_required: true
-
-    no_duplicate_identity_mapping: true
-
-
-# ============================================================
-# SAFETY GUARANTEES
-# ============================================================
-
-safety:
-
-  guarantees:
-
-    - deterministic_alias_resolution
-    - replay_safe_lineage
-    - canonical_identity_convergence
-    - observer_independent_resolution
-    - invariant_preserving_normalization
-
-  forbid:
-
-    - alias_identity_override
-    - duplicate_identity_mapping
-    - hidden_alias_mutation
-    - probabilistic_resolution
-    - undeclared_alias_binding
-    - filesystem_authority_override
-
-  enforcement:
-
-    violation_action: FAIL_FAST
-
-    replay_violation_action: REPLAY_INVALID
-
-    ontology_violation_action: IDENTITY_REJECTION
-
-
-# ============================================================
-# FAILURE EFFECTS
-# ============================================================
-
-failure_effects:
-
-  ambiguous_alias_resolution:
-
-    effect:
-
-      - replay_invalid
-      - ontology_failure
-      - identity_rejection
-
-
-  duplicate_identity_mapping:
-
-    effect:
-
-      - deterministic_failure
-      - lineage_invalid
-
-
-  forbidden_alias_execution:
-
-    effect:
-
-      - runtime_refusal
-      - CI_failure
-      - constitutional_invalid
-
-
-  observer_relative_resolution:
-
-    effect:
-
-      - replay_invalid
-      - determinism_failure
-
-
-# ============================================================
-# GLOBAL CONSTITUTIONAL RULES
+# CONSTITUTIONAL RULES
 # ============================================================
 
 rules:
 
   - id: PATH_ALIAS_RULE_1
+
     rule: >
-      Canonical constitutional identity must derive
-      exclusively from module-path ontology semantics.
+      Alias keys must remain topology-independent
+      compatibility identifiers.
+
 
   - id: PATH_ALIAS_RULE_2
+
     rule: >
-      Filesystem paths are compatibility artifacts only
-      and must never independently define authority.
+      Filesystem paths are forbidden as alias keys.
+
 
   - id: PATH_ALIAS_RULE_3
+
     rule: >
-      Alias resolution must remain deterministic,
-      replay-safe, and observer-independent.
+      Canonical ontology identity must remain
+      independent from repository topology.
+
 
   - id: PATH_ALIAS_RULE_4
+
     rule: >
-      Runtime execution must never depend on ambiguous
-      alias resolution.
+      Alias normalization must remain deterministic
+      and replay-safe.
+
 
   - id: PATH_ALIAS_RULE_5
-    rule: >
-      Replay reconstruction must normalize aliases through
-      canonical deterministic mappings.
 
-  - id: PATH_ALIAS_RULE_6
     rule: >
-      Reflection-based alias discovery is constitutionally
-      forbidden.
-
-  - id: PATH_ALIAS_RULE_7
-    rule: >
-      Filesystem aliases must never override canonical
-      registry identity semantics.
-
-  - id: PATH_ALIAS_RULE_8
-    rule: >
-      Alias normalization must preserve:
-        - replay admissibility
-        - deterministic execution
-        - invariant preservation
-        - lineage continuity
+      Forbidden aliases may remain declared for
+      governance visibility but are runtime
+      inadmissible.
 
 
 # ============================================================
-# CI ENFORCEMENT ALIGNMENT
+# CONSTITUTIONAL ASSERTIONS
 # ============================================================
 
-ci_alignment:
+constitutional_assertions:
 
-  enforced_by:
+  - >
+    Canonical ontology identity must remain
+    independent from filesystem topology.
 
-    - afritech.ci.path_ontology_validation
-    - afritech.ci.import_topology_enforcement
-    - afritech.ci.replay_validation
-    - afritech.ci.alias_validation
+  - >
+    Alias keys are compatibility artifacts only
+    and must never define constitutional identity.
 
-  required_checks:
+  - >
+    Replay-safe canonicalization requires
+    deterministic alias normalization.
 
-    - canonical_mapping_validation
-    - deterministic_resolution_validation
-    - no_duplicate_identity_mapping
-    - no_forbidden_alias_execution
-    - replay_safe_alias_normalization
-
-  failure_mode: CI_FAIL
-
-
-# ============================================================
-# CONSTITUTIONAL ASSERTION
-# ============================================================
-
-constitutional_assertion:
-
-  description: >
-    Path aliases are deterministic compatibility artifacts only.
-
-    Canonical constitutional identity derives exclusively from:
-      - module-path ontology
-      - deterministic replay-safe resolution
-      - invariant-preserving execution semantics
-      - constitutionally admitted execution surfaces
-
-    Filesystem aliases must never independently define:
-      - runtime authority
-      - replay legitimacy
-      - execution legitimacy
-      - constitutional sovereignty
-
-    Alias normalization must remain:
-      - deterministic
-      - replay-safe
-      - observer-independent
-      - constitutionally bounded
-      - closed-world aligned
+  - >
+    Governance legitimacy derives from canonical
+    ontology identity and replay admissibility,
+    not from compatibility aliases.

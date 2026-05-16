@@ -4,29 +4,22 @@
 AfriTech Execution Engine
 
 Deterministic + Proof‑Carrying Execution Engine
-
-Responsibilities:
-- Execute core logic
-- Enforce invariants
-- Produce reproducible results
-- Enforce proof‑carrying execution (PCE)
-- Integrate ZK proof generation
-- Emit TRACE for causal correctness
 """
 
 from __future__ import annotations
 
 from typing import Dict, Any, Callable, Optional
 import traceback
-import hashlib
 import json
 
-from afritech.runtime.context.runtime_context import RuntimeContext
+from afritech.shared.context import RuntimeContext
 from afritech.runtime.guards.invariant_guard import InvariantGuard
 from afritech.runtime.guards.proof_validator import ProofValidator
 from afritech.proof.proof_artifact import ProofArtifact
-
 from afritech.trace.trace_engine import TraceEngine
+
+# ✅ FIX: import from shared (breaks circular dependency)
+from afritech.shared.types import ExecutionResult
 
 # ✅ ZK integration
 from afritech.zk.interface import ZKProof
@@ -38,98 +31,6 @@ from afritech.zk.interface import ZKProof
 
 class ExecutionError(Exception):
     pass
-
-
-# -----------------------------------------------------------------
-# EXECUTION RESULT
-# -----------------------------------------------------------------
-
-class ExecutionResult:
-    """
-    Deterministic execution result with proof + trace binding
-    """
-
-    def __init__(
-        self,
-        success: bool,
-        output: Optional[Dict[str, Any]] = None,
-        error: Optional[str] = None,
-        context: Optional[RuntimeContext] = None,
-        proof: Optional[ProofArtifact] = None,
-        zk_proof: Optional[ZKProof] = None,
-        trace_hash: Optional[str] = None,
-    ):
-        self.success = success
-        self.output = output or {}
-        self.error = error
-        self.context = context
-        self.proof = proof
-        self.zk_proof = zk_proof
-        self.trace_hash = trace_hash
-
-        self.timestamp = (
-            context.timestamp if context else "UNDEFINED_TIMESTAMP"
-        )
-
-        self.result_hash = self._compute_hash()
-
-    # -------------------------------------------------------------
-    # CANONICAL SERIALIZATION
-    # -------------------------------------------------------------
-
-    @staticmethod
-    def _canonical_json(data: Dict[str, Any]) -> str:
-        return json.dumps(
-            data,
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-
-    # -------------------------------------------------------------
-    # HASH
-    # -------------------------------------------------------------
-
-    def _compute_hash(self) -> str:
-        base = {
-            "success": self.success,
-            "output": self.output,
-            "error": self.error,
-            "trace_hash": self.trace_hash,
-        }
-
-        return hashlib.sha256(
-            self._canonical_json(base).encode("utf-8")
-        ).hexdigest()
-
-    # -------------------------------------------------------------
-    # VERIFY
-    # -------------------------------------------------------------
-
-    def verify(self) -> bool:
-        return self.result_hash == self._compute_hash()
-
-    # -------------------------------------------------------------
-    # EXPORT
-    # -------------------------------------------------------------
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "success": self.success,
-            "output": self.output,
-            "error": self.error,
-            "context": self.context.to_dict() if self.context else None,
-            "result_hash": self.result_hash,
-            "trace_hash": self.trace_hash,
-            "timestamp": self.timestamp,
-            "proof": self.proof.to_dict() if self.proof else None,
-            "zk_proof": self.zk_proof.to_dict() if self.zk_proof else None,
-        }
-
-    def __repr__(self):
-        return (
-            f"<ExecutionResult success={self.success} "
-            f"hash={self.result_hash[:10]}...>"
-        )
 
 
 # -----------------------------------------------------------------
@@ -162,20 +63,14 @@ class ExecutionEngine:
 
     def execute(self, context: RuntimeContext) -> ExecutionResult:
 
-        # ---------------------------------------------------------
-        # CONTEXT VALIDATION
-        # ---------------------------------------------------------
-
+        # ✅ CONTEXT VALIDATION
         if not isinstance(context, RuntimeContext):
             raise ExecutionError("invalid_context_type")
 
         if not context.verify():
             raise ExecutionError("context_integrity_failed")
 
-        # ---------------------------------------------------------
-        # PRE‑INVARIANTS
-        # ---------------------------------------------------------
-
+        # ✅ PRE‑INVARIANTS
         InvariantGuard.enforce_authority(context)
         InvariantGuard.enforce_closed_world(context)
 
@@ -250,7 +145,7 @@ class ExecutionEngine:
                 result.zk_proof = zk_proof
 
             # -----------------------------------------------------
-            # TRACE FINALIZATION (EXECUTION SCOPE)
+            # TRACE FINALIZATION
             # -----------------------------------------------------
 
             trace_hash = None

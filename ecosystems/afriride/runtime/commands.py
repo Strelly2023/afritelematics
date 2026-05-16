@@ -1,7 +1,7 @@
 # ecosystems/afriride/runtime/commands.py
 
 from dataclasses import dataclass
-from typing import Final
+from typing import Final, Optional
 
 __all__: Final = [
     # Core mutation (single-ride)
@@ -18,7 +18,7 @@ __all__: Final = [
 
 
 # ---------------------------------------------------------
-# Mutation commands (replay-defining)
+# Mutation commands (replay-defining, epoch-aware)
 # ---------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -28,12 +28,13 @@ class AssignDriver:
 
     Requests assignment of a specific driver to the ride.
 
-    This command:
-    - mutates canonical state
-    - participates in replay-defining trace identity
-    - is subject to deterministic admission and ordering
+    Properties:
+    - replay-defining
+    - epoch-bounded admissibility
+    - deterministic ordering participant
     """
     driver_id: str
+    epoch: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -43,12 +44,13 @@ class AssignDriverToRideA:
 
     Assigns a driver to Ride A.
 
-    This command:
-    - mutates an independent canonical domain
-    - participates in replay-defining trace identity
-    - must compose deterministically with other mutations
+    Properties:
+    - replay-defining
+    - independent mutation domain
+    - epoch-bounded admissibility
     """
     driver_id: str
+    epoch: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -58,12 +60,13 @@ class AssignDriverToRideB:
 
     Assigns a driver to Ride B.
 
-    This command:
-    - mutates an independent canonical domain
-    - participates in replay-defining trace identity
-    - must compose deterministically with other mutations
+    Properties:
+    - replay-defining
+    - independent mutation domain
+    - epoch-bounded admissibility
     """
     driver_id: str
+    epoch: Optional[int] = None
 
 
 # ---------------------------------------------------------
@@ -77,10 +80,10 @@ class ReadRideState:
 
     Requests a snapshot read of the current ride state.
 
-    This command:
-    - must never mutate canonical state
-    - must never affect replay-defining trace identity
-    - is explicitly excluded from legitimacy hashing
+    Properties:
+    - non-mutating
+    - excluded from replay identity
+    - NOT epoch-bound (observer only)
     """
     request_id: str
 
@@ -92,10 +95,9 @@ class EmitAuditEvent:
 
     Represents an audit or logging side-effect.
 
-    This command:
-    - is allowed to occur during execution
-    - must not influence replay identity
-    - must not introduce ordering ambiguity
-    - is excluded from canonical trace hashing
+    Properties:
+    - non-mutating
+    - excluded from replay identity
+    - NOT epoch-bound
     """
     event_id: str

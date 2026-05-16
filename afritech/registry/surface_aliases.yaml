@@ -1,5 +1,116 @@
+schema: afritech.registry.surface_aliases.v1
+
+version: 1
+
+metadata:
+
+  authority: REGISTRY
+  status: ACTIVE
+  mutability: CONTROLLED
+
+  description: >
+    Surface alias registry providing deterministic
+    filesystem-to-surface resolution mappings.
+
+    Aliases represent FULL filesystem paths and resolve
+    deterministically to canonical registry artifacts.
+
+    This registry is strictly a compatibility layer and
+    does not define execution or constitutional authority.
+
+
+# ============================================================
+# ALIASES
+# ============================================================
+
 aliases:
 
   afritech/registry/attestation.py:
+
     resolved_to:
       - afritech/registry/attestation.yaml
+
+    status: MIGRATING
+
+    ontology: FILESYSTEM_TO_FILESYSTEM_COMPATIBILITY
+
+    description: >
+      Deprecated Python surface redirected to canonical YAML
+      attestation registry.
+
+
+# ============================================================
+# RESOLUTION RULES
+# ============================================================
+
+resolution:
+
+  ordering: DETERMINISTIC
+
+  single_target_required: true
+
+  observer_independent: true
+
+  replay_safe: true
+
+  constraints:
+
+    - no_multiple_primary_targets
+    - deterministic_lookup_only
+    - no_runtime_resolution
+    - no_reflection
+
+
+# ============================================================
+# VALIDATION RULES
+# ============================================================
+
+validation:
+
+  required:
+
+    - alias_must_be_filesystem_path
+    - resolved_targets_must_exist
+    - deterministic_resolution_required
+
+  forbidden:
+
+    - ambiguous_resolution
+    - multi-branch_resolution
+    - runtime_dynamic_aliasing
+    - alias_chains
+
+  failure_mode: FAIL_FAST
+
+
+# ============================================================
+# CLOSED-WORLD SEMANTICS
+# ============================================================
+
+closed_world:
+
+  enforced: true
+
+  description: >
+    Only declared aliases are valid. No implicit or
+    dynamically discovered surfaces are allowed.
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion: >
+
+  Surface aliases are deterministic compatibility mappings only.
+
+  Canonical surface authority derives exclusively from:
+    - registered canonical artifacts
+    - attested registry state
+    - deterministic replay-safe resolution
+
+  Filesystem aliases must never:
+    - define execution authority
+    - override canonical registry identity
+    - introduce ambiguity
+    - depend on runtime resolution

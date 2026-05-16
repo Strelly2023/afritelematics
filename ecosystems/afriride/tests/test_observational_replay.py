@@ -22,16 +22,24 @@ def test_observation_order_does_not_affect_replay_hash():
     r1 = run_replay_variant_a()
     r2 = run_replay_variant_b()
 
+    # -----------------------------------------------------
     # Replay identity must be stable
+    # -----------------------------------------------------
     assert r1["hash"] == r2["hash"]
 
-    # Canonical traces must be identical
+    # -----------------------------------------------------
+    # Canonical replay trace must be identical
+    # -----------------------------------------------------
     assert r1["trace"] == r2["trace"]
 
+    # -----------------------------------------------------
     # Final canonical state must be identical
+    # -----------------------------------------------------
     assert r1["final_state"] == r2["final_state"]
 
+    # -----------------------------------------------------
     # Explicit expected canonical state
+    # -----------------------------------------------------
     assert r1["final_state"] == {
         "drivers_available": ["B"],
         "ride_status": "OPEN",

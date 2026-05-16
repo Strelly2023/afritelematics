@@ -4,26 +4,34 @@ import sys
 import yaml
 import hashlib
 import json
+from pathlib import Path
 
 # =============================
-# ROOT RESOLUTION (STABLE)
+# ROOT RESOLUTION (ROBUST)
 # =============================
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.abspath(os.path.join(ROOT, ".."))
+SCRIPT_PATH = Path(__file__).resolve()
+ARCH_ROOT = SCRIPT_PATH.parent                  # afritech_v1/architecture
+REPO_ROOT = SCRIPT_PATH.parents[2]              # ✅ repo root (FIXED)
 
-RULES_PATH = os.path.join(ROOT, "architecture/dependency_rules.yaml")
-KERNEL_HASH_PATH = os.path.join(ROOT, "architecture/kernel_hash.txt")
+# =============================
+# PATHS
+# =============================
+RULES_PATH = ARCH_ROOT / "dependency_rules.yaml"
+KERNEL_HASH_PATH = REPO_ROOT / "kernel_hash.txt"   # ✅ FIXED (was wrong before)
+KERNEL_DIR = REPO_ROOT / "afritech_v1" / "kernel"
+SEAL_PATH = ARCH_ROOT / "../kernel/SEAL_MANIFEST.json"
+SEAL_PATH = SEAL_PATH.resolve()
 
 # =============================
 # LOAD RULES
 # =============================
-with open(RULES_PATH) as f:
+with open(RULES_PATH, "r") as f:
     RULES = yaml.safe_load(f)["layers"]
 
 # =============================
 # HASH UTIL
 # =============================
-def hash_file(path: str) -> str:
+def hash_file(path: Path) -> str:
     with open(path, "rb") as f:
         return hashlib.sha256(f.read()).hexdigest()
 
@@ -33,20 +41,20 @@ def hash_file(path: str) -> str:
 def snapshot_kernel():
     entries = []
 
-    kernel_root = os.path.join(PROJECT_ROOT, "afritech_v1", "kernel")
+    if not KERNEL_DIR.exists():
+        return entries
 
-    for root, _, files in os.walk(kernel_root):
-        for file in sorted(files):
+    for file_path in sorted(KERNEL_DIR.rglob("*")):
+        if not file_path.is_file():
+            continue
 
-            if not file.endswith((".py", ".md")):
-                continue
+        if file_path.suffix not in {".py", ".md"}:
+            continue
 
-            full = os.path.join(root, file)
+        # ✅ Stable relative path
+        rel = file_path.relative_to(REPO_ROOT).as_posix()
 
-            # canonical relative path
-            rel = os.path.relpath(full, PROJECT_ROOT).replace("\\", "/")
-
-            entries.append(f"{hash_file(full)}  {rel}")
+        entries.append(f"{hash_file(file_path)}  {rel}")
 
     return sorted(entries)
 
@@ -54,12 +62,12 @@ def snapshot_kernel():
 # KERNEL INTEGRITY CHECK
 # =============================
 def verify_kernel_integrity():
-    if not os.path.exists(KERNEL_HASH_PATH):
+    if not KERNEL_HASH_PATH.exists():
         print("⚠️ kernel_hash.txt not found — skipping integrity check")
         return
 
     with open(KERNEL_HASH_PATH) as f:
-        expected = sorted([line.strip() for line in f.readlines()])
+        expected = sorted(line.strip() for line in f.readlines() if line.strip())
 
     current = snapshot_kernel()
 
@@ -74,7 +82,7 @@ def verify_kernel_integrity():
 
         sys.exit(1)
 
-    print("🔐 Kernel integrity verified")
+    print("✅ Kernel hash integrity verified")
 
 # =============================
 # IMPORT NORMALIZATION
@@ -85,12 +93,12 @@ def normalize_import(name: str) -> str:
 # =============================
 # IMPORT EXTRACTION
 # =============================
-def extract_imports(file_path):
+def extract_imports(file_path: Path):
     imports = set()
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            tree = ast.parse(f.read(), filename=file_path)
+        content = file_path.read_text(encoding="utf-8")
+        tree = ast.parse(content, filename=str(file_path))
     except Exception:
         return imports
 
@@ -113,31 +121,25 @@ def run_dependency_check():
     violations = []
 
     for layer, cfg in RULES.items():
-        base_path = os.path.join(ROOT, cfg["path"])
+        base_path = (ARCH_ROOT.parent / cfg["path"]).resolve()
 
-        if not os.path.exists(base_path):
+        if not base_path.exists():
             continue
 
-        for root, _, files in os.walk(base_path):
-            for file in files:
+        for file_path in base_path.rglob("*.py"):
 
-                if not file.endswith(".py"):
+            imports = extract_imports(file_path)
+
+            for imp in imports:
+
+                # ignore external libs
+                if imp not in RULES:
                     continue
 
-                full_path = os.path.join(root, file)
-                imports = extract_imports(full_path)
-
-                for imp in imports:
-
-                    # ignore external libs / stdlib
-                    if imp not in RULES:
-                        continue
-
-                    # enforce dependency rule
-                    if imp not in cfg["may_import"]:
-                        violations.append(
-                            f"❌ {layer} -> {imp} | {full_path}"
-                        )
+                if imp not in cfg["may_import"]:
+                    violations.append(
+                        f"❌ {layer} -> {imp} | {file_path.relative_to(REPO_ROOT)}"
+                    )
 
     if violations:
         print("\n🚨 AFRITECH ARCHITECTURE VIOLATIONS 🚨\n")
@@ -151,33 +153,34 @@ def run_dependency_check():
 # KERNEL SEAL VERIFICATION
 # =============================
 def verify_kernel_seal():
-    seal_path = os.path.join(ROOT, "kernel/SEAL_MANIFEST.json")
-
-    if not os.path.exists(seal_path):
+    if not SEAL_PATH.exists():
         print("⚠️ No kernel seal found — skipping strict verification")
         return
 
-    with open(seal_path) as f:
+    with open(SEAL_PATH) as f:
         seal = json.load(f)
 
     expected = seal["files"]
     current = {}
 
-    kernel_root = os.path.join(PROJECT_ROOT, "afritech_v1", "kernel")
+    if not KERNEL_DIR.exists():
+        print("⚠️ Kernel directory not found")
+        return
 
-    for root, _, files in os.walk(kernel_root):
-        for file in files:
+    for file_path in KERNEL_DIR.rglob("*"):
 
-            if not file.endswith((".py", ".md")):
-                continue
+        if not file_path.is_file():
+            continue
 
-            full = os.path.join(root, file)
-            rel = os.path.relpath(full, kernel_root).replace("\\", "/")
+        if file_path.suffix not in {".py", ".md"}:
+            continue
 
-            current[rel] = hash_file(full)
+        rel = file_path.relative_to(KERNEL_DIR).as_posix()
+        current[rel] = hash_file(file_path)
 
     if expected != current:
         print("\n🚨 KERNEL SEAL VIOLATION 🚨\n")
+
         print("Expected:")
         print(json.dumps(expected, indent=2))
 
@@ -189,7 +192,7 @@ def verify_kernel_seal():
     print("🔐 Kernel seal verified")
 
 # =============================
-# BOOT PIPELINE (SINGLE ENTRYPOINT)
+# BOOT PIPELINE
 # =============================
 def main():
     print("🚀 AfriTech v0 Boot Validation Starting...\n")

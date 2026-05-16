@@ -1,51 +1,59 @@
 # ecosystems/afriride/runtime/state.py
 
-from dataclasses import dataclass, field
-from typing import Optional, Set, Dict, Any
+from dataclasses import dataclass
+from typing import Optional, FrozenSet, Dict, Any
 
 __all__ = [
     "RideState",
 ]
 
 
-@dataclass
+@dataclass(frozen=True)
 class RideState:
     """
-    Canonical mutable state for AfriRide execution.
+    Canonical immutable state for AfriRide execution.
 
     This state defines the *entire* replay‑defining mutable surface
-    for all currently validated experiments:
-    - concurrent mutation under conflict
-    - observational replay isolation
-    - independent mutation composition
+    for all validated experiments.
 
-    Design constraints (non‑negotiable):
-    - no derived or transient fields
-    - no observational or diagnostic metadata
+    NON‑NEGOTIABLE CONSTRAINTS:
+    - immutable (no in‑place mutation)
     - no ordering‑dependent data structures
+    - no derived, transient, or observational fields
+    - equality and identity are structural
     """
 
-    # Shared resource pool
-    drivers_available: Set[str] = field(default_factory=set)
+    # ---------------------------------------------------------
+    # Shared resource pool (order‑independent, deterministic)
+    # ---------------------------------------------------------
+    drivers_available: FrozenSet[str]
 
-    # Single‑ride mutation (conflict experiments)
+    # ---------------------------------------------------------
+    # Single‑ride mutation domain
+    # ---------------------------------------------------------
     ride_status: str = "OPEN"
     assigned_driver: Optional[str] = None
 
-    # Independent mutation domains (composition experiments)
+    # ---------------------------------------------------------
+    # Independent mutation domains (composition‑safe)
+    # ---------------------------------------------------------
     ride_a_assigned: Optional[str] = None
     ride_b_assigned: Optional[str] = None
+
+    # ---------------------------------------------------------
+    # Canonical Snapshot
+    # ---------------------------------------------------------
 
     def snapshot(self) -> Dict[str, Any]:
         """
         Produce a canonical, replay‑stable snapshot of state.
 
         Guarantees:
-        - deterministic ordering of all collections
-        - inclusion of only replay‑defining state
-        - exclusion of observational or auxiliary data
+        - deterministic ordering of collections
+        - observer‑free representation
+        - includes only replay‑defining state
 
-        This snapshot defines *state identity* for replay purposes.
+        This snapshot defines *state identity* for replay and hashing.
         """
 
         return {
