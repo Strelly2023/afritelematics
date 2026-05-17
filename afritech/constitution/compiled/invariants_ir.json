@@ -1,370 +1,264 @@
 {
-  "schema": "afritech.constitution.invariants.ir.v2",
-
-  "generated_by": "compile_invariants.py",
-
-  "deterministic": true,
-  "closed_world_aligned": true,
-  "semantic_completeness_verified": true,
-  "runtime_projection_verified": true,
-  "replay_safe": true,
-
-  "projection_model": {
-    "type": "runtime_subset_projection",
-    "canonical_registry": "afritech/constitution/INVARIANTS.yaml",
-    "semantic_registry": "afritech/constitution/invariants_semantics.yaml"
-  },
-
-  "invariant_count": 6,
-
-  "runtime_projection": [
-    "I1_REGISTRY_AUTHORITY",
-    "I2_SEALED_SURFACE",
+  "canonical_invariant_count": 30,
+  "canonical_invariants": [
+    "I10_EXPLICIT_DEPENDENCIES",
+    "I11_AUTHORITY_DECLARATION",
+    "I12_NO_AUTHORITY_ESCALATION",
+    "I13_ADR_REQUIRED_FOR_MUTATION",
+    "I14_BOUND_EXECUTION_SURFACE",
+    "I15_NO_DYNAMIC_BEHAVIOR_INJECTION",
+    "I16_TOTAL_OUTCOME_DECLARATION",
+    "I17_DETERMINISTIC_FAILURE",
+    "I18_REPLAYABLE_REFUSAL",
+    "I19_STATE_TRANSITION_EXPLICIT",
+    "I1_EXPLICIT_INPUT_BOUNDARY",
+    "I20_NO_HIDDEN_SIDE_EFFECTS",
+    "I21_DETERMINISTIC_ORDERING",
+    "I22_TIME_SOURCE_CONTROL",
+    "I23_INPUT_IMMUTABILITY",
+    "I24_OUTPUT_INTEGRITY",
+    "I25_CLASSIFICATION_IS_POST_EXECUTION",
+    "I26_CLASSIFICATION_REPLAY_ALIGNMENT",
+    "I27_NO_CLASSIFICATION_SIDE_EFFECT",
+    "I28_PROOF_OF_CONTINUITY",
+    "I29_HASH_VERIFIABILITY",
+    "I2_EXPLICIT_OUTPUT_BOUNDARY",
+    "I30_OBSERVABILITY_COMPLETENESS",
     "I3_NO_SILENT_MUTATION",
-    "I4_DETERMINISTIC_RUNTIME",
-    "I5_EPOCH_MONOTONIC",
-    "I6_CLOSED_EXECUTION_WORLD"
+    "I4_DETERMINISTIC_EXECUTION",
+    "I5_REPLAY_REQUIRED",
+    "I6_REPLAY_AUTHORITY",
+    "I7_TRANSCRIPT_COMPLETENESS",
+    "I8_TRANSCRIPT_HASH_STABILITY",
+    "I9_CLOSED_WORLD"
   ],
-
+  "closed_world_aligned": true,
+  "deterministic": true,
+  "execution_hash": "66f52a639579e72caf382d94c32620998e0c548fe3b284149b6aa9ae9ba44c09",
+  "guarantees": {
+    "canonical_alignment_verified": true,
+    "closed_world_execution": true,
+    "deterministic_execution": true,
+    "replay_safe_projection": true,
+    "semantic_constraints_enforced": true
+  },
   "invariants": {
-
-    "I1_REGISTRY_AUTHORITY": {
-
-      "category": "AUTHORITY_ROOT",
-
-      "formal_name": "REGISTRY_AUTHORITY_EXCLUSIVE",
-
-      "constitutional_assertion":
-        "AfriTech recognizes exactly one authoritative constitutional source: the sealed registry.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I1_REGISTRY_AUTHORITY"
-      ],
-
-      "runtime_scope": [
-        "runtime_admission",
-        "replay_verification",
-        "registry_loading"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "ci": {
-          "validators": [
-            "ast_import_validator"
-          ],
-          "timing": "STATIC_ANALYSIS",
-          "refusal_mode": "CI_FAIL"
-        },
-
-        "runtime": {
-          "validators": [
-            "registry_authority_guard"
-          ],
-          "timing": "PRE_EXECUTION",
-          "refusal_mode": "HARD_FAILURE"
-        },
-
-        "replay": {
-          "validators": [
-            "registry_consistency_verifier"
-          ],
-          "timing": "PRE_REPLAY",
-          "refusal_mode": "REPLAY_INVALID"
-        }
-      },
-
-      "required_witnesses": [
-        "registry_hash",
-        "receipt.registry_hash",
-        "transcript.registry_hash"
-      ]
-    },
-
-    "I2_SEALED_SURFACE": {
-
+    "I1_EXPLICIT_INPUT_BOUNDARY": {
       "category": "EXECUTION_BOUNDARY",
-
-      "formal_name": "SEALED_EXECUTION_SURFACE",
-
-      "constitutional_assertion":
-        "Only sealed and hash-attested execution surfaces may participate in constitutional runtime execution.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I2_SEALED_SURFACE"
-      ],
-
-      "runtime_scope": [
-        "runtime_execution",
-        "surface_admission"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "ci": {
-          "validators": [
-            "forbid_speculative_runtime_access"
-          ],
-          "timing": "STATIC_ANALYSIS",
-          "refusal_mode": "CI_FAIL"
-        },
-
-        "runtime": {
-          "validators": [
-            "surface_admission_guard"
-          ],
-          "timing": "PRE_EXECUTION",
-          "refusal_mode": "HARD_FAILURE"
-        }
+      "constitutional_assertion": "ALL(runtime_context.inputs ARE explicit AND declared)\n",
+      "description": "Execution MUST operate only on explicitly provided RuntimeContext inputs.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": true
       },
-
-      "required_witnesses": [
-        "execution_surface_hash",
-        "receipt.execution_surface_hash"
-      ]
+      "id": "I1_EXPLICIT_INPUT_BOUNDARY",
+      "runtime_enforced": true,
+      "runtime_scope": "PRE"
     },
-
+    "I2_EXPLICIT_OUTPUT_BOUNDARY": {
+      "category": "EXECUTION_BOUNDARY",
+      "constitutional_assertion": "outputs subset_of ExecutionResult.outputs\n",
+      "description": "All outputs MUST be fully contained within ExecutionResult.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": true
+      },
+      "id": "I2_EXPLICIT_OUTPUT_BOUNDARY",
+      "runtime_enforced": true,
+      "runtime_scope": "POST"
+    },
     "I3_NO_SILENT_MUTATION": {
-
       "category": "STATE_INTEGRITY",
-
-      "formal_name": "NO_SILENT_STATE_MUTATION",
-
-      "constitutional_assertion":
-        "Constitutional state transitions must always be explicit, replayable, ordered, and witness-verifiable.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I3_NO_SILENT_MUTATION"
-      ],
-
-      "runtime_scope": [
-        "state_mutation",
-        "replay_reconstruction",
-        "runtime_state"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "ci": {
-          "validators": [
-            "witness_validator"
-          ],
-          "timing": "STATIC_ANALYSIS",
-          "refusal_mode": "CI_FAIL"
-        },
-
-        "runtime": {
-          "validators": [
-            "mutation_trace_guard"
-          ],
-          "timing": "DURING_EXECUTION",
-          "refusal_mode": "HARD_FAILURE"
-        },
-
-        "replay": {
-          "validators": [
-            "replay_equivalence_engine"
-          ],
-          "timing": "REPLAY_VALIDATION",
-          "refusal_mode": "REPLAY_INVALID"
-        }
+      "constitutional_assertion": "ALL(state_changes ARE recorded_in_trace)\n",
+      "description": "No state mutation without trace visibility.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": true
       },
-
-      "required_witnesses": [
-        "mutation_witness",
-        "equivalence_proof"
-      ]
+      "id": "I3_NO_SILENT_MUTATION",
+      "runtime_enforced": true,
+      "runtime_scope": "DURING"
     },
-
-    "I4_DETERMINISTIC_RUNTIME": {
-
+    "I4_DETERMINISTIC_EXECUTION": {
       "category": "REPLAY_INTEGRITY",
-
-      "formal_name": "DETERMINISTIC_RUNTIME_EXECUTION",
-
-      "constitutional_assertion":
-        "Equivalent runtime inputs must always produce equivalent outputs, replay traces, witnesses, and hashes.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I4_DETERMINISTIC_RUNTIME"
-      ],
-
-      "runtime_scope": [
-        "runtime_execution",
-        "replay_equivalence",
-        "witness_generation"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "runtime": {
-          "validators": [
-            "execution_surface_validation"
-          ],
-          "timing": "PRE_EXECUTION",
-          "refusal_mode": "HARD_FAILURE"
-        },
-
-        "replay": {
-          "validators": [
-            "replay_equivalence_engine"
-          ],
-          "timing": "REPLAY_VALIDATION",
-          "refusal_mode": "REPLAY_INVALID"
-        }
+      "constitutional_assertion": "inputs\u2081 = inputs\u2082 implies outputs\u2081 = outputs\u2082 AND trace\u2081 = trace\u2082\n",
+      "description": "Identical inputs MUST produce identical outputs and traces.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": true
       },
-
-      "required_witnesses": [
-        "execution_witness",
-        "replay_witness",
-        "equivalence_proof"
-      ]
+      "id": "I4_DETERMINISTIC_EXECUTION",
+      "runtime_enforced": true,
+      "runtime_scope": "POST"
     },
-
-    "I5_EPOCH_MONOTONIC": {
-
-      "category": "TEMPORAL_INTEGRITY",
-
-      "formal_name": "EPOCH_STRICT_MONOTONICITY",
-
-      "constitutional_assertion":
-        "Constitutional epochs must advance monotonically and remain replay-safe.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I5_EPOCH_MONOTONIC"
-      ],
-
-      "runtime_scope": [
-        "epoch_registry",
-        "replay_lineage",
-        "governance_history"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "ci": {
-          "validators": [
-            "identity_validator"
-          ],
-          "timing": "STATIC_ANALYSIS",
-          "refusal_mode": "CI_FAIL"
-        },
-
-        "replay": {
-          "validators": [
-            "replay_equivalence_engine"
-          ],
-          "timing": "PRE_REPLAY",
-          "refusal_mode": "REPLAY_INVALID"
-        }
+    "I5_REPLAY_REQUIRED": {
+      "category": "REPLAY_INTEGRITY",
+      "constitutional_assertion": "for_all execution exists replay(execution)\n",
+      "description": "All executions MUST be replayable.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": false
       },
-
-      "required_witnesses": [
-        "epoch_registry_hash",
-        "transcript_witness"
-      ]
+      "id": "I5_REPLAY_REQUIRED",
+      "runtime_enforced": true,
+      "runtime_scope": "REPLAY"
     },
-
-    "I6_CLOSED_EXECUTION_WORLD": {
-
+    "I9_CLOSED_WORLD": {
       "category": "CLOSED_WORLD_ENFORCEMENT",
-
-      "formal_name": "CLOSED_EXECUTION_WORLD",
-
-      "constitutional_assertion":
-        "Only explicitly declared constitutional entities may participate in runtime or replay semantics.",
-
-      "projection_type": "runtime_executable",
-
-      "projection_of": [
-        "I6_CLOSED_EXECUTION_WORLD"
-      ],
-
-      "runtime_scope": [
-        "runtime_execution",
-        "semantic_compilation",
-        "witness_validation",
-        "replay_validation"
-      ],
-
-      "deterministic": true,
-      "replay_safe": true,
-      "closed_world_aligned": true,
-
-      "enforcement_points": {
-
-        "ci": {
-          "validators": [
-            "semantic_concept_validator",
-            "cross_concept_validator"
-          ],
-          "timing": "STATIC_ANALYSIS",
-          "refusal_mode": "CI_FAIL"
-        },
-
-        "runtime": {
-          "validators": [
-            "import_topology_enforcement"
-          ],
-          "timing": "PRE_EXECUTION",
-          "refusal_mode": "HARD_FAILURE"
-        },
-
-        "replay": {
-          "validators": [
-            "replay_equivalence_engine"
-          ],
-          "timing": "REPLAY_VALIDATION",
-          "refusal_mode": "REPLAY_INVALID"
-        }
+      "constitutional_assertion": "execution_inputs subset_of declared_inputs\n",
+      "description": "No undeclared external access allowed.\n",
+      "enforcement": {
+        "governance": false,
+        "replay": true,
+        "runtime": true
       },
-
-      "required_witnesses": [
-        "constitutional_receipt",
-        "equivalence_proof",
-        "invariants_ir"
-      ]
+      "id": "I9_CLOSED_WORLD",
+      "runtime_enforced": true,
+      "runtime_scope": "PRE"
     }
   },
-
-  "guarantees": {
-    "deterministic_execution": true,
-    "closed_world_execution": true,
-    "semantic_projection_verified": true,
-    "replay_safe_projection": true,
-    "canonical_alignment_verified": true
+  "replay_safe": true,
+  "runtime_projection": [
+    "I1_EXPLICIT_INPUT_BOUNDARY",
+    "I2_EXPLICIT_OUTPUT_BOUNDARY",
+    "I3_NO_SILENT_MUTATION",
+    "I4_DETERMINISTIC_EXECUTION",
+    "I5_REPLAY_REQUIRED",
+    "I9_CLOSED_WORLD"
+  ],
+  "runtime_projection_count": 6,
+  "schema": "afritech.constitution.invariants.ir.v3",
+  "semantic_hash": "9185f0219fcd2eaa7544cdee8afc53242a24678db0334238b87a095dbf065cd8",
+  "semantic_invariants": {
+    "I10_EXPLICIT_DEPENDENCIES": {
+      "description": "All dependencies must be explicitly defined.\n",
+      "id": "I10_EXPLICIT_DEPENDENCIES"
+    },
+    "I11_AUTHORITY_DECLARATION": {
+      "description": "Authority must be formally defined via governance.\n",
+      "id": "I11_AUTHORITY_DECLARATION"
+    },
+    "I12_NO_AUTHORITY_ESCALATION": {
+      "description": "Components cannot exceed authorized roles.\n",
+      "id": "I12_NO_AUTHORITY_ESCALATION"
+    },
+    "I13_ADR_REQUIRED_FOR_MUTATION": {
+      "description": "System evolution requires governance approval.\n",
+      "id": "I13_ADR_REQUIRED_FOR_MUTATION"
+    },
+    "I14_BOUND_EXECUTION_SURFACE": {
+      "description": "Execution cannot escape defined runtime boundaries.\n",
+      "id": "I14_BOUND_EXECUTION_SURFACE"
+    },
+    "I15_NO_DYNAMIC_BEHAVIOR_INJECTION": {
+      "description": "Behavior cannot be modified during execution.\n",
+      "id": "I15_NO_DYNAMIC_BEHAVIOR_INJECTION"
+    },
+    "I16_TOTAL_OUTCOME_DECLARATION": {
+      "description": "Every execution must resolve fully.\n",
+      "id": "I16_TOTAL_OUTCOME_DECLARATION"
+    },
+    "I17_DETERMINISTIC_FAILURE": {
+      "description": "Failures must be consistent and replayable.\n",
+      "id": "I17_DETERMINISTIC_FAILURE"
+    },
+    "I18_REPLAYABLE_REFUSAL": {
+      "description": "Refusals must be replay-consistent.\n",
+      "id": "I18_REPLAYABLE_REFUSAL"
+    },
+    "I19_STATE_TRANSITION_EXPLICIT": {
+      "description": "Every state transition must be formally declared.\n",
+      "id": "I19_STATE_TRANSITION_EXPLICIT"
+    },
+    "I1_EXPLICIT_INPUT_BOUNDARY": {
+      "description": "Execution depends strictly on declared RuntimeContext inputs.\n",
+      "id": "I1_EXPLICIT_INPUT_BOUNDARY"
+    },
+    "I20_NO_HIDDEN_SIDE_EFFECTS": {
+      "description": "No hidden or implicit side effects exist.\n",
+      "id": "I20_NO_HIDDEN_SIDE_EFFECTS"
+    },
+    "I21_DETERMINISTIC_ORDERING": {
+      "description": "Execution ordering must not vary between runs.\n",
+      "id": "I21_DETERMINISTIC_ORDERING"
+    },
+    "I22_TIME_SOURCE_CONTROL": {
+      "description": "Time must be deterministic and controlled.\n",
+      "id": "I22_TIME_SOURCE_CONTROL"
+    },
+    "I23_INPUT_IMMUTABILITY": {
+      "description": "Inputs must not change during execution.\n",
+      "id": "I23_INPUT_IMMUTABILITY"
+    },
+    "I24_OUTPUT_INTEGRITY": {
+      "description": "Outputs must be correct and verifiable.\n",
+      "id": "I24_OUTPUT_INTEGRITY"
+    },
+    "I25_CLASSIFICATION_IS_POST_EXECUTION": {
+      "description": "Classification cannot affect execution.\n",
+      "id": "I25_CLASSIFICATION_IS_POST_EXECUTION"
+    },
+    "I26_CLASSIFICATION_REPLAY_ALIGNMENT": {
+      "description": "Classification must reflect replay reality.\n",
+      "id": "I26_CLASSIFICATION_REPLAY_ALIGNMENT"
+    },
+    "I27_NO_CLASSIFICATION_SIDE_EFFECT": {
+      "description": "Classification cannot modify outputs.\n",
+      "id": "I27_NO_CLASSIFICATION_SIDE_EFFECT"
+    },
+    "I28_PROOF_OF_CONTINUITY": {
+      "description": "Replay guarantees system consistency over time.\n",
+      "id": "I28_PROOF_OF_CONTINUITY"
+    },
+    "I29_HASH_VERIFIABILITY": {
+      "description": "Hashes must verify trace integrity.\n",
+      "id": "I29_HASH_VERIFIABILITY"
+    },
+    "I2_EXPLICIT_OUTPUT_BOUNDARY": {
+      "description": "Execution produces only explicitly declared outputs.\n",
+      "id": "I2_EXPLICIT_OUTPUT_BOUNDARY"
+    },
+    "I30_OBSERVABILITY_COMPLETENESS": {
+      "description": "All relevant events must be captured.\n",
+      "id": "I30_OBSERVABILITY_COMPLETENESS"
+    },
+    "I3_NO_SILENT_MUTATION": {
+      "description": "All state changes must be observable in trace.\n",
+      "id": "I3_NO_SILENT_MUTATION"
+    },
+    "I4_DETERMINISTIC_EXECUTION": {
+      "description": "Execution must always produce identical outcomes for identical inputs.\n",
+      "id": "I4_DETERMINISTIC_EXECUTION"
+    },
+    "I5_REPLAY_REQUIRED": {
+      "description": "System must support full replay of all executions.\n",
+      "id": "I5_REPLAY_REQUIRED"
+    },
+    "I6_REPLAY_AUTHORITY": {
+      "description": "Replay defines behavioral correctness.\n",
+      "id": "I6_REPLAY_AUTHORITY"
+    },
+    "I7_TRANSCRIPT_COMPLETENESS": {
+      "description": "Execution trace must fully describe behavior.\n",
+      "id": "I7_TRANSCRIPT_COMPLETENESS"
+    },
+    "I8_TRANSCRIPT_HASH_STABILITY": {
+      "description": "Replay hashes must remain identical across runs.\n",
+      "id": "I8_TRANSCRIPT_HASH_STABILITY"
+    },
+    "I9_CLOSED_WORLD": {
+      "description": "Execution cannot depend on undeclared external systems.\n",
+      "id": "I9_CLOSED_WORLD"
+    }
   },
-
-  "source_hash":
-    "89d4442ff2ab714798bd3d607e5559ba4a7d7838a38d2581006f31ef622f8b5a"
+  "validation": {
+    "deterministic_ordering": true,
+    "projection_consistent": true,
+    "runtime_subset_of_canonical": true
+  }
 }

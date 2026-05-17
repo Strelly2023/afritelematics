@@ -1,43 +1,215 @@
 """
-Shared runtime context
+Shared Runtime Context
+======================
 
 Neutral, dependency-free representation of execution context.
 
-Must not import runtime.engine or guards.
+Constitutional guarantees:
+
+- deterministic replay-safe serialization
+- immutable runtime metadata
+- dependency isolation
+- stable context hashing
+- closed-world execution compatibility
+
+This module MUST NOT import:
+
+- runtime.engine
+- runtime.guards
+- replay.verifier
 """
 
-from typing import Dict, Any
+from __future__ import annotations
+
+import hashlib
+import json
+
+from dataclasses import dataclass, field
+from typing import Any, Dict
 
 
+# ============================================================
+# CONTEXT
+# ============================================================
+
+@dataclass(frozen=True)
 class RuntimeContext:
     """
-    Shared context used across runtime and evaluation.
+    Shared runtime context used across:
+
+    - runtime execution
+    - replay verification
+    - constitutional enforcement
+    - property testing
+    - witness generation
     """
 
-    def __init__(
+    # --------------------------------------------------------
+    # constitutional authority
+    # --------------------------------------------------------
+
+    authority_profile: str
+
+    # --------------------------------------------------------
+    # deterministic execution payload
+    # --------------------------------------------------------
+
+    payload: Dict[str, Any]
+
+    # --------------------------------------------------------
+    # replay semantics
+    # --------------------------------------------------------
+
+    replay_requirements: Dict[str, Any]
+
+    # --------------------------------------------------------
+    # deterministic timestamp
+    # --------------------------------------------------------
+
+    timestamp: str | None = None
+
+    # --------------------------------------------------------
+    # replay-safe deterministic context hash
+    # --------------------------------------------------------
+
+    context_hash: str = field(
+        default="",
+    )
+
+    # ========================================================
+    # INITIALIZATION
+    # ========================================================
+
+    def __post_init__(
         self,
-        *,
-        authority_profile: str,
-        payload: Dict[str, Any],
-        replay_requirements: Dict[str, Any],
-        context_hash: str,
-        timestamp: str,
-    ):
-        self.authority_profile = authority_profile
-        self.payload = payload
-        self.replay_requirements = replay_requirements
-        self.context_hash = context_hash
-        self.timestamp = timestamp
+    ) -> None:
 
-    def verify(self) -> bool:
-        # minimal integrity check (real logic can stay in runtime if needed)
-        return bool(self.context_hash and self.timestamp)
+        # ----------------------------------------------------
+        # auto-generate deterministic hash if absent
+        # ----------------------------------------------------
 
-    def to_dict(self):
-        return {
-            "authority_profile": self.authority_profile,
-            "payload": self.payload,
-            "replay_requirements": self.replay_requirements,
-            "context_hash": self.context_hash,
-            "timestamp": self.timestamp,
+        if not self.context_hash:
+
+            generated = (
+                self._generate_hash()
+            )
+
+            object.__setattr__(
+                self,
+                "context_hash",
+                generated,
+            )
+
+    # ========================================================
+    # DETERMINISTIC HASHING
+    # ========================================================
+
+    def _generate_hash(
+        self,
+    ) -> str:
+
+        canonical = {
+
+            "authority_profile":
+                self.authority_profile,
+
+            "payload":
+                self.payload,
+
+            "replay_requirements":
+                self.replay_requirements,
+
+            "timestamp":
+                self.timestamp,
         }
+
+        encoded = json.dumps(
+
+            canonical,
+
+            sort_keys=True,
+
+            separators=(
+                ",",
+                ":",
+            ),
+
+            ensure_ascii=False,
+
+        ).encode(
+            "utf-8"
+        )
+
+        return hashlib.sha256(
+            encoded
+        ).hexdigest()
+
+    # ========================================================
+    # INTEGRITY
+    # ========================================================
+
+    def verify(
+        self,
+    ) -> bool:
+        """
+        Deterministic replay-safe integrity validation.
+        """
+
+        try:
+
+            expected = (
+                self._generate_hash()
+            )
+
+        except Exception:
+
+            return False
+
+        return (
+            expected
+            == self.context_hash
+        )
+
+    # ========================================================
+    # SERIALIZATION
+    # ========================================================
+
+    def to_dict(
+        self,
+    ) -> Dict[str, Any]:
+
+        return {
+
+            "authority_profile":
+                self.authority_profile,
+
+            "payload":
+                self.payload,
+
+            "replay_requirements":
+                self.replay_requirements,
+
+            "context_hash":
+                self.context_hash,
+
+            "timestamp":
+                self.timestamp,
+        }
+
+    # ========================================================
+    # REPR
+    # ========================================================
+
+    def __repr__(
+        self,
+    ) -> str:
+
+        return (
+
+            "RuntimeContext("
+            f"authority_profile="
+            f"{self.authority_profile!r}, "
+            f"context_hash="
+            f"{self.context_hash[:12]}..."
+            ")"
+        )

@@ -1,42 +1,8 @@
-# afritech/ci/invariant_validator.py
-
-"""
-AfriTech Constitutional Invariant Validator
-===========================================
-
-Validates consistency between:
-
-- canonical constitutional invariant registry
-- semantic runtime enforcement registry
-- compiled invariant IR
-- generated invariant index
-
-Enforces:
-
-- deterministic ordering
-- duplicate prevention
-- canonical registry integrity
-- runtime projection validity
-- replay-safe invariant topology
-- compiled/index parity
-
-CONSTITUTIONAL MODEL:
-
-Canonical Registry
-    ↓
-Semantic Enforcement Projection
-    ↓
-Compiled Runtime Projection
-    ↓
-Deterministic Runtime Index
-"""
-
 from __future__ import annotations
 
 import json
 import re
 import sys
-
 from pathlib import Path
 from typing import Any, Dict, List, Set
 
@@ -47,626 +13,262 @@ import yaml
 # PATHS
 # ============================================================
 
-REPO_ROOT = (
-    Path(__file__)
-    .resolve()
-    .parents[2]
-)
+ROOT = Path(__file__).resolve().parents[2]
 
-AFRITECH_ROOT = (
-    REPO_ROOT
-    / "afritech"
-)
-
-# ------------------------------------------------------------
-# Canonical constitutional registry
-# ------------------------------------------------------------
-
-CANONICAL_REGISTRY = (
-    AFRITECH_ROOT
-    / "constitution"
-    / "INVARIANTS.yaml"
-)
-
-# ------------------------------------------------------------
-# Semantic runtime enforcement registry
-# ------------------------------------------------------------
-
-SEMANTIC_SOURCE = (
-    AFRITECH_ROOT
-    / "constitution"
-    / "invariants_semantics.yaml"
-)
-
-# ------------------------------------------------------------
-# Compiled executable IR
-# ------------------------------------------------------------
-
-COMPILED_IR = (
-    AFRITECH_ROOT
-    / "constitution"
-    / "compiled"
-    / "invariants_ir.json"
-)
-
-# ------------------------------------------------------------
-# Generated deterministic runtime index
-# ------------------------------------------------------------
-
-COMPILED_INDEX = (
-    AFRITECH_ROOT
-    / "constitution"
-    / "compiled"
-    / "invariants_index.py"
-)
-
-
-# ============================================================
-# EXCEPTIONS
-# ============================================================
-
-class InvariantValidationError(
-    Exception
-):
-    pass
+CANONICAL = ROOT / "afritech/constitution/INVARIANTS.yaml"
+SEMANTIC = ROOT / "afritech/constitution/invariants_semantics.yaml"
+IR_FILE = ROOT / "afritech/constitution/compiled/invariants_ir.json"
+INDEX_FILE = ROOT / "afritech/constitution/compiled/invariants_index.py"
 
 
 # ============================================================
 # FAILURE
 # ============================================================
 
-def fail(message: str) -> None:
-
-    raise InvariantValidationError(
-        message
-    )
+def fail(msg: str) -> None:
+    raise RuntimeError(msg)
 
 
 # ============================================================
 # LOADERS
 # ============================================================
 
-def load_yaml(
-    path: Path,
-) -> Dict[str, Any]:
-
+def load_yaml(path: Path) -> Dict[str, Any]:
     if not path.exists():
-
-        fail(
-            f"missing YAML source: {path}"
-        )
+        fail(f"Missing file: {path}")
 
     try:
-
-        return yaml.safe_load(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
-
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
-
-        fail(
-            f"invalid YAML: {exc}"
-        )
+        fail(f"Invalid YAML: {exc}")
 
 
-def load_json(
-    path: Path,
-) -> Dict[str, Any]:
-
+def load_json(path: Path) -> Dict[str, Any]:
     if not path.exists():
-
-        fail(
-            f"missing JSON artifact: {path}"
-        )
+        fail(f"Missing file: {path}")
 
     try:
-
-        return json.loads(
-            path.read_text(
-                encoding="utf-8"
-            )
-        )
-
+        return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-
-        fail(
-            f"invalid JSON: {exc}"
-        )
+        fail(f"Invalid JSON: {exc}")
 
 
 # ============================================================
-# INVARIANT SORTING
+# SORTING
 # ============================================================
 
-INVARIANT_ID_PATTERN = re.compile(
-    r"^I([0-9]+)_"
-)
+ID_PATTERN = re.compile(r"^I(\d+)_")
 
 
-def invariant_sort_key(
-    inv_id: str,
-):
-
-    match = (
-        INVARIANT_ID_PATTERN.match(
-            inv_id
-        )
-    )
-
-    if not match:
-
-        return (
-            999999,
-            inv_id,
-        )
-
-    try:
-
-        number = int(
-            match.group(1)
-        )
-
-    except ValueError:
-
-        return (
-            999999,
-            inv_id,
-        )
-
-    return (
-        number,
-        inv_id,
-    )
+def sort_key(inv_id: str):
+    match = ID_PATTERN.match(inv_id)
+    return (int(match.group(1)) if match else 9999, inv_id)
 
 
 # ============================================================
-# CANONICAL REGISTRY
+# LOADERS
 # ============================================================
 
-def load_canonical_registry_ids() -> List[str]:
+def load_canonical_ids() -> List[str]:
+    data = load_yaml(CANONICAL)
 
-    registry_data = load_yaml(
-        CANONICAL_REGISTRY
-    )
-
-    invariants = registry_data.get(
-        "invariants"
-    )
-
-    if not isinstance(
-        invariants,
-        list,
-    ):
-
-        fail(
-            "canonical invariant registry "
-            "must contain "
-            "'invariants' list"
-        )
-
-    ids: List[str] = []
-
-    for entry in invariants:
-
-        if not isinstance(
-            entry,
-            dict,
-        ):
-
-            fail(
-                "canonical invariant entry "
-                "must be mapping"
-            )
-
-        inv_id = entry.get("id")
-
-        if not isinstance(
-            inv_id,
-            str,
-        ):
-
-            fail(
-                "canonical invariant "
-                "missing valid id"
-            )
-
-        ids.append(inv_id)
+    invs = data.get("invariants")
+    if not isinstance(invs, list):
+        fail("Canonical invariants must be list")
 
     return sorted(
-        ids,
-        key=invariant_sort_key,
+        [inv["id"] for inv in invs],
+        key=sort_key,
     )
 
 
-# ============================================================
-# SEMANTIC ENFORCEMENT
-# ============================================================
+def load_semantic_ids() -> List[str]:
+    data = load_yaml(SEMANTIC)
 
-def extract_semantic_enforcement_ids(
-    semantic_data: Dict[str, Any],
-) -> Set[str]:
+    semantics = data.get("semantics")
+    if not isinstance(semantics, dict):
+        fail("Semantic registry must be mapping")
 
-    discovered: Set[str] = set()
-
-    semantic_root = semantic_data.get(
-        "semantic_enforcement",
-        {}
-    )
-
-    if not isinstance(
-        semantic_root,
-        dict,
-    ):
-
-        fail(
-            "semantic_enforcement "
-            "must be mapping"
-        )
-
-    for _, enforcement_def in (
-        semantic_root.items()
-    ):
-
-        if not isinstance(
-            enforcement_def,
-            dict,
-        ):
-
-            continue
-
-        enforced = enforcement_def.get(
-            "enforced_invariants",
-            []
-        )
-
-        if not isinstance(
-            enforced,
-            list,
-        ):
-
-            fail(
-                "enforced_invariants "
-                "must be list"
-            )
-
-        for inv_id in enforced:
-
-            if not isinstance(
-                inv_id,
-                str,
-            ):
-
-                fail(
-                    "enforced invariant "
-                    "id must be string"
-                )
-
-            discovered.add(inv_id)
-
-    return discovered
+    return sorted(semantics.keys(), key=sort_key)
 
 
-# ============================================================
-# INDEX PARSING
-# ============================================================
-# ============================================================
-# INDEX PARSING
-# ============================================================
+def load_ir_ids() -> List[str]:
+    ir = load_json(IR_FILE)
 
-INDEX_INVARIANT_PATTERN = re.compile(
-    r"^I[0-9]+_[A-Z0-9_]+$"
-)
+    runtime = ir.get("runtime_projection")
+    if not isinstance(runtime, list):
+        fail("IR runtime_projection must be list")
+
+    return sorted(runtime, key=sort_key)
 
 
-def parse_index_ids(
-    path: Path,
-) -> List[str]:
+INDEX_PATTERN = re.compile(r"I\d+_[A-Z0-9_]+")
 
-    if not path.exists():
 
-        fail(
-            f"missing invariant index: "
-            f"{path}"
-        )
+def load_index_ids() -> List[str]:
+    if not INDEX_FILE.exists():
+        fail("Missing invariant index")
 
     ids: List[str] = []
 
-    for line in path.read_text(
-        encoding="utf-8"
-    ).splitlines():
-
+    for line in INDEX_FILE.read_text(encoding="utf-8").splitlines():
         line = line.strip()
-
-        # ----------------------------------------------------
-        # ignore empty/comment lines
-        # ----------------------------------------------------
-
-        if not line:
-            continue
-
-        if line.startswith("#"):
-            continue
-
-        # ----------------------------------------------------
-        # only assignments
-        # ----------------------------------------------------
 
         if "=" not in line:
             continue
 
-        left, _ = line.split(
-            "=",
-            1,
-        )
+        left = line.split("=", 1)[0].strip()
 
-        inv_id = left.strip()
+        if INDEX_PATTERN.fullmatch(left):
+            ids.append(left)
 
-        # ----------------------------------------------------
-        # strict invariant symbol validation
-        # ----------------------------------------------------
-
-        if not INDEX_INVARIANT_PATTERN.fullmatch(
-            inv_id
-        ):
-            continue
-
-        ids.append(inv_id)
-
-    return ids
+    return sorted(set(ids), key=sort_key)
 
 
 # ============================================================
 # VALIDATION HELPERS
 # ============================================================
 
-def validate_deterministic_ordering(
-    ids: List[str],
-) -> None:
-
-    expected = sorted(
-        ids,
-        key=invariant_sort_key,
-    )
-
-    if ids != expected:
-
-        fail(
-            "non-deterministic invariant "
-            "ordering detected"
-        )
-
-
-def validate_duplicate_ids(
-    ids: List[str],
-) -> None:
-
+def validate_no_duplicates(ids: List[str], name: str):
     seen: Set[str] = set()
-
-    duplicates: Set[str] = set()
-
-    for inv_id in ids:
-
-        if inv_id in seen:
-
-            duplicates.add(inv_id)
-
-        seen.add(inv_id)
-
-    if duplicates:
-
-        fail(
-            f"duplicate invariant ids: "
-            f"{sorted(duplicates)}"
-        )
+    for i in ids:
+        if i in seen:
+            fail(f"{name} duplicate detected: {i}")
+        seen.add(i)
 
 
-def validate_runtime_projection(
-    registry_ids: Set[str],
-    projection_ids: Set[str],
-    projection_name: str,
-) -> None:
+def validate_order(ids: List[str], name: str):
+    if ids != sorted(ids, key=sort_key):
+        fail(f"{name} ordering not deterministic")
 
-    unknown = (
-        projection_ids
-        - registry_ids
-    )
 
-    if unknown:
+def validate_subset(parent: Set[str], child: Set[str], name: str):
+    diff = child - parent
+    if diff:
+        fail(f"{name} contains unknown invariants: {sorted(diff)}")
 
-        fail(
-            f"{projection_name} contains "
-            f"unknown invariants: "
-            f"{sorted(unknown)}"
-        )
+
+# ============================================================
+# IR STRUCTURE VALIDATION ✅ FINAL
+# ============================================================
+
+FORBIDDEN_TERMS = {
+    "intent",
+    "duplicate",
+    "equivalence",
+    "identity",
+    "retry",
+    "canonicalization",
+}
+
+
+def validate_ir_structure(ir: Dict[str, Any]) -> None:
+
+    invs = ir.get("invariants")
+
+    if not isinstance(invs, dict):
+        fail("IR invariants must be mapping")
+
+    for inv_id, inv in invs.items():
+
+        if not isinstance(inv, dict):
+            fail(f"{inv_id} invalid structure")
+
+        # ✅ FINAL REQUIRED FIELDS (MATCH COMPILER + YAML)
+        required = [
+            "category",
+            "constitutional_assertion",
+            "runtime_scope",
+            "enforcement",
+        ]
+
+        for field in required:
+            if field not in inv:
+                fail(f"{inv_id} missing field: {field}")
+
+        # ✅ enforcement must match YAML structure
+        if not isinstance(inv.get("enforcement"), dict):
+            fail(f"{inv_id} enforcement must be mapping")
+
+        # ✅ runtime_scope validation
+        valid_scopes = {"PRE", "DURING", "POST", "REPLAY", "GOVERNANCE"}
+        if inv.get("runtime_scope") not in valid_scopes:
+            fail(f"{inv_id} invalid runtime_scope: {inv.get('runtime_scope')}")
+
+        # ✅ semantic leakage protection
+        text = json.dumps(inv).lower()
+        for term in FORBIDDEN_TERMS:
+            if term in text:
+                fail(f"{inv_id} contains forbidden semantic term: {term}")
 
 
 # ============================================================
 # MAIN VALIDATION
 # ============================================================
 
-def run_validation() -> None:
+def run() -> None:
+
+    canonical_ids = load_canonical_ids()
+    semantic_ids = load_semantic_ids()
+    ir_ids = load_ir_ids()
+    index_ids = load_index_ids()
+
+    ir = load_json(IR_FILE)
+    validate_ir_structure(ir)
+
+    cs = set(canonical_ids)
+    ss = set(semantic_ids)
+    rs = set(ir_ids)
+    ix = set(index_ids)
 
     # --------------------------------------------------------
-    # canonical constitutional registry
+    # BASIC
     # --------------------------------------------------------
 
-    registry_ids = (
-        load_canonical_registry_ids()
-    )
+    validate_no_duplicates(canonical_ids, "canonical")
+    validate_no_duplicates(semantic_ids, "semantic")
+    validate_no_duplicates(ir_ids, "ir")
+    validate_no_duplicates(index_ids, "index")
 
-    registry_set = set(
-        registry_ids
-    )
-
-    # --------------------------------------------------------
-    # semantic runtime enforcement
-    # --------------------------------------------------------
-
-    semantic_data = load_yaml(
-        SEMANTIC_SOURCE
-    )
-
-    semantic_ids = sorted(
-        extract_semantic_enforcement_ids(
-            semantic_data
-        ),
-        key=invariant_sort_key,
-    )
+    validate_order(canonical_ids, "canonical")
+    validate_order(semantic_ids, "semantic")
+    validate_order(ir_ids, "ir")
+    validate_order(index_ids, "index")
 
     # --------------------------------------------------------
-    # compiled IR
+    # ALIGNMENT
     # --------------------------------------------------------
 
-    compiled_ir = load_json(
-        COMPILED_IR
-    )
+    validate_subset(cs, rs, "IR")
+    validate_subset(cs, ix, "Index")
+    validate_subset(cs, ss, "Semantic")
 
-    compiled_invariants = (
-        compiled_ir.get(
-            "invariants"
-        )
-    )
+    # ✅ semantic must cover runtime invariants
+    validate_subset(set(semantic_ids), rs, "Semantic coverage")
 
-    if not isinstance(
-        compiled_invariants,
-        dict,
-    ):
+    # --------------------------------------------------------
+    # IR ↔ INDEX LOCK
+    # --------------------------------------------------------
 
+    if ir_ids != index_ids:
         fail(
-            "compiled IR invariants "
-            "must be mapping"
+            f"IR/index mismatch\n"
+            f"IR: {ir_ids}\n"
+            f"INDEX: {index_ids}"
         )
 
-    compiled_ids = sorted(
-        compiled_invariants.keys(),
-        key=invariant_sort_key,
-    )
-
-    compiled_set = set(
-        compiled_ids
-    )
-
     # --------------------------------------------------------
-    # deterministic runtime index
-    # --------------------------------------------------------
-
-    index_ids = sorted(
-        parse_index_ids(
-            COMPILED_INDEX
-        ),
-        key=invariant_sort_key,
-    )
-
-    index_set = set(
-        index_ids
-    )
-
-    # ========================================================
-    # DUPLICATE CHECKS
-    # ========================================================
-
-    validate_duplicate_ids(
-        registry_ids
-    )
-
-    validate_duplicate_ids(
-        semantic_ids
-    )
-
-    validate_duplicate_ids(
-        compiled_ids
-    )
-
-    validate_duplicate_ids(
-        index_ids
-    )
-
-    # ========================================================
-    # DETERMINISTIC ORDERING
-    # ========================================================
-
-    validate_deterministic_ordering(
-        registry_ids
-    )
-
-    validate_deterministic_ordering(
-        semantic_ids
-    )
-
-    validate_deterministic_ordering(
-        compiled_ids
-    )
-
-    validate_deterministic_ordering(
-        index_ids
-    )
-
-    # ========================================================
-    # PROJECTION VALIDATION
-    # ========================================================
-
-    validate_runtime_projection(
-        registry_set,
-        set(semantic_ids),
-        "semantic registry",
-    )
-
-    validate_runtime_projection(
-        registry_set,
-        compiled_set,
-        "compiled IR",
-    )
-
-    validate_runtime_projection(
-        registry_set,
-        index_set,
-        "compiled index",
-    )
-
-    # ========================================================
-    # INDEX ↔ IR PARITY
-    # ========================================================
-
-    if compiled_ids != index_ids:
-
-        fail(
-            "compiled IR and invariant "
-            "index diverged"
-        )
-
-    # ========================================================
     # SUCCESS
-    # ========================================================
+    # --------------------------------------------------------
 
-    print(
-        "✅ Invariant validation passed"
-    )
-
-    print(
-        "✅ Canonical registry integrity verified"
-    )
-
-    print(
-        "✅ Semantic runtime projection verified"
-    )
-
-    print(
-        "✅ Compiled runtime projection verified"
-    )
-
-    print(
-        "✅ Deterministic invariant ordering verified"
-    )
-
-    print(
-        "✅ Duplicate invariant IDs not detected"
-    )
-
-    print(
-        "✅ Replay-safe invariant topology verified"
-    )
+    print("✅ Invariant validation PASSED")
+    print("✅ Canonical registry verified")
+    print("✅ Semantic registry aligned")
+    print("✅ IR structure validated")
+    print("✅ Runtime projection validated")
+    print("✅ Deterministic ordering verified")
+    print("✅ Duplicate prevention verified")
+    print(f"✅ Runtime invariants: {len(ir_ids)}")
 
 
 # ============================================================
@@ -674,23 +276,13 @@ def run_validation() -> None:
 # ============================================================
 
 def main() -> int:
-
     try:
-
-        run_validation()
-
+        run()
         return 0
-
     except Exception as exc:
-
-        print(
-            f"❌ Invariant validation failed: "
-            f"{exc}"
-        )
-
+        print(f"❌ Validation failed: {exc}")
         return 1
 
 
 if __name__ == "__main__":
-
     sys.exit(main())

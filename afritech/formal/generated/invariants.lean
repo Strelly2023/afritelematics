@@ -9,10 +9,10 @@ Source:
   afritech/constitution/compiled/invariants_ir.json
 
 Generation time:
-  2026-05-16T14:35:54.677300Z
+  2026-05-17T11:07:54.516471Z
 
 Source hash:
-  89d4442ff2ab714798bd3d607e5559ba4a7d7838a38d2581006f31ef622f8b5a
+  None
 
 Constitutional rule:
   All invariant semantics originate in Semantic IR.
@@ -26,42 +26,42 @@ namespace AfriTech
 constant Invariant : Type
 
 /-- Canonical constitutional invariants (generated). -/
-constant I1_REGISTRY_AUTHORITY : Invariant
-constant I2_SEALED_SURFACE : Invariant
+constant I1_EXPLICIT_INPUT_BOUNDARY : Invariant
+constant I2_EXPLICIT_OUTPUT_BOUNDARY : Invariant
 constant I3_NO_SILENT_MUTATION : Invariant
-constant I4_DETERMINISTIC_RUNTIME : Invariant
-constant I5_EPOCH_MONOTONIC : Invariant
-constant I6_CLOSED_EXECUTION_WORLD : Invariant
+constant I4_DETERMINISTIC_EXECUTION : Invariant
+constant I5_REPLAY_REQUIRED : Invariant
+constant I9_CLOSED_WORLD : Invariant
 
 /-- Set of all declared constitutional invariants. -/
 def AllInvariants : Set Invariant :=
   {
-    I1_REGISTRY_AUTHORITY,
-    I2_SEALED_SURFACE,
+    I1_EXPLICIT_INPUT_BOUNDARY,
+    I2_EXPLICIT_OUTPUT_BOUNDARY,
     I3_NO_SILENT_MUTATION,
-    I4_DETERMINISTIC_RUNTIME,
-    I5_EPOCH_MONOTONIC,
-    I6_CLOSED_EXECUTION_WORLD,
+    I4_DETERMINISTIC_EXECUTION,
+    I5_REPLAY_REQUIRED,
+    I9_CLOSED_WORLD,
   }
 
 /-- Formal theorem stubs for constitutional invariants.
 These are placeholders and MUST be discharged in later phases. -/
-theorem i1_registry_authority : True := by
+theorem i1_explicit_input_boundary : True := by
   trivial
 
-theorem i2_sealed_surface : True := by
+theorem i2_explicit_output_boundary : True := by
   trivial
 
 theorem i3_no_silent_mutation : True := by
   trivial
 
-theorem i4_deterministic_runtime : True := by
+theorem i4_deterministic_execution : True := by
   trivial
 
-theorem i5_epoch_monotonic : True := by
+theorem i5_replay_required : True := by
   trivial
 
-theorem i6_closed_execution_world : True := by
+theorem i9_closed_world : True := by
   trivial
 
 

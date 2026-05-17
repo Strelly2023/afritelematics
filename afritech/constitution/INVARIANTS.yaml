@@ -1,253 +1,335 @@
-# afritech/constitution/INVARIANTS.yaml
-
-# =========================================================
-# AFRITECH CONSTITUTIONAL INVARIANTS
-# =========================================================
-
 schema: afritech.constitution.invariants.v1
 
 meta:
   description: >
-    Immutable constitutional constraints governing system behavior.
-    These invariants define the fundamental laws that MUST NEVER be violated
-    by runtime, governance, or infrastructure layers.
-
+    Canonical registry of constitutional invariants.
+    Defines execution, replay, and governance constraints.
   authority: registry
   enforcement: REQUIRED
   mutability: FORBIDDEN
   deterministic: true
   replay_safe: true
+  ordering: canonical
+  canonical_invariant_count: 30
 
-
-# =========================================================
-# CORE CONSTITUTIONAL INVARIANTS
-# =========================================================
 
 invariants:
 
-  # ------------------------------------------------------
-  # I1 — SINGLE SOURCE OF TRUTH
-  # ------------------------------------------------------
-  - id: I1_REGISTRY_AUTHORITY
-    category: AUTHORITY_ROOT
-    description: >
-      The registry is the sole source of truth for all constitutional state.
-      No runtime, replay, governance, or semantic layer may override,
-      shadow, reinterpret, or bypass registry authority.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# EXECUTION BOUNDARY
+# ---------------------------------------------------------
+
+- id: I1_EXPLICIT_INPUT_BOUNDARY
+  category: EXECUTION_BOUNDARY
+  runtime_scope: PRE
+  description: >
+    Execution MUST operate only on explicitly provided RuntimeContext inputs.
+  constitutional_assertion: >
+    ALL(runtime_context.inputs ARE explicit AND declared)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I2_EXPLICIT_OUTPUT_BOUNDARY
+  category: EXECUTION_BOUNDARY
+  runtime_scope: POST
+  description: >
+    All outputs MUST be fully contained within ExecutionResult.
+  constitutional_assertion: >
+    outputs subset_of ExecutionResult.outputs
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I14_BOUND_EXECUTION_SURFACE
+  category: EXECUTION_BOUNDARY
+  runtime_scope: PRE
+  description: >
+    Execution MUST remain within declared runtime surfaces.
+  constitutional_assertion: >
+    execution_surface subset_of declared_surfaces
+  enforcement: { runtime: true, replay: false, governance: false }
+
+- id: I15_NO_DYNAMIC_BEHAVIOR_INJECTION
+  category: EXECUTION_BOUNDARY
+  runtime_scope: PRE
+  description: >
+    Execution logic MUST NOT be injected dynamically.
+  constitutional_assertion: >
+    execution_logic IS static_during_runtime
+  enforcement: { runtime: true, replay: false, governance: false }
 
 
-  # ------------------------------------------------------
-  # I2 — SEALED EXECUTION SURFACE
-  # ------------------------------------------------------
-  - id: I2_SEALED_SURFACE
-    category: EXECUTION_BOUNDARY
-    description: >
-      All execution surfaces must match registry-declared files,
-      hashes, and admissible runtime topology.
-      Any mismatch must halt execution.
-    enforcement: REQUIRED
-    violation_class: B_STRUCTURAL
+# ---------------------------------------------------------
+# STATE INTEGRITY
+# ---------------------------------------------------------
+
+- id: I3_NO_SILENT_MUTATION
+  category: STATE_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    No state mutation without trace visibility.
+  constitutional_assertion: >
+    ALL(state_changes ARE recorded_in_trace)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I19_STATE_TRANSITION_EXPLICIT
+  category: STATE_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    All state transitions MUST be declared.
+  constitutional_assertion: >
+    ALL(state_transitions ARE explicitly_declared)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I20_NO_HIDDEN_SIDE_EFFECTS
+  category: STATE_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    No hidden side effects allowed.
+  constitutional_assertion: >
+    effects subset_of observable_trace
+  enforcement: { runtime: true, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I3 — NO SILENT MUTATION
-  # ------------------------------------------------------
-  - id: I3_NO_SILENT_MUTATION
-    category: STATE_INTEGRITY
-    description: >
-      Constitutional state must never mutate implicitly.
-      All state transitions must be explicit, replayable,
-      witness-bound, and constitutionally admissible.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# REPLAY INTEGRITY
+# ---------------------------------------------------------
+
+- id: I4_DETERMINISTIC_EXECUTION
+  category: REPLAY_INTEGRITY
+  runtime_scope: POST
+  description: >
+    Identical inputs MUST produce identical outputs and traces.
+  constitutional_assertion: >
+    inputs₁ = inputs₂ implies outputs₁ = outputs₂ AND trace₁ = trace₂
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I5_REPLAY_REQUIRED
+  category: REPLAY_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    All executions MUST be replayable.
+  constitutional_assertion: >
+    for_all execution exists replay(execution)
+  enforcement: { runtime: false, replay: true, governance: false }
+
+- id: I6_REPLAY_AUTHORITY
+  category: REPLAY_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Replay results are authoritative.
+  constitutional_assertion: >
+    replay_result = canonical_truth
+  enforcement: { runtime: false, replay: true, governance: false }
+
+- id: I7_TRANSCRIPT_COMPLETENESS
+  category: REPLAY_INTEGRITY
+  runtime_scope: POST
+  description: >
+    Execution traces MUST fully reconstruct behavior.
+  constitutional_assertion: >
+    trace implies reconstruct(execution)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I8_TRANSCRIPT_HASH_STABILITY
+  category: REPLAY_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Replay hashes MUST remain stable.
+  constitutional_assertion: >
+    hash(trace₁) = hash(trace₂) IF equivalent_execution
+  enforcement: { runtime: false, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I4 — DETERMINISTIC EXECUTION
-  # ------------------------------------------------------
-  - id: I4_DETERMINISTIC_RUNTIME
-    category: REPLAY_INTEGRITY
-    description: >
-      The same RuntimeContext must always produce identical execution
-      outputs, witnesses, hashes, replay traces, and execution semantics.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# CLOSED WORLD
+# ---------------------------------------------------------
+
+- id: I9_CLOSED_WORLD
+  category: CLOSED_WORLD_ENFORCEMENT
+  runtime_scope: PRE
+  description: >
+    No undeclared external access allowed.
+  constitutional_assertion: >
+    execution_inputs subset_of declared_inputs
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I10_EXPLICIT_DEPENDENCIES
+  category: CLOSED_WORLD_ENFORCEMENT
+  runtime_scope: GOVERNANCE
+  description: >
+    All dependencies MUST be declared.
+  constitutional_assertion: >
+    dependencies subset_of declared_dependencies
+  enforcement: { runtime: true, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I5 — EPOCH MONOTONICITY
-  # ------------------------------------------------------
-  - id: I5_EPOCH_MONOTONIC
-    category: TEMPORAL_INTEGRITY
-    description: >
-      Constitutional epochs must advance monotonically.
-      Epoch rollback, aliasing, divergence, or replay ambiguity
-      is constitutionally forbidden.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# GOVERNANCE
+# ---------------------------------------------------------
+
+- id: I11_AUTHORITY_DECLARATION
+  category: GOVERNANCE_CONTROL
+  runtime_scope: GOVERNANCE
+  description: >
+    Authority MUST be explicitly declared.
+  constitutional_assertion: >
+    authority ∈ approved_ADRs
+  enforcement: { runtime: false, replay: false, governance: true }
+
+- id: I12_NO_AUTHORITY_ESCALATION
+  category: GOVERNANCE_CONTROL
+  runtime_scope: GOVERNANCE
+  description: >
+    No component may escalate authority.
+  constitutional_assertion: >
+    authority_runtime ≤ authority_declared
+  enforcement: { runtime: true, replay: false, governance: true }
+
+- id: I13_ADR_REQUIRED_FOR_MUTATION
+  category: GOVERNANCE_CONTROL
+  runtime_scope: GOVERNANCE
+  description: >
+    Changes require ADR approval.
+  constitutional_assertion: >
+    mutation implies approved_ADR
+  enforcement: { runtime: false, replay: false, governance: true }
 
 
-  # ------------------------------------------------------
-  # I6 — CLOSED EXECUTION WORLD
-  # ------------------------------------------------------
-  - id: I6_CLOSED_EXECUTION_WORLD
-    category: CLOSED_WORLD_ENFORCEMENT
-    description: >
-      Only explicitly declared constitutional entities,
-      runtime surfaces, semantic artifacts, and witnesses
-      may participate in execution or replay semantics.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# EXECUTION FINALITY
+# ---------------------------------------------------------
+
+- id: I16_TOTAL_OUTCOME_DECLARATION
+  category: EXECUTION_FINALITY
+  runtime_scope: POST
+  description: >
+    Execution MUST resolve to final outcome.
+  constitutional_assertion: >
+    execution implies exists final_outcome
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I17_DETERMINISTIC_FAILURE
+  category: EXECUTION_FINALITY
+  runtime_scope: POST
+  description: >
+    Failures MUST be reproducible.
+  constitutional_assertion: >
+    failure(inputs₁) = failure(inputs₂)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I18_REPLAYABLE_REFUSAL
+  category: EXECUTION_FINALITY
+  runtime_scope: POST
+  description: >
+    Refusals MUST be replay-consistent.
+  constitutional_assertion: >
+    refusal_replay(inputs) = refusal_original(inputs)
+  enforcement: { runtime: true, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I7 — AUTHORITY DECLARATION
-  # ------------------------------------------------------
-  - id: I7_AUTHORITY_DECLARATION
-    category: AUTHORITY_CONTROL
-    description: >
-      Authority must be explicitly declared before execution begins.
-      Execution without authority declaration is constitutionally invalid.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# TEMPORAL INTEGRITY
+# ---------------------------------------------------------
+
+- id: I21_DETERMINISTIC_ORDERING
+  category: TEMPORAL_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    Execution ordering MUST be deterministic.
+  constitutional_assertion: >
+    order(execution₁) = order(execution₂)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I22_TIME_SOURCE_CONTROL
+  category: TEMPORAL_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    Time MUST be controlled and replay-stable.
+  constitutional_assertion: >
+    time_source ∈ controlled_sources
+  enforcement: { runtime: true, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I8 — NO AUTHORITY ESCALATION
-  # ------------------------------------------------------
-  - id: I8_NO_AUTHORITY_ESCALATION
-    category: AUTHORITY_CONTROL
-    description: >
-      Execution cannot derive, elevate, infer, or expand authority
-      beyond what is explicitly declared.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# DATA INTEGRITY
+# ---------------------------------------------------------
+
+- id: I23_INPUT_IMMUTABILITY
+  category: DATA_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    Inputs MUST remain immutable.
+  constitutional_assertion: >
+    inputs(t0) = inputs(tn)
+  enforcement: { runtime: true, replay: false, governance: false }
+
+- id: I24_OUTPUT_INTEGRITY
+  category: DATA_INTEGRITY
+  runtime_scope: POST
+  description: >
+    Outputs MUST be verifiable.
+  constitutional_assertion: >
+    outputs ARE deterministic_and_verifiable
+  enforcement: { runtime: true, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I9 — PROOF REQUIRED
-  # ------------------------------------------------------
-  - id: I9_PROOF_REQUIRED
-    category: PROOF_ENFORCEMENT
-    description: >
-      Every execution must produce replay-safe proofs,
-      witnesses, and RuntimeCertificates.
-      Execution without proof artifacts is invalid.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# CLASSIFICATION
+# ---------------------------------------------------------
+
+- id: I25_CLASSIFICATION_IS_POST_EXECUTION
+  category: CLASSIFICATION_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Classification occurs after execution.
+  constitutional_assertion: >
+    classification_time > execution_end
+  enforcement: { runtime: false, replay: true, governance: false }
+
+- id: I26_CLASSIFICATION_REPLAY_ALIGNMENT
+  category: CLASSIFICATION_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Classification aligns with replay.
+  constitutional_assertion: >
+    classification = replay_observed_behavior
+  enforcement: { runtime: false, replay: true, governance: false }
+
+- id: I27_NO_CLASSIFICATION_SIDE_EFFECT
+  category: CLASSIFICATION_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Classification does not modify outputs.
+  constitutional_assertion: >
+    classification DOES NOT modify(outputs, trace)
+  enforcement: { runtime: false, replay: true, governance: false }
 
 
-  # ------------------------------------------------------
-  # I10 — CONSENSUS DETERMINISM
-  # ------------------------------------------------------
-  - id: I10_CONSENSUS_DETERMINISM
-    category: DISTRIBUTED_CONSISTENCY
-    description: >
-      Distributed constitutional execution must converge toward
-      identical canonical replay semantics across all nodes.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+# ---------------------------------------------------------
+# PROOF
+# ---------------------------------------------------------
 
+- id: I28_PROOF_OF_CONTINUITY
+  category: PROOF_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    System MUST support replay continuity proof.
+  constitutional_assertion: >
+    replay_chain implies continuity_proof
+  enforcement: { runtime: false, replay: true, governance: false }
 
-  # ------------------------------------------------------
-  # I11 — NODE TRUST VALIDATION
-  # ------------------------------------------------------
-  - id: I11_NODE_HEALTH_REQUIRED
-    category: DISTRIBUTED_TRUST
-    description: >
-      Nodes participating in constitutional execution must satisfy
-      trust, health, replay, and attestation requirements.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
+- id: I29_HASH_VERIFIABILITY
+  category: PROOF_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Execution traces MUST be hash verifiable.
+  constitutional_assertion: >
+    hash(trace) implies integrity_verified
+  enforcement: { runtime: false, replay: true, governance: false }
 
-
-  # ------------------------------------------------------
-  # I12 — HASH-BOUND IDENTITY
-  # ------------------------------------------------------
-  - id: I12_IDENTITY_INTEGRITY
-    category: IDENTITY_INTEGRITY
-    description: >
-      Constitutional identity must remain hash-bound,
-      canonical, replay-safe, and observer-independent.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
-
-
-  # ------------------------------------------------------
-  # I13 — EPOCH LINEAGE STABILITY
-  # ------------------------------------------------------
-  - id: I13_EPOCH_LINEAGE
-    category: TEMPORAL_INTEGRITY
-    description: >
-      Governance lineage must remain deterministic,
-      replay-safe, and cryptographically reconstructable.
-    enforcement: REQUIRED
-    violation_class: A_FATAL
-
-
-  # ------------------------------------------------------
-  # I14 — ADR GOVERNANCE REQUIRED
-  # ------------------------------------------------------
-  - id: I14_ADR_REQUIRED
-    category: GOVERNANCE_CONTROL
-    description: >
-      Structural constitutional changes require explicit ADR approval
-      before runtime admission.
-    enforcement: REQUIRED
-    violation_class: B_STRUCTURAL
-
-
-  # ------------------------------------------------------
-  # I15 — NON-EXECUTABLE ISOLATION
-  # ------------------------------------------------------
-  - id: I15_NON_EXECUTABLE_ISOLATION
-    category: EXECUTION_BOUNDARY
-    description: >
-      Documentary, speculative, or non-runtime artifacts
-      must never participate in constitutional execution semantics.
-    enforcement: REQUIRED
-    violation_class: B_STRUCTURAL
-
-
-# =========================================================
-# VALIDATION POLICY
-# =========================================================
-
-validation:
-
-  deterministic_ordering: REQUIRED
-  duplicate_ids_forbidden: true
-  replay_safe_projection: true
-  canonical_registry_required: true
-  runtime_projection_subset_only: true
-
-
-# =========================================================
-# RUNTIME PROJECTION MODEL
-# =========================================================
-
-runtime_projection:
-
-  executable_runtime_invariants:
-    - I1_REGISTRY_AUTHORITY
-    - I2_SEALED_SURFACE
-    - I3_NO_SILENT_MUTATION
-    - I4_DETERMINISTIC_RUNTIME
-    - I5_EPOCH_MONOTONIC
-    - I6_CLOSED_EXECUTION_WORLD
-
-
-# =========================================================
-# CONSTITUTIONAL GUARANTEES
-# =========================================================
-
-guarantees:
-
-  replay_safe: true
-  deterministic_execution: true
-  closed_world_execution: true
-  witness_required: true
-  semantic_projection_verified: true
-  constitutional_integrity_preserved: true
+- id: I30_OBSERVABILITY_COMPLETENESS
+  category: PROOF_INTEGRITY
+  runtime_scope: POST
+  description: >
+    All execution events MUST be observable.
+  constitutional_assertion: >
+    execution_events subset_of observable_log
+  enforcement: { runtime: true, replay: true, governance: false }

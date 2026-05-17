@@ -1,3 +1,5 @@
+# afritech/constitution/verify_semantic_coverage.py
+
 """
 AfriTech Semantic Coverage Verifier
 ===================================
@@ -5,34 +7,28 @@ AfriTech Semantic Coverage Verifier
 Enforces constitutional semantic closure between:
 
 1. Canonical invariant registry
-2. Semantic runtime enforcement registry
-3. Compiled runtime invariant IR
-4. Deterministic runtime index
-5. Concrete executable enforcement references
-6. Witness completeness
+2. Semantic interpretation registry
+3. Compiled runtime invariant projection
+4. Deterministic invariant index
+5. Executable runtime enforcement references
+6. Runtime projection witness guarantees
 
-FAIL-CLOSED.
-
-Coverage is established through either:
-
-A) Explicit module declaration
-
-    ENFORCED_INVARIANTS = { ... }
-
-or
-
-B) Direct invariant symbol references
-   in executable runtime code.
-
-CONSTITUTIONAL MODEL:
+CONSTITUTIONAL MODEL
+--------------------
 
 Canonical Registry
-    ↓
-Semantic Runtime Projection
-    ↓
+    ==
+Semantic Interpretation Layer
+
+Runtime Projection
+    ⊆
+Canonical Registry
+
 Compiled Runtime Projection
-    ↓
-Executable Enforcement Surfaces
+    ==
+Deterministic Runtime Index
+
+FAIL-CLOSED.
 """
 
 from __future__ import annotations
@@ -54,11 +50,11 @@ from typing import Dict, Set, Any
 ROOT = (
     Path(__file__)
     .resolve()
-    .parents[2]
+    .parents[1]
 )
 
 AFRITECH_ROOT = (
-    ROOT / "afritech"
+    ROOT
 )
 
 # -------------------------------------------------------------
@@ -72,7 +68,7 @@ CANONICAL_REGISTRY = (
 )
 
 # -------------------------------------------------------------
-# Semantic runtime enforcement registry
+# Semantic interpretation layer
 # -------------------------------------------------------------
 
 SEMANTIC_REGISTRY = (
@@ -82,7 +78,7 @@ SEMANTIC_REGISTRY = (
 )
 
 # -------------------------------------------------------------
-# Compiled IR
+# Compiled runtime projection
 # -------------------------------------------------------------
 
 COMPILED_IR = (
@@ -93,7 +89,7 @@ COMPILED_IR = (
 )
 
 # -------------------------------------------------------------
-# Deterministic invariant index
+# Deterministic runtime index
 # -------------------------------------------------------------
 
 INDEX_FILE = (
@@ -105,22 +101,31 @@ INDEX_FILE = (
 
 
 # =============================================================
+# INVARIANT PATTERN
+# =============================================================
+
+INVARIANT_PATTERN = re.compile(
+    r"^I[0-9]+_[A-Z0-9_]+$"
+)
+
+
+# =============================================================
 # ENFORCEMENT SURFACES
 # =============================================================
 
 ENFORCEMENT_ROOTS = [
 
-    ROOT / "afritech" / "kernel",
-    ROOT / "afritech" / "runtime",
-    ROOT / "afritech" / "guards",
-    ROOT / "afritech" / "proof",
-    ROOT / "afritech" / "replay",
-    ROOT / "afritech" / "ci",
-    ROOT / "afritech" / "epoch",
-    ROOT / "afritech" / "registry",
-    ROOT / "afritech" / "mutation",
+    ROOT / "kernel",
+    ROOT / "runtime",
+    ROOT / "guards",
+    ROOT / "proof",
+    ROOT / "replay",
+    ROOT / "ci",
+    ROOT / "epoch",
+    ROOT / "registry",
+    ROOT / "mutation",
 
-    ROOT / "ecosystems",
+    ROOT.parent / "ecosystems",
 ]
 
 
@@ -128,7 +133,9 @@ ENFORCEMENT_ROOTS = [
 # FAILURE
 # =============================================================
 
-def fail(msg: str) -> None:
+def fail(
+    msg: str,
+) -> None:
 
     print(
         f"[SEMANTIC COVERAGE VIOLATION] "
@@ -155,7 +162,8 @@ def load_yaml(
 
     try:
 
-        return yaml.safe_load(
+        data = yaml.safe_load(
+
             path.read_text(
                 encoding="utf-8"
             )
@@ -166,6 +174,17 @@ def load_yaml(
         fail(
             f"Invalid YAML: {exc}"
         )
+
+    if not isinstance(
+        data,
+        dict,
+    ):
+
+        fail(
+            f"Invalid YAML structure: {path}"
+        )
+
+    return data
 
 
 # =============================================================
@@ -184,7 +203,8 @@ def load_json(
 
     try:
 
-        return json.loads(
+        data = json.loads(
+
             path.read_text(
                 encoding="utf-8"
             )
@@ -195,6 +215,17 @@ def load_json(
         fail(
             f"Invalid JSON: {exc}"
         )
+
+    if not isinstance(
+        data,
+        dict,
+    ):
+
+        fail(
+            f"Invalid JSON structure: {path}"
+        )
+
+    return data
 
 
 # =============================================================
@@ -235,7 +266,9 @@ def load_canonical_ids() -> Set[str]:
                 "must be mapping"
             )
 
-        inv_id = inv.get("id")
+        inv_id = inv.get(
+            "id"
+        )
 
         if not isinstance(
             inv_id,
@@ -247,74 +280,92 @@ def load_canonical_ids() -> Set[str]:
                 "valid id"
             )
 
-        discovered.add(inv_id)
+        if not INVARIANT_PATTERN.fullmatch(
+            inv_id
+        ):
+
+            fail(
+                f"Invalid canonical "
+                f"invariant id: {inv_id}"
+            )
+
+        discovered.add(
+            inv_id
+        )
+
+    if not discovered:
+
+        fail(
+            "Canonical registry "
+            "cannot be empty"
+        )
 
     return discovered
 
 
 # =============================================================
-# SEMANTIC PROJECTION
+# SEMANTIC INTERPRETATION
 # =============================================================
 
 def load_semantic_projection_ids() -> Set[str]:
+    """
+    Semantic interpretation layer MUST
+    align exactly with canonical IDs.
+    """
 
     data = load_yaml(
         SEMANTIC_REGISTRY
     )
 
-    semantic_root = data.get(
-        "semantic_enforcement"
+    semantics = data.get(
+        "semantics"
     )
 
     if not isinstance(
-        semantic_root,
+        semantics,
         dict,
     ):
 
         fail(
-            "semantic_enforcement "
-            "must be mapping"
+            "semantic registry must "
+            "contain semantics mapping"
+        )
+
+    if not semantics:
+
+        fail(
+            "semantic registry "
+            "cannot be empty"
         )
 
     discovered: Set[str] = set()
 
-    for _, spec in semantic_root.items():
+    for inv_id in sorted(
+        semantics.keys()
+    ):
 
         if not isinstance(
-            spec,
-            dict,
-        ):
-
-            continue
-
-        enforced = spec.get(
-            "enforced_invariants",
-            []
-        )
-
-        if not isinstance(
-            enforced,
-            list,
+            inv_id,
+            str,
         ):
 
             fail(
-                "enforced_invariants "
-                "must be list"
+                "Invalid semantic "
+                "invariant id"
             )
 
-        for inv_id in enforced:
+        if not INVARIANT_PATTERN.fullmatch(
+            inv_id
+        ):
 
-            if not isinstance(
-                inv_id,
-                str,
-            ):
+            fail(
+                f"Invalid semantic "
+                f"invariant id: {inv_id}"
+            )
 
-                fail(
-                    "Invalid enforced "
-                    "invariant id"
-                )
-
-            discovered.add(inv_id)
+        discovered.add(
+            inv_id
+        )
 
     return discovered
 
@@ -350,11 +401,6 @@ def load_compiled_ir() -> Dict[str, Any]:
 # INDEX SYMBOLS
 # =============================================================
 
-
-# =============================================================
-# INDEX SYMBOLS
-# =============================================================
-
 INDEX_INVARIANT_PATTERN = re.compile(
     r"^I[0-9]+_[A-Z0-9_]+$"
 )
@@ -370,6 +416,7 @@ def load_index_symbols() -> Set[str]:
         )
 
     tree = ast.parse(
+
         INDEX_FILE.read_text(
             encoding="utf-8"
         )
@@ -393,10 +440,6 @@ def load_index_symbols() -> Set[str]:
             ):
                 continue
 
-            # -------------------------------------------------
-            # strict invariant symbol filtering
-            # -------------------------------------------------
-
             if not INDEX_INVARIANT_PATTERN.fullmatch(
                 target.id
             ):
@@ -407,6 +450,7 @@ def load_index_symbols() -> Set[str]:
             )
 
     return symbols
+
 
 # =============================================================
 # AST REFERENCE VISITOR
@@ -431,9 +475,14 @@ class InvariantReferenceVisitor(
     ) -> None:
 
         if node.id in self.known:
-            self.referenced.add(node.id)
 
-        self.generic_visit(node)
+            self.referenced.add(
+                node.id
+            )
+
+        self.generic_visit(
+            node
+        )
 
     def visit_Attribute(
         self,
@@ -441,9 +490,14 @@ class InvariantReferenceVisitor(
     ) -> None:
 
         if node.attr in self.known:
-            self.referenced.add(node.attr)
 
-        self.generic_visit(node)
+            self.referenced.add(
+                node.attr
+            )
+
+        self.generic_visit(
+            node
+        )
 
 
 # =============================================================
@@ -495,7 +549,9 @@ def extract_declared_invariants(
                             and elt.id in known
                         ):
 
-                            found.add(elt.id)
+                            found.add(
+                                elt.id
+                            )
 
     return found
 
@@ -523,7 +579,9 @@ def scan_enforcement_references(
                     encoding="utf-8"
                 )
 
-                tree = ast.parse(source)
+                tree = ast.parse(
+                    source
+                )
 
             except Exception:
                 continue
@@ -541,7 +599,9 @@ def scan_enforcement_references(
                 )
             )
 
-            visitor.visit(tree)
+            visitor.visit(
+                tree
+            )
 
             referenced |= (
                 visitor.referenced
@@ -557,28 +617,39 @@ def scan_enforcement_references(
 def verify_witness_structure(
     ir_data: Dict[str, Any],
 ) -> None:
+    """
+    Runtime projection invariants must
+    preserve deterministic replay metadata.
+    """
+
+    if not ir_data:
+
+        fail(
+            "Compiled runtime "
+            "projection empty"
+        )
 
     for inv_id, inv in ir_data.items():
 
-        required = inv.get(
-            "required_witnesses"
-        )
-
         if not isinstance(
-            required,
-            list,
+            inv,
+            dict,
         ):
 
             fail(
                 f"Invariant {inv_id} "
-                "missing required_witnesses"
+                "must be mapping"
             )
 
-        if not required:
+        if (
+            "runtime_enforced"
+            not in inv
+        ):
 
             fail(
+
                 f"Invariant {inv_id} "
-                "required_witnesses empty"
+                "missing runtime_enforced"
             )
 
 
@@ -594,20 +665,32 @@ def verify_projection_consistency(
 ) -> None:
 
     # ---------------------------------------------------------
-    # semantic subset
+    # semantic alignment
     # ---------------------------------------------------------
 
-    semantic_unknown = (
-        semantic_ids
-        - canonical_ids
-    )
+    if semantic_ids != canonical_ids:
 
-    if semantic_unknown:
+        missing_semantic = (
+            canonical_ids
+            - semantic_ids
+        )
+
+        unexpected_semantic = (
+            semantic_ids
+            - canonical_ids
+        )
 
         fail(
-            "Semantic projection contains "
-            "unknown invariants: "
-            f"{sorted(semantic_unknown)}"
+
+            "Semantic registry "
+            "misaligned with "
+            "canonical registry:\n"
+
+            f"Missing semantic ids: "
+            f"{sorted(missing_semantic)}\n"
+
+            f"Unexpected semantic ids: "
+            f"{sorted(unexpected_semantic)}"
         )
 
     # ---------------------------------------------------------
@@ -622,8 +705,9 @@ def verify_projection_consistency(
     if compiled_unknown:
 
         fail(
-            "Compiled IR contains "
-            "unknown invariants: "
+
+            "Compiled runtime projection "
+            "contains unknown invariants: "
             f"{sorted(compiled_unknown)}"
         )
 
@@ -639,6 +723,7 @@ def verify_projection_consistency(
     if index_unknown:
 
         fail(
+
             "Invariant index contains "
             "unknown invariants: "
             f"{sorted(index_unknown)}"
@@ -651,8 +736,9 @@ def verify_projection_consistency(
     if compiled_ids != index_ids:
 
         fail(
-            "Compiled IR and invariant "
-            "index diverged"
+
+            "Compiled runtime projection "
+            "and invariant index diverged"
         )
 
 
@@ -671,7 +757,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # semantic projection
+    # semantic interpretation layer
     # ---------------------------------------------------------
 
     semantic_ids = (
@@ -679,7 +765,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # compiled runtime IR
+    # compiled runtime projection
     # ---------------------------------------------------------
 
     compiled_ir = (
@@ -691,7 +777,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # deterministic index
+    # deterministic runtime index
     # ---------------------------------------------------------
 
     index_ids = (
@@ -703,9 +789,13 @@ def main() -> None:
     # ---------------------------------------------------------
 
     verify_projection_consistency(
+
         canonical_ids,
+
         semantic_ids,
+
         compiled_ids,
+
         index_ids,
     )
 
@@ -727,6 +817,7 @@ def main() -> None:
     if unenforced:
 
         fail(
+
             "Compiled runtime invariants "
             "never enforced: "
             f"{sorted(unenforced)}"

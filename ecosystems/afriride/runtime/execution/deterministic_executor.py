@@ -12,6 +12,10 @@ from ecosystems.afriride.runtime.commands import (
 from ecosystems.afriride.runtime.state import RideState
 from ecosystems.afriride.runtime.mutation import apply_mutation
 
+# ---------------------------------------------------------------------
+# CONSTITUTIONAL INVARIANT DECLARATION (VISIBLE TO VERIFIER)
+# ---------------------------------------------------------------------
+
 from afritech.constitution.compiled.invariants_index import (
     I4_DETERMINISTIC_RUNTIME,
     I5_EPOCH_MONOTONIC,
@@ -34,7 +38,17 @@ class DeterministicExecutor:
     PUBLIC CONTRACT:
       - execute(...) -> replay trace ONLY
       - execute_with_state(...) -> (trace, final_state)
+
+    This class:
+    - enforces closed-world execution
+    - enforces epoch monotonicity
+    - guarantees deterministic ordering
+    - produces replay-stable traces
     """
+
+    # -----------------------------------------------------------------
+    # CLOSED COMMAND UNIVERSE
+    # -----------------------------------------------------------------
 
     ALLOWED_COMMANDS = (
         AssignDriver,
@@ -44,9 +58,9 @@ class DeterministicExecutor:
         EmitAuditEvent,
     )
 
-    # ---------------------------------------------------------
-    # Canonicalization
-    # ---------------------------------------------------------
+    # -----------------------------------------------------------------
+    # CANONICAL ORDERING
+    # -----------------------------------------------------------------
 
     @staticmethod
     def canonical_key(command: Any) -> Tuple[str, str]:
@@ -60,15 +74,15 @@ class DeterministicExecutor:
             return ("READ", command.request_id)
         if isinstance(command, EmitAuditEvent):
             return ("AUDIT", command.event_id)
-        raise AssertionError("NON‑ADMISSIBLE COMMAND")
+        raise AssertionError("NON-ADMISSIBLE COMMAND")
 
     @classmethod
     def canonicalize(cls, commands: Iterable[Any]) -> List[Any]:
         return sorted(commands, key=cls.canonical_key)
 
-    # ---------------------------------------------------------
-    # Admissibility
-    # ---------------------------------------------------------
+    # -----------------------------------------------------------------
+    # ADMISSIBILITY
+    # -----------------------------------------------------------------
 
     @staticmethod
     def admissible(state: RideState, command: Any) -> bool:
@@ -78,21 +92,25 @@ class DeterministicExecutor:
                 and command.driver_id in state.drivers_available
                 and state.assigned_driver is None
             )
+
         if isinstance(command, AssignDriverToRideA):
             return (
                 command.driver_id in state.drivers_available
                 and state.ride_a_assigned is None
             )
+
         if isinstance(command, AssignDriverToRideB):
             return (
                 command.driver_id in state.drivers_available
                 and state.ride_b_assigned is None
             )
+
+        # Observational commands are always admissible
         return True
 
-    # ---------------------------------------------------------
-    # Internal execution (ONLY place state changes)
-    # ---------------------------------------------------------
+    # -----------------------------------------------------------------
+    # INTERNAL EXECUTION (ONLY PLACE STATE CHANGES)
+    # -----------------------------------------------------------------
 
     @classmethod
     def _execute_internal(
@@ -102,12 +120,14 @@ class DeterministicExecutor:
         epoch: int,
     ) -> Tuple[List[Dict[str, Any]], RideState]:
 
+        # Closed-world & epoch enforcement
         for cmd in commands:
             if not isinstance(cmd, cls.ALLOWED_COMMANDS):
-                raise AssertionError("NON‑ADMISSIBLE COMMAND")
+                raise AssertionError("NON-ADMISSIBLE COMMAND")
+
             if hasattr(cmd, "epoch") and cmd.epoch is not None:
                 if cmd.epoch > epoch:
-                    raise AssertionError("FUTURE‑EPOCH COMMAND")
+                    raise AssertionError("FUTURE-EPOCH COMMAND")
 
         trace: List[Dict[str, Any]] = [
             {"type": "EXECUTION_CONTEXT", "epoch": epoch}
@@ -116,6 +136,8 @@ class DeterministicExecutor:
         current_state = state
 
         for command in cls.canonicalize(commands):
+
+            # Observational / auxiliary commands do not affect replay
             if isinstance(command, (ReadRideState, EmitAuditEvent)):
                 continue
 
@@ -127,6 +149,7 @@ class DeterministicExecutor:
                 })
                 continue
 
+            # Δ-based state transition (immutable)
             current_state = apply_mutation(current_state, command)
 
             trace.append({
@@ -136,9 +159,9 @@ class DeterministicExecutor:
 
         return trace, current_state
 
-    # ---------------------------------------------------------
-    # PUBLIC API (tests depend on this)
-    # ---------------------------------------------------------
+    # -----------------------------------------------------------------
+    # PUBLIC API (TESTS DEPEND ON THIS)
+    # -----------------------------------------------------------------
 
     @classmethod
     def execute(
@@ -147,6 +170,9 @@ class DeterministicExecutor:
         commands: Iterable[Any],
         epoch: int,
     ) -> List[Dict[str, Any]]:
+        """
+        Execute commands and return replay-defining trace only.
+        """
         trace, _ = cls._execute_internal(state, commands, epoch)
         return trace
 
@@ -157,13 +183,20 @@ class DeterministicExecutor:
         commands: Iterable[Any],
         epoch: int,
     ) -> Tuple[List[Dict[str, Any]], RideState]:
+        """
+        Execute commands and return (trace, final_state).
+        """
         return cls._execute_internal(state, commands, epoch)
 
-    # ---------------------------------------------------------
-    # Replay identity
-    # ---------------------------------------------------------
+    # -----------------------------------------------------------------
+    # REPLAY IDENTITY
+    # -----------------------------------------------------------------
 
     @staticmethod
     def trace_hash(trace: List[Dict[str, Any]]) -> str:
-        payload = json.dumps(trace, sort_keys=True, separators=(",", ":"))
+        payload = json.dumps(
+            trace,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
         return hashlib.sha256(payload.encode()).hexdigest()

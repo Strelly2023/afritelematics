@@ -1,234 +1,270 @@
-# ============================================================
-# AFRITECH SEMANTIC ENFORCEMENT REGISTRY
-# ============================================================
+# =========================================================
+# AFRITECH INVARIANT SEMANTICS REGISTRY
+# =========================================================
 
-schema: afritech.constitution.semantic_enforcement.v2
+schema: afritech.constitution.invariants.semantics.v1
 
 meta:
-
   description: >
-    Semantic runtime enforcement projection for executable
-    constitutional invariants.
+    Semantic interpretation layer for constitutional invariants.
 
-  projection_model: runtime_subset_projection
+    This file provides controlled semantic annotations used for:
+      - audit understanding
+      - classification alignment
+      - documentation
+      - tooling interpretation
 
-  canonical_registry: >
-    afritech/constitution/INVARIANTS.yaml
+    This layer DOES NOT introduce behavior.
+    Execution authority remains in IR and runtime layers.
 
-  compiled_projection: >
-    afritech/constitution/compiled/invariants_ir.json
-
+  authority: derived
+  mutability: GOVERNED
   deterministic: true
   replay_safe: true
-  closed_world_aligned: true
 
 
-# ============================================================
-# SEMANTIC ENFORCEMENT REGISTRY
-# ============================================================
+# =========================================================
+# SEMANTIC DEFINITIONS
+# =========================================================
 
-semantic_enforcement:
+semantics:
 
-  # ----------------------------------------------------------
-  # AFRIRIDE DETERMINISTIC RUNTIME
-  # ----------------------------------------------------------
+  # =====================================================
+  # EXECUTION BOUNDARY
+  # =====================================================
 
-  afriride_deterministic_runtime:
+  I1_EXPLICIT_INPUT_BOUNDARY:
+    meaning: input_is_closed_set
+    interpretation: >
+      Execution depends strictly on declared RuntimeContext inputs.
+    semantic_tags: [boundary, input, determinism]
 
-    description: >
-      Deterministic, replay-safe, epoch-bounded,
-      closed-world execution enforced by the
-      AfriRide runtime execution kernel.
+  I2_EXPLICIT_OUTPUT_BOUNDARY:
+    meaning: output_is_fully_declared
+    interpretation: >
+      Execution produces only explicitly declared outputs.
+    semantic_tags: [boundary, output, containment]
 
-    runtime_projection: true
+  I14_BOUND_EXECUTION_SURFACE:
+    meaning: execution_surface_is_closed
+    interpretation: >
+      Execution cannot escape defined runtime boundaries.
+    semantic_tags: [surface, isolation]
 
-    projection_of:
-      - I1_REGISTRY_AUTHORITY
-      - I2_SEALED_SURFACE
-      - I3_NO_SILENT_MUTATION
-      - I4_DETERMINISTIC_RUNTIME
-      - I5_EPOCH_MONOTONIC
-      - I6_CLOSED_EXECUTION_WORLD
-
-    enforced_invariants:
-
-      - I1_REGISTRY_AUTHORITY
-      - I2_SEALED_SURFACE
-      - I3_NO_SILENT_MUTATION
-      - I4_DETERMINISTIC_RUNTIME
-      - I5_EPOCH_MONOTONIC
-      - I6_CLOSED_EXECUTION_WORLD
-
-    # ========================================================
-    # ENFORCEMENT COMPONENTS
-    # ========================================================
-
-    enforced_by:
-
-      # ------------------------------------------------------
-      # I1 — REGISTRY AUTHORITY
-      # ------------------------------------------------------
-
-      I1_REGISTRY_AUTHORITY:
-
-        components:
-          - afritech/registry/registry.yaml
-          - afritech/runtime/admission.py
-          - afritech/runtime/registry_authority_guard.py
-
-        guarantees:
-          - canonical registry authority
-          - registry hash binding
-          - replay-safe registry lineage
-          - prevention of registry shadowing
-
-        refusal_modes:
-          - runtime_refusal
-          - replay_invalid
-          - constitutional_invalid
+  I15_NO_DYNAMIC_BEHAVIOR_INJECTION:
+    meaning: execution_is_static
+    interpretation: >
+      Behavior cannot be modified during execution.
+    semantic_tags: [immutability, safety]
 
 
-      # ------------------------------------------------------
-      # I2 — SEALED EXECUTION SURFACE
-      # ------------------------------------------------------
+  # =====================================================
+  # STATE INTEGRITY
+  # =====================================================
 
-      I2_SEALED_SURFACE:
+  I3_NO_SILENT_MUTATION:
+    meaning: mutation_requires_visibility
+    interpretation: >
+      All state changes must be observable in trace.
+    semantic_tags: [mutation, traceability]
 
-        components:
-          - afritech/runtime/execution_surface.py
-          - afritech/runtime/admission.py
-          - ecosystems/afriride/runtime/execution/deterministic_executor.py
+  I19_STATE_TRANSITION_EXPLICIT:
+    meaning: transitions_are_declared
+    interpretation: >
+      Every state transition must be formally declared.
+    semantic_tags: [state, transitions]
 
-        guarantees:
-          - execution surface sealing
-          - hash-attested runtime admission
-          - immutable execution topology
-          - runtime boundary integrity
-
-        refusal_modes:
-          - execution_refused
-          - surface_invalid
-          - constitutional_invalid
-
-
-      # ------------------------------------------------------
-      # I3 — NO SILENT MUTATION
-      # ------------------------------------------------------
-
-      I3_NO_SILENT_MUTATION:
-
-        components:
-          - ecosystems/afriride/runtime/mutation.py
-          - ecosystems/afriride/runtime/state.py
-          - afritech/proof/witness_generator.py
-
-        guarantees:
-          - explicit mutation tracing
-          - replay-safe state transitions
-          - witness-bound mutation lineage
-          - deterministic mutation ordering
-
-        refusal_modes:
-          - mutation_invalid
-          - witness_invalid
-          - replay_invalid
+  I20_NO_HIDDEN_SIDE_EFFECTS:
+    meaning: no_untracked_effects
+    interpretation: >
+      No hidden or implicit side effects exist.
+    semantic_tags: [effects, trace]
 
 
-      # ------------------------------------------------------
-      # I4 — DETERMINISTIC RUNTIME
-      # ------------------------------------------------------
+  # =====================================================
+  # REPLAY INTEGRITY
+  # =====================================================
 
-      I4_DETERMINISTIC_RUNTIME:
+  I4_DETERMINISTIC_EXECUTION:
+    meaning: same_input_same_output
+    interpretation: >
+      Execution must always produce identical outcomes for identical inputs.
+    semantic_tags: [determinism, replay]
 
-        components:
-          - ecosystems/afriride/runtime/execution/deterministic_executor.py
-          - ecosystems/afriride/runtime/mutation.py
-          - ecosystems/afriride/runtime/state.py
+  I5_REPLAY_REQUIRED:
+    meaning: execution_must_be_replayable
+    interpretation: >
+      System must support full replay of all executions.
+    semantic_tags: [replay, validation]
 
-        guarantees:
-          - canonical command ordering
-          - immutable Δ-based transitions
-          - replay-stable trace hashing
-          - observer-independent execution
-          - deterministic witness generation
+  I6_REPLAY_AUTHORITY:
+    meaning: replay_is_source_of_truth
+    interpretation: >
+      Replay defines behavioral correctness.
+    semantic_tags: [authority, replay]
 
-        refusal_modes:
-          - replay_divergence
-          - equivalence_failure
-          - deterministic_violation
+  I7_TRANSCRIPT_COMPLETENESS:
+    meaning: trace_is_complete
+    interpretation: >
+      Execution trace must fully describe behavior.
+    semantic_tags: [trace, completeness]
 
-
-      # ------------------------------------------------------
-      # I5 — EPOCH MONOTONICITY
-      # ------------------------------------------------------
-
-      I5_EPOCH_MONOTONIC:
-
-        components:
-          - ecosystems/afriride/runtime/execution/deterministic_executor.py
-          - afritech/registry/registry.yaml
-          - afritech/runtime/epoch_guard.py
-
-        guarantees:
-          - explicit epoch-bound execution
-          - future-epoch rejection
-          - replay-safe epoch lineage
-          - monotonic governance ordering
-
-        refusal_modes:
-          - epoch_invalid
-          - replay_invalid
-          - lineage_invalid
+  I8_TRANSCRIPT_HASH_STABILITY:
+    meaning: hash_is_stable
+    interpretation: >
+      Replay hashes must remain identical across runs.
+    semantic_tags: [hash, determinism]
 
 
-      # ------------------------------------------------------
-      # I6 — CLOSED EXECUTION WORLD
-      # ------------------------------------------------------
+  # =====================================================
+  # CLOSED WORLD
+  # =====================================================
 
-      I6_CLOSED_EXECUTION_WORLD:
+  I9_CLOSED_WORLD:
+    meaning: no_external_dependency
+    interpretation: >
+      Execution cannot depend on undeclared external systems.
+    semantic_tags: [closed_world, dependency]
 
-        components:
-          - ecosystems/afriride/runtime/execution/deterministic_executor.py
-          - afritech/constitution/path_ontology.yaml
-          - afritech/ci/import_topology_validator.py
-
-        guarantees:
-          - explicit runtime allowlists
-          - rejection of undeclared runtime entities
-          - closed mutation surface
-          - deterministic ontology boundaries
-          - replay-safe semantic closure
-
-        refusal_modes:
-          - ontology_invalid
-          - execution_refusal
-          - replay_invalid
+  I10_EXPLICIT_DEPENDENCIES:
+    meaning: dependencies_are_declared
+    interpretation: >
+      All dependencies must be explicitly defined.
+    semantic_tags: [dependency, declaration]
 
 
-# ============================================================
-# VALIDATION GUARANTEES
-# ============================================================
+  # =====================================================
+  # GOVERNANCE
+  # =====================================================
 
-validation:
+  I11_AUTHORITY_DECLARATION:
+    meaning: authority_is_declared
+    interpretation: >
+      Authority must be formally defined via governance.
+    semantic_tags: [authority, governance]
 
-  deterministic_ordering: REQUIRED
-  replay_safe_projection: REQUIRED
-  closed_world_alignment: REQUIRED
-  runtime_projection_subset_only: true
-  canonical_registry_required: true
-  duplicate_invariant_ids_forbidden: true
+  I12_NO_AUTHORITY_ESCALATION:
+    meaning: no_privilege_escalation
+    interpretation: >
+      Components cannot exceed authorized roles.
+    semantic_tags: [security, governance]
+
+  I13_ADR_REQUIRED_FOR_MUTATION:
+    meaning: change_requires_adr
+    interpretation: >
+      System evolution requires governance approval.
+    semantic_tags: [change_management]
 
 
-# ============================================================
-# GUARANTEES
-# ============================================================
+  # =====================================================
+  # EXECUTION FINALITY
+  # =====================================================
+
+  I16_TOTAL_OUTCOME_DECLARATION:
+    meaning: outcome_is_complete
+    interpretation: >
+      Every execution must resolve fully.
+    semantic_tags: [finality]
+
+  I17_DETERMINISTIC_FAILURE:
+    meaning: failure_is_reproducible
+    interpretation: >
+      Failures must be consistent and replayable.
+    semantic_tags: [failure, replay]
+
+  I18_REPLAYABLE_REFUSAL:
+    meaning: refusal_is_stable
+    interpretation: >
+      Refusals must be replay-consistent.
+    semantic_tags: [refusal]
+
+
+  # =====================================================
+  # TEMPORAL INTEGRITY
+  # =====================================================
+
+  I21_DETERMINISTIC_ORDERING:
+    meaning: order_is_stable
+    interpretation: >
+      Execution ordering must not vary between runs.
+    semantic_tags: [ordering]
+
+  I22_TIME_SOURCE_CONTROL:
+    meaning: time_is_controlled
+    interpretation: >
+      Time must be deterministic and controlled.
+    semantic_tags: [time]
+
+
+  # =====================================================
+  # DATA INTEGRITY
+  # =====================================================
+
+  I23_INPUT_IMMUTABILITY:
+    meaning: inputs_are_readonly
+    interpretation: >
+      Inputs must not change during execution.
+    semantic_tags: [data, immutability]
+
+  I24_OUTPUT_INTEGRITY:
+    meaning: outputs_are_valid
+    interpretation: >
+      Outputs must be correct and verifiable.
+    semantic_tags: [data, verification]
+
+
+  # =====================================================
+  # CLASSIFICATION
+  # =====================================================
+
+  I25_CLASSIFICATION_IS_POST_EXECUTION:
+    meaning: classification_after_execution
+    interpretation: >
+      Classification cannot affect execution.
+    semantic_tags: [classification]
+
+  I26_CLASSIFICATION_REPLAY_ALIGNMENT:
+    meaning: classification_matches_replay
+    interpretation: >
+      Classification must reflect replay reality.
+    semantic_tags: [classification, replay]
+
+  I27_NO_CLASSIFICATION_SIDE_EFFECT:
+    meaning: classification_is_pure
+    interpretation: >
+      Classification cannot modify outputs.
+    semantic_tags: [purity]
+
+
+  # =====================================================
+  # PROOF
+  # =====================================================
+
+  I28_PROOF_OF_CONTINUITY:
+    meaning: replay_proves_continuity
+    interpretation: >
+      Replay guarantees system consistency over time.
+    semantic_tags: [proof]
+
+  I29_HASH_VERIFIABILITY:
+    meaning: hash_validates_execution
+    interpretation: >
+      Hashes must verify trace integrity.
+    semantic_tags: [hash, proof]
+
+  I30_OBSERVABILITY_COMPLETENESS:
+    meaning: system_is_fully_observable
+    interpretation: >
+      All relevant events must be captured.
+    semantic_tags: [observability]
+
+
+# =========================================================
+# SEMANTIC GUARANTEES
+# =========================================================
 
 guarantees:
-
-  deterministic_execution: true
-  replay_safe_execution: true
-  witness_generation_required: true
-  constitutional_projection_verified: true
-  semantic_projection_verified: true
-  runtime_projection_verified: true
-  closed_world_execution: true
+  semantic_layer_non_authoritative: true
+  execution_defined_in_ir: true
+  replay_truth_preserved: true
+  classification_is_non_interfering: true

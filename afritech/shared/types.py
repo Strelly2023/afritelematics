@@ -1,91 +1,347 @@
 """
-Shared runtime types
+Shared Runtime Types
+====================
 
-Rules:
-- MUST NOT depend on runtime.engine
-- MUST NOT depend on guards
-- PURE data + deterministic logic only
+Pure shared runtime data structures.
+
+This module MUST NOT depend on:
+
+- runtime.engine
+- execution orchestrators
+- guards
+- replay verifier internals
+
+Constitutional guarantees:
+
+- deterministic serialization
+- replay-safe hashing
+- immutable execution artifacts
+- canonical witness binding
+- side-effect free logic
 """
 
 from __future__ import annotations
 
-from typing import Dict, Any, Optional
 import hashlib
 import json
 
+from dataclasses import dataclass, field
+from typing import Any, Dict, Mapping, Optional
 
+
+# ============================================================
+# HELPERS
+# ============================================================
+
+def canonical_json(
+    data: Any,
+) -> str:
+    """
+    Deterministic replay-safe JSON serialization.
+    """
+
+    return json.dumps(
+
+        data,
+
+        sort_keys=True,
+
+        separators=(
+            ",",
+            ":",
+        ),
+
+        ensure_ascii=False,
+
+    )
+
+
+def stable_hash(
+    data: Any,
+) -> str:
+    """
+    Stable replay-safe SHA256 hash.
+    """
+
+    encoded = canonical_json(
+        data
+    ).encode(
+        "utf-8"
+    )
+
+    return hashlib.sha256(
+        encoded
+    ).hexdigest()
+
+
+# ============================================================
+# EXECUTION RESULT
+# ============================================================
+
+@dataclass(frozen=True)
 class ExecutionResult:
     """
-    Deterministic execution result with proof + trace binding
+    Deterministic runtime execution result.
+
+    Guarantees:
+
+    - immutable result topology
+    - replay-safe serialization
+    - canonical witness hashing
+    - deterministic proof binding
     """
 
-    def __init__(
-        self,
-        success: bool,
-        output: Optional[Dict[str, Any]] = None,
-        error: Optional[str] = None,
-        context=None,
-        proof=None,
-        zk_proof=None,
-        trace_hash: Optional[str] = None,
-    ):
-        self.success = success
-        self.output = output or {}
-        self.error = error
-        self.context = context
-        self.proof = proof
-        self.zk_proof = zk_proof
-        self.trace_hash = trace_hash
+    # --------------------------------------------------------
+    # execution status
+    # --------------------------------------------------------
 
-        self.timestamp = (
-            context.timestamp if context else "UNDEFINED_TIMESTAMP"
+    success: bool
+
+    # --------------------------------------------------------
+    # deterministic output
+    # --------------------------------------------------------
+
+    output: Dict[str, Any] = field(
+        default_factory=dict
+    )
+
+    # --------------------------------------------------------
+    # replay-safe error surface
+    # --------------------------------------------------------
+
+    error: Optional[str] = None
+
+    # --------------------------------------------------------
+    # execution context
+    # --------------------------------------------------------
+
+    context: Any = None
+
+    # --------------------------------------------------------
+    # constitutional proof objects
+    # --------------------------------------------------------
+
+    proof: Any = None
+
+    zk_proof: Any = None
+
+    # --------------------------------------------------------
+    # deterministic trace binding
+    # --------------------------------------------------------
+
+    trace_hash: Optional[str] = None
+
+    # --------------------------------------------------------
+    # deterministic timestamp
+    # --------------------------------------------------------
+
+    timestamp: str = "UNDEFINED_TIMESTAMP"
+
+    # --------------------------------------------------------
+    # replay-safe result hash
+    # --------------------------------------------------------
+
+    result_hash: str = field(
+        default="",
+    )
+
+    # ========================================================
+    # INITIALIZATION
+    # ========================================================
+
+    def __post_init__(
+        self,
+    ) -> None:
+
+        # ----------------------------------------------------
+        # derive timestamp from context
+        # ----------------------------------------------------
+
+        if (
+            self.context
+            and hasattr(
+                self.context,
+                "timestamp",
+            )
+        ):
+
+            object.__setattr__(
+                self,
+                "timestamp",
+                self.context.timestamp
+                or "UNDEFINED_TIMESTAMP",
+            )
+
+        # ----------------------------------------------------
+        # generate deterministic result hash
+        # ----------------------------------------------------
+
+        if not self.result_hash:
+
+            generated = (
+                self._compute_hash()
+            )
+
+            object.__setattr__(
+                self,
+                "result_hash",
+                generated,
+            )
+
+    # ========================================================
+    # HASHING
+    # ========================================================
+
+    def _hash_payload(
+        self,
+    ) -> Dict[str, Any]:
+
+        return {
+
+            "success":
+                self.success,
+
+            "output":
+                self.output,
+
+            "error":
+                self.error,
+
+            "trace_hash":
+                self.trace_hash,
+
+            "timestamp":
+                self.timestamp,
+        }
+
+    def _compute_hash(
+        self,
+    ) -> str:
+
+        return stable_hash(
+            self._hash_payload()
         )
 
-        self.result_hash = self._compute_hash()
+    # ========================================================
+    # VERIFICATION
+    # ========================================================
 
-    # -------------------------------------------------------------
-    # CANONICAL JSON
-    # -------------------------------------------------------------
-    @staticmethod
-    def _canonical_json(data: Dict[str, Any]) -> str:
-        return json.dumps(data, sort_keys=True, separators=(",", ":"))
+    def verify(
+        self,
+    ) -> bool:
+        """
+        Replay-safe integrity validation.
+        """
 
-    # -------------------------------------------------------------
-    # HASH
-    # -------------------------------------------------------------
-    def _compute_hash(self) -> str:
-        base = {
-            "success": self.success,
-            "output": self.output,
-            "error": self.error,
-            "trace_hash": self.trace_hash,
-        }
+        try:
 
-        return hashlib.sha256(
-            self._canonical_json(base).encode("utf-8")
-        ).hexdigest()
+            expected = (
+                self._compute_hash()
+            )
 
-    # -------------------------------------------------------------
-    # VERIFY
-    # -------------------------------------------------------------
-    def verify(self) -> bool:
-        return self.result_hash == self._compute_hash()
+        except Exception:
 
-    # -------------------------------------------------------------
-    # SERIALIZE
-    # -------------------------------------------------------------
-    def to_dict(self):
+            return False
+
+        return (
+            expected
+            == self.result_hash
+        )
+
+    # ========================================================
+    # SERIALIZATION
+    # ========================================================
+
+    def to_dict(
+        self,
+    ) -> Dict[str, Any]:
+
         return {
-            "success": self.success,
-            "output": self.output,
-            "error": self.error,
-            "context": self.context.to_dict() if self.context else None,
-            "result_hash": self.result_hash,
-            "trace_hash": self.trace_hash,
-            "timestamp": self.timestamp,
-            "proof": self.proof.to_dict() if self.proof else None,
-            "zk_proof": self.zk_proof.to_dict() if self.zk_proof else None,
+
+            "success":
+                self.success,
+
+            "output":
+                self.output,
+
+            "error":
+                self.error,
+
+            "context":
+                (
+                    self.context.to_dict()
+                    if (
+                        self.context
+                        and hasattr(
+                            self.context,
+                            "to_dict",
+                        )
+                    )
+                    else None
+                ),
+
+            "result_hash":
+                self.result_hash,
+
+            "trace_hash":
+                self.trace_hash,
+
+            "timestamp":
+                self.timestamp,
+
+            "proof":
+                (
+                    self.proof.to_dict()
+                    if (
+                        self.proof
+                        and hasattr(
+                            self.proof,
+                            "to_dict",
+                        )
+                    )
+                    else self.proof
+                ),
+
+            "zk_proof":
+                (
+                    self.zk_proof.to_dict()
+                    if (
+                        self.zk_proof
+                        and hasattr(
+                            self.zk_proof,
+                            "to_dict",
+                        )
+                    )
+                    else self.zk_proof
+                ),
         }
 
-    def __repr__(self):
-        return f"<ExecutionResult success={self.success} hash={self.result_hash[:10]}...>"
+    # ========================================================
+    # REPRESENTATION
+    # ========================================================
+
+    def __repr__(
+        self,
+    ) -> str:
+
+        return (
+
+            "ExecutionResult("
+            f"success={self.success}, "
+            f"hash={self.result_hash[:12]}..."
+            ")"
+        )
+
+
+# ============================================================
+# EXPORTS
+# ============================================================
+
+__all__ = [
+
+    "canonical_json",
+
+    "stable_hash",
+
+    "ExecutionResult",
+]
