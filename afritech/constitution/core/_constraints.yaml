@@ -1,0 +1,10 @@
+schema: afritech.constitution.core.constraints.v1
+constraints:
+  max_files: 5
+  min_axioms_per_file: 3
+  max_axioms_per_file: 5
+  max_lines_per_file: 50
+  no_prose: true
+  only_semantic_atoms_allowed: true
+failure:
+  fail_pipeline: true

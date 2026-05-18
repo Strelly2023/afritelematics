@@ -1,0 +1,34 @@
+schema: afritech.constitution.core.closed_world.v3
+meta:
+  authority: constitutional
+  domain: semantic_boundary
+  invariants: [SEM-CW-001]
+axioms:
+  - id: AX-CW-001
+    guarantees: [SEM-CW-001]
+    depends_on: []
+    statement: Valid semantics are a subset of declared semantic atoms.
+    formal:
+      operator: SUBSET
+      operands: [valid_semantics, declared_semantic_atoms]
+  - id: AX-CW-002
+    guarantees: [SEM-CW-001]
+    depends_on: [AX-CW-001]
+    statement: Undeclared semantics are invalid.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: undeclared_semantic
+        rhs: invalid
+  - id: AX-CW-003
+    guarantees: [SEM-CW-001]
+    depends_on: [AX-CW-001, AX-CW-002]
+    statement: Runtime participation requires a declared semantic surface.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: runtime_participation
+        rhs: declared_semantic_surface
+evaluation:
+  boundary_enforced: true
+  proof_relevant: true

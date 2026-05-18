@@ -3,7 +3,7 @@
   "closed_world_aligned": true,
   "deterministic": true,
   "epoch_ir_hash": "52d6ca7cc9b96cb86ddf0925ce0f32e8b70506bf1e9b453d60faabfaba059d10",
-  "generated_at": "2026-05-17T12:36:18.278128+00:00",
+  "generated_at": "2026-05-17T18:35:36.401780+00:00",
   "hash_algorithm": "sha256",
   "implementation_state": "IMPLEMENTED",
   "invariant_ir_hash": "7b0d33319a78899a51f3b4626fdf4aacf2e33824cf80503c9b7fa9cebce9f734",
@@ -12,5 +12,5 @@
   "replay_trace_hash": "dcb96a8c2fbdbe36cee841768c39872bcc46f96cee0d3ca1279cd7507de287d1",
   "runtime_certificate_hash": "292362fbf19432d017c0ead8869403637293d753933b4d2d1d322c7ab5fd04fd",
   "schema_version": 1,
-  "witness_hash": "4ffd02fbe54330f98edb4a882a3844f0d491a245003facdefc2f4b2687b8d82c"
+  "witness_hash": "81bbe5aaa449b405d7cc48ae996d51b459f4ae387390d90d044345a1279ffbfa"
 }

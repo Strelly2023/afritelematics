@@ -1,0 +1,38 @@
+schema: afritech.ci.semantic_integrity_checks.v1
+checks:
+  - id: CI-SEM-001
+    name: no_semantic_logic_in_code
+    enforcement: block_merge
+  - id: CI-SEM-002
+    name: no_string_based_semantics
+    enforcement: block_merge
+  - id: CI-SEM-003
+    name: all_execution_uses_sir
+    enforcement: block_merge
+  - id: CI-SEM-004
+    name: normalization_required
+    enforcement: block_merge
+  - id: CI-SEM-005
+    name: proof_generation_required
+    enforcement: block_merge
+  - id: CI-SEM-006
+    name: deterministic_hash_verified
+    enforcement: block_merge
+  - id: CI-SEM-007
+    name: no_implicit_state
+    enforcement: block_merge
+  - id: CI-SEM-008
+    name: no_undeclared_semantics
+    enforcement: block_merge
+  - id: CI-SEM-009
+    name: semantic_reference_required
+    enforcement: block_merge
+  - id: CI-SEM-010
+    name: dependency_acyclic
+    enforcement: block_merge
+  - id: CI-SEM-011
+    name: kernel_size_constraint
+    enforcement: block_merge
+failure:
+  block_merge: true
+  severity: CRITICAL

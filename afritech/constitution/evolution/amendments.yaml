@@ -1,0 +1,10 @@
+schema: afritech.constitution.evolution.amendments.v1
+amendments:
+  AMD-001:
+    status: RESERVED
+    affects: [AX-DET-001]
+    compatibility: EPOCH-2
+    compatibility_window: [EPOCH-1, EPOCH-2]
+    migration_required: true
+    migration_strategy: replay_and_reseal
+    rule: Core is closed within an epoch, not across all time.

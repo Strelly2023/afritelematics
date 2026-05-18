@@ -1,0 +1,37 @@
+schema: afritech.constitution.semantic_atoms.core.v2
+
+meta:
+  authority: constitutional
+  role: semantic_identity_registry
+  mutability: FORBIDDEN
+  closed_world: true
+  enforcement: REQUIRED
+
+semantic_atoms:
+
+  SEM-DET-001:
+    name: DETERMINISTIC_EXECUTION
+    hash: a9347f202d5415254582682b1e648087c979f1bac64ac0e51b060bcecd5c155c
+
+  SEM-RPL-001:
+    name: REPLAY_SAFETY
+    hash: 3a7365a379f32b9059ef3f441ba17ad6fdf8be24a320468da8a5f7637c191e99
+
+  SEM-CW-001:
+    name: CLOSED_WORLD
+    hash: bb6fda7824ea1d4ecfa3480a6fbb5556e9766607c833c5dec3c12509f6271c1d
+
+  SEM-ID-001:
+    name: CANONICAL_IDENTITY
+    hash: e0902a407b745fedd492ed64c395ed72d0203306542c9201c36436f429114a26
+
+  SEM-ADM-001:
+    name: ADMISSIBILITY
+    hash: e6c2142194ca7968776bdbc53abfc5d7706fce3da6d5eb5bc8298a3b6f6c0b50
+
+constraints:
+  total_atoms_fixed: true
+  duplicate_ids_forbidden: true
+  duplicate_names_forbidden: true
+  semantic_definition_forbidden: true
+  semantic_hash_required: true

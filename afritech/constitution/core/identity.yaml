@@ -1,0 +1,32 @@
+schema: afritech.constitution.core.identity.v3
+meta:
+  authority: constitutional
+  domain: identity
+  invariants: [SEM-ID-001]
+axioms:
+  - id: AX-ID-001
+    guarantees: [SEM-ID-001]
+    depends_on: []
+    statement: Every entity resolves to one canonical identity.
+    formal:
+      operator: FUNCTION_OF
+      operands: [canonical_identity, entity]
+  - id: AX-ID-002
+    guarantees: [SEM-ID-001]
+    depends_on: [AX-ID-001]
+    statement: Equivalent entities resolve to equivalent canonical identities.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: equivalent_entities
+        rhs: equivalent_canonical_identities
+  - id: AX-ID-003
+    guarantees: [SEM-ID-001]
+    depends_on: [AX-ID-001, AX-RPL-001]
+    statement: Identity is preserved under replay of the same history.
+    formal:
+      operator: EQUIVALENT
+      operands: [identity(entity, history), identity(entity, replay(history))]
+evaluation:
+  deterministic: true
+  proof_relevant: true

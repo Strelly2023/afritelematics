@@ -1,0 +1,35 @@
+schema: afritech.simulation.adversarial.index.v1
+scenarios:
+  ADV-001:
+    name: REORDERED_EVENTS
+    targets: [SEM-DET-001, AX-DET-001, AX-DET-002, AX-DET-003]
+  ADV-002:
+    name: BYZANTINE_WITNESS
+    targets: [SEM-RPL-001, SEM-ID-001, AX-RPL-001, AX-ID-001]
+  ADV-003:
+    name: UNDECLARED_SEMANTIC_SURFACE
+    targets: [SEM-CW-001, AX-CW-001, AX-CW-002, AX-CW-003]
+  ADV-004:
+    name: INVALID_HISTORY_ADMISSION
+    targets: [SEM-ADM-001, AX-ADM-001, AX-ADM-002, AX-ADM-003]
+  ADV-005:
+    name: REPLAY_STATE_DIVERGENCE
+    targets: [SEM-RPL-001, AX-RPL-002, AX-RPL-003]
+  ADV-006:
+    name: IDENTITY_ALIAS_COLLISION
+    targets: [SEM-ID-001, AX-ID-002, AX-ID-003]
+  ADV-007:
+    name: PARTITION_REPLAY_DIVERGENCE
+    targets: [SEM-DET-001, SEM-RPL-001, AX-DET-002, AX-RPL-002]
+  ADV-008:
+    name: CONCURRENT_MUTATION_CONFLICT
+    targets: [SEM-DET-001, AX-DET-001, AX-DET-002, AX-DET-003]
+coverage:
+  require_every_semantic_atom: true
+  require_every_core_axiom: true
+metrics:
+  required:
+    - determinism_violation
+    - replay_equivalence
+    - divergence_detected
+    - reconciliation_success

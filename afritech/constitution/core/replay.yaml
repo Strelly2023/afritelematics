@@ -1,0 +1,34 @@
+schema: afritech.constitution.core.replay.v3
+meta:
+  authority: constitutional
+  domain: replay
+  invariants: [SEM-RPL-001]
+axioms:
+  - id: AX-RPL-001
+    guarantees: [SEM-RPL-001]
+    depends_on: [AX-DET-001]
+    statement: Replay reconstructs state from recorded history.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: replay(history)
+        rhs: reconstructable_state
+  - id: AX-RPL-002
+    guarantees: [SEM-RPL-001]
+    depends_on: [AX-RPL-001, AX-DET-002]
+    statement: Replay state equals original execution state for valid history.
+    formal:
+      operator: EQUIVALENT
+      operands: [state(replay(history)), state(original_execution(history))]
+  - id: AX-RPL-003
+    guarantees: [SEM-RPL-001]
+    depends_on: [AX-RPL-001, AX-RPL-002]
+    statement: Only valid history is replay-admissible.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: valid_history
+        rhs: replay_admissible
+evaluation:
+  replay_safe: true
+  proof_relevant: true

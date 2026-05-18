@@ -1,0 +1,26 @@
+schema: afritech.constitution.semantic_atoms.registry.v4
+
+meta:
+  authority: constitutional
+  role: semantic_structure_registry
+  source_of_truth: semantic_atoms_core.yaml
+  closed_world: true
+
+semantic_structure:
+
+  dependencies:
+
+    SEM-RPL-001:
+      depends_on: [SEM-DET-001, SEM-ID-001]
+
+    SEM-ADM-001:
+      depends_on: [SEM-ID-001, SEM-CW-001]
+
+constraints:
+
+  semantic_definition_forbidden: true
+  semantic_composition_forbidden: true
+  semantic_interpretation_forbidden: true
+
+  dependency_acyclic_required: true
+  undefined_atoms_forbidden: true

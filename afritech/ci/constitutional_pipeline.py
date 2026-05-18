@@ -31,7 +31,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-
 # ============================================================
 # ROOT
 # ============================================================
@@ -142,6 +141,16 @@ def validate_yaml_documents() -> None:
     targets = [
         "afritech/constitution/INVARIANTS.yaml",
         "afritech/constitution/invariants_semantics.yaml",
+        "afritech/constitution/semantic_atoms_core.yaml",
+        "afritech/constitution/semantic_atoms.yaml",
+        "afritech/constitution/profiles.yaml",
+        "afritech/constitution/evolution/amendments.yaml",
+        "afritech/constitution/evolution/epochs.yaml",
+        "afritech/simulation/adversarial/index.yaml",
+        "afritech/ci/semantic_integrity_checks.yaml",
+        "afritech/ci/governance_size_policy.yaml",
+        "afritech/runtime/policies/replay_compression.yaml",
+        "afritech/runtime/contracts/witness_recovery_contract.yaml",
     ]
 
     for path in targets:
@@ -194,6 +203,46 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.constitution.verify_semantic_coverage",
+        ],
+    ),
+
+    PipelineStep(
+        name="semantic_kernel_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.semantic_kernel_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="adversarial_runner_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.adversarial_runner_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="semantic_directionality_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.semantic_directionality_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="governance_size_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.governance_size_validator",
         ],
     ),
 

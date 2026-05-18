@@ -65,6 +65,10 @@ def sort_key(inv_id: str):
     return (int(match.group(1)) if match else 9999, inv_id)
 
 
+def invariant_sort_key(inv_id: str):
+    return sort_key(inv_id)
+
+
 # ============================================================
 # LOADERS
 # ============================================================
@@ -103,15 +107,26 @@ def load_ir_ids() -> List[str]:
 
 
 INDEX_PATTERN = re.compile(r"I\d+_[A-Z0-9_]+")
+LEGACY_INVARIANT_ALIASES = {
+    "I1_REGISTRY_AUTHORITY",
+    "I2_SEALED_SURFACE",
+    "I4_DETERMINISTIC_RUNTIME",
+    "I5_EPOCH_MONOTONIC",
+    "I6_CLOSED_EXECUTION_WORLD",
+}
 
 
 def load_index_ids() -> List[str]:
-    if not INDEX_FILE.exists():
+    return parse_index_ids(INDEX_FILE)
+
+
+def parse_index_ids(path: Path) -> List[str]:
+    if not path.exists():
         fail("Missing invariant index")
 
     ids: List[str] = []
 
-    for line in INDEX_FILE.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
 
         if "=" not in line:
@@ -119,7 +134,7 @@ def load_index_ids() -> List[str]:
 
         left = line.split("=", 1)[0].strip()
 
-        if INDEX_PATTERN.fullmatch(left):
+        if INDEX_PATTERN.fullmatch(left) and left not in LEGACY_INVARIANT_ALIASES:
             ids.append(left)
 
     return sorted(set(ids), key=sort_key)
@@ -142,10 +157,22 @@ def validate_order(ids: List[str], name: str):
         fail(f"{name} ordering not deterministic")
 
 
+def validate_deterministic_ordering(ids: List[str]) -> None:
+    validate_order(ids, "invariants")
+
+
 def validate_subset(parent: Set[str], child: Set[str], name: str):
     diff = child - parent
     if diff:
         fail(f"{name} contains unknown invariants: {sorted(diff)}")
+
+
+def validate_runtime_projection(
+    registry: Set[str],
+    projection: Set[str],
+    name: str,
+) -> None:
+    validate_subset(registry, projection, name)
 
 
 # ============================================================

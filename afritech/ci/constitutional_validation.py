@@ -122,7 +122,6 @@ EXPECTED_PHASES: Set[int] = set(
     PHASE_DEFINITIONS.keys()
 )
 
-
 # ============================================================
 # FAILURE
 # ============================================================
@@ -310,6 +309,42 @@ SUBSYSTEMS: List[
         module=(
             "afritech.ci."
             "invariant_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="semantic_kernel_validator",
+        module=(
+            "afritech.ci."
+            "semantic_kernel_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="adversarial_runner_validator",
+        module=(
+            "afritech.ci."
+            "adversarial_runner_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="governance_size_validator",
+        module=(
+            "afritech.ci."
+            "governance_size_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="semantic_directionality_validator",
+        module=(
+            "afritech.ci."
+            "semantic_directionality_validator"
         ),
         phase=4,
     ),

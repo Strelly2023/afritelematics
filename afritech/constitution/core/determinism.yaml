@@ -1,0 +1,32 @@
+schema: afritech.constitution.core.determinism.v3
+meta:
+  authority: constitutional
+  domain: determinism
+  invariants: [SEM-DET-001]
+axioms:
+  - id: AX-DET-001
+    guarantees: [SEM-DET-001]
+    depends_on: []
+    statement: State is a pure function of event history.
+    formal:
+      operator: FUNCTION_OF
+      operands: [state, event_history]
+  - id: AX-DET-002
+    guarantees: [SEM-DET-001]
+    depends_on: [AX-DET-001]
+    statement: Equal histories yield equal states.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: equal_histories
+        rhs: equal_states
+  - id: AX-DET-003
+    guarantees: [SEM-DET-001]
+    depends_on: [AX-DET-001, AX-DET-002]
+    statement: Event ordering is canonical before state transition.
+    formal:
+      operator: EQUIVALENT
+      operands: [order(events), canonical_order(events)]
+evaluation:
+  deterministic: true
+  proof_relevant: true

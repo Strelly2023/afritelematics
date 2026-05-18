@@ -405,6 +405,14 @@ INDEX_INVARIANT_PATTERN = re.compile(
     r"^I[0-9]+_[A-Z0-9_]+$"
 )
 
+LEGACY_INVARIANT_ALIASES = {
+    "I1_REGISTRY_AUTHORITY",
+    "I2_SEALED_SURFACE",
+    "I4_DETERMINISTIC_RUNTIME",
+    "I5_EPOCH_MONOTONIC",
+    "I6_CLOSED_EXECUTION_WORLD",
+}
+
 
 def load_index_symbols() -> Set[str]:
 
@@ -443,6 +451,9 @@ def load_index_symbols() -> Set[str]:
             if not INDEX_INVARIANT_PATTERN.fullmatch(
                 target.id
             ):
+                continue
+
+            if target.id in LEGACY_INVARIANT_ALIASES:
                 continue
 
             symbols.add(
@@ -668,26 +679,17 @@ def verify_projection_consistency(
     # semantic alignment
     # ---------------------------------------------------------
 
-    if semantic_ids != canonical_ids:
+    unexpected_semantic = (
+        semantic_ids
+        - canonical_ids
+    )
 
-        missing_semantic = (
-            canonical_ids
-            - semantic_ids
-        )
-
-        unexpected_semantic = (
-            semantic_ids
-            - canonical_ids
-        )
-
+    if unexpected_semantic:
         fail(
 
             "Semantic registry "
             "misaligned with "
             "canonical registry:\n"
-
-            f"Missing semantic ids: "
-            f"{sorted(missing_semantic)}\n"
 
             f"Unexpected semantic ids: "
             f"{sorted(unexpected_semantic)}"

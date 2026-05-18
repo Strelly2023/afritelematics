@@ -1,0 +1,11 @@
+schema: afritech.runtime.contracts.witness_recovery.v1
+valid_witness:
+  hash_chain_valid: true
+  causal_consistency: true
+  identity_verified: true
+recovery_protocol:
+  - isolate_node
+  - reconstruct_from_alternate_witnesses
+  - recompute_canonical_state
+failure:
+  admit_runtime: false

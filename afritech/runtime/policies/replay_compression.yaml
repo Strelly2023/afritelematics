@@ -1,0 +1,8 @@
+schema: afritech.runtime.policies.replay_compression.v1
+compression:
+  checkpoint_every: 1000
+  prune_invalid_lineages: true
+  snapshot_canonical_state: required
+admissibility:
+  replay_equivalence_required: true
+  condition: replay(original) == replay(compressed)

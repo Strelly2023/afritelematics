@@ -1,0 +1,20 @@
+schema: afritech.constitution.evolution.epochs.v1
+epochs:
+  EPOCH-1:
+    status: ACTIVE
+    active_axioms:
+      - AX-ADM-001
+      - AX-ADM-002
+      - AX-ADM-003
+      - AX-CW-001
+      - AX-CW-002
+      - AX-CW-003
+      - AX-DET-001
+      - AX-DET-002
+      - AX-DET-003
+      - AX-ID-001
+      - AX-ID-002
+      - AX-ID-003
+      - AX-RPL-001
+      - AX-RPL-002
+      - AX-RPL-003

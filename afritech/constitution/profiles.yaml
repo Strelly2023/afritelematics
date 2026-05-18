@@ -1,0 +1,25 @@
+schema: afritech.constitution.profiles.v1
+profiles:
+  STRICT_RUNTIME:
+    requires: [SEM-DET-001, SEM-CW-001, SEM-ID-001]
+    forbids: [NON_DETERMINISTIC_IO, UNDECLARED_SEMANTICS]
+    runtime_constraints:
+      deterministic_only: true
+      allow_side_effects: false
+  REPLAY_CRITICAL:
+    requires: [SEM-DET-001, SEM-RPL-001, SEM-CW-001]
+    forbids: [NON_DETERMINISTIC_IO, HISTORY_REWRITE]
+    runtime_constraints:
+      deterministic_only: true
+      allow_side_effects: false
+      replay_required: true
+  ADMISSIBILITY_CRITICAL:
+    requires: [SEM-ADM-001, SEM-ID-001, SEM-CW-001]
+    forbids: [DERIVED_AXIOM, SEMANTIC_REDEFINITION]
+    runtime_constraints:
+      deterministic_only: true
+      allow_side_effects: false
+      proof_required: true
+binding:
+  field: profile
+  required_for: [operation, runtime_contract, governance_binding]

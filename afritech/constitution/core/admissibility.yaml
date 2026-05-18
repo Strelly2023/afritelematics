@@ -1,0 +1,36 @@
+schema: afritech.constitution.core.admissibility.v3
+meta:
+  authority: constitutional
+  domain: admissibility
+  invariants: [SEM-ADM-001]
+axioms:
+  - id: AX-ADM-001
+    guarantees: [SEM-ADM-001]
+    depends_on: [AX-CW-001]
+    statement: Invariant preservation is required for admissible execution.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: invariant_preserved
+        rhs: admissible_execution
+  - id: AX-ADM-002
+    guarantees: [SEM-ADM-001]
+    depends_on: [AX-CW-002]
+    statement: Semantic satisfaction is required for admissible execution.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: semantic_satisfied
+        rhs: admissible_execution
+  - id: AX-ADM-003
+    guarantees: [SEM-ADM-001]
+    depends_on: [AX-ADM-001, AX-ADM-002, AX-RPL-003, AX-DET-003]
+    statement: Admissible execution implies replay validity and determinism.
+    formal:
+      operator: IMPLIES
+      operands:
+        lhs: admissible_execution
+        rhs: [replay_valid, deterministic_execution]
+evaluation:
+  satisfiability_required: true
+  proof_relevant: true
