@@ -412,6 +412,15 @@ SUBSYSTEMS: List[
         phase=4,
     ),
 
+    ValidationSubsystem(
+        name="python_gap_validator",
+        module=(
+            "afritech.ci."
+            "python_gap_validator"
+        ),
+        phase=4,
+    ),
+
     # ========================================================
     # PHASE 5
     # REPLAY + PROOF AUTHORITY

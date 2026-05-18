@@ -49,6 +49,7 @@ jobs:
           python3 -m afritech.ci.execution_completeness_validator
           python3 -m afritech.ci.full_witness_coverage_validator
           python3 -m afritech.ci.formal_runtime_equivalence_validator
+          python3 -m afritech.ci.python_gap_validator
 
       - name: Multi-epoch replay validation
         run: python3 -m afritech.verify.verify_multi_epoch_replay

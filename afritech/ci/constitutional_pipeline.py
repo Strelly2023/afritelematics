@@ -346,6 +346,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
     ),
 
     PipelineStep(
+        name="python_gap_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.python_gap_validator",
+        ],
+    ),
+
+    PipelineStep(
         name="verify_execution_lineage",
         phase="CONSTITUTION",
         command=[
