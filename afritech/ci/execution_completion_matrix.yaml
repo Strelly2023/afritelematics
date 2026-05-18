@@ -1,0 +1,49 @@
+schema: afritech.ci.execution_completion_matrix.v1
+status: IMPLEMENTED
+authority: CI
+surfaces:
+  runtime_activation:
+    declared_in: afritech/architecture/surface_authority_registry.yaml
+    implementation_state: IMPLEMENTED
+    runtime_admissible: true
+    replay_participating: true
+    proof_admissible: true
+    tests:
+      - afritech/tests/runtime/test_profile_resolver.py
+      - afritech/tests/semantic_engine/test_constitutional_receipts.py
+  proof:
+    declared_in: afritech/architecture/surface_authority_registry.yaml
+    implementation_state: IMPLEMENTED
+    runtime_admissible: true
+    replay_participating: true
+    proof_admissible: true
+    tests:
+      - afritech/tests/replay/test_trace_reconstruction.py
+      - afritech/tests/constitution/test_level2_formal_model.py
+  receipt_reconstruction:
+    declared_in: afritech/architecture/implementation_registry.yaml
+    implementation_state: IMPLEMENTED
+    runtime_admissible: true
+    replay_participating: true
+    proof_admissible: true
+    tests:
+      - afritech/tests/replay/test_trace_reconstruction.py
+  transcript_surface_set:
+    declared_in: afritech/architecture/enforcement_matrix.yaml
+    implementation_state: FROZEN
+    runtime_admissible: false
+    replay_participating: false
+    proof_admissible: false
+    freeze_reason: aggregate surface superseded by receipt-bound transcript witnesses
+  evaluation:
+    declared_in: afritech/architecture/surface_implementation_binding.yaml
+    implementation_state: FROZEN
+    runtime_admissible: false
+    replay_participating: false
+    proof_admissible: false
+    freeze_reason: analytical namespace frozen until execution binding amendment
+completion_rule:
+  allowed_states: [IMPLEMENTED, FROZEN]
+  unresolved_states_forbidden: [PLANNED, PARTIAL, DOCUMENTARY]
+  implemented_requires_tests: true
+  frozen_requires_freeze_reason: true

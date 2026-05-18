@@ -1,0 +1,19 @@
+schema: afritech.constitution.canonical.index.v1
+status: IMPLEMENTED
+authority: CONSTITUTION
+closed_world: true
+canonical_sources:
+  semantic_dependencies: afritech/constitution/canonical/SEMANTIC_DEPENDENCIES.yaml
+  enforcement_map: afritech/constitution/canonical/ENFORCEMENT_MAP.yaml
+  concepts:
+    - afritech/constitution/canonical/concepts/admissibility.yaml
+    - afritech/constitution/canonical/concepts/authority_declaration.yaml
+    - afritech/constitution/canonical/concepts/closed_world.yaml
+    - afritech/constitution/canonical/concepts/deterministic_execution.yaml
+    - afritech/constitution/canonical/concepts/mutation_traceability.yaml
+    - afritech/constitution/canonical/concepts/replay_admissibility.yaml
+completion:
+  empty: false
+  implementation_state: IMPLEMENTED
+  replay_participating: true
+  proof_admissible: true

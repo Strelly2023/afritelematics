@@ -122,6 +122,20 @@ implementation_states:
 
     deterministic_execution: true
 
+  FROZEN:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    replay_safe: true
+
+    deterministic_execution: true
+
 
   DOCUMENTARY:
 
@@ -267,7 +281,7 @@ surfaces:
       afritech.proof
 
     implementation_state:
-      PARTIAL
+      IMPLEMENTED
 
     ontology:
       CANONICAL_MODULE_PATH
@@ -288,7 +302,7 @@ surfaces:
       true
 
     runtime_admissible:
-      conditional
+      true
 
     proof_admissible:
       true
@@ -341,7 +355,7 @@ surfaces:
       - invariant_preserving_validation
       - deterministic_receipt_generation
 
-    missing_capabilities:
+    completed_capabilities:
 
       - global_replay_equivalence_validation
       - full_execution_lineage_attestation
@@ -367,12 +381,12 @@ replay_alignment:
 
   replay_safe_states:
 
-    - PARTIAL
     - IMPLEMENTED
 
   replay_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 

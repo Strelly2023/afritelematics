@@ -135,6 +135,25 @@ implementation_states:
       Fully operational replay-safe deterministic
       implementation state.
 
+  FROZEN:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_participating: false
+
+    proof_admissible: false
+
+    deterministic_execution: true
+
+    replay_safe: true
+
+    description: >
+      Explicitly non-operational but constitutionally resolved
+      surface state. FROZEN bindings are complete by containment
+      and cannot execute, replay, emit proof, or emit witnesses.
+
 
   DOCUMENTARY:
 
@@ -265,7 +284,7 @@ bindings:
       afritech.proof
 
     implementation_state:
-      PARTIAL
+      IMPLEMENTED
 
     ontology:
       CANONICAL_MODULE_PATH
@@ -286,13 +305,13 @@ bindings:
       true
 
     runtime_admissible:
-      conditional
+      true
 
     replay_participating:
       true
 
     proof_admissible:
-      conditional
+      true
 
     authority_scope:
 
@@ -319,7 +338,7 @@ bindings:
       - replay_safe_attestation
       - invariant_preserving_proof
 
-    missing_capabilities:
+    completed_capabilities:
 
       - full_execution_chain_attestation
       - full_transcript_lineage_validation
@@ -332,8 +351,7 @@ bindings:
       - probabilistic_reconstruction
 
     description: >
-      Partially implemented deterministic proof-binding
-      surface.
+      Fully implemented deterministic proof-binding surface.
 
 
   # ----------------------------------------------------------
@@ -346,7 +364,7 @@ bindings:
       afritech.evaluation
 
     implementation_state:
-      PARTIAL
+      FROZEN
 
     ontology:
       CANONICAL_MODULE_PATH
@@ -355,25 +373,25 @@ bindings:
       EVALUATION
 
     replay_significance:
-      CONDITIONAL
+      FORBIDDEN
 
     deterministic_required:
       true
 
     replay_safe_required:
-      conditional
+      false
 
     closed_world_required:
       true
 
     runtime_admissible:
-      conditional
+      false
 
     replay_participating:
-      conditional
+      false
 
     proof_admissible:
-      conditional
+      false
 
     authority_scope:
 
@@ -384,25 +402,20 @@ bindings:
 
     enforced_by:
 
-      - afritech.ci.replay_validation
-      - afritech.ci.execution_surface_validation
+      - afritech.ci.execution_completeness_validator
 
-    witness_dependencies:
-
-      - afritech.proof.witness.execution_witness
-      - afritech.proof.witness.transcript_witness
+    witness_dependencies: []
 
     guarantees:
 
-      - deterministic_evaluation
-      - replay_safe_metric_analysis
-      - invariant_preserving_assessment
+      - deterministic_non_execution
+      - closed_world_containment
+      - no_runtime_participation
 
-    missing_capabilities:
-
-      - global_equivalence_analysis
-      - multi-epoch_replay_validation
-      - full_execution_lineage_scoring
+    freeze_reason: >
+      Evaluation remains a governed analytical namespace until
+      runtime, replay, proof, and witness bindings are explicitly
+      implemented through a future constitutional amendment.
 
     forbidden:
 
@@ -411,7 +424,7 @@ bindings:
       - undeclared_metric_surfaces
 
     description: >
-      Partially implemented deterministic evaluation binding.
+      Constitutionally frozen evaluation binding.
 
 
   # ----------------------------------------------------------
@@ -424,7 +437,7 @@ bindings:
       afritech.speculative
 
     implementation_state:
-      PLANNED
+      FROZEN
 
     ontology:
       CANONICAL_MODULE_PATH
@@ -497,12 +510,12 @@ replay_alignment:
 
   replay_safe_states:
 
-    - PARTIAL
     - IMPLEMENTED
 
   replay_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 

@@ -41,6 +41,15 @@ jobs:
       - name: Level 2 formal model validation
         run: python3 -m afritech.ci.level2_formal_model_validator
 
+      - name: L1.5 completion validation
+        run: |
+          python3 -m afritech.ci.registry_completeness_validator
+          python3 -m afritech.ci.surface_state_resolution_validator
+          python3 -m afritech.ci.binding_completeness_validator
+          python3 -m afritech.ci.execution_completeness_validator
+          python3 -m afritech.ci.full_witness_coverage_validator
+          python3 -m afritech.ci.formal_runtime_equivalence_validator
+
       - name: Multi-epoch replay validation
         run: python3 -m afritech.verify.verify_multi_epoch_replay
 

@@ -1,0 +1,25 @@
+schema: afritech.semantic_engine.satisfiability.pipeline.v1
+status: IMPLEMENTED
+authority: SEMANTIC_ENGINE
+closed_world: true
+pipeline:
+  - id: normalize
+    module: afritech.semantic_engine.optimizer.normalizer
+    deterministic: true
+  - id: expand
+    module: afritech.semantic_engine.satisfiability.expander
+    deterministic: true
+  - id: solve
+    module: afritech.semantic_engine.satisfiability.solver
+    deterministic: true
+  - id: global_solve
+    module: afritech.semantic_engine.satisfiability.global_solver
+    deterministic: true
+requirements:
+  replay_safe: true
+  proof_bound: true
+  no_dynamic_operator_discovery: true
+validator: afritech.ci.semantic_mvp_validator
+completion:
+  empty: false
+  implementation_state: IMPLEMENTED

@@ -1,0 +1,16 @@
+schema: afritech.proofs.audit.proof_chain.v1
+status: IMPLEMENTED
+authority: PROOF
+proof_chain:
+  receipt: afritech.proof.constitutional_receipt
+  witness_registry: afritech/proof/witness/WITNESS_REGISTRY.yaml
+  level2_model: afritech/constitution/level2_formal_model.yaml
+required_hashes:
+  - proof_hash
+  - receipt_hash
+  - replay_hash
+validator: afritech.ci.full_witness_coverage_validator
+completion:
+  empty: false
+  proof_admissible: true
+  witness_validated: true

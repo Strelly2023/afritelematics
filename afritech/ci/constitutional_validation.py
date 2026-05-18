@@ -358,6 +358,60 @@ SUBSYSTEMS: List[
         phase=4,
     ),
 
+    ValidationSubsystem(
+        name="registry_completeness_validator",
+        module=(
+            "afritech.ci."
+            "registry_completeness_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="surface_state_resolution_validator",
+        module=(
+            "afritech.ci."
+            "surface_state_resolution_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="binding_completeness_validator",
+        module=(
+            "afritech.ci."
+            "binding_completeness_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="execution_completeness_validator",
+        module=(
+            "afritech.ci."
+            "execution_completeness_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="full_witness_coverage_validator",
+        module=(
+            "afritech.ci."
+            "full_witness_coverage_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="formal_runtime_equivalence_validator",
+        module=(
+            "afritech.ci."
+            "formal_runtime_equivalence_validator"
+        ),
+        phase=4,
+    ),
+
     # ========================================================
     # PHASE 5
     # REPLAY + PROOF AUTHORITY

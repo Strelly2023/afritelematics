@@ -90,6 +90,26 @@ implementation_states:
       Fully implemented deterministic replay-safe
       implementation state.
 
+  FROZEN:
+
+    executable: false
+
+    runtime_admissible: false
+
+    replay_admissible: false
+
+    proof_admissible: false
+
+    deterministic_execution: true
+
+    closed_world_aligned: true
+
+    description: >
+      Constitutionally declared and explicitly non-operational
+      surface. FROZEN surfaces are complete as inert artifacts
+      and may not participate in runtime, replay, proof, or
+      witness generation.
+
 
   DOCUMENTARY:
 
@@ -140,7 +160,7 @@ implementations:
   afritech.proof.constitutional_receipt:
 
     implementation_state:
-      PARTIAL
+      IMPLEMENTED
 
     category:
       PROOF
@@ -197,7 +217,7 @@ implementations:
       - invariant_hash
       - execution_surface_hash
 
-    missing_capabilities:
+    completed_capabilities:
 
       - transcript_hash_generation
       - mutation_trace_hash_generation
@@ -214,14 +234,9 @@ implementations:
     description: >
       Deterministic constitutional receipt generation surface.
 
-      Replay admissible and proof admissible under
-      constrained witness completeness semantics.
-
-      Classified as PARTIAL because:
-        - transcript lineage remains incomplete
-        - mutation trace completeness is partial
-        - full replay equivalence reconstruction
-          is not yet implemented
+      Fully implemented through deterministic receipt bundles,
+      transcript hashes, mutation trace hashes, execution-chain
+      hashes, replay hashes, and reconstruction validation.
 
 
   # ----------------------------------------------------------
@@ -309,7 +324,7 @@ implementations:
   afritech.proof.witness.transcript_witness:
 
     implementation_state:
-      PARTIAL
+      IMPLEMENTED
 
     category:
       WITNESS
@@ -329,7 +344,7 @@ implementations:
 
       replay_admissible: true
 
-      proof_admissible: conditional
+      proof_admissible: true
 
       closed_world_aligned: true
 
@@ -337,13 +352,13 @@ implementations:
 
       replay_safe: true
 
-    missing_capabilities:
+    completed_capabilities:
 
       - full_transcript_lineage
       - replay_equivalence_validation
 
     description: >
-      Partially implemented transcript witness surface.
+      Fully implemented transcript witness surface.
 
 
   # ----------------------------------------------------------
@@ -353,7 +368,7 @@ implementations:
   afritech.proof.witness.mutation_witness:
 
     implementation_state:
-      PARTIAL
+      IMPLEMENTED
 
     category:
       WITNESS
@@ -373,7 +388,7 @@ implementations:
 
       replay_admissible: true
 
-      proof_admissible: conditional
+      proof_admissible: true
 
       closed_world_aligned: true
 
@@ -381,13 +396,13 @@ implementations:
 
       replay_safe: true
 
-    missing_capabilities:
+    completed_capabilities:
 
       - deterministic_mutation_lineage
       - mutation_equivalence_reconstruction
 
     description: >
-      Partially implemented mutation witness surface.
+      Fully implemented mutation witness surface.
 
 
   # ----------------------------------------------------------
@@ -436,7 +451,7 @@ implementations:
   afritech.trace.trace_reconstructor:
 
     implementation_state:
-      PLANNED
+      IMPLEMENTED
 
     category:
       TRACE
@@ -452,31 +467,29 @@ implementations:
 
     semantic_properties:
 
-      deterministic_execution: false
+      deterministic_execution: true
 
-      replay_admissible: false
+      replay_admissible: true
 
-      proof_admissible: false
+      proof_admissible: true
 
       closed_world_aligned: true
 
       observer_independent: true
 
-      replay_safe: false
+      replay_safe: true
 
-    forbidden_behaviors:
+    completed_capabilities:
 
-      - runtime_execution
-      - replay_participation
-      - witness_generation
-      - constitutional_attestation
+      - deterministic_trace_reconstruction
+      - receipt_reconstruction
+      - transcript_hash_validation
+      - mutation_trace_hash_validation
+      - execution_chain_hash_validation
 
     description: >
-      Planned deterministic replay trace reconstruction
-      surface.
-
-      Intentionally non-operational until replay-equivalence
-      semantics are constitutionally stabilized.
+      Implemented deterministic replay trace reconstruction
+      surface bound to receipt reconstruction and CI validation.
 
 
 # ============================================================
@@ -548,12 +561,12 @@ replay_alignment:
 
   replay_safe_states:
 
-    - PARTIAL
     - IMPLEMENTED
 
   replay_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 

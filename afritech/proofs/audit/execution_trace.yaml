@@ -1,0 +1,19 @@
+schema: afritech.proofs.audit.execution_trace.v1
+status: IMPLEMENTED
+authority: PROOF
+trace_binding:
+  transcript_witness: afritech.proof.witness.transcript_witness
+  mutation_witness: afritech.proof.witness.mutation_witness
+  execution_witness: afritech.proof.witness.execution_witness
+  replay_witness: afritech.proof.witness.replay_witness
+hashes:
+  required:
+    - execution_chain_hash
+    - transcript_hash
+    - mutation_trace_hash
+    - replay_hash
+validator: afritech.ci.trace_reconstruction_validator
+completion:
+  empty: false
+  replay_participating: true
+  proof_admissible: true

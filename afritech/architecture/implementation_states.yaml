@@ -286,6 +286,77 @@ states:
       Fully implemented deterministic replay-safe
       operational implementation state.
 
+  # ----------------------------------------------------------
+  # FROZEN
+  # ----------------------------------------------------------
+
+  FROZEN:
+
+    executable:
+      false
+
+    runtime_admissible:
+      false
+
+    replay_admissible:
+      false
+
+    proof_admissible:
+      false
+
+    deterministic_execution:
+      true
+
+    closed_world_aligned:
+      true
+
+    replay_safe:
+      true
+
+    observer_independent:
+      true
+
+    witness_generation:
+      false
+
+    mutation_authority:
+      false
+
+    replay_participation:
+      false
+
+    proof_participation:
+      false
+
+    runtime_participation:
+      false
+
+    allowed_operations:
+
+      - declarative_registration
+      - ontology_visibility
+      - frozen_lineage_reference
+
+    forbidden_operations:
+
+      - runtime_execution
+      - replay_execution
+      - proof_generation
+      - witness_generation
+      - constitutional_attestation
+      - mutation_execution
+
+    replay_significance:
+      FROZEN_DECLARATION_ONLY
+
+    enforcement_level:
+      FAIL_CLOSED_CONTAINMENT
+
+    description: >
+      Explicitly resolved non-operational implementation
+      state. FROZEN surfaces are complete by containment and
+      cannot silently become executable.
+
 
   # ----------------------------------------------------------
   # DOCUMENTARY
@@ -501,12 +572,12 @@ replay_alignment:
 
   replay_safe_states:
 
-    - PARTIAL
     - IMPLEMENTED
 
   replay_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 

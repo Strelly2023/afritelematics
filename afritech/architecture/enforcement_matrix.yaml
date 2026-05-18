@@ -146,6 +146,27 @@ implementation_states:
       Fully operational deterministic constitutional
       enforcement surface.
 
+  FROZEN:
+
+    executable: false
+
+    replay_participating: false
+
+    runtime_admissible: false
+
+    enforcement_admissible: false
+
+    proof_admissible: false
+
+    replay_safe: true
+
+    deterministic_execution: true
+
+    description: >
+      Explicitly resolved non-operational enforcement surface.
+      FROZEN enforcement entries are inert and fail closed if
+      referenced as runtime, replay, proof, or witness authority.
+
 
   DOCUMENTARY:
 
@@ -199,7 +220,7 @@ enforcement:
 
   afritech.transcript.execution_trace_surface_set:
 
-    implementation_state: PLANNED
+    implementation_state: FROZEN
 
     ontology: CANONICAL_MODULE_PATH
 
@@ -226,15 +247,14 @@ enforcement:
 
     witness_dependencies: []
 
-    missing_capabilities:
-
-      - transcript_trace_binding
-      - execution_trace_admission
-      - replay_trace_validation
+    freeze_reason: >
+      Reserved aggregate transcript surface set is frozen.
+      Implemented trace authority is delegated to
+      afritech.trace.trace_reconstructor and receipt-bound
+      transcript witnesses.
 
     description: >
-      Reserved transcript execution trace surface-set
-      enforcement capability not yet operationally implemented.
+      Frozen aggregate transcript execution trace surface-set.
 
 
   # ----------------------------------------------------------
@@ -243,13 +263,13 @@ enforcement:
 
   afritech.proof.constitutional_receipt:
 
-    implementation_state: PARTIAL
+    implementation_state: IMPLEMENTED
 
     ontology: CANONICAL_MODULE_PATH
 
     replay_blocking: true
 
-    runtime_blocking: false
+    runtime_blocking: true
 
     proof_blocking: true
 
@@ -286,9 +306,6 @@ enforcement:
       - replay_hash
       - receipt_hash
       - invariant_hash
-
-    missing_witnesses:
-
       - mutation_trace_hash
       - transcript_hash
       - deterministic_execution_chain
@@ -549,12 +566,12 @@ replay_alignment:
 
   replay_safe_states:
 
-    - PARTIAL
     - IMPLEMENTED
 
   replay_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 
@@ -588,12 +605,12 @@ runtime_alignment:
     - IMPLEMENTED
 
   conditionally_runtime_safe_states:
-
-    - PARTIAL
+    []
 
   runtime_forbidden_states:
 
     - PLANNED
+    - FROZEN
     - DOCUMENTARY
     - FORBIDDEN_ALIAS
 

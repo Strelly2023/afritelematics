@@ -1,0 +1,13 @@
+schema: afritech.proofs.audit.semantic_lineage.v1
+status: IMPLEMENTED
+authority: CONSTITUTION
+semantic_lineage:
+  atoms: afritech/constitution/semantic_atoms_core.yaml
+  dependencies: afritech/constitution/semantic_atoms.yaml
+  level2_model: afritech/constitution/level2_formal_model.yaml
+  invariant_ir: afritech/constitution/compiled/invariants_ir.json
+validator: afritech.ci.formal_runtime_equivalence_validator
+completion:
+  empty: false
+  closed_world: true
+  drift_effect: CI_FAIL

@@ -378,6 +378,7 @@ transition_policy:
 
     - PLANNED -> PARTIAL
     - PLANNED -> DOCUMENTARY
+    - PLANNED -> FROZEN
 
   forbidden_transitions:
 

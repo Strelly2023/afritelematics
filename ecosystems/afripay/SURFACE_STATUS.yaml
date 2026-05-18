@@ -1,5 +1,18 @@
+schema: afritech.ecosystem.surface_status.v1
+
+version: 1
+
 surface: AFRIPAY
 
-status: PLANNED
+status: FROZEN
 
 runtime_active: false
+
+replay_participating: false
+
+proof_admissible: false
+
+freeze_reason: >
+  AfriPay is retained as an explicitly frozen ecosystem surface
+  until a future constitutional amendment supplies runtime,
+  replay, proof, and witness bindings.

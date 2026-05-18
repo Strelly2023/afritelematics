@@ -1,0 +1,21 @@
+schema: afritech.governance.binding_manifest.v1
+status: IMPLEMENTED
+authority: GOVERNANCE
+closed_world: true
+bindings:
+  architecture_binding_registry:
+    path: afritech/architecture/surface_implementation_binding.yaml
+    state: IMPLEMENTED
+    verifier: afritech.ci.binding_completeness_validator
+  governance_binding_schema:
+    path: afritech/governance/binding_schema.yaml
+    state: IMPLEMENTED
+    verifier: afritech.governance.binding_validator
+  afriride_rule_binding:
+    path: ecosystems/afriride/governance/bindings/bind_0011.yaml
+    state: IMPLEMENTED
+    verifier: afritech.ci.execution_completeness_validator
+completion:
+  empty: false
+  no_implicit_bindings: true
+  ambiguous_binding_effect: CI_FAIL

@@ -153,6 +153,13 @@ def validate_yaml_documents() -> None:
         "afritech/runtime/contracts/witness_recovery_contract.yaml",
         "afritech/proof/witness/WITNESS_REGISTRY.yaml",
         "afritech/constitution/level2_formal_model.yaml",
+        "afritech/ci/execution_completion_matrix.yaml",
+        "afritech/architecture/implementation_registry.yaml",
+        "afritech/architecture/surface_implementation_binding.yaml",
+        "afritech/architecture/enforcement_matrix.yaml",
+        "afritech/architecture/surface_authority_registry.yaml",
+        "afritech/epoch/epoch_registry.yaml",
+        "afritech/governance/binding_manifest.yaml",
     ]
 
     for path in targets:
@@ -275,6 +282,66 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.ci.level2_formal_model_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="registry_completeness_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.registry_completeness_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="surface_state_resolution_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.surface_state_resolution_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="binding_completeness_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.binding_completeness_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="execution_completeness_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.execution_completeness_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="full_witness_coverage_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.full_witness_coverage_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="formal_runtime_equivalence_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.formal_runtime_equivalence_validator",
         ],
     ),
 
