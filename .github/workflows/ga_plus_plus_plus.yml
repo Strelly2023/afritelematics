@@ -38,6 +38,9 @@ jobs:
       - name: Trace reconstruction validation
         run: python3 -m afritech.ci.trace_reconstruction_validator
 
+      - name: Level 2 formal model validation
+        run: python3 -m afritech.ci.level2_formal_model_validator
+
       - name: Multi-epoch replay validation
         run: python3 -m afritech.verify.verify_multi_epoch_replay
 

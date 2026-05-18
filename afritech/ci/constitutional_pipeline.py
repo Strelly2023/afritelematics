@@ -152,6 +152,7 @@ def validate_yaml_documents() -> None:
         "afritech/runtime/policies/replay_compression.yaml",
         "afritech/runtime/contracts/witness_recovery_contract.yaml",
         "afritech/proof/witness/WITNESS_REGISTRY.yaml",
+        "afritech/constitution/level2_formal_model.yaml",
     ]
 
     for path in targets:
@@ -264,6 +265,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.ci.trace_reconstruction_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="level2_formal_model_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.level2_formal_model_validator",
         ],
     ),
 

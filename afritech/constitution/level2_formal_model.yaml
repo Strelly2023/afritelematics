@@ -1,0 +1,178 @@
+schema: afritech.constitution.level2.formal_model.v1
+
+meta:
+  authority: constitutional
+  role: formal_consistency_model
+  level: 2
+  scope: GA++++
+  mutability: GOVERNED
+  closed_world: true
+
+system:
+  id: AFRITECH-L2-GA-PLUS-PLUS-PLUS-PLUS
+  tuple: [Sigma, A, I, T, E, R]
+  definition: "S = (Sigma, A, I, T, E, R)"
+  state_space:
+    symbol: Sigma
+    fields: [epoch, registry, surfaces, invariants, history]
+    uniqueness_law: "state = f(event_history)"
+  semantic_atoms:
+    - SEM-DET-001
+    - SEM-RPL-001
+    - SEM-CW-001
+    - SEM-ID-001
+    - SEM-ADM-001
+  runtime_projection:
+    - I1_EXPLICIT_INPUT_BOUNDARY
+    - I2_EXPLICIT_OUTPUT_BOUNDARY
+    - I3_NO_SILENT_MUTATION
+    - I4_DETERMINISTIC_EXECUTION
+    - I5_REPLAY_REQUIRED
+    - I9_CLOSED_WORLD
+  transition_system:
+    symbol: T
+    signature: "(state, event, epoch) -> (state_prime, proof)"
+    deterministic: true
+    invariant_preserving: true
+    guard_filtered: true
+  execution_rules:
+    symbol: E
+    closed_world: true
+    deterministic: true
+    declared_surface_required: true
+  replay_operator:
+    symbol: R
+    signature: "history -> reconstructed_receipt"
+    requires:
+      - execution_chain_hash
+      - deterministic_execution_chain
+      - transcript_hash
+      - mutation_trace_hash
+      - replay_hash
+      - receipt_hash
+
+theorems:
+  - id: L2-THM-001
+    name: deterministic_state_uniqueness
+    statement: "For every admissible history there is exactly one system state."
+    requires_atoms: [SEM-DET-001]
+    requires_axioms: [AX-DET-001, AX-DET-002]
+    requires_invariants: [I4_DETERMINISTIC_EXECUTION, I21_DETERMINISTIC_ORDERING]
+    requires_witnesses: [execution_chain_hash, replay_hash]
+    verifier: afritech.verify.verify_execution_lineage
+
+  - id: L2-THM-002
+    name: safe_transition_closure
+    statement: "Every admitted transition preserves constitutional invariants."
+    requires_atoms: [SEM-DET-001, SEM-ADM-001]
+    requires_axioms: [AX-DET-003, AX-ADM-003]
+    requires_invariants: [I3_NO_SILENT_MUTATION, I19_STATE_TRANSITION_EXPLICIT, I20_NO_HIDDEN_SIDE_EFFECTS]
+    requires_witnesses: [mutation_trace_hash, receipt_hash]
+    verifier: afritech.ci.trace_reconstruction_validator
+
+  - id: L2-THM-003
+    name: admissibility_safety
+    statement: "Admissibility implies deterministic, replay-valid, invariant-aligned execution."
+    requires_atoms: [SEM-ADM-001, SEM-DET-001, SEM-RPL-001, SEM-ID-001, SEM-CW-001]
+    requires_axioms: [AX-ADM-001, AX-ADM-002, AX-ADM-003]
+    requires_invariants: [I1_EXPLICIT_INPUT_BOUNDARY, I2_EXPLICIT_OUTPUT_BOUNDARY, I9_CLOSED_WORLD]
+    requires_witnesses: [normalized_expression_hash, proof_hash, receipt_hash]
+    verifier: afritech.ci.receipt_validator
+
+  - id: L2-THM-004
+    name: no_undeclared_behavior
+    statement: "All valid behavior is confined to declared semantic and execution surfaces."
+    requires_atoms: [SEM-CW-001]
+    requires_axioms: [AX-CW-001, AX-CW-002, AX-CW-003]
+    requires_invariants: [I9_CLOSED_WORLD, I14_BOUND_EXECUTION_SURFACE, I15_NO_DYNAMIC_BEHAVIOR_INJECTION]
+    requires_witnesses: [receipt_hash]
+    verifier: afritech.ci.semantic_kernel_validator
+
+  - id: L2-THM-005
+    name: strong_determinism
+    statement: "Identical admissible inputs produce identical execution and replay receipts."
+    requires_atoms: [SEM-DET-001, SEM-RPL-001]
+    requires_axioms: [AX-DET-001, AX-DET-002, AX-DET-003, AX-RPL-002]
+    requires_invariants: [I4_DETERMINISTIC_EXECUTION, I7_TRANSCRIPT_COMPLETENESS, I8_TRANSCRIPT_HASH_STABILITY]
+    requires_witnesses: [deterministic_execution_chain, transcript_hash, replay_hash]
+    verifier: afritech.verify.verify_execution_lineage
+
+  - id: L2-THM-006
+    name: replay_soundness
+    statement: "Replay is the canonical truth test for a valid execution history."
+    requires_atoms: [SEM-RPL-001, SEM-DET-001]
+    requires_axioms: [AX-RPL-001, AX-RPL-002, AX-RPL-003]
+    requires_invariants: [I5_REPLAY_REQUIRED, I6_REPLAY_AUTHORITY, I28_PROOF_OF_CONTINUITY]
+    requires_witnesses: [execution_chain_hash, transcript_hash, mutation_trace_hash, replay_hash]
+    verifier: afritech.verify.verify_multi_epoch_replay
+
+  - id: L2-THM-007
+    name: identity_stability
+    statement: "Canonical identity is unique and preserved under replay."
+    requires_atoms: [SEM-ID-001, SEM-RPL-001]
+    requires_axioms: [AX-ID-001, AX-ID-002, AX-ID-003]
+    requires_invariants: [I10_EXPLICIT_DEPENDENCIES, I11_AUTHORITY_DECLARATION]
+    requires_witnesses: [replay_hash, receipt_hash]
+    verifier: afritech.ci.identity_validator
+
+  - id: L2-THM-008
+    name: mutation_completeness
+    statement: "Every admitted state mutation has a reconstructable trace."
+    requires_atoms: [SEM-RPL-001, SEM-ADM-001]
+    requires_axioms: [AX-RPL-001, AX-ADM-003]
+    requires_invariants: [I3_NO_SILENT_MUTATION, I19_STATE_TRANSITION_EXPLICIT, I29_HASH_VERIFIABILITY]
+    requires_witnesses: [mutation_trace_hash, transcript_hash]
+    verifier: afritech.ci.trace_reconstruction_validator
+
+  - id: L2-THM-009
+    name: temporal_consistency
+    statement: "Epoch lineage is monotonic, immutable after reseal, and replay-preserving."
+    requires_atoms: [SEM-RPL-001, SEM-DET-001]
+    requires_axioms: [AX-RPL-003, AX-DET-002]
+    requires_invariants: [I13_ADR_REQUIRED_FOR_MUTATION, I28_PROOF_OF_CONTINUITY, I29_HASH_VERIFIABILITY]
+    requires_witnesses: [replay_hash, receipt_hash]
+    verifier: afritech.verify.verify_multi_epoch_replay
+
+  - id: L2-THM-010
+    name: system_consistency
+    statement: "The system cannot produce two conflicting valid states for the same admitted history."
+    requires_atoms: [SEM-DET-001, SEM-RPL-001, SEM-CW-001, SEM-ID-001, SEM-ADM-001]
+    requires_axioms: [AX-DET-002, AX-RPL-002, AX-ADM-003, AX-CW-003, AX-ID-003]
+    requires_invariants: [I4_DETERMINISTIC_EXECUTION, I5_REPLAY_REQUIRED, I9_CLOSED_WORLD, I24_OUTPUT_INTEGRITY]
+    requires_witnesses: [execution_chain_hash, transcript_hash, mutation_trace_hash, replay_hash, receipt_hash]
+    verifier: afritech.ci.constitutional_validation
+
+  - id: L2-THM-011
+    name: failure_consistency_preservation
+    statement: "Failures reject invalid states instead of creating alternate valid states."
+    requires_atoms: [SEM-ADM-001, SEM-RPL-001, SEM-DET-001]
+    requires_axioms: [AX-ADM-003, AX-RPL-003, AX-DET-003]
+    requires_invariants: [I16_TOTAL_OUTCOME_DECLARATION, I17_DETERMINISTIC_FAILURE, I18_REPLAYABLE_REFUSAL]
+    requires_witnesses: [proof_hash, replay_hash, receipt_hash]
+    verifier: afritech.ci.receipt_validator
+
+  - id: L2-THM-012
+    name: meaning_stability
+    statement: "The system cannot reinterpret declared semantics inconsistently."
+    requires_atoms: [SEM-CW-001, SEM-DET-001]
+    requires_axioms: [AX-CW-001, AX-CW-002, AX-DET-001]
+    requires_invariants: [I21_DETERMINISTIC_ORDERING, I22_TIME_SOURCE_CONTROL, I23_INPUT_IMMUTABILITY]
+    requires_witnesses: [normalized_expression_hash, transcript_hash]
+    verifier: afritech.ci.semantic_kernel_validator
+
+final_property:
+  id: L2-COMPLETE-SYSTEM-PROPERTY
+  statement: "valid(e) iff ADM(e) and deterministic(e) and invariant_preserving(e) and replay_equivalent(e) and identity_stable(e) and trace_complete(e)."
+  depends_on:
+    - L2-THM-001
+    - L2-THM-002
+    - L2-THM-003
+    - L2-THM-004
+    - L2-THM-005
+    - L2-THM-006
+    - L2-THM-007
+    - L2-THM-008
+    - L2-THM-009
+    - L2-THM-010
+    - L2-THM-011
+    - L2-THM-012

@@ -349,6 +349,15 @@ SUBSYSTEMS: List[
         phase=4,
     ),
 
+    ValidationSubsystem(
+        name="level2_formal_model_validator",
+        module=(
+            "afritech.ci."
+            "level2_formal_model_validator"
+        ),
+        phase=4,
+    ),
+
     # ========================================================
     # PHASE 5
     # REPLAY + PROOF AUTHORITY
