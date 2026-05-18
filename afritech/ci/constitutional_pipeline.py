@@ -247,6 +247,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
     ),
 
     PipelineStep(
+        name="receipt_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.receipt_validator",
+        ],
+    ),
+
+    PipelineStep(
         name="generate_completeness",
         phase="CONSTITUTION",
         command=[

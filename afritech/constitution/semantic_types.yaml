@@ -1,0 +1,9 @@
+schema: afritech.constitution.semantic_types.v1
+
+semantic_types:
+
+  SEM-DET-001: GUARANTEE
+  SEM-RPL-001: GUARANTEE
+  SEM-ID-001: PRINCIPLE
+  SEM-CW-001: CONSTRAINT
+  SEM-ADM-001: VALIDATION

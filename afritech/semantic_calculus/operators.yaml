@@ -1,0 +1,39 @@
+schema: afritech.semantic_calculus.operators.v1
+
+operators:
+
+  AND:
+    arity: n
+    output: BOOLEAN
+
+  OR:
+    arity: n
+    output: BOOLEAN
+
+  IMPLIES:
+    arity: 2
+    output: BOOLEAN
+
+  EQUIVALENT:
+    arity: 2
+    output: BOOLEAN
+
+  FORALL:
+    arity: 2
+    output: BOOLEAN
+
+  EXISTS:
+    arity: 2
+    output: BOOLEAN
+
+  SUBSET:
+    arity: 2
+    output: BOOLEAN
+
+  REQUIRES:
+    arity: 1
+    output: BOOLEAN
+
+  FORBIDS:
+    arity: 1
+    output: BOOLEAN

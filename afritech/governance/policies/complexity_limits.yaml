@@ -1,0 +1,9 @@
+limits:
+
+  max_expansion_depth: 20
+  max_rewrite_steps: 1000
+  max_proof_size: 10000
+  max_expression_nodes: 5000
+
+policy:
+  violation: TERMINATE_EVALUATION

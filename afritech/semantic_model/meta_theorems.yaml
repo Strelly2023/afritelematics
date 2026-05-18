@@ -1,0 +1,13 @@
+theorems:
+
+  normalization_soundness:
+    statement: normalization(expr) preserves truth
+
+  rewrite_confluence:
+    statement: all rewrite paths produce equivalent forms
+
+  replay_preservation:
+    statement: replay preserves admissibility
+
+  satisfiability_consistency:
+    statement: no valid system contains contradictions

@@ -1,0 +1,12 @@
+id: adversarial_rejected_admission
+declared_symbols:
+  - can_assign
+  - driver_available
+truth_values:
+  can_assign: true
+  driver_available: false
+expression:
+  operator: REQUIRES
+  operands:
+    - can_assign
+    - driver_available

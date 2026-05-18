@@ -1,0 +1,48 @@
+schema: afritech.runtime.contracts.normalization.v1
+
+normalization_contract:
+  status: mandatory
+  applies_to:
+    - semantic_yaml
+    - s_ir
+    - proof_generation
+    - execution_admission
+
+  invariant:
+    evaluation_requires_normalized_ir: true
+    hashing_requires_normalized_ir: true
+    proof_requires_normalized_hash: true
+    raw_expression_evaluation_allowed: false
+
+  canonical_order:
+    - compile
+    - normalize
+    - hash
+    - evaluate
+    - proof
+
+  mvp_rewrites:
+    and:
+      flatten_nested_and: true
+      remove_duplicate_operands: true
+      sort_operands_by_canonical_hash: true
+      single_operand_collapses: true
+
+    equivalent:
+      sort_binary_operands_by_canonical_hash: true
+
+    requires:
+      preserve_operand_order: true
+
+    forall:
+      preserve_variable_domain_body_shape: true
+      normalize_body: true
+
+  hard_failures:
+    - normalization_failed
+    - unsupported_operator
+    - undeclared_symbol
+    - rewrite_overflow
+    - hash_mismatch
+
+  on_violation: SYSTEM_INVALID

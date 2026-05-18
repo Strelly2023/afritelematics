@@ -1,0 +1,16 @@
+system_contract:
+
+  requires:
+
+    - termination_guaranteed
+    - rewrite_confluence
+    - normalization_canonical
+    - satisfiability_verified
+    - proof_generated
+    - proof_within_limits
+    - semantic_hash_stable
+    - consensus_verified
+
+  on_violation:
+    action: SYSTEM_HALT
+``

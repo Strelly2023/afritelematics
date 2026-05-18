@@ -1,0 +1,66 @@
+schema: afritech.governance.anti_entropy.v1
+
+anti_entropy:
+
+  description: >
+    Defines risk classes that introduce implementation entropy.
+    These must never occur in the system.
+
+  risks:
+
+    semantic_drift:
+      forbidden: true
+
+    implicit_runtime_semantics:
+      forbidden: true
+
+    proof_bypass:
+      forbidden: true
+
+    non_determinism:
+      forbidden: true
+
+    layer_contamination:
+      forbidden: true
+
+    optimization_semantic_shortcuts:
+      forbidden: true
+
+  enforcement:
+
+    runtime: REQUIRED
+    ci: REQUIRED
+    code_review: REQUIRED
+    architecture_freeze: REQUIRED
+
+  executable_boundary:
+
+    runtime_code_may:
+      - execute_declared_semantics
+      - normalize_declared_semantics
+      - hash_normalized_semantics
+      - evaluate_normalized_semantics
+      - generate_proofs
+
+    runtime_code_must_not:
+      - define_semantics
+      - infer_semantic_authority
+      - bypass_normalization
+      - evaluate_raw_expressions
+      - introduce_new_operators_without_constitutional_declaration
+
+  frozen_surfaces:
+    constitution: FROZEN
+    semantic_calculus: FROZEN
+    meta_semantics: FROZEN
+
+  allowed_changes_after_freeze:
+    - bug_fixes
+    - contradiction_resolution
+    - implementation_required_clarifications
+
+  failure:
+
+    block_execution: true
+    block_merge: true
+    severity: CRITICAL

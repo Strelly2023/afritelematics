@@ -1,0 +1,19 @@
+schema: afritech.semantic_calculus.computation.v1
+
+guarantees:
+
+  termination:
+    description: all evaluation reduces to normal form in finite steps
+    enforced: true
+
+  bounded_complexity:
+    description: evaluation cost must remain within defined limits
+    enforced: true
+
+  determinism:
+    description: identical inputs produce identical normalized outputs
+    enforced: true
+
+  confluence:
+    description: all rewrite paths lead to equivalent normal forms
+    enforced: true

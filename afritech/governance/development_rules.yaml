@@ -1,0 +1,27 @@
+schema: afritech.governance.development_rules.v1
+
+rules:
+
+  D1_NO_SHORTCUT:
+    statement: >
+      If correctness depends on a shortcut, the implementation must be rejected.
+
+  D2_EXPLAINABILITY:
+    statement: >
+      Every evaluation must be traceable, normalized, and provable.
+
+  D3_REPRODUCIBILITY:
+    statement: >
+      Any result must be reproducible across environments and runs.
+
+  D4_NO_MAGIC:
+    statement: >
+      No hidden behavior, implicit logic, or silent inference is allowed.
+
+review_requirements:
+
+  - "Does this introduce semantic meaning in code?"
+  - "Can this be expressed in S-IR?"
+  - "Is this deterministic?"
+  - "Are proofs preserved?"
+  - "Is normalization enforced?"

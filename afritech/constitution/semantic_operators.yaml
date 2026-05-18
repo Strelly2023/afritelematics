@@ -1,0 +1,27 @@
+schema: afritech.constitution.semantic_operators.v1
+
+operators:
+
+  AND:
+    type: boolean
+
+  OR:
+    type: boolean
+
+  IMPLIES:
+    type: logical
+
+  REQUIRES:
+    type: dependency
+
+  FORBIDS:
+    type: constraint
+
+  EQUIVALENT:
+    type: equality
+
+  FORALL:
+    type: quantifier
+
+  EXISTS:
+    type: quantifier

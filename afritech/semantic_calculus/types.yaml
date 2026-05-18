@@ -1,0 +1,34 @@
+schema: afritech.semantic_calculus.types.v1
+
+types:
+
+  ENTITY:
+    description: abstract identity
+
+  HISTORY:
+    description: ordered event sequence
+
+  STATE:
+    description: computed system state
+
+  BOOLEAN:
+    description: truth value
+
+  FUNCTION:
+    description: deterministic mapping
+
+  PROPERTY:
+    description: evaluable predicate
+
+typing_rules:
+
+  function_application:
+    input: [FUNCTION, ENTITY|HISTORY]
+    output: STATE
+
+  logical_operator:
+    input: BOOLEAN
+    output: BOOLEAN
+
+  equivalence:
+    requires_same_type: true

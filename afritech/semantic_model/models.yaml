@@ -1,0 +1,41 @@
+schema: afritech.semantic_model.models.v1
+
+models:
+
+  STATE_MODEL:
+    domain: deterministic_transition_system
+
+    entities:
+      - state
+      - transition
+
+    properties:
+      deterministic: true
+
+  HISTORY_MODEL:
+    domain: ordered_event_graph
+
+    entities:
+      - event
+      - sequence
+
+    properties:
+      total_ordering: true
+
+  REPLAY_MODEL:
+    domain: equivalence_relation
+
+    relation:
+      name: replay_equivalence
+
+    properties:
+      reflexive: true
+      symmetric: true
+      transitive: true
+
+  IDENTITY_MODEL:
+    domain: canonical_mapping
+
+    properties:
+      uniqueness: true
+      stability: true

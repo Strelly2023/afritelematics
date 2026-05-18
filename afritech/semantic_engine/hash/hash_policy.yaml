@@ -1,0 +1,33 @@
+schema: afritech.semantic_engine.hash.policy.v1
+
+hash_policy:
+  authority: normalized_s_ir
+  algorithm: sha256
+  encoding: utf-8
+  serialization:
+    format: canonical_json
+    sort_keys: true
+    separators:
+      item: ","
+      key: ":"
+
+  identity_rule:
+    semantic_identity_is_hash_of_normalized_s_ir: true
+    raw_yaml_hash_is_not_semantic_identity: true
+    raw_expression_hash_is_not_semantic_identity: true
+
+  required_inputs:
+    - normalized_s_ir
+
+  forbidden_inputs:
+    - raw_yaml
+    - unnormalized_s_ir
+    - runtime_interpretation
+
+  guarantees:
+    - replay_equivalence
+    - proof_reuse
+    - deterministic_admission
+    - distributed_convergence_ready
+
+  on_violation: SYSTEM_INVALID

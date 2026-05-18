@@ -1,0 +1,9 @@
+consensus:
+
+  requirement:
+
+    normalized_expression_hash:
+      identical_across_nodes: true
+
+  violation:
+    action: reject_execution

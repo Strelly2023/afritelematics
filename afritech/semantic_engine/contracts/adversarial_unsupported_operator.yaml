@@ -1,0 +1,12 @@
+id: adversarial_unsupported_operator
+declared_symbols:
+  - request_valid
+  - driver_available
+truth_values:
+  request_valid: true
+  driver_available: true
+expression:
+  operator: OR
+  operands:
+    - request_valid
+    - driver_available

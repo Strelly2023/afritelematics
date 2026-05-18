@@ -1,0 +1,23 @@
+schema: afritech.constitution.theorems.v1
+
+theorems:
+
+  DETERMINISM:
+
+    statement:
+      equivalent_histories ⇒ equivalent_states
+
+  REPLAY_SOUNDNESS:
+
+    statement:
+      replay(history) ⇒ admissible
+
+  CLOSED_WORLD:
+
+    statement:
+      undeclared_semantics ⇒ excluded_from_execution
+
+  ADMISSIBILITY:
+
+    statement:
+      satisfiable_semantics ⇒ execution_allowed

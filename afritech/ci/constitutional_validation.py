@@ -373,6 +373,15 @@ SUBSYSTEMS: List[
     ),
 
     ValidationSubsystem(
+        name="receipt_validator",
+        module=(
+            "afritech.ci."
+            "receipt_validator"
+        ),
+        phase=5,
+    ),
+
+    ValidationSubsystem(
         name="replay_verifier",
         module=(
             "afritech.verify.replay"

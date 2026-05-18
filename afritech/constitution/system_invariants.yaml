@@ -1,0 +1,22 @@
+schema: afritech.constitution.system_invariants.v1
+
+invariants:
+
+  EVALUATION_TERMINATES:
+    guarantee: finite_normal_form
+
+  REWRITE_CONFLUENT:
+    guarantee: equivalent_normal_forms
+
+  PROOF_BOUNDED:
+    guarantee: proof_size_within_limits
+
+  GLOBAL_CONSISTENCY:
+    guarantee: no_cross_graph_contradiction
+
+  CONSENSUS_CONVERGENCE:
+    guarantee: normalize(node_A) == normalize(node_B)
+
+enforcement:
+  runtime: HARD_REQUIRED
+  violation: SYSTEM_INVALID

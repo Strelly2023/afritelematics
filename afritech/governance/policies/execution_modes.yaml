@@ -1,0 +1,16 @@
+execution_modes:
+
+  STRICT:
+    full_evaluation: true
+    proof_required: true
+
+  FAST:
+    cache_enabled: true
+    approximation_allowed: false
+
+  AUDIT:
+    full_lineage: true
+    proof_exhaustive: true
+
+  REPLAY:
+    deterministic_only: true

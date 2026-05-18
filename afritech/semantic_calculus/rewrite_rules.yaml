@@ -1,0 +1,23 @@
+schema: afritech.semantic_calculus.rewrite.v1
+
+rules:
+
+  - id: RW-001
+    pattern: AND(A, A)
+    rewrite: A
+
+  - id: RW-002
+    pattern: AND(A, TRUE)
+    rewrite: A
+
+  - id: RW-003
+    pattern: OR(A, FALSE)
+    rewrite: A
+
+  - id: RW-004
+    pattern: IMPLIES(A, A)
+    rewrite: TRUE
+
+  - id: RW-005
+    pattern: EQUIVALENT(A, A)
+    rewrite: TRUE

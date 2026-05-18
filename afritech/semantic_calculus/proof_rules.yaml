@@ -1,0 +1,39 @@
+schema: afritech.semantic_calculus.proof_rules.v1
+
+inference_rules:
+
+  modus_ponens:
+
+    from:
+      - IMPLIES(A, B)
+      - A
+
+    derive:
+      - B
+
+  equivalence_elimination:
+
+    from:
+      - EQUIVALENT(A, B)
+
+    derive:
+      - IMPLIES(A, B)
+      - IMPLIES(B, A)
+
+  conjunction_elimination:
+
+    from:
+      - AND(A, B)
+
+    derive:
+      - A
+      - B
+
+  conjunction_introduction:
+
+    from:
+      - A
+      - B
+
+    derive:
+      - AND(A, B)

@@ -1,0 +1,16 @@
+schema: afritech.semantic_calculus.fixpoint.v1
+
+fixpoint:
+
+  evaluation:
+
+    iterative: true
+
+    convergence:
+      required: true
+
+    condition:
+      no_further_rewrites
+
+  guarantee:
+    finite_normal_form: true

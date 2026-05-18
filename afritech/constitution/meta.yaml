@@ -1,0 +1,222 @@
+#====================================================
+# The system governs not only execution,
+# but the structure of meaning itself.
+#====================================================
+
+schema: afritech.constitution.meta.v3
+
+meta:
+  authority: constitutional
+  enforcement: REQUIRED
+  mutability: FORBIDDEN
+
+  guarantees:
+    - SEM-DET-001
+    - SEM-RPL-001
+    - SEM-CW-001
+    - SEM-ID-001
+    - SEM-ADM-001
+
+
+#====================================================
+# META PRINCIPLES (CANONICAL + ATOMIC)
+#====================================================
+
+meta_principles:
+
+  #--------------------------------------------------
+  # SEMANTIC MINIMALITY
+  #--------------------------------------------------
+
+  - id: META-001
+    guarantees: [SEM-ADM-001]
+
+    rule: SEMANTIC_MINIMALITY
+
+    assertion: |
+      semantics = canonical_minimal_set
+
+    enforcement:
+      semantic_registry_required: true
+      duplicate_semantics_forbidden: true
+
+
+  #--------------------------------------------------
+  # TRACEABLE ENFORCEMENT
+  #--------------------------------------------------
+
+  - id: META-002
+    guarantees: [SEM-RPL-001, SEM-ID-001]
+
+    rule: ENFORCEMENT_TRACEABILITY
+
+    assertion: |
+      enforcement → semantic_atom_reference
+
+    enforcement:
+      semantic_reference_required: true
+      orphan_enforcement_forbidden: true
+
+
+  #--------------------------------------------------
+  # CLOSED-WORLD SEMANTICS
+  #--------------------------------------------------
+
+  - id: META-003
+    guarantees: [SEM-CW-001]
+
+    rule: CLOSED_WORLD_SEMANTICS
+
+    assertion: |
+      semantics ⊆ declared_semantic_atoms
+
+    enforcement:
+      undeclared_semantics_forbidden: true
+      dynamic_semantics_forbidden: true
+
+
+  #--------------------------------------------------
+  # DETERMINISTIC INTERPRETATION
+  #--------------------------------------------------
+
+  - id: META-004
+    guarantees: [SEM-DET-001]
+
+    rule: DETERMINISTIC_MEANING
+
+    assertion: |
+      identical_input → identical_interpretation
+
+    enforcement:
+      interpretation_deterministic: true
+      replay_consistent: true
+
+
+  #--------------------------------------------------
+  # SEMANTIC / EXECUTION SEPARATION
+  #--------------------------------------------------
+
+  - id: META-005
+    guarantees: [SEM-ID-001]
+
+    rule: SEMANTIC_EXECUTION_SEPARATION
+
+    assertion: |
+      semantics ≠ execution_mechanics
+      AND semantics → admissibility_constraints
+
+    enforcement:
+      execution_independence_required: true
+      admissibility_semantic_control: true
+
+
+  #--------------------------------------------------
+  # REPLAY-BASED CONSISTENCY
+  #--------------------------------------------------
+
+  - id: META-006
+    guarantees: [SEM-RPL-001, SEM-ADM-001]
+
+    rule: REPLAY_SEMANTIC_CONSISTENCY
+
+    assertion: |
+      replay ⇒ semantic_consistency
+
+    enforcement:
+      replay_verification_required: true
+      semantic_alignment_required: true
+
+
+#====================================================
+# META DEPENDENCY GRAPH (STRICT DAG)
+#====================================================
+
+meta_dependencies:
+
+  META-002:
+    depends_on: [META-001]
+
+  META-003:
+    depends_on: [META-001]
+
+  META-004:
+    depends_on: [META-003]
+
+  META-005:
+    depends_on: [META-002]
+
+  META-006:
+    depends_on: [META-002, META-004]
+
+
+#====================================================
+# GLOBAL ENFORCEMENT (CI + RUNTIME)
+#====================================================
+
+enforcement:
+
+  semantic_directionality:
+    core_only_definition: true
+    downward_flow_required: true
+    upward_definition_forbidden: true
+
+  semantic_usage:
+    atom_reference_only: true
+    freeform_semantics_forbidden: true
+
+  system_integrity:
+    closed_world_enforced: true
+    deterministic_interpretation_enforced: true
+
+
+#====================================================
+# CI POLICY (BLOCKING)
+#====================================================
+
+ci:
+
+  required_checks:
+    - semantic_atom_reference_required
+    - no_duplicate_semantic_expression
+    - meta_dependency_acyclic
+    - no_undeclared_semantics
+    - deterministic_interpretation_verified
+    - semantic_traceability_complete
+
+  failure_policy:
+    block_merge: true
+    block_release: true
+
+
+#====================================================
+# DRIFT PREVENTION
+#====================================================
+
+drift_control:
+
+  semantic_equivalence_detection: REQUIRED
+  duplicate_meaning_detection: REQUIRED
+  semantic_hash_alignment: REQUIRED
+
+
+#====================================================
+# VALIDATION LAYERS (STRUCTURAL)
+#====================================================
+
+validation:
+
+  semantic_layer:
+    canonical_atoms_only: true
+    registry_required: true
+
+  enforcement_layer:
+    semantic_trace_required: true
+    invariant_mapping_required: true
+
+  interpretation_layer:
+    deterministic_only: true
+    replay_consistency_required: true
+
+  boundary_layer:
+    closed_world_required: true
+    undefined_semantics_forbidden: true

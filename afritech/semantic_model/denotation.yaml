@@ -1,0 +1,23 @@
+schema: afritech.semantic_model.denotation.v1
+
+denotation:
+
+  replay(history):
+    maps_to:
+      function:
+        deterministic_transition
+
+  state(history):
+    maps_to:
+      evaluation:
+        STATE_MODEL
+
+  canonical_identity(entity):
+    maps_to:
+      mapping:
+        IDENTITY_MODEL
+
+  valid_semantics:
+    maps_to:
+      subset:
+        declared_semantic_atoms

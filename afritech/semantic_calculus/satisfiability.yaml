@@ -1,0 +1,15 @@
+schema: afritech.semantic_calculus.satisfiability.v1
+
+properties:
+
+  soundness:
+    description: all derived truths are valid
+
+  completeness:
+    description: all valid truths are derivable
+
+  termination:
+    description: evaluation always converges
+
+  consistency:
+    description: no contradictions exist in valid state

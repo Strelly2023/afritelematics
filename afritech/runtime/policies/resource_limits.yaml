@@ -1,0 +1,15 @@
+resources:
+
+  cpu_budget:
+    max_cycles: bounded
+
+  memory_budget:
+    max_bytes: bounded
+
+  proof_budget:
+    max_nodes: 10000
+
+  evaluation_budget:
+    max_steps: 5000
+
+action_on_violation: TERMINATE_EVALUATION

@@ -1,0 +1,25 @@
+composition:
+
+  SEM-DET-001:
+
+    expression:
+      AND:
+        - PRIM-DET-ORDER-001
+        - PRIM-DET-STATE-001
+        - PRIM-DET-REPLAY-001
+        - PRIM-DET-OBS-001
+
+  SEM-RPL-001:
+
+    expression:
+      AND:
+        - PRIM-RPL-EQUIV-001
+        - PRIM-RPL-LINEAGE-001
+        - PRIM-RPL-RECON-001
+
+  SEM-ADM-001:
+
+    expression:
+      AND:
+        - PRIM-ADM-INVARIANT-001
+        - PRIM-ADM-CONSISTENCY-001

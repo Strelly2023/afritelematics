@@ -1,0 +1,11 @@
+id: adversarial_undeclared_symbol
+declared_symbols:
+  - request_valid
+truth_values:
+  request_valid: true
+  driver_available: true
+expression:
+  operator: AND
+  operands:
+    - request_valid
+    - driver_available

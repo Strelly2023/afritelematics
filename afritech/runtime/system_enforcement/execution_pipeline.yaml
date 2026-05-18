@@ -1,0 +1,59 @@
+schema: afritech.runtime.system_enforcement.execution_pipeline.v1
+
+execution_pipeline:
+  authority: canonical_runtime_path
+  status: frozen_for_mvp
+
+  invariant:
+    runtime_code_may_execute_semantics: true
+    runtime_code_must_not_define_semantics: true
+    raw_expression_evaluation_allowed: false
+
+  stages:
+    - name: compile
+      input: semantic_yaml
+      output: s_ir
+      failure: SYSTEM_INVALID
+
+    - name: normalize
+      input: s_ir
+      output: normalized_s_ir
+      required_before_evaluation: true
+      failure: SYSTEM_INVALID
+
+    - name: hash
+      input: normalized_s_ir
+      output: normalized_expression_hash
+      failure: SYSTEM_INVALID
+
+    - name: evaluate
+      input: normalized_s_ir
+      output: admissibility_result
+      allowed_operators:
+        - AND
+        - EQUIVALENT
+        - REQUIRES
+        - FORALL
+      failure: SYSTEM_INVALID
+
+    - name: proof
+      input:
+        - normalized_expression_hash
+        - admissibility_result
+      output: proof_artifact
+      failure: SYSTEM_INVALID
+
+    - name: admission_gate
+      input: proof_artifact
+      output:
+        - ADMIT
+        - REJECT
+      failure: SYSTEM_INVALID
+
+  non_bypassable_order:
+    - compile
+    - normalize
+    - hash
+    - evaluate
+    - proof
+    - admission_gate

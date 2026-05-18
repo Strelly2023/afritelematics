@@ -1,0 +1,11 @@
+cost_model:
+
+  metrics:
+    - expansion_depth
+    - evaluation_steps
+    - normalization_cost
+    - proof_size
+
+  constraints:
+    max_depth: configurable
+    max_cost: bounded

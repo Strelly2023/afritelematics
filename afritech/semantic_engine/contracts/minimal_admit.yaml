@@ -1,0 +1,20 @@
+id: minimal_assignment_admission
+declared_symbols:
+  - request_valid
+  - driver_available
+  - can_assign
+truth_values:
+  request_valid: true
+  driver_available: true
+  can_assign: true
+expression:
+  operator: AND
+  operands:
+    - operator: REQUIRES
+      operands:
+        - can_assign
+        - driver_available
+    - operator: EQUIVALENT
+      operands:
+        - request_valid
+        - request_valid

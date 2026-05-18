@@ -1,0 +1,6 @@
+type: AXIOM | EXPRESSION | CONTRACT
+
+fields:
+  id
+  operator
+  operands

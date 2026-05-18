@@ -1,0 +1,62 @@
+schema: afritech.constitution.semantic_primitives.v2
+
+meta:
+  authority: constitutional
+  role: irreducible_semantic_atoms
+  closed_world: true
+  evaluable: true
+
+
+#====================================================
+# FORMAL SEMANTIC PRIMITIVES
+#====================================================
+
+primitives:
+
+  PRIM-DET-STATE-001:
+
+    type: PROPERTY
+
+    formal:
+      operator: EQUIVALENT
+      operands:
+        - replay(state_history)
+        - replay(state_history)
+
+    invariant: state_determinism
+
+  PRIM-DET-ORDER-001:
+
+    type: PROPERTY
+
+    formal:
+      operator: EQUIVALENT
+      operands:
+        - order(events)
+        - canonical_order(events)
+
+    invariant: ordering_stability
+
+  PRIM-RPL-EQUIV-001:
+
+    type: GUANRANTEE
+
+    formal:
+      operator: EQUIVALENT
+      operands:
+        - state(replay(H))
+        - state(original_execution(H))
+
+    invariant: replay_equivalence
+
+  PRIM-ADM-INVARIANT-001:
+
+    type: CONSTRAINT
+
+    formal:
+      operator: FORALL
+      operands:
+        - invariant_set
+        - preserved(invariant_set)
+
+    invariant: invariant_preservation

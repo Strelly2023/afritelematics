@@ -1,0 +1,13 @@
+schema: afritech.semantic_calculus.equivalence.v2
+
+equivalence:
+
+  rule:
+
+    normalize(eval(H1)) == normalize(eval(H2))
+    ⇒ semantically_equivalent(H1, H2)
+
+  properties:
+    reflexive: true
+    symmetric: true
+    transitive: true

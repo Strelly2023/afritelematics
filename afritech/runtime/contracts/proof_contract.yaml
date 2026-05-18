@@ -1,0 +1,16 @@
+execution:
+
+  proof_required: true
+
+  must_include:
+    - normalized_expression_hash
+    - canonical_expression
+    - proof_hash
+    - dependency_graph
+
+  must_validate:
+    - normalized_expression_hash_matches_normalized_s_ir
+    - canonical_expression_matches_normalized_s_ir
+    - proof_hash_matches_proof_payload
+
+  on_violation: SYSTEM_INVALID

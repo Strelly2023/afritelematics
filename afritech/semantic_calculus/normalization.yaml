@@ -1,0 +1,15 @@
+schema: afritech.semantic_calculus.normalization.v1
+
+normalization:
+
+  required_form: CNF
+
+  steps:
+    - eliminate_equivalence
+    - eliminate_implication
+    - push_negation_inward
+    - distribute_or_over_and
+
+  result:
+    canonical_expression: true
+    hash_stable: true

@@ -1,0 +1,32 @@
+schema: afritech.semantic_calculus.evaluation.v1
+
+evaluation:
+
+  AND:
+    rule: all_true
+
+  OR:
+    rule: any_true
+
+  IMPLIES:
+    truth_table:
+      - lhs: FALSE
+        result: TRUE
+      - lhs: TRUE
+        rhs: FALSE
+        result: FALSE
+      - lhs: TRUE
+        rhs: TRUE
+        result: TRUE
+
+  EQUIVALENT:
+    rule: equality
+
+  SUBSET:
+    rule: set_inclusion
+
+  FORALL:
+    rule: universal_quantification
+
+  EXISTS:
+    rule: existential_quantification

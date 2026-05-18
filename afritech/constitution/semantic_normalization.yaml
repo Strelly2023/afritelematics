@@ -1,0 +1,14 @@
+schema: afritech.constitution.semantic_normalization.v1
+
+normalization:
+
+  rules:
+
+    - aliases:
+        - deterministic_execution
+        - replay_determinism
+      canonical: SEM-DET-001
+
+    - aliases:
+        - replay_equivalence
+      canonical: SEM-RPL-001

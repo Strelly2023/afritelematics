@@ -1,0 +1,10 @@
+schema: afritech.semantic_engine.proof.mvp.v1
+
+proof:
+  pipeline: compile.normalize.hash.evaluate.proof
+  evaluated: boolean
+  normalized: true
+  normalized_expression_hash: sha256
+  canonical_expression: canonical_json
+  dependency_graph: list
+  proof_hash: sha256

@@ -1,0 +1,19 @@
+schema: afritech.semantic_calculus.equivalence.v1
+
+rules:
+
+  - id: EQ-001
+    rule: commutativity
+    applies_to: [AND, OR]
+
+  - id: EQ-002
+    rule: associativity
+    applies_to: [AND, OR]
+
+  - id: EQ-003
+    rule: distribution
+    applies_to: [AND, OR]
+
+  - id: EQ-004
+    rule: symmetry
+    applies_to: [EQUIVALENT]
