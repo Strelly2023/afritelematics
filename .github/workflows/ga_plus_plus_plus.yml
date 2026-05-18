@@ -1,0 +1,45 @@
+name: GA Plus Plus Plus Gate
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - develop/semantic-runtime
+      - "freeze/**"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ga-plus-plus-plus:
+    name: Reconstructable Constitutional Execution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Constitutional pipeline
+        run: python3 -m afritech.ci.constitutional_pipeline
+
+      - name: Constitutional validation
+        run: python3 -m afritech.ci.constitutional_validation
+
+      - name: Trace reconstruction validation
+        run: python3 -m afritech.ci.trace_reconstruction_validator
+
+      - name: Multi-epoch replay validation
+        run: python3 -m afritech.verify.verify_multi_epoch_replay
+
+      - name: Test suite
+        run: pytest -q

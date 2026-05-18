@@ -2,11 +2,15 @@
   "canonical_identity": "afritech.proof.constitutional_receipt",
   "closed_world_aligned": true,
   "deterministic": true,
+  "deterministic_execution_chain": true,
   "execution_surface_hash": "331a3fc05748f4cbe494ec069966327d83999de5dd518b5fe13619a17955dee3",
-  "implementation_state": "PARTIAL",
+  "implementation_state": "IMPLEMENTED",
+  "mutation_trace_hash": "795a35f65bd03e42f00dcce8083784262b6898b11a5b10277a7f1a3f8da2212d",
   "observer_independent": true,
-  "receipt_hash": "1a5892be78dd2470fe1107f304936c87f645b09e50d1bf9c9e0be36258d794fd",
+  "receipt_hash": "622872426aedeb1c22a2525a41cf0d869f2d6ddced9d5760242c64ed904ae958",
+  "replay_hash": "9e0bc49e8fc7bed1c908d959266a5096e3cf40ef7dee515e0b41c183c50ee317",
   "replay_safe": true,
   "schema_version": 1,
-  "surface_validation_hash": "6e89ad308f543d0cfb4e57ae0cad3ab6bf944a54c1a68459ac62a2aa01ee2941"
+  "surface_validation_hash": "6e89ad308f543d0cfb4e57ae0cad3ab6bf944a54c1a68459ac62a2aa01ee2941",
+  "transcript_hash": "9e0bc49e8fc7bed1c908d959266a5096e3cf40ef7dee515e0b41c183c50ee317"
 }

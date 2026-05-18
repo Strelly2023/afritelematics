@@ -30,8 +30,10 @@ def test_admitted_decision_emits_complete_receipt_bundle():
     assert result["status"] == "ADMIT"
     assert result["receipt"]["decision"] == "ADMIT"
     assert result["receipt"]["execution_chain_hash"]
+    assert result["receipt"]["deterministic_execution_chain"] is True
     assert result["receipt"]["transcript_hash"]
     assert result["receipt"]["mutation_trace_hash"]
+    assert result["receipt"]["replay_hash"]
     assert result["receipt"]["inspection_hash"]
     assert result["receipt"]["signature"]
     assert result["transcript"]["execution_chain_hash"] == result["receipt"]["execution_chain_hash"]

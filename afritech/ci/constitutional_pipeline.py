@@ -151,6 +151,7 @@ def validate_yaml_documents() -> None:
         "afritech/ci/governance_size_policy.yaml",
         "afritech/runtime/policies/replay_compression.yaml",
         "afritech/runtime/contracts/witness_recovery_contract.yaml",
+        "afritech/proof/witness/WITNESS_REGISTRY.yaml",
     ]
 
     for path in targets:
@@ -253,6 +254,36 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.ci.receipt_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="trace_reconstruction_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.trace_reconstruction_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="verify_execution_lineage",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.verify.verify_execution_lineage",
+        ],
+    ),
+
+    PipelineStep(
+        name="verify_multi_epoch_replay",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.verify.verify_multi_epoch_replay",
         ],
     ),
 

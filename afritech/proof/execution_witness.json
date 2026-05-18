@@ -3,9 +3,9 @@
   "closed_world_aligned": true,
   "deterministic": true,
   "hash_algorithm": "sha256",
-  "implementation_state": "PARTIAL",
+  "implementation_state": "IMPLEMENTED",
   "observer_independent": true,
   "replay_safe": true,
   "schema_version": 1,
-  "witness_hash": "8ce77438a0998c2452e4cd4b5f741f241e8505720dc6b62e199fa91617066369"
+  "witness_hash": "f1b4172bcb02e68ba8a68e8af5769cb9a2986b9ec62bd2cc00a64f01342c7bdc"
 }

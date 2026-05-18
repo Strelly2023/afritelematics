@@ -15,7 +15,7 @@ This surface governs:
 
 This surface is constitutionally classified as:
 
-    IMPLEMENTATION_STATE = "PLANNED"
+    IMPLEMENTATION_STATE = "IMPLEMENTED"
 
 Meaning:
 - ontology-visible
@@ -23,7 +23,7 @@ Meaning:
 - replay-significant
 - constitutionally recognized
 
-But NOT yet fully operationally admissible for:
+Operationally admissible for:
 - global replay equivalence
 - full transcript reconstruction
 - complete mutation lineage reconstruction
@@ -54,6 +54,13 @@ from afritech.trace.trace_validator import (
     validate_trace,
 )
 
+from afritech.runtime.receipts import (
+    build_execution_chain,
+    verify_receipt_bundle,
+)
+
+from afritech.shared.types import stable_hash
+
 
 # ============================================================
 # CONSTITUTIONAL IDENTITY
@@ -63,13 +70,13 @@ CANONICAL_IDENTITY = (
     "afritech.trace.trace_reconstructor"
 )
 
-IMPLEMENTATION_STATE = "PLANNED"
+IMPLEMENTATION_STATE = "IMPLEMENTED"
 
-REPLAY_ADMISSIBLE = False
+REPLAY_ADMISSIBLE = True
 
-PROOF_ADMISSIBLE = False
+PROOF_ADMISSIBLE = True
 
-RUNTIME_ADMISSIBLE = False
+RUNTIME_ADMISSIBLE = True
 
 DETERMINISTIC_EXECUTION = True
 
@@ -514,6 +521,98 @@ class TraceReconstructor:
 
             "reconstructed":
                 reconstructed,
+        }
+
+    # ========================================================
+    # RECEIPT BUNDLE RECONSTRUCTION
+    # ========================================================
+
+    @classmethod
+    def reconstruct_receipt_bundle(
+        cls,
+        bundle: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Reconstruct execution evidence from transcript, mutation trace,
+        execution chain, and receipt artifacts alone.
+        """
+
+        if not verify_receipt_bundle(bundle):
+
+            raise TraceReconstructionError(
+                "receipt_bundle_verification_failed"
+            )
+
+        transcript = bundle["transcript"]
+        mutation_trace = bundle["mutation_trace"]
+        receipt = bundle["receipt"]
+
+        execution_chain = build_execution_chain(
+            {
+                "contract":
+                    bundle.get("input_contract"),
+
+                "truth_values":
+                    bundle.get("input_truth_values"),
+            },
+            transcript["steps"],
+        )
+
+        replay_hash = stable_hash(
+            {
+                "program_id":
+                    receipt.get("program_id"),
+
+                "decision":
+                    receipt.get("decision"),
+
+                "transcript_hash":
+                    transcript["transcript_hash"],
+
+                "mutation_trace_hash":
+                    mutation_trace["mutation_trace_hash"],
+
+                "execution_chain_hash":
+                    execution_chain["execution_chain_hash"],
+            }
+        )
+
+        if replay_hash != receipt.get("replay_hash"):
+
+            raise ReplayEquivalenceError(
+                "replay_hash_mismatch"
+            )
+
+        return {
+            "status":
+                "RECONSTRUCTED",
+
+            "program_id":
+                receipt.get("program_id"),
+
+            "decision":
+                receipt.get("decision"),
+
+            "execution_chain_hash":
+                execution_chain["execution_chain_hash"],
+
+            "transcript_hash":
+                transcript["transcript_hash"],
+
+            "mutation_trace_hash":
+                mutation_trace["mutation_trace_hash"],
+
+            "replay_hash":
+                replay_hash,
+
+            "receipt_hash":
+                receipt["receipt_hash"],
+
+            "deterministic":
+                True,
+
+            "replay_safe":
+                True,
         }
 
 

@@ -382,6 +382,33 @@ SUBSYSTEMS: List[
     ),
 
     ValidationSubsystem(
+        name="trace_reconstruction_validator",
+        module=(
+            "afritech.ci."
+            "trace_reconstruction_validator"
+        ),
+        phase=5,
+    ),
+
+    ValidationSubsystem(
+        name="execution_lineage_verifier",
+        module=(
+            "afritech.verify."
+            "verify_execution_lineage"
+        ),
+        phase=5,
+    ),
+
+    ValidationSubsystem(
+        name="multi_epoch_replay_verifier",
+        module=(
+            "afritech.verify."
+            "verify_multi_epoch_replay"
+        ),
+        phase=5,
+    ),
+
+    ValidationSubsystem(
         name="replay_verifier",
         module=(
             "afritech.verify.replay"

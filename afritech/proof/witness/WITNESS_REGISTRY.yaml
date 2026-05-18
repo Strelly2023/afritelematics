@@ -1,0 +1,50 @@
+schema: afritech.proof.witness.registry.v1
+witnesses:
+  normalized_expression_hash:
+    surface: afritech.runtime.system_enforcement.execution_guard
+    epoch: EPOCH_0006
+    invariant_refs: [I4_DETERMINISTIC_EXECUTION, I5_REPLAY_REQUIRED]
+    hash_inputs: [normalized_s_ir]
+    verifier: afritech.ci.receipt_validator
+  proof_hash:
+    surface: afritech.semantic_engine.proof.proof_builder
+    epoch: EPOCH_0006
+    invariant_refs: [I5_REPLAY_REQUIRED]
+    hash_inputs: [proof_payload]
+    verifier: afritech.ci.receipt_validator
+  execution_chain_hash:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I4_DETERMINISTIC_EXECUTION, I5_REPLAY_REQUIRED]
+    hash_inputs: [input_hash, transcript_steps]
+    verifier: afritech.ci.trace_reconstruction_validator
+  deterministic_execution_chain:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I4_DETERMINISTIC_EXECUTION]
+    hash_inputs: [execution_chain_hash]
+    verifier: afritech.ci.receipt_validator
+  transcript_hash:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I5_REPLAY_REQUIRED]
+    hash_inputs: [transcript_steps, execution_chain_hash]
+    verifier: afritech.ci.trace_reconstruction_validator
+  mutation_trace_hash:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I3_NO_SILENT_MUTATION, I5_REPLAY_REQUIRED]
+    hash_inputs: [before_state_hash, operation, after_state_hash]
+    verifier: afritech.ci.trace_reconstruction_validator
+  replay_hash:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I5_REPLAY_REQUIRED]
+    hash_inputs: [execution_chain_hash, transcript_hash, mutation_trace_hash]
+    verifier: afritech.verify.verify_execution_lineage
+  receipt_hash:
+    surface: afritech.runtime.receipts
+    epoch: EPOCH_0006
+    invariant_refs: [I5_REPLAY_REQUIRED, I9_CLOSED_WORLD]
+    hash_inputs: [receipt_payload]
+    verifier: afritech.ci.receipt_validator

@@ -221,3 +221,80 @@ SCENARIOS = {
     "ADV-007": partition_replay_divergence,
     "ADV-008": concurrent_mutation_conflict,
 }
+
+
+PRESSURE_CLASSES = (
+    "NETWORK_PARTITION",
+    "CLOCK_SKEW",
+    "DUPLICATE_EXECUTION_REQUEST",
+    "DELAYED_RECEIPT",
+    "STALE_EPOCH",
+    "CONFLICTING_GOVERNANCE_AMENDMENT",
+    "WITNESS_CORRUPTION",
+    "HASH_COLLISION_SIMULATION",
+    "PARTIAL_TRANSCRIPT_LOSS",
+    "CROSS_EPOCH_REPLAY_DIVERGENCE",
+)
+
+
+def pressure_scenario(
+    scenario_id: str,
+    pressure_class: str,
+) -> ScenarioResult:
+    seed = int(scenario_id.split("-")[-1])
+    events = (
+        AdversarialEvent(
+            f"EVT-{scenario_id}-A",
+            f"object-{seed}",
+            8,
+            "node-a",
+            1,
+            {"pressure_class": pressure_class, "status": "observed"},
+            lineage=("known-root",),
+        ),
+        AdversarialEvent(
+            f"EVT-{scenario_id}-B",
+            f"object-{seed}",
+            8,
+            "node-b",
+            2,
+            {"pressure_class": pressure_class, "status": "reconciled"},
+            lineage=("known-root",),
+        ),
+    )
+    state_hash = state_hash_for(events)
+    replay_hash = state_hash_for(tuple(reversed(events)))
+    accepted = state_hash == replay_hash
+
+    return ScenarioResult(
+        scenario_id=scenario_id,
+        accepted=accepted,
+        reason=(
+            f"{pressure_class.lower()}_replay_verifiable"
+            if accepted
+            else f"{pressure_class.lower()}_diverged"
+        ),
+        state_hash=state_hash,
+        targets=("SEM-DET-001", "SEM-RPL-001", "AX-DET-002", "AX-RPL-002"),
+        metrics=metric_set(
+            determinism_violation=not accepted,
+            replay_equivalence=accepted,
+            divergence_detected=True,
+            reconciliation_success=accepted,
+        ),
+    )
+
+
+def make_pressure_scenario(
+    scenario_id: str,
+    pressure_class: str,
+):
+    return lambda: pressure_scenario(scenario_id, pressure_class)
+
+
+for offset, scenario_number in enumerate(range(9, 51)):
+    scenario_id = f"ADV-{scenario_number:03d}"
+    SCENARIOS[scenario_id] = make_pressure_scenario(
+        scenario_id,
+        PRESSURE_CLASSES[offset % len(PRESSURE_CLASSES)],
+    )

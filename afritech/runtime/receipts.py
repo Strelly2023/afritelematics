@@ -134,6 +134,15 @@ def build_receipt(
     inspection_hash: str | None,
     epoch: int = 6,
 ) -> dict[str, Any]:
+    replay_hash = stable_hash(
+        {
+            "program_id": program_id,
+            "decision": decision,
+            "transcript_hash": transcript["transcript_hash"],
+            "mutation_trace_hash": mutation_trace["mutation_trace_hash"],
+            "execution_chain_hash": execution_chain["execution_chain_hash"],
+        }
+    )
     receipt_payload = {
         "schema": RECEIPT_SCHEMA,
         "decision": decision,
@@ -141,17 +150,17 @@ def build_receipt(
         "normalized_expression_hash": normalized_expression_hash,
         "proof_hash": proof_hash,
         "execution_chain_hash": execution_chain["execution_chain_hash"],
+        "deterministic_execution_chain": True,
         "transcript_hash": transcript["transcript_hash"],
         "mutation_trace_hash": mutation_trace["mutation_trace_hash"],
         "inspection_hash": inspection_hash,
         "epoch": epoch,
+        "replay_hash": replay_hash,
         "replay_binding": stable_hash(
             {
                 "program_id": program_id,
                 "decision": decision,
-                "transcript_hash": transcript["transcript_hash"],
-                "execution_chain_hash": execution_chain["execution_chain_hash"],
-                "mutation_trace_hash": mutation_trace["mutation_trace_hash"],
+                "replay_hash": replay_hash,
             }
         ),
         "signature_algorithm": SIGNATURE_ALGORITHM,
@@ -273,6 +282,18 @@ def verify_receipt_bundle(bundle: dict[str, Any]) -> bool:
     if receipt.get("transcript_hash") != transcript.get("transcript_hash"):
         return False
     if receipt.get("mutation_trace_hash") != mutation_trace.get("mutation_trace_hash"):
+        return False
+    if receipt.get("deterministic_execution_chain") is not True:
+        return False
+    if receipt.get("replay_hash") != stable_hash(
+        {
+            "program_id": receipt.get("program_id"),
+            "decision": receipt.get("decision"),
+            "transcript_hash": receipt.get("transcript_hash"),
+            "mutation_trace_hash": receipt.get("mutation_trace_hash"),
+            "execution_chain_hash": receipt.get("execution_chain_hash"),
+        }
+    ):
         return False
 
     payload = {

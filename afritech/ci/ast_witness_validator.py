@@ -26,6 +26,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Set
 
+import yaml
+
 
 # ---------------------------------------------------------------------
 # PATHS (CANONICAL)
@@ -39,6 +41,14 @@ SEMANTIC_IR = (
     / "constitution"
     / "compiled"
     / "invariants_ir.json"
+)
+
+WITNESS_REGISTRY = (
+    PROJECT_ROOT
+    / "afritech"
+    / "proof"
+    / "witness"
+    / "WITNESS_REGISTRY.yaml"
 )
 
 AFRITECH_ROOT = PROJECT_ROOT / "afritech"
@@ -77,6 +87,40 @@ def load_declared_witnesses() -> Set[str]:
                 declared.add(w)
 
     return declared
+
+
+def load_registry_witnesses() -> Set[str]:
+    if not WITNESS_REGISTRY.exists():
+        fail(f"Missing witness registry: {WITNESS_REGISTRY}")
+
+    payload = yaml.safe_load(WITNESS_REGISTRY.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        fail("Witness registry must be a mapping")
+
+    witnesses = payload.get("witnesses")
+    if not isinstance(witnesses, dict) or not witnesses:
+        fail("Witness registry must declare witnesses")
+
+    required = {
+        "surface",
+        "epoch",
+        "invariant_refs",
+        "hash_inputs",
+        "verifier",
+    }
+
+    for witness_id, spec in witnesses.items():
+        if not isinstance(spec, dict):
+            fail(f"Invalid witness spec: {witness_id}")
+
+        missing = required - spec.keys()
+        if missing:
+            fail(
+                f"Witness {witness_id} missing registry fields: "
+                f"{sorted(missing)}"
+            )
+
+    return set(witnesses.keys())
 
 
 # ---------------------------------------------------------------------
@@ -160,7 +204,7 @@ def scan_codebase() -> Set[str]:
 # ---------------------------------------------------------------------
 
 def main() -> None:
-    declared = load_declared_witnesses()
+    declared = load_declared_witnesses() | load_registry_witnesses()
     emitted = scan_codebase()
 
     missing = declared - emitted

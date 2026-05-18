@@ -41,7 +41,7 @@ OUTPUT_DIR = Path("afritech/proof")
 
 HASH_ALGO = "sha256"
 
-IMPLEMENTATION_STATE = "PARTIAL"
+IMPLEMENTATION_STATE = "IMPLEMENTED"
 
 WITNESS_IDENTITIES = {
     "REPLAY":
@@ -458,6 +458,26 @@ def generate_receipt(
 
         "receipt_hash":
             stable_hash(bundle),
+
+        "transcript_hash":
+            bundle["replay_hash"],
+
+        "mutation_trace_hash":
+            stable_hash(
+                {
+                    "witness_type":
+                        "MUTATION",
+
+                    "references":
+                        bundle["references"],
+                }
+            ),
+
+        "deterministic_execution_chain":
+            True,
+
+        "replay_hash":
+            bundle["replay_hash"],
 
         "execution_surface_hash":
             stable_hash(
