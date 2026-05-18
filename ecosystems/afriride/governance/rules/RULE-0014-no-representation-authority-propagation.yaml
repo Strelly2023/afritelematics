@@ -1,0 +1,19 @@
+schema: ecosystems.afriride.governance.rule.v1
+id: RULE-0014
+name: no-representation-authority-propagation
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+statement: Presentation or observation fields cannot propagate execution authority.
+applies_to:
+  - observational_declaration
+  - replay_correspondence
+forbidden:
+  - authority_from_display_state
+  - authority_from_observer_label
+  - authority_from_replay_annotation
+violation_effect:
+  runtime: refuse
+  replay: invalid
+guard: ecosystems.afriride.governance.guards.guard_no_retry_interpretation
+completion:
+  empty: false

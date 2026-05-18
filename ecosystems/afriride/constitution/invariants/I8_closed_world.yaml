@@ -1,0 +1,23 @@
+schema: ecosystems.afriride.constitution.invariant.v1
+id: I8_CLOSED_WORLD
+status: IMPLEMENTED
+authority: AFRIRIDE_CONSTITUTION
+statement: AfriRide may execute only declared commands, guards, and replay scopes.
+applies_to:
+  - command_dispatch
+  - governance_guards
+  - replay_registry
+requires:
+  - declared_command
+  - declared_authority
+  - declared_failure_taxonomy
+forbidden:
+  - undeclared_command_execution
+  - authority_escalation
+  - semantic_field_injection
+validators:
+  - ecosystems.afriride.tests.integration.test_governance_boundary_enforcement
+  - ecosystems.afriride.proofs.governance.authority_boundary_validator
+completion:
+  empty: false
+  closed_world: true

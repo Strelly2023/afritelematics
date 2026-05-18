@@ -1,0 +1,22 @@
+schema: ecosystems.afriride.governance.adr.v1
+id: ADR-0011
+status: IMPLEMENTED
+title: No Semantic Escalation In Dispatch Retry
+authority: AFRIRIDE_GOVERNANCE
+decision: >
+  Retry and dispatch logic may observe declared failure classes but
+  must not infer semantic equivalence, identity collapse, or authority
+  escalation from representation fields.
+rules:
+  - RULE-0011-no-semantic-escalation
+  - RULE-0012-no-equivalence-inference
+  - RULE-0013-no-identity-collapsing
+  - RULE-0014-no-representation-authority-propagation
+bindings:
+  - ecosystems/afriride/governance/bindings/bind_0011.yaml
+validators:
+  - ecosystems.afriride.governance.guards.guard_no_authority_escalation
+  - ecosystems.afriride.governance.guards.guard_no_equivalence_inference
+completion:
+  empty: false
+  implementation_state: IMPLEMENTED

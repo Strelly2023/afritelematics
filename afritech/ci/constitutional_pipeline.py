@@ -356,6 +356,26 @@ PIPELINE: tuple[PipelineStep, ...] = (
     ),
 
     PipelineStep(
+        name="yaml_gap_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.yaml_gap_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="partial_planned_audit_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.partial_planned_audit_validator",
+        ],
+    ),
+
+    PipelineStep(
         name="verify_execution_lineage",
         phase="CONSTITUTION",
         command=[

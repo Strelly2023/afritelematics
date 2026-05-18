@@ -1,0 +1,19 @@
+schema: ecosystems.afriride.governance.rule.v1
+id: RULE-0013
+name: no-identity-collapsing
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+statement: Rider, driver, ride, and assignment identities must remain distinct.
+applies_to:
+  - ride_lifecycle
+  - driver_assignment
+forbidden:
+  - driver_ride_identity_merge
+  - rider_driver_identity_merge
+  - assignment_identity_reuse
+violation_effect:
+  runtime: refuse
+  replay: invalid
+guard: ecosystems.afriride.governance.guards.guard_no_authority_escalation
+completion:
+  empty: false

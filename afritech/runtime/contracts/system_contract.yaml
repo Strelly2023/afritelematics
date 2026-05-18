@@ -13,4 +13,3 @@ system_contract:
 
   on_violation:
     action: SYSTEM_HALT
-``

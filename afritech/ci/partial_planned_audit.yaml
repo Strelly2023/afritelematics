@@ -1,0 +1,92 @@
+schema: afritech.ci.partial_planned_audit.v1
+status: IMPLEMENTED
+authority: CI
+policy:
+  active_surface_states_must_be_resolved: true
+  unresolved_runtime_states_forbidden: [PARTIAL, PLANNED]
+  allowed_occurrence_classes:
+    - validator_policy
+    - state_vocabulary
+    - transition_policy
+    - documentation_history
+    - formal_math_terminology
+    - trace_schema_terminology
+allowed_occurrences:
+  - path: afritech/ci/witness_validator.py
+    class: validator_policy
+    reason: rejects forbidden implementation states
+  - path: afritech/ci/completion_utils.py
+    class: validator_policy
+    reason: defines unresolved state set
+  - path: afritech/ci/trace_reconstruction_validator.py
+    class: validator_policy
+    reason: rejects planned/partial reconstruction surfaces
+  - path: afritech/ci/identity_validator.py
+    class: validator_policy
+    reason: validates admissible and forbidden state vocabulary
+  - path: afritech/ci/execution_completion_matrix.yaml
+    class: validator_policy
+    reason: records forbidden unresolved state names
+  - path: afritech/ci/partial_planned_audit_validator.py
+    class: validator_policy
+    reason: validates explicit PARTIAL/PLANNED occurrence audit
+  - path: afritech/epoch/epoch_semantics.yaml
+    class: state_vocabulary
+    reason: canonical epoch semantic vocabulary
+  - path: afritech/proof/witness_policy.yaml
+    class: state_vocabulary
+    reason: canonical witness policy vocabulary
+  - path: afritech/architecture/planned_surface_policy.yaml
+    class: transition_policy
+    reason: canonical policy for planned surface containment
+  - path: afritech/architecture/surface_implementation_binding.yaml
+    class: state_vocabulary
+    reason: state definitions only; active bindings are resolved
+  - path: afritech/architecture/implementation_states.yaml
+    class: state_vocabulary
+    reason: state definitions only; active entries are resolved
+  - path: afritech/architecture/surface_authority_registry.yaml
+    class: state_vocabulary
+    reason: state definitions only; active surfaces are resolved
+  - path: afritech/architecture/enforcement_matrix.yaml
+    class: state_vocabulary
+    reason: state definitions only; active enforcement surfaces are resolved
+  - path: afritech/architecture/implementation_registry.yaml
+    class: state_vocabulary
+    reason: state definitions only; active implementations are resolved
+  - path: afritech/architecture/implementation_registry_loader.py
+    class: validator_policy
+    reason: loader recognizes state vocabulary
+  - path: afritech/proof/constitutional_profiles.py
+    class: documentation_history
+    reason: module docstring asserts non-partial profile semantics
+  - path: afritech/constitution/canonical/concepts/mutation_traceability.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/constitution/canonical/concepts/deterministic_execution.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/constitution/canonical/concepts/admissibility.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/constitution/canonical/concepts/closed_world.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/constitution/canonical/concepts/authority_declaration.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/constitution/canonical/concepts/replay_admissibility.yaml
+    class: state_vocabulary
+    reason: concept policy references forbidden unresolved states
+  - path: afritech/trace/README.md
+    class: documentation_history
+    reason: historical trace implementation-state narrative
+  - path: afritech/trace/trace_schema.yaml
+    class: trace_schema_terminology
+    reason: graph theory partial-DAG wording
+  - path: afritech/formal/constitutional_model.lean
+    class: formal_math_terminology
+    reason: partial deterministic relation is a formal math term
+completion:
+  empty: false
+  active_unresolved_surfaces: 0

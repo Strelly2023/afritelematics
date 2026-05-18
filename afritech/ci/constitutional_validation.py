@@ -421,6 +421,24 @@ SUBSYSTEMS: List[
         phase=4,
     ),
 
+    ValidationSubsystem(
+        name="yaml_gap_validator",
+        module=(
+            "afritech.ci."
+            "yaml_gap_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
+        name="partial_planned_audit_validator",
+        module=(
+            "afritech.ci."
+            "partial_planned_audit_validator"
+        ),
+        phase=4,
+    ),
+
     # ========================================================
     # PHASE 5
     # REPLAY + PROOF AUTHORITY

@@ -1,0 +1,23 @@
+schema: ecosystems.afriride.governance.binding.v1
+id: BIND-0011
+status: IMPLEMENTED
+adr: ADR-0011
+authority: AFRIRIDE_GOVERNANCE
+binds:
+  rules:
+    - RULE-0011-no-semantic-escalation
+    - RULE-0012-no-equivalence-inference
+    - RULE-0013-no-identity-collapsing
+    - RULE-0014-no-representation-authority-propagation
+  guards:
+    - ecosystems.afriride.governance.guards.guard_no_semantic_fields
+    - ecosystems.afriride.governance.guards.guard_no_equivalence_inference
+    - ecosystems.afriride.governance.guards.guard_no_authority_escalation
+    - ecosystems.afriride.governance.guards.guard_no_retry_interpretation
+runtime_effect:
+  violation: runtime_refusal
+  replay_effect: replay_invalid
+  proof_effect: governance_proof_invalid
+completion:
+  empty: false
+  closed_world: true

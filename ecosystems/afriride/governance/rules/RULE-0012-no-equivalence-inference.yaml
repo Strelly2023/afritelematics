@@ -1,0 +1,18 @@
+schema: ecosystems.afriride.governance.rule.v1
+id: RULE-0012
+name: no-equivalence-inference
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+statement: Equivalent-looking representations must not be treated as equal identities.
+applies_to:
+  - dispatch_retry
+  - driver_assignment
+forbidden:
+  - representation_equivalence_claim
+  - inferred_identity_equality
+violation_effect:
+  runtime: refuse
+  replay: invalid
+guard: ecosystems.afriride.governance.guards.guard_no_equivalence_inference
+completion:
+  empty: false

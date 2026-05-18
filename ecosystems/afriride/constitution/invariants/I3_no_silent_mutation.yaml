@@ -1,0 +1,24 @@
+schema: ecosystems.afriride.constitution.invariant.v1
+id: I3_NO_SILENT_MUTATION
+status: IMPLEMENTED
+authority: AFRIRIDE_CONSTITUTION
+statement: Every AfriRide state mutation must be represented in replay evidence.
+applies_to:
+  - ride_state
+  - driver_assignment
+  - replay_trace
+requires:
+  - before_state_hash
+  - operation
+  - after_state_hash
+  - replay_trace_entry
+forbidden:
+  - hidden_assignment_change
+  - unrecorded_retry
+  - out_of_band_state_write
+validators:
+  - ecosystems.afriride.proofs.replay.replay_consistency_checker
+  - ecosystems.afriride.runtime.replay.replay_hash
+completion:
+  empty: false
+  replay_participating: true

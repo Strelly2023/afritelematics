@@ -1,0 +1,18 @@
+schema: ecosystems.afriride.governance.rule.v1
+id: RULE-0011
+name: no-semantic-escalation
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+statement: Runtime observations must not become semantic authority.
+applies_to:
+  - dispatch_retry
+  - observational_declaration
+forbidden:
+  - authority_from_observation
+  - semantic_field_escalation
+violation_effect:
+  runtime: refuse
+  replay: invalid
+guard: ecosystems.afriride.governance.guards.guard_no_semantic_fields
+completion:
+  empty: false

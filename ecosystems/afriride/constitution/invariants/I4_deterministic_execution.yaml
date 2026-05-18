@@ -1,0 +1,23 @@
+schema: ecosystems.afriride.constitution.invariant.v1
+id: I4_DETERMINISTIC_EXECUTION
+status: IMPLEMENTED
+authority: AFRIRIDE_CONSTITUTION
+statement: Equal AfriRide inputs must produce equal assignment and replay results.
+applies_to:
+  - dispatch_assignment
+  - retry_cycle
+  - replay_execution
+requires:
+  - canonical_command_order
+  - deterministic_candidate_order
+  - stable_replay_hash
+forbidden:
+  - clock_dependent_assignment
+  - unordered_driver_selection
+  - nondeterministic_retry
+validators:
+  - ecosystems.afriride.runtime.replay.replay_engine
+  - ecosystems.afriride.tests.replay.test_replay_determinism
+completion:
+  empty: false
+  replay_participating: true

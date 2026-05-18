@@ -1,0 +1,25 @@
+schema: ecosystems.afriride.constitution.invariant.v1
+id: I5_REPLAY_REQUIRED
+status: IMPLEMENTED
+authority: AFRIRIDE_CONSTITUTION
+statement: Every admitted AfriRide execution must produce replay-verifiable evidence.
+applies_to:
+  - ride_request
+  - driver_assignment
+  - cancellation
+  - trip_completion
+requires:
+  - replay_scope
+  - replay_trace
+  - replay_hash
+  - correspondence_result
+forbidden:
+  - execution_without_replay_trace
+  - unhashable_decision
+  - replay_scope_omission
+validators:
+  - ecosystems.afriride.runtime.replay.replay_engine
+  - ecosystems.afriride.tests.replay.test_replay_hash_consistency
+completion:
+  empty: false
+  replay_participating: true

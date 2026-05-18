@@ -1,0 +1,30 @@
+schema: ecosystems.afriride.governance.replay_registry.v1
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+replay_scopes:
+  ride_lifecycle:
+    commands:
+      - request_ride
+      - assign_driver
+      - accept_driver
+      - cancel_trip
+      - start_trip
+      - complete_trip
+    hash_required: true
+  dispatch_retry:
+    commands:
+      - assign_driver
+    hash_required: true
+    taxonomy_required: true
+  observational_declaration:
+    commands:
+      - declaration_emit
+    hash_required: true
+    execution_authority: false
+requirements:
+  - canonical_command_order
+  - deterministic_replay_hash
+  - declared_failure_taxonomy
+completion:
+  empty: false
+  replay_participating: true

@@ -1,0 +1,29 @@
+schema: ecosystems.afriride.governance.admissibility_registry.v1
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+admissibility:
+  ride_request:
+    required_authority: rider_command
+    replay_required: true
+    guards:
+      - closed_world_command
+      - deterministic_dispatch_input
+  driver_assignment:
+    required_authority: dispatch_engine
+    replay_required: true
+    guards:
+      - no_identity_collapsing
+      - deterministic_candidate_order
+  retry_cycle:
+    required_authority: dispatch_engine
+    replay_required: true
+    guards:
+      - no_retry_interpretation
+      - failure_taxonomy_declared
+forbidden:
+  - undeclared_command
+  - semantic_escalation
+  - replay_scope_omission
+completion:
+  empty: false
+  implementation_state: IMPLEMENTED

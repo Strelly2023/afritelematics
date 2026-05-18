@@ -1,0 +1,31 @@
+schema: ecosystems.afriride.governance.failure_taxonomy.v1
+status: IMPLEMENTED
+authority: AFRIRIDE_GOVERNANCE
+failure_classes:
+  NO_DRIVER_AVAILABLE:
+    replay_admissible: true
+    retry_allowed: true
+    semantic_authority: false
+  DRIVER_TIMEOUT:
+    replay_admissible: true
+    retry_allowed: true
+    semantic_authority: false
+  DRIVER_REJECTED:
+    replay_admissible: true
+    retry_allowed: true
+    semantic_authority: false
+  AUTHORITY_VIOLATION:
+    replay_admissible: true
+    retry_allowed: false
+    semantic_authority: false
+  REPLAY_DIVERGENCE:
+    replay_admissible: false
+    retry_allowed: false
+    semantic_authority: false
+forbidden:
+  - failure_class_inference
+  - undeclared_failure_class
+  - retry_based_identity_claim
+completion:
+  empty: false
+  implementation_state: IMPLEMENTED

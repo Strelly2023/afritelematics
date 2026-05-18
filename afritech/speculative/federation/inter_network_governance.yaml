@@ -150,9 +150,9 @@ inter_network_federation:
 
     thresholds:
 
-      active: > 0.75
-      watchlist: 0.5 - 0.75
-      excluded: < 0.5
+      active: "> 0.75"
+      watchlist: "0.5 - 0.75"
+      excluded: "< 0.5"
 
   # -----------------------------------------------------------------
   # SYSTEM QUARANTINE

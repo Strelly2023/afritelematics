@@ -1,0 +1,33 @@
+schema: ecosystems.afriride.constitution.epoch.v1
+epoch: EPOCH-0008
+status: FROZEN
+authority: AFRIRIDE_CONSTITUTION
+title: Replay Authority Boundary
+activated_by:
+  - ADR-0013-replay-taxonomy-registry
+scope:
+  runtime_active: false
+  replay_authoritative: true
+  mutation_authority: false
+  semantic_authority: false
+guarantees:
+  - replay_scope_is_declared
+  - replay_hashes_are_deterministic
+  - observational_classification_has_no_execution_authority
+  - failures_are_taxonomy_bound
+forbidden:
+  - retry_interpretation
+  - semantic_equivalence_inference
+  - identity_collapsing
+  - representation_authority_propagation
+validators:
+  - ecosystems.afriride.proofs.replay.replay_consistency_checker
+  - ecosystems.afriride.proofs.replay.replay_correspondence_proof
+  - ecosystems.afriride.proofs.governance.doctrine_compliance_validator
+completion:
+  empty: false
+  implementation_state: FROZEN
+  freeze_reason: >
+    Epoch 0008 is retained as replay-authority doctrine until
+    a future admitted AfriRide runtime epoch binds it to active
+    execution.
