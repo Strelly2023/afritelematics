@@ -1,0 +1,62 @@
+schema: ecosystems.afriride.continuity.index.v1
+version: 1
+
+positioning:
+  statement: >
+    AfriRide is a continuity-critical coordination environment used to validate
+    deterministic operational recovery under mobility disruption.
+  forbidden_positioning:
+    - generic_ride_hailing_claim
+    - doctrine_as_product_surface
+    - optimization_claim_without_replay_proof
+
+metrics:
+  required:
+    - replay_equivalent
+    - identity_continuity
+    - coordination_continuity
+    - authority_conflict_prevented
+    - reconstruction_complete
+    - epoch_replay_stable
+
+scenarios:
+  AFRIRIDE-CONT-001:
+    class: connectivity_loss_recovery
+    description: Driver-side connectivity loss recovers to one replay-equivalent trip assignment.
+    targets:
+      - connectivity_loss_recovery
+      - SEM-RPL-001
+      - SEM-ID-001
+      - AX-RPL-002
+  AFRIRIDE-CONT-002:
+    class: replay_reconstruction
+    description: Dispute reconstruction emits transcript and mutation trace hashes from execution artifacts.
+    targets:
+      - replay_reconstruction
+      - SEM-RPL-001
+      - AX-RPL-002
+      - trace_complete
+  AFRIRIDE-CONT-003:
+    class: adversarial_coordination
+    description: Duplicate driver assignment authority is refused deterministically.
+    targets:
+      - adversarial_coordination
+      - SEM-DET-001
+      - SEM-ADM-001
+      - AX-ADM-003
+  AFRIRIDE-CONT-004:
+    class: offline_operational_continuity
+    description: Offline independent ride operations rejoin with stable driver identity and replay hash.
+    targets:
+      - offline_operational_continuity
+      - SEM-RPL-001
+      - SEM-ID-001
+      - AX-ID-003
+  AFRIRIDE-CONT-005:
+    class: multi_epoch_recovery
+    description: Trip execution remains replay-stable across a deterministic epoch chain.
+    targets:
+      - multi_epoch_recovery
+      - SEM-DET-001
+      - SEM-RPL-001
+      - AX-DET-002

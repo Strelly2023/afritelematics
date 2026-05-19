@@ -44,6 +44,9 @@ jobs:
       - name: Continuity validation
         run: python3 -m afritech.ci.continuity_validator
 
+      - name: AfriRide continuity demonstration
+        run: python3 -m afritech.ci.afriride_continuity_demo_validator
+
       - name: L1.5 completion validation
         run: |
           python3 -m afritech.ci.registry_completeness_validator
