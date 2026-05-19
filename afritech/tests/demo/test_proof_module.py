@@ -25,3 +25,4 @@ def test_proof_module_can_emit_machine_readable_payload(capsys) -> None:
     assert '"identity": "stable"' in output
     assert '"conflicts": "deterministic"' in output
     assert '"claims_valid": true' in output
+    assert '"global_deployment_readiness_claimed": false' in output

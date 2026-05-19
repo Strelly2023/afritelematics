@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from afritech.ci import afriride_continuity_demo_validator
+from afritech.ci import claim_discipline_validator
 from afritech.ci import continuity_validator
 from afritech.ci import trace_reconstruction_validator
 from afritech.verify import verify_multi_epoch_replay
@@ -68,6 +69,10 @@ def evidence_checks() -> tuple[EvidenceCheck, ...]:
         EvidenceCheck(
             "Constitutional replay validation",
             replay_check,
+        ),
+        EvidenceCheck(
+            "Claim discipline validation",
+            claim_discipline_validator.validate,
         ),
     )
 
@@ -133,6 +138,9 @@ def proof_payload(results: tuple[object, ...]) -> dict[str, object]:
         "global_deployment_readiness_claimed": False,
         "scenario_count": len(results),
         "scenarios": [result.scenario_id for result in results],
+        "classification": (
+            "bounded deterministic continuity validation architecture"
+        ),
     }
 
 

@@ -1,0 +1,83 @@
+schema: afritech.constitution.claim_discipline.v1
+version: 1
+
+allowed_classification: >
+  Bounded deterministic continuity validation architecture
+  with executable, replay-verifiable operational recovery
+  demonstrations under controlled disruption scenarios.
+
+core_rules:
+  - id: CLAIM_RULE_001
+    rule: No expansion without compression.
+    requires:
+      - compression_target
+      - complexity_justification
+  - id: CLAIM_RULE_002
+    rule: No claim without executable evidence.
+    requires:
+      - scope
+      - evidence
+      - validator
+  - id: CLAIM_RULE_003
+    rule: No proof without a harder counter-test waiting behind it.
+    requires:
+      - counter_test
+
+forbidden_claim_terms:
+  - final form
+  - complete crystallization
+  - truth system
+  - global resilience infrastructure
+  - production survivability
+  - universal deployment readiness
+
+claims:
+  - id: CLAIM_CONTINUITY_001
+    statement: Continuity under simulated disruption
+    scope: controlled_simulated_disruption
+    evidence:
+      - afritech.ci.continuity_validator
+      - afritech.ci.afriride_continuity_demo_validator
+      - python3 -m afritech.demo.proof
+    validator: afritech.ci.claim_discipline_validator
+    counter_test: hostile_partition_healing_under_byzantine_coordination
+
+  - id: CLAIM_REPLAY_001
+    statement: Deterministic replay for declared evidence paths
+    scope: declared_evidence_paths
+    evidence:
+      - afritech.verify.engine.verify_replay
+      - afritech.ci.trace_reconstruction_validator
+      - afritech.verify.verify_multi_epoch_replay
+    validator: afritech.ci.claim_discipline_validator
+    counter_test: cross_epoch_replay_under_protocol_change
+
+  - id: CLAIM_AFRIRIDE_001
+    statement: AfriRide is a controlled continuity demonstration environment
+    scope: afriride_controlled_demo
+    evidence:
+      - ecosystems.afriride.continuity.index.yaml
+      - ecosystems.afriride.continuity.scenarios
+      - ecosystems.afriride.tests.continuity
+    validator: afritech.ci.claim_discipline_validator
+    counter_test: low_connectivity_trip_recovery_with_adversarial_duplicate_acceptance
+
+new_surfaces:
+  - id: SURFACE_DEMO_PROOF_001
+    surface: afritech.demo.proof
+    compression_target: one_command_human_readable_proof_surface
+    complexity_justification: >
+      Compresses validator lattice evidence into one bounded proof command and
+      one machine-readable output without adding new runtime authority.
+
+  - id: SURFACE_AFRIRIDE_CONTINUITY_001
+    surface: ecosystems.afriride.continuity
+    compression_target: controlled_mobility_continuity_demo
+    complexity_justification: >
+      Compresses operational continuity evidence into five mobility disruption
+      scenarios that reuse deterministic AfriRide execution and replay.
+
+readiness_boundary:
+  global_deployment_readiness_claimed: false
+  production_survivability_claimed: false
+  distributed_byzantine_consensus_claimed: false

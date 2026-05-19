@@ -341,6 +341,15 @@ SUBSYSTEMS: List[
     ),
 
     ValidationSubsystem(
+        name="claim_discipline_validator",
+        module=(
+            "afritech.ci."
+            "claim_discipline_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
         name="governance_size_validator",
         module=(
             "afritech.ci."
