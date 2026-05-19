@@ -47,6 +47,9 @@ jobs:
       - name: AfriRide continuity demonstration
         run: python3 -m afritech.ci.afriride_continuity_demo_validator
 
+      - name: Human-readable proof package
+        run: python3 -m afritech.demo.proof
+
       - name: L1.5 completion validation
         run: |
           python3 -m afritech.ci.registry_completeness_validator
