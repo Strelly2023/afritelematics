@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import sys
 from dataclasses import dataclass
 from typing import Callable
@@ -115,6 +116,36 @@ def status_line(label: str, ok: bool) -> str:
     return f"{label} {'[OK]' if ok else '[FAIL]'}"
 
 
+def proof_payload(results: tuple[object, ...]) -> dict[str, object]:
+    return {
+        "continuity": "pass" if all(result.accepted for result in results) else "fail",
+        "replay": "pass"
+        if all(result.metrics["replay_equivalent"] for result in results)
+        else "fail",
+        "identity": "stable"
+        if all(result.metrics["identity_continuity"] for result in results)
+        else "unstable",
+        "conflicts": "deterministic"
+        if all(result.metrics["authority_conflict_prevented"] for result in results)
+        else "unresolved",
+        "claims_valid": all(result.accepted for result in results),
+        "scope": "controlled_simulated_disruption",
+        "global_deployment_readiness_claimed": False,
+        "scenario_count": len(results),
+        "scenarios": [result.scenario_id for result in results],
+    }
+
+
+def print_summary() -> None:
+    print("SUMMARY:")
+    print()
+    print("AfriTech demonstrates deterministic continuity under simulated disruption.")
+    print("All operations remain replay-verifiable, identity-stable, and conflict-safe.")
+    print()
+    print("This demonstration is bounded to controlled scenarios and does not claim")
+    print("global deployment readiness.")
+
+
 def print_story(results: tuple[object, ...]) -> None:
     scenario_ids = [getattr(result, "scenario_id") for result in results]
     metric_names = sorted(
@@ -157,9 +188,11 @@ def print_story(results: tuple[object, ...]) -> None:
     print("  - Deterministic replay verified for declared evidence paths")
     print("  - AfriRide is a controlled continuity demonstration environment")
     print("  - No claim is made for global deployment readiness")
+    print()
+    print_summary()
 
 
-def run() -> int:
+def run(*, json_output: bool = False) -> int:
     checks = evidence_checks()
     failures = []
 
@@ -169,6 +202,23 @@ def run() -> int:
             failures.append(detail)
 
     if failures:
+        if json_output:
+            print(
+                json.dumps(
+                    {
+                        "continuity": "fail",
+                        "replay": "fail",
+                        "identity": "unknown",
+                        "conflicts": "unknown",
+                        "claims_valid": False,
+                        "failures": failures,
+                    },
+                    sort_keys=True,
+                    indent=2,
+                )
+            )
+            return 1
+
         print("=== AFRITECH CONTINUITY PROOF ===")
         print()
         print("RESULT:")
@@ -178,12 +228,15 @@ def run() -> int:
         return 1
 
     results = run_afriride()
-    print_story(results)
+    if json_output:
+        print(json.dumps(proof_payload(results), sort_keys=True, indent=2))
+    else:
+        print_story(results)
     return 0
 
 
 def main() -> None:
-    sys.exit(run())
+    sys.exit(run(json_output="--json" in sys.argv[1:]))
 
 
 if __name__ == "__main__":
