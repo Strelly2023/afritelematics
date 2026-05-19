@@ -23,6 +23,64 @@ core_rules:
     requires:
       - counter_test
 
+canonical_compression:
+  schema: afritech.constitution.compression_basis.v1
+  objective: >
+    Reduce high-load concepts to a minimal basis without weakening determinism,
+    replay validity, or epistemic discipline.
+  minimal_basis:
+    identity:
+      primitive_refs:
+        - SEM-ID-001
+      preserves:
+        - canonical_identity
+        - identity_stability_under_replay
+    determinism:
+      primitive_refs:
+        - SEM-DET-001
+      preserves:
+        - stable_execution_order
+        - observer_independent_state
+    replay:
+      primitive_refs:
+        - SEM-RPL-001
+      preserves:
+        - reconstruction
+        - replay_equivalence
+    closed_world:
+      primitive_refs:
+        - SEM-CW-001
+      preserves:
+        - declared_surface_only
+        - bounded_execution_authority
+    epistemic_discipline:
+      primitive_refs:
+        - CLAIM_RULE_001
+        - CLAIM_RULE_002
+        - CLAIM_RULE_003
+      preserves:
+        - scoped_claims
+        - executable_evidence
+        - counter_test_pressure
+  reductions:
+    admissibility:
+      expression: function(identity, determinism, replay, closed_world)
+      replaces:
+        - replay_admissibility
+        - execution_admissibility
+        - surface_admissibility
+    continuity:
+      expression: function(identity, determinism, replay, epistemic_discipline)
+      replaces:
+        - continuity_integrity
+        - operational_recovery_claim
+    proof_surface:
+      expression: function(replay, closed_world, epistemic_discipline)
+      replaces:
+        - claim_snapshot
+        - proof_package
+        - demonstration_summary
+
 forbidden_claim_terms:
   - final form
   - complete crystallization
@@ -41,6 +99,15 @@ claims:
       - python3 -m afritech.demo.proof
     validator: afritech.ci.claim_discipline_validator
     counter_test: hostile_partition_healing_under_byzantine_coordination
+    falsification_tests:
+      - inject_network_partition
+      - inject_duplicate_authority
+      - inject_delayed_replay_rejoin
+    lineage:
+      epoch: 6
+      validated_by:
+        - afritech.ci.continuity_validator
+        - afritech.ci.afriride_continuity_demo_validator
 
   - id: CLAIM_REPLAY_001
     statement: Deterministic replay for declared evidence paths
@@ -51,6 +118,15 @@ claims:
       - afritech.verify.verify_multi_epoch_replay
     validator: afritech.ci.claim_discipline_validator
     counter_test: cross_epoch_replay_under_protocol_change
+    falsification_tests:
+      - inject_clock_drift
+      - inject_execution_delay
+      - inject_mutation_reordering
+    lineage:
+      epoch: 6
+      validated_by:
+        - afritech.verify.engine.verify_replay
+        - afritech.ci.trace_reconstruction_validator
 
   - id: CLAIM_AFRIRIDE_001
     statement: AfriRide is a controlled continuity demonstration environment
@@ -61,6 +137,15 @@ claims:
       - ecosystems.afriride.tests.continuity
     validator: afritech.ci.claim_discipline_validator
     counter_test: low_connectivity_trip_recovery_with_adversarial_duplicate_acceptance
+    falsification_tests:
+      - inject_offline_driver_rejoin
+      - inject_passenger_state_mutation
+      - inject_conflicting_acceptance
+    lineage:
+      epoch: 6
+      validated_by:
+        - afritech.ci.afriride_continuity_demo_validator
+        - ecosystems.afriride.tests.continuity
 
 new_surfaces:
   - id: SURFACE_DEMO_PROOF_001
@@ -81,3 +166,17 @@ readiness_boundary:
   global_deployment_readiness_claimed: false
   production_survivability_claimed: false
   distributed_byzantine_consensus_claimed: false
+
+negative_capabilities:
+  - id: NEG_CAP_001
+    cannot_claim: global_scaling
+    reason: No large-scale node coordination or hostile public network evidence.
+  - id: NEG_CAP_002
+    cannot_claim: non_deterministic_optimization
+    reason: Optimization outside deterministic replay scope is not admitted.
+  - id: NEG_CAP_003
+    cannot_claim: external_runtime_guarantees
+    reason: Current evidence is bounded to controlled local proof surfaces.
+  - id: NEG_CAP_004
+    cannot_claim: byzantine_fault_tolerance
+    reason: Byzantine consensus is named as counter-test pressure, not proven capability.

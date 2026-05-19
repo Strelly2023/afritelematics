@@ -16,6 +16,8 @@ REQUIRED_CLAIM_FIELDS = {
     "evidence",
     "validator",
     "counter_test",
+    "falsification_tests",
+    "lineage",
 }
 REQUIRED_SURFACE_FIELDS = {
     "id",
@@ -27,6 +29,17 @@ FORBIDDEN_READINESS_FLAGS = {
     "global_deployment_readiness_claimed",
     "production_survivability_claimed",
     "distributed_byzantine_consensus_claimed",
+}
+REQUIRED_COMPRESSION_KEYS = {
+    "schema",
+    "objective",
+    "minimal_basis",
+    "reductions",
+}
+REQUIRED_NEGATIVE_CAPABILITY_FIELDS = {
+    "id",
+    "cannot_claim",
+    "reason",
 }
 
 
@@ -97,6 +110,21 @@ def validate_claims(
         if not claim["counter_test"]:
             fail(f"{claim['id']} must name a harder counter-test")
 
+        falsification_tests = claim["falsification_tests"]
+        if not isinstance(falsification_tests, list) or not falsification_tests:
+            fail(f"{claim['id']} must define falsification tests")
+
+        lineage = claim["lineage"]
+        if not isinstance(lineage, dict):
+            fail(f"{claim['id']} must define claim lineage")
+
+        if not lineage.get("epoch"):
+            fail(f"{claim['id']} lineage must declare epoch")
+
+        validators = lineage.get("validated_by")
+        if not isinstance(validators, list) or not validators:
+            fail(f"{claim['id']} lineage must bind validators")
+
         validate_forbidden_terms(
             str(claim["statement"]),
             forbidden_terms,
@@ -134,6 +162,56 @@ def validate_readiness_boundary(payload: dict[str, Any]) -> None:
             fail(f"forbidden readiness claim must remain false: {flag}")
 
 
+def validate_canonical_compression(payload: dict[str, Any]) -> None:
+    compression = payload.get("canonical_compression")
+    if not isinstance(compression, dict):
+        fail("claim discipline must define canonical compression")
+
+    missing = REQUIRED_COMPRESSION_KEYS - set(compression)
+    if missing:
+        fail(f"canonical compression missing fields: {sorted(missing)}")
+
+    if compression["schema"] != "afritech.constitution.compression_basis.v1":
+        fail("canonical compression schema mismatch")
+
+    basis = compression["minimal_basis"]
+    if not isinstance(basis, dict) or len(basis) < 4:
+        fail("canonical compression must define minimal basis")
+
+    reductions = compression["reductions"]
+    if not isinstance(reductions, dict) or not reductions:
+        fail("canonical compression must define reductions")
+
+    for name, reduction in reductions.items():
+        if not isinstance(reduction, dict):
+            fail(f"compression reduction must be mapping: {name}")
+        if not reduction.get("expression"):
+            fail(f"compression reduction missing expression: {name}")
+        replaced = reduction.get("replaces")
+        if not isinstance(replaced, list) or not replaced:
+            fail(f"compression reduction missing replaced concepts: {name}")
+
+
+def validate_negative_capabilities(payload: dict[str, Any]) -> None:
+    capabilities = payload.get("negative_capabilities")
+    if not isinstance(capabilities, list) or not capabilities:
+        fail("claim discipline must define negative capabilities")
+
+    for capability in capabilities:
+        if not isinstance(capability, dict):
+            fail("negative capability entries must be mappings")
+
+        missing = REQUIRED_NEGATIVE_CAPABILITY_FIELDS - set(capability)
+        if missing:
+            fail(
+                f"{capability.get('id', '<unknown>')} missing fields: "
+                f"{sorted(missing)}"
+            )
+
+        if not capability["cannot_claim"] or not capability["reason"]:
+            fail(f"{capability['id']} must define bounded non-capability")
+
+
 def validate() -> None:
     payload = load_policy()
 
@@ -154,9 +232,11 @@ def validate() -> None:
         context="allowed_classification",
     )
     validate_core_rules(payload)
+    validate_canonical_compression(payload)
     validate_claims(payload, forbidden_terms)
     validate_new_surfaces(payload)
     validate_readiness_boundary(payload)
+    validate_negative_capabilities(payload)
 
 
 def main() -> int:
@@ -165,6 +245,8 @@ def main() -> int:
         print("✅ Claim discipline validation PASSED")
         print("✅ Claims scoped, evidenced, validator-bound, and counter-tested")
         print("✅ New surfaces declare compression or complexity justification")
+        print("✅ Canonical compression basis and falsification tests validated")
+        print("✅ Negative capabilities explicitly bounded")
         print("✅ Global readiness claims remain forbidden")
         return 0
     except Exception as exc:
