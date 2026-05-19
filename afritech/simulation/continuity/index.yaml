@@ -1,0 +1,59 @@
+schema: afritech.simulation.continuity.index.v1
+version: 1
+
+metrics:
+  required:
+    - execution_admissible
+    - replay_converges
+    - identity_preserved
+    - coordination_rebuilds
+    - recovery_deterministic
+
+scenarios:
+  CONT-001:
+    class: partition_survival
+    description: Network split executes independently and merges into one canonical replay state.
+    targets:
+      - SEM-DET-001
+      - SEM-RPL-001
+      - AX-DET-002
+      - AX-RPL-002
+  CONT-002:
+    class: replay_divergence_recovery
+    description: Divergent forged lineage is rejected before receipt admission.
+    targets:
+      - SEM-RPL-001
+      - SEM-ADM-001
+      - AX-RPL-003
+      - AX-ADM-003
+  CONT-003:
+    class: identity_drift
+    description: Offline alias recovery preserves canonical identity.
+    targets:
+      - SEM-ID-001
+      - AX-ID-001
+      - AX-ID-003
+  CONT-004:
+    class: delayed_event_convergence
+    description: Delayed events converge by canonical causal ordering.
+    targets:
+      - SEM-DET-001
+      - SEM-RPL-001
+      - AX-DET-003
+      - AX-RPL-002
+  CONT-005:
+    class: coordination_rebuild
+    description: Coordinator loss rebuilds through deterministic node election.
+    targets:
+      - SEM-DET-001
+      - SEM-CW-001
+      - AX-DET-002
+      - AX-CW-001
+  CONT-006:
+    class: offline_admissibility
+    description: Offline local execution rejoins only after deterministic replay convergence.
+    targets:
+      - SEM-ADM-001
+      - SEM-RPL-001
+      - AX-ADM-003
+      - AX-RPL-003

@@ -153,6 +153,7 @@ def validate_yaml_documents() -> None:
         "afritech/runtime/contracts/witness_recovery_contract.yaml",
         "afritech/proof/witness/WITNESS_REGISTRY.yaml",
         "afritech/constitution/level2_formal_model.yaml",
+        "afritech/constitution/CONTINUITY_PROFILE.yaml",
         "afritech/ci/execution_completion_matrix.yaml",
         "afritech/ci/completeness_policy.yaml",
         "afritech/architecture/implementation_registry.yaml",
@@ -161,6 +162,7 @@ def validate_yaml_documents() -> None:
         "afritech/architecture/surface_authority_registry.yaml",
         "afritech/epoch/epoch_registry.yaml",
         "afritech/governance/binding_manifest.yaml",
+        "afritech/simulation/continuity/index.yaml",
     ]
 
     for path in targets:
@@ -233,6 +235,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.ci.adversarial_runner_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="continuity_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.continuity_validator",
         ],
     ),
 

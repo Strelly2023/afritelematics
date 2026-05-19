@@ -1,0 +1,140 @@
+schema: afritech.constitution.continuity_profile.v1
+version: 1
+
+mission:
+  id: CONTINUITY_MISSION_001
+  statement: >
+    AfriTech is a deterministic continuity execution layer that preserves
+    verifiable operations under system disruption.
+  additive_to:
+    - afritech.constitution.level2_formal_model
+  replaces:
+    - none
+
+invariant_class:
+  id: CONTINUITY_INVARIANTS
+  definition: >
+    For every admissible disruption, the system preserves identity continuity,
+    coordination continuity, economic participation continuity, and
+    deterministic recoverability.
+  required_properties:
+    - identity_continuity
+    - coordination_continuity
+    - economic_participation_continuity
+    - deterministic_recoverability
+
+formal_to_operational_mapping:
+  replay:
+    operational_meaning: recoverability
+    level2_refs:
+      - SEM-RPL-001
+      - AX-RPL-002
+  determinism:
+    operational_meaning: trust_under_coordination
+    level2_refs:
+      - SEM-DET-001
+      - AX-DET-001
+      - AX-DET-002
+  witnesses:
+    operational_meaning: verifiable_history
+    level2_refs:
+      - witness_completeness
+      - trace_complete
+  closed_world:
+    operational_meaning: attack_surface_reduction
+    level2_refs:
+      - SEM-CW-001
+      - AX-CW-001
+      - AX-CW-002
+  identity_ontology:
+    operational_meaning: portability
+    level2_refs:
+      - SEM-ID-001
+      - AX-ID-001
+      - AX-ID-003
+  mutation_governance:
+    operational_meaning: controlled_change
+    level2_refs:
+      - invariant_preserving
+      - mutation_traceability
+
+disruption_classes:
+  partition_survival:
+    description: Independent partition execution must merge into one canonical replay state.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+  replay_divergence_recovery:
+    description: Divergent branches must be rejected or repaired before admission.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+  identity_drift:
+    description: Alias and node disruption must not create canonical identity drift.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+  delayed_event_convergence:
+    description: Delayed events must converge under canonical causal ordering.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+  coordination_rebuild:
+    description: Coordinator loss must rebuild deterministically without violating replay.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+  offline_admissibility:
+    description: Offline local execution may rejoin only when deterministic replay convergence holds.
+    required_metrics:
+      - execution_admissible
+      - replay_converges
+      - identity_preserved
+      - coordination_rebuilds
+      - recovery_deterministic
+
+success_rule:
+  valid_if_all:
+    - execution_remains_admissible
+    - replay_converges
+    - identity_preserved
+    - coordination_rebuilds
+    - recovery_deterministic
+  hard_fail_if_any:
+    - replay_divergence
+    - identity_drift
+    - nondeterministic_recovery
+    - unbound_coordination_state
+
+validators:
+  ci:
+    - afritech.ci.continuity_validator
+  simulation:
+    - afritech.simulation.continuity.runner
+
+failure_effects:
+  replay_divergence: CONTINUITY_INVALID
+  identity_drift: CONTINUITY_INVALID
+  coordination_rebuild_failure: CI_FAIL
+  nondeterministic_recovery: HARD_FAIL
+
+constitutional_assertion:
+  description: >
+    Continuity validation is an additive operational survival layer. It does not
+    weaken or replace Level 2 correctness; it requires Level 2 correctness to
+    remain true under disruption.

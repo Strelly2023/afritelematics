@@ -332,6 +332,15 @@ SUBSYSTEMS: List[
     ),
 
     ValidationSubsystem(
+        name="continuity_validator",
+        module=(
+            "afritech.ci."
+            "continuity_validator"
+        ),
+        phase=4,
+    ),
+
+    ValidationSubsystem(
         name="governance_size_validator",
         module=(
             "afritech.ci."

@@ -41,6 +41,9 @@ jobs:
       - name: Level 2 formal model validation
         run: python3 -m afritech.ci.level2_formal_model_validator
 
+      - name: Continuity validation
+        run: python3 -m afritech.ci.continuity_validator
+
       - name: L1.5 completion validation
         run: |
           python3 -m afritech.ci.registry_completeness_validator
