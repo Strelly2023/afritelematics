@@ -1,4 +1,5 @@
 from afritech.ci import binding_completeness_validator
+from afritech.ci import completeness_policy_validator
 from afritech.ci import execution_completeness_validator
 from afritech.ci import formal_runtime_equivalence_validator
 from afritech.ci import full_witness_coverage_validator
@@ -19,3 +20,4 @@ def test_l15_completion_validators_pass() -> None:
     python_gap_validator.validate()
     yaml_gap_validator.validate()
     partial_planned_audit_validator.validate()
+    completeness_policy_validator.validate()

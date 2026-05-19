@@ -1,0 +1,45 @@
+schema: afritech.ci.completeness.v1
+status: IMPLEMENTED
+authority: CI
+
+rules:
+
+  - id: COMP_001
+    rule: No empty YAML nodes allowed
+    enforced_by:
+      - afritech.ci.yaml_gap_validator
+      - afritech.ci.registry_completeness_validator
+
+  - id: COMP_002
+    rule: All surfaces must have binding
+    enforced_by:
+      - afritech.ci.binding_completeness_validator
+      - afritech.ci.execution_completeness_validator
+
+  - id: COMP_003
+    rule: No PLANNED surfaces in runtime topology
+    enforced_by:
+      - afritech.ci.surface_state_resolution_validator
+      - afritech.ci.partial_planned_audit_validator
+
+  - id: COMP_004
+    rule: All surfaces must emit witnesses
+    enforced_by:
+      - afritech.ci.full_witness_coverage_validator
+      - afritech.ci.ast_witness_validator
+
+  - id: COMP_005
+    rule: Formal model must match runtime behavior
+    enforced_by:
+      - afritech.ci.formal_runtime_equivalence_validator
+      - afritech.ci.level2_formal_model_validator
+
+failure:
+  block_merge: true
+  severity: CRITICAL
+  action: CI_FAIL
+
+completion:
+  empty: false
+  active: true
+  validator: afritech.ci.completeness_policy_validator

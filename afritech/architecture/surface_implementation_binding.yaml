@@ -275,6 +275,226 @@ bindings:
 
 
   # ----------------------------------------------------------
+  # RUNTIME ENGINE
+  # ----------------------------------------------------------
+
+  runtime_engine:
+
+    canonical_identity:
+      afritech.runtime.engine
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - dispatch
+      - routing
+      - execution
+      - replay_binding
+
+    enforced_by:
+
+      - afritech.ci.execution_completeness_validator
+      - afritech.ci.invariant_validator
+      - afritech.ci.receipt_validator
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.transcript_witness
+
+    guarantees:
+
+      - deterministic_runtime_execution
+      - invariant_enforced_execution
+      - replay_safe_dispatch
+
+    forbidden:
+
+      - authority_escalation
+      - surface_extension
+      - nondeterministic_dispatch
+
+    description: >
+      Canonical runtime engine binding for deterministic,
+      invariant-enforced execution.
+
+
+  # ----------------------------------------------------------
+  # RUNTIME ADMISSION
+  # ----------------------------------------------------------
+
+  runtime_admission:
+
+    canonical_identity:
+      afritech.runtime.admission
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - guard_enforcement
+      - admission_control
+      - runtime_refusal
+
+    enforced_by:
+
+      - afritech.ci.surface_state_resolution_validator
+      - afritech.ci.binding_completeness_validator
+      - afritech.ci.receipt_validator
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+
+    guarantees:
+
+      - deterministic_admission
+      - guard_enforced_execution
+      - closed_world_runtime_entry
+
+    forbidden:
+
+      - undeclared_surface_admission
+      - speculative_runtime_admission
+      - admission_without_receipt
+
+    description: >
+      Runtime admission binding for deterministic guard
+      enforcement and receipt-bound refusal.
+
+
+  # ----------------------------------------------------------
+  # RUNTIME ORCHESTRATION
+  # ----------------------------------------------------------
+
+  runtime_orchestration:
+
+    canonical_identity:
+      afritech.runtime.orchestration
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - deterministic_ordering
+      - execution_sequence_control
+      - replay_order_alignment
+
+    enforced_by:
+
+      - afritech.ci.ast_call_order_validator
+      - afritech.ci.execution_completeness_validator
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+
+    guarantees:
+
+      - deterministic_ordering
+      - replay_order_alignment
+      - no_observer_relative_schedule
+
+    forbidden:
+
+      - nondeterministic_schedule
+      - hidden_execution_order
+      - observer_relative_ordering
+
+    description: >
+      Runtime orchestration binding for deterministic execution
+      ordering and replay-aligned scheduling.
+
+
+  # ----------------------------------------------------------
   # PROOF
   # ----------------------------------------------------------
 
@@ -425,6 +645,79 @@ bindings:
 
     description: >
       Constitutionally frozen evaluation binding.
+
+
+  # ----------------------------------------------------------
+  # REPLAY
+  # ----------------------------------------------------------
+
+  replay:
+
+    canonical_identity:
+      afritech.verify.replay
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      REPLAY
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - replay_validation
+      - replay_admissibility
+      - replay_divergence_detection
+
+    enforced_by:
+
+      - afritech.verify.replay
+      - afritech.verify.verify_execution_lineage
+      - afritech.verify.verify_multi_epoch_replay
+
+    witness_dependencies:
+
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.witness_bundle
+
+    guarantees:
+
+      - authoritative_replay
+      - deterministic_reconstruction
+      - replay_equivalence
+
+    forbidden:
+
+      - observer_relative_replay
+      - replay_without_trace
+      - replay_without_receipt
+
+    description: >
+      Authoritative replay binding for deterministic validation,
+      lineage verification, and replay divergence detection.
 
 
   # ----------------------------------------------------------

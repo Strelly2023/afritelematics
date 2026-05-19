@@ -154,6 +154,7 @@ def validate_yaml_documents() -> None:
         "afritech/proof/witness/WITNESS_REGISTRY.yaml",
         "afritech/constitution/level2_formal_model.yaml",
         "afritech/ci/execution_completion_matrix.yaml",
+        "afritech/ci/completeness_policy.yaml",
         "afritech/architecture/implementation_registry.yaml",
         "afritech/architecture/surface_implementation_binding.yaml",
         "afritech/architecture/enforcement_matrix.yaml",
@@ -372,6 +373,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
             sys.executable,
             "-m",
             "afritech.ci.partial_planned_audit_validator",
+        ],
+    ),
+
+    PipelineStep(
+        name="completeness_policy_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.completeness_policy_validator",
         ],
     ),
 

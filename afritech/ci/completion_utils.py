@@ -28,6 +28,7 @@ STRUCTURAL_YAML = [
     ROOT / "afritech/proofs/audit/proof_chain.yaml",
     ROOT / "afritech/proofs/audit/semantic_lineage.yaml",
     ROOT / "afritech/semantic_engine/satisfiability/pipeline.yaml",
+    ROOT / "afritech/ci/completeness_policy.yaml",
     ROOT / "ecosystems/afripay/SURFACE_STATUS.yaml",
 ]
 

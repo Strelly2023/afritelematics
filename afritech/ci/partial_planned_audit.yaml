@@ -27,6 +27,9 @@ allowed_occurrences:
   - path: afritech/ci/execution_completion_matrix.yaml
     class: validator_policy
     reason: records forbidden unresolved state names
+  - path: afritech/ci/completeness_policy.yaml
+    class: validator_policy
+    reason: global policy records forbidden unresolved state names
   - path: afritech/ci/partial_planned_audit_validator.py
     class: validator_policy
     reason: validates explicit PARTIAL/PLANNED occurrence audit

@@ -439,6 +439,15 @@ SUBSYSTEMS: List[
         phase=4,
     ),
 
+    ValidationSubsystem(
+        name="completeness_policy_validator",
+        module=(
+            "afritech.ci."
+            "completeness_policy_validator"
+        ),
+        phase=4,
+    ),
+
     # ========================================================
     # PHASE 5
     # REPLAY + PROOF AUTHORITY
