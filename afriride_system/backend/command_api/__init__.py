@@ -1,0 +1,1 @@
+"""Command API adapter package."""

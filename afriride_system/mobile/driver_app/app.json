@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "AfriRide Driver",
+    "slug": "afriride-driver",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light"
+  }
+}
