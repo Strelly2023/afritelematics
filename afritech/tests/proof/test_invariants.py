@@ -22,8 +22,8 @@ import pytest
 from hypothesis import given, strategies as st
 
 # Import system components
-from afritech.runtime.engine.executor import ExecutionEngine, ExecutionError
-from afritech.runtime.context.runtime_context import RuntimeContext
+from afritech.core.runtime.engine.executor import ExecutionEngine, ExecutionError
+from afritech.core.runtime.context.runtime_context import RuntimeContext
 
 
 # ---------------------------------------------------------------------

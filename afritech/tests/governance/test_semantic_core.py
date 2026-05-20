@@ -1,6 +1,6 @@
 import pytest
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract, admit_semantic_yaml
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract, admit_semantic_yaml
 from afritech.semantic_engine.cli import main as semantic_cli
 from afritech.semantic_engine.ir.schema import SystemInvalid
 from afritech.semantic_engine.parser.ir_builder import compile_semantic_yaml

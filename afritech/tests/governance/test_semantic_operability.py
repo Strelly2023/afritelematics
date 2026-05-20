@@ -5,7 +5,7 @@ from afritech.api.semantic_admission import (
     admit_semantic_contract,
     create_semantic_admission_app,
 )
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 from afritech.sdk.semantic_admission import SemanticAdmissionClient
 from afritech.semantic_engine.inspection import inspect_admission, mermaid_proof_graph
 from afritech.tools.proof_viewer import load_result_or_contract, main as proof_viewer_main

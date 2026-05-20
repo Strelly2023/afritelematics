@@ -3,7 +3,7 @@ from copy import deepcopy
 import yaml
 import pytest
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 from afritech.trace.trace_reconstructor import (
     TraceReconstructionError,
     TraceReconstructor,

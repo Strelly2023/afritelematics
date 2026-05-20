@@ -1,11 +1,11 @@
 import pytest
 
-from afritech.runtime.consensus.semantic_consensus import local_consensus
-from afritech.runtime.consensus.sync_protocol import build_sync_envelope
-from afritech.runtime.engine.execution_engine import SemanticExecutionEngine
-from afritech.runtime.recovery.snapshot_controller import create_snapshot, verify_snapshot
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
-from afritech.runtime.system_enforcement.violation_handler import handle_violation
+from afritech.core.runtime.consensus.semantic_consensus import local_consensus
+from afritech.core.runtime.consensus.sync_protocol import build_sync_envelope
+from afritech.core.runtime.engine.execution_engine import SemanticExecutionEngine
+from afritech.core.runtime.recovery.snapshot_controller import create_snapshot, verify_snapshot
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.violation_handler import handle_violation
 from afritech.semantic_engine.cache.proof_cache import ProofCache
 from afritech.semantic_engine.cache.proof_canonical_store import ProofCanonicalStore
 from afritech.semantic_engine.cache.semantic_index import SemanticIndex

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from afritech.runtime.profiles import resolve_profile, validate_operation
+from afritech.core.runtime.profiles import resolve_profile, validate_operation
 
 
 def test_replay_critical_profile_resolves_runtime_constraints() -> None:
