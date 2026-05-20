@@ -5,7 +5,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Header, HTTPException
 
 from afriride_system.api.dispatcher_adapter import get_gateway
-from afriride_system.api.idempotency import run_once
+from afriride_system.api.idempotency import (
+    IdempotencyConflict,
+    command_fingerprint,
+    run_once,
+)
 from afriride_system.api.logging import log_command, log_result
 from afriride_system.api.responses import success
 from afriride_system.api.schemas import CancelRide, RequestRide
@@ -29,8 +33,11 @@ def request_ride(
         result = run_once(
             idempotency_key,
             lambda: gateway.passenger.request_ride(command),
+            fingerprint=command_fingerprint("request_ride", command),
         )
         log_result("request_ride", result)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except AfriRidePhase1Error as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return success(result)
@@ -60,8 +67,11 @@ def cancel_ride(
         result = run_once(
             idempotency_key,
             lambda: gateway.passenger.cancel(command),
+            fingerprint=command_fingerprint("cancel_ride", command),
         )
         log_result("cancel_ride", result)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except AfriRidePhase1Error as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return success(result)

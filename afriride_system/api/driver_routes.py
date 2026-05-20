@@ -5,7 +5,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Header, HTTPException
 
 from afriride_system.api.dispatcher_adapter import get_gateway
-from afriride_system.api.idempotency import run_once
+from afriride_system.api.idempotency import (
+    IdempotencyConflict,
+    command_fingerprint,
+    run_once,
+)
 from afriride_system.api.logging import log_command, log_result
 from afriride_system.api.responses import success
 from afriride_system.api.schemas import DriverStatus, RideAction
@@ -23,13 +27,17 @@ def driver_status(
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
-    command = payload.model_dump()
-    log_command("driver_status", command)
-    result = run_once(
-        idempotency_key,
-        lambda: gateway.driver.status(command),
-    )
-    log_result("driver_status", result)
+    try:
+        command = payload.model_dump()
+        log_command("driver_status", command)
+        result = run_once(
+            idempotency_key,
+            lambda: gateway.driver.status(command),
+            fingerprint=command_fingerprint("driver_status", command),
+        )
+        log_result("driver_status", result)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return success(result)
 
 
@@ -80,8 +88,11 @@ def _driver_action(
         result = run_once(
             idempotency_key,
             lambda: action(command),
+            fingerprint=command_fingerprint(command_name, command),
         )
         log_result(command_name, result)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except AfriRidePhase1Error as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return success(result)
