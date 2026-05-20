@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 
 
 @dataclass(frozen=True)

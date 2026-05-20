@@ -29,7 +29,7 @@ STRUCTURAL_YAML = [
     ROOT / "afritech/proofs/audit/semantic_lineage.yaml",
     ROOT / "afritech/semantic_engine/satisfiability/pipeline.yaml",
     ROOT / "afritech/ci/completeness_policy.yaml",
-    ROOT / "ecosystems/afripay/SURFACE_STATUS.yaml",
+    ROOT / "docs/roadmap/FUTURE_SURFACE_STATUS.yaml",
 ]
 
 ACTIVE_SURFACE_SECTIONS = {
@@ -95,10 +95,11 @@ def active_entries() -> list[tuple[Path, str, dict[str, Any]]]:
                     if isinstance(value, dict):
                         entries.append((path, str(key), value))
 
-    surface_status = load_yaml(ROOT / "ecosystems/afripay/SURFACE_STATUS.yaml")
+    surface_status_path = ROOT / "docs/roadmap/FUTURE_SURFACE_STATUS.yaml"
+    surface_status = load_yaml(surface_status_path)
     entries.append(
         (
-            ROOT / "ecosystems/afripay/SURFACE_STATUS.yaml",
+            surface_status_path,
             str(surface_status.get("surface", "unknown_surface")),
             {
                 "implementation_state": surface_status.get("status"),

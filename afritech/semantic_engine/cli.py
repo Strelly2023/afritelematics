@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 from afritech.semantic_engine.ir.schema import SystemInvalid
 
 

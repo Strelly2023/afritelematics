@@ -21,7 +21,7 @@ AFRITECH_ROOT = PROJECT_ROOT / "afritech"
 # ---------------------------------------------------------------------
 
 SURFACE_MAP: Dict[str, str] = {
-    "runtime": "afritech.runtime",
+    "runtime": "afritech.core.runtime",
     "replay": "afritech.replay",
     "governance": "afritech.governance",
     "constitutional": "afritech.constitution",
@@ -36,7 +36,7 @@ SURFACE_MAP: Dict[str, str] = {
 # ---------------------------------------------------------------------
 
 EXECUTION_SURFACE_PREFIXES = (
-    "afritech.runtime",
+    "afritech.core.runtime",
     "afritech.replay",
     "afritech.governance",
     "afritech.constitution",
@@ -66,9 +66,9 @@ DECLARATIVE_GOVERNANCE_PREFIXES = (
 # ---------------------------------------------------------------------
 
 DECLARATIVE_RUNTIME_PREFIXES = (
-    "afritech.runtime.schemas",
-    "afritech.runtime.receipts",
-    "afritech.runtime.metadata",
+    "afritech.core.runtime.schemas",
+    "afritech.core.runtime.receipts",
+    "afritech.core.runtime.metadata",
 )
 
 
@@ -81,7 +81,7 @@ DECLARATIVE_RUNTIME_PREFIXES = (
 # ---------------------------------------------------------------------
 
 REPLAY_SAFE_RUNTIME_PREFIXES = (
-    "afritech.runtime.replay_safe",
+    "afritech.core.runtime.replay_safe",
 )
 
 
@@ -137,9 +137,9 @@ def module_matches_prefix(module: str, prefix: str) -> bool:
     Boundary-safe namespace matching.
 
     Prevents:
-        afritech.runtimex
+        afritech.core.runtimex
     from matching:
-        afritech.runtime
+        afritech.core.runtime
     """
 
     return module == prefix or module.startswith(prefix + ".")

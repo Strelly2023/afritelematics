@@ -407,7 +407,7 @@ class RuntimeCertificateCompiler:
         cert = {
 
             "schema":
-                "afritech.runtime.certificate.v1",
+                "afritech.core.runtime.certificate.v1",
 
             "runtime_certificate":
                 runtime_certificate,

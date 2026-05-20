@@ -6,7 +6,7 @@ from afritech.simulation.adversarial.resolution import (
     reject_invalid_lineage,
     state_hash_for,
 )
-from afritech.runtime.concurrency import ConcurrentMutation, resolve_conflicts
+from afritech.core.runtime.concurrency import ConcurrentMutation, resolve_conflicts
 
 
 TARGETS = {

@@ -149,12 +149,13 @@ def validate_yaml_documents() -> None:
         "afritech/simulation/adversarial/index.yaml",
         "afritech/ci/semantic_integrity_checks.yaml",
         "afritech/ci/governance_size_policy.yaml",
-        "afritech/runtime/policies/replay_compression.yaml",
-        "afritech/runtime/contracts/witness_recovery_contract.yaml",
+        "afritech/core/runtime/policies/replay_compression.yaml",
+        "afritech/core/runtime/contracts/witness_recovery_contract.yaml",
         "afritech/proof/witness/WITNESS_REGISTRY.yaml",
         "afritech/constitution/level2_formal_model.yaml",
         "afritech/constitution/CONTINUITY_PROFILE.yaml",
         "afritech/constitution/CLAIM_DISCIPLINE.yaml",
+        "afritech/constitution/FIVE_INVARIANT_CONTRACT.yaml",
         "afritech/ci/execution_completion_matrix.yaml",
         "afritech/ci/completeness_policy.yaml",
         "afritech/architecture/implementation_registry.yaml",
@@ -453,6 +454,147 @@ PIPELINE: tuple[PipelineStep, ...] = (
         ],
     ),
 
+    PipelineStep(
+        name="compileall_afritech",
+        phase="STATIC",
+        command=[
+            sys.executable,
+            "-m",
+            "compileall",
+            "afritech",
+        ],
+    ),
+)
+
+PIPELINE = (
+    PIPELINE[0],
+    PIPELINE[1],
+    PipelineStep(
+        name="semantic_kernel_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.semantic_kernel_validator",
+        ],
+    ),
+    PipelineStep(
+        name="structural_closure_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.structural_closure_validator",
+        ],
+    ),
+    PipelineStep(
+        name="continuity_resilience_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.continuity_resilience_validator",
+        ],
+    ),
+    PipelineStep(
+        name="claim_discipline_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.claim_discipline_validator",
+        ],
+    ),
+    PipelineStep(
+        name="semantic_directionality_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.semantic_directionality_validator",
+        ],
+    ),
+    PipelineStep(
+        name="governance_size_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.governance_size_validator",
+        ],
+    ),
+    PipelineStep(
+        name="witness_proof_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.witness_proof_validator",
+        ],
+    ),
+    PipelineStep(
+        name="replay_integrity_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.replay_integrity_validator",
+        ],
+    ),
+    PipelineStep(
+        name="level2_formal_model_validator",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.level2_formal_model_validator",
+        ],
+    ),
+    PipelineStep(
+        name="generate_completeness",
+        phase="CONSTITUTION",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.proof.generate_completeness",
+        ],
+    ),
+    PipelineStep(
+        name="execution_integrity_validator",
+        phase="STATIC",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.execution_integrity_validator",
+        ],
+    ),
+    PipelineStep(
+        name="proof_surface_validator",
+        phase="STATIC",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.proof_surface_validator",
+        ],
+    ),
+    PipelineStep(
+        name="four_gate_validator",
+        phase="STATIC",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.four_gate_validator",
+        ],
+    ),
+    PipelineStep(
+        name="enforcement_integrity_validator",
+        phase="STATIC",
+        command=[
+            sys.executable,
+            "-m",
+            "afritech.ci.enforcement_integrity_validator",
+        ],
+    ),
     PipelineStep(
         name="compileall_afritech",
         phase="STATIC",

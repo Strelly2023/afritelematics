@@ -20,13 +20,13 @@ Responsibilities:
 
 from __future__ import annotations
 
-from afritech.runtime.context.runtime_context import RuntimeContext
-from afritech.runtime.engine.executor import (
+from afritech.core.runtime.context.runtime_context import RuntimeContext
+from afritech.core.runtime.engine.executor import (
     ExecutionEngine,
     ExecutionResult,
 )
 from afritech.guards.engine import verify_sovereignty
-from afritech.runtime.guards.determinism_guard import (
+from afritech.core.runtime.guards.determinism_guard import (
     enforce_determinism,
     DeterminismViolation,
 )

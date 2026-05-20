@@ -26,7 +26,7 @@ REGISTRY_PATH = (
 # ---------------------------------------------------------------------
 
 SURFACE_PREFIXES: Dict[str, str] = {
-    "runtime": "afritech.runtime",
+    "runtime": "afritech.core.runtime",
     "replay": "afritech.replay",
     "governance": "afritech.governance",
     "constitutional": "afritech.constitution",

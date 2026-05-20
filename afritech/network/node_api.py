@@ -18,7 +18,7 @@ import time
 import uuid
 
 # ✅ CORRECT IMPORTS (ALIGNED WITH ARCHITECTURE)
-from afritech.runtime.engine.executor import ExecutionEngine
+from afritech.core.runtime.engine.executor import ExecutionEngine
 from afritech.shared.types import ExecutionResult
 from afritech.shared.context import RuntimeContext
 from afritech.network.node_identity import NodeIdentity

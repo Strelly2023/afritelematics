@@ -1,4 +1,4 @@
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 
 
 def solve_all(contracts) -> list[dict]:

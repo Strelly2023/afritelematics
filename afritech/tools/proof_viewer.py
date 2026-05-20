@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 from afritech.semantic_engine.inspection import inspect_admission, mermaid_proof_graph
 
 

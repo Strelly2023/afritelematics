@@ -28,7 +28,7 @@ from network.consensus.distributed_consensus import (
 # ✅ Proof + ZK validation
 from afritech.zk.interface import ZKProof
 from afritech.zk.registry import ZKRegistry
-from afritech.runtime.guards.proof_validator import ProofValidator
+from afritech.core.runtime.guards.proof_validator import ProofValidator
 
 
 # -----------------------------------------------------------------

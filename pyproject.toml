@@ -9,7 +9,10 @@ description = "AfriTech constitutional execution and replay verification system"
 requires-python = ">=3.10"
 
 # Optional but recommended
-dependencies = []
+dependencies = [
+    "fastapi",
+    "pydantic",
+]
 
 # --------------------------------------------------
 # ✅ PACKAGE DISCOVERY
@@ -19,7 +22,8 @@ dependencies = []
 where = ["."]
 include = [
     "afritech*",
-    "ecosystems*"
+    "ecosystems*",
+    "afriride_system*"
 ]
 
 # --------------------------------------------------
@@ -28,7 +32,7 @@ include = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-testpaths = ["ecosystems/afriride/tests"]
+testpaths = ["ecosystems/afriride/tests", "afriride_system/tests"]
 addopts = "-ra -q"
 
 # --------------------------------------------------

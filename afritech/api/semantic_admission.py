@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 from afritech.semantic_engine.inspection import inspect_admission, mermaid_proof_graph
 
 

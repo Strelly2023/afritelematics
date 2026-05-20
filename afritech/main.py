@@ -145,7 +145,7 @@ def boot() -> None:
     # ------------------------------------------------------------
 
     try:
-        from afritech.runtime.main import (
+        from afritech.core.runtime.main import (
             main as runtime_main,
         )
 

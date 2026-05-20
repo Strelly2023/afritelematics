@@ -54,7 +54,7 @@ from afritech.trace.trace_validator import (
     validate_trace,
 )
 
-from afritech.runtime.receipts import (
+from afritech.core.runtime.receipts import (
     build_execution_chain,
     verify_receipt_bundle,
 )
