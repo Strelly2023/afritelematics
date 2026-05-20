@@ -492,6 +492,148 @@ implementations:
       surface bound to receipt reconstruction and CI validation.
 
 
+  # ----------------------------------------------------------
+  # CLAIM DISCIPLINE VALIDATOR
+  # ----------------------------------------------------------
+
+  afritech.ci.claim_discipline_validator:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      VALIDATOR
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/ci/claim_discipline_validator.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - claim_evidence_binding_validation
+      - forbidden_readiness_claim_rejection
+      - scoped_claim_enforcement
+
+    description: >
+      Implemented claim discipline validator enforcing scoped claims,
+      executable evidence bindings, non-claims, and readiness boundaries.
+
+
+  # ----------------------------------------------------------
+  # FOUR-GATE VALIDATOR
+  # ----------------------------------------------------------
+
+  afritech.ci.four_gate_validator:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      VALIDATOR
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/ci/four_gate_validator.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - proof_meaning_preservation_check
+      - authority_boundary_check
+      - afriride_scope_check
+      - claim_discipline_check
+      - enforcement_integrity_check
+
+    description: >
+      Implemented four-gate validator enforcing proof meaning,
+      authority boundaries, AfriRide scope, claim discipline,
+      and enforcement integrity.
+
+
+  # ----------------------------------------------------------
+  # ENFORCEMENT INTEGRITY VALIDATOR
+  # ----------------------------------------------------------
+
+  afritech.ci.enforcement_integrity_validator:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      VALIDATOR
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/ci/enforcement_integrity_validator.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - five_invariant_contract_serialization_check
+      - mandatory_four_gate_check
+      - enforcement_bypass_detection
+      - preserve_or_isolate_boundary_check
+
+    description: >
+      Implemented enforcement integrity validator preserving
+      validator mandatory status and product/core isolation.
+
+
 # ============================================================
 # GLOBAL RULES
 # ============================================================

@@ -1,0 +1,45 @@
+schema: afritech.ci.authority.v1
+status: PROVEN_GOVERNANCE
+classification: AUTHORITY_COMPRESSION
+
+canonical_gate:
+  id: canonical_constitutional_pipeline
+  command: python3 -m afritech.ci.constitutional_pipeline
+  authority: CI_ADMISSIBILITY_GATE
+  rule: Only the canonical constitutional pipeline defines CI admissibility.
+
+supporting_gates:
+  - id: constitutional_validation
+    command: python3 -m afritech.ci.constitutional_validation
+    role: supporting_validation
+  - id: afritech_demo_proof
+    command: python3 -m afritech.demo.proof
+    role: proof_surface_confirmation
+  - id: claim_discipline_validator
+    command: python3 -m afritech.ci.claim_discipline_validator
+    role: claim_boundary_confirmation
+  - id: enforcement_integrity_validator
+    command: python3 -m afritech.ci.enforcement_integrity_validator
+    role: enforcement_boundary_confirmation
+
+workflow_roles:
+  .github/workflows/architecture.yml:
+    role: supporting_architecture_adapter
+    must_invoke_canonical_gate: true
+  .github/workflows/constitutional_ci.yml:
+    role: supporting_deep_constitutional_adapter
+    must_invoke_canonical_gate: true
+  .github/workflows/constitutional_enforcement.yml:
+    role: supporting_enforcement_adapter
+    must_invoke_canonical_gate: true
+  .github/workflows/ga_plus_plus_plus.yml:
+    role: supporting_ga_reconstruction_adapter
+    must_invoke_canonical_gate: true
+
+rules:
+  - id: ci_authority_single_source
+    statement: Only canonical_pipeline defines CI admissibility; workflows are adapters or supporting gates.
+  - id: no_workflow_truth_redefinition
+    statement: Workflows may invoke validators but may not redefine proof truth, invariants, or admissibility.
+  - id: no_supporting_gate_independence
+    statement: Supporting workflows must invoke the canonical constitutional pipeline before making completion claims.

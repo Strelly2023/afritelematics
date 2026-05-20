@@ -9,6 +9,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = ROOT / "afritech/constitution/CLAIM_DISCIPLINE.yaml"
+BINDINGS = ROOT / "afritech/constitution/CLAIM_EVIDENCE_BINDINGS.yaml"
+IMPLEMENTATION_REGISTRY = ROOT / "afritech/architecture/implementation_registry.yaml"
 REQUIRED_CLAIM_FIELDS = {
     "id",
     "statement",
@@ -41,6 +43,22 @@ REQUIRED_NEGATIVE_CAPABILITY_FIELDS = {
     "cannot_claim",
     "reason",
 }
+REQUIRED_BINDING_FIELDS = {
+    "id",
+    "status",
+    "statement",
+    "scope",
+    "evidence",
+    "implementation_refs",
+    "validators",
+    "non_claims",
+}
+EXPECTED_BINDING_CLAIMS = (
+    "continuity_under_simulated_disruption",
+    "deterministic_replay",
+    "identity_and_coordination_continuity",
+    "enforcement_integrity",
+)
 
 
 def fail(message: str) -> None:
@@ -51,6 +69,20 @@ def load_policy() -> dict[str, Any]:
     payload = yaml.safe_load(POLICY.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         fail("claim discipline policy must be a mapping")
+    return payload
+
+
+def load_bindings() -> dict[str, Any]:
+    payload = yaml.safe_load(BINDINGS.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        fail("claim evidence bindings must be a mapping")
+    return payload
+
+
+def load_implementation_registry() -> dict[str, Any]:
+    payload = yaml.safe_load(IMPLEMENTATION_REGISTRY.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        fail("implementation registry must be a mapping")
     return payload
 
 
@@ -212,6 +244,96 @@ def validate_negative_capabilities(payload: dict[str, Any]) -> None:
             fail(f"{capability['id']} must define bounded non-capability")
 
 
+def validate_claim_evidence_bindings(
+    forbidden_terms: list[str],
+) -> None:
+    payload = load_bindings()
+    registry = load_implementation_registry()
+
+    if payload.get("schema") != "afritech.constitution.claim_evidence_bindings.v1":
+        fail("claim evidence bindings schema mismatch")
+    if payload.get("status") != "PROVEN_GOVERNANCE":
+        fail("claim evidence bindings status mismatch")
+    if payload.get("authority") != "afritech.demo.proof":
+        fail("claim evidence bindings authority mismatch")
+    if payload.get("classification") != "CLAIM_EVIDENCE_BINDING":
+        fail("claim evidence bindings classification mismatch")
+    if (
+        payload.get("binding_rule")
+        != "No IMPLEMENTED claim is admissible without executable evidence and validator binding."
+    ):
+        fail("claim evidence binding rule mismatch")
+
+    claims = payload.get("claims")
+    if not isinstance(claims, list) or not claims:
+        fail("claim evidence bindings must define claims")
+
+    claim_ids = tuple(claim.get("id") for claim in claims if isinstance(claim, dict))
+    if claim_ids != EXPECTED_BINDING_CLAIMS:
+        fail(f"claim evidence binding ids mismatch: {claim_ids}")
+
+    implementations = registry.get("implementations")
+    if not isinstance(implementations, dict) or not implementations:
+        fail("implementation registry must define implementations")
+
+    for claim in claims:
+        if not isinstance(claim, dict):
+            fail("claim evidence binding entries must be mappings")
+
+        missing = REQUIRED_BINDING_FIELDS - set(claim)
+        if missing:
+            fail(f"{claim.get('id', '<unknown>')} missing binding fields: {sorted(missing)}")
+
+        if claim["status"] != "IMPLEMENTED":
+            fail(f"{claim['id']} binding must be IMPLEMENTED")
+
+        if not claim["scope"]:
+            fail(f"{claim['id']} binding has empty scope")
+
+        evidence = claim["evidence"]
+        if not isinstance(evidence, list) or not evidence:
+            fail(f"{claim['id']} binding must define executable evidence")
+
+        implementation_refs = claim["implementation_refs"]
+        if not isinstance(implementation_refs, list) or not implementation_refs:
+            fail(f"{claim['id']} binding must define implementation refs")
+
+        for implementation_ref in implementation_refs:
+            if implementation_ref not in implementations:
+                fail(
+                    f"{claim['id']} references missing implementation: "
+                    f"{implementation_ref}"
+                )
+            implementation = implementations[implementation_ref]
+            if not isinstance(implementation, dict):
+                fail(f"{implementation_ref} registry entry must be a mapping")
+            if implementation.get("implementation_state") != "IMPLEMENTED":
+                fail(f"{implementation_ref} must be IMPLEMENTED for claim binding")
+            semantic_properties = implementation.get("semantic_properties")
+            if not isinstance(semantic_properties, dict):
+                fail(f"{implementation_ref} must define semantic properties")
+            if semantic_properties.get("replay_admissible") is not True:
+                fail(f"{implementation_ref} must be replay admissible")
+            if semantic_properties.get("proof_admissible") is not True:
+                fail(f"{implementation_ref} must be proof admissible")
+            if semantic_properties.get("deterministic_execution") is not True:
+                fail(f"{implementation_ref} must be deterministic")
+
+        validators = claim["validators"]
+        if not isinstance(validators, list) or not validators:
+            fail(f"{claim['id']} binding must define validators")
+
+        non_claims = claim["non_claims"]
+        if not isinstance(non_claims, list) or not non_claims:
+            fail(f"{claim['id']} binding must define non-claims")
+
+        validate_forbidden_terms(
+            str(claim["statement"]),
+            forbidden_terms,
+            context=f"claim evidence binding {claim['id']}",
+        )
+
+
 def validate() -> None:
     payload = load_policy()
 
@@ -237,6 +359,7 @@ def validate() -> None:
     validate_new_surfaces(payload)
     validate_readiness_boundary(payload)
     validate_negative_capabilities(payload)
+    validate_claim_evidence_bindings(forbidden_terms)
 
 
 def main() -> int:
@@ -247,6 +370,7 @@ def main() -> int:
         print("✅ New surfaces declare compression or complexity justification")
         print("✅ Canonical compression basis and falsification tests validated")
         print("✅ Negative capabilities explicitly bounded")
+        print("✅ Claim-evidence bindings validated")
         print("✅ Global readiness claims remain forbidden")
         return 0
     except Exception as exc:

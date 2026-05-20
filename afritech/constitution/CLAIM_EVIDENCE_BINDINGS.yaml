@@ -1,0 +1,86 @@
+schema: afritech.constitution.claim_evidence_bindings.v1
+status: PROVEN_GOVERNANCE
+authority: afritech.demo.proof
+classification: CLAIM_EVIDENCE_BINDING
+
+binding_rule: No IMPLEMENTED claim is admissible without executable evidence and validator binding.
+
+claims:
+  - id: continuity_under_simulated_disruption
+    status: IMPLEMENTED
+    statement: AfriTech demonstrates continuity under simulated AfriRide disruption.
+    scope: bounded_controlled_afriride_scenarios
+    evidence:
+      - afritech.ci.continuity_validator
+      - afritech.ci.afriride_continuity_demo_validator
+      - ecosystems.afriride.tests.continuity
+    implementation_refs:
+      - afritech.trace.trace_reconstructor
+      - afritech.proof.witness.replay_witness
+    validators:
+      - afritech.ci.claim_discipline_validator
+      - afritech.ci.continuity_resilience_validator
+      - afritech.demo.proof
+    non_claims:
+      - global_deployment_readiness
+      - mass_market_operational_readiness
+
+  - id: deterministic_replay
+    status: IMPLEMENTED
+    statement: Declared AfriRide evidence paths preserve deterministic replay equivalence.
+    scope: declared_replay_and_trace_reconstruction_surfaces
+    evidence:
+      - afritech.verify.engine.verify_replay
+      - afritech.ci.trace_reconstruction_validator
+      - afritech.ci.replay_integrity_validator
+    implementation_refs:
+      - afritech.trace.trace_reconstructor
+      - afritech.proof.witness.replay_witness
+      - afritech.proof.witness.witness_bundle
+    validators:
+      - afritech.ci.replay_integrity_validator
+      - afritech.ci.witness_proof_validator
+      - afritech.demo.proof
+    non_claims:
+      - universal_replay_for_undeclared_surfaces
+      - global_distributed_runtime_readiness
+
+  - id: identity_and_coordination_continuity
+    status: IMPLEMENTED
+    statement: Bounded AfriRide scenarios preserve identity and coordination continuity.
+    scope: declared_afriride_continuity_scenarios
+    evidence:
+      - ecosystems.afriride.continuity.scenarios
+      - ecosystems.afriride.runtime.execution.deterministic_executor
+      - afritech.ci.identity_validator
+    implementation_refs:
+      - afritech.proof.constitutional_receipt
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.transcript_witness
+    validators:
+      - afritech.ci.identity_validator
+      - afritech.ci.continuity_resilience_validator
+      - afritech.demo.proof
+    non_claims:
+      - unrestricted_identity_federation
+      - production_business_platform_readiness
+
+  - id: enforcement_integrity
+    status: IMPLEMENTED
+    statement: Four-gate enforcement and preserve-or-isolate boundary remain mandatory.
+    scope: repository_constitutional_validation_surface
+    evidence:
+      - afritech.ci.four_gate_validator
+      - afritech.ci.enforcement_integrity_validator
+      - afritech.ci.constitutional_validation
+    implementation_refs:
+      - afritech.ci.four_gate_validator
+      - afritech.ci.enforcement_integrity_validator
+      - afritech.ci.claim_discipline_validator
+    validators:
+      - afritech.ci.four_gate_validator
+      - afritech.ci.enforcement_integrity_validator
+      - afritech.ci.constitutional_validation
+    non_claims:
+      - bypassable_enforcement
+      - optional_constitutional_validation
