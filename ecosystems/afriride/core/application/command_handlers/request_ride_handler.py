@@ -1,7 +1,7 @@
 from ecosystems.afriride.core.application.commands.request_ride import (
     request_ride,
 )
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 
 
 def handle_request_ride(command: dict, store: EventStore):

@@ -1,4 +1,4 @@
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 
 from ecosystems.afriride.core.application.command_handlers.request_ride_handler import (
     handle_request_ride,

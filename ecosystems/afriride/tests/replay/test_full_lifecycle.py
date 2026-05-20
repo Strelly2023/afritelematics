@@ -1,6 +1,6 @@
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
-from ecosystems.afriride.core.domain.aggregates.repository import load_aggregate
-from ecosystems.afriride.core.domain.aggregates.ride_aggregate import RideAggregate
+from afritech.core.infrastructure.persistence.event_store import EventStore
+from ecosystems.afriride.domain.aggregates.repository import load_aggregate
+from ecosystems.afriride.domain.aggregates.ride_aggregate import RideAggregate
 
 
 def test_full_lifecycle():

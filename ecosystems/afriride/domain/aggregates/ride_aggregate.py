@@ -1,5 +1,5 @@
-from ecosystems.afriride.core.domain.state.ride_state import RideStatus
-from ecosystems.afriride.core.domain.events.ride_events import (
+from ecosystems.afriride.domain.state.ride_state import RideStatus
+from ecosystems.afriride.domain.events.ride_events import (
     RideRequested,
     DriverAssigned,
     TripStarted,

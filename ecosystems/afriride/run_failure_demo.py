@@ -21,8 +21,8 @@ from copy import deepcopy
 from ecosystems.afriride.core.constitutional.runtime_adapter import ExecutionRuntime
 
 # ✅ Domain Context + Roles (FIXED IMPORT)
-from ecosystems.afriride.core.domain.ride_context import AfriRideExecutionContext
-from ecosystems.afriride.core.domain.ride_roles import RideAuthorityRole
+from ecosystems.afriride.domain.ride_context import AfriRideExecutionContext
+from ecosystems.afriride.domain.ride_roles import RideAuthorityRole
 
 # ✅ Observability
 from ecosystems.afriride.core.observability.decision_metrics import (

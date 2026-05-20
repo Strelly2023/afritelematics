@@ -1,5 +1,5 @@
-from ecosystems.core.infrastructure.observability.event_tracer import EventTracer
-from ecosystems.afriride.core.domain.events.ride_events import RideRequested
+from afritech.core.infrastructure.observability.event_tracer import EventTracer
+from ecosystems.afriride.domain.events.ride_events import RideRequested
 
 
 def test_event_tracing():

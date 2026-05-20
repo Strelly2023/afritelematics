@@ -1,8 +1,8 @@
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 from ecosystems.afriride.core.application.commands.request_ride import request_ride
 from ecosystems.afriride.core.application.dispatch.dispatch_engine import DispatchEngine
-from ecosystems.afriride.core.domain.state.ride_state import RideStatus
-from ecosystems.afriride.core.domain.aggregates.repository import load_aggregate
+from ecosystems.afriride.domain.state.ride_state import RideStatus
+from ecosystems.afriride.domain.aggregates.repository import load_aggregate
 
 
 def test_driver_acceptance_stops_dispatch():

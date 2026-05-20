@@ -2,7 +2,7 @@ import json
 import time
 from typing import Optional
 
-from ecosystems.afriride.core.domain.events.ride_events import Event
+from ecosystems.afriride.domain.events.ride_events import Event
 
 
 class ProjectionWorker:

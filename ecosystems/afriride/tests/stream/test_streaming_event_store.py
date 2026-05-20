@@ -1,8 +1,8 @@
-from ecosystems.core.infrastructure.stream.event_stream import EventStream
-from ecosystems.core.infrastructure.stream.streaming_event_store import StreamingEventStore
-from ecosystems.core.infrastructure.observability.event_tracer import EventTracer
+from afritech.core.infrastructure.stream.event_stream import EventStream
+from afritech.core.infrastructure.stream.streaming_event_store import StreamingEventStore
+from afritech.core.infrastructure.observability.event_tracer import EventTracer
 
-from ecosystems.afriride.core.domain.events.ride_events import RideRequested
+from ecosystems.afriride.domain.events.ride_events import RideRequested
 
 
 # --------------------------------------------------

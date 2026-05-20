@@ -1,4 +1,4 @@
-from ecosystems.afriride.core.domain.events.ride_events import (
+from ecosystems.afriride.domain.events.ride_events import (
     DriverOffered,
     OfferExpired,
 )

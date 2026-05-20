@@ -1,10 +1,10 @@
 # 📁 ecosystems/afriride/application/commands/request_ride.py
 
-from ecosystems.afriride.core.domain.aggregates.repository import (
+from ecosystems.afriride.domain.aggregates.repository import (
     load_aggregate,
 )
 
-from ecosystems.afriride.core.domain.events.ride_events import (
+from ecosystems.afriride.domain.events.ride_events import (
     RideRequested,
 )
 

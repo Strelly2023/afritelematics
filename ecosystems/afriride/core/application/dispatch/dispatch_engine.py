@@ -1,4 +1,4 @@
-from ecosystems.afriride.core.domain.aggregates.repository import (
+from ecosystems.afriride.domain.aggregates.repository import (
     load_aggregate,
 )
 

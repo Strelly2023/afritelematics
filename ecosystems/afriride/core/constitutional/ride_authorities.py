@@ -24,10 +24,10 @@ from dataclasses import dataclass
 from typing import List, Dict, Any
 
 # ✅ Domain-owned role definition (NO enum defined here)
-from ecosystems.afriride.core.domain.ride_roles import RideAuthorityRole
+from ecosystems.afriride.domain.ride_roles import RideAuthorityRole
 
 # ✅ Typed execution context
-from ecosystems.afriride.core.domain.ride_context import AfriRideExecutionContext
+from ecosystems.afriride.domain.ride_context import AfriRideExecutionContext
 
 
 # =========================================================

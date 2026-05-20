@@ -1,5 +1,3 @@
-import hashlib
-import json
 from typing import Any, Dict, Iterable, List, Tuple
 
 from ecosystems.afriride.runtime.commands import (
@@ -11,6 +9,7 @@ from ecosystems.afriride.runtime.commands import (
 )
 from ecosystems.afriride.runtime.state import RideState
 from ecosystems.afriride.runtime.mutation import apply_mutation
+from afritech.core.runtime.executor import DeterministicCommandExecutor
 
 # ---------------------------------------------------------------------
 # CONSTITUTIONAL INVARIANT DECLARATION (VISIBLE TO VERIFIER)
@@ -119,45 +118,17 @@ class DeterministicExecutor:
         commands: Iterable[Any],
         epoch: int,
     ) -> Tuple[List[Dict[str, Any]], RideState]:
-
-        # Closed-world & epoch enforcement
-        for cmd in commands:
-            if not isinstance(cmd, cls.ALLOWED_COMMANDS):
-                raise AssertionError("NON-ADMISSIBLE COMMAND")
-
-            if hasattr(cmd, "epoch") and cmd.epoch is not None:
-                if cmd.epoch > epoch:
-                    raise AssertionError("FUTURE-EPOCH COMMAND")
-
-        trace: List[Dict[str, Any]] = [
-            {"type": "EXECUTION_CONTEXT", "epoch": epoch}
-        ]
-
-        current_state = state
-
-        for command in cls.canonicalize(commands):
-
-            # Observational / auxiliary commands do not affect replay
-            if isinstance(command, (ReadRideState, EmitAuditEvent)):
-                continue
-
-            if not cls.admissible(current_state, command):
-                trace.append({
-                    "type": "REFUSAL",
-                    "command": command.__class__.__name__,
-                    "driver": getattr(command, "driver_id", None),
-                })
-                continue
-
-            # Δ-based state transition (immutable)
-            current_state = apply_mutation(current_state, command)
-
-            trace.append({
-                "type": command.__class__.__name__,
-                "driver": getattr(command, "driver_id", None),
-            })
-
-        return trace, current_state
+        return DeterministicCommandExecutor.execute_with_state(
+            state=state,
+            commands=commands,
+            epoch=epoch,
+            allowed_commands=cls.ALLOWED_COMMANDS,
+            canonical_key=cls.canonical_key,
+            admissible=cls.admissible,
+            apply_mutation=apply_mutation,
+            refusal_driver=lambda command: getattr(command, "driver_id", None),
+            observational_commands=(ReadRideState, EmitAuditEvent),
+        )
 
     # -----------------------------------------------------------------
     # PUBLIC API (TESTS DEPEND ON THIS)
@@ -194,9 +165,4 @@ class DeterministicExecutor:
 
     @staticmethod
     def trace_hash(trace: List[Dict[str, Any]]) -> str:
-        payload = json.dumps(
-            trace,
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        return hashlib.sha256(payload.encode()).hexdigest()
+        return DeterministicCommandExecutor.trace_hash(trace)

@@ -1,4 +1,4 @@
-from ecosystems.afriride.core.domain.aggregates.repository import load_aggregate
+from ecosystems.afriride.domain.aggregates.repository import load_aggregate
 from ecosystems.afriride.core.infrastructure.matching.driver_matcher import match_driver
 from ecosystems.afriride.core.infrastructure.geo.geo_index import DriverGeoIndex
 from ecosystems.afriride.core.infrastructure.presence.driver_presence import DriverPresenceService

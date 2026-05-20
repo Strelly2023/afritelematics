@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict
 
 # ✅ Domain-owned roles (NO circular dependency)
-from ecosystems.afriride.core.domain.ride_roles import RideAuthorityRole
+from ecosystems.afriride.domain.ride_roles import RideAuthorityRole
 
 
 # =========================================================

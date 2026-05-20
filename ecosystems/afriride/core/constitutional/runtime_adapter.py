@@ -27,7 +27,7 @@ import uuid
 from typing import Any, Callable, Dict, List
 
 # ✅ Typed Context
-from ecosystems.afriride.core.domain.ride_context import (
+from ecosystems.afriride.domain.ride_context import (
     AfriRideExecutionContext
 )
 

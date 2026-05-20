@@ -1,7 +1,7 @@
 from ecosystems.afriride.core.application.commands.complete_trip import (
     complete_trip,
 )
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 
 
 def handle_complete_trip(command: dict, store: EventStore):

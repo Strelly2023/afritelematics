@@ -1,9 +1,9 @@
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 
 from ecosystems.afriride.core.application.commands.request_ride import request_ride
 from ecosystems.afriride.core.application.commands.assign_driver import assign_driver
 
-from ecosystems.afriride.core.domain.aggregates.repository import load_aggregate
+from ecosystems.afriride.domain.aggregates.repository import load_aggregate
 
 from ecosystems.afriride.core.infrastructure.geo.geo_index import DriverGeoIndex
 from ecosystems.afriride.core.infrastructure.presence.driver_presence import DriverPresenceService

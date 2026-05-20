@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from typing import Any, List
 
 # ✅ Typed Context
-from ecosystems.afriride.core.domain.ride_context import (
+from ecosystems.afriride.domain.ride_context import (
     AfriRideExecutionContext
 )
 

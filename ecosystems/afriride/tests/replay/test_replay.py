@@ -1,5 +1,5 @@
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
-from ecosystems.afriride.core.domain.aggregates.repository import load_aggregate
+from afritech.core.infrastructure.persistence.event_store import EventStore
+from ecosystems.afriride.domain.aggregates.repository import load_aggregate
 
 
 def test_replay_consistency():
@@ -10,7 +10,7 @@ def test_replay_consistency():
     # --------------------------------------------------
     # Create events manually through aggregate
     # --------------------------------------------------
-    from ecosystems.afriride.core.domain.aggregates.ride_aggregate import RideAggregate
+    from ecosystems.afriride.domain.aggregates.ride_aggregate import RideAggregate
 
     agg = RideAggregate()
 

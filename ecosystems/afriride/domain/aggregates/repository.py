@@ -1,4 +1,4 @@
-from ecosystems.afriride.core.domain.aggregates.ride_aggregate import RideAggregate
+from ecosystems.afriride.domain.aggregates.ride_aggregate import RideAggregate
 
 
 def load_aggregate(store, ride_id):

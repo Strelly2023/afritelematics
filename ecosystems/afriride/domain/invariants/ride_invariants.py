@@ -1,4 +1,4 @@
-"""Explicitly frozen non-operational surface for ecosystems.afriride.core.domain.models.driver."""
+"""Explicitly frozen non-operational surface for ecosystems.afriride.domain.invariants.ride_invariants."""
 
 from __future__ import annotations
 

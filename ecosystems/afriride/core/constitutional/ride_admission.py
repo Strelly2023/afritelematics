@@ -34,7 +34,7 @@ from ecosystems.afriride.core.constitutional.ride_authorities import (
 )
 
 # ✅ Typed Context
-from ecosystems.afriride.core.domain.ride_context import (
+from ecosystems.afriride.domain.ride_context import (
     AfriRideExecutionContext
 )
 

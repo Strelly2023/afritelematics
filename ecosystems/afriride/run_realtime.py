@@ -2,10 +2,10 @@ import asyncio
 
 import asyncio
 
-from ecosystems.core.infrastructure.stream.event_stream import EventStream
-from ecosystems.core.infrastructure.websocket.ws_server import WebSocketServer
-from ecosystems.core.infrastructure.stream.streaming_event_store import StreamingEventStore
-from ecosystems.core.infrastructure.stream.event_stream_bridge import EventStreamBridge
+from afritech.core.infrastructure.stream.event_stream import EventStream
+from afritech.core.infrastructure.websocket.ws_server import WebSocketServer
+from afritech.core.infrastructure.stream.streaming_event_store import StreamingEventStore
+from afritech.core.infrastructure.stream.event_stream_bridge import EventStreamBridge
 
 
 

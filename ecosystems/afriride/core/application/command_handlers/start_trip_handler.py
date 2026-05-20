@@ -1,7 +1,7 @@
 from ecosystems.afriride.core.application.commands.start_trip import (
     start_trip,
 )
-from ecosystems.core.infrastructure.persistence.event_store import EventStore
+from afritech.core.infrastructure.persistence.event_store import EventStore
 
 
 def handle_start_trip(command: dict, store: EventStore):
