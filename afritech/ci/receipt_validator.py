@@ -6,12 +6,12 @@ from typing import Any
 
 import yaml
 
-from afritech.runtime.receipts import (
+from afritech.core.runtime.receipts import (
     receipt_inspection_hash,
     reconstruct_receipt_bundle,
     verify_receipt_bundle,
 )
-from afritech.runtime.system_enforcement.execution_guard import (
+from afritech.core.runtime.system_enforcement.execution_guard import (
     admit_contract,
     truth_values_from_payload,
 )

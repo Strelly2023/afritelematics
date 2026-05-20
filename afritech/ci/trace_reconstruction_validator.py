@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-from afritech.runtime.system_enforcement.execution_guard import (
+from afritech.core.runtime.system_enforcement.execution_guard import (
     admit_contract,
     truth_values_from_payload,
 )

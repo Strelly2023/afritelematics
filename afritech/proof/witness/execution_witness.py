@@ -48,8 +48,8 @@ REQUIRED_EXECUTION_FIELDS = (
 
 AUTHORIZED_EXECUTION_SURFACES = {
 
-    "afritech.runtime.admission",
-    "afritech.runtime.replay",
+    "afritech.core.runtime.admission",
+    "afritech.core.runtime.replay",
     "afritech.kernel.constitutional_gateway",
 
 }

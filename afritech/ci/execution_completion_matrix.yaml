@@ -9,8 +9,8 @@ surfaces:
     replay_participating: true
     proof_admissible: true
     tests:
-      - afritech/tests/runtime/test_profile_resolver.py
-      - afritech/tests/semantic_engine/test_constitutional_receipts.py
+      - afritech/tests/proof/test_profile_resolver.py
+      - afritech/tests/governance/test_constitutional_receipts.py
   proof:
     declared_in: afritech/architecture/surface_authority_registry.yaml
     implementation_state: IMPLEMENTED
@@ -19,7 +19,7 @@ surfaces:
     proof_admissible: true
     tests:
       - afritech/tests/replay/test_trace_reconstruction.py
-      - afritech/tests/constitution/test_level2_formal_model.py
+      - afritech/tests/governance/test_level2_formal_model.py
   receipt_reconstruction:
     declared_in: afritech/architecture/implementation_registry.yaml
     implementation_state: IMPLEMENTED

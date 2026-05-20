@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONSTITUTION = ROOT / "afritech/constitution"
 
 FORBIDDEN_IMPORT_PREFIXES = (
-    "afritech.runtime",
+    "afritech.core.runtime",
     "afritech.execution",
     "afritech.worker",
 )

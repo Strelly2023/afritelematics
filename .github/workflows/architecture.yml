@@ -36,6 +36,9 @@ jobs:
       # ARCHITECTURAL / AST ENFORCEMENT
       # ------------------------------------------------------------
 
+      - name: Canonical constitutional pipeline
+        run: python3 -m afritech.ci.constitutional_pipeline
+
       - name: Validate import topology
         run: python3 -m afritech.ci.ast_import_validator
 

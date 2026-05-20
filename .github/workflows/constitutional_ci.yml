@@ -137,6 +137,13 @@ jobs:
           test -f afritech/__init__.py
 
 
+      - name: Canonical constitutional pipeline
+
+        run: |
+
+          python -m afritech.ci.constitutional_pipeline
+
+
       - name: Compile all Python sources
 
         run: |

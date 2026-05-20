@@ -116,7 +116,7 @@ INVARIANT_PATTERN = re.compile(
 ENFORCEMENT_ROOTS = [
 
     ROOT / "kernel",
-    ROOT / "runtime",
+    ROOT / "core" / "runtime",
     ROOT / "guards",
     ROOT / "proof",
     ROOT / "replay",

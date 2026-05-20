@@ -6,14 +6,14 @@ from typing import Any
 
 import yaml
 
-from afritech.runtime.system_enforcement.execution_guard import admit_contract
+from afritech.core.runtime.system_enforcement.execution_guard import admit_contract
 
 
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_FILES = [
-    ROOT / "afritech/runtime/system_enforcement/execution_pipeline.yaml",
-    ROOT / "afritech/runtime/contracts/normalization_contract.yaml",
+    ROOT / "afritech/core/runtime/system_enforcement/execution_pipeline.yaml",
+    ROOT / "afritech/core/runtime/contracts/normalization_contract.yaml",
     ROOT / "afritech/semantic_engine/hash/hash_policy.yaml",
     ROOT / "afritech/governance/anti_entropy.yaml",
 ]
