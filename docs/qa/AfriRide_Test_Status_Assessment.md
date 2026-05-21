@@ -32,6 +32,14 @@ and bounded continuity-validation posture, not a traditional
 feature-complete production test posture.
 ```
 
+Precise status judgment:
+
+```text
+AfriRide is a constitutionally verified deterministic execution system
+that proves continuity, replay, and identity under bounded disruption,
+but is not yet a production-operational mobility platform.
+```
+
 ---
 
 # 1. Current Test Posture
@@ -57,6 +65,8 @@ bounded product-flow behavior
 ```
 
 This means the repository validates whether AfriRide behavior remains reconstructable, replay-equivalent, and constitutionally admissible under bounded operational scenarios.
+
+This is a deliberate epistemic boundary. The current validation posture is not incomplete because it excludes live GPS physics, marketplace economics, or massive distributed load. Those domains are intentionally outside the current admissibility boundary until they are declared, normalized, recorded, and tested.
 
 ---
 
@@ -193,6 +203,13 @@ Most important current result:
 AfriRide continuity is boundedly reconstructable.
 ```
 
+Stronger formal interpretation:
+
+```text
+Continuity is replay-equivalent, invariant-preserving, and witness-verifiable
+within a closed deterministic execution domain.
+```
+
 This means:
 
 ```text
@@ -201,11 +218,36 @@ lineage can be verified
 mutation can be reconstructed
 admissibility can be validated
 bounded continuity behavior can be reproduced deterministically
+divergence is detectable
+invalid states are rejectable
 ```
 
 ---
 
-# 4. Missing or Partial Operational Test Areas
+# 4. Refined Status Model
+
+| Layer | Status | Interpretation |
+| --- | --- | --- |
+| Deterministic execution | Fully proven | Formally enforced and replay verified |
+| Replay equivalence | Fully proven | Multi-validator replay validation |
+| Witness integrity | Fully proven | Mandatory and CI enforced |
+| Continuity under disruption | Proven bounded | Validated within defined scenarios |
+| Closed-world enforcement | Fully proven | Hard-fail topology and identity model |
+| Governance and claim discipline | Fully proven | Strict epistemic constraints |
+| Runtime activation | Conditional | Depends on epoch and declared authority |
+| Distributed scale | Not proven | Explicitly beyond current evidence |
+| Real mobility physics | Not modeled | GPS, routing, and traffic are not proof-domain inputs yet |
+| Marketplace economics | Not modeled | Supply, demand, incentives, and fairness remain future domains |
+| Adversarial security at scale | Not proven | Current adversarial coverage is bounded |
+| Production SRE reliability | Not proven | No real infrastructure load evidence yet |
+
+---
+
+# 5. Missing or Partial Operational Test Areas
+
+The following areas are not merely missing tests. They are intentionally excluded domains beyond the current admissibility boundary.
+
+They become admissible only after the system defines recorded inputs, deterministic normalization, declared execution surfaces, replay semantics, and bounded claims for each domain.
 
 ## Large-Scale Distributed Load Testing
 
@@ -275,7 +317,15 @@ API abuse and rate-limit testing
 
 ---
 
-# 5. Recommended Next Test Expansion
+# 6. Recommended Next Test Expansion
+
+The real bottleneck is:
+
+```text
+transition from replay-proven system to live runtime authority under scale
+```
+
+The next test expansion should therefore focus less on adding UI features and more on proving that live operational admission can remain replay-equivalent under load, failure, and external input disorder.
 
 Priority order:
 
@@ -302,7 +352,7 @@ bounded operational classification
 
 ---
 
-# 6. Bounded Non-Claims
+# 7. Bounded Non-Claims
 
 This assessment does not claim:
 
@@ -321,7 +371,7 @@ complete state-space exhaustiveness achieved
 
 ---
 
-# 7. Safe Final Classification
+# 8. Safe Final Classification
 
 ```text
 AfriRide test posture is strong in deterministic replay validation,
@@ -332,3 +382,11 @@ marketplace economics, security adversarial depth, and massive
 multi-region deployment proof remain future operational hardening work.
 ```
 
+Final formal classification:
+
+```text
+AfriRide is a replay-verifiable continuity engine and closed-world
+deterministic runtime model under bounded disruption evidence, not yet
+a real-world mobility network proven under scale, chaos, geography,
+marketplace economics, and production SRE conditions.
+```

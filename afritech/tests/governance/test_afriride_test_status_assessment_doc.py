@@ -72,7 +72,7 @@ def test_test_status_assessment_has_bounded_classification() -> None:
     for surface in NON_REDEFINED_SURFACES:
         assert surface in text
 
-    before_non_claims = lowered.split("# 6. bounded non-claims")[0]
+    before_non_claims = lowered.split("# 7. bounded non-claims")[0]
     for phrase in FORBIDDEN_INFLATION:
         assert phrase not in before_non_claims
 
@@ -111,6 +111,54 @@ def test_test_status_assessment_distinguishes_strengths_from_partial_areas() -> 
 
     for partial_area in PARTIAL_AREAS:
         assert partial_area in text
+
+
+def test_test_status_assessment_defines_formal_status_judgment() -> None:
+    text = read_doc()
+
+    assert (
+        "AfriRide is a constitutionally verified deterministic execution system"
+        in text
+    )
+    assert (
+        "but is not yet a production-operational mobility platform"
+        in text
+    )
+    assert "This is a deliberate epistemic boundary." in text
+    assert (
+        "intentionally outside the current admissibility boundary"
+        in text
+    )
+    assert (
+        "Continuity is replay-equivalent, invariant-preserving, and witness-verifiable"
+        in text
+    )
+    assert "divergence is detectable" in text
+    assert "invalid states are rejectable" in text
+
+
+def test_test_status_assessment_refines_status_model_and_bottleneck() -> None:
+    text = read_doc()
+
+    for row in (
+        "| Deterministic execution | Fully proven | Formally enforced and replay verified |",
+        "| Replay equivalence | Fully proven | Multi-validator replay validation |",
+        "| Witness integrity | Fully proven | Mandatory and CI enforced |",
+        "| Runtime activation | Conditional | Depends on epoch and declared authority |",
+        "| Distributed scale | Not proven | Explicitly beyond current evidence |",
+        "| Real mobility physics | Not modeled | GPS, routing, and traffic are not proof-domain inputs yet |",
+        "| Production SRE reliability | Not proven | No real infrastructure load evidence yet |",
+    ):
+        assert row in text
+
+    assert (
+        "transition from replay-proven system to live runtime authority under scale"
+        in text
+    )
+    assert (
+        "live operational admission can remain replay-equivalent under load"
+        in text
+    )
 
 
 def test_test_status_assessment_lists_operational_test_gaps() -> None:
