@@ -28,9 +28,13 @@ def normalize_input(adapted_input: Mapping[str, Any]) -> dict[str, Any]:
 
     timestamp = int(adapted_input["timestamp"])
 
-    return {
+    normalized = {
         "request_id": str(adapted_input["request_id"]),
         "payload_hash": stable_payload_hash(payload),
         "timestamp_bucket": timestamp // 1000,
     }
 
+    if "user_id" in adapted_input:
+        normalized["user_id"] = str(adapted_input["user_id"])
+
+    return normalized

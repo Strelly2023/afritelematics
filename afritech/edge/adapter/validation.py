@@ -18,3 +18,8 @@ def validate_adapted_request(adapted_input: Mapping[str, Any]) -> None:
     if not isinstance(adapted_input.get("payload"), Mapping):
         raise ValueError("Adapted payload must be a mapping")
 
+    if "user_id" in adapted_input and not isinstance(
+        adapted_input.get("user_id"),
+        str,
+    ):
+        raise ValueError("Adapted user_id must be a string")

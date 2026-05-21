@@ -19,3 +19,8 @@ def validate_normalized_input(normalized_input: Mapping[str, Any]) -> None:
     if not isinstance(normalized_input.get("timestamp_bucket"), int):
         raise ValueError("Normalized timestamp_bucket must be an integer")
 
+    if "user_id" in normalized_input and not isinstance(
+        normalized_input.get("user_id"),
+        str,
+    ):
+        raise ValueError("Normalized user_id must be a string")

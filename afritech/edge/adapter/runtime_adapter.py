@@ -21,9 +21,13 @@ def adapt_request(raw_input: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(payload, Mapping):
         raise ValueError("Edge input payload must be a mapping")
 
-    return {
+    adapted = {
         "request_id": str(raw_input["request_id"]),
         "timestamp": int(raw_input["timestamp"]),
         "payload": deepcopy(dict(payload)),
     }
 
+    if "user_id" in raw_input:
+        adapted["user_id"] = str(raw_input["user_id"])
+
+    return adapted

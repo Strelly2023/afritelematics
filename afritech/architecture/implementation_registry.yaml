@@ -923,6 +923,321 @@ implementations:
       normalization to ingestion ordering before execution admission.
 
 
+  # ----------------------------------------------------------
+  # PRODUCTION MVP PIPELINE IMPLEMENTATION
+  # ----------------------------------------------------------
+
+  afritech.api.app:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      API
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/api/app.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - mvp_api_entrypoint
+      - edge_adapter_invocation
+      - edge_normalization_invocation
+      - edge_ingestion_invocation
+      - worker_invocation
+
+    forbidden_behaviors:
+
+      - direct_core_execution_without_edge
+      - system_clock_authority
+      - unnormalized_input_admission
+
+    description: >
+      Implemented FastAPI-compatible MVP entrypoint routing external
+      requests through adapter, normalization, ingestion, queue, worker,
+      core execution, event log, and replay-compatible output.
+
+
+  afritech.execution.queue.simple_queue:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      QUEUE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/execution/queue/simple_queue.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - fifo_publish
+      - fifo_consume
+      - empty_queue_refusal
+
+    description: >
+      Implemented in-process FIFO queue for deterministic MVP
+      production pipeline replay tests.
+
+
+  afritech.core.engine:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      CORE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/core/engine.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - deterministic_normalized_input_execution
+      - payload_hash_result_binding
+      - request_identity_preservation
+
+    description: >
+      Implemented deterministic core execution entrypoint for the MVP
+      edge pipeline.
+
+
+  afritech.core.runtime.worker.worker:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      WORKER
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/core/runtime/worker/worker.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - edge_pipeline_guard_enforcement
+      - deterministic_core_execution
+      - replay_ledger_record_generation
+      - replay_hash_generation
+
+    forbidden_behaviors:
+
+      - worker_execution_without_edge_trace
+      - unguarded_core_invocation
+      - hidden_event_log_mutation
+
+    description: >
+      Implemented MVP worker consuming normalized events, enforcing
+      edge pipeline order, invoking deterministic core execution, and
+      appending replay ledger records.
+
+
+  afritech.storage.event_schema:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      STORAGE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/storage/event_schema.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - immutable_event_record
+      - canonical_json_hashing
+      - replay_hash_generation
+
+    description: >
+      Implemented replay-safe event schema for immutable MVP event
+      records and deterministic SHA-256 replay hashes.
+
+
+  afritech.storage.event_log:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      STORAGE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/storage/event_log.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - append_only_event_storage
+      - event_snapshot_read
+      - test_log_reset
+
+    description: >
+      Implemented in-memory MVP event log for replay-safe production
+      pipeline validation.
+
+
+  afritech.storage.replay_engine:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      REPLAY
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/storage/replay_engine.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - event_reexecution
+      - replay_hash_recalculation
+      - replay_equivalence_check_support
+
+    description: >
+      Implemented MVP replay engine recalculating execution hashes
+      from stored normalized input records.
+
+
 # ============================================================
 # GLOBAL RULES
 # ============================================================
