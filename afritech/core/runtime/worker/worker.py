@@ -14,6 +14,7 @@ from afritech.storage.event_schema import EventRecord
 
 def process_event(
     event: Mapping[str, Any],
+    partition_id: int | None = None,
     flow_trace: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Execute one normalized event and append a replay ledger record."""
@@ -26,6 +27,7 @@ def process_event(
 
     record = EventRecord(
         request_id=str(normalized_input["request_id"]),
+        partition_id=partition_id,
         normalized_input=normalized_input,
         output=deepcopy(output),
         trace=trace,
@@ -34,4 +36,3 @@ def process_event(
     store_event(record)
 
     return output
-

@@ -964,18 +964,21 @@ implementations:
       - edge_adapter_invocation
       - edge_normalization_invocation
       - edge_ingestion_invocation
-      - worker_invocation
+      - partitioned_queue_admission
+      - asynchronous_worker_drain_control
 
     forbidden_behaviors:
 
       - direct_core_execution_without_edge
       - system_clock_authority
       - unnormalized_input_admission
+      - synchronous_core_execution_in_api_request_path
 
     description: >
       Implemented FastAPI-compatible MVP entrypoint routing external
-      requests through adapter, normalization, ingestion, queue, worker,
-      core execution, event log, and replay-compatible output.
+      requests through adapter, normalization, ingestion, partition
+      routing, queue admission, worker drain control, event log, and
+      replay-compatible output.
 
 
   afritech.execution.queue.simple_queue:
@@ -1018,6 +1021,140 @@ implementations:
     description: >
       Implemented in-process FIFO queue for deterministic MVP
       production pipeline replay tests.
+
+
+  afritech.execution.queue.partitioned_queue:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      QUEUE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/execution/queue/partitioned_queue.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - partitioned_fifo_publish
+      - partitioned_fifo_consume
+      - empty_partition_non_execution
+      - deterministic_partition_isolation
+
+    description: >
+      Implemented in-process partitioned queue for deterministic
+      multi-worker production pipeline validation.
+
+
+  afritech.execution.partition.router:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      PARTITIONING
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/execution/partition/router.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - stable_partition_assignment
+      - declared_routing_key_selection
+      - invalid_partition_count_rejection
+
+    forbidden_behaviors:
+
+      - random_partition_assignment
+      - system_clock_partition_assignment
+      - filesystem_identity_partitioning
+
+    description: >
+      Implemented deterministic partition router assigning normalized
+      edge events to stable execution partitions through declared
+      routing keys.
+
+
+  afritech.execution.worker.worker_pool:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      WORKER
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/execution/worker/worker_pool.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - partition_worker_cycle
+      - deterministic_partition_drain
+      - partition_id_event_binding
+
+    description: >
+      Implemented partition-aware worker pool controls for deterministic
+      queue draining and replay ledger generation.
 
 
   afritech.core.engine:
@@ -1097,6 +1234,7 @@ implementations:
 
       - edge_pipeline_guard_enforcement
       - deterministic_core_execution
+      - partition_id_replay_ledger_binding
       - replay_ledger_record_generation
       - replay_hash_generation
 
@@ -1146,6 +1284,7 @@ implementations:
     completed_capabilities:
 
       - immutable_event_record
+      - partition_identity_capture
       - canonical_json_hashing
       - replay_hash_generation
 

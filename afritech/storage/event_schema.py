@@ -20,6 +20,7 @@ class EventRecord:
     """Immutable replay ledger record for one deterministic execution."""
 
     request_id: str
+    partition_id: int | None
     normalized_input: dict[str, Any]
     output: dict[str, Any]
     trace: dict[str, Any]
@@ -29,4 +30,3 @@ class EventRecord:
     def generate_hash(data: Mapping[str, Any]) -> str:
         serialized = canonical_json(data)
         return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-

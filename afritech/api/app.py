@@ -6,17 +6,19 @@ from typing import Any
 
 from fastapi import FastAPI
 
-from afritech.core.runtime.worker.worker import process_event
 from afritech.edge.adapter.runtime_adapter import adapt_request
 from afritech.edge.adapter.validation import validate_adapted_request
 from afritech.edge.ingestion.queue_ingestor import ingest_event
 from afritech.edge.normalization.normalizer import normalize_input
 from afritech.edge.normalization.validation import validate_normalized_input
-from afritech.execution.queue.simple_queue import SimpleQueue
+from afritech.execution.partition.router import get_partition
+from afritech.execution.queue.partitioned_queue import PartitionedQueue
+from afritech.execution.worker.worker_pool import WorkerPool
 
 
 app = FastAPI(title="AfriTech Deterministic MVP Pipeline")
-queue = SimpleQueue()
+queue = PartitionedQueue(num_partitions=8)
+worker_pool = WorkerPool(queue)
 
 
 @app.post("/process")
@@ -36,11 +38,23 @@ def process(payload: dict[str, Any]) -> dict[str, Any]:
     normalized = normalize_input(adapted)
     validate_normalized_input(normalized)
 
-    ingest_event(normalized, queue)
+    partition_id = get_partition(normalized, queue.num_partitions)
+    ingest_event(normalized, queue, partition_id=partition_id)
 
-    event = queue.consume()
-    return process_event(
-        event,
-        flow_trace={"stages": ["adapter", "normalization", "ingestion"]},
-    )
+    return {
+        "status": "accepted",
+        "request_id": normalized["request_id"],
+        "partition_id": partition_id,
+    }
 
+
+@app.post("/workers/drain")
+def drain_workers(partition_id: int | None = None) -> dict[str, Any]:
+    """Run deterministic worker cycles for admitted queue events."""
+
+    outputs = worker_pool.drain(partition_id=partition_id)
+    return {
+        "status": "drained",
+        "processed": len(outputs),
+        "outputs": outputs,
+    }

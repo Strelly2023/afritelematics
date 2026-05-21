@@ -37,4 +37,9 @@ def normalize_input(adapted_input: Mapping[str, Any]) -> dict[str, Any]:
     if "user_id" in adapted_input:
         normalized["user_id"] = str(adapted_input["user_id"])
 
+    for routing_key in ("city_id", "trip_id"):
+        value = payload.get(routing_key)
+        if value is not None:
+            normalized[routing_key] = str(value)
+
     return normalized
