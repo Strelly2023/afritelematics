@@ -4,11 +4,14 @@ from pathlib import Path
 
 import yaml
 
-from afritech.api.app import process
+from fastapi.testclient import TestClient
+
+from afritech.api.app import app
 from afritech.storage.event_log import clear_event_log, get_all_events
 from afritech.storage.replay_engine import replay_event
 
 
+client = TestClient(app)
 ROOT = Path(__file__).resolve().parents[3]
 IMPLEMENTATION_REGISTRY = ROOT / "afritech/architecture/implementation_registry.yaml"
 
@@ -55,11 +58,13 @@ def test_api_to_worker_to_replay_pipeline_is_consistent() -> None:
         "destination": "Melbourne Airport",
     }
 
-    response = process(payload)
+    response = client.post("/process", json=payload)
 
-    assert response["status"] == "processed"
-    assert response["request_id"] == "123"
-    assert response["user_id"] == "userA"
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "processed"
+    assert body["request_id"] == "123"
+    assert body["user_id"] == "userA"
 
     events = get_all_events()
     assert len(events) == 1
@@ -91,15 +96,15 @@ def test_api_pipeline_replay_hash_is_stable_for_payload_order() -> None:
         "request_id": "stable",
     }
 
-    first_response = process(first_payload)
+    first_response = client.post("/process", json=first_payload)
     first_event = get_all_events()[-1]
 
     clear_event_log()
 
-    second_response = process(second_payload)
+    second_response = client.post("/process", json=second_payload)
     second_event = get_all_events()[-1]
 
-    assert first_response["status"] == "processed"
-    assert second_response["status"] == "processed"
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
     assert first_event.normalized_input == second_event.normalized_input
     assert first_event.replay_hash == second_event.replay_hash
