@@ -1193,10 +1193,62 @@ implementations:
       - deterministic_normalized_input_execution
       - payload_hash_result_binding
       - request_identity_preservation
+      - deterministic_matching_engine_invocation
 
     description: >
       Implemented deterministic core execution entrypoint for the MVP
       edge pipeline.
+
+
+  afritech.core.matching_engine:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      CORE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/core/matching_engine.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - deterministic_driver_candidate_scoring
+      - driver_id_tie_breaking
+      - recorded_input_matching_only
+      - replay_stable_ranking_output
+
+    forbidden_behaviors:
+
+      - random_driver_selection
+      - live_external_map_lookup
+      - first_acceptance_wins_race_condition
+      - unrecorded_distance_calculation
+
+    description: >
+      Implemented deterministic AfriRide matching engine selecting a
+      driver from recorded candidate inputs using replay-stable scoring
+      and explicit driver identity tie-breaking.
 
 
   afritech.core.runtime.worker.worker:

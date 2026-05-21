@@ -24,3 +24,9 @@ def validate_normalized_input(normalized_input: Mapping[str, Any]) -> None:
         str,
     ):
         raise ValueError("Normalized user_id must be a string")
+
+    if "driver_candidates" in normalized_input and not isinstance(
+        normalized_input.get("driver_candidates"),
+        list,
+    ):
+        raise ValueError("Normalized driver_candidates must be a list")

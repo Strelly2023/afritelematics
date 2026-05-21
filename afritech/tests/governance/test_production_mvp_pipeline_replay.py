@@ -168,3 +168,43 @@ def test_api_pipeline_routes_declared_city_to_stable_partition() -> None:
     assert {event.partition_id for event in events} == {first_body["partition_id"]}
     assert all(event.normalized_input["city_id"] == "melbourne" for event in events)
     assert all(replay_event(event) == event.replay_hash for event in events)
+
+
+def test_api_pipeline_records_deterministic_matching_decision() -> None:
+    clear_event_log()
+
+    payload = {
+        "request_id": "match-1",
+        "user_id": "rider-1",
+        "timestamp": 1700000000999,
+        "city_id": "melbourne",
+        "action": "ride_request",
+        "driver_candidates": [
+            {
+                "driver_id": "driver-b",
+                "distance_km": "2.5",
+                "rating": "4.9",
+                "active_trips": 0,
+            },
+            {
+                "driver_id": "driver-a",
+                "distance_km": "1.1",
+                "rating": "4.7",
+                "active_trips": 0,
+            },
+        ],
+    }
+
+    response = client.post("/process", json=payload)
+    assert response.status_code == 200
+
+    drain_response = client.post("/workers/drain")
+    assert drain_response.status_code == 200
+    output = drain_response.json()["outputs"][0]
+
+    assert output["matching"]["selected_driver_id"] == "driver-a"
+    assert output["matching"]["ranking"][0]["driver_id"] == "driver-a"
+
+    event = get_all_events()[0]
+    assert event.output["matching"] == output["matching"]
+    assert replay_event(event) == event.replay_hash

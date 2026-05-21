@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any
 
 
@@ -41,5 +42,11 @@ def normalize_input(adapted_input: Mapping[str, Any]) -> dict[str, Any]:
         value = payload.get(routing_key)
         if value is not None:
             normalized[routing_key] = str(value)
+
+    driver_candidates = payload.get("driver_candidates")
+    if driver_candidates is not None:
+        if not isinstance(driver_candidates, list):
+            raise ValueError("driver_candidates must be a list")
+        normalized["driver_candidates"] = deepcopy(driver_candidates)
 
     return normalized
