@@ -795,6 +795,258 @@ bindings:
       with no runtime or replay legitimacy.
 
 
+  # ----------------------------------------------------------
+  # EDGE ADAPTER
+  # ----------------------------------------------------------
+
+  edge_adapter:
+
+    canonical_identity:
+      afritech.edge.adapter
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - external_input_adaptation
+      - canonical_request_envelope_generation
+      - edge_admission_preparation
+
+    enforced_by:
+
+      - afritech.edge.adapter.validation
+      - afritech.guards.edge_input_guard
+      - afritech.ci.execution_surface_validation
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+
+    implementation_bindings:
+
+      runtime_activation:
+        implementation: afritech.edge.adapter.runtime_adapter
+
+      proof:
+        implementation: afritech.proof.witness.execution_witness
+
+      evaluation:
+        implementation: afritech.edge.adapter.validation
+
+    guarantees:
+
+      - deterministic_external_input_adaptation
+      - canonical_request_envelope_generation
+      - closed_world_edge_admission
+
+    forbidden:
+
+      - direct_external_runtime_execution
+      - observer_relative_adaptation
+      - filesystem_identity_resolution
+
+    description: >
+      Edge adapter binding maps external input adaptation to
+      deterministic runtime activation, proof witness participation,
+      and validation surfaces.
+
+
+  # ----------------------------------------------------------
+  # EDGE NORMALIZATION
+  # ----------------------------------------------------------
+
+  edge_normalization:
+
+    canonical_identity:
+      afritech.edge.normalization
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - deterministic_input_normalization
+      - canonical_payload_hashing
+      - timestamp_bucket_normalization
+
+    enforced_by:
+
+      - afritech.edge.normalization.validation
+      - afritech.guards.edge_input_guard
+      - afritech.ci.execution_surface_validation
+
+    witness_dependencies:
+
+      - afritech.proof.witness.mutation_witness
+
+    implementation_bindings:
+
+      runtime_activation:
+        implementation: afritech.edge.normalization.normalizer
+
+      proof:
+        implementation: afritech.proof.witness.mutation_witness
+
+      evaluation:
+        implementation: afritech.edge.normalization.validation
+
+    guarantees:
+
+      - deterministic_input_transformation
+      - replay_stable_payload_hashing
+      - canonical_identity_alignment
+
+    forbidden:
+
+      - python_hash_randomization
+      - unnormalized_external_input
+      - nondeterministic_payload_ordering
+
+    description: >
+      Edge normalization binding maps replay-stable input
+      transformation to deterministic runtime activation,
+      proof witness participation, and validation surfaces.
+
+
+  # ----------------------------------------------------------
+  # EDGE INGESTION
+  # ----------------------------------------------------------
+
+  edge_ingestion:
+
+    canonical_identity:
+      afritech.edge.ingestion
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - deterministic_queue_ingestion
+      - normalized_event_admission
+      - edge_pipeline_ordering
+
+    enforced_by:
+
+      - afritech.guards.edge_input_guard
+      - afritech.ci.execution_surface_validation
+      - afritech.trace.trace_reconstructor
+
+    witness_dependencies:
+
+      - afritech.proof.witness.transcript_witness
+
+    implementation_bindings:
+
+      runtime_activation:
+        implementation: afritech.edge.ingestion.queue_ingestor
+
+      replay:
+        implementation: afritech.trace.trace_reconstructor
+
+      proof:
+        implementation: afritech.proof.witness.transcript_witness
+
+    guarantees:
+
+      - queue_mediated_external_admission
+      - normalized_event_only_ingestion
+      - replay_trace_compatibility
+
+    forbidden:
+
+      - direct_core_invocation
+      - unqueued_external_admission
+      - observer_relative_queue_ordering
+
+    description: >
+      Edge ingestion binding maps normalized input admission to
+      deterministic queueing semantics, replay reconstruction,
+      and transcript witness participation.
+
+
 # ============================================================
 # REPLAY ALIGNMENT
 # ============================================================

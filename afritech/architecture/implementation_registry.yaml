@@ -634,6 +634,295 @@ implementations:
       validator mandatory status and product/core isolation.
 
 
+  # ----------------------------------------------------------
+  # EDGE ADAPTER IMPLEMENTATION
+  # ----------------------------------------------------------
+
+  afritech.edge.adapter.runtime_adapter:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      EDGE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/edge/adapter/runtime_adapter.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - external_request_to_canonical_envelope
+      - required_field_validation
+      - deterministic_type_coercion
+      - payload_copy_isolation
+
+    forbidden_behaviors:
+
+      - direct_runtime_execution
+      - observer_relative_adaptation
+      - filesystem_identity_resolution
+      - nondeterministic_payload_mutation
+
+    description: >
+      Implemented deterministic edge adapter converting external
+      request mappings into canonical replay-safe request envelopes.
+
+
+  afritech.edge.adapter.validation:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      EDGE_VALIDATOR
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/edge/adapter/validation.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - adapted_request_shape_validation
+      - request_id_type_validation
+      - timestamp_type_validation
+      - payload_mapping_validation
+
+    description: >
+      Implemented validation surface for canonical edge adapter
+      request envelopes.
+
+
+  # ----------------------------------------------------------
+  # EDGE NORMALIZATION IMPLEMENTATION
+  # ----------------------------------------------------------
+
+  afritech.edge.normalization.normalizer:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      EDGE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/edge/normalization/normalizer.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - canonical_json_payload_serialization
+      - sha256_payload_hashing
+      - deterministic_timestamp_bucket_generation
+      - replay_stable_normalized_input_generation
+
+    forbidden_behaviors:
+
+      - python_process_hashing
+      - unordered_payload_hashing
+      - observer_relative_timestamp_interpretation
+      - unnormalized_external_input_admission
+
+    description: >
+      Implemented deterministic edge normalizer using canonical
+      JSON serialization and SHA-256 payload hashing to produce
+      replay-stable normalized inputs.
+
+
+  afritech.edge.normalization.validation:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      EDGE_VALIDATOR
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/edge/normalization/validation.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - normalized_request_id_validation
+      - sha256_payload_hash_validation
+      - timestamp_bucket_validation
+
+    description: >
+      Implemented validation surface for replay-stable normalized
+      edge input structures.
+
+
+  # ----------------------------------------------------------
+  # EDGE INGESTION IMPLEMENTATION
+  # ----------------------------------------------------------
+
+  afritech.edge.ingestion.queue_ingestor:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      EDGE
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/edge/ingestion/queue_ingestor.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - normalized_event_queue_publish
+      - queue_protocol_boundary
+      - event_copy_isolation
+
+    forbidden_behaviors:
+
+      - direct_core_invocation
+      - unqueued_external_admission
+      - mutable_event_aliasing
+      - observer_relative_queue_selection
+
+    description: >
+      Implemented deterministic edge ingestion surface admitting
+      normalized inputs through explicit queue publish semantics.
+
+
+  afritech.guards.edge_input_guard:
+
+    implementation_state:
+      IMPLEMENTED
+
+    category:
+      GUARD
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    replay_significance:
+      REQUIRED
+
+    canonical_path:
+      afritech/guards/edge_input_guard.py
+
+    semantic_properties:
+
+      deterministic_execution: true
+
+      replay_admissible: true
+
+      proof_admissible: true
+
+      closed_world_aligned: true
+
+      observer_independent: true
+
+      replay_safe: true
+
+    completed_capabilities:
+
+      - adapter_normalization_ingestion_order_validation
+      - malformed_trace_rejection
+      - direct_external_execution_rejection
+
+    description: >
+      Implemented edge input guard enforcing adapter to
+      normalization to ingestion ordering before execution admission.
+
+
 # ============================================================
 # GLOBAL RULES
 # ============================================================

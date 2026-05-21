@@ -373,6 +373,216 @@ surfaces:
       replay attestation and witness admissibility.
 
 
+  # ----------------------------------------------------------
+  # EDGE ADAPTER
+  # ----------------------------------------------------------
+
+  edge_adapter:
+
+    canonical_identity:
+      afritech.edge.adapter
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    replay_participating:
+      true
+
+    authority_owner:
+
+      - afritech.edge.adapter
+
+    mutation_authority:
+
+      - none
+
+    mutation_constraints:
+
+      - canonical_input_required
+      - deterministic_adapter_required
+      - replay_traceability_required
+      - closed_world_execution_required
+
+    authority_scope:
+
+      - external_input_adaptation
+      - canonical_request_envelope_generation
+      - edge_admission_preparation
+
+    witness_dependencies:
+
+      - afritech.proof.witness.execution_witness
+
+    description: >
+      Edge adapter execution surface responsible for converting
+      external inputs into canonical, replay-safe, deterministic
+      input structures before runtime admission.
+
+
+  # ----------------------------------------------------------
+  # EDGE NORMALIZATION
+  # ----------------------------------------------------------
+
+  edge_normalization:
+
+    canonical_identity:
+      afritech.edge.normalization
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    replay_participating:
+      true
+
+    authority_owner:
+
+      - afritech.edge.normalization
+
+    mutation_authority:
+
+      - none
+
+    mutation_constraints:
+
+      - stable_hashing_required
+      - canonical_identity_alignment_required
+      - deterministic_transformation_required
+      - replay_traceability_required
+
+    authority_scope:
+
+      - deterministic_input_normalization
+      - canonical_payload_hashing
+      - timestamp_bucket_normalization
+
+    witness_dependencies:
+
+      - afritech.proof.witness.mutation_witness
+
+    description: >
+      Edge normalization execution surface enforcing deterministic
+      input transformation, ambiguity removal, replay-stable
+      hashing, and canonical identity alignment.
+
+
+  # ----------------------------------------------------------
+  # EDGE INGESTION
+  # ----------------------------------------------------------
+
+  edge_ingestion:
+
+    canonical_identity:
+      afritech.edge.ingestion
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      EDGE
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    proof_admissible:
+      true
+
+    replay_participating:
+      true
+
+    authority_owner:
+
+      - afritech.edge.ingestion
+
+    mutation_authority:
+
+      - none
+
+    mutation_constraints:
+
+      - normalized_input_required
+      - queue_mediated_admission_required
+      - replay_traceability_required
+      - closed_world_execution_required
+
+    authority_scope:
+
+      - deterministic_queue_ingestion
+      - normalized_event_admission
+      - edge_pipeline_ordering
+
+    witness_dependencies:
+
+      - afritech.proof.witness.transcript_witness
+
+    description: >
+      Edge ingestion execution surface responsible for admitting
+      normalized events into deterministic execution pipelines
+      through controlled queueing semantics.
+
+
 # ============================================================
 # REPLAY ALIGNMENT
 # ============================================================

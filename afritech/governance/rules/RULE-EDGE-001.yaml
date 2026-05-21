@@ -1,0 +1,25 @@
+id: RULE-EDGE-001
+status: ACTIVE
+classification: CONSTITUTIONAL_EDGE_ADMISSION_RULE
+rule: >
+  External inputs must never directly enter runtime execution.
+  All external inputs must pass through adapter, normalization,
+  and ingestion surfaces before execution admission.
+enforcement:
+  runtime: true
+  replay: true
+  ci: true
+required_sequence:
+  - adapter
+  - normalization
+  - ingestion
+forbidden:
+  - direct_external_runtime_execution
+  - unnormalized_external_input
+  - unqueued_external_admission
+  - observer_relative_edge_ordering
+  - unrecorded_provider_input
+failure_effect:
+  - execution_refusal
+  - replay_invalid
+  - ci_failure

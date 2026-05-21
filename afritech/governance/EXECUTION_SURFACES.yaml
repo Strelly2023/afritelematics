@@ -61,12 +61,18 @@ allowed_execution_surfaces:
       - runtime_engine
       - proof
       - evaluation
+      - edge_adapter
+      - edge_normalization
+      - edge_ingestion
 
     canonical_replacements:
       - runtime_activation
       - runtime_engine
       - proof
       - evaluation
+      - edge_adapter
+      - edge_normalization
+      - edge_ingestion
 
     admissibility:
       new_runtime_usage: FORBIDDEN
@@ -330,3 +336,71 @@ allowed_execution_surfaces:
     forbidden_operations:
       - autonomous_mutation
       - direct_runtime_modification
+
+  edge_adapter:
+    status: CANONICAL
+
+    description: >
+      Edge adapter surface converting external inputs into
+      canonical deterministic request envelopes before runtime
+      admission.
+
+    paths:
+      - afritech/edge/adapter/
+
+    allowed_operations:
+      - external_input_adaptation
+      - canonical_envelope_generation
+      - adapter_validation
+
+    forbidden_operations:
+      - direct_runtime_execution
+      - core_invocation
+      - observer_relative_adaptation
+      - filesystem_identity_resolution
+
+  edge_normalization:
+    status: CANONICAL
+
+    description: >
+      Edge normalization surface transforming adapted inputs into
+      replay-stable canonical inputs using deterministic hashing
+      and canonical identity alignment.
+
+    paths:
+      - afritech/edge/normalization/
+
+    allowed_operations:
+      - deterministic_input_normalization
+      - canonical_payload_hashing
+      - timestamp_bucket_normalization
+      - normalization_validation
+
+    forbidden_operations:
+      - process_randomized_hashing
+      - unnormalized_external_admission
+      - observer_relative_transformation
+      - direct_runtime_execution
+
+  edge_ingestion:
+    status: CANONICAL
+
+    description: >
+      Edge ingestion surface admitting normalized inputs into
+      deterministic execution pipelines through controlled queue
+      publish semantics.
+
+    paths:
+      - afritech/edge/ingestion/
+
+    allowed_operations:
+      - normalized_event_ingestion
+      - queue_publish
+      - edge_pipeline_ordering
+
+    forbidden_operations:
+      - direct_core_invocation
+      - direct_runtime_execution
+      - raw_external_input_ingestion
+      - observer_relative_queue_selection
+      - unqueued_external_admission

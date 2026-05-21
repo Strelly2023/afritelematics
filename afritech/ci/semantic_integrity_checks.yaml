@@ -33,6 +33,9 @@ checks:
   - id: CI-SEM-011
     name: kernel_size_constraint
     enforcement: block_merge
+  - id: CI-EDGE-001
+    name: edge_pipeline_required
+    enforcement: block_merge
 failure:
   block_merge: true
   severity: CRITICAL

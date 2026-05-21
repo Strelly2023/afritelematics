@@ -63,6 +63,9 @@ CANONICAL_SURFACES = {
     "runtime_engine",
     "proof",
     "evaluation",
+    "edge_adapter",
+    "edge_normalization",
+    "edge_ingestion",
 }
 
 DEPRECATED_AGGREGATES = {
