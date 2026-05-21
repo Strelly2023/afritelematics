@@ -5,6 +5,7 @@ from afritech.ci import (
     geo_determinism_validator,
     scale_determinism_validator,
 )
+from afritech.simulation.validation_receipt import SCHEMA
 from afritech.simulation.scale.cluster_simulator import (
     ClusterSimulator,
     hash_scale_trace,
@@ -105,3 +106,27 @@ def test_phase1_validators_pass() -> None:
     geo_determinism_validator.run()
     client_replay_validator.run()
     scale_determinism_validator.run()
+
+
+def test_phase1_validators_emit_replay_stable_validation_receipts() -> None:
+    geo_receipt_a = geo_determinism_validator.build_receipt()
+    geo_receipt_b = geo_determinism_validator.build_receipt()
+    client_receipt_a = client_replay_validator.build_receipt()
+    client_receipt_b = client_replay_validator.build_receipt()
+    scale_receipt_a = scale_determinism_validator.build_receipt()
+    scale_receipt_b = scale_determinism_validator.build_receipt()
+
+    for left, right in (
+        (geo_receipt_a, geo_receipt_b),
+        (client_receipt_a, client_receipt_b),
+        (scale_receipt_a, scale_receipt_b),
+    ):
+        assert left.schema == SCHEMA
+        assert left == right
+        assert left.replay_hash == right.replay_hash
+        assert left.deterministic is True
+        assert left.replay_safe is True
+        assert left.input_hash
+        assert left.output_hash
+        assert left.trace_hash
+        assert left.evidence
