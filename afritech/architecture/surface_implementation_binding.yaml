@@ -320,11 +320,17 @@ bindings:
       - execution
       - replay_binding
 
+    data_locality:
+      enforced: true
+      rule: RULE-036
+      guard: afritech.guards.data_locality_guard.validate_data_locality
+
     enforced_by:
 
       - afritech.ci.execution_completeness_validator
       - afritech.ci.invariant_validator
       - afritech.ci.receipt_validator
+      - afritech.guards.data_locality_guard
 
     witness_dependencies:
 
@@ -461,37 +467,239 @@ bindings:
     proof_admissible:
       true
 
+    locality_scheduler:
+      implementation: afritech.runtime.locality.scheduler
+      role: locality_enforcement_and_optimization
+      deterministic_required: true
+      replay_safe_required: true
+      witness_requirements:
+        - locality_trace
+        - scheduler_trace
+
+    execution_graph_optimizer:
+      implementation: afritech.runtime.orchestration.execution_graph_optimizer
+      role: replay_safe_dag_optimization
+      deterministic_required: true
+      replay_safe_required: true
+      witness_requirements:
+        - graph_optimizer_trace
+        - scheduler_trace
+
     authority_scope:
 
       - deterministic_ordering
       - execution_sequence_control
       - replay_order_alignment
+      - locality_enforcement_and_optimization
+      - replay_safe_dag_optimization
 
     enforced_by:
 
       - afritech.ci.ast_call_order_validator
       - afritech.ci.execution_completeness_validator
+      - afritech.runtime.locality.scheduler
+      - afritech.runtime.orchestration.execution_graph_optimizer
 
     witness_dependencies:
 
       - afritech.proof.witness.execution_witness
       - afritech.proof.witness.transcript_witness
+      - locality_trace
+      - scheduler_trace
+      - graph_optimizer_trace
 
     guarantees:
 
       - deterministic_ordering
       - replay_order_alignment
       - no_observer_relative_schedule
+      - deterministic_scheduler_replay
+      - locality_governed_optimization
+      - deterministic_graph_optimization
+      - partition_preserving_pipeline_fusion
+      - zero_copy_graph_flow_traceability
 
     forbidden:
 
       - nondeterministic_schedule
       - hidden_execution_order
       - observer_relative_ordering
+      - untraced_scheduler_adjustment
+      - cross_partition_work_stealing
+      - cross_partition_pipeline_fusion
+      - untraced_graph_optimization
 
     description: >
       Runtime orchestration binding for deterministic execution
       ordering and replay-aligned scheduling.
+
+
+  # ----------------------------------------------------------
+  # DISTRIBUTED EXECUTION FABRIC
+  # ----------------------------------------------------------
+
+  distributed_execution_fabric:
+
+    canonical_identity:
+      afritech.distributed.fabric.execution_fabric
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      DISTRIBUTED_RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - cluster_partition_orchestration
+      - network_aware_scheduling
+      - deterministic_failover
+      - deterministic_merge_ordering
+
+    enforced_by:
+
+      - afritech.distributed.fabric.execution_fabric
+      - afritech.distributed.replay.distributed_replay_verifier
+
+    witness_dependencies:
+
+      - distributed_fabric_trace
+      - scheduler_trace
+      - graph_optimizer_trace
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+
+    guarantees:
+
+      - canonical_partition_ownership
+      - deterministic_network_placement
+      - replay_safe_failover
+      - deterministic_distributed_merge
+      - fabric_trace_replay_validation
+
+    forbidden:
+
+      - random_node_selection
+      - realtime_load_authority
+      - undeclared_partition_ownership
+      - nondeterministic_failover
+      - untraced_distributed_routing
+
+    description: >
+      Distributed multi-node execution fabric binding for
+      replay-safe cluster-wide partition orchestration,
+      network-aware scheduling, deterministic failover, and
+      canonical merge ordering.
+
+
+  # ----------------------------------------------------------
+  # DISTRIBUTED OS
+  # ----------------------------------------------------------
+
+  distributed_os:
+
+    canonical_identity:
+      afritech.distributed.os.distributed_os
+
+    implementation_state:
+      IMPLEMENTED
+
+    ontology:
+      CANONICAL_MODULE_PATH
+
+    category:
+      DISTRIBUTED_RUNTIME
+
+    replay_significance:
+      REQUIRED
+
+    deterministic_required:
+      true
+
+    replay_safe_required:
+      true
+
+    closed_world_required:
+      true
+
+    runtime_admissible:
+      true
+
+    replay_participating:
+      true
+
+    proof_admissible:
+      true
+
+    authority_scope:
+
+      - deterministic_autoscaling
+      - cross_cluster_federation
+      - hardware_policy_binding
+      - execution_snapshot_management
+      - resource_contract_enforcement
+
+    enforced_by:
+
+      - afritech.distributed.os.distributed_os
+      - afritech.distributed.fabric.execution_fabric
+
+    witness_dependencies:
+
+      - distributed_os_trace
+      - distributed_fabric_trace
+      - scheduler_trace
+      - graph_optimizer_trace
+      - afritech.proof.witness.execution_witness
+      - afritech.proof.witness.replay_witness
+
+    guarantees:
+
+      - deterministic_environment_planning
+      - replay_safe_autoscaling
+      - canonical_federation_routing
+      - deterministic_hardware_binding
+      - persistent_snapshot_replayability
+      - declared_resource_containment
+
+    forbidden:
+
+      - realtime_load_authority
+      - random_scaling
+      - latency_based_routing_authority
+      - dynamic_hardware_selection
+      - untraced_snapshot_restore
+      - resource_contract_escape
+
+    description: >
+      Deterministic distributed OS binding for replay-safe
+      environment planning above the execution engine,
+      including autoscaling, federation routing, hardware
+      binding, execution snapshots, and resource contracts.
 
 
   # ----------------------------------------------------------

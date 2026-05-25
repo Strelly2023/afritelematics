@@ -1,0 +1,86 @@
+schema: afritech.concept.data_locality.v1
+
+version: 1
+
+metadata:
+  authority: CONSTITUTION
+  status: ACTIVE
+  mutability: CONTROLLED
+  concept_class: CANONICAL_CONCEPT
+  description: >
+    Canonical constitutional definition of bounded data-locality semantics.
+
+concept:
+  id: CONCEPT_DATA_LOCALITY
+  canonical_name: data_locality
+  name: data_locality
+  domain:
+    - runtime
+    - replay
+    - enforcement
+    - execution_surfaces
+
+  constitutional_domain:
+    - runtime
+    - replay
+    - enforcement
+    - execution_surfaces
+
+definition:
+  summary: >
+    Data locality requires execution to operate near the data it depends on,
+    inside bounded declared surfaces, using predictable and replay-safe access
+    patterns.
+
+  requires:
+    - bounded_data_access
+    - surface_scoped_data
+    - deterministic_access_patterns
+    - partition_affinity
+    - declared_working_set_limits
+
+  forbidden_when:
+    - random_data_access
+    - cross_surface_data_dependency
+    - unbounded_working_set
+    - undeclared_partition_hop
+    - dynamic_data_discovery
+
+  canonical_statement: >
+    Data locality is bounded execution context: accessed data, surfaces, and
+    partitions must remain inside declared execution scope.
+
+enforcement_points:
+  - afritech.guards.data_locality_guard
+  - afritech.ci.invariant_validator
+  - afritech.ci.semantic_concept_validator
+  - afritech.ci.execution_completeness_validator
+
+witness_requirements:
+  - locality_trace
+  - scheduler_trace
+  - execution_witness
+  - replay_witness
+  - transcript_witness
+  - locality_scope_witness
+
+replay_requirements:
+  - deterministic_access_scope
+  - stable_partition_affinity
+  - declared_surface_scope
+  - bounded_working_set
+
+rules:
+  - id: LOCALITY_RULE_1
+    rule: Execution must operate within bounded data scope
+  - id: LOCALITY_RULE_2
+    rule: Cross-surface data access must be explicit and replay-safe
+  - id: LOCALITY_RULE_3
+    rule: Partition hops must preserve stable locality affinity
+  - id: LOCALITY_RULE_9
+    rule: Work stealing is permitted only within same partition and NUMA boundary
+
+constitutional_assertion:
+  statement: >
+    accessed_data subset_of bounded_execution_scope and execution_surface
+    subset_of declared_surfaces.

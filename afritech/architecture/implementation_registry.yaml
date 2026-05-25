@@ -4,7 +4,8 @@ version: 2
 
 metadata:
 
-  authority: ARCHITECTURE
+  #authority: ARCHITECTURE
+  authority: OPERATIONAL
 
   status: ACTIVE
 
@@ -1594,3 +1595,57 @@ constitutional_assertion:
       - observer-relative interpretation
       - speculative inference
       - symbolic naming shortcuts
+
+afritech.distributed.partition.partition_assignment:
+  status: implemented
+
+afritech.distributed.partition.partition_registry:
+  status: implemented
+
+afritech.distributed.queue.queue_record:
+  status: implemented
+
+afritech.distributed.queue.distributed_queue_adapter:
+  status: implemented
+
+afritech.distributed.worker.worker_node:
+  status: implemented
+
+afritech.distributed.worker.worker_result:
+  status: implemented
+
+afritech.distributed.replay.distributed_replay_verifier:
+  status: implemented
+
+afritech.distributed.replay.distributed_ledger:
+  status: implemented
+
+afritech.distributed.replay.distributed_execution_transcript:
+  status: implemented
+
+afritech.distributed.recovery.recovery_protocol:
+  status: implemented
+
+afritech.distributed.recovery.partition_rebuild:
+  status: implemented
+
+afritech.distributed.recovery.node_recovery:
+  status: implemented
+
+afritech.distributed.coordinator.coordinator:
+  status: implemented
+
+afritech.distributed.coordinator.batch_coordinator:
+  status: implemented
+
+afritech.runtime.locality.scheduler:
+  status: IMPLEMENTED
+
+afritech.runtime.orchestration.execution_graph_optimizer:
+  status: IMPLEMENTED
+
+afritech.distributed.fabric.execution_fabric:
+  status: IMPLEMENTED
+
+afritech.distributed.os.distributed_os:
+  status: IMPLEMENTED

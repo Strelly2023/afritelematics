@@ -1,0 +1,33 @@
+id: RULE-036
+name: data_locality_enforcement
+
+description: >
+  Enforces that all execution surfaces operate on localized,
+  bounded data sets to preserve performance and determinism.
+
+applies_to:
+  - runtime
+  - replay
+  - execution_surfaces
+
+requirements:
+  - surface_scoped_data_access
+  - bounded_working_set
+  - deterministic_access_pattern
+  - scheduler_trace_required
+  - work_stealing_same_partition_and_numa
+
+forbidden:
+  - random_access_patterns
+  - cross_surface_unbounded_calls
+  - pointer_heavy_data_structures
+  - cross_partition_work_stealing
+  - cross_numa_work_stealing
+
+rules:
+  - id: LOCALITY_RULE_9
+    rule: Work stealing is permitted only within same partition and NUMA boundary
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

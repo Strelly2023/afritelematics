@@ -1,0 +1,24 @@
+schema: afritech.surface_implementation_registry.v1
+
+version: 1
+
+metadata:
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+  registry_class: CONSTITUTIONAL_SURFACE_IMPLEMENTATION_REGISTRY
+  description: >
+    Declares implemented execution surfaces that participate in
+    deterministic replay-safe runtime behavior.
+
+afritech.runtime.locality.scheduler:
+  status: IMPLEMENTED
+
+afritech.runtime.orchestration.execution_graph_optimizer:
+  status: IMPLEMENTED
+
+afritech.distributed.fabric.execution_fabric:
+  status: IMPLEMENTED
+
+afritech.distributed.os.distributed_os:
+  status: IMPLEMENTED
