@@ -10,9 +10,50 @@ foundational_principle: >
   operational capability, and AI-ready enterprise intelligence.
 
 canonical_statement: >
+  AfriTech has four constitutional pillars: Deterministic Truth, Orchestration,
+  Data Locality, and Observability. AfriTech also has four ecosystem pillars:
   AfriCPPT governs. AfriTPPS executes. AfriProgramming builds. AFRIPower
-  explains. Together, they form the four foundational pillars of the AfriTech
-  Ecosystem.
+  explains.
+
+constitutional_pillars:
+  - id: DETERMINISTIC_TRUTH
+    name: Deterministic Truth
+    constitutional_function: Replay Governance
+    purpose: Defines canonical truth through deterministic replay.
+    question_answered: What is true?
+    authority_boundary: Truth is produced by replay governance, not assertion.
+  - id: ORCHESTRATION
+    name: Orchestration
+    constitutional_function: Replay-Safe Execution
+    purpose: Coordinates execution while preserving replay safety.
+    question_answered: How does execution proceed safely?
+    authority_boundary: Orchestration coordinates execution but does not redefine truth.
+  - id: DATA_LOCALITY
+    name: Data Locality
+    constitutional_function: Compute Near Data
+    purpose: Keeps compute near bounded, declared data scope.
+    question_answered: Where should computation happen?
+    authority_boundary: Data movement must remain declared, bounded, and replay-safe.
+  - id: OBSERVABILITY
+    name: Observability
+    constitutional_function: Explain Without Authority
+    purpose: Explains system behavior without creating decision authority.
+    question_answered: What happened and why?
+    authority_boundary: Observability may explain but must not govern, mutate, or decide.
+
+ecosystem_pillars:
+  - id: AfriCPPT
+    role: GOVERNANCE
+    canonical_action: governs
+  - id: AfriTPPS
+    role: EXECUTION
+    canonical_action: executes
+  - id: AfriProgramming
+    role: ENGINEERING
+    canonical_action: builds
+  - id: AFRIPower
+    role: INTELLIGENCE
+    canonical_action: explains
 
 core_definitions:
   afritech:

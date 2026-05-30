@@ -8,6 +8,31 @@ Canonical Foundation of the AfriTech Ecosystem
 
 This principle is the constitutional root. All systems, frameworks, and implementations must derive from and align with it.
 
+## 1.1 Constitutional Pillars
+
+These are the internal laws every AfriTech system must obey.
+
+```text
+1. Deterministic Truth
+   (Replay Governance)
+
+2. Orchestration
+   (Replay-Safe Execution)
+
+3. Data Locality
+   (Compute Near Data)
+
+4. Observability
+   (Explain Without Authority)
+```
+
+Constitutional pillar separation:
+
+- Deterministic Truth defines canonical truth through replay governance.
+- Orchestration coordinates execution while preserving replay safety.
+- Data Locality keeps compute near bounded, declared data scope.
+- Observability explains behavior without creating decision authority.
+
 ## 2. Core Definitions
 
 ### AfriTech
@@ -31,6 +56,8 @@ An operational capability framework that enables structured execution through al
 An intelligent enterprise readiness framework that structures content, data, and workflows for AI-driven decision-making and automation.
 
 ## 3. System Hierarchy
+
+These are the ecosystem pillars, not the constitutional pillars.
 
 ```text
 AfriTech Ecosystem

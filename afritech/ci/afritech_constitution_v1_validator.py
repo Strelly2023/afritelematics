@@ -20,6 +20,8 @@ REQUIRED_ROOT_KEYS = {
     "scope",
     "foundational_principle",
     "canonical_statement",
+    "constitutional_pillars",
+    "ecosystem_pillars",
     "core_definitions",
     "hierarchy",
     "constitutional_rules",
@@ -45,12 +47,43 @@ REQUIRED_BRANCH_DOMAINS = {
 }
 
 REQUIRED_CANONICAL_PHRASES = (
+    "four constitutional pillars",
+    "Deterministic Truth",
+    "Orchestration",
+    "Data Locality",
+    "Observability",
+    "four ecosystem pillars",
     "AfriCPPT governs",
     "AfriTPPS executes",
     "AfriProgramming builds",
     "AFRIPower explains",
-    "four foundational pillars of the AfriTech Ecosystem",
 )
+
+REQUIRED_CONSTITUTIONAL_PILLARS = {
+    "DETERMINISTIC_TRUTH": {
+        "name": "Deterministic Truth",
+        "constitutional_function": "Replay Governance",
+    },
+    "ORCHESTRATION": {
+        "name": "Orchestration",
+        "constitutional_function": "Replay-Safe Execution",
+    },
+    "DATA_LOCALITY": {
+        "name": "Data Locality",
+        "constitutional_function": "Compute Near Data",
+    },
+    "OBSERVABILITY": {
+        "name": "Observability",
+        "constitutional_function": "Explain Without Authority",
+    },
+}
+
+REQUIRED_ECOSYSTEM_PILLARS = {
+    "AfriCPPT": {"role": "GOVERNANCE", "canonical_action": "governs"},
+    "AfriTPPS": {"role": "EXECUTION", "canonical_action": "executes"},
+    "AfriProgramming": {"role": "ENGINEERING", "canonical_action": "builds"},
+    "AFRIPower": {"role": "INTELLIGENCE", "canonical_action": "explains"},
+}
 
 REQUIRED_BRANCH_PURPOSES = {
     "AfriCPPT": "Defines what is allowed.",
@@ -194,6 +227,95 @@ def validate_hierarchy(payload: dict[str, Any]) -> None:
         fail(f"hierarchy branch order mismatch: {branch_ids!r}")
 
 
+def validate_constitutional_pillars(payload: dict[str, Any]) -> None:
+    pillars = payload.get("constitutional_pillars")
+    if not isinstance(pillars, list) or not pillars:
+        fail("constitutional_pillars must be a non-empty list")
+
+    pillar_ids: list[str] = []
+    discovered: dict[str, dict[str, Any]] = {}
+    for index, pillar in enumerate(pillars):
+        if not isinstance(pillar, dict):
+            fail(f"constitutional_pillars[{index}] must be a mapping")
+
+        pillar_id = pillar.get("id")
+        if not isinstance(pillar_id, str) or not pillar_id:
+            fail(f"constitutional_pillars[{index}] missing id")
+
+        pillar_ids.append(pillar_id)
+        discovered[pillar_id] = pillar
+
+        for key in (
+            "name",
+            "constitutional_function",
+            "purpose",
+            "question_answered",
+            "authority_boundary",
+        ):
+            value = pillar.get(key)
+            if not isinstance(value, str) or not value.strip():
+                fail(f"constitutional pillar {pillar_id} missing {key}")
+
+    if pillar_ids != list(REQUIRED_CONSTITUTIONAL_PILLARS):
+        fail(f"constitutional pillar order mismatch: {pillar_ids!r}")
+
+    extra = set(pillar_ids) - set(REQUIRED_CONSTITUTIONAL_PILLARS)
+    if extra:
+        fail(f"unexpected constitutional pillars: {sorted(extra)}")
+
+    missing = set(REQUIRED_CONSTITUTIONAL_PILLARS) - set(pillar_ids)
+    if missing:
+        fail(f"missing constitutional pillars: {sorted(missing)}")
+
+    for pillar_id, expected in REQUIRED_CONSTITUTIONAL_PILLARS.items():
+        pillar = discovered[pillar_id]
+        for key, expected_value in expected.items():
+            if pillar.get(key) != expected_value:
+                fail(
+                    f"constitutional pillar {pillar_id} {key} mismatch: "
+                    f"{pillar.get(key)!r}"
+                )
+
+
+def validate_ecosystem_pillars(payload: dict[str, Any]) -> None:
+    pillars = payload.get("ecosystem_pillars")
+    if not isinstance(pillars, list) or not pillars:
+        fail("ecosystem_pillars must be a non-empty list")
+
+    pillar_ids: list[str] = []
+    discovered: dict[str, dict[str, Any]] = {}
+    for index, pillar in enumerate(pillars):
+        if not isinstance(pillar, dict):
+            fail(f"ecosystem_pillars[{index}] must be a mapping")
+
+        pillar_id = pillar.get("id")
+        if not isinstance(pillar_id, str) or not pillar_id:
+            fail(f"ecosystem_pillars[{index}] missing id")
+
+        pillar_ids.append(pillar_id)
+        discovered[pillar_id] = pillar
+
+    if pillar_ids != list(REQUIRED_ECOSYSTEM_PILLARS):
+        fail(f"ecosystem pillar order mismatch: {pillar_ids!r}")
+
+    extra = set(pillar_ids) - set(REQUIRED_ECOSYSTEM_PILLARS)
+    if extra:
+        fail(f"unexpected ecosystem pillars: {sorted(extra)}")
+
+    missing = set(REQUIRED_ECOSYSTEM_PILLARS) - set(pillar_ids)
+    if missing:
+        fail(f"missing ecosystem pillars: {sorted(missing)}")
+
+    for pillar_id, expected in REQUIRED_ECOSYSTEM_PILLARS.items():
+        pillar = discovered[pillar_id]
+        for key, expected_value in expected.items():
+            if pillar.get(key) != expected_value:
+                fail(
+                    f"ecosystem pillar {pillar_id} {key} mismatch: "
+                    f"{pillar.get(key)!r}"
+                )
+
+
 def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
     responsibilities = payload.get("layer_responsibilities")
     if not isinstance(responsibilities, dict):
@@ -267,6 +389,8 @@ def validate(path: Path = CONSTITUTION) -> None:
     validate_required_root_keys(payload)
     validate_canonical_relationship(payload)
     validate_core_definitions(payload)
+    validate_constitutional_pillars(payload)
+    validate_ecosystem_pillars(payload)
     validate_hierarchy(payload)
     validate_branch_responsibilities(payload)
 
