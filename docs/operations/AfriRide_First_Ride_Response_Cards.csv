@@ -1,0 +1,11 @@
+scenario,operator_response,required_evidence,stop_if
+driver asks about pay fairness,"We are testing whether pricing feels fair before we scale. After the ride we will show the trip record and ask what felt right or wrong.",pricing_explanation;driver_feedback,driver cannot see or understand the price explanation
+driver worries about hidden pricing,"AfriRide should not hide the reason for a trip price. If the price is questioned, we inspect the replay record instead of guessing.",pricing_explanation;replay_receipt,price cannot be explained
+driver does not understand replay,"Replay means we can reconstruct the trip steps: request, assignment, pickup, dropoff, price, and support issue if any.",replay_receipt;trip_timeline,operator cannot show the trip timeline
+user asks why price is different,"Let us inspect the trip record and explain the inputs used for the price before making any adjustment.",pricing_explanation;trip_record,price reason is missing
+pickup is delayed,"We will record the delay, inspect assignment and driver movement, and decide whether this is a product blocker.",dispatch_explanation;pickup_timestamps,delay source cannot be traced
+driver cancels,"We will record the cancellation reason and inspect whether the assignment, pickup, or price caused confusion.",cancellation_trace;driver_feedback,cancellation has no trace
+user cancels,"We will record why the ride was cancelled and inspect whether booking, price, or pickup timing caused the issue.",cancellation_trace;user_feedback,cancellation has no trace
+payment record is unclear,"We will not treat payment as settled until the manual or mock payment record can be reconstructed.",payment_record;trip_record,payment record cannot be reconstructed
+support issue has no trace,"We cannot rely on memory. We need the issue linked to a ride record before deciding what happened.",support_log;trip_record,support issue cannot be linked to a trip
+replay receipt is missing,"Pause the next ride. A completed ride without replay proof breaks the pilot promise.",replay_receipt,next ride would start without replay proof
