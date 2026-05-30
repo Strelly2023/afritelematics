@@ -1,0 +1,285 @@
+"""Validate the non-binding AfriTech Constitution v1.0 doctrine artifact."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+
+ROOT = Path(__file__).resolve().parents[2]
+CONSTITUTION = ROOT / "afritech/constitution/AFRITECH_CONSTITUTION_V1.yaml"
+
+REQUIRED_ROOT_KEYS = {
+    "schema",
+    "version",
+    "status",
+    "authority",
+    "scope",
+    "foundational_principle",
+    "canonical_statement",
+    "core_definitions",
+    "hierarchy",
+    "constitutional_rules",
+    "layer_responsibilities",
+    "doctrines",
+    "system_dynamics",
+    "expansion_rules",
+    "canonical_language",
+}
+
+REQUIRED_BRANCHES = {
+    "AfriCPPT": "GOVERNANCE",
+    "AfriTPPS": "EXECUTION",
+    "AfriProgramming": "ENGINEERING",
+    "AFRIPower": "INTELLIGENCE",
+}
+
+REQUIRED_BRANCH_DOMAINS = {
+    "AfriCPPT": "GOVERNANCE",
+    "AfriTPPS": "EXECUTION",
+    "AFRIPower": "INTELLIGENCE",
+    "AfriProgramming": "ENGINEERING",
+}
+
+REQUIRED_CANONICAL_PHRASES = (
+    "AfriCPPT governs",
+    "AfriTPPS executes",
+    "AfriProgramming builds",
+    "AFRIPower explains",
+    "four foundational pillars of the AfriTech Ecosystem",
+)
+
+REQUIRED_BRANCH_PURPOSES = {
+    "AfriCPPT": "Defines what is allowed.",
+    "AfriTPPS": "Defines how work gets executed.",
+    "AfriProgramming": "Builds and verifies software systems.",
+    "AFRIPower": "Transforms evidence into intelligence.",
+}
+
+REQUIRED_BRANCH_QUESTIONS = {
+    "AfriCPPT": "What should be done?",
+    "AfriTPPS": "How should it be executed?",
+    "AfriProgramming": "How do we build it?",
+    "AFRIPower": "What can we learn from it?",
+}
+
+REQUIRED_BRANCH_OUTPUTS = {
+    "AfriCPPT": {
+        "ADR",
+        "Invariant",
+        "Rule",
+        "Binding",
+        "Guard",
+        "Policy",
+        "Governance Model",
+    },
+    "AfriTPPS": {
+        "Capabilities",
+        "Workflows",
+        "Processes",
+        "Programs",
+        "Operational Models",
+        "Execution Metrics",
+    },
+    "AfriProgramming": {
+        "Code",
+        "Tests",
+        "Validators",
+        "Runtime Systems",
+        "Proof Artifacts",
+        "Software Platforms",
+    },
+    "AFRIPower": {
+        "Insights",
+        "Dashboards",
+        "Reports",
+        "Graph Projections",
+        "Explanations",
+        "Enterprise Intelligence Views",
+    },
+}
+
+
+def fail(message: str) -> None:
+    raise RuntimeError(message)
+
+
+def load_constitution(path: Path = CONSTITUTION) -> dict[str, Any]:
+    if not path.exists():
+        fail(f"constitution file missing: {path.relative_to(ROOT)}")
+
+    try:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        fail(f"constitution YAML does not parse: {exc}")
+
+    if not isinstance(payload, dict):
+        fail("constitution YAML root must be a mapping")
+
+    return payload
+
+
+def validate_required_root_keys(payload: dict[str, Any]) -> None:
+    missing = REQUIRED_ROOT_KEYS - set(payload)
+    if missing:
+        fail(f"constitution missing root keys: {sorted(missing)}")
+
+
+def validate_canonical_relationship(payload: dict[str, Any]) -> None:
+    statement = payload.get("canonical_statement")
+    if not isinstance(statement, str) or not statement.strip():
+        fail("canonical_statement must be a non-empty string")
+
+    missing = [
+        phrase for phrase in REQUIRED_CANONICAL_PHRASES if phrase not in statement
+    ]
+    if missing:
+        fail(f"canonical relationship missing phrases: {missing}")
+
+
+def validate_hierarchy(payload: dict[str, Any]) -> None:
+    hierarchy = payload.get("hierarchy")
+    if not isinstance(hierarchy, dict):
+        fail("hierarchy must be a mapping")
+
+    if hierarchy.get("root") != "AfriTech":
+        fail("hierarchy root must be AfriTech")
+
+    layers = hierarchy.get("layers")
+    if not isinstance(layers, list) or not layers:
+        fail("hierarchy.layers must be a non-empty list")
+
+    branch_ids: list[str] = []
+    discovered_roles: dict[str, str] = {}
+    for index, layer in enumerate(layers):
+        if not isinstance(layer, dict):
+            fail(f"hierarchy.layers[{index}] must be a mapping")
+
+        branch_id = layer.get("id")
+        role = layer.get("role")
+        if not isinstance(branch_id, str) or not branch_id:
+            fail(f"hierarchy.layers[{index}] missing branch id")
+        if not isinstance(role, str) or not role:
+            fail(f"hierarchy.layers[{index}] missing role")
+
+        branch_ids.append(branch_id)
+        discovered_roles[branch_id] = role
+
+    duplicates = sorted(
+        {branch_id for branch_id in branch_ids if branch_ids.count(branch_id) > 1}
+    )
+    if duplicates:
+        fail(f"duplicate hierarchy branch IDs: {duplicates}")
+
+    missing_branches = set(REQUIRED_BRANCHES) - set(branch_ids)
+    if missing_branches:
+        fail(f"hierarchy missing required branches: {sorted(missing_branches)}")
+
+    extra_branches = set(branch_ids) - set(REQUIRED_BRANCHES)
+    if extra_branches:
+        fail(f"hierarchy contains unexpected branches: {sorted(extra_branches)}")
+
+    role_mismatches = {
+        branch_id: (discovered_roles.get(branch_id), expected_role)
+        for branch_id, expected_role in REQUIRED_BRANCHES.items()
+        if discovered_roles.get(branch_id) != expected_role
+    }
+    if role_mismatches:
+        fail(f"hierarchy role mismatch: {role_mismatches}")
+
+    if branch_ids != list(REQUIRED_BRANCHES):
+        fail(f"hierarchy branch order mismatch: {branch_ids!r}")
+
+
+def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
+    responsibilities = payload.get("layer_responsibilities")
+    if not isinstance(responsibilities, dict):
+        fail("layer_responsibilities must be a mapping")
+
+    for branch_id, expected_domain in REQUIRED_BRANCH_DOMAINS.items():
+        branch = responsibilities.get(branch_id)
+        if not isinstance(branch, dict):
+            fail(f"{branch_id} responsibilities missing")
+
+        domain = branch.get("domain")
+        if domain != expected_domain:
+            fail(f"{branch_id} domain must be {expected_domain}, got {domain!r}")
+
+        items = branch.get("responsibilities")
+        if not isinstance(items, list) or not items:
+            fail(f"{branch_id} must define at least one responsibility")
+        if not all(isinstance(item, str) and item.strip() for item in items):
+            fail(f"{branch_id} responsibilities must be non-empty strings")
+
+        if branch.get("purpose") != REQUIRED_BRANCH_PURPOSES[branch_id]:
+            fail(f"{branch_id} purpose mismatch: {branch.get('purpose')!r}")
+
+        if branch.get("question_answered") != REQUIRED_BRANCH_QUESTIONS[branch_id]:
+            fail(
+                f"{branch_id} question_answered mismatch: "
+                f"{branch.get('question_answered')!r}"
+            )
+
+        outputs = branch.get("outputs")
+        if not isinstance(outputs, list):
+            fail(f"{branch_id} outputs must be a list")
+        missing_outputs = REQUIRED_BRANCH_OUTPUTS[branch_id] - set(outputs)
+        if missing_outputs:
+            fail(f"{branch_id} outputs missing: {sorted(missing_outputs)}")
+
+    chain = responsibilities["AfriCPPT"].get("canonical_chain")
+    expected_chain = ["ADR", "INVARIANT", "RULE", "BINDING", "GUARD", "CI"]
+    if chain != expected_chain:
+        fail(f"AfriCPPT canonical chain mismatch: {chain!r}")
+
+
+def validate_core_definitions(payload: dict[str, Any]) -> None:
+    definitions = payload.get("core_definitions")
+    if not isinstance(definitions, dict):
+        fail("core_definitions must be a mapping")
+
+    required_definition_keys = {
+        "afritech",
+        "afri_programming",
+        "afri_cppt",
+        "afri_tpps",
+        "afri_power",
+    }
+    missing = required_definition_keys - set(definitions)
+    if missing:
+        fail(f"core_definitions missing entries: {sorted(missing)}")
+
+    for key in required_definition_keys:
+        definition = definitions.get(key)
+        if not isinstance(definition, dict):
+            fail(f"core_definitions.{key} must be a mapping")
+        if not definition.get("role"):
+            fail(f"core_definitions.{key} missing role")
+        if not definition.get("definition"):
+            fail(f"core_definitions.{key} missing definition")
+
+
+def validate(path: Path = CONSTITUTION) -> None:
+    payload = load_constitution(path)
+    validate_required_root_keys(payload)
+    validate_canonical_relationship(payload)
+    validate_core_definitions(payload)
+    validate_hierarchy(payload)
+    validate_branch_responsibilities(payload)
+
+
+def main() -> int:
+    try:
+        validate()
+        print("AfriTech Constitution v1.0 validation PASSED")
+        return 0
+    except Exception as exc:
+        print(f"AfriTech Constitution v1.0 validation failed: {exc}")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
