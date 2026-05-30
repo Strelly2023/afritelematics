@@ -13,7 +13,9 @@ canonical_statement: >
   AfriTech has four constitutional pillars: Deterministic Truth, Orchestration,
   Data Locality, and Observability. AfriTech also has four ecosystem pillars:
   AfriCPPT governs. AfriTPPS executes. AfriProgramming builds. AFRIPower
-  explains.
+  explains. The mature AfriTech core model organizes eighteen core pillars
+  across constitutional kernel, runtime, distributed scale, governance, and
+  human/ecosystem layers.
 
 constitutional_pillars:
   - id: DETERMINISTIC_TRUTH
@@ -40,6 +42,87 @@ constitutional_pillars:
     purpose: Explains system behavior without creating decision authority.
     question_answered: What happened and why?
     authority_boundary: Observability may explain but must not govern, mutate, or decide.
+
+core_pillar_layers:
+  - id: CONSTITUTIONAL_KERNEL
+    name: Constitutional Kernel
+    purpose: Defines truth.
+    legitimacy_boundary: Truth remains narrow and replay-governed.
+    pillars:
+      - id: DETERMINISTIC_EXECUTION
+        name: Deterministic Execution
+        summary: Same execution produces same replay and same legitimacy.
+      - id: REPLAY_LEGITIMACY
+        name: Replay Legitimacy
+        summary: Replay reconstructs constitutional truth.
+      - id: CLOSED_WORLD_ADMISSIBILITY
+        name: Closed-World Admissibility
+        summary: Undeclared surfaces are inadmissible.
+      - id: CANONICAL_IDENTITY
+        name: Canonical Identity
+        summary: Identity derives from ontology, not observation.
+      - id: CONSTITUTIONAL_AUTHORITY
+        name: Constitutional Authority
+        summary: Authority must be explicit, bounded, and enforceable.
+  - id: RUNTIME
+    name: Runtime and Operational
+    purpose: Defines lawful execution behavior.
+    legitimacy_boundary: Operations remain replay-safe and cannot redefine truth.
+    pillars:
+      - id: DATA_LOCALITY
+        name: Data Locality
+        summary: Compute near the data.
+      - id: CONTINUITY_PRESERVATION
+        name: Continuity Preservation
+        summary: Identity survives disruption.
+      - id: ENTROPY_CONTAINMENT
+        name: Entropy Containment
+        summary: External uncertainty cannot redefine truth.
+      - id: OBSERVABILITY_ISOLATION
+        name: Observability Isolation
+        summary: Observation may describe execution but may not mutate legitimacy.
+  - id: DISTRIBUTED_SCALE
+    name: Distributed Scale
+    purpose: Defines lawful scaling.
+    legitimacy_boundary: Scaling must converge to replay-equivalent truth.
+    pillars:
+      - id: PARTITIONED_DETERMINISTIC_SCALE
+        name: Partitioned Deterministic Scale
+        summary: Scale without replay divergence.
+      - id: WITNESS_INTEGRITY
+        name: Witness Integrity
+        summary: Every legitimacy-bearing action must be reconstructable.
+      - id: MULTI_NODE_CONVERGENCE
+        name: Multi-Node Convergence
+        summary: Distributed execution must converge to replay-equivalent truth.
+  - id: GOVERNANCE
+    name: Governance and Proof
+    purpose: Prevents conceptual inflation.
+    legitimacy_boundary: Governance remains evidence-bound and authority-minimal.
+    pillars:
+      - id: PROOF_BOUND_GOVERNANCE
+        name: Proof-Bound Governance
+        summary: Claims require executable evidence.
+      - id: PRESERVE_OR_ISOLATE
+        name: Preserve-or-Isolate
+        summary: Unproven expansion must not contaminate proven truth.
+      - id: AUTHORITY_COMPRESSION
+        name: Authority Compression
+        summary: Minimal authority surface, maximal replay verifiability.
+  - id: HUMAN_ECOSYSTEM
+    name: Human and Ecosystem
+    purpose: Defines why the system exists.
+    legitimacy_boundary: Ecosystem expansion cannot redefine legitimacy backward.
+    pillars:
+      - id: HUMAN_CONTINUITY
+        name: Human Continuity
+        summary: People retain identity, agency, and continuity through disruption.
+      - id: ECONOMIC_CONTINUITY
+        name: Economic Continuity
+        summary: Economic participation survives instability.
+      - id: INFRASTRUCTURE_SOVEREIGNTY
+        name: Infrastructure Sovereignty
+        summary: Critical execution infrastructure remains governable by constitutional truth.
 
 ecosystem_pillars:
   - id: AfriCPPT

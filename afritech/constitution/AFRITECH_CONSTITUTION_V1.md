@@ -33,6 +33,97 @@ Constitutional pillar separation:
 - Data Locality keeps compute near bounded, declared data scope.
 - Observability explains behavior without creating decision authority.
 
+## 1.2 Mature Core Pillar Layers
+
+The mature AfriTech core model organizes legitimacy into five layers. This
+prevents conceptual mixing: truth remains narrow, operations remain scalable,
+governance remains bounded, and ecosystem expansion cannot redefine
+constitutional legitimacy backward.
+
+### Constitutional Kernel
+
+Defines truth.
+
+```text
+1. Deterministic Execution
+   same execution -> same replay -> same legitimacy
+
+2. Replay Legitimacy
+   replay reconstructs constitutional truth
+
+3. Closed-World Admissibility
+   undeclared surfaces are inadmissible
+
+4. Canonical Identity
+   identity derives from ontology, not observation
+
+5. Constitutional Authority
+   authority must be explicit, bounded, and enforceable
+```
+
+### Runtime and Operational
+
+Defines lawful execution behavior.
+
+```text
+6. Data Locality
+   compute near the data
+
+7. Continuity Preservation
+   identity survives disruption
+
+8. Entropy Containment
+   external uncertainty cannot redefine truth
+
+9. Observability Isolation
+   observation may describe execution; it may not mutate legitimacy
+```
+
+### Distributed Scale
+
+Defines lawful scaling.
+
+```text
+10. Partitioned Deterministic Scale
+    scale without replay divergence
+
+11. Witness Integrity
+    every legitimacy-bearing action must be reconstructable
+
+12. Multi-Node Convergence
+    distributed execution must converge to replay-equivalent truth
+```
+
+### Governance and Proof
+
+Prevents conceptual inflation.
+
+```text
+13. Proof-Bound Governance
+    claims require executable evidence
+
+14. Preserve-or-Isolate
+    unproven expansion must not contaminate proven truth
+
+15. Authority Compression
+    minimal authority surface, maximal replay verifiability
+```
+
+### Human and Ecosystem
+
+Defines why the system exists.
+
+```text
+16. Human Continuity
+    people retain identity, agency, and continuity through disruption
+
+17. Economic Continuity
+    economic participation survives instability
+
+18. Infrastructure Sovereignty
+    critical execution infrastructure must remain governable by constitutional truth
+```
+
 ## 2. Core Definitions
 
 ### AfriTech

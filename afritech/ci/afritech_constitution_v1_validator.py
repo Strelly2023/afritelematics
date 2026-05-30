@@ -21,6 +21,7 @@ REQUIRED_ROOT_KEYS = {
     "foundational_principle",
     "canonical_statement",
     "constitutional_pillars",
+    "core_pillar_layers",
     "ecosystem_pillars",
     "core_definitions",
     "hierarchy",
@@ -57,7 +58,59 @@ REQUIRED_CANONICAL_PHRASES = (
     "AfriTPPS executes",
     "AfriProgramming builds",
     "AFRIPower explains",
+    "eighteen core pillars",
 )
+
+REQUIRED_CORE_PILLAR_LAYERS = {
+    "CONSTITUTIONAL_KERNEL": (
+        "Constitutional Kernel",
+        "Defines truth.",
+        (
+            "DETERMINISTIC_EXECUTION",
+            "REPLAY_LEGITIMACY",
+            "CLOSED_WORLD_ADMISSIBILITY",
+            "CANONICAL_IDENTITY",
+            "CONSTITUTIONAL_AUTHORITY",
+        ),
+    ),
+    "RUNTIME": (
+        "Runtime and Operational",
+        "Defines lawful execution behavior.",
+        (
+            "DATA_LOCALITY",
+            "CONTINUITY_PRESERVATION",
+            "ENTROPY_CONTAINMENT",
+            "OBSERVABILITY_ISOLATION",
+        ),
+    ),
+    "DISTRIBUTED_SCALE": (
+        "Distributed Scale",
+        "Defines lawful scaling.",
+        (
+            "PARTITIONED_DETERMINISTIC_SCALE",
+            "WITNESS_INTEGRITY",
+            "MULTI_NODE_CONVERGENCE",
+        ),
+    ),
+    "GOVERNANCE": (
+        "Governance and Proof",
+        "Prevents conceptual inflation.",
+        (
+            "PROOF_BOUND_GOVERNANCE",
+            "PRESERVE_OR_ISOLATE",
+            "AUTHORITY_COMPRESSION",
+        ),
+    ),
+    "HUMAN_ECOSYSTEM": (
+        "Human and Ecosystem",
+        "Defines why the system exists.",
+        (
+            "HUMAN_CONTINUITY",
+            "ECONOMIC_CONTINUITY",
+            "INFRASTRUCTURE_SOVEREIGNTY",
+        ),
+    ),
+}
 
 REQUIRED_CONSTITUTIONAL_PILLARS = {
     "DETERMINISTIC_TRUTH": {
@@ -316,6 +369,62 @@ def validate_ecosystem_pillars(payload: dict[str, Any]) -> None:
                 )
 
 
+def validate_core_pillar_layers(payload: dict[str, Any]) -> None:
+    layers = payload.get("core_pillar_layers")
+    if not isinstance(layers, list) or not layers:
+        fail("core_pillar_layers must be a non-empty list")
+
+    layer_ids: list[str] = []
+    total_pillars = 0
+    for index, layer in enumerate(layers):
+        if not isinstance(layer, dict):
+            fail(f"core_pillar_layers[{index}] must be a mapping")
+
+        layer_id = layer.get("id")
+        if not isinstance(layer_id, str) or not layer_id:
+            fail(f"core_pillar_layers[{index}] missing id")
+        layer_ids.append(layer_id)
+
+        if layer_id not in REQUIRED_CORE_PILLAR_LAYERS:
+            fail(f"unexpected core pillar layer: {layer_id}")
+
+        expected_name, expected_purpose, expected_pillars = (
+            REQUIRED_CORE_PILLAR_LAYERS[layer_id]
+        )
+        if layer.get("name") != expected_name:
+            fail(f"{layer_id} name mismatch: {layer.get('name')!r}")
+        if layer.get("purpose") != expected_purpose:
+            fail(f"{layer_id} purpose mismatch: {layer.get('purpose')!r}")
+        if not isinstance(layer.get("legitimacy_boundary"), str):
+            fail(f"{layer_id} missing legitimacy_boundary")
+
+        pillars = layer.get("pillars")
+        if not isinstance(pillars, list) or not pillars:
+            fail(f"{layer_id} pillars must be a non-empty list")
+
+        pillar_ids: list[str] = []
+        for pillar_index, pillar in enumerate(pillars):
+            if not isinstance(pillar, dict):
+                fail(f"{layer_id}.pillars[{pillar_index}] must be a mapping")
+            pillar_id = pillar.get("id")
+            if not isinstance(pillar_id, str) or not pillar_id:
+                fail(f"{layer_id}.pillars[{pillar_index}] missing id")
+            if not isinstance(pillar.get("name"), str) or not pillar["name"].strip():
+                fail(f"{pillar_id} missing name")
+            if not isinstance(pillar.get("summary"), str) or not pillar["summary"].strip():
+                fail(f"{pillar_id} missing summary")
+            pillar_ids.append(pillar_id)
+
+        if tuple(pillar_ids) != expected_pillars:
+            fail(f"{layer_id} pillar order mismatch: {pillar_ids!r}")
+        total_pillars += len(pillar_ids)
+
+    if layer_ids != list(REQUIRED_CORE_PILLAR_LAYERS):
+        fail(f"core pillar layer order mismatch: {layer_ids!r}")
+    if total_pillars != 18:
+        fail(f"core pillar count must be 18, got {total_pillars}")
+
+
 def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
     responsibilities = payload.get("layer_responsibilities")
     if not isinstance(responsibilities, dict):
@@ -390,6 +499,7 @@ def validate(path: Path = CONSTITUTION) -> None:
     validate_canonical_relationship(payload)
     validate_core_definitions(payload)
     validate_constitutional_pillars(payload)
+    validate_core_pillar_layers(payload)
     validate_ecosystem_pillars(payload)
     validate_hierarchy(payload)
     validate_branch_responsibilities(payload)
