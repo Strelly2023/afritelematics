@@ -1,0 +1,2 @@
+date,city,drivers_contacted,drivers_onboarded,drivers_active,users_invited,users_activated,rides_requested,rides_completed,rides_failed,booking_time_median_seconds,pickup_reliability_rate,ride_success_rate,pricing_anomaly_count,replay_mismatch_count,dispatch_unexplained_count,dispute_count,refund_case_count,driver_complaint_count,user_complaint_count,replay_explained_incident_count,top_driver_complaint,top_user_complaint,operator_decision
+YYYY-MM-DD,city-name,0,0,0,0,0,0,0,0,0,0.00,0.00,0,0,0,0,0,0,0,0,none,none,go|pause|narrow
