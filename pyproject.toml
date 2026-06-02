@@ -1,6 +1,15 @@
+# =============================================================================
+# BUILD SYSTEM
+# =============================================================================
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+
+# =============================================================================
+# PROJECT METADATA
+# =============================================================================
 
 [project]
 name = "afritech"
@@ -8,16 +17,24 @@ version = "0.1.0"
 description = "AfriTech constitutional execution and replay verification system"
 requires-python = ">=3.10"
 
-# Optional but recommended
 dependencies = [
     "fastapi",
     "httpx",
     "pydantic",
 ]
 
-# --------------------------------------------------
-# ✅ PACKAGE DISCOVERY
-# --------------------------------------------------
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "mutmut",
+]
+
+
+# =============================================================================
+# PACKAGE DISCOVERY
+# =============================================================================
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -27,18 +44,101 @@ include = [
     "afriride_system*"
 ]
 
-# --------------------------------------------------
-# ✅ PYTEST CONFIG (FIXES YOUR ORIGINAL ERROR)
-# --------------------------------------------------
+
+# =============================================================================
+# PYTEST CONFIGURATION
+# =============================================================================
 
 [tool.pytest.ini_options]
+
 pythonpath = ["."]
-testpaths = ["ecosystems/afriride/tests", "afriride_system/tests"]
-addopts = "-ra -q"
+testpaths = [
+    "afritech/tests",
+    "tests",
+    "afriride_system/tests",
+    "ecosystems/afriride/tests",
+]
 
-# --------------------------------------------------
-# ✅ OPTIONAL: TYPE CHECKING / FUTURE USE
-# --------------------------------------------------
+# ✅ IMPORTANT: disable Django auto-load globally
+addopts = "-ra -q --disable-warnings -p no:django"
 
-[tool.setuptools]
-zip-safe = false
+xfail_strict = true
+
+filterwarnings = [
+    "error",
+]
+
+
+# =============================================================================
+# COVERAGE CONFIGURATION
+# =============================================================================
+
+[tool.coverage.run]
+branch = true
+
+# ✅ ONLY TEST AFRIPOWER + VALIDATOR
+source = [ 
+    "afritech.afripower",
+    "afritech.ci.afripower_intelligence_validator",
+]
+
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+skip_covered = false
+precision = 2
+
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == \"__main__\":",
+    "if TYPE_CHECKING:",
+]
+
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/migrations/*",
+    "*/site-packages/*",
+]
+
+
+[tool.coverage.html]
+directory = "coverage_html"
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+
+# =============================================================================
+# MUTATION TESTING
+# =============================================================================
+
+[tool.mutmut]
+
+paths_to_mutate = [
+    "afritech/afripower/",
+    "afritech/ci/afripower_intelligence_validator.py",
+]
+
+tests_dir = "tests"
+
+# ✅ CRITICAL: disable django plugin
+runner = "pytest -q -p no:django"
+
+use_coverage = true
+max_stack_depth = 10
+
+
+# =============================================================================
+# OPTIONAL STRICTNESS
+# =============================================================================
+
+[tool.pyright]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W"]
+ignore = []

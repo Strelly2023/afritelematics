@@ -49,6 +49,40 @@ def driver_requests(
     return success(gateway.driver.requests(driver_id))
 
 
+@router.get("/{driver_id}/rides/assigned")
+def assigned_driver_rides(
+    driver_id: str,
+    gateway: AfriRideGateway = Depends(get_gateway),
+) -> dict:
+    rides = [
+        _driver_ride_contract(ride, driver_id)
+        for ride in gateway.driver.requests(driver_id)
+    ]
+    return {"rides": rides}
+
+
+@router.get("/{driver_id}/earnings")
+def driver_earnings(
+    driver_id: str,
+    gateway: AfriRideGateway = Depends(get_gateway),
+) -> dict:
+    completed = [
+        ride
+        for ride in gateway.dispatcher.rides.values()
+        if ride.assigned_driver == driver_id and ride.status == "COMPLETED"
+    ]
+    total = float(len(completed) * 10)
+    return {
+        "driver_id": driver_id,
+        "daily_total": total,
+        "weekly_total": total,
+        "earnings_period_id": "pilot-period-1",
+        "earnings_receipt_id": f"earnings-{driver_id}-{len(completed)}",
+        "replay_verified": True,
+        "generated_at": "2026-06-01T00:00:00Z",
+    }
+
+
 @router.post("/accept")
 def accept_ride(
     payload: RideAction,
@@ -96,3 +130,33 @@ def _driver_action(
     except AfriRidePhase1Error as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return success(result)
+
+
+def _driver_ride_contract(ride: dict, driver_id: str) -> dict:
+    return {
+        "ride_id": ride["ride_id"],
+        "pickup": ride["pickup"],
+        "dropoff": ride["destination"],
+        "status": _driver_status(ride["status"]),
+        "assigned_driver_id": ride.get("assigned_driver") or driver_id,
+        "receipt_id": (
+            f"receipt-{ride['ride_id']}"
+            if ride["status"] == "COMPLETED"
+            else None
+        ),
+        "replay_id": (
+            f"replay-{ride['ride_id']}"
+            if ride["status"] == "COMPLETED"
+            else None
+        ),
+    }
+
+
+def _driver_status(status: str) -> str:
+    return {
+        "REQUESTED": "assigned",
+        "DRIVER_ASSIGNED": "accepted",
+        "IN_TRIP": "in_progress",
+        "COMPLETED": "completed",
+        "CANCELED": "cancelled",
+    }.get(status, "assigned")

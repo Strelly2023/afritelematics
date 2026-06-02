@@ -6,14 +6,12 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
-from ecosystems.afriride.continuity.resolution import (
-    canonical_hash,
-    initial_state,
-)
+from ecosystems.afriride.continuity.resolution import canonical_hash
 from ecosystems.afriride.runtime.commands import AssignDriver
 from ecosystems.afriride.runtime.execution.deterministic_executor import (
     DeterministicExecutor,
 )
+from ecosystems.afriride.runtime.state import RideState
 
 from afriride_system.backend.state import DriverSession, RideSession
 from afriride_system.integration.websocket_gateway.event_bridge import EventBridge
@@ -83,7 +81,7 @@ class AfriRideCommandDispatcher:
             raise AfriRidePhase1Error("ride_not_accepting_driver")
 
         trace, final_state = DeterministicExecutor.execute_with_state(
-            state=initial_state(),
+            state=self._assignment_state(),
             commands=(AssignDriver(driver_id=driver_id, epoch=epoch),),
             epoch=epoch,
         )
@@ -174,3 +172,16 @@ class AfriRideCommandDispatcher:
         if ride.assigned_driver != driver_id:
             raise AfriRidePhase1Error("driver_not_assigned_to_ride")
         return ride
+
+    def _assignment_state(self) -> RideState:
+        return RideState(
+            drivers_available=frozenset(
+                driver_id
+                for driver_id, driver in self.drivers.items()
+                if driver.online
+            ),
+            ride_status="OPEN",
+            assigned_driver=None,
+            ride_a_assigned=None,
+            ride_b_assigned=None,
+        )
