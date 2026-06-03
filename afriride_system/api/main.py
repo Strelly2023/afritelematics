@@ -28,6 +28,11 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/health")
+def health_check() -> dict[str, str]:
+    return health()
+
+
 @app.get("/rides/active")
 def active_rides() -> dict:
     gateway = get_gateway()
