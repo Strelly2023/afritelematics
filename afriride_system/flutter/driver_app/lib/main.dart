@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'api/afriride_api_client.dart';
 import 'contracts/ride_contract.dart';
@@ -45,6 +46,7 @@ void main() {
           'AFRIRIDE_API_BASE_URL',
           defaultValue: 'https://example.invalid',
         ),
+        client: http.Client(),
       ),
     ),
   );

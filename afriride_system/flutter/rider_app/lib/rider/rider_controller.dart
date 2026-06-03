@@ -25,11 +25,18 @@ class RiderController {
     required String rideId,
     required String pickup,
     required String dropoff,
+    String? pilotRunId,
   }) {
     return _emit(
       eventType: 'RIDER_REQUESTED_RIDE',
       entityId: rideId,
-      payload: {'ride_id': rideId, 'pickup': pickup, 'dropoff': dropoff},
+      payload: {
+        'ride_id': rideId,
+        'pickup': pickup,
+        'dropoff': dropoff,
+        if (pilotRunId != null && pilotRunId.trim().isNotEmpty)
+          'pilot_run_id': pilotRunId,
+      },
     );
   }
 

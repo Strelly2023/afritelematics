@@ -1,13 +1,48 @@
+import 'package:flutter/foundation.dart';
+
+import 'core/api_client.dart';
 import 'core/signer.dart';
 import 'rider/rider_controller.dart';
 import 'rider/ws_client.dart';
 
 void main() {
-  final controller = RiderController(signer: EventSigner('pilot-secret'));
-  controller.requestRide(rideId: 'ride_123', pickup: 'A', dropoff: 'B');
+  const apiBaseUrl = String.fromEnvironment(
+    'AFRIRIDE_API_BASE_URL',
+    defaultValue: 'http://localhost:8000',
+  );
+  const deviceRole = String.fromEnvironment(
+    'AFRIRIDE_DEVICE_ROLE',
+    defaultValue: 'rider',
+  );
+  const pilotRunId = String.fromEnvironment(
+    'AFRIRIDE_PILOT_RUN_ID',
+    defaultValue: 'local_pilot',
+  );
 
-  final tracking = RideTrackingClient('ride_123');
+  const rideId = 'ride_123';
+  final controller = RiderController(
+    deviceId: '${deviceRole}_1',
+    signer: EventSigner('pilot-secret'),
+    api: ApiClient(baseUrl: apiBaseUrl),
+  );
+  controller.requestRide(
+    rideId: rideId,
+    pickup: 'A',
+    dropoff: 'B',
+    pilotRunId: pilotRunId,
+  );
+
+  final tracking = RideTrackingClient(
+    rideId,
+    baseUrl: _webSocketBaseUrl(apiBaseUrl),
+  );
   tracking.listen().listen((message) {
-    print('Live update: $message');
+    debugPrint('Live update: $message');
   });
+}
+
+String _webSocketBaseUrl(String apiBaseUrl) {
+  final uri = Uri.parse(apiBaseUrl);
+  final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
+  return uri.replace(scheme: scheme).toString();
 }
