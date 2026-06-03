@@ -78,12 +78,19 @@ on:
       - develop
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   architecture:
     name: Enforce Architectural & Constitutional Invariants
     runs-on: ubuntu-latest
 
+    env:
+      AFRITECH_MODE: ci   # ✅ critical separation (CI vs runtime)
+
     steps:
+
       # ------------------------------------------------------------
       # CHECKOUT
       # ------------------------------------------------------------
@@ -98,84 +105,114 @@ jobs:
         with:
           python-version: "3.11"
 
+      # ------------------------------------------------------------
+      # DEPENDENCIES
+      # ------------------------------------------------------------
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       # ------------------------------------------------------------
+      # CONSTITUTIONAL PIPELINE (CI SAFE)
+      # ------------------------------------------------------------
+      - name: Canonical constitutional pipeline
+        run: |
+          python - <<EOF
+          import os
+
+          # Ensure CI-safe behavior
+          os.environ["AFRITECH_MODE"] = "ci"
+
+          try:
+              from afritech.ci.constitutional_pipeline import run_pipeline
+              run_pipeline()
+              print("✅ Constitutional pipeline passed (CI mode)")
+          except Exception as e:
+              print("❌ Constitutional pipeline failed")
+              raise e
+          EOF
+
+      # ------------------------------------------------------------
       # ARCHITECTURAL / AST ENFORCEMENT
       # ------------------------------------------------------------
-
-      - name: Canonical constitutional pipeline
-        run: python3 -m afritech.ci.constitutional_pipeline
-
       - name: Validate import topology
-        run: python3 -m afritech.ci.ast_import_validator
+        run: python -m afritech.ci.ast_import_validator
 
       - name: Validate constitutional call order
-        run: python3 -m afritech.ci.ast_call_order_validator
+        run: python -m afritech.ci.ast_call_order_validator
 
       - name: Enforce mutation import confinement
-        run: python3 -m afritech.ci.import_topology_enforcement
+        run: python -m afritech.ci.import_topology_enforcement
 
       # ------------------------------------------------------------
-      # EXECUTION AUTHORITY ENFORCEMENT (GAP 1)
+      # EXECUTION AUTHORITY ENFORCEMENT
       # ------------------------------------------------------------
-
       - name: Forbid direct execution bypass (kernel only)
         run: |
-          if grep -R "execute(context)" afritech/ \
+          violations=$(grep -R "execute(" afritech/ \
             | grep -v "kernel/execute.py" \
-            | grep -v "\.spec$"; then
+            | grep -v "\.spec")
+
+          if [ ! -z "$violations" ]; then
             echo "❌ Direct execution bypass detected"
+            echo "$violations"
             exit 1
           fi
 
-      # ------------------------------------------------------------
-      # DETERMINISM ENFORCEMENT (GAP 2)
-      # ------------------------------------------------------------
+          echo "✅ Execution authority enforced"
 
-      - name: Enforce AST-level determinism (execution functions)
+      # ------------------------------------------------------------
+      # DETERMINISM ENFORCEMENT (REAL)
+      # ------------------------------------------------------------
+      - name: Enforce AST-level determinism
         run: |
           python - <<EOF
-          from afritech.runtime.guards.determinism_guard import enforce_determinism
-          from afritech.runtime.engine.executor import ExecutionEngine
-          import inspect
+          import ast
+          import os
 
-          # Discover all ExecutionEngine instances by convention
-          # (tests will fail if nondeterministic code is present)
-          print("✅ DeterminismGuard import successful")
+          FORBIDDEN = ["random", "time", "uuid", "os.urandom"]
+
+          for root, _, files in os.walk("afritech"):
+              for f in files:
+                  if f.endswith(".py"):
+                      path = os.path.join(root, f)
+                      with open(path, "r") as file:
+                          tree = ast.parse(file.read(), filename=path)
+
+                      for node in ast.walk(tree):
+                          if isinstance(node, ast.Import):
+                              for n in node.names:
+                                  if n.name in FORBIDDEN:
+                                      raise Exception(f"❌ Non-deterministic import in {path}: {n.name}")
+
+          print("✅ Determinism enforced")
           EOF
 
       # ------------------------------------------------------------
       # EPOCH & SPECULATION ISOLATION
       # ------------------------------------------------------------
-
       - name: Forbid raw epoch access
-        run: python3 -m afritech.ci.forbid_raw_epoch_access
+        run: python -m afritech.ci.forbid_raw_epoch_access
 
       - name: Forbid speculative runtime access
-        run: python3 -m afritech.ci.forbid_speculative_runtime_access
+        run: python -m afritech.ci.forbid_speculative_runtime_access
 
       # ------------------------------------------------------------
       # TOPOLOGY FREEZE
       # ------------------------------------------------------------
-
       - name: Enforce topology freeze
-        run: python3 -m afritech.ci.forbid_topology_change
+        run: python -m afritech.ci.forbid_topology_change
 
       # ------------------------------------------------------------
       # FINAL CONFIRMATION
       # ------------------------------------------------------------
-
       - name: Architecture enforcement complete
         run: |
           echo "✅ Architectural topology verified"
           echo "✅ Execution authority closed"
           echo "✅ Determinism enforced at kernel boundary"
           echo "✅ No constitutional bypasses detected"
-
 
 ===== ./.github/workflows/constitutional_ci.yml =====
 name: Constitutional Enforcement
@@ -3699,6 +3736,37 @@ build: off
 
 
 
+===== ./afriride_system/flutter/driver_app/analysis_options.yaml =====
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at https://dart.dev/lints.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+  rules:
+    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
+    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
+
+
 ===== ./afriride_system/flutter/driver_app/pubspec.yaml =====
 name: afriride_driver_pilot
 description: Minimal AfriRide driver pilot client.
@@ -3715,8 +3783,40 @@ dependencies:
   http: ^1.2.0
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+===== ./afriride_system/flutter/rider_app/analysis_options.yaml =====
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at https://dart.dev/lints.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+  rules:
+    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
+    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
+
 
 ===== ./afriride_system/flutter/rider_app/pubspec.yaml =====
 name: afriride_rider_pilot
@@ -3732,6 +3832,11 @@ dependencies:
   crypto: ^3.0.3
   http: ^1.2.0
   web_socket_channel: ^2.4.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
 
 
 ===== ./afritech/architecture/PATH_ONTOLOGY.yaml =====
@@ -12083,6 +12188,7 @@ failure:
 schema: afritech.ci.partial_planned_audit.v1
 status: IMPLEMENTED
 authority: CI
+
 policy:
   active_surface_states_must_be_resolved: true
   unresolved_runtime_states_forbidden: [PARTIAL, PLANNED]
@@ -12093,104 +12199,143 @@ policy:
     - documentation_history
     - formal_math_terminology
     - trace_schema_terminology
+
 allowed_occurrences:
   - path: afritech/ci/witness_validator.py
     class: validator_policy
     reason: rejects forbidden implementation states
+
   - path: afritech/ci/completion_utils.py
     class: validator_policy
     reason: defines unresolved state set
+
   - path: afritech/ci/trace_reconstruction_validator.py
     class: validator_policy
     reason: rejects planned/partial reconstruction surfaces
+
   - path: afritech/ci/identity_validator.py
     class: validator_policy
     reason: validates admissible and forbidden state vocabulary
+
   - path: afritech/ci/execution_completion_matrix.yaml
     class: validator_policy
     reason: records forbidden unresolved state names
+
   - path: afritech/ci/completeness_policy.yaml
     class: validator_policy
     reason: global policy records forbidden unresolved state names
+
   - path: afritech/ci/partial_planned_audit_validator.py
     class: validator_policy
     reason: validates explicit PARTIAL/PLANNED occurrence audit
+
   - path: afritech/epoch/epoch_semantics.yaml
     class: state_vocabulary
     reason: canonical epoch semantic vocabulary
+
   - path: afritech/proof/witness_policy.yaml
     class: state_vocabulary
     reason: canonical witness policy vocabulary
+
   - path: afritech/architecture/planned_surface_policy.yaml
     class: transition_policy
     reason: canonical policy for planned surface containment
+
   - path: afritech/architecture/surface_implementation_binding.yaml
     class: state_vocabulary
     reason: state definitions only; active bindings are resolved
+
   - path: afritech/architecture/implementation_states.yaml
     class: state_vocabulary
     reason: state definitions only; active entries are resolved
+
   - path: afritech/architecture/surface_authority_registry.yaml
     class: state_vocabulary
     reason: state definitions only; active surfaces are resolved
+
   - path: afritech/architecture/enforcement_matrix.yaml
     class: state_vocabulary
     reason: state definitions only; active enforcement surfaces are resolved
+
   - path: afritech/architecture/implementation_registry_loader.py
     class: validator_policy
     reason: loader recognizes state vocabulary
+
   - path: afritech/architecture/sub_enforcement_registry.yaml
     class: state_vocabulary
     reason: split enforcement registry defines planned and partial state policy
+
   - path: afritech/architecture/sub_modules_registry.yaml
     class: state_vocabulary
     reason: split implementation registry defines planned and partial state vocabulary
+
   - path: afritech/ci/implementation_state_validation.py
     class: validator_policy
     reason: implementation-state validator composes split registry state vocabulary
+
   - path: afritech/proof/constitutional_profiles.py
     class: documentation_history
     reason: module docstring asserts non-partial profile semantics
+
   - path: afritech/constitution/canonical/concepts/mutation_traceability.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/constitution/canonical/concepts/deterministic_execution.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/constitution/canonical/concepts/admissibility.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/constitution/canonical/concepts/closed_world.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/constitution/canonical/concepts/authority_declaration.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/constitution/canonical/concepts/replay_admissibility.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states
+
   - path: afritech/trace/README.md
     class: documentation_history
     reason: historical trace implementation-state narrative
+
   - path: afritech/trace/trace_schema.yaml
     class: trace_schema_terminology
     reason: graph theory partial-DAG wording
+
   - path: afritech/formal/constitutional_model.lean
     class: formal_math_terminology
     reason: partial deterministic relation is a formal math term
+
   - path: afritech/simulation/scale/test_consensus.py
     class: validator_policy
     reason: consensus test names partial disagreement scenario without declaring runtime surface state
+
   - path: afritech/tests/governance/test_afriride_test_cases_doc.py
     class: documentation_history
     reason: validates documented planned-surface claim handling
+
   - path: afritech/tests/governance/test_afritech_ontology_consolidation_review_doc.py
     class: documentation_history
     reason: validates review document terminology for unresolved-state vocabulary
+
+  - path: afritech/tests/ci/test_afriride_controlled_pilot_layer_validator.py
+    class: documentation_history
+    reason: validates controlled-pilot planned-surface handling without declaring active runtime state
+
+  - path: afritech/tests/ci/test_afriride_phase5_closure_validator.py
+    class: documentation_history
+    reason: validates historical Wave 6 planned-state references without creating unresolved runtime surfaces
+
 completion:
   empty: false
   active_unresolved_surfaces: 0
-
 
 ===== ./afritech/ci/semantic_integrity_checks.yaml =====
 schema: afritech.ci.semantic_integrity_checks.v1
@@ -40006,7 +40151,16 @@ services:
     envVars:
       - key: AFRIRIDE_TEST_MODE
         value: "true"
-
+      - key: AFRIRIDE_PILOT_MODE
+        value: "true"
+      - key: AFRIRIDE_EVIDENCE_CAPTURE
+        value: "true"
+      - key: AFRIRIDE_REPLAY_REQUIRED
+        value: "true"
+      - key: AFRIRIDE_ALLOW_REAL_DEVICES
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.11"
 
 ===== ./rider_app/node_modules/@react-native/community-cli-plugin/node_modules/debug/.coveralls.yml =====
 repo_token: SIAeZjKYlHK74rbcFvNHMUzjRiMpflxve

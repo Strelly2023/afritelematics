@@ -7,12 +7,19 @@ on:
       - develop
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   architecture:
     name: Enforce Architectural & Constitutional Invariants
     runs-on: ubuntu-latest
 
+    env:
+      AFRITECH_MODE: ci   # ✅ critical separation (CI vs runtime)
+
     steps:
+
       # ------------------------------------------------------------
       # CHECKOUT
       # ------------------------------------------------------------
@@ -27,77 +34,108 @@ jobs:
         with:
           python-version: "3.11"
 
+      # ------------------------------------------------------------
+      # DEPENDENCIES
+      # ------------------------------------------------------------
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       # ------------------------------------------------------------
+      # CONSTITUTIONAL PIPELINE (CI SAFE)
+      # ------------------------------------------------------------
+      - name: Canonical constitutional pipeline
+        run: |
+          python - <<EOF
+          import os
+
+          # Ensure CI-safe behavior
+          os.environ["AFRITECH_MODE"] = "ci"
+
+          try:
+              from afritech.ci.constitutional_pipeline import run_pipeline
+              run_pipeline()
+              print("✅ Constitutional pipeline passed (CI mode)")
+          except Exception as e:
+              print("❌ Constitutional pipeline failed")
+              raise e
+          EOF
+
+      # ------------------------------------------------------------
       # ARCHITECTURAL / AST ENFORCEMENT
       # ------------------------------------------------------------
-
-      - name: Canonical constitutional pipeline
-        run: python3 -m afritech.ci.constitutional_pipeline
-
       - name: Validate import topology
-        run: python3 -m afritech.ci.ast_import_validator
+        run: python -m afritech.ci.ast_import_validator
 
       - name: Validate constitutional call order
-        run: python3 -m afritech.ci.ast_call_order_validator
+        run: python -m afritech.ci.ast_call_order_validator
 
       - name: Enforce mutation import confinement
-        run: python3 -m afritech.ci.import_topology_enforcement
+        run: python -m afritech.ci.import_topology_enforcement
 
       # ------------------------------------------------------------
-      # EXECUTION AUTHORITY ENFORCEMENT (GAP 1)
+      # EXECUTION AUTHORITY ENFORCEMENT
       # ------------------------------------------------------------
-
       - name: Forbid direct execution bypass (kernel only)
         run: |
-          if grep -R "execute(context)" afritech/ \
+          violations=$(grep -R "execute(" afritech/ \
             | grep -v "kernel/execute.py" \
-            | grep -v "\.spec$"; then
+            | grep -v "\.spec")
+
+          if [ ! -z "$violations" ]; then
             echo "❌ Direct execution bypass detected"
+            echo "$violations"
             exit 1
           fi
 
-      # ------------------------------------------------------------
-      # DETERMINISM ENFORCEMENT (GAP 2)
-      # ------------------------------------------------------------
+          echo "✅ Execution authority enforced"
 
-      - name: Enforce AST-level determinism (execution functions)
+      # ------------------------------------------------------------
+      # DETERMINISM ENFORCEMENT (REAL)
+      # ------------------------------------------------------------
+      - name: Enforce AST-level determinism
         run: |
           python - <<EOF
-          from afritech.runtime.guards.determinism_guard import enforce_determinism
-          from afritech.runtime.engine.executor import ExecutionEngine
-          import inspect
+          import ast
+          import os
 
-          # Discover all ExecutionEngine instances by convention
-          # (tests will fail if nondeterministic code is present)
-          print("✅ DeterminismGuard import successful")
+          FORBIDDEN = ["random", "time", "uuid", "os.urandom"]
+
+          for root, _, files in os.walk("afritech"):
+              for f in files:
+                  if f.endswith(".py"):
+                      path = os.path.join(root, f)
+                      with open(path, "r") as file:
+                          tree = ast.parse(file.read(), filename=path)
+
+                      for node in ast.walk(tree):
+                          if isinstance(node, ast.Import):
+                              for n in node.names:
+                                  if n.name in FORBIDDEN:
+                                      raise Exception(f"❌ Non-deterministic import in {path}: {n.name}")
+
+          print("✅ Determinism enforced")
           EOF
 
       # ------------------------------------------------------------
       # EPOCH & SPECULATION ISOLATION
       # ------------------------------------------------------------
-
       - name: Forbid raw epoch access
-        run: python3 -m afritech.ci.forbid_raw_epoch_access
+        run: python -m afritech.ci.forbid_raw_epoch_access
 
       - name: Forbid speculative runtime access
-        run: python3 -m afritech.ci.forbid_speculative_runtime_access
+        run: python -m afritech.ci.forbid_speculative_runtime_access
 
       # ------------------------------------------------------------
       # TOPOLOGY FREEZE
       # ------------------------------------------------------------
-
       - name: Enforce topology freeze
-        run: python3 -m afritech.ci.forbid_topology_change
+        run: python -m afritech.ci.forbid_topology_change
 
       # ------------------------------------------------------------
       # FINAL CONFIRMATION
       # ------------------------------------------------------------
-
       - name: Architecture enforcement complete
         run: |
           echo "✅ Architectural topology verified"
