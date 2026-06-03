@@ -1,0 +1,637 @@
+{
+  "authority_law": "Failure may enter execution. Failure may not define truth.",
+  "baseline": {
+    "accepted_events": [
+      {
+        "canonical_event_hash": "cc4c5e29b4771b9924a5da83fe76e8f3bd8fe2089c2655794812cd62a5d55895",
+        "canonical_id": "f09f4ce804853cde8fe3e8b66dcfc650729e0943bf826eb4520a9adc1c2a5569",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.000",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:00Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "c827a93d72786bf49909ee986eea15bb807b4727c5ea1b2daecea7beba7d2be2",
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "ef31d05120af132cbf4331634c42ce2d93e5026be52a4841978a5670787aeda4",
+        "canonical_id": "10ff15d6d3ebea27bb16762cc4f49cf9432b9e05fed788add2c7cf6661ef28ca",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.001",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:01Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "e78a8b95f6d529b7cf38e62be22f5fa477a26cb40d8275ca553db9fe794cb6c4",
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "6c868f4d2d41e44110785411408705e7f1c0d45d19fde7f24278805532beeaf3",
+        "canonical_id": "58b85f5a4d58f37a7a32b9fe0f2fa2d1c618044293f5414f445cae23c0e5a4fd",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.002",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:02Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "0ddb59a30f772eda19a3a376135acf1c73bf2976f85213832a070f9949598027",
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "a7250957f09292d2e7fccd3eb6969ee9e40764d96926af9c56217b22a6291edf",
+        "canonical_id": "84da452c5b49878e1ab3808317563b5318023ece98285a3979cb887f32323857",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.003",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:03Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "af556eb58a4c35cabe67a5300e1543b716faa3ad15199a988a7ea7ab51381ad7",
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "daa1a737b214fc9445ad946d352732dd168c85f3ac28dcccbdb719749934e650",
+        "canonical_id": "827892306d243f473c01b5cdd603f061fd3b9f3350e512a9de10d5d5d633a9c2",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.004",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:04Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "b28eb2d9dba140dc602f56367db543f02573ea6d9468e1174746633504b9f4d5",
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "d73c7a1fe75a24805f3f90ff6707912bc18da1c54577dcc09b7ac34c67006602",
+        "canonical_id": "cd9acb729ae5662da493251084ac0dee7444b9030d6de20f836b1fe0e68205d6",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.005",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:05Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "b2658ac46d71315d04ad46079f5ff28d5430ae8680136601b612d34d6ed72a44",
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter"
+      }
+    ],
+    "admissibility_hash": "b82d7d355623498052c253373bcec88e11f4c5e5783c68e5ed8c419a1cc44f58",
+    "classification_counts": {
+      "clock_drift": 0,
+      "corrupted": 0,
+      "delayed": 0,
+      "duplicate": 0,
+      "normal": 6,
+      "offline_recovery": 0,
+      "out_of_order": 0,
+      "partitioned": 0
+    },
+    "convergence_hash": "416f2f43d71f0000b5d0d3a1aba2f6158c44509299b9bbd28fa3baf308de8d8f",
+    "final_state": {
+      "accepted_event_count": 6,
+      "accepted_event_ids": [
+        "entropy.event.000",
+        "entropy.event.001",
+        "entropy.event.002",
+        "entropy.event.003",
+        "entropy.event.004",
+        "entropy.event.005"
+      ],
+      "identity_ids": [
+        "driver.entropy.001",
+        "rider.entropy.001"
+      ],
+      "last_sequence": 5,
+      "state_hash": "bd6ff1069600c9c49feab8febbbd98dc31fca1f286aac90e6c9f02258c441929"
+    },
+    "identity_resolution_hash": "57d061a133b72cf67c804104d76024ed8b53f92d52542b96724f799aa6792694",
+    "record_hashes": [
+      "aecd209888ba6a83379c587c53d415c4f099029b3fe1f0a35f3d6596c5ca80f0",
+      "ebd65fe8906b2be9be3e1d16c192849624d74017a6a04cdc650a63cc288ab064",
+      "2c81b8fcf214466f963cb3c4468cbc931f4e79104da02fd19b24f9cbc019eca7",
+      "11ced6eebc8a3bfee913aedbd0c8411a0c86d90b26c9e8714c9bf359fd54b138",
+      "f11d33a6531975b201d9fa4b75107ac935025f5b08b456f6c78472851c94703c",
+      "96f14711459eb67678f5c6f30dbed7a1f96c3fd35fd1ed8f5b6f217c6947beec"
+    ],
+    "replay_hash": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "verified": true
+  },
+  "disturbed": {
+    "accepted_events": [
+      {
+        "canonical_event_hash": "cc4c5e29b4771b9924a5da83fe76e8f3bd8fe2089c2655794812cd62a5d55895",
+        "canonical_id": "f09f4ce804853cde8fe3e8b66dcfc650729e0943bf826eb4520a9adc1c2a5569",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.000",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:00Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "c827a93d72786bf49909ee986eea15bb807b4727c5ea1b2daecea7beba7d2be2",
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "ef31d05120af132cbf4331634c42ce2d93e5026be52a4841978a5670787aeda4",
+        "canonical_id": "10ff15d6d3ebea27bb16762cc4f49cf9432b9e05fed788add2c7cf6661ef28ca",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.001",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:01Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "e78a8b95f6d529b7cf38e62be22f5fa477a26cb40d8275ca553db9fe794cb6c4",
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "6c868f4d2d41e44110785411408705e7f1c0d45d19fde7f24278805532beeaf3",
+        "canonical_id": "58b85f5a4d58f37a7a32b9fe0f2fa2d1c618044293f5414f445cae23c0e5a4fd",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.002",
+        "identity_id": "rider.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:02Z",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "0ddb59a30f772eda19a3a376135acf1c73bf2976f85213832a070f9949598027",
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "a7250957f09292d2e7fccd3eb6969ee9e40764d96926af9c56217b22a6291edf",
+        "canonical_id": "84da452c5b49878e1ab3808317563b5318023ece98285a3979cb887f32323857",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.003",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:03Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "af556eb58a4c35cabe67a5300e1543b716faa3ad15199a988a7ea7ab51381ad7",
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "daa1a737b214fc9445ad946d352732dd168c85f3ac28dcccbdb719749934e650",
+        "canonical_id": "827892306d243f473c01b5cdd603f061fd3b9f3350e512a9de10d5d5d633a9c2",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.004",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:04Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "b28eb2d9dba140dc602f56367db543f02573ea6d9468e1174746633504b9f4d5",
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "d73c7a1fe75a24805f3f90ff6707912bc18da1c54577dcc09b7ac34c67006602",
+        "canonical_id": "cd9acb729ae5662da493251084ac0dee7444b9030d6de20f836b1fe0e68205d6",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "entropy.event.005",
+        "identity_id": "driver.entropy.001",
+        "normalized_timestamp": "2026-05-26T00:00:05Z",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.entropy.001"
+        },
+        "raw_event_hash": "b2658ac46d71315d04ad46079f5ff28d5430ae8680136601b612d34d6ed72a44",
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter"
+      }
+    ],
+    "admissibility_hash": "b82d7d355623498052c253373bcec88e11f4c5e5783c68e5ed8c419a1cc44f58",
+    "classification_counts": {
+      "clock_drift": 0,
+      "corrupted": 0,
+      "delayed": 0,
+      "duplicate": 1,
+      "normal": 6,
+      "offline_recovery": 0,
+      "out_of_order": 0,
+      "partitioned": 0
+    },
+    "convergence_hash": "416f2f43d71f0000b5d0d3a1aba2f6158c44509299b9bbd28fa3baf308de8d8f",
+    "final_state": {
+      "accepted_event_count": 6,
+      "accepted_event_ids": [
+        "entropy.event.000",
+        "entropy.event.001",
+        "entropy.event.002",
+        "entropy.event.003",
+        "entropy.event.004",
+        "entropy.event.005"
+      ],
+      "identity_ids": [
+        "driver.entropy.001",
+        "rider.entropy.001"
+      ],
+      "last_sequence": 5,
+      "state_hash": "bd6ff1069600c9c49feab8febbbd98dc31fca1f286aac90e6c9f02258c441929"
+    },
+    "identity_resolution_hash": "57d061a133b72cf67c804104d76024ed8b53f92d52542b96724f799aa6792694",
+    "record_hashes": [
+      "aecd209888ba6a83379c587c53d415c4f099029b3fe1f0a35f3d6596c5ca80f0",
+      "ebd65fe8906b2be9be3e1d16c192849624d74017a6a04cdc650a63cc288ab064",
+      "2c81b8fcf214466f963cb3c4468cbc931f4e79104da02fd19b24f9cbc019eca7",
+      "ee18731c6d4d35ecb9c2323908b9c556260e3808f2ca12bd109d848c1df6a94d",
+      "11ced6eebc8a3bfee913aedbd0c8411a0c86d90b26c9e8714c9bf359fd54b138",
+      "f11d33a6531975b201d9fa4b75107ac935025f5b08b456f6c78472851c94703c",
+      "96f14711459eb67678f5c6f30dbed7a1f96c3fd35fd1ed8f5b6f217c6947beec"
+    ],
+    "replay_hash": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "verified": true
+  },
+  "equivalent": true,
+  "final_state": {
+    "accepted_event_count": 6,
+    "accepted_event_ids": [
+      "entropy.event.000",
+      "entropy.event.001",
+      "entropy.event.002",
+      "entropy.event.003",
+      "entropy.event.004",
+      "entropy.event.005"
+    ],
+    "identity_ids": [
+      "driver.entropy.001",
+      "rider.entropy.001"
+    ],
+    "last_sequence": 5,
+    "state_hash": "bd6ff1069600c9c49feab8febbbd98dc31fca1f286aac90e6c9f02258c441929"
+  },
+  "input_variations": [
+    [
+      {
+        "event_id": "entropy.event.000",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:00Z"
+      },
+      {
+        "event_id": "entropy.event.001",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:01Z"
+      },
+      {
+        "event_id": "entropy.event.002",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:02Z"
+      },
+      {
+        "event_id": "entropy.event.003",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:03Z"
+      },
+      {
+        "event_id": "entropy.event.004",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:04Z"
+      },
+      {
+        "event_id": "entropy.event.005",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:05Z"
+      }
+    ],
+    [
+      {
+        "event_id": "entropy.event.000",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:00Z"
+      },
+      {
+        "event_id": "entropy.event.001",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:01Z"
+      },
+      {
+        "event_id": "entropy.event.002",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:02Z"
+      },
+      {
+        "event_id": "entropy.event.001",
+        "identity_id": "rider.entropy.001",
+        "partition_id": "partition.0",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:01Z"
+      },
+      {
+        "event_id": "entropy.event.003",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:03Z"
+      },
+      {
+        "event_id": "entropy.event.004",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:04Z"
+      },
+      {
+        "event_id": "entropy.event.005",
+        "identity_id": "driver.entropy.001",
+        "partition_id": "partition.2",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.entropy.001"
+        },
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-26T00:00:05Z"
+      }
+    ]
+  ],
+  "invariants": {
+    "same_admissibility_decision": true,
+    "same_convergence_result": true,
+    "same_identity_resolution": true,
+    "same_replay_hash": true
+  },
+  "normalized_inputs": [
+    {
+      "canonical_event_hash": "cc4c5e29b4771b9924a5da83fe76e8f3bd8fe2089c2655794812cd62a5d55895",
+      "canonical_id": "f09f4ce804853cde8fe3e8b66dcfc650729e0943bf826eb4520a9adc1c2a5569",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.000",
+      "identity_id": "rider.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:00Z",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "request",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "c827a93d72786bf49909ee986eea15bb807b4727c5ea1b2daecea7beba7d2be2",
+      "received_order": 0,
+      "sequence": 0,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "ef31d05120af132cbf4331634c42ce2d93e5026be52a4841978a5670787aeda4",
+      "canonical_id": "10ff15d6d3ebea27bb16762cc4f49cf9432b9e05fed788add2c7cf6661ef28ca",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.001",
+      "identity_id": "rider.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:01Z",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "match",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "e78a8b95f6d529b7cf38e62be22f5fa477a26cb40d8275ca553db9fe794cb6c4",
+      "received_order": 1,
+      "sequence": 1,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "6c868f4d2d41e44110785411408705e7f1c0d45d19fde7f24278805532beeaf3",
+      "canonical_id": "58b85f5a4d58f37a7a32b9fe0f2fa2d1c618044293f5414f445cae23c0e5a4fd",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.002",
+      "identity_id": "rider.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:02Z",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "accept",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "0ddb59a30f772eda19a3a376135acf1c73bf2976f85213832a070f9949598027",
+      "received_order": 2,
+      "sequence": 2,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "ef31d05120af132cbf4331634c42ce2d93e5026be52a4841978a5670787aeda4",
+      "canonical_id": "10ff15d6d3ebea27bb16762cc4f49cf9432b9e05fed788add2c7cf6661ef28ca",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.001",
+      "identity_id": "rider.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:01Z",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "match",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "e78a8b95f6d529b7cf38e62be22f5fa477a26cb40d8275ca553db9fe794cb6c4",
+      "received_order": 1,
+      "sequence": 1,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "a7250957f09292d2e7fccd3eb6969ee9e40764d96926af9c56217b22a6291edf",
+      "canonical_id": "84da452c5b49878e1ab3808317563b5318023ece98285a3979cb887f32323857",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.003",
+      "identity_id": "driver.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:03Z",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "pickup",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "af556eb58a4c35cabe67a5300e1543b716faa3ad15199a988a7ea7ab51381ad7",
+      "received_order": 3,
+      "sequence": 3,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "daa1a737b214fc9445ad946d352732dd168c85f3ac28dcccbdb719749934e650",
+      "canonical_id": "827892306d243f473c01b5cdd603f061fd3b9f3350e512a9de10d5d5d633a9c2",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.004",
+      "identity_id": "driver.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:04Z",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "dropoff",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "b28eb2d9dba140dc602f56367db543f02573ea6d9468e1174746633504b9f4d5",
+      "received_order": 4,
+      "sequence": 4,
+      "source": "mobile_adapter"
+    },
+    {
+      "canonical_event_hash": "d73c7a1fe75a24805f3f90ff6707912bc18da1c54577dcc09b7ac34c67006602",
+      "canonical_id": "cd9acb729ae5662da493251084ac0dee7444b9030d6de20f836b1fe0e68205d6",
+      "corrupted": false,
+      "corruption_reason": "",
+      "event_id": "entropy.event.005",
+      "identity_id": "driver.entropy.001",
+      "normalized_timestamp": "2026-05-26T00:00:05Z",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "complete",
+        "ride_id": "ride.entropy.001"
+      },
+      "raw_event_hash": "b2658ac46d71315d04ad46079f5ff28d5430ae8680136601b612d34d6ed72a44",
+      "received_order": 5,
+      "sequence": 5,
+      "source": "mobile_adapter"
+    }
+  ],
+  "replay_hash": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+  "scenario": "duplicate_messages"
+}

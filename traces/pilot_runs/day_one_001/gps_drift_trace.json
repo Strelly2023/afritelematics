@@ -1,0 +1,44 @@
+{
+  "receipt": "gps_drift_trace",
+  "run_id": "day_one_001",
+  "minute": 135,
+  "status": "captured",
+  "scenario": "gps_drift",
+  "trace_id": "day_one_001_gps_drift_001",
+  "route_context": "stationary_or_bounded_route_rehearsal",
+  "gps_observations": [
+    {
+      "event_id": "gps_001",
+      "sequence": 1,
+      "latitude": -37.8136,
+      "longitude": 144.9631,
+      "classification": "accepted_observation"
+    },
+    {
+      "event_id": "gps_002",
+      "sequence": 2,
+      "latitude": -37.8137,
+      "longitude": 144.9632,
+      "classification": "accepted_observation"
+    },
+    {
+      "event_id": "gps_003",
+      "sequence": 3,
+      "latitude": -37.9000,
+      "longitude": 145.2000,
+      "classification": "isolated_drift"
+    }
+  ],
+  "normalization_result": {
+    "accepted": [
+      "gps_001",
+      "gps_002"
+    ],
+    "isolated": [
+      "gps_003"
+    ],
+    "pricing_truth_changed": false
+  },
+  "replay_equivalence": true,
+  "claim_boundary_preserved": true
+}

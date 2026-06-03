@@ -1,0 +1,114 @@
+{
+"receipt": "device_registration_snapshot",
+"protocol": "CONTROLLED_PILOT_TRACE_PROTOCOL",
+"pilot_run_id": "day_one_003",
+"capture_timestamp": "2026-05-31T00:00:00Z",
+"environment": "controlled_pilot",
+
+"trace_context": {
+"trace_id": "day_one_003",
+"sequence_position": 0,
+"previous_hash": null,
+"next_expected": "signed_event_sequence"
+},
+
+"classification": {
+"status": "candidate_live_pilot_evidence",
+"authority": "non_authoritative",
+"purpose": "evidence_collection",
+"admissibility": "conditional"
+},
+
+"devices": [
+{
+"device_id": "ostrinov_phone_001",
+"device_type": "smartphone",
+"role": "driver_device",
+"driver_id": "driver-1",
+
+
+  "binding_status": "bound",
+
+  "binding_proof": {
+    "method": "device_registration_api",
+    "binding_timestamp": "2026-05-31T00:00:00Z",
+    "binding_receipt_id": null
+  },
+
+  "capability_constraints": {
+    "can_sign_events": true,
+    "can_capture_gps": true,
+    "can_buffer_offline": false
+  },
+
+  "security_profile": {
+    "private_key_present": true,
+    "secure_storage": true,
+    "tamper_detected": false
+  },
+
+  "claim_boundary_preserved": true,
+
+  "authority_constraints": {
+    "pricing_authority": false,
+    "dispatch_authority": false,
+    "replay_authority": false,
+    "receipt_authority": false
+  },
+
+  "notes": [
+    "device participates in controlled pilot",
+    "device operates as evidence emitter only",
+    "no authority beyond signed event emission",
+    "subject to replay verification",
+    "subject to receipt verification"
+  ]
+}
+
+
+],
+
+"verification_requirements": {
+"receipt_evidence_required": true,
+"replay_evidence_required": true,
+"driver_observation_required": true,
+"stakeholder_report_required": true
+},
+
+"limitations": [
+"device registration alone does not prove execution",
+"device registration alone does not prove receipt generation",
+"device registration alone does not prove replay verification",
+"device registration alone does not justify production readiness claims"
+],
+
+"permitted_claim": "device registered for controlled pilot evidence collection",
+
+"prohibited_claims": [
+"production proven",
+"production validated",
+"globally deployed",
+"GA++++ certified"
+],
+
+"constitutional_boundary": {
+"execution_generates_behavior": true,
+"replay_authorizes_truth": true,
+"observation_redefines_truth": false
+},
+
+"ci_validation": {
+"validated_by": "afritech.ci.driver_surface_validator",
+"validation_status": "passed",
+"violations": 0,
+"validation_timestamp": "2026-05-31T00:00:00Z"
+},
+
+"integrity": {
+"hash_algorithm": "sha256",
+"content_hash": null,
+"signature": null,
+"signed_by": null,
+"signature_status": "not_yet_signed"
+}
+}

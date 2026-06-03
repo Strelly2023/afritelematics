@@ -5,10 +5,9 @@ adr:
   title: Integration of Proof and Evaluation into Execution Lifecycle
   status: APPROVED
   type: CONSTITUTIONAL_EXECUTION_INTEGRATION
-
   epoch: 6
-
   approved_at: "2026-05-07T00:00:00Z"
+  registry_ref: ADR-0007
 
   context: >
     Following the introduction of proof and evaluation surfaces
@@ -26,7 +25,7 @@ adr:
 
     Execution flow is defined as:
 
-      state → transition → result → proof → evaluation
+      activation → guard → state → transition → result → proof → evaluation → seal
 
     This ensures:
       - every execution is provable
@@ -36,30 +35,55 @@ adr:
     Proof generation and evaluation are REQUIRED stages of execution,
     not optional extensions.
 
+  constraints:
+    - proof must be a deterministic function of execution result
+    - evaluation must not influence execution or proof generation
+    - proof and evaluation must not modify system state
+    - outputs must be identical under replay conditions
+
   implementation:
     execution_pipeline_extended: true
 
     lifecycle:
-      - state
-      - transition
-      - result
-      - proof
+      - runtime.activation
+      - guard_engine
+      - state_engine
+      - result_generation
+      - proof_generation
       - evaluation
+      - registry_seal
 
     surfaces_affected:
       - runtime.engine
+      - runtime.activation
       - proof
       - evaluation
 
     breaking_changes: false
 
   invariants:
-    - proof_generation_is_mandatory
-    - evaluation_is_mandatory
-    - execution_pipeline_is_fully_deterministic
-    - proof_outputs_are_replay_verifiable
-    - evaluation_outputs_do_not_modify_state
-    - every_transition_produces_proof_and_evaluation
+    - INVARIANT-PROOF-GENERATION-MANDATORY
+    - INVARIANT-EVALUATION-MANDATORY
+    - INVARIANT-EXECUTION-DETERMINISM
+    - INVARIANT-PROOF-REPLAY-VERIFIABLE
+    - INVARIANT-EVALUATION-NO-STATE-MUTATION
+    - INVARIANT-TRANSITION-MUST-PRODUCE-PROOF-EVALUATION
+
+  validation_pipeline:
+    - runtime_activation
+    - guard_engine
+    - runtime_engine
+    - proof_generator
+    - evaluation_engine
+    - registry_seal
+
+  enforced_by:
+    - afritech.runtime.activation
+    - afritech.runtime.engine
+    - afritech.proof
+    - afritech.evaluation
+    - afritech.guards.guard_engine
+    - afritech.registry.seal
 
   validation:
     replay_required: true
@@ -82,16 +106,24 @@ adr:
 
   implementation_notes: >
     The extended execution lifecycle is implemented across:
+      - afritech.runtime.activation
       - afritech.runtime.engine
       - afritech.proof
       - afritech.evaluation
 
     The system MUST enforce:
-      1. Proof artifacts are generated immediately after execution
-      2. Evaluation follows proof generation
-      3. Neither proof nor evaluation may alter system state
-      4. Guard enforcement applies before execution
-      5. Replay MUST validate proof and evaluation deterministically
+      1. runtime.activation executes before runtime.engine
+      2. all execution passes guard validation before state execution
+      3. proof artifacts are generated immediately after execution
+      4. evaluation follows proof generation
+      5. neither proof nor evaluation may alter system state
+      6. all outputs must be deterministic and replayable
+
+    Replay validation MUST:
+      - validate state hash consistency
+      - validate proof artifact integrity
+      - validate evaluation output determinism
+      - ensure full lifecycle reproducibility
 
     Any execution missing proof or evaluation MUST be rejected.
 
@@ -113,6 +145,7 @@ adr:
       - EPOCH_0006
 
     surfaces:
+      - runtime.activation
       - runtime.engine
       - proof
       - evaluation
@@ -122,11 +155,11 @@ adr:
 
   traceability:
     related_files:
+      - afritech/runtime/activation.py
       - afritech/runtime/engine.py
       - afritech/proof/
       - afritech/evaluation/
-      - afritech/guards/invariant_guard.py
-      - afritech/guards/schema.py
+      - afritech/guards/
 
   integrity:
     immutable: true

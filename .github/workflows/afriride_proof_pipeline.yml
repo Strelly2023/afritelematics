@@ -1,0 +1,43 @@
+name: AfriRide Proof Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+
+jobs:
+  validate-proof-controls:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate evidence origin control
+        run: python3 -m afritech.ci.afriride_evidence_origin_control_validator
+
+      - name: Validate evidence bundle contract
+        run: python3 -m afritech.ci.afriride_controlled_pilot_evidence_bundle_validator
+
+      - name: Validate execution receipt contract
+        run: python3 -m afritech.ci.afriride_controlled_pilot_execution_receipt_validator
+
+      - name: Validate certification contract
+        run: python3 -m afritech.ci.afriride_controlled_pilot_certification_validator
+
+      - name: Validate Wave 7 gate contract
+        run: python3 -m afritech.ci.afriride_wave7_go_no_go_gate_validator
+
+      - name: Run proof control tests
+        run: |
+          pytest -q \
+            afritech/tests/ci/test_afriride_evidence_origin_control_validator.py \
+            afritech/tests/ci/test_afriride_controlled_pilot_evidence_bundle_validator.py \
+            afritech/tests/ci/test_afriride_controlled_pilot_execution_receipt_validator.py \
+            afritech/tests/ci/test_afriride_wave6_closure_triad_validators.py \
+            afritech/tests/cli/test_afriride_pilot_cli.py

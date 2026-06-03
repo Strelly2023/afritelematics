@@ -1,0 +1,57 @@
+id: RULE-019
+
+description: >
+  Defines declared binding rules for AfriTech Constitution v1.0. These rules
+  make Constitution v1.0 traceable and validateable without making it runtime
+  authoritative.
+
+rules:
+  - id: RULE-019-1
+    description: Constitution v1.0 doctrine file must exist.
+    enforcement:
+      type: required_file
+      path: afritech/constitution/AFRITECH_CONSTITUTION_V1.md
+      on_failure: REJECT_BINDING
+
+  - id: RULE-019-2
+    description: Constitution v1.0 machine-readable YAML must parse.
+    enforcement:
+      type: yaml_parse
+      path: afritech/constitution/AFRITECH_CONSTITUTION_V1.yaml
+      on_failure: REJECT_BINDING
+
+  - id: RULE-019-3
+    description: Constitution v1.0 validator must pass.
+    enforcement:
+      type: ci_validator
+      module: afritech.ci.afritech_constitution_v1_validator
+      on_failure: REJECT_BINDING
+
+  - id: RULE-019-4
+    description: Constitution v1.0 checkpoint must exist and record green state.
+    enforcement:
+      type: checkpoint_validation
+      path: docs/proof/AFRITECH_CONSTITUTION_V1_CHECKPOINT.md
+      required_terms:
+        - "1378 passed"
+        - "98 passed, 0 failed"
+        - "Constitutional closure achieved"
+      on_failure: REJECT_BINDING
+
+  - id: RULE-019-5
+    description: Constitution v1.0 must not be runtime authoritative in this phase.
+    enforcement:
+      type: negative_authority_check
+      runtime_authoritative: false
+      on_failure: REJECT_BINDING
+
+on_failure:
+  REJECT_BINDING: >
+    Reject the declared Constitution v1.0 binding and prevent further binding
+    work until the rule failure is resolved.
+
+linked_invariants:
+  - INVARIANT-019
+
+linked_adr:
+  - ADR-0019

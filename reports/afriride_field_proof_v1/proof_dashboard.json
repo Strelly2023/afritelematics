@@ -1,0 +1,24 @@
+{
+  "afriride_field_hash": "0b9417ace0e384d5917974896b3ad888a05ae938975a5a472e1b991896cb4fc0",
+  "authority_disclaimer": "Field observability reports proof health. It does not define truth; replay validation and field validators remain authority.",
+  "dashboard_hash": "4e708a9d5b1be379fb544cc16f589e8ea28a625b658113318fb0ff36f63e3e50",
+  "metrics": {
+    "admissibility_equivalence_rate": 1.0,
+    "dispute_reproducibility_rate": 1.0,
+    "drift_detection_count": 0,
+    "healthy": true,
+    "identity_equivalence_rate": 1.0,
+    "max_observed_event_count": 10,
+    "pricing_equivalence_rate": 1.0,
+    "replay_equivalence_rate": 1.0,
+    "scenario_count": 5
+  },
+  "scenario_hashes": {
+    "delayed_sync": "bb1e884359c3ab5c29add1a8e51799e9f98d623c0f8c064f39e568a7729245ba",
+    "dispute_resolution": "3df31a68413672ad78416d6ba1380277e1a43b4e3e38e122b7dcd75f7832d15c",
+    "duplicate_events": "b79cbe9a39bb76fc24b615c0e507dfcfcb7d0013cdc941a293e7fb6067cb1a68",
+    "gps_drift": "9e0ac05bf274d9d4d1980547948523b7d99371026038b9f226281c70f9bb92fc",
+    "offline_trip": "92b0f6fd901e01f42ce59a0a20d3ff68bf0aff144791c8eb83bb67bfaaab131d"
+  },
+  "schema": "afriride.field_proof_dashboard.v1"
+}

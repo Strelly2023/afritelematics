@@ -1,0 +1,187 @@
+id: BIND-014
+
+description: >
+  Defines the binding between cross-system proof validation rules (RULE‑014)
+  and their concrete implementation within the AfriTech platform.
+  Ensures that all proof verification logic is executed through
+  governed, auditable components.
+
+bindings:
+
+  # ---------------------------------------------------------
+  # ✅ CORE VERIFICATION ENGINE
+  # ---------------------------------------------------------
+
+  - id: BIND-014-1
+    name: cross_proof_verifier
+    description: >
+      Primary verification entry point for cross-system proofs.
+      Responsible for orchestrating all validation steps.
+    target: afritech.services.cross_proof_verifier.verify_cross_system_proof
+    responsibilities:
+      - schema validation
+      - merkle recomputation
+      - signature verification
+      - rule enforcement
+    linked_rules:
+      - RULE-014-1
+      - RULE-014-6
+      - RULE-014-7
+
+  # ---------------------------------------------------------
+  # ✅ KEY REGISTRY
+  # ---------------------------------------------------------
+
+  - id: BIND-014-2
+    name: public_key_registry
+    description: >
+      Resolves public keys used for signature verification.
+    target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+    responsibilities:
+      - provide public key lookup by public_key_id
+      - enforce key presence
+    linked_rules:
+      - RULE-014-5
+
+  # ---------------------------------------------------------
+  # ✅ MERKLE ENGINE
+  # ---------------------------------------------------------
+
+  - id: BIND-014-3
+    name: merkle_engine
+    description: >
+      Computes deterministic merkle root from logs.
+    target: afritech.crypto.merkle.compute_merkle_root
+    responsibilities:
+      - rebuild merkle tree
+      - ensure deterministic hashing
+    linked_rules:
+      - RULE-014-6
+
+  # ---------------------------------------------------------
+  # ✅ SIGNATURE VERIFICATION
+  # ---------------------------------------------------------
+
+  - id: BIND-014-4
+    name: signature_verifier
+    description: >
+      Validates signature against merkle_root and public key.
+    target: afritech.crypto.signature_utils.verify_signature
+    responsibilities:
+      - cryptographic signature validation
+      - reject invalid signatures
+    linked_rules:
+      - RULE-014-7
+
+  # ---------------------------------------------------------
+  # ✅ STRUCTURE VALIDATION GUARD
+  # ---------------------------------------------------------
+
+  - id: BIND-014-5
+    name: proof_structure_guard
+    description: >
+      Validates proof structure and required fields.
+    target: afritech.guards.guard_cross_proof.guard_validate_proof_structure
+    responsibilities:
+      - ensure required fields exist
+      - ensure schema compliance
+    linked_rules:
+      - RULE-014-1
+      - RULE-014-2
+      - RULE-014-3
+      - RULE-014-4
+
+  # ---------------------------------------------------------
+  # ✅ MERKLE VALIDATION GUARD
+  # ---------------------------------------------------------
+
+  - id: BIND-014-6
+    name: merkle_validation_guard
+    description: >
+      Ensures recomputed merkle root matches provided value.
+    target: afritech.guards.guard_cross_proof.guard_validate_merkle
+    responsibilities:
+      - compare computed vs provided root
+    linked_rules:
+      - RULE-014-6
+
+  # ---------------------------------------------------------
+  # ✅ SIGNATURE VALIDATION GUARD
+  # ---------------------------------------------------------
+
+  - id: BIND-014-7
+    name: signature_validation_guard
+    description: >
+      Confirms signature verification result.
+    target: afritech.guards.guard_cross_proof.guard_validate_signature
+    responsibilities:
+      - enforce signature validity
+    linked_rules:
+      - RULE-014-7
+
+# ---------------------------------------------------------
+# ✅ EXECUTION FLOW
+# ---------------------------------------------------------
+
+execution_flow:
+  - step: validate_structure
+    binding: BIND-014-5
+
+  - step: compute_merkle
+    binding: BIND-014-3
+
+  - step: validate_merkle
+    binding: BIND-014-6
+
+  - step: resolve_key
+    binding: BIND-014-2
+
+  - step: verify_signature
+    binding: BIND-014-4
+
+  - step: enforce_signature
+    binding: BIND-014-7
+
+# ---------------------------------------------------------
+# ✅ FAILURE POLICY
+# ---------------------------------------------------------
+
+failure_policy:
+  on_any_failure: REJECT_PROOF
+  behavior:
+    - stop_processing: true
+    - log_incident: true
+    - emit_alert: true
+
+# ---------------------------------------------------------
+# ✅ TRACEABILITY
+# ---------------------------------------------------------
+
+linked_rules:
+  - RULE-014
+
+linked_invariants:
+  - INVARIANT-014
+  - INVARIANT-014B
+  - INVARIANT-014C
+
+linked_adr:
+  - ADR-0014
+
+# ---------------------------------------------------------
+# ✅ CI ENFORCEMENT
+# ---------------------------------------------------------
+
+ci:
+  enforcement:
+    - All bindings must resolve to valid Python paths
+    - All referenced functions must exist
+    - All guards must return boolean values
+    - Verification flow must execute without side effects
+
+  tests:
+    - test_binding_paths_valid
+    - test_verifier_executes_all_steps
+    - test_missing_binding_fails
+    - test_invalid_guard_output_fails
+    - test_successful_proof_verification    

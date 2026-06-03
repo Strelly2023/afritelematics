@@ -1,4 +1,4 @@
-# afritech/runtime/context/runtime_context.py
+# afritech/core/runtime/context/runtime_context.py
 
 """
 Runtime Context Compatibility Layer

@@ -2,16 +2,12 @@ schema: afritech.governance.adr.v1
 
 adr:
   id: ADR-0012
-
   title: Edge Layer Constitutional Admission
-
   status: ACCEPTED
-
   type: CONSTITUTIONAL_EXECUTION_TOPOLOGY
-
   proposed_epoch: 7
-
-  date: 2026-05-21
+  approved_at: "2026-05-21T00:00:00Z"
+  registry_ref: ADR-0012
 
   authors:
     - AfriTech Governance
@@ -30,7 +26,7 @@ adr:
 
   supersedes: []
 
-  depends_on:
+  dependencies:
     - ADR-0001
     - ADR-0002
     - ADR-0003
@@ -55,12 +51,11 @@ adr:
     identity while allowing production access to the core.
 
   problem_statement: >
-    Without a declared edge layer, production traffic could be treated
-    as an informal runtime input path. That would create ambiguity
-    between external-world adaptation and constitutional runtime
-    admission.
+    Without a declared edge layer, production traffic could enter
+    runtime execution through informal paths, creating ambiguity
+    between external-world adaptation and constitutional admission.
 
-    The system needs explicit surfaces that contain non-determinism
+    The system requires explicit surfaces to contain non-determinism
     before execution admission.
 
   decision: >
@@ -70,80 +65,98 @@ adr:
       - afritech.edge.normalization
       - afritech.edge.ingestion
 
-    External inputs must pass through adapter, normalization, and
-    ingestion before any execution admission. The edge layer may
-    adapt and normalize external input, but it must not redefine
-    constitutional truth, replay authority, proof authority, or core
-    runtime semantics.
+    External inputs MUST pass through adapter → normalization →
+    ingestion before any execution admission.
+
+    The edge layer MAY adapt and normalize external input, but MUST NOT:
+      - redefine constitutional truth
+      - alter replay authority
+      - alter proof authority
+      - modify core runtime semantics
+
+  constraints:
+    - edge must be the only entry point for external inputs
+    - adapter must produce canonical deterministic representation
+    - normalization must be replay-stable
+    - ingestion must only admit validated events
+    - edge ordering must be strictly enforced
+    - edge must not introduce semantic interpretation
+    - edge must not bypass runtime admission controls
 
   classification:
-
     mutation_type: EXECUTION_TOPOLOGY_EXTENSION
-
     constitutional_scope: EDGE_ADMISSION_BOUNDARY
-
     runtime_effect: CONTROLLED_EDGE_ADMISSION
-
     determinism_effect: PRESERVED
-
     replay_effect: PRESERVED
-
     semantic_effect: NONE
-
     authority_effect: BOUNDED_EDGE_AUTHORITY
-
     execution_surface_effect: DECLARED_CANONICAL_EDGE_SURFACES
-
     mutation_visibility: EXPLICIT
 
-  invariants_preserved:
-
-    - I3_NO_SILENT_MUTATION
-    - I4_DETERMINISTIC_EXECUTION
-    - I5_REPLAY_REQUIRED
-    - I6_AUTHORITY_DECLARATION
-    - I7_NO_AUTHORITY_ESCALATION
-    - I8_CLOSED_WORLD
-    - I14_ADR_REQUIRED
+  invariants:
+    - INVARIANT-NO-SILENT-MUTATION
+    - INVARIANT-DETERMINISTIC-EXECUTION
+    - INVARIANT-REPLAY-REQUIRED-FOR-VALIDITY
+    - INVARIANT-AUTHORITY-DECLARATION
+    - INVARIANT-NO-AUTHORITY-ESCALATION
+    - INVARIANT-CLOSED-WORLD
+    - INVARIANT-ADR-REQUIRED
+    - INVARIANT-EDGE-GATED-EXECUTION
+    - INVARIANT-EDGE-ORDERING-ENFORCED
+    - INVARIANT-EXTERNAL-NONDETERMINISM-CONTAINED
 
   invariant_assertions:
-
     - external inputs MUST NOT enter runtime execution directly
-
-    - edge adapter output MUST be canonical and deterministic
-
-    - edge normalization MUST use replay-stable transformations
-
-    - edge ingestion MUST admit only normalized events
-
-    - edge ordering MUST be adapter then normalization then ingestion
-
-    - edge surfaces MUST NOT redefine constitutional truth
-
-    - edge surfaces MUST NOT bypass replay admissibility
+    - adapter output MUST be canonical and deterministic
+    - normalization MUST use replay-stable transformations
+    - ingestion MUST admit only normalized events
+    - edge ordering MUST be adapter → normalization → ingestion
+    - edge MUST NOT redefine constitutional truth
+    - edge MUST NOT bypass replay admissibility
+    - edge MUST NOT introduce semantic interpretation
 
   admitted_surfaces:
-
     - afritech.edge.adapter
     - afritech.edge.normalization
     - afritech.edge.ingestion
 
-  required_rule:
+  validation_pipeline:
+    - edge_adapter
+    - edge_normalization
+    - edge_ingestion
+    - runtime_admission
+    - runtime_orchestration
+    - runtime_activation
+    - guard_engine
+    - runtime_engine
+    - proof_generator
+    - evaluation_engine
+    - replay_verification
+    - registry_seal
 
+  enforced_by:
+    - afritech.edge.adapter
+    - afritech.edge.normalization
+    - afritech.edge.ingestion
+    - afritech.guards.edge_input_guard
+    - afritech.guards.guard_engine
+    - afritech.runtime.admission
+    - afritech.verify.replay
+    - afritech.registry.seal
+
+  required_rule:
     - RULE-EDGE-001
 
   required_guard:
-
     - afritech.guards.edge_input_guard
 
   required_ci_checks:
-
     - CI-EDGE-001
     - afritech.ci.surface_validator
     - afritech.ci.constitutional_pipeline
 
   forbidden:
-
     - direct_external_runtime_execution
     - raw_external_input_to_core
     - unnormalized_provider_response_execution
@@ -152,21 +165,37 @@ adr:
     - undeclared_edge_execution_surface
 
   consequences:
-
     positive:
       - non_determinism_contained_before_runtime
-      - production_input_path_declared
+      - production_input_path_formalized
       - replay_safe_edge_boundary_created
-      - closed_world_edge_topology_enforced
+      - closed_world_execution_preserved
 
     negative:
-      - additional_registry_surface_area
-      - additional_validator_and_test_maintenance
-      - production_pipeline_must_respect_edge_ordering
+      - increases governance surface area
+      - introduces additional validation and CI requirements
+      - requires strict pipeline discipline in production
 
-  safe_final_classification: >
-    ADR-0012 admits the edge layer as a bounded constitutional
-    execution topology for controlled production input admission.
-    It preserves the AfriTech core as the authoritative deterministic
-    runtime and prevents external inputs from bypassing adapter,
-    normalization, and ingestion surfaces.
+  links:
+    epochs:
+      - EPOCH_0007
+
+    surfaces:
+      - afritech.edge.adapter
+      - afritech.edge.normalization
+      - afritech.edge.ingestion
+      - runtime.admission
+      - runtime.engine
+
+  traceability:
+    related_files:
+      - afritech/edge/adapter/runtime_adapter.py
+      - afritech/edge/normalization/normalizer.py
+      - afritech/edge/ingestion/queue_ingestor.py
+      - afritech/guards/edge_input_guard.py
+      - afritech/governance/rules/RULE-EDGE-001.yaml
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

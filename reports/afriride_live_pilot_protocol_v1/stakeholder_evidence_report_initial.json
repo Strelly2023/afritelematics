@@ -1,0 +1,18 @@
+{
+  "analysis_hash": "e109c5839035da140fb3432fd47ff5762ec9c080af36ef1e1665f7cfe5ccc9d7",
+  "authority_boundary": "Stakeholder evidence reports communicate validated evidence status only. They do not define truth, certify compliance, authorize launch, or replace replay and CI validators.",
+  "evidence_hashes": [],
+  "evidence_status": "not_submitted",
+  "non_claims": [
+    "production_ready",
+    "public_launch_ready",
+    "regulatory_approved",
+    "market_validated",
+    "fleet_scale_validated",
+    "long_duration_validated"
+  ],
+  "report_hash": "06a8c094bb93ee6055bda4650d24805ede944e9d6e75504f244b521f1f6ddba7",
+  "schema": "afriride.stakeholder_evidence_report_instance.v1",
+  "summary": "No real pilot evidence has been submitted for stakeholder review.",
+  "template_hash": "76dfc522ec7b1bc729273563ab8569082a198ee2a153b88f4296c10e06b61f85"
+}

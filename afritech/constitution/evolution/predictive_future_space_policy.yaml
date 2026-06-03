@@ -1,0 +1,99 @@
+schema: afritech.predictive_future_space_policy.v1
+classification: autonomous_constitutional_predictive_future_space_policy
+authority: PREDICTIVE_REVIEW_ONLY
+
+lock: >
+  Prediction informs. Risk informs. Authority decides.
+  Forecasts may not choose the future. Risk may not erase the future.
+  AfriTech can see possible futures without being captured by them.
+
+required_context:
+  - authority_disclaimer
+  - constitution_reference
+  - future_space_scope
+  - prediction_model_version
+  - ratification_status
+  - replay_reference
+  - risk_model_version
+  - validator_reference
+
+predictive_governance_surfaces:
+  - inevitability_forecasting
+  - inevitability_reinforcement_monitoring
+  - anticipatory_suppression_analysis
+
+invariant_separations:
+  - awareness_authority
+  - forecasting_future_selection
+  - prediction_destiny
+  - probability_legitimacy
+  - risk_exclusion
+  - uncertainty_illegitimacy
+
+allowed_predictive_actions:
+  - analyze_uncertainty
+  - compare_future_scenarios
+  - detect_reinforcement_loops
+  - expose_prediction_pressure
+  - forecast_trajectories
+  - model_instability
+  - reveal_lock_in_dynamics
+  - simulate_constitutional_pressure
+  - surface_convergence_pressure
+  - warn_about_future_risk
+
+forbidden_predictive_actions:
+  - collapse_constitutional_plurality
+  - convert_prediction_into_legitimacy
+  - convert_risk_into_exclusion
+  - operationally_select_constitutional_futures
+  - operationalize_inevitability
+  - pre_ratify_constitutional_destiny
+  - silently_narrow_admissible_futures
+  - suppress_admissible_constitutional_futures
+
+inevitability_forecasting:
+  required_preservation:
+    - forecast_uncertainty
+    - future_plurality
+    - probability_authority_separation
+    - replay_reference
+    - ratification_status
+  forbidden_drift:
+    - prediction_derived_legitimacy
+    - probabilistic_destiny
+    - future_space_collapse
+    - high_probability_future_as_authority
+
+inevitability_reinforcement_monitoring:
+  required_detection:
+    - forecast_amplification
+    - operational_future_preselection
+    - prediction_driven_resource_concentration
+    - recommendation_pressure
+    - salience_amplification
+    - self_fulfilling_legitimacy
+  forbidden_drift:
+    - forecast_confidence_to_operational_priority
+    - predictive_optimization_as_authority
+    - resource_routing_to_predicted_legitimacy
+    - self_fulfilling_future_selection
+
+anticipatory_suppression_analysis:
+  required_preservation:
+    - admissible_future_space
+    - alternative_governance_trajectories
+    - authorized_divergence
+    - constitutional_experimentation_space
+    - low_confidence_constitutional_futures
+    - uncertainty_legitimacy_separation
+  forbidden_drift:
+    - preventive_future_closure
+    - risk_derived_illegitimacy
+    - suppression_of_authorized_divergence
+    - uncertainty_based_exclusion
+
+required_authority_disclaimer: >
+  This predictive artifact informs review by describing future pressure,
+  uncertainty, and reinforcement risk. It does not select, suppress, ratify,
+  or legitimize constitutional futures.

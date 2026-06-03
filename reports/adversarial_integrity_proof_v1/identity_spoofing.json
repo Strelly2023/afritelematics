@@ -1,0 +1,31 @@
+{
+  "all_attacks_rejected": true,
+  "attacks": [
+    {
+      "attack_name": "mobile_replay_spoofing",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "mobile_client",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "mobile client attempted replay spoof after signature creation",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "invalid_partition_id",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "partitioning",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "undeclared partition id rejected by closed-world registry",
+      "truth_authority": "replay_validation",
+      "verified": true
+    }
+  ],
+  "authority_isolated": true,
+  "authority_law": "Malicious behavior must not create valid truth.",
+  "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+  "replay_truth_preserved": true,
+  "scenario": "identity_spoofing_resistance",
+  "verified": true
+}

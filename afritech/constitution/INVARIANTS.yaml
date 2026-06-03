@@ -10,7 +10,7 @@ meta:
   deterministic: true
   replay_safe: true
   ordering: canonical
-  canonical_invariant_count: 30
+  canonical_invariant_count: 36
 
 
 invariants:
@@ -333,3 +333,160 @@ invariants:
   constitutional_assertion: >
     execution_events subset_of observable_log
   enforcement: { runtime: true, replay: true, governance: false }
+
+
+# ---------------------------------------------------------
+# EXTENDED (SYSTEM HARDENING)
+# ---------------------------------------------------------
+
+- id: I31_STRUCTURAL_VALIDATION_REQUIRED
+  category: REPLAY_INTEGRITY
+  runtime_scope: PRE
+  description: >
+    Distributed core types MUST be validated structurally.
+  constitutional_assertion: >
+    validation_method != isinstance
+  enforcement: { runtime: true, replay: true, governance: true }
+
+- id: I32_CANONICAL_ORDERING_GLOBAL
+  category: TEMPORAL_INTEGRITY
+  runtime_scope: DURING
+  description: >
+    All records MUST follow canonical ordering.
+  constitutional_assertion: >
+    records ORDERED_BY (partition_id, sequence, event_id)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I33_REPLAY_EQUIVALENCE_STRICT
+  category: REPLAY_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Replay MUST reproduce identical results AND traces.
+  constitutional_assertion: >
+    replay(results, trace) == original(results, trace)
+  enforcement: { runtime: false, replay: true, governance: false }
+
+- id: I34_PARTITION_ASSIGNMENT_BINDING
+  category: DATA_INTEGRITY
+  runtime_scope: PRE
+  description: >
+    Partition MUST be derived from assignment.
+  constitutional_assertion: >
+    partition_id == assignment(partition_key)
+  enforcement: { runtime: true, replay: true, governance: false }
+
+- id: I35_HASH_CHAIN_CONTINUITY
+  category: PROOF_INTEGRITY
+  runtime_scope: REPLAY
+  description: >
+    Execution MUST form a continuous hash chain.
+  constitutional_assertion: >
+    hash_chain(event → record → batch → result → receipt → trace)
+  enforcement: { runtime: false, replay: true, governance: true }
+
+- id: I36_DATA_LOCALITY_BOUND
+  category: EXECUTION_BOUNDARY
+  runtime_scope: DURING
+  description: >
+    Execution data access MUST remain within bounded, declared, and localized
+    execution scope.
+  constitutional_assertion: >
+    accessed_data subset_of bounded_execution_scope
+  enforcement: { runtime: true, replay: true, governance: false }
+# ---------------------------------------------------------
+# cross-system-proof-format.yaml (INVARIANTS)
+# ---------------------------------------------------------
+
+- id: INVARIANT-014
+  description: >
+    All proofs must be verifiable independently of their origin system.
+  enforcement:
+    - Proof must contain all required fields
+    - Verification must not rely on internal database state
+    - Verification must succeed using only proof + public key
+
+- id: INVARIANT-014B
+  description: >
+    Proof integrity must be guaranteed via merkle root and signature.
+  enforcement:
+    - Merkle root must be deterministically reproducible
+    - Signature must validate against merkle_root
+    - Any tampering must invalidate the proof
+
+# ---------------------------------------------------------
+# ✅ EXTENDED INVARIANTS (CRITICAL FOR PRODUCTION)
+# ---------------------------------------------------------
+
+- id: INVARIANT-014C
+  description: >
+    Proof structure must conform to the canonical schema defined in ADR‑0014.
+  enforcement:
+    - Required fields must exist
+    - Field types must match schema
+    - Unknown critical fields must not break verification
+
+- id: INVARIANT-014D
+  description: >
+    Public keys must be resolvable via a trusted registry.
+  enforcement:
+    - public_key_id must exist in registry
+    - Missing or invalid key must reject proof
+
+- id: INVARIANT-014E
+  description: >
+    Proofs must be deterministic and reproducible across systems.
+  enforcement:
+    - Same input logs must produce identical merkle root
+    - Hash algorithm must be consistent
+
+- id: INVARIANT-014F
+  description: >
+    Proof verification must be side-effect free.
+  enforcement:
+    - No mutation of proof data during verification
+    - No dependency on external mutable state
+
+- id: INVARIANT-014G
+  description: >
+    Timestamp must ensure temporal validity of proofs.
+  enforcement:
+    - Timestamp must be ISO-8601 format
+    - Optional TTL validation may reject stale proofs
+
+- id: INVARIANT-014H
+  description: >
+    Cross-system interoperability must be preserved across versions.
+  enforcement:
+    - Version field must be present
+    - Backward compatibility must be maintained or explicitly versioned
+
+# ---------------------------------------------------------
+# ✅ OPTIONAL SECURITY INVARIANTS (ADVANCED)
+# ---------------------------------------------------------
+
+- id: INVARIANT-014I
+  description: >
+    Proof metadata must not affect cryptographic verification.
+  enforcement:
+    - Metadata is ignored during hash/signature validation
+    - Metadata may enrich context but not affect integrity
+
+- id: INVARIANT-014J
+  description: >
+    Proof serialization must be canonical.
+  enforcement:
+    - JSON must be normalized (ordering, encoding)
+    - No non-deterministic serialization allowed
+
+- id: INVARIANT-019
+  category: GOVERNANCE_BINDING
+  runtime_scope: GOVERNANCE
+  description: >
+    AfriTech Constitution v1.0 doctrine must only become executable through
+    declared governance bindings and must not silently become runtime authority.
+  constitutional_assertion: >
+    constitution_v1_doctrine -> declared_binding_required AND runtime_authority = false
+  enforcement:
+    runtime: false
+    replay: false
+    governance: true

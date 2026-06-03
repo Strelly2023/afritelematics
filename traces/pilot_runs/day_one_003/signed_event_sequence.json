@@ -1,0 +1,213 @@
+{
+"receipt": "signed_event_sequence",
+"protocol": "CONTROLLED_PILOT_TRACE_PROTOCOL",
+"pilot_run_id": "day_one_003",
+"capture_timestamp": "2026-05-31T00:00:00Z",
+"environment": "controlled_pilot",
+
+"trace_context": {
+"trace_id": "day_one_003",
+"sequence_position": 2,
+"previous_artifact": "live_api_config.json",
+"previous_hash": "TO_BE_COMPUTED",
+"next_expected": "api_response_receipts"
+},
+
+"classification": {
+"status": "candidate_live_pilot_evidence",
+"authority": "non_authoritative",
+"purpose": "signed_event_capture",
+"admissibility": "conditional"
+},
+
+"device": {
+"device_id": "ostrinov_phone_001",
+"driver_id": "driver-1",
+"binding_source": "device_registration_snapshot.json",
+"signed_event_capable": true
+},
+
+"ride": {
+"ride_id": "day_one_003_phone_trip_001",
+"scenario": "controlled_driver_lifecycle",
+"expected_sequence": [
+"accept",
+"start",
+"location",
+"complete"
+]
+},
+
+"events": [
+{
+"sequence_number": 1,
+"event_id": "day_one_003_evt_001_accept",
+"event_type": "accept",
+"ride_id": "day_one_003_phone_trip_001",
+"driver_id": "driver-1",
+"device_id": "ostrinov_phone_001",
+"emitted_at": "TO_BE_CAPTURED",
+"logical_clock": 1,
+"payload": {
+"action": "accept",
+"source": "driver_app",
+"authority": "request_only"
+},
+"signature": {
+"algorithm": "ed25519_or_hmac_sha256",
+"signature_value": "TO_BE_CAPTURED",
+"signature_status": "pending"
+},
+"admissibility": {
+"requires_api_acceptance": true,
+"requires_replay_inclusion": true,
+"status": "pending"
+}
+},
+{
+"sequence_number": 2,
+"event_id": "day_one_003_evt_002_start",
+"event_type": "start",
+"ride_id": "day_one_003_phone_trip_001",
+"driver_id": "driver-1",
+"device_id": "ostrinov_phone_001",
+"emitted_at": "TO_BE_CAPTURED",
+"logical_clock": 2,
+"payload": {
+"action": "start",
+"source": "driver_app",
+"authority": "request_only"
+},
+"signature": {
+"algorithm": "ed25519_or_hmac_sha256",
+"signature_value": "TO_BE_CAPTURED",
+"signature_status": "pending"
+},
+"admissibility": {
+"requires_api_acceptance": true,
+"requires_replay_inclusion": true,
+"status": "pending"
+}
+},
+{
+"sequence_number": 3,
+"event_id": "day_one_003_evt_003_location",
+"event_type": "location",
+"ride_id": "day_one_003_phone_trip_001",
+"driver_id": "driver-1",
+"device_id": "ostrinov_phone_001",
+"emitted_at": "TO_BE_CAPTURED",
+"logical_clock": 3,
+"payload": {
+"action": "location",
+"source": "driver_app",
+"authority": "observation_only",
+"latitude": "TO_BE_CAPTURED",
+"longitude": "TO_BE_CAPTURED"
+},
+"signature": {
+"algorithm": "ed25519_or_hmac_sha256",
+"signature_value": "TO_BE_CAPTURED",
+"signature_status": "pending"
+},
+"admissibility": {
+"requires_api_acceptance": true,
+"requires_replay_inclusion": true,
+"status": "pending"
+}
+},
+{
+"sequence_number": 4,
+"event_id": "day_one_003_evt_004_complete",
+"event_type": "complete",
+"ride_id": "day_one_003_phone_trip_001",
+"driver_id": "driver-1",
+"device_id": "ostrinov_phone_001",
+"emitted_at": "TO_BE_CAPTURED",
+"logical_clock": 4,
+"payload": {
+"action": "complete",
+"source": "driver_app",
+"authority": "request_only"
+},
+"signature": {
+"algorithm": "ed25519_or_hmac_sha256",
+"signature_value": "TO_BE_CAPTURED",
+"signature_status": "pending"
+},
+"admissibility": {
+"requires_api_acceptance": true,
+"requires_replay_inclusion": true,
+"status": "pending"
+}
+}
+],
+
+"sequence_invariants": {
+"strict_order_required": true,
+"logical_clock_monotonic": true,
+"same_device_required": true,
+"same_driver_required": true,
+"same_ride_required": true,
+"signature_required_for_each_event": true,
+"api_acceptance_required_for_each_event": true,
+"replay_inclusion_required_for_each_event": true
+},
+
+"authority_constraints": {
+"event_may_request_driver_action": true,
+"event_may_observe_location": true,
+
+
+"event_may_compute_price": false,
+"event_may_assign_driver": false,
+"event_may_mutate_replay": false,
+"event_may_generate_receipt": false,
+"event_may_authorize_payout": false
+
+
+},
+
+"verification_requirements": {
+"all_events_signed": true,
+"all_events_api_accepted": true,
+"complete_event_required": true,
+"receipt_evidence_required_after_complete": true,
+"replay_evidence_required_after_complete": true,
+"driver_app_observation_required": true
+},
+
+"limitations": [
+"event sequence template alone does not prove execution",
+"pending signatures are not proof of signed emission",
+"pending timestamps are not proof of live execution",
+"pending API acceptance is not proof of backend admission",
+"pending replay inclusion is not proof of replay verification"
+],
+
+"permitted_claim": "signed event sequence template prepared for controlled pilot execution",
+
+"prohibited_claims": [
+"events executed",
+"events accepted by API",
+"receipt generated",
+"replay verified",
+"production proven",
+"GA++++ certified"
+],
+
+"constitutional_boundary": {
+"execution_generates_behavior": true,
+"replay_authorizes_truth": true,
+"event_template_redefines_truth": false,
+"observation_redefines_truth": false
+},
+
+"integrity": {
+"hash_algorithm": "sha256",
+"content_hash": null,
+"signature": null,
+"signed_by": null,
+"signature_status": "not_yet_signed"
+}
+}

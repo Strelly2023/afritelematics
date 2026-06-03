@@ -1,0 +1,31 @@
+schema: afritech.constitution.evolution.replay_translator_registry.v1
+classification: compatibility_containment_metadata
+authority: non_authoritative_translator_lifecycle_registry
+boundary:
+  - translators_preserve_access_to_old_truth
+  - translators_do_not_define_new_truth
+  - replay_validates_truth
+
+allowed_statuses:
+  - PROPOSED
+  - ACTIVE
+  - STABLE
+  - DEPRECATED
+  - ARCHIVED
+
+translator_budget:
+  default_max_per_source_epoch_per_interface: 1
+  exception_required_for_overrides: true
+
+required_fields:
+  - status
+  - source_epoch
+  - target_interface
+  - compatibility_class
+  - fixture_status
+  - owner
+  - retirement_path
+
+translators: {}
+
+exceptions: {}

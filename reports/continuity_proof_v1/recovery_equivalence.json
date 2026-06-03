@@ -1,0 +1,754 @@
+{
+  "authority_law": "Missing information must never result in invented truth.",
+  "equivalent_when_complete": true,
+  "full_replay_hash": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+  "full_trace": [
+    {
+      "event_id": "continuity.event.000",
+      "identity_id": "rider.continuity.001",
+      "partition_id": "partition.1",
+      "payload": {
+        "action": "request",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 0,
+      "sequence": 0,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:00Z"
+    },
+    {
+      "event_id": "continuity.event.001",
+      "identity_id": "rider.continuity.001",
+      "partition_id": "partition.1",
+      "payload": {
+        "action": "match",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 1,
+      "sequence": 1,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:01Z"
+    },
+    {
+      "event_id": "continuity.event.002",
+      "identity_id": "rider.continuity.001",
+      "partition_id": "partition.1",
+      "payload": {
+        "action": "accept",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 2,
+      "sequence": 2,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:02Z"
+    },
+    {
+      "event_id": "continuity.event.003",
+      "identity_id": "driver.continuity.001",
+      "partition_id": "partition.3",
+      "payload": {
+        "action": "pickup",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 3,
+      "sequence": 3,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:03Z"
+    },
+    {
+      "event_id": "continuity.event.004",
+      "identity_id": "driver.continuity.001",
+      "partition_id": "partition.3",
+      "payload": {
+        "action": "dropoff",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 4,
+      "sequence": 4,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:04Z"
+    },
+    {
+      "event_id": "continuity.event.005",
+      "identity_id": "driver.continuity.001",
+      "partition_id": "partition.3",
+      "payload": {
+        "action": "complete",
+        "ride_id": "ride.continuity.001"
+      },
+      "received_order": 5,
+      "sequence": 5,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:00:05Z"
+    }
+  ],
+  "input_variations": {
+    "partial_trace": [
+      {
+        "event_id": "continuity.event.000",
+        "identity_id": "rider.continuity.001",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:00Z"
+      },
+      {
+        "event_id": "continuity.event.001",
+        "identity_id": "rider.continuity.001",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:01Z"
+      },
+      {
+        "event_id": "continuity.event.003",
+        "identity_id": "driver.continuity.001",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:03Z"
+      },
+      {
+        "event_id": "continuity.event.004",
+        "identity_id": "driver.continuity.001",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:04Z"
+      },
+      {
+        "event_id": "continuity.event.005",
+        "identity_id": "driver.continuity.001",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:05Z"
+      }
+    ],
+    "recovery_trace": [
+      {
+        "event_id": "continuity.event.002",
+        "identity_id": "rider.continuity.001",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.continuity.001"
+        },
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter",
+        "source_timestamp": "2026-05-27T00:00:02Z"
+      }
+    ]
+  },
+  "no_invented_truth": true,
+  "reconstructed_replay_hash": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+  "reconstruction": {
+    "accepted_events": [
+      {
+        "canonical_event_hash": "3de0c2da3cb3abb9dafac40439f6fe0f5b289dbe7aafcf9b1076e73a6c47a568",
+        "canonical_id": "f57fa883c04986dd4cfe90249fafa05bb0e806a4f8232867490ab62a0539d0ca",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.000",
+        "identity_id": "rider.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:00Z",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "request",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "b4f5b0567ccf693f060d76a118d3aefa06b2e40fdae7d8119858365a7ea208b0",
+        "received_order": 0,
+        "sequence": 0,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "dfe0a58b49a85079c851cdf5fd4702d92612086e4eeffa8d65a776e9fbdea17d",
+        "canonical_id": "c00a99bc671474dce78b363ad1de403a3d4be6b66bd03009aef9027f4984a3c8",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.001",
+        "identity_id": "rider.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:01Z",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "match",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "b1de820fccacd3f5ae61b93aeff80ac0827b16256444ccc38c52eeef3d56edb0",
+        "received_order": 1,
+        "sequence": 1,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "eb9191c992d2b76229835ac1b1c48413826d196593f0dd5b533f064d1f6c7c14",
+        "canonical_id": "dd6e792672863137525b50761db98f70dc2b92de150b5b7931f7f16b7d0bc678",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.002",
+        "identity_id": "rider.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:02Z",
+        "partition_id": "partition.1",
+        "payload": {
+          "action": "accept",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "756af69f044b9b86a186dc3ecc3af611996f2add6c371f14c878ccd838aa4c30",
+        "received_order": 2,
+        "sequence": 2,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "e3800e766f278392591ef1a41d5480cab77d5ef449bb15790413caa3d6da5257",
+        "canonical_id": "92d7af86baac2b73e675945467c520b61d3b878f4489fe5a6359fc455ab0dd49",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.003",
+        "identity_id": "driver.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:03Z",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "pickup",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "ca0d6b1bdf9a24f2dbf32cd216c7e83a0548d771ed2914a6060ccc4d8180d347",
+        "received_order": 3,
+        "sequence": 3,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "1f746526aeaf5cbf8ccd9c8aec797ac76190f1c56e9934fd394ce6fc53b6ede7",
+        "canonical_id": "63a6bd48411e835b0cdd9cf5e2f09422c20cc5a5d3bb17812b0ff5cd3bbfbf7f",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.004",
+        "identity_id": "driver.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:04Z",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "dropoff",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "f3de6a2a3f9667c9dfa0d362cb1218d6166be017f5b4f17faa227a2183adf3cd",
+        "received_order": 4,
+        "sequence": 4,
+        "source": "mobile_adapter"
+      },
+      {
+        "canonical_event_hash": "0a41c729fa1ac7f89a206282624aeb6322f577e68d8a578e9b0a02c23beb07b5",
+        "canonical_id": "f425c53ed8acc72778f01f6bded935325bafcbce15a40cb598429de309b3ad59",
+        "corrupted": false,
+        "corruption_reason": "",
+        "event_id": "continuity.event.005",
+        "identity_id": "driver.continuity.001",
+        "normalized_timestamp": "2026-05-27T00:00:05Z",
+        "partition_id": "partition.3",
+        "payload": {
+          "action": "complete",
+          "ride_id": "ride.continuity.001"
+        },
+        "raw_event_hash": "066ae4a67a163140db96dda5bfcbeaaa0fabc677f804838b755adf1deef976d0",
+        "received_order": 5,
+        "sequence": 5,
+        "source": "mobile_adapter"
+      }
+    ],
+    "complete": true,
+    "continuity_hash": "2fc2bfdf09d8c4cc317808b42a5dc5f6ec98bb4fda05dbeb50f13dbe3d43b981",
+    "convergence": {
+      "accepted_events": [
+        {
+          "canonical_event_hash": "3de0c2da3cb3abb9dafac40439f6fe0f5b289dbe7aafcf9b1076e73a6c47a568",
+          "canonical_id": "f57fa883c04986dd4cfe90249fafa05bb0e806a4f8232867490ab62a0539d0ca",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.000",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "request",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "5d6a327ab1d8f68af111e80bf368a1596922bd455ca188b8acf5721d5ab6c318",
+          "received_order": 0,
+          "sequence": 0,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "dfe0a58b49a85079c851cdf5fd4702d92612086e4eeffa8d65a776e9fbdea17d",
+          "canonical_id": "c00a99bc671474dce78b363ad1de403a3d4be6b66bd03009aef9027f4984a3c8",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.001",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "match",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "9e9041ea7b4a216a1a9bd234f4176ffc13d78a62c4e21babb877e81e8c759d5d",
+          "received_order": 1,
+          "sequence": 1,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "eb9191c992d2b76229835ac1b1c48413826d196593f0dd5b533f064d1f6c7c14",
+          "canonical_id": "dd6e792672863137525b50761db98f70dc2b92de150b5b7931f7f16b7d0bc678",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.002",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "accept",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "e64c81bb6d1f786911464d03ec74571db8e5f6bf84e7859ad7e9fe5e775dffd4",
+          "received_order": 2,
+          "sequence": 2,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "e3800e766f278392591ef1a41d5480cab77d5ef449bb15790413caa3d6da5257",
+          "canonical_id": "92d7af86baac2b73e675945467c520b61d3b878f4489fe5a6359fc455ab0dd49",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.003",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "pickup",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "f0bef0888764e5d820b773adef0f49075aa62122d81177e7e7fdf05ebbd8d7c1",
+          "received_order": 3,
+          "sequence": 3,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "1f746526aeaf5cbf8ccd9c8aec797ac76190f1c56e9934fd394ce6fc53b6ede7",
+          "canonical_id": "63a6bd48411e835b0cdd9cf5e2f09422c20cc5a5d3bb17812b0ff5cd3bbfbf7f",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.004",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "dropoff",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "8577b20f8cc6b58f61d220f0ef7043615c36cb9afea1c9ef522a452405124ae8",
+          "received_order": 4,
+          "sequence": 4,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "0a41c729fa1ac7f89a206282624aeb6322f577e68d8a578e9b0a02c23beb07b5",
+          "canonical_id": "f425c53ed8acc72778f01f6bded935325bafcbce15a40cb598429de309b3ad59",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.005",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "observed-time-not-authoritative",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "complete",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "23a90501b44be81872426b956063d0c10b08ac0b00efc020696db2d6dde2c711",
+          "received_order": 5,
+          "sequence": 5,
+          "source": "mobile_adapter"
+        }
+      ],
+      "admissibility_hash": "664e621d5d567fa46b87514b19aa058dea72990c0affaa42ca43df7f67c6f9c6",
+      "classification_counts": {
+        "clock_drift": 0,
+        "corrupted": 0,
+        "delayed": 0,
+        "duplicate": 0,
+        "normal": 6,
+        "offline_recovery": 0,
+        "out_of_order": 0,
+        "partitioned": 0
+      },
+      "convergence_hash": "6a841f2002280aa12cdcf1e40ad4155a57b803847f1666933c1ab8b631abe9b5",
+      "final_state": {
+        "accepted_event_count": 6,
+        "accepted_event_ids": [
+          "continuity.event.000",
+          "continuity.event.001",
+          "continuity.event.002",
+          "continuity.event.003",
+          "continuity.event.004",
+          "continuity.event.005"
+        ],
+        "identity_ids": [
+          "driver.continuity.001",
+          "rider.continuity.001"
+        ],
+        "last_sequence": 5,
+        "state_hash": "05a736494edc448b449282a3e852258b3b4afdb142f6f2817a91d7227e55ed1f"
+      },
+      "identity_resolution_hash": "1063398e33515b19e34778d6b6cfe46c6265b8382799fdb7201485408bff27d5",
+      "record_hashes": [
+        "e7ea18896ecfaeb15d5eeb172560c645ef3aa165947ce36afa6cd65f559c72e0",
+        "2e7a095c7794f6ef2539134007e9e4a0e35d9ffe1c620228241a94707bf61765",
+        "47e0e6326bfd50b0576ef410eb56fdc66231b28c4c58a4b88ca14036c96f1f6c",
+        "a673aeeda8c17e6810ac0ad99774538af44460c114c52ea7190c62a3c227ee02",
+        "6c6ffb2a67cd77b74559466d5b87c94c2d98b08fa490ab0e7134067de3caf885",
+        "469962f06af323d908f30799b72dc258f6236328f697481b3e394012fb82ae92"
+      ],
+      "replay_hash": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+      "verified": true
+    },
+    "findings": [
+      {
+        "admitted": true,
+        "event_id": "continuity.event.000",
+        "reason": "admissible",
+        "sequence": 0
+      },
+      {
+        "admitted": true,
+        "event_id": "continuity.event.001",
+        "reason": "admissible",
+        "sequence": 1
+      },
+      {
+        "admitted": true,
+        "event_id": "continuity.event.003",
+        "reason": "admissible",
+        "sequence": 3
+      },
+      {
+        "admitted": true,
+        "event_id": "continuity.event.004",
+        "reason": "admissible",
+        "sequence": 4
+      },
+      {
+        "admitted": true,
+        "event_id": "continuity.event.005",
+        "reason": "admissible",
+        "sequence": 5
+      },
+      {
+        "admitted": true,
+        "event_id": "continuity.event.002",
+        "reason": "admissible",
+        "sequence": 2
+      }
+    ],
+    "gaps": [],
+    "partial": {
+      "boundary_sequence": null,
+      "convergence": {
+        "accepted_events": [
+          {
+            "canonical_event_hash": "3de0c2da3cb3abb9dafac40439f6fe0f5b289dbe7aafcf9b1076e73a6c47a568",
+            "canonical_id": "f57fa883c04986dd4cfe90249fafa05bb0e806a4f8232867490ab62a0539d0ca",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.000",
+            "identity_id": "rider.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.1",
+            "payload": {
+              "action": "request",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "5d6a327ab1d8f68af111e80bf368a1596922bd455ca188b8acf5721d5ab6c318",
+            "received_order": 0,
+            "sequence": 0,
+            "source": "mobile_adapter"
+          },
+          {
+            "canonical_event_hash": "dfe0a58b49a85079c851cdf5fd4702d92612086e4eeffa8d65a776e9fbdea17d",
+            "canonical_id": "c00a99bc671474dce78b363ad1de403a3d4be6b66bd03009aef9027f4984a3c8",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.001",
+            "identity_id": "rider.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.1",
+            "payload": {
+              "action": "match",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "9e9041ea7b4a216a1a9bd234f4176ffc13d78a62c4e21babb877e81e8c759d5d",
+            "received_order": 1,
+            "sequence": 1,
+            "source": "mobile_adapter"
+          },
+          {
+            "canonical_event_hash": "eb9191c992d2b76229835ac1b1c48413826d196593f0dd5b533f064d1f6c7c14",
+            "canonical_id": "dd6e792672863137525b50761db98f70dc2b92de150b5b7931f7f16b7d0bc678",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.002",
+            "identity_id": "rider.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.1",
+            "payload": {
+              "action": "accept",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "e64c81bb6d1f786911464d03ec74571db8e5f6bf84e7859ad7e9fe5e775dffd4",
+            "received_order": 2,
+            "sequence": 2,
+            "source": "mobile_adapter"
+          },
+          {
+            "canonical_event_hash": "e3800e766f278392591ef1a41d5480cab77d5ef449bb15790413caa3d6da5257",
+            "canonical_id": "92d7af86baac2b73e675945467c520b61d3b878f4489fe5a6359fc455ab0dd49",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.003",
+            "identity_id": "driver.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.3",
+            "payload": {
+              "action": "pickup",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "f0bef0888764e5d820b773adef0f49075aa62122d81177e7e7fdf05ebbd8d7c1",
+            "received_order": 3,
+            "sequence": 3,
+            "source": "mobile_adapter"
+          },
+          {
+            "canonical_event_hash": "1f746526aeaf5cbf8ccd9c8aec797ac76190f1c56e9934fd394ce6fc53b6ede7",
+            "canonical_id": "63a6bd48411e835b0cdd9cf5e2f09422c20cc5a5d3bb17812b0ff5cd3bbfbf7f",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.004",
+            "identity_id": "driver.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.3",
+            "payload": {
+              "action": "dropoff",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "8577b20f8cc6b58f61d220f0ef7043615c36cb9afea1c9ef522a452405124ae8",
+            "received_order": 4,
+            "sequence": 4,
+            "source": "mobile_adapter"
+          },
+          {
+            "canonical_event_hash": "0a41c729fa1ac7f89a206282624aeb6322f577e68d8a578e9b0a02c23beb07b5",
+            "canonical_id": "f425c53ed8acc72778f01f6bded935325bafcbce15a40cb598429de309b3ad59",
+            "corrupted": false,
+            "corruption_reason": "",
+            "event_id": "continuity.event.005",
+            "identity_id": "driver.continuity.001",
+            "normalized_timestamp": "observed-time-not-authoritative",
+            "partition_id": "partition.3",
+            "payload": {
+              "action": "complete",
+              "ride_id": "ride.continuity.001"
+            },
+            "raw_event_hash": "23a90501b44be81872426b956063d0c10b08ac0b00efc020696db2d6dde2c711",
+            "received_order": 5,
+            "sequence": 5,
+            "source": "mobile_adapter"
+          }
+        ],
+        "admissibility_hash": "664e621d5d567fa46b87514b19aa058dea72990c0affaa42ca43df7f67c6f9c6",
+        "classification_counts": {
+          "clock_drift": 0,
+          "corrupted": 0,
+          "delayed": 0,
+          "duplicate": 0,
+          "normal": 6,
+          "offline_recovery": 0,
+          "out_of_order": 0,
+          "partitioned": 0
+        },
+        "convergence_hash": "6a841f2002280aa12cdcf1e40ad4155a57b803847f1666933c1ab8b631abe9b5",
+        "final_state": {
+          "accepted_event_count": 6,
+          "accepted_event_ids": [
+            "continuity.event.000",
+            "continuity.event.001",
+            "continuity.event.002",
+            "continuity.event.003",
+            "continuity.event.004",
+            "continuity.event.005"
+          ],
+          "identity_ids": [
+            "driver.continuity.001",
+            "rider.continuity.001"
+          ],
+          "last_sequence": 5,
+          "state_hash": "05a736494edc448b449282a3e852258b3b4afdb142f6f2817a91d7227e55ed1f"
+        },
+        "identity_resolution_hash": "1063398e33515b19e34778d6b6cfe46c6265b8382799fdb7201485408bff27d5",
+        "record_hashes": [
+          "e7ea18896ecfaeb15d5eeb172560c645ef3aa165947ce36afa6cd65f559c72e0",
+          "2e7a095c7794f6ef2539134007e9e4a0e35d9ffe1c620228241a94707bf61765",
+          "47e0e6326bfd50b0576ef410eb56fdc66231b28c4c58a4b88ca14036c96f1f6c",
+          "a673aeeda8c17e6810ac0ad99774538af44460c114c52ea7190c62a3c227ee02",
+          "6c6ffb2a67cd77b74559466d5b87c94c2d98b08fa490ab0e7134067de3caf885",
+          "469962f06af323d908f30799b72dc258f6236328f697481b3e394012fb82ae92"
+        ],
+        "replay_hash": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+        "verified": true
+      },
+      "gaps": [],
+      "halted_at_gap": false,
+      "replay_hash": "a3470893984df915b65f425c5796a41a0bada2cec66cb27c904399e52d5ddf75",
+      "replayed_events": [
+        {
+          "canonical_event_hash": "3de0c2da3cb3abb9dafac40439f6fe0f5b289dbe7aafcf9b1076e73a6c47a568",
+          "canonical_id": "f57fa883c04986dd4cfe90249fafa05bb0e806a4f8232867490ab62a0539d0ca",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.000",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:00Z",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "request",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "b4f5b0567ccf693f060d76a118d3aefa06b2e40fdae7d8119858365a7ea208b0",
+          "received_order": 0,
+          "sequence": 0,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "dfe0a58b49a85079c851cdf5fd4702d92612086e4eeffa8d65a776e9fbdea17d",
+          "canonical_id": "c00a99bc671474dce78b363ad1de403a3d4be6b66bd03009aef9027f4984a3c8",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.001",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:01Z",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "match",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "b1de820fccacd3f5ae61b93aeff80ac0827b16256444ccc38c52eeef3d56edb0",
+          "received_order": 1,
+          "sequence": 1,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "eb9191c992d2b76229835ac1b1c48413826d196593f0dd5b533f064d1f6c7c14",
+          "canonical_id": "dd6e792672863137525b50761db98f70dc2b92de150b5b7931f7f16b7d0bc678",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.002",
+          "identity_id": "rider.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:02Z",
+          "partition_id": "partition.1",
+          "payload": {
+            "action": "accept",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "756af69f044b9b86a186dc3ecc3af611996f2add6c371f14c878ccd838aa4c30",
+          "received_order": 2,
+          "sequence": 2,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "e3800e766f278392591ef1a41d5480cab77d5ef449bb15790413caa3d6da5257",
+          "canonical_id": "92d7af86baac2b73e675945467c520b61d3b878f4489fe5a6359fc455ab0dd49",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.003",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:03Z",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "pickup",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "ca0d6b1bdf9a24f2dbf32cd216c7e83a0548d771ed2914a6060ccc4d8180d347",
+          "received_order": 3,
+          "sequence": 3,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "1f746526aeaf5cbf8ccd9c8aec797ac76190f1c56e9934fd394ce6fc53b6ede7",
+          "canonical_id": "63a6bd48411e835b0cdd9cf5e2f09422c20cc5a5d3bb17812b0ff5cd3bbfbf7f",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.004",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:04Z",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "dropoff",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "f3de6a2a3f9667c9dfa0d362cb1218d6166be017f5b4f17faa227a2183adf3cd",
+          "received_order": 4,
+          "sequence": 4,
+          "source": "mobile_adapter"
+        },
+        {
+          "canonical_event_hash": "0a41c729fa1ac7f89a206282624aeb6322f577e68d8a578e9b0a02c23beb07b5",
+          "canonical_id": "f425c53ed8acc72778f01f6bded935325bafcbce15a40cb598429de309b3ad59",
+          "corrupted": false,
+          "corruption_reason": "",
+          "event_id": "continuity.event.005",
+          "identity_id": "driver.continuity.001",
+          "normalized_timestamp": "2026-05-27T00:00:05Z",
+          "partition_id": "partition.3",
+          "payload": {
+            "action": "complete",
+            "ride_id": "ride.continuity.001"
+          },
+          "raw_event_hash": "066ae4a67a163140db96dda5bfcbeaaa0fabc677f804838b755adf1deef976d0",
+          "received_order": 5,
+          "sequence": 5,
+          "source": "mobile_adapter"
+        }
+      ]
+    },
+    "plan": {
+      "gap_count": 0,
+      "isolated_event_count": 0,
+      "reason": "all_required_sequences_observed",
+      "reconstructable": true,
+      "strategy": "reconstructable"
+    },
+    "status": "reconstructable"
+  },
+  "scenario": "delayed_completion",
+  "verified": true
+}

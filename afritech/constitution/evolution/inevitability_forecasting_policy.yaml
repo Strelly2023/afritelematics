@@ -1,0 +1,38 @@
+schema: afritech.inevitability_forecasting_policy.v1
+classification: autonomous_constitutional_inevitability_forecasting_policy
+authority: PROBABILITY_CONTAINMENT_ONLY
+inherits_policy: afritech.predictive_future_space_policy.v1
+
+lock: >
+  Inevitability forecasting may model futures. Forecast confidence may not
+  ratify constitutional futures. Prediction informs. Risk informs.
+  Authority decides.
+
+required_payload_fields:
+  - authority_disclaimer
+  - forecast_confidence
+  - forecast_uncertainty
+  - future_space_scope
+  - model_version
+  - probability_classification
+  - ratification_status
+  - replay_reference
+
+allowed_actions:
+  - compare_future_scenarios
+  - describe_likelihood
+  - expose_forecast_pressure
+  - identify_probability_concentration
+  - model_governance_trajectories
+  - recommend_authority_review
+
+forbidden_drift:
+  - collapse_future_plurality_into_confidence
+  - convert_probability_into_legitimacy
+  - forecast_confidence_as_authority
+  - pre_ratify_constitutional_future
+  - treat_likely_future_as_destiny
+
+required_authority_disclaimer: >
+  This inevitability forecast describes likelihood and uncertainty. It does
+  not select, ratify, or legitimize constitutional futures.

@@ -1,0 +1,15 @@
+"""Reference-only traceability bridge for AfriTech proof artifacts."""
+
+BRIDGE_STATUS = "REFERENCE_ONLY"
+REFERENCE_ONLY = True
+RUNTIME_AUTHORITY = False
+ENFORCEMENT_AUTHORITY = False
+PROJECTION_DEPENDENCY = False
+
+__all__ = [
+    "BRIDGE_STATUS",
+    "ENFORCEMENT_AUTHORITY",
+    "PROJECTION_DEPENDENCY",
+    "REFERENCE_ONLY",
+    "RUNTIME_AUTHORITY",
+]

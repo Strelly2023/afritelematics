@@ -1,0 +1,207 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0016
+  title: Multi-Source Consensus and External Trust Scoring
+  status: ACCEPTED
+  type: CONSTITUTIONAL_CONSENSUS_AND_TRUST_SCORING
+  proposed_epoch: 7
+  approved_at: "2026-05-28T21:47:22Z"
+  registry_ref: ADR-0016
+
+  authors:
+    - AfriTech Governance
+
+  context:
+    problem: >
+      AfriTech may receive evidence from multiple external systems, devices,
+      partners, operators, and proof emitters. These sources can disagree,
+      degrade, replay late, or provide incomplete data. AfriTech needs a
+      governed method for comparing evidence quality without allowing external
+      sources or trust scores to define constitutional truth.
+
+    goal: >
+      Define a deterministic multi-source consensus and external trust scoring
+      doctrine that ranks evidence reliability, detects disagreement, and
+      preserves source independence while keeping replay and governance as the
+      only admissible truth authorities.
+
+    constraints:
+      - Trust scores are advisory evidence, not truth.
+      - External sources must not define AfriTech constitutional authority.
+      - Consensus must preserve dissent and disagreement.
+      - Consensus must be deterministic for identical inputs.
+      - Missing or late evidence must be classified, not silently ignored.
+
+  decision: >
+    Adopt a bounded multi-source consensus and external trust scoring model.
+    The model produces advisory trust assessments over declared evidence
+    sources. It may influence review priority, admission confidence, and
+    operator attention, but it must not override replay, proof verification,
+    governance invariants, or runtime admission rules.
+
+  source_contract:
+    artifact_type: multisource_evidence_packet
+    version: v1
+    required_fields:
+      - source_id
+      - source_type
+      - issued_at
+      - evidence_hash
+      - evidence_type
+      - trust_inputs
+      - signature_status
+      - replay_status
+      - declared_limitations
+
+    source_types:
+      - internal_runtime
+      - mobile_device
+      - partner_system
+      - operator_attestation
+      - external_registry
+      - audit_artifact
+
+  trust_scoring_model:
+    score_range:
+      min: 0
+      max: 100
+    deterministic_inputs:
+      - signature_status
+      - replay_status
+      - source_history
+      - freshness
+      - schema_validity
+      - contradiction_count
+      - declared_limitations
+    forbidden_inputs:
+      - hidden heuristics
+      - operator preference
+      - filesystem location
+      - undocumented reputation claims
+      - runtime side effects
+
+    score_classes:
+      trusted:
+        range: [80, 100]
+        meaning: strong advisory confidence
+      review_required:
+        range: [50, 79]
+        meaning: admissible for review, not automatic trust
+      low_confidence:
+        range: [1, 49]
+        meaning: weak advisory confidence
+      rejected:
+        range: [0, 0]
+        meaning: invalid or constitutionally inadmissible evidence
+
+  consensus_model:
+    output_type: advisory_consensus_packet
+    required_outputs:
+      - consensus_id
+      - source_ids
+      - source_scores
+      - agreement_set
+      - disagreement_set
+      - missing_sources
+      - late_sources
+      - confidence_summary
+      - non_claims
+
+    deterministic_flow:
+      - validate source packets
+      - compute per-source trust scores
+      - group matching evidence hashes
+      - preserve contradictions as disagreement_set
+      - classify missing and late sources
+      - compute confidence_summary from declared inputs
+      - emit advisory packet with non-claims
+
+  constitutional_boundary:
+    advisory_only: true
+    runtime_authoritative: false
+    replay_authoritative: false
+    proof_authoritative: false
+    governance_authoritative: true
+    may_trigger_review: true
+    may_block_when_invalid: true
+    may_override_replay: false
+    may_override_invariants: false
+
+  invariants:
+    - id: INVARIANT-016
+      description: >
+        Multi-source consensus must preserve disagreement and must not collapse
+        conflicting evidence into false equivalence.
+    - id: INVARIANT-016B
+      description: >
+        Trust scores must be deterministic, explainable, and derived only from
+        declared inputs.
+    - id: INVARIANT-016C
+      description: >
+        External trust scores must remain advisory and must not define runtime
+        or replay truth.
+
+  rules:
+    - id: RULE-016-1
+      description: Every scored source must declare evidence_hash and source_id.
+    - id: RULE-016-2
+      description: Trust scores must include input attribution.
+    - id: RULE-016-3
+      description: Disagreement must remain visible in consensus output.
+    - id: RULE-016-4
+      description: External scores must never override replay validation.
+    - id: RULE-016-5
+      description: Rejected sources must include rejection reason.
+
+  bindings:
+    - id: BIND-016-1
+      description: Trust confidence doctrine binding.
+      target: afritech/truth/epistemic_confidence.yaml
+    - id: BIND-016-2
+      description: Consensus proof validation surface.
+      target: afritech/ci/convergence_validator.py
+    - id: BIND-016-3
+      description: Multi-source consensus validation surface.
+      target: afritech/ci/convergence_validator.py
+
+  ci:
+    required_checks:
+      - source_packets_are_declared
+      - trust_score_inputs_are_attributed
+      - disagreement_is_preserved
+      - rejected_sources_have_reasons
+      - advisory_boundary_is_explicit
+      - replay_override_is_forbidden
+
+    tests:
+      - test_distributed_convergence_engine
+      - test_network_convergence_under_delay
+      - test_convergence_validator
+      - test_witness_forgery_detection
+
+  non_claims:
+    - Trust score does not equal truth.
+    - Consensus does not eliminate dissent.
+    - External evidence does not define AfriTech authority.
+    - Advisory confidence does not replace replay or proof verification.
+
+  consequences:
+    positives:
+      - External evidence can be ranked without becoming authoritative.
+      - Disagreement becomes explicit and reviewable.
+      - Trust scoring can support operator and governance workflows.
+      - Future AI readiness workflows can consume confidence packets safely.
+    negatives:
+      - Trust inputs must be carefully versioned.
+      - Consensus packets add another audit surface.
+
+  supersedes: []
+
+  depends_on:
+    - ADR-0014
+    - ADR-0015
+
+  next_admissible_step: >
+    Introduce RULE-016 and BIND-016 only after trust scoring examples and
+    adversarial disagreement fixtures are declared.

@@ -1,0 +1,119 @@
+schema: afritech.canonical_explanation.v1
+classification: canonical_explanation_schema
+authority: EXPLANATION_ONLY
+
+purpose: >
+  Define how compatibility, replay, lifecycle, and governance state may be
+  explained to humans and tools without creating new semantics.
+
+source_authorities:
+  - replay
+  - validators
+  - registries
+  - artifacts
+
+forbidden_authority:
+  - governance_enforcement
+  - legitimacy_definition
+  - replay_truth_validation
+  - semantic_reinterpretation
+
+status_values:
+  - green
+  - yellow
+  - red
+  - unknown
+
+source_ref_types:
+  - artifact
+  - registry
+  - replay
+  - validator
+
+allowed_actions:
+  - expand
+  - inspect
+  - link_to_source
+  - recommend_next_check
+
+forbidden_actions:
+  - infer_legitimacy
+  - mutate_replay_meaning
+  - override_validator
+  - redefine_truth
+
+explanation_record:
+  id:
+    type: string
+    required: true
+  status:
+    type: enum
+    values:
+      - green
+      - yellow
+      - red
+      - unknown
+    required: true
+  summary:
+    type: string
+    required: true
+  source_refs:
+    type: list
+    required: true
+    item_shape:
+      type:
+        type: enum
+        values:
+          - artifact
+          - registry
+          - replay
+          - validator
+        required: true
+      name:
+        type: string
+        required: true
+      result:
+        type: string
+        required: true
+  allowed_actions:
+    type: list
+    values:
+      - expand
+      - inspect
+      - link_to_source
+      - recommend_next_check
+    required: true
+  forbidden_actions:
+    type: list
+    values:
+      - infer_legitimacy
+      - mutate_replay_meaning
+      - override_validator
+      - redefine_truth
+    required: true
+
+canonical_examples:
+  compatibility_green:
+    id: compatibility.health.current
+    status: green
+    summary: Compatibility lifecycle metadata is valid and no translator burden is present.
+    source_refs:
+      - type: validator
+        name: afritech.ci.epoch_lifecycle_validator
+        result: passed
+      - type: registry
+        name: epoch_lifecycle_registry
+        result: active_epochs=1
+    allowed_actions:
+      - expand
+      - inspect
+      - link_to_source
+      - recommend_next_check
+    forbidden_actions:
+      - infer_legitimacy
+      - mutate_replay_meaning
+      - override_validator
+      - redefine_truth
+
+lock: >
+  Explanations may summarize evidence. Explanations may not become evidence.

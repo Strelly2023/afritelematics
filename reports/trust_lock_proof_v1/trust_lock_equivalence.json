@@ -1,0 +1,12 @@
+{
+  "authority_law": "Externally consumed truth must not be replaceable without loss of institutional trust.",
+  "equivalent": true,
+  "scenario_hashes": {
+    "external_dependency": "9832db771955427247cdc75a570951166a412598064e75816ddbe65812222cf3",
+    "operational_consumption": "21263b9f37f6772c941f018b8d9314f3e9ddabbe8cc23c9ea3e9a549f33ad67c",
+    "removal_breakage": "a3bbb6fc240a112f7a2384fa81932e8270a2caff8017eacb9dd0a030c23432c2",
+    "replacement_failure": "8c2183189aec2f4ade00fb262cbb9706b3b48eeb0fabf2f661463e8e3eb34523"
+  },
+  "schema": "afritech.trust_lock_equivalence_report.v1",
+  "trust_lock_hash": "247c7cce6d838d717451d16c6e58aff4b16b4a0383302e4629349e19617dc3ac"
+}

@@ -97,3 +97,8 @@ adr:
       - EPOCH_0001
     genesis:
       - ADR-0001
+
+INVARIANT-ADR-LOCATION:
+  rule: >
+    All executable ADRs MUST exist only in afritech/governance/adr.
+    Any ADR outside this directory is considered non-executable documentation.

@@ -36,3 +36,17 @@ afritech.egg-info/
 
 # Explicit allowlist
 !requirements.txt
+
+node_modules/
+dist/
+.expo/
+
+.coveralls.yml
+*.pem
+*.key
+
+*.sqlite3
+db.sqlite3
+.coverage
+coverage.xml
+htmlcov/

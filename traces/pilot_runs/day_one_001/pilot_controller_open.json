@@ -1,0 +1,13 @@
+{
+  "receipt": "pilot_controller_closeout",
+  "run_id": "day_one_001",
+  "status": "opened",
+  "claim_boundary_read": true,
+  "forbidden_claims": [
+    "pilot completed",
+    "production ready",
+    "public launch ready",
+    "regulatory approved",
+    "market validated"
+  ]
+}

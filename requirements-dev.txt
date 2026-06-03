@@ -1,0 +1,9 @@
+PyYAML>=6.0
+
+fastapi>=0.115
+pynacl>=1.5
+jsonschema>=4.25
+hypothesis>=6.140
+
+pytest>=9
+pytest-django>=4.12

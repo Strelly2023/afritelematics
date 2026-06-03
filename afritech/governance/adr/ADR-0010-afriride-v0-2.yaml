@@ -1,5 +1,3 @@
-# afritech/governance/adr/ADR-000X-afriride-v0-2.yaml
-
 schema: afritech.governance.adr.v1
 
 adr:
@@ -8,7 +6,8 @@ adr:
   status: PROPOSED
   type: CONSTITUTIONAL_EVOLUTION
   proposed_epoch: 7
-  date: 2026-05-13
+  approved_at: "2026-05-13T00:00:00Z"
+  registry_ref: ADR-0010
 
   authors:
     - AfriTech Governance
@@ -16,10 +15,6 @@ adr:
   related_artifacts:
     - ecosystems/afriride/v0_2/
     - ecosystems/afriride/AFRIRIDE_V0_FREEZE.md
-
-  # -----------------------------------------------------
-  # ✅ CONTEXT
-  # -----------------------------------------------------
 
   context: >
     AfriRide v0.1 established deterministic, replay-verifiable
@@ -32,10 +27,6 @@ adr:
     authority-governed coordination remains replay-sound across
     multiple failure modes without mutating or weakening v0.1.
 
-  # -----------------------------------------------------
-  # ✅ DECISION
-  # -----------------------------------------------------
-
   decision: >
     Introduce AfriRide v0.2 as a new Proof-of-Continuity surface
     that expands the validated failure space while preserving
@@ -46,12 +37,14 @@ adr:
     runtime, without modification of the frozen constitutional
     core.
 
-  # -----------------------------------------------------
-  # ✅ SCOPE
-  # -----------------------------------------------------
+  constraints:
+    - v0.1 artifacts must remain immutable
+    - v0.2 execution must be externally layered
+    - replay identity must be preserved across versions
+    - failure modes must be explicitly declared
+    - no non-deterministic behavior is permitted
 
   scope:
-
     added:
       - DRIVER_DROPOUT deterministic failure scenario
       - DRIVER_REJECTION_CHAIN deterministic failure scenario
@@ -59,32 +52,47 @@ adr:
       - v0.2 deterministic failure taxonomy
       - v0.2 determinism envelope
       - multi-scenario continuity metrics:
-          - Continuity Coverage (CC)
-          - Deterministic Refusal Rate (DRR)
-      - v0.2 execution handlers and runtime wrapper
+          - CONTINUITY_COVERAGE (CC)
+          - DETERMINISTIC_REFUSAL_RATE (DRR)
+      - v0.2 execution handlers
+      - v0.2 runtime wrapper
 
     preserved:
       - AfriRide v0.1 (constitutionally frozen)
       - v0.1 determinism guarantees
       - v0.1 replay identity guarantees
-      - v0.1 authority model and execution law
-
-  # -----------------------------------------------------
-  # ✅ INVARIANTS
-  # -----------------------------------------------------
+      - v0.1 authority model
+      - v0.1 execution law
 
   invariants:
-    - v0.1 artifacts MUST NOT be modified
-    - v0.2 execution MUST be layered externally
-    - replay hash identity is mandatory
-    - deterministic refusal is required on exhaustion or timeout
-    - all failures MUST be declared in the failure taxonomy
-    - no nondeterministic behavior is permitted
-    - determinism envelope violations invalidate proof
+    - INVARIANT-V0-1-IMMUTABILITY
+    - INVARIANT-V0-2-LAYERED-EXECUTION
+    - INVARIANT-REPLAY-HASH-IDENTITY
+    - INVARIANT-DETERMINISTIC-REFUSAL-REQUIRED
+    - INVARIANT-FAILURE-TAXONOMY-COMPLETE
+    - INVARIANT-NO-NONDETERMINISM
+    - INVARIANT-DETERMINISM-ENVELOPE-ENFORCED
 
-  # -----------------------------------------------------
-  # ✅ EVIDENCE
-  # -----------------------------------------------------
+  validation_pipeline:
+    - runtime_admission
+    - runtime_orchestration
+    - runtime_activation
+    - guard_engine
+    - runtime_engine
+    - proof_generator
+    - evaluation_engine
+    - replay_verification
+    - registry_seal
+    - continuity_validator
+
+  enforced_by:
+    - afritech.runtime.engine
+    - afritech.guards.guard_engine
+    - afritech.verify.replay
+    - afritech.proof
+    - afritech.evaluation
+    - afritech.registry.seal
+    - ecosystems.afriride.v0_2.runtime_wrapper
 
   evidence:
     executable:
@@ -96,41 +104,79 @@ adr:
       - ecosystems/afriride/v0_2/scenarios/timeout.yaml
 
     metrics:
-      - Decision Determinism Rate (DDR): 1.0 (all scenarios)
-      - Continuity Coverage (CC): 1.0
-      - Deterministic Refusal Rate (DRR): 1.0
+      DECISION_DETERMINISM_RATE: 1.0
+      CONTINUITY_COVERAGE: 1.0
+      DETERMINISTIC_REFUSAL_RATE: 1.0
 
     replay:
-      - identical execution and replay hashes verified
-      - replay verifier status: VALID
+      execution_hash_match: true
+      replay_hash_match: true
+      verifier_status: VALID
 
-  # -----------------------------------------------------
-  # ✅ CONSEQUENCES
-  # -----------------------------------------------------
+  dependencies:
+    - ADR-0001
+    - ADR-0002
+    - ADR-0003
+    - ADR-0004
+    - ADR-0005
+    - ADR-0006
+    - ADR-0007
+    - ADR-0008
+    - ADR-0009
+
+  implementation_notes: >
+    AfriRide v0.2 introduces an expanded deterministic failure space
+    validated through replay-verifiable execution.
+
+    The system MUST enforce:
+      1. v0.1 artifacts remain frozen and unmodified
+      2. v0.2 operates as an external layered execution surface
+      3. All scenarios must produce deterministic outputs
+      4. Replay must reproduce identical execution and hash outputs
+      5. Deterministic refusal must occur when constraints are violated
+
+    Continuity validation MUST:
+      - validate all declared failure scenarios
+      - verify deterministic response behavior
+      - enforce completeness of failure taxonomy
+      - ensure no undeclared execution path exists
 
   consequences:
-
     positive:
       - expands AfriRide continuity proof to multiple failure modes
       - strengthens AfriTech institutional credibility
       - demonstrates scalable governance without historical mutation
       - preserves replay-verifiable lineage across epochs
+      - proves deterministic execution under failure diversity
 
     negative:
       - requires new constitutional epoch (Epoch 7)
       - increases governance surface area
       - introduces additional audit responsibilities
+      - adds complexity to replay validation
 
-  # -----------------------------------------------------
-  # ✅ STATUS & NEXT STEPS
-  # -----------------------------------------------------
+  links:
+    epochs:
+      - EPOCH_0007
 
-  status_notes:
-    - This ADR authorizes advancement to Epoch 7
-    - AfriRide v0.2 may be frozen after ratification
-    - No product, optimization, or performance claims are authorized
+    surfaces:
+      - ecosystems.afriride.v0_2
+      - runtime.engine
+      - proof
+      - evaluation
+      - replay_verification
 
-  approval_requirements:
-    - governance review
-    - replay verifier confirmation
-    - epoch registry update
+  traceability:
+    related_files:
+      - ecosystems/afriride/v0_2/run_multi_scenario_demo.py
+      - ecosystems/afriride/v0_2/scenarios/
+      - ecosystems/afriride/v0_2/runtime_wrapper.py
+      - afritech/verify/replay.py
+      - afritech/proof/
+      - afritech/evaluation/
+      - afritech/guards/
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

@@ -120,7 +120,7 @@ class ADRAutoTrigger:
         self.adr_store = adr_store
 
         # ✅ PRIMARY: Workflow engine (governance layer)
-        from governance.adr.adr_workflow_engine import ADRWorkflowEngine
+        from afritech.governance.adr.adr_workflow_engine import ADRWorkflowEngine
         self.workflow = ADRWorkflowEngine(base_path)
 
     # -----------------------------------------------------------------

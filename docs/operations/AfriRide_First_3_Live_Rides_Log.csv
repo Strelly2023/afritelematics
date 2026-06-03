@@ -1,0 +1,4 @@
+ride_number,ride_id,driver_id,rider_id,route_type,status,price_explained,dispatch_explained,replay_receipt_checked,driver_fairness_response,rider_reliability_response,confusion_point,issue_class,operator_decision,next_action
+1,ride-001,driver-001,rider-001,bounded_route,completed|failed,yes|no,yes|no,yes|no,pending,pending,none,none,go|pause|narrow,run_ride_2
+2,ride-002,driver-001,rider-002,bounded_route,completed|failed,yes|no,yes|no,yes|no,pending,pending,none,none,go|pause|narrow,run_ride_3
+3,ride-003,driver-002,rider-003,bounded_route,completed|failed,yes|no,yes|no,yes|no,pending,pending,none,none,go|pause|narrow,review_first_3

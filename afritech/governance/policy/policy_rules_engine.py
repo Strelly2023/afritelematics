@@ -1,4 +1,4 @@
-from governance.policy.policy_models import PolicyDecision, PolicyRule
+from afritech.governance.policy.policy_models import PolicyDecision, PolicyRule
 
 
 class PolicyEngineError(Exception):

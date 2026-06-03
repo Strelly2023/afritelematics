@@ -1,0 +1,171 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from afritech.extensions.afriprog.repository_intelligence.contract_locator import ContractLocator
+from afritech.extensions.afriprog.repository_intelligence.orchestrator_preview import run_repository_intelligence
+from afritech.extensions.afriprog.repository_intelligence.repo_loader import RepoLoader, RepoLoaderError
+from afritech.extensions.afriprog.repository_intelligence.report_builder import RepoReportBuilder
+from afritech.extensions.afriprog.repository_intelligence.structure_mapper import StructureMapper
+from afritech.extensions.afriprog.repository_intelligence.surface_locator import SurfaceLocator
+from afritech.extensions.afriprog.repository_intelligence.test_mapper import TestMapper
+
+
+def test_repo_loader_lists_supported_files_deterministically(tmp_path: Path):
+    (tmp_path / "b.py").write_text("print('b')", encoding="utf-8")
+    (tmp_path / "a.py").write_text("print('a')", encoding="utf-8")
+    (tmp_path / "c.txt").write_text("ignored", encoding="utf-8")
+
+    files = RepoLoader(tmp_path).list_python_files()
+
+    assert [Path(item.path).name for item in files] == ["a.py", "b.py"]
+
+
+def test_repo_loader_rejects_missing_root(tmp_path: Path):
+    with pytest.raises(RepoLoaderError):
+        RepoLoader(tmp_path / "missing")
+
+
+def test_structure_mapper_detects_layers_by_path_parts():
+    mapper = StructureMapper([
+        "afritech/tests/runtime/test_replay.py",
+        "afritech/ci/constitutional_validation.py",
+        "afritech/guards/replay_guard.py",
+        "afritech/constitution/registry.py",
+        "afritech/extensions/afriprog/orchestrator.py",
+        "afritech/runtime/executor.py",
+    ])
+
+    layers = mapper.detect_layers()
+
+    assert layers.tests == ("afritech/tests/runtime/test_replay.py",)
+    assert layers.ci == ("afritech/ci/constitutional_validation.py",)
+    assert layers.guards == ("afritech/guards/replay_guard.py",)
+    assert layers.constitution == ("afritech/constitution/registry.py",)
+    assert layers.extensions == ("afritech/extensions/afriprog/orchestrator.py",)
+    assert layers.applications == ("afritech/runtime/executor.py",)
+
+
+def test_surface_locator_detects_known_surfaces():
+    surfaces = SurfaceLocator([
+        "afriride_system/flutter/driver_app/lib/main.dart",
+        "afriride_system/flutter/rider_app/lib/main.dart",
+        "afriride_system/web_app/src/main.dart",
+        "afritech/api/app.py",
+        "unknown/file.txt",
+    ]).detect_surfaces()
+
+    assert surfaces.driver_app == ("afriride_system/flutter/driver_app/lib/main.dart",)
+    assert surfaces.rider_app == ("afriride_system/flutter/rider_app/lib/main.dart",)
+    assert surfaces.web_app == ("afriride_system/web_app/src/main.dart",)
+    assert surfaces.backend == ("afritech/api/app.py",)
+    assert surfaces.unknown == ("unknown/file.txt",)
+
+
+def test_test_mapper_finds_python_and_flutter_tests():
+    mapper = TestMapper([
+        "afritech/tests/runtime/test_replay.py",
+        "afriride_system/flutter/driver_app/test/main_test.dart",
+        "afritech/runtime/replay.py",
+    ])
+
+    assert mapper.find_tests() == (
+        "afriride_system/flutter/driver_app/test/main_test.dart",
+        "afritech/tests/runtime/test_replay.py",
+    )
+
+
+def test_test_mapper_maps_test_to_candidate_target():
+    mapper = TestMapper([
+        "afritech/tests/runtime/test_replay.py",
+        "afritech/runtime/replay.py",
+        "afritech/runtime/other.py",
+    ])
+
+    mappings = mapper.map_test_targets()
+
+    assert len(mappings) == 1
+    assert mappings[0].test_file == "afritech/tests/runtime/test_replay.py"
+    assert mappings[0].target_candidates == ("afritech/runtime/replay.py",)
+
+
+def test_contract_locator_finds_contract_schema_receipt_and_binding():
+    contracts = ContractLocator([
+        "afritech/contracts/ride_contract.py",
+        "afritech/evidence/evidence_schema.json",
+        "afritech/receipts/runtime_receipt.py",
+        "afritech/constitution/CLAIM_EVIDENCE_BINDINGS.yaml",
+        "afritech/runtime/executor.py",
+    ]).find_contracts()
+
+    paths = [item.path for item in contracts]
+    types = [item.contract_type for item in contracts]
+
+    assert "afritech/contracts/ride_contract.py" in paths
+    assert "afritech/evidence/evidence_schema.json" in paths
+    assert "afritech/receipts/runtime_receipt.py" in paths
+    assert "afritech/constitution/CLAIM_EVIDENCE_BINDINGS.yaml" in paths
+    assert "directory_contract" in types
+    assert "schema" in types
+    assert "receipt" in types
+    assert "binding" in types
+
+
+def test_report_builder_creates_deterministic_json():
+    builder = RepoReportBuilder({
+        "tests": ["test_a.py"],
+        "files": ["a.py", "test_a.py"],
+        "contracts": ["contract.py"],
+    })
+
+    loaded = json.loads(builder.to_json_string())
+
+    assert loaded["summary"] == {
+        "contracts": 1,
+        "tests": 1,
+        "total_files": 2,
+    }
+
+
+def test_orchestrator_preview_runs_on_fixture_repo(tmp_path: Path):
+    (tmp_path / "afritech" / "tests").mkdir(parents=True)
+    (tmp_path / "afritech" / "runtime").mkdir(parents=True)
+    (tmp_path / "afritech" / "contracts").mkdir(parents=True)
+
+    (tmp_path / "afritech" / "tests" / "test_replay.py").write_text(
+        "def test_sample():\n    assert True\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "afritech" / "runtime" / "replay.py").write_text(
+        "class Replay:\n    pass\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "afritech" / "contracts" / "ride_contract.py").write_text(
+        "RIDE_CONTRACT = True\n",
+        encoding="utf-8",
+    )
+
+    output = tmp_path / "repo_intelligence.json"
+
+    summary = run_repository_intelligence(root=tmp_path, output_path=output)
+
+    assert summary.total_files == 3
+    assert summary.tests == 1
+    assert summary.contracts == 1
+    assert output.exists()
+
+
+def test_orchestrator_preview_is_read_only_by_default(tmp_path: Path):
+    (tmp_path / "afritech").mkdir()
+    (tmp_path / "afritech" / "example.py").write_text(
+        "VALUE = 1\n",
+        encoding="utf-8",
+    )
+
+    summary = run_repository_intelligence(root=tmp_path)
+
+    assert summary.total_files == 1
+    assert not (tmp_path / "repo_intelligence.json").exists()

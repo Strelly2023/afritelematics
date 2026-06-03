@@ -1,0 +1,170 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0015
+  title: Cross-Scenario Continuity Proof Aggregation
+  status: ACCEPTED
+  type: CONSTITUTIONAL_PROOF_AGGREGATION
+  proposed_epoch: 7
+  approved_at: "2026-05-28T21:47:22Z"
+  registry_ref: ADR-0015
+
+  authors:
+    - AfriTech Governance
+
+  context:
+    problem: >
+      AfriTech and AfriRide produce continuity evidence across many scenarios:
+      offline recovery, delayed synchronization, replay equivalence, partial
+      disruption, corruption isolation, multi-region recovery, entropy events,
+      and live-pilot operational traces. These proofs are useful independently,
+      but decision makers also need an aggregate continuity view that preserves
+      source proof authority.
+
+    goal: >
+      Define a canonical aggregation doctrine for cross-scenario continuity
+      proofs so multiple scenario proofs can be summarized, compared, and
+      checkpointed without weakening replay truth or mutating source evidence.
+
+    constraints:
+      - Aggregation must not redefine source proof truth.
+      - Aggregation must preserve each source proof hash.
+      - Aggregation must be deterministic for identical source inputs.
+      - Aggregation must not convert advisory evidence into runtime authority.
+      - Aggregation must remain replay-verifiable and auditor-readable.
+
+  decision: >
+    Adopt a cross-scenario continuity proof aggregation standard. The aggregate
+    artifact is a deterministic index over source proof artifacts, scenario
+    classifications, evidence hashes, outcome statuses, and non-claims. It may
+    summarize continuity readiness, but it must never replace the underlying
+    proof artifacts or become an independent source of runtime truth.
+
+  aggregation_contract:
+    artifact_type: continuity_proof_aggregate
+    version: v1
+    required_fields:
+      - aggregate_id
+      - version
+      - generated_at
+      - scope
+      - scenario_proofs
+      - aggregate_hash
+      - source_hashes
+      - continuity_summary
+      - non_claims
+      - validator
+
+    scenario_proof_fields:
+      - scenario_id
+      - source_path
+      - proof_type
+      - proof_hash
+      - result
+      - replay_participating
+      - continuity_property
+      - failure_boundary
+
+    continuity_summary_fields:
+      - total_scenarios
+      - passed_scenarios
+      - failed_scenarios
+      - replay_verified_count
+      - continuity_properties_observed
+      - excluded_claims
+
+  constitutional_boundary:
+    aggregate_authority: EVIDENCE_INDEX
+    source_truth_authority: SOURCE_PROOF
+    runtime_authoritative: false
+    replay_authoritative: false
+    governance_authoritative: true
+    may_block_release_when_validator_fails: true
+    may_replace_source_proof: false
+    may_mutate_source_proof: false
+
+  deterministic_aggregation_flow:
+    - collect declared source proof artifacts
+    - validate each source proof path and hash
+    - normalize scenario identifiers
+    - sort scenario entries by scenario_id and source_path
+    - compute aggregate_hash from canonical JSON
+    - emit continuity summary and non-claims
+    - validate aggregate with CI before use
+
+  invariants:
+    - id: INVARIANT-015
+      description: >
+        Continuity aggregates must preserve source proof hash identity and must
+        not mutate source proof content.
+    - id: INVARIANT-015B
+      description: >
+        Aggregate readiness statements must remain bounded by the included
+        scenarios and explicit non-claims.
+    - id: INVARIANT-015C
+      description: >
+        Aggregation order must be deterministic and replay-verifiable.
+
+  rules:
+    - id: RULE-015-1
+      description: Each source proof must have a stable proof_hash.
+    - id: RULE-015-2
+      description: Scenario entries must sort deterministically.
+    - id: RULE-015-3
+      description: Aggregate hash must be computed from canonical serialization.
+    - id: RULE-015-4
+      description: Aggregates must include explicit non-claims.
+    - id: RULE-015-5
+      description: Aggregate artifacts must not claim runtime authority.
+
+  bindings:
+    - id: BIND-015-1
+      description: Source proof artifact binding.
+      target: reports/
+    - id: BIND-015-2
+      description: Continuity proof document binding.
+      target: docs/proof/
+    - id: BIND-015-3
+      description: Future aggregate validator binding.
+      target: afritech.ci.continuity_invariants_validator
+
+  ci:
+    required_checks:
+      - source_proof_paths_exist
+      - source_hashes_are_present
+      - aggregate_order_is_deterministic
+      - aggregate_hash_is_stable
+      - non_claims_are_explicit
+      - runtime_authority_is_false
+
+    tests:
+      - test_continuity_invariants_validator
+      - test_entropy_bound_execution
+      - test_multiregion_gate6
+      - test_afriride_marketplace_proof
+      - test_mobile_pilot_e2e
+
+  non_claims:
+    - Aggregation does not prove global deployment readiness.
+    - Aggregation does not replace source replay verification.
+    - Aggregation does not create runtime authority.
+    - Aggregation does not infer continuity outside declared scenarios.
+
+  consequences:
+    positives:
+      - Continuity evidence becomes comparable across scenarios.
+      - Governance can cite one aggregate while preserving source proof truth.
+      - Auditors can trace every summary claim to source proof artifacts.
+      - Future dashboards can display continuity readiness without creating new authority.
+    negatives:
+      - Aggregate maintenance adds one validation surface.
+      - Scenario taxonomy must remain stable for deterministic comparison.
+
+  supersedes: []
+
+  depends_on:
+    - ADR-0014
+
+  next_admissible_step: >
+    Introduce RULE-015 and BIND-015 only when aggregate artifacts are promoted
+    from documented doctrine into enforced CI surfaces.

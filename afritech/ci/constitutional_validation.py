@@ -1,1236 +1,296 @@
-# afritech/ci/constitutional_validation.py
+"""Unified constitutional validation gate for AfriTech.
 
-"""
-AfriTech Unified Constitutional Validation
-==========================================
-
-PHASE 8:
-Deterministic Constitutional Admission Kernel
-
-This module defines the single authoritative
-constitutional validation gate for the AfriTech
-ecosystem.
-
-No:
-- runtime admission
-- governance transition
-- replay certification
-- ontology activation
-- semantic expansion
-- execution authorization
-
-may occur unless ALL required constitutional
-validators succeed.
-
-CONSTITUTIONAL GUARANTEES
--------------------------
-This validator enforces:
-
-- deterministic execution ordering
-- replay-safe orchestration
-- ontology-safe subsystem loading
-- constitutional dependency closure
-- semantic admissibility
-- invariant preservation
-- execution surface integrity
-- bounded validator execution
-- governance-safe validation sequencing
-- replay-bound legitimacy enforcement
-
-VALIDATION DOMAINS
-------------------
-- identity integrity
-- alias normalization
-- witness admissibility
-- invariant consistency
-- semantic ontology integrity
-- execution surface topology
-- runtime certificate validity
-- AST semantic admissibility
-- replay verification
-- import topology legality
-- path ontology legality
-
-ARCHITECTURAL PROPERTY
-----------------------
-This file acts as the constitutional admission
-controller for the AfriTech verification runtime.
-
-FORMAL MODEL
--------------
-admit(state) :=
-    forall validator:
-        validator.valid(state)
-
-Only replay-verifiable system states may
-be constitutionally admitted.
+The module is intentionally boring in the best possible way: one canonical
+registry, deterministic ordering, bounded subprocess execution, and fail-closed
+registry validation before any validator is invoked.
 """
 
 from __future__ import annotations
 
-import importlib
-import multiprocessing
+import importlib.util
+import subprocess
 import sys
 import time
-import traceback
-
 from dataclasses import dataclass
-
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Set
+from pathlib import Path
+from typing import Iterable
 
 
-# ============================================================
-# CONSTITUTIONAL CONSTANTS
-# ============================================================
-
+ROOT = Path(__file__).resolve().parents[2]
 FAIL_FAST = True
+VALIDATOR_TIMEOUT_SECONDS = 30
 
-VALID_RESULT_CODES = {
-    0,
-    None,
-}
-
-VALIDATOR_TIMEOUT_SECONDS = 10
-
-
-# ============================================================
-# PHASE DEFINITIONS
-# ============================================================
-
-PHASE_DEFINITIONS: Dict[int, str] = {
-
+PHASE_DEFINITIONS: dict[int, str] = {
     1: "IDENTITY_AND_ALIAS",
-
     2: "STRUCTURAL_TOPOLOGY",
-
     3: "AST_AND_EXECUTION_LEGALITY",
-
-    4: (
-        "SEMANTIC_AND_"
-        "INVARIANT_ADMISSIBILITY"
-    ),
-
+    4: "SEMANTIC_AND_INVARIANT_ADMISSIBILITY",
     5: "REPLAY_AND_PROOF_AUTHORITY",
 }
+EXPECTED_PHASES = frozenset(PHASE_DEFINITIONS)
 
 
-EXPECTED_PHASES: Set[int] = set(
-    PHASE_DEFINITIONS.keys()
-)
+class ConstitutionalValidationError(Exception):
+    """Raised when constitutional validation cannot be admitted."""
 
-# ============================================================
-# FAILURE
-# ============================================================
-
-class ConstitutionalValidationError(
-    Exception
-):
-    """
-    Raised when constitutional validation
-    fails.
-    """
-    pass
-
-
-def fail(message: str) -> None:
-
-    raise ConstitutionalValidationError(
-        message
-    )
-
-
-# ============================================================
-# VALIDATION SUBSYSTEM
-# ============================================================
 
 @dataclass(frozen=True)
 class ValidationSubsystem:
-    """
-    Immutable constitutional validator
-    definition.
-    """
+    """Immutable constitutional validator definition."""
 
     name: str
-
     module: str
-
+    phase: int
     entrypoint: str = "main"
-
-    phase: int = 0
-
     required: bool = True
+    timeout_seconds: int = VALIDATOR_TIMEOUT_SECONDS
 
+    @property
+    def command(self) -> tuple[str, ...]:
+        return (sys.executable, "-m", self.module)
 
-# ============================================================
-# VALIDATION RESULT
-# ============================================================
 
 @dataclass(frozen=True)
 class ValidationResult:
-    """
-    Immutable validation execution result.
-    """
+    """Immutable validation execution result."""
 
     name: str
-
     phase: int
-
     success: bool
-
     duration_seconds: float
-
-    error: Optional[str] = None
-
-
-# ============================================================
-# CONSTITUTIONAL SUBSYSTEMS
-# ============================================================
-
-SUBSYSTEMS: List[
-    ValidationSubsystem
-] = [
-
-    # ========================================================
-    # PHASE 1
-    # IDENTITY + ALIAS
-    # ========================================================
-
-    ValidationSubsystem(
-        name="identity_validator",
-        module=(
-            "afritech.ci."
-            "identity_validator"
-        ),
-        phase=1,
-    ),
-
-    ValidationSubsystem(
-        name="alias_validator",
-        module=(
-            "afritech.ci."
-            "alias_validator"
-        ),
-        phase=1,
-    ),
-
-    # ========================================================
-    # PHASE 2
-    # STRUCTURAL TOPOLOGY
-    # ========================================================
-
-    ValidationSubsystem(
-        name="path_ontology_validator",
-        module=(
-            "afritech.ci."
-            "path_ontology_validator"
-        ),
-        phase=2,
-    ),
-
-    ValidationSubsystem(
-        name="import_topology_validator",
-        module=(
-            "afritech.ci."
-            "import_topology_validator"
-        ),
-        phase=2,
-    ),
-
-    ValidationSubsystem(
-        name="surface_validator",
-        module=(
-            "afritech.ci."
-            "surface_validator"
-        ),
-        phase=2,
-    ),
-
-    # ========================================================
-    # PHASE 3
-    # AST + EXECUTION LEGALITY
-    # ========================================================
-
-    ValidationSubsystem(
-        name="ast_import_validator",
-        module=(
-            "afritech.ci."
-            "ast_import_validator"
-        ),
-        phase=3,
-    ),
-
-    ValidationSubsystem(
-        name="ast_call_order_validator",
-        module=(
-            "afritech.ci."
-            "ast_call_order_validator"
-        ),
-        phase=3,
-    ),
-
-    ValidationSubsystem(
-        name="ast_witness_validator",
-        module=(
-            "afritech.ci."
-            "ast_witness_validator"
-        ),
-        phase=3,
-    ),
-
-    # ========================================================
-    # PHASE 4
-    # SEMANTIC + INVARIANT ADMISSIBILITY
-    # ========================================================
-
-    ValidationSubsystem(
-        name="semantic_concept_validator",
-        module=(
-            "afritech.ci."
-            "semantic_concept_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="cross_concept_validator",
-        module=(
-            "afritech.ci."
-            "cross_concept_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="invariant_validator",
-        module=(
-            "afritech.ci."
-            "invariant_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="semantic_kernel_validator",
-        module=(
-            "afritech.ci."
-            "semantic_kernel_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="adversarial_runner_validator",
-        module=(
-            "afritech.ci."
-            "adversarial_runner_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="continuity_validator",
-        module=(
-            "afritech.ci."
-            "continuity_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="claim_discipline_validator",
-        module=(
-            "afritech.ci."
-            "claim_discipline_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="governance_size_validator",
-        module=(
-            "afritech.ci."
-            "governance_size_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="semantic_directionality_validator",
-        module=(
-            "afritech.ci."
-            "semantic_directionality_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="level2_formal_model_validator",
-        module=(
-            "afritech.ci."
-            "level2_formal_model_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="registry_completeness_validator",
-        module=(
-            "afritech.ci."
-            "registry_completeness_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="surface_state_resolution_validator",
-        module=(
-            "afritech.ci."
-            "surface_state_resolution_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="binding_completeness_validator",
-        module=(
-            "afritech.ci."
-            "binding_completeness_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="execution_completeness_validator",
-        module=(
-            "afritech.ci."
-            "execution_completeness_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="full_witness_coverage_validator",
-        module=(
-            "afritech.ci."
-            "full_witness_coverage_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="formal_runtime_equivalence_validator",
-        module=(
-            "afritech.ci."
-            "formal_runtime_equivalence_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="python_gap_validator",
-        module=(
-            "afritech.ci."
-            "python_gap_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="yaml_gap_validator",
-        module=(
-            "afritech.ci."
-            "yaml_gap_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="partial_planned_audit_validator",
-        module=(
-            "afritech.ci."
-            "partial_planned_audit_validator"
-        ),
-        phase=4,
-    ),
-
-    ValidationSubsystem(
-        name="completeness_policy_validator",
-        module=(
-            "afritech.ci."
-            "completeness_policy_validator"
-        ),
-        phase=4,
-    ),
-
-    # ========================================================
-    # PHASE 5
-    # REPLAY + PROOF AUTHORITY
-    # ========================================================
-
-    ValidationSubsystem(
-        name="runtime_certificate_validator",
-        module=(
-            "afritech.ci."
-            "runtime_certificate_validator"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="witness_validator",
-        module=(
-            "afritech.ci."
-            "witness_validator"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="receipt_validator",
-        module=(
-            "afritech.ci."
-            "receipt_validator"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="trace_reconstruction_validator",
-        module=(
-            "afritech.ci."
-            "trace_reconstruction_validator"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="execution_lineage_verifier",
-        module=(
-            "afritech.verify."
-            "verify_execution_lineage"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="multi_epoch_replay_verifier",
-        module=(
-            "afritech.verify."
-            "verify_multi_epoch_replay"
-        ),
-        phase=5,
-    ),
-
-    ValidationSubsystem(
-        name="replay_verifier",
-        module=(
-            "afritech.verify.replay"
-        ),
-        phase=5,
-    ),
-]
-
-SUBSYSTEMS = [
-    ValidationSubsystem(
-        name="identity_validator",
-        module="afritech.ci.identity_validator",
-        phase=1,
-    ),
-    ValidationSubsystem(
-        name="alias_validator",
-        module="afritech.ci.alias_validator",
-        phase=1,
-    ),
-    ValidationSubsystem(
-        name="path_ontology_validator",
-        module="afritech.ci.path_ontology_validator",
-        phase=2,
-    ),
-    ValidationSubsystem(
-        name="import_topology_validator",
-        module="afritech.ci.import_topology_validator",
-        phase=2,
-    ),
-    ValidationSubsystem(
-        name="surface_validator",
-        module="afritech.ci.surface_validator",
-        phase=2,
-    ),
-    ValidationSubsystem(
-        name="structural_closure_validator",
-        module="afritech.ci.structural_closure_validator",
-        phase=2,
-    ),
-    ValidationSubsystem(
-        name="execution_integrity_validator",
-        module="afritech.ci.execution_integrity_validator",
-        phase=3,
-    ),
-    ValidationSubsystem(
-        name="ast_witness_validator",
-        module="afritech.ci.ast_witness_validator",
-        phase=3,
-    ),
-    ValidationSubsystem(
-        name="semantic_concept_validator",
-        module="afritech.ci.semantic_concept_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="invariant_validator",
-        module="afritech.ci.invariant_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="continuity_resilience_validator",
-        module="afritech.ci.continuity_resilience_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="claim_discipline_validator",
-        module="afritech.ci.claim_discipline_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="governance_size_validator",
-        module="afritech.ci.governance_size_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="semantic_directionality_validator",
-        module="afritech.ci.semantic_directionality_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="level2_formal_model_validator",
-        module="afritech.ci.level2_formal_model_validator",
-        phase=4,
-    ),
-    ValidationSubsystem(
-        name="witness_proof_validator",
-        module="afritech.ci.witness_proof_validator",
-        phase=5,
-    ),
-    ValidationSubsystem(
-        name="receipt_validator",
-        module="afritech.ci.receipt_validator",
-        phase=5,
-    ),
-    ValidationSubsystem(
-        name="replay_integrity_validator",
-        module="afritech.ci.replay_integrity_validator",
-        phase=5,
-    ),
-    ValidationSubsystem(
-        name="proof_surface_validator",
-        module="afritech.ci.proof_surface_validator",
-        phase=5,
-    ),
-    ValidationSubsystem(
-        name="four_gate_validator",
-        module="afritech.ci.four_gate_validator",
-        phase=5,
-    ),
-    ValidationSubsystem(
-        name="enforcement_integrity_validator",
-        module="afritech.ci.enforcement_integrity_validator",
-        phase=5,
-    ),
-]
-
-
-# ============================================================
-# SORTING
-# ============================================================
-
-def sort_key(
-    subsystem: ValidationSubsystem,
-):
-
-    replay_priority = (
-        subsystem.name
-        == "replay_verifier"
-    )
-
-    return (
-        subsystem.phase,
-        replay_priority,
-        subsystem.name,
-    )
-
-
-# ============================================================
-# REGISTRY VALIDATION
-# ============================================================
-
-def validate_subsystem_registry() -> None:
-    """
-    Ensure deterministic constitutional
-    subsystem registry integrity.
-    """
-
-    names = set()
-
-    modules = set()
-
-    for subsystem in SUBSYSTEMS:
-
-        if subsystem.name in names:
-
-            fail(
-                f"duplicate subsystem "
-                f"name detected: "
-                f"{subsystem.name}"
-            )
-
-        if subsystem.module in modules:
-
-            fail(
-                f"duplicate subsystem "
-                f"module detected: "
-                f"{subsystem.module}"
-            )
-
-        if subsystem.phase not in (
-            PHASE_DEFINITIONS
-        ):
-
-            fail(
-                f"invalid phase for "
-                f"{subsystem.name}: "
-                f"{subsystem.phase}"
-            )
-
-        names.add(
-            subsystem.name
-        )
-
-        modules.add(
-            subsystem.module
-        )
-
-
-# ============================================================
-# PHASE VALIDATION
-# ============================================================
-
-def validate_phase_coverage() -> None:
-    """
-    Ensure complete constitutional
-    phase coverage.
-    """
-
-    discovered = {
-        subsystem.phase
-        for subsystem in SUBSYSTEMS
-    }
-
-    missing = (
-        EXPECTED_PHASES
-        - discovered
-    )
-
-    unknown = (
-        discovered
-        - EXPECTED_PHASES
-    )
-
-    if missing:
-
-        fail(
-            f"missing constitutional "
-            f"phases: "
-            f"{sorted(missing)}"
-        )
-
-    if unknown:
-
-        fail(
-            f"unknown constitutional "
-            f"phases: "
-            f"{sorted(unknown)}"
-        )
-
-
-# ============================================================
-# IMPORT VALIDATION
-# ============================================================
-
-def load_entrypoint(
-    subsystem: ValidationSubsystem,
-) -> Callable[[], int]:
-
-    try:
-
-        module = importlib.import_module(
-            subsystem.module
-        )
-
-    except Exception as exc:
-
-        fail(
-            f"failed to import "
-            f"{subsystem.name}: {exc}"
-        )
-
-    if not hasattr(
-        module,
-        subsystem.entrypoint,
-    ):
-
-        fail(
-            f"{subsystem.name} missing "
-            f"entrypoint: "
-            f"{subsystem.entrypoint}"
-        )
-
-    entrypoint = getattr(
-        module,
-        subsystem.entrypoint,
-    )
-
-    if not callable(
-        entrypoint
-    ):
-
-        fail(
-            f"{subsystem.name} entrypoint "
-            f"is not callable"
-        )
-
-    return entrypoint
-
-
-# ============================================================
-# SUBPROCESS EXECUTION
-# ============================================================
-
-def execute_entrypoint(
-    entrypoint,
-    queue,
+    exit_code: int | None = None
+    stdout: str = ""
+    stderr: str = ""
+    error: str | None = None
+
+    def canonical_dict(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "phase": self.phase,
+            "success": self.success,
+            "duration_seconds": round(self.duration_seconds, 6),
+            "exit_code": self.exit_code,
+            "stdout": self.stdout,
+            "stderr": self.stderr,
+            "error": self.error,
+        }
+
+
+SUBSYSTEMS: tuple[ValidationSubsystem, ...] = (
+    ValidationSubsystem(name="identity_validator", module="afritech.ci.identity_validator", phase=1),
+    ValidationSubsystem(name="alias_validator", module="afritech.ci.alias_validator", phase=1),
+    ValidationSubsystem(name="path_ontology_validator", module="afritech.ci.path_ontology_validator", phase=2),
+    ValidationSubsystem(name="import_topology_validator", module="afritech.ci.import_topology_validator", phase=2),
+    ValidationSubsystem(name="surface_validator", module="afritech.ci.surface_validator", phase=2),
+    ValidationSubsystem(name="structural_closure_validator", module="afritech.ci.structural_closure_validator", phase=2),
+    ValidationSubsystem(name="ast_import_validator", module="afritech.ci.ast_import_validator", phase=3),
+    ValidationSubsystem(name="ast_call_order_validator", module="afritech.ci.ast_call_order_validator", phase=3),
+    ValidationSubsystem(name="ast_witness_validator", module="afritech.ci.ast_witness_validator", phase=3),
+    ValidationSubsystem(name="execution_integrity_validator", module="afritech.ci.execution_integrity_validator", phase=3),
+    ValidationSubsystem(name="semantic_concept_validator", module="afritech.ci.semantic_concept_validator", phase=4),
+    ValidationSubsystem(name="cross_concept_validator", module="afritech.ci.cross_concept_validator", phase=4),
+    ValidationSubsystem(name="invariant_validator", module="afritech.ci.invariant_validator", phase=4),
+    ValidationSubsystem(name="semantic_kernel_validator", module="afritech.ci.semantic_kernel_validator", phase=4),
+    ValidationSubsystem(name="adversarial_runner_validator", module="afritech.ci.adversarial_runner_validator", phase=4),
+    ValidationSubsystem(name="continuity_validator", module="afritech.ci.continuity_validator", phase=4),
+    ValidationSubsystem(name="continuity_resilience_validator", module="afritech.ci.continuity_resilience_validator", phase=4),
+    ValidationSubsystem(name="claim_discipline_validator", module="afritech.ci.claim_discipline_validator", phase=4),
+    ValidationSubsystem(name="governance_size_validator", module="afritech.ci.governance_size_validator", phase=4),
+    ValidationSubsystem(name="semantic_directionality_validator", module="afritech.ci.semantic_directionality_validator", phase=4),
+    ValidationSubsystem(name="level2_formal_model_validator", module="afritech.ci.level2_formal_model_validator", phase=4),
+    ValidationSubsystem(name="registry_completeness_validator", module="afritech.ci.registry_completeness_validator", phase=4),
+    ValidationSubsystem(name="surface_state_resolution_validator", module="afritech.ci.surface_state_resolution_validator", phase=4),
+    ValidationSubsystem(name="binding_completeness_validator", module="afritech.ci.binding_completeness_validator", phase=4),
+    ValidationSubsystem(name="execution_completeness_validator", module="afritech.ci.execution_completeness_validator", phase=4),
+    ValidationSubsystem(name="full_witness_coverage_validator", module="afritech.ci.full_witness_coverage_validator", phase=4),
+    ValidationSubsystem(name="formal_runtime_equivalence_validator", module="afritech.ci.formal_runtime_equivalence_validator", phase=4),
+    ValidationSubsystem(name="python_gap_validator", module="afritech.ci.python_gap_validator", phase=4),
+    ValidationSubsystem(name="yaml_gap_validator", module="afritech.ci.yaml_gap_validator", phase=4),
+    ValidationSubsystem(name="partial_planned_audit_validator", module="afritech.ci.partial_planned_audit_validator", phase=4),
+    ValidationSubsystem(name="completeness_policy_validator", module="afritech.ci.completeness_policy_validator", phase=4),
+    ValidationSubsystem(name="runtime_certificate_validator", module="afritech.ci.runtime_certificate_validator", phase=5),
+    ValidationSubsystem(name="witness_validator", module="afritech.ci.witness_validator", phase=5),
+    ValidationSubsystem(name="witness_proof_validator", module="afritech.ci.witness_proof_validator", phase=5),
+    ValidationSubsystem(name="receipt_validator", module="afritech.ci.receipt_validator", phase=5),
+    ValidationSubsystem(name="trace_reconstruction_validator", module="afritech.ci.trace_reconstruction_validator", phase=5),
+    ValidationSubsystem(name="execution_lineage_verifier", module="afritech.verify.verify_execution_lineage", phase=5),
+    ValidationSubsystem(name="multi_epoch_replay_verifier", module="afritech.verify.verify_multi_epoch_replay", phase=5),
+    ValidationSubsystem(name="replay_verifier", module="afritech.verify.replay", phase=5),
+    ValidationSubsystem(name="replay_integrity_validator", module="afritech.ci.replay_integrity_validator", phase=5),
+    ValidationSubsystem(name="proof_surface_validator", module="afritech.ci.proof_surface_validator", phase=5),
+    ValidationSubsystem(name="four_gate_validator", module="afritech.ci.four_gate_validator", phase=5),
+    ValidationSubsystem(name="governance_projection_validator", module="afritech.ci.governance_projection_validator", phase=5),
+    ValidationSubsystem(name="traceability_bridge_validator", module="afritech.ci.traceability_bridge_validator", phase=5),
+    ValidationSubsystem(name="explain_execution_api_validator", module="afritech.ci.explain_execution_api_validator", phase=5),
+    ValidationSubsystem(name="projection_enriched_explanation_validator", module="afritech.ci.projection_enriched_explanation_validator", phase=5),
+    ValidationSubsystem(name="enforcement_integrity_validator", module="afritech.ci.enforcement_integrity_validator", phase=5),
+    ValidationSubsystem(name="afriprogramming_engineering_validator", module="afritech.ci.afriprogramming_engineering_validator", phase=5),
+    ValidationSubsystem(name="afripower_intelligence_validator", module="afritech.ci.afripower_intelligence_validator", phase=5),
+)
+
+
+def fail(message: str) -> None:
+    raise ConstitutionalValidationError(message)
+
+
+def sort_key(subsystem: ValidationSubsystem) -> tuple[int, str]:
+    return (subsystem.phase, subsystem.name)
+
+
+def ordered_subsystems(
+    subsystems: Iterable[ValidationSubsystem] = SUBSYSTEMS,
+) -> tuple[ValidationSubsystem, ...]:
+    return tuple(sorted(subsystems, key=sort_key))
+
+
+def validate_subsystem_registry(
+    subsystems: Iterable[ValidationSubsystem] = SUBSYSTEMS,
 ) -> None:
+    names: set[str] = set()
+    modules: set[str] = set()
+    discovered_phases: set[int] = set()
 
-    try:
+    for subsystem in subsystems:
+        if not subsystem.name.strip():
+            fail("subsystem name must not be empty")
+        if not subsystem.module.strip():
+            fail(f"{subsystem.name} module must not be empty")
+        if subsystem.name in names:
+            fail(f"duplicate subsystem name detected: {subsystem.name}")
+        if subsystem.module in modules:
+            fail(f"duplicate subsystem module detected: {subsystem.module}")
+        if subsystem.phase not in EXPECTED_PHASES:
+            fail(f"invalid phase for {subsystem.name}: {subsystem.phase}")
+        if subsystem.timeout_seconds <= 0:
+            fail(f"invalid timeout for {subsystem.name}: {subsystem.timeout_seconds}")
+        if importlib.util.find_spec(subsystem.module) is None:
+            fail(f"subsystem module is not importable: {subsystem.module}")
 
-        result = entrypoint()
+        names.add(subsystem.name)
+        modules.add(subsystem.module)
+        discovered_phases.add(subsystem.phase)
 
-        queue.put(
-            (
-                "success",
-                result,
-            )
-        )
+    missing = EXPECTED_PHASES - discovered_phases
+    if missing:
+        fail(f"missing constitutional phases: {sorted(missing)}")
 
-    except SystemExit as exc:
-        # ✅ CRITICAL FIX: handle sys.exit()
-        queue.put(
-            (
-                "success",
-                exc.code,
-            )
-        )
 
-    except BaseException:
-        # ✅ catch ALL remaining failures (not just Exception)
-        queue.put(
-            (
-                "failure",
-                traceback.format_exc(),
-            )
-        )
-
-# ============================================================
-# SUBSYSTEM EXECUTION
-# ============================================================
-
-def run_subsystem(
-    subsystem: ValidationSubsystem,
-) -> ValidationResult:
-
-    print(
-        f"🔍 Running "
-        f"{subsystem.name}..."
-    )
-
+def run_subsystem(subsystem: ValidationSubsystem) -> ValidationResult:
+    print(f"Running {subsystem.name}...")
     started = time.perf_counter()
 
     try:
-
-        entrypoint = load_entrypoint(
-            subsystem
+        completed = subprocess.run(
+            list(subsystem.command),
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=subsystem.timeout_seconds,
+            check=False,
+            shell=False,
         )
-
-        queue = multiprocessing.Queue()
-
-        process = multiprocessing.Process(
-            target=execute_entrypoint,
-            args=(
-                entrypoint,
-                queue,
-            ),
-        )
-
-        process.start()
-
-        process.join(
-            VALIDATOR_TIMEOUT_SECONDS
-        )
-
-        if process.is_alive():
-
-            process.terminate()
-
-            process.join()
-
-            duration = (
-                time.perf_counter()
-                - started
-            )
-
-            return ValidationResult(
-                name=subsystem.name,
-                phase=subsystem.phase,
-                success=False,
-                duration_seconds=duration,
-                error=(
-                    "validator execution "
-                    "timed out"
-                ),
-            )
-
-        duration = (
-            time.perf_counter()
-            - started
-        )
-
-        try:
-
-            status, payload = (
-                queue.get_nowait()
-            )
-
-        except Exception:
-
-            return ValidationResult(
-                name=subsystem.name,
-                phase=subsystem.phase,
-                success=False,
-                duration_seconds=duration,
-                error=(
-                    "validator produced "
-                    "no execution result"
-                ),
-            )
-
-        if status == "failure":
-
-            return ValidationResult(
-                name=subsystem.name,
-                phase=subsystem.phase,
-                success=False,
-                duration_seconds=duration,
-                error=payload,
-            )
-
-        if payload not in (
-            VALID_RESULT_CODES
-        ):
-
-            return ValidationResult(
-                name=subsystem.name,
-                phase=subsystem.phase,
-                success=False,
-                duration_seconds=duration,
-                error=(
-                    f"non-zero result: "
-                    f"{payload}"
-                ),
-            )
-
-        print(
-            f"✅ {subsystem.name} "
-            f"passed "
-            f"({duration:.4f}s)"
-        )
-
-        return ValidationResult(
-            name=subsystem.name,
-            phase=subsystem.phase,
-            success=True,
-            duration_seconds=duration,
-        )
-
-    except Exception:
-
-        traceback.print_exc()
-
-        duration = (
-            time.perf_counter()
-            - started
-        )
-
+    except subprocess.TimeoutExpired as exc:
         return ValidationResult(
             name=subsystem.name,
             phase=subsystem.phase,
             success=False,
-            duration_seconds=duration,
-            error=(
-                "unexpected "
-                "execution failure"
-            ),
+            duration_seconds=time.perf_counter() - started,
+            exit_code=124,
+            stdout=_normalize_output(exc.stdout),
+            stderr=_normalize_output(exc.stderr),
+            error="validator execution timed out",
+        )
+    except OSError as exc:
+        return ValidationResult(
+            name=subsystem.name,
+            phase=subsystem.phase,
+            success=False,
+            duration_seconds=time.perf_counter() - started,
+            error=f"validator execution error: {exc}",
         )
 
-
-# ============================================================
-# ORCHESTRATION
-# ============================================================
-
-def run_validation() -> None:
-
-    validate_subsystem_registry()
-
-    validate_phase_coverage()
-
-    print(
-        "🚀 Starting unified "
-        "constitutional validation..."
+    duration = time.perf_counter() - started
+    success = completed.returncode == 0
+    result = ValidationResult(
+        name=subsystem.name,
+        phase=subsystem.phase,
+        success=success,
+        duration_seconds=duration,
+        exit_code=completed.returncode,
+        stdout=completed.stdout,
+        stderr=completed.stderr,
+        error=None if success else f"non-zero exit code: {completed.returncode}",
     )
 
-    print()
+    if completed.stdout:
+        print(completed.stdout.strip())
+    if completed.stderr:
+        print(completed.stderr.strip())
+    if success:
+        print(f"{subsystem.name} passed ({duration:.4f}s)")
 
-    results: List[
-        ValidationResult
-    ] = []
+    return result
 
-    ordered_subsystems = sorted(
-        SUBSYSTEMS,
-        key=sort_key,
-    )
 
-    current_phase = None
+def run_validation(
+    subsystems: Iterable[ValidationSubsystem] = SUBSYSTEMS,
+) -> tuple[ValidationResult, ...]:
+    subsystem_tuple = tuple(subsystems)
+    validate_subsystem_registry(subsystem_tuple)
 
-    for subsystem in ordered_subsystems:
+    print("Starting unified constitutional validation...")
+    results: list[ValidationResult] = []
+    current_phase: int | None = None
 
+    for subsystem in ordered_subsystems(subsystem_tuple):
         if subsystem.phase != current_phase:
-
             current_phase = subsystem.phase
+            print("=" * 72)
+            print(f"PHASE {current_phase}: {PHASE_DEFINITIONS[current_phase]}")
+            print("=" * 72)
 
-            phase_name = (
-                PHASE_DEFINITIONS[
-                    current_phase
-                ]
-            )
+        result = run_subsystem(subsystem)
+        results.append(result)
 
-            print(
-                "=" * 72
-            )
-
-            print(
-                f"PHASE "
-                f"{current_phase}: "
-                f"{phase_name}"
-            )
-
-            print(
-                "=" * 72
-            )
-
-        result = run_subsystem(
-            subsystem
-        )
-
-        results.append(
-            result
-        )
-
-        if (
-            not result.success
-            and subsystem.required
-        ):
-
-            print()
-
-            print(
-                f"❌ "
-                f"{subsystem.name} failed"
-            )
-
-            print(
-                f"Reason:"
-            )
-
-            print(
-                result.error
-            )
-
+        if not result.success and subsystem.required:
+            print(f"{subsystem.name} failed")
+            if result.error:
+                print(result.error)
             if FAIL_FAST:
+                fail("constitutional validation failed")
 
-                fail(
-                    "constitutional "
-                    "validation failed"
-                )
-
-        print()
-
-    failed = [
-        result
-        for result in results
-        if not result.success
-    ]
-
+    failed = [result for result in results if not result.success]
     if failed:
+        fail("one or more constitutional validators failed")
 
-        print(
-            "❌ Constitutional "
-            "validation failed"
-        )
+    total_duration = sum(result.duration_seconds for result in results)
+    print("=" * 72)
+    print("Unified constitutional validation passed")
+    print("=" * 72)
+    print(f"Validated subsystems: {len(results)}")
+    print(f"Total execution time: {total_duration:.4f}s")
+    print("Deterministic constitutional closure achieved")
 
-        print()
-
-        for result in failed:
-
-            phase_name = (
-                PHASE_DEFINITIONS[
-                    result.phase
-                ]
-            )
-
-            print(
-                f"[PHASE "
-                f"{result.phase} - "
-                f"{phase_name}] "
-                f"{result.name}"
-            )
-
-            print(
-                f"{result.error}"
-            )
-
-            print()
-
-        fail(
-            "one or more constitutional "
-            "validators failed"
-        )
-
-    total_duration = sum(
-        result.duration_seconds
-        for result in results
-    )
-
-    print(
-        "=" * 72
-    )
-
-    print(
-        "✅ Unified constitutional "
-        "validation passed"
-    )
-
-    print(
-        "=" * 72
-    )
-
-    print(
-        f"Validated subsystems: "
-        f"{len(results)}"
-    )
-
-    print(
-        f"Total execution time: "
-        f"{total_duration:.4f}s"
-    )
-
-    print()
-
-    for phase_id in sorted(
-        PHASE_DEFINITIONS
-    ):
-
-        print(
-            f"✅ PHASE "
-            f"{phase_id}: "
-            f"{PHASE_DEFINITIONS[phase_id]}"
-        )
-
-    print()
-
-    print(
-        "✅ Identity integrity verified"
-    )
-
-    print(
-        "✅ Alias normalization verified"
-    )
-
-    print(
-        "✅ Structural topology verified"
-    )
-
-    print(
-        "✅ AST legality verified"
-    )
-
-    print(
-        "✅ Semantic ontology integrity "
-        "verified"
-    )
-
-    print(
-        "✅ Witness admissibility verified"
-    )
-
-    print(
-        "✅ Runtime certificate integrity "
-        "verified"
-    )
-
-    print(
-        "✅ Replay authority verified"
-    )
-
-    print(
-        "✅ Replay-safe constitutional "
-        "governance verified"
-    )
-
-    print(
-        "✅ Deterministic constitutional "
-        "closure achieved"
-    )
+    return tuple(results)
 
 
-# ============================================================
-# ENTRYPOINT
-# ============================================================
+def _normalize_output(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
 
 def main() -> int:
-
     try:
-
         run_validation()
-
         return 0
-
     except Exception as exc:
-
-        print()
-
-        print(
-            f"❌ Constitutional "
-            f"validation failed: "
-            f"{exc}"
-        )
-
+        print(f"Constitutional validation failed: {exc}")
         return 1
 
 
 if __name__ == "__main__":
-
-    multiprocessing.freeze_support()
-
     sys.exit(main())

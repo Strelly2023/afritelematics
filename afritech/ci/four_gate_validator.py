@@ -15,7 +15,7 @@ from afritech.ci import proof_surface_validator
 
 ROOT = Path(__file__).resolve().parents[2]
 
-ALLOWED_ACTIVE_ECOSYSTEMS = {"afriride"}
+ALLOWED_ACTIVE_ECOSYSTEMS = {"afriride", "afriprogramming"}
 
 PROOF_EXPECTED = {
     "continuity": "pass",

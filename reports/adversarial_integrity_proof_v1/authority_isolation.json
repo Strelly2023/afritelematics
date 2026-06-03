@@ -1,0 +1,41 @@
+{
+  "all_attacks_rejected": true,
+  "attacks": [
+    {
+      "attack_name": "fake_observability_evidence",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "observability",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "fake observability evidence attempted to replace authority disclaimer",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "fake_replay_hash",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "replay_claim",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "hostile payload attempted to inject replay authority",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "provider_response_injection",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "provider_response",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "provider response attempted to inject authority metadata",
+      "truth_authority": "replay_validation",
+      "verified": true
+    }
+  ],
+  "authority_isolated": true,
+  "authority_law": "Malicious behavior must not create valid truth.",
+  "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+  "replay_truth_preserved": true,
+  "scenario": "authority_isolation",
+  "verified": true
+}

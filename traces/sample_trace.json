@@ -1,0 +1,51 @@
+{
+  "trace_id": "sample_trace",
+  "events": [
+    {
+      "event_id": "evt_001",
+      "type": "ride_requested",
+      "timestamp": 1710000000,
+      "payload": {
+        "user_id": "u123",
+        "pickup": "A",
+        "dropoff": "B"
+      }
+    }
+  ],
+  "normalized_events": [
+    {
+      "event_id": "evt_001",
+      "type": "ride_requested",
+      "normalized": true,
+      "timestamp": 1710000000,
+      "data": {
+        "user_id": "u123",
+        "pickup": "A",
+        "dropoff": "B"
+      }
+    }
+  ],
+  "execution_states": [
+    {
+      "state_id": "s1",
+      "status": "request_received",
+      "timestamp": 1710000001,
+      "context": {
+        "assigned_driver": null
+      }
+    }
+  ],
+  "witnesses": [
+    {
+      "witness_type": "execution_witness",
+      "timestamp": 1710000002,
+      "details": "Initial execution recorded"
+    }
+  ],
+  "hash": "e7460634d083bbdc6b33d4f8859b2e821f88588202c3a2ab9c286be6905cd44c",
+  "metadata": {
+    "version": "v1",
+    "source": "sample_seed",
+    "replay_status": "unverified"
+  }
+}

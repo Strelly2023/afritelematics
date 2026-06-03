@@ -1,0 +1,143 @@
+id: RULE-014
+
+description: >
+  Defines mandatory validation rules for cross-system proof verification
+  as specified in ADR‑0014. These rules ensure integrity, authenticity,
+  and deterministic reproducibility of proofs.
+
+rules:
+
+  # ---------------------------------------------------------
+  # ✅ CORE STRUCTURE REQUIREMENTS
+  # ---------------------------------------------------------
+
+  - id: RULE-014-1
+    description: Proof must include merkle_root
+    enforcement:
+      type: required_field
+      field: merkle_root
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-2
+    description: Proof must include signature
+    enforcement:
+      type: required_field
+      field: signature
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-3
+    description: Proof must include public_key_id
+    enforcement:
+      type: required_field
+      field: public_key_id
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-4
+    description: Proof must include data.logs for reconstruction
+    enforcement:
+      type: required_field
+      field: data.logs
+      on_failure: REJECT_PROOF
+
+  # ---------------------------------------------------------
+  # ✅ KEY TRUST VALIDATION
+  # ---------------------------------------------------------
+
+  - id: RULE-014-5
+    description: public_key_id must exist in key registry
+    enforcement:
+      type: registry_lookup
+      target: PUBLIC_KEY_REGISTRY
+      field: public_key_id
+      on_failure: REJECT_PROOF
+
+  # ---------------------------------------------------------
+  # ✅ CRYPTOGRAPHIC VERIFICATION
+  # ---------------------------------------------------------
+
+  - id: RULE-014-6
+    description: Logs must reproduce identical merkle root
+    enforcement:
+      type: deterministic_check
+      process: recompute_merkle_root(data.logs)
+      expected: merkle_root
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-7
+    description: Signature must match merkle_root using resolved public key
+    enforcement:
+      type: cryptographic_verification
+      input: merkle_root
+      key: public_key_id
+      signature: signature
+      on_failure: REJECT_PROOF
+
+  # ---------------------------------------------------------
+  # ✅ OPTIONAL VALIDATION RULES (RECOMMENDED)
+  # ---------------------------------------------------------
+
+  - id: RULE-014-8
+    description: Hash algorithm must be supported and deterministic
+    enforcement:
+      type: allowed_values
+      field: hash_algorithm
+      allowed: ["sha256"]
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-9
+    description: Timestamp must be valid ISO-8601 format
+    enforcement:
+      type: format_check
+      field: timestamp
+      format: iso8601
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-10
+    description: Proof version must be supported
+    enforcement:
+      type: allowed_values
+      field: version
+      allowed: ["v1"]
+      on_failure: REJECT_PROOF
+
+  # ---------------------------------------------------------
+  # ✅ SECURITY HARDENING RULES
+  # ---------------------------------------------------------
+
+  - id: RULE-014-11
+    description: Proof must not contain conflicting fields
+    enforcement:
+      type: consistency_check
+      logic: no_duplicate_or_conflicting_fields
+      on_failure: REJECT_PROOF
+
+  - id: RULE-014-12
+    description: Metadata must not affect proof validation
+    enforcement:
+      type: isolation_check
+      field: metadata
+      rule: ignored_in_verification
+      on_failure: IGNORE_FIELD
+
+# ---------------------------------------------------------
+# ✅ DEFAULT ACTIONS
+# ---------------------------------------------------------
+
+on_failure:
+  REJECT_PROOF: >
+    Immediately reject proof and stop verification
+
+  IGNORE_FIELD: >
+    Ignore non-critical field and continue processing
+
+# ---------------------------------------------------------
+# ✅ TRACEABILITY
+# ---------------------------------------------------------
+
+linked_invariants:
+  - INVARIANT-014
+  - INVARIANT-014B
+  - INVARIANT-014C
+
+linked_adr:
+  - ADR-0014

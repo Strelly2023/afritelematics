@@ -5,10 +5,9 @@ adr:
   title: Registry Seal Lifecycle and Authority Finalization Model
   status: APPROVED
   type: ARCHITECTURAL
-
   epoch: 5
-
   approved_at: "2026-01-05T00:00:00Z"
+  registry_ref: ADR-0005
 
   context: >
     AfriTech now has:
@@ -33,28 +32,25 @@ adr:
 
     The system MUST enforce:
 
-    1. Registry state is sealed per epoch boundary
-    2. A sealed registry is immutable and replay-verifiable
-    3. Any mutation requires a new seal cycle
-    4. Seal operations must be cryptographically hash-chained
-    5. Registry seals MUST reference:
-       - genesis trust root (ADR-0001)
-       - epoch state (ADR-0002)
-       - state hashes (ADR-0003)
-       - guard outcomes (ADR-0004)
-    6. Seal validation MUST occur before replay acceptance
+      1. Registry state is sealed per epoch boundary
+      2. A sealed registry is immutable and replay-verifiable
+      3. Any mutation requires a new seal cycle
+      4. Seal operations must be cryptographically hash-chained
+      5. Registry seals MUST reference:
+         - genesis trust root (ADR-0001)
+         - epoch state (ADR-0002)
+         - state hashes (ADR-0003)
+         - guard outcomes (ADR-0004)
+      6. Seal validation MUST occur before replay acceptance
 
   registry_model:
     components:
       registry_state:
         description: Current mutable system snapshot before sealing
-
       registry_seal:
         description: Immutable cryptographic snapshot of system state
-
       seal_hash:
         description: Deterministic hash of full system state at epoch closure
-
       attestation:
         description: Proof of validity of sealed state
 
@@ -68,11 +64,22 @@ adr:
     - lock_registry_state
 
   invariants:
-    - sealed_registry_is_immutable
-    - single_registry_seal_per_epoch
-    - replay_rejects_unsealed_states
-    - registry_hash_chain_is_continuous
-    - seal_validation_requires_all_dependencies
+    - INVARIANT-SEALED-REGISTRY-IMMUTABLE
+    - INVARIANT-SINGLE-SEAL-PER-EPOCH
+    - INVARIANT-REPLAY-REQUIRES-SEALED-STATE
+    - INVARIANT-REGISTRY-HASH-CHAIN-CONTINUITY
+    - INVARIANT-SEAL-VALIDATION-COMPLETE
+
+  validation_pipeline:
+    - guard_engine
+    - epoch_validator
+    - state_validator
+    - registry_seal_validator
+
+  enforced_by:
+    - afritech.registry.seal
+    - afritech.registry.history
+    - afritech.verify.replay
 
   dependencies:
     - ADR-0001
@@ -113,11 +120,5 @@ adr:
       - Seal failure blocks epoch finalization
 
   links:
-    dependencies:
-      - ADR-0001
-      - ADR-0002
-      - ADR-0003
-      - ADR-0004
-
     epochs:
       - EPOCH_0005

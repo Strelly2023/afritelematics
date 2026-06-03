@@ -31,3 +31,8 @@ rules:
 enforcement:
   level: STRICT
   failure_mode: CI_FAIL
+RULE-ADR-DOC-SYNC:
+  description: Markdown ADR must match YAML ADR
+  enforcement:
+    - md file must exist for each ADR
+    - content must be derived from YAML

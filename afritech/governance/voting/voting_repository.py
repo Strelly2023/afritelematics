@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from governance.voting.voting_models import Vote, VotingSession
+from afritech.governance.voting.voting_models import Vote, VotingSession
 
 
 class VotingRepository:

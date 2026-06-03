@@ -1,6 +1,6 @@
-from governance.voting.voting_models import VotingSession, Vote, VoteDecision
-from governance.voting.voting_repository import VotingRepository
-from governance.adr.adr_workflow_engine import ADRWorkflowEngine, ADRStatus
+from afritech.governance.voting.voting_models import VotingSession, Vote, VoteDecision
+from afritech.governance.voting.voting_repository import VotingRepository
+from afritech.governance.adr.adr_workflow_engine import ADRWorkflowEngine, ADRStatus
 
 
 class VotingEngineError(Exception):

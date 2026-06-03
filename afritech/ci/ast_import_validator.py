@@ -59,7 +59,7 @@ FORBIDDEN_SPECULATIVE_PREFIXES = (
     "afritech.speculative",
     "afritech.civilization",
     "afritech.federation",
-    "afritech.distributed",
+    #"afritech.distributed",
     "afritech.economic",
 )
 

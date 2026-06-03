@@ -1,0 +1,20 @@
+{
+  "authority_law": "Missing information must never result in invented truth.",
+  "continuity_equivalence_hash": "5baf681c74ea7ba642aa06a36920c028af7c014c8e4a0568f6337c075cc4456f",
+  "equivalent": true,
+  "replay_hashes": {
+    "corrupted_segment_isolation": "9021608ccd3d86f8c16f3deb92145457f3063a1b49d856363c679be9974e148c",
+    "delayed_completion": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+    "missing_segment_replay": "9021608ccd3d86f8c16f3deb92145457f3063a1b49d856363c679be9974e148c",
+    "offline_node_merge": "d7cd2ec1f3fa4fccb4b31b5b908ddcf3d78b6605f9f8072366d15f7566ae01cb",
+    "partial_trace_recovery": "9021608ccd3d86f8c16f3deb92145457f3063a1b49d856363c679be9974e148c"
+  },
+  "scenario_hashes": {
+    "corrupted_segment_isolation": "8a95a307c456176a57cb0dc3c0fbb8268dcddc3536b1b8b735fea040e8fc5bf7",
+    "delayed_completion": "78097823677309f37c6d14668a49b21925f3c0f3224887bb2bc7dab51ac2faeb",
+    "missing_segment_replay": "c1ea8c1ae29e6e92e8e25d66ce46d59ee6bc9634fdb34d80727661583eaf06c5",
+    "offline_node_merge": "d3db4028ae6360407ed3f162381ccc7b0642f69d16475368bbd1e7ebdde6c567",
+    "partial_trace_recovery": "a6f5eb3d0de7369e08bd36b7a02289b36bff44f0aef54f3481af913ad9b4f7c8"
+  },
+  "schema": "afritech.continuity_equivalence_report.v1"
+}

@@ -1,0 +1,39 @@
+[run]
+branch = True
+
+# ✅ Scope ONLY AFRIPower + validator
+source =
+    afritech/afripower
+    afritech/ci/afripower_intelligence_validator.py
+
+
+[report]
+
+# ✅ Clean report (ignore irrelevant lines)
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == "__main__":
+    if TYPE_CHECKING:
+
+
+# ✅ Remove noise
+omit =
+    */__init__.py
+    */migrations/*
+    */tests/*
+    */site-packages/*
+
+# ✅ STRICT ENFORCEMENT
+fail_under = 95
+precision = 2
+show_missing = True
+skip_covered = False
+
+
+[html]
+directory = coverage_html
+
+
+[xml]
+output = coverage.xml

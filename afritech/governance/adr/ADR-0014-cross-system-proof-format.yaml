@@ -1,0 +1,185 @@
+id: ADR-0014
+title: Cross-System Proof Format (Standard)
+status: ACCEPTED
+epoch: 6
+
+context:
+  problem: >
+    Proofs are currently system-specific and lack interoperability.
+    External systems cannot verify proofs without relying on
+    internal implementation details or shared databases.
+
+  goal: >
+    Enable portable, trustless verification across independent systems,
+    allowing any compliant system to validate proofs using only
+    cryptographic guarantees.
+
+  constraints:
+    - Must not rely on shared database state
+    - Must support external auditors
+    - Must be deterministic and reproducible
+    - Must be API and transport independent
+
+decision:
+  description: >
+    Adopt a canonical JSON proof format including:
+    - deterministic data payload
+    - merkle root for integrity
+    - signature for authenticity
+    - public key reference for trust resolution
+
+  format:
+    version: "v1"
+
+    required_fields:
+      - version
+      - system_id
+      - network
+      - timestamp
+      - proof_type
+      - data
+      - merkle_root
+      - hash_algorithm
+      - signature
+      - public_key_id
+
+    schema:
+      version: string
+      system_id: string
+      network: string
+      timestamp: string (ISO-8601)
+
+      proof_type: string
+
+      data:
+        logs: list
+
+      merkle_root: string
+      hash_algorithm: string
+
+      signature: string
+      public_key_id: string
+
+      metadata: optional object
+
+  cryptographic_requirements:
+    - Hash algorithm must be deterministic (e.g. SHA-256)
+    - Log ordering must be stable and canonical
+    - Merkle root must be reproducible across systems
+    - Signature must be generated from merkle_root only
+    - Public key must be resolvable via registry
+
+  verification_process:
+    - Validate schema completeness
+    - Recompute merkle root from logs
+    - Compare computed root with provided root
+    - Resolve public key via public_key_id
+    - Verify signature using resolved key
+    - Optionally validate timestamp freshness
+
+  trust_model:
+    description: >
+      Trust is derived from cryptographic guarantees rather than
+      system relationships.
+
+    properties:
+      - No shared database required
+      - No shared secret required
+      - Verification is deterministic
+      - Proof origin is verifiable via signature
+
+consequences:
+  positives:
+    - Cross-system interoperability
+    - Independent verification capability
+    - Zero-trust architecture enforcement
+    - Compatibility with external auditors
+    - Scalable distributed trust model
+
+  negatives:
+    - Requires key management infrastructure
+    - Requires strict schema adherence
+    - Requires canonical serialization discipline
+    - Additional verification overhead
+
+invariants:
+  - id: INVARIANT-014
+    description: >
+      Any proof must be verifiable independently of the originating system.
+
+  - id: INVARIANT-014B
+    description: >
+      Proof integrity must be guaranteed through deterministic merkle root
+      and signature validation.
+
+rules:
+  - id: RULE-014-1
+    description: Proof must include merkle_root and signature
+
+  - id: RULE-014-2
+    description: public_key_id must resolve to a valid key
+
+  - id: RULE-014-3
+    description: Logs must regenerate identical merkle root
+
+  - id: RULE-014-4
+    description: Signature must match merkle_root and public key
+
+bindings:
+  - id: BIND-014-1
+    description: Cross-system verifier binding
+    target: afritech.services.cross_proof_verifier.verify_cross_system_proof
+
+  - id: BIND-014-2
+    description: Public key registry binding
+    target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+
+guards:
+  - id: GUARD-014-1
+    description: Validate proof structure
+    implementation: afritech.guards.guard_cross_proof.guard_validate_proof_structure
+
+  - id: GUARD-014-2
+    description: Validate merkle integrity
+    implementation: afritech.guards.guard_cross_proof.guard_validate_merkle
+
+  - id: GUARD-014-3
+    description: Validate signature authenticity
+    implementation: afritech.guards.guard_cross_proof.guard_validate_signature
+
+ci:
+  tests:
+    - test_cross_system_proof_valid
+    - test_cross_system_proof_tampered
+    - test_invalid_signature_rejected
+    - test_unknown_public_key_fails
+    - test_merkle_mismatch_rejected
+
+  enforcement:
+    - All proofs must pass verification tests
+    - Any failed guard must block acceptance
+    - Signature verification must be mandatory
+
+extensions:
+  future_adrs:
+    - ADR-0015: Key Rotation System
+    - ADR-0016: Multi-Signature Proof Format
+    - ADR-0017: Blockchain Anchoring
+    - ADR-0018: Global Trust Registry
+
+  extensibility:
+    metadata:
+      description: >
+        Optional metadata field can be extended without breaking
+        verification logic.
+
+    versioning:
+      description: >
+        Future versions must maintain backward compatibility or
+        declare breaking changes explicitly.
+
+notes:
+  - Proof format is transport-agnostic (API, file, blockchain)
+  - Canonical JSON serialization is REQUIRED
+  - This ADR establishes the foundation for trust federation
+  - Future ADRs will build on this format for advanced features

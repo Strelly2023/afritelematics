@@ -66,5 +66,117 @@ jobs:
       - name: Multi-epoch replay validation
         run: python3 -m afritech.verify.verify_multi_epoch_replay
 
+      - name: Validate epoch lifecycle and replay translator containment
+        run: python3 -m afritech.ci.epoch_lifecycle_validator
+
+      - name: Report compatibility observability status
+        continue-on-error: true
+        run: python3 -m afritech.tools.compat_status status
+
+      - name: Validate observability authority boundaries
+        run: python3 -m afritech.ci.observability_authority_validator
+
+      - name: Validate canonical explanation schema
+        run: python3 -m afritech.ci.canonical_explanation_schema_validator
+
+      - name: Validate canonical explanation composition schema
+        run: python3 -m afritech.ci.canonical_explanation_composition_validator
+
+      - name: Validate cognitive complexity budget
+        run: python3 -m afritech.ci.cognitive_complexity_validator
+
+      - name: Validate cognitive salience policy
+        run: python3 -m afritech.ci.cognitive_salience_validator
+
+      - name: Validate temporal cognition policy
+        run: python3 -m afritech.ci.temporal_cognition_validator
+
+      - name: Validate predictive future-space policy
+        run: python3 -m afritech.ci.predictive_future_space_validator
+
+      - name: Validate specialized predictive governance policies
+        run: |
+          python3 -m afritech.ci.inevitability_forecasting_validator
+          python3 -m afritech.ci.inevitability_reinforcement_validator
+          python3 -m afritech.ci.anticipatory_suppression_validator
+
+      - name: Validate production load proof
+        run: python3 -m afritech.ci.load_proof_validator
+
+      - name: Validate multi-node fault proof
+        run: python3 -m afritech.ci.multi_node_fault_validator
+
+      - name: Validate durable queue proof
+        run: python3 -m afritech.ci.durable_queue_validator
+
+      - name: Validate persistent event store proof
+        run: python3 -m afritech.ci.persistent_storage_validator
+
+      - name: Validate observability evidence proof
+        run: python3 -m afritech.ci.observability_evidence_validator
+
+      - name: Validate security adversarial proof
+        run: python3 -m afritech.ci.security_adversarial_validator
+
+      - name: Validate mobile pilot E2E proof
+        run: python3 -m afritech.ci.mobile_pilot_e2e_validator
+
+      - name: Validate AfriRide marketplace proof
+        run: python3 -m afritech.ci.marketplace_simulation_validator
+
+      - name: Validate AfriRide GA eLive workflow contract
+        run: python3 -m afritech.ci.afriride_ga_elive_workflow_validator
+
+      - name: Validate AfriRide Phase 5 readiness certificate
+        run: python3 -m afritech.ci.afriride_phase5_readiness_certificate_validator
+
+      - name: Validate AfriRide Phase 5 closure
+        run: python3 -m afritech.ci.afriride_phase5_closure_validator
+
+      - name: Validate economic trust proof
+        run: python3 -m afritech.ci.economic_trust_validator
+
+      - name: Validate production readiness certificate
+        run: python3 -m afritech.ci.production_readiness_certificate_validator
+
+      - name: Validate entropy-bound execution proof
+        run: python3 -m afritech.ci.entropy_invariants_validator
+
+      - name: Validate continuity proof
+        run: python3 -m afritech.ci.continuity_invariants_validator
+
+      - name: Validate chaos repetition stability proof
+        run: python3 -m afritech.ci.chaos_stability_validator
+
+      - name: Validate replay authority proof
+        run: python3 -m afritech.ci.replay_authority_validator
+
+      - name: Validate trust lock-in proof
+        run: python3 -m afritech.ci.trust_lock_validator
+
+      - name: Validate multi-region convergence proof
+        run: python3 -m afritech.ci.multiregion_validator
+
+      - name: Validate adversarial integrity proof
+        run: python3 -m afritech.ci.adversarial_integrity_validator
+
+      - name: Validate AfriRide field proof
+        run: python3 -m afritech.ci.afriride_field_validator
+
+      - name: Validate AfriRide field observability
+        run: python3 -m afritech.ci.afriride_field_observability_validator
+
+      - name: Validate AfriRide live pilot protocol
+        run: python3 -m afritech.ci.afriride_live_pilot_protocol_validator
+
+      - name: Validate AfriRide day-one pilot runbook
+        run: python3 -m afritech.ci.afriride_day_one_runbook_validator
+
+      - name: Validate AfriRide post-pilot analysis protocol
+        run: python3 -m afritech.ci.afriride_post_pilot_analysis_validator
+
+      - name: Validate AfriRide stakeholder evidence report template
+        run: python3 -m afritech.ci.afriride_stakeholder_evidence_report_validator
+
       - name: Test suite
         run: pytest -q

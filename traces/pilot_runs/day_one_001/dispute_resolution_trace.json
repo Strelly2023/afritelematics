@@ -1,0 +1,28 @@
+{
+  "receipt": "dispute_resolution_trace",
+  "run_id": "day_one_001",
+  "minute": 195,
+  "status": "captured",
+  "scenario": "dispute_resolution",
+  "trace_id": "day_one_001_dispute_resolution_001",
+  "dispute": {
+    "claim_id": "dispute_001",
+    "claimant": "rider_dry_run",
+    "claim": "fare_should_be_9999",
+    "decision_id": "day_one_001_dry_run_trip_001:fare_cents"
+  },
+  "replay_authority": {
+    "decision_id": "day_one_001_dry_run_trip_001:fare_cents",
+    "replay_value": 0,
+    "claim_value": 9999,
+    "claim_admitted": false,
+    "reason": "claim_conflicts_with_replay_authority"
+  },
+  "support_action": {
+    "manual_override_attempted": false,
+    "resolved_by": "replay_authority",
+    "outcome": "claim_rejected"
+  },
+  "dispute_reproducible": true,
+  "claim_boundary_preserved": true
+}

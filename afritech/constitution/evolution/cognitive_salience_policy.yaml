@@ -1,0 +1,122 @@
+schema: afritech.cognitive_salience_policy.v1
+classification: cognitive_salience_policy
+authority: SALIENCE_ONLY
+
+lock: >
+  Governed attention. Transparent priority. No salience-driven truth.
+
+allowed_salience_sources:
+  - canonical_id_ordering
+  - declared_incident_severity
+  - declared_lifecycle_state
+  - declared_timestamp_ordering
+  - replay_mismatch_status
+  - role_specific_operational_need
+  - validator_severity
+
+forbidden_salience_sources:
+  - ai_preference
+  - dashboard_local_urgency_rules
+  - hidden_heuristics
+  - runtime_environment_ordering
+  - user_specific_semantic_inference
+
+highlight_levels:
+  - neutral
+  - informational
+  - warning
+  - critical
+
+deterministic_prioritization:
+  required_fields:
+    - primary_ordering_key
+    - secondary_tie_breaker
+    - source_authority
+    - stable_deterministic_fallback
+    - unknown_state_handling
+  forbidden_ordering_sources:
+    - ai_preference
+    - dashboard_local_ranking
+    - hidden_heuristic_priority
+    - runtime_environment_ordering
+    - user_specific_semantic_inference
+
+urgency_constraints:
+  critical_requires:
+    - declared_incident_severity
+    - replay_mismatch_status
+    - validator_failure
+  warning_allows:
+    - degraded
+    - incomplete_evidence
+    - pending
+  unknown_must_not_display_as_healthy: true
+  ai_only_urgency_escalation_allowed: false
+
+recommendation_transparency:
+  required_fields:
+    - advisory_status
+    - alternative_inspection_paths
+    - reason_for_recommendation
+    - source_explanation_ids
+    - source_replay_or_validator_refs
+  forbidden_actions:
+    - approve_exceptions
+    - create_hidden_operational_priority
+    - infer_legitimacy
+    - override_validators
+    - reinterpret_replay
+    - repair_state
+
+attention_budget:
+  max_ai_generated_summaries: 1
+  max_critical_banners: 1
+  max_highlighted_items: 3
+  max_pinned_investigation_paths: 1
+  max_recommended_next_actions: 5
+
+incident_attention_budget:
+  max_affected_artifacts: 5
+  max_primary_failures: 1
+  max_recommended_next_checks: 1
+  max_replay_or_validator_refs: 7
+  max_secondary_failures: 3
+
+ai_attention_budget:
+  max_omitted_detail_warnings: 1
+  max_primary_concerns: 1
+  max_recommended_next_checks: 1
+  max_secondary_concerns: 3
+  max_source_explanation_records: 5
+
+role_based_salience:
+  must_preserve_shared_source_evidence: true
+  forbidden_role_divergence:
+    - role_specific_hidden_evidence
+    - role_specific_legitimacy_claims
+    - role_specific_replay_result
+    - role_specific_truth
+    - role_specific_validator_severity
+
+ai_salience:
+  advisory_only: true
+  must_preserve_source_refs: true
+  may_create_urgency_from_speculation: false
+  may_infer_causality: false
+  may_infer_legitimacy: false
+  may_override_deterministic_ordering: false
+  may_prioritize_without_source_evidence: false
+
+required_transparency_fields:
+  - advisory_flag
+  - authority_disclaimer
+  - ordering_key
+  - salience_id
+  - salience_level
+  - salience_type
+  - source_evidence_reference
+  - source_signal
+  - tie_breaker
+
+required_authority_disclaimer: >
+  Salience directs attention. It does not validate truth or define legitimacy.

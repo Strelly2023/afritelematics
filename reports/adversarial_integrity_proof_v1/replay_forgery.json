@@ -1,0 +1,41 @@
+{
+  "all_attacks_rejected": true,
+  "attacks": [
+    {
+      "attack_name": "fake_replay_hash",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "replay_claim",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "hostile payload attempted to inject replay authority",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "tampered_event_log",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "storage",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "tampered persistent row failed canonical event hash validation",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "duplicate_worker_result",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "worker",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "duplicate worker execution result attempted to define outcome twice",
+      "truth_authority": "replay_validation",
+      "verified": true
+    }
+  ],
+  "authority_isolated": true,
+  "authority_law": "Malicious behavior must not create valid truth.",
+  "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+  "replay_truth_preserved": true,
+  "scenario": "replay_forgery_resistance",
+  "verified": true
+}

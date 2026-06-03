@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from governance.adr.adr_models import ADR
+from afritech.governance.adr.adr_models import ADR
 
 
 class ADRRepository:

@@ -6,6 +6,7 @@ import yaml
 
 from fastapi.testclient import TestClient
 
+from afritech.architecture.registry_loader import load_implementation_registry
 from afritech.api.app import app
 from afritech.storage.event_log import clear_event_log, get_all_events
 from afritech.storage.replay_engine import replay_event
@@ -36,7 +37,7 @@ def load_yaml(path: Path) -> dict:
 
 
 def test_mvp_pipeline_implementations_are_registered() -> None:
-    registry = load_yaml(IMPLEMENTATION_REGISTRY)
+    registry = load_implementation_registry()
     implementations = registry["implementations"]
 
     for implementation in MVP_IMPLEMENTATIONS:

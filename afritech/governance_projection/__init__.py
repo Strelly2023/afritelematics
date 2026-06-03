@@ -1,0 +1,13 @@
+"""Read-only documentary projection of AfriTech governance artifacts."""
+
+PROJECTION_STATUS = "DOCUMENTARY"
+PROJECTION_IS_DOCUMENTARY_ONLY = True
+RUNTIME_AUTHORITY = False
+ENFORCEMENT_AUTHORITY = False
+
+__all__ = [
+    "ENFORCEMENT_AUTHORITY",
+    "PROJECTION_IS_DOCUMENTARY_ONLY",
+    "PROJECTION_STATUS",
+    "RUNTIME_AUTHORITY",
+]

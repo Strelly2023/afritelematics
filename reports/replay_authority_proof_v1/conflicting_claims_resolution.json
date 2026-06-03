@@ -1,0 +1,503 @@
+{
+  "audit_packet": {
+    "audit_hash": "e131f40abe11e07efdff85ae8b9bcbdbb2d89f16b425390b7721a505ec4d815a",
+    "claims_hash": "8a8eb69bb93651b23eaab5faed679c0c9496748faed13980f3fc9bf5debfe9a5",
+    "decisions_hash": "c5d806915d2b607ff4cd952c56f2a397cd717a5259d590f30e270d29742e53d3",
+    "dispute": {
+      "claims": [
+        {
+          "asserted_value": 9999,
+          "claim_id": "claim.driver.fare",
+          "claimant_id": "driver.authority.001",
+          "decision_id": "ride.authority.001:fare_cents",
+          "supporting_event_ids": [
+            "authority.event.002"
+          ]
+        },
+        {
+          "asserted_value": 1500,
+          "claim_id": "claim.rider.fare",
+          "claimant_id": "rider.authority.001",
+          "decision_id": "ride.authority.001:fare_cents",
+          "supporting_event_ids": [
+            "authority.event.002"
+          ]
+        }
+      ],
+      "claims_hash": "8a8eb69bb93651b23eaab5faed679c0c9496748faed13980f3fc9bf5debfe9a5",
+      "reconstruction": {
+        "convergence": {
+          "accepted_events": [
+            {
+              "canonical_event_hash": "7d1dffa0e69f418d266945351a5c040e0adee43b0a2a16e622ce50172d5dfd52",
+              "canonical_id": "e319bb1c97146b61c9ec00809698a19449f640c814f4c2ccc185591d5af91ebd",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.000",
+              "identity_id": "rider.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:00Z",
+              "partition_id": "partition.0",
+              "payload": {
+                "action": "request",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "8ead1975c36c5eb9854892e6cbea6d73f4699f0c3f2eb29ecbf33022190480c9",
+              "received_order": 0,
+              "sequence": 0,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "fc2f9d313df2c1db861e905e4685430a8f9a126cf6e10df9b082ee05c3e87f49",
+              "canonical_id": "0b590dd6697ce248ec7915b8971425270b17ae46ef473f92925e395b8080966a",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.001",
+              "identity_id": "rider.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:01Z",
+              "partition_id": "partition.0",
+              "payload": {
+                "action": "match",
+                "driver_id": "driver.authority.001",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "c2de3d6b85553b0d288be3e35c4b17bbb970d6fc9acf1dfb03e2b0f07f7fdd4a",
+              "received_order": 1,
+              "sequence": 1,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "dfb9fb1d3e5719c05ca5962b91a36e37be44bab19e53ad9e8280b681d46344a8",
+              "canonical_id": "1f39131a35ec86832fa281e814956274bd25cae862494827ab92b3085c80a7de",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.002",
+              "identity_id": "rider.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:02Z",
+              "partition_id": "partition.0",
+              "payload": {
+                "action": "price_quote",
+                "fare_cents": 1500,
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "989aa8e27b9ff0f71d654e864ba2af64458a1bf199fa0b1bc489e7299eb53c56",
+              "received_order": 2,
+              "sequence": 2,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "381866d0beeb7eb4ae26a0c291a9ca1ae79a0bf5be013c92041931a3254dbb0e",
+              "canonical_id": "40143a5d6d82138a09aa115969d2638eaada63c5f87e794b0ae20a8856790d55",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.003",
+              "identity_id": "driver.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:03Z",
+              "partition_id": "partition.2",
+              "payload": {
+                "action": "accept",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "6a4ec93b90966c1f50dab03319fdd492213ff5eefd7d3d18be0e91f8f0cc6875",
+              "received_order": 3,
+              "sequence": 3,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "f9a75434076d1343d5ce3044b807c2b147a67590e2d8218a37e0190d3602ddc1",
+              "canonical_id": "148cef4b96e04d0f8801f657b903ec6a4960bae5ae49d9f9c87fa3dc9e26381d",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.004",
+              "identity_id": "driver.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:04Z",
+              "partition_id": "partition.2",
+              "payload": {
+                "action": "pickup",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "dcc87493cfad54a6a174067efa25a1a8a9690d79cafbcd36ad42ce39e6c89750",
+              "received_order": 4,
+              "sequence": 4,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "4f7d06b3effc2a53c826e79c757d84a07b9e87c45fd0d6d3dfefc6a5462a0c7c",
+              "canonical_id": "817acf3ca64a5c335cc03b6ce760b18c5dcdec5271da2a31ae4139d814dbc51b",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.005",
+              "identity_id": "driver.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:05Z",
+              "partition_id": "partition.2",
+              "payload": {
+                "action": "dropoff",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "15afed76c54bb2cf337f366d8fbe1eb037939c0aeec543efcb69375fa301203a",
+              "received_order": 5,
+              "sequence": 5,
+              "source": "mobile_adapter"
+            },
+            {
+              "canonical_event_hash": "5392f4295726e146b436f911fd53ffad4b8440ce8cfcc441e849fcbce99a3440",
+              "canonical_id": "78b37ce89e2544f3aea9ec998e1e336d3fc397bb2e64143b5e3a967b24e65ec0",
+              "corrupted": false,
+              "corruption_reason": "",
+              "event_id": "authority.event.006",
+              "identity_id": "driver.authority.001",
+              "normalized_timestamp": "2026-05-27T00:01:06Z",
+              "partition_id": "partition.2",
+              "payload": {
+                "action": "complete",
+                "ride_id": "ride.authority.001"
+              },
+              "raw_event_hash": "e638aeca9ffe685fd8b8902c4d61c2c227d805a48c7048de38431a4fdb95023e",
+              "received_order": 6,
+              "sequence": 6,
+              "source": "mobile_adapter"
+            }
+          ],
+          "admissibility_hash": "20c85e634f68fad1f5e5ab3cfdb7c04d70c548eb8a0254c078174a20b3b21348",
+          "classification_counts": {
+            "clock_drift": 0,
+            "corrupted": 0,
+            "delayed": 0,
+            "duplicate": 0,
+            "normal": 7,
+            "offline_recovery": 0,
+            "out_of_order": 0,
+            "partitioned": 0
+          },
+          "convergence_hash": "556bb2cb2310a98047902372bcf2b11641685ec5a986e3caa6194ddffcee8c4f",
+          "final_state": {
+            "accepted_event_count": 7,
+            "accepted_event_ids": [
+              "authority.event.000",
+              "authority.event.001",
+              "authority.event.002",
+              "authority.event.003",
+              "authority.event.004",
+              "authority.event.005",
+              "authority.event.006"
+            ],
+            "identity_ids": [
+              "driver.authority.001",
+              "rider.authority.001"
+            ],
+            "last_sequence": 6,
+            "state_hash": "45577517d526a6c7cac227dc3222c8a12861410bcf94394907b6b6c956e2263b"
+          },
+          "identity_resolution_hash": "3be35fa54cb52870852386346196a3f1e88cdda19030d606b98bf5751b5d7994",
+          "record_hashes": [
+            "1fa84a2a2dfebedc14c94372d426ab2bb03454b60081751fe899d8b70bc59d59",
+            "27e0681e4600bdea349a1baaba189ca5b4e6d24664204285558dab010f988c0f",
+            "ad9d7e4a6a75eaa5d6dfb93dc0085eabd8f5a178729233e04e8d2dcba1b0e0a9",
+            "7b984ab24a1cd3316477e0f845ac5d8d2672bc066186f4e438db19a1fa79241b",
+            "fc21e887f57fb149e0730572e4bdafe51b2e6010b1526c5c200203c78b60ada0",
+            "7689f97562bf49dba147fcd005b298a5d8c00bf82d605dea16eb59b5663ba4d2",
+            "18b81de69cc0924d4fe6718520aeb30d4e1956a2b14da6f3b8236b1f9bb52a01"
+          ],
+          "replay_hash": "ed51f87102ff26d143f51daeb651fa7637643c46a270a2cc00563b67bf23b52e",
+          "verified": true
+        },
+        "decisions": [
+          {
+            "authoritative_value": 1500,
+            "authority_hash": "765808d3c16ebbfb64cb435d226b2d9b290c0f8f492477c8e864830331bc64fb",
+            "decision_id": "ride.authority.001:fare_cents",
+            "decision_type": "fare_cents",
+            "evidence_event_ids": [
+              "authority.event.002"
+            ],
+            "replay_hash": "ed51f87102ff26d143f51daeb651fa7637643c46a270a2cc00563b67bf23b52e",
+            "subject_id": "ride.authority.001"
+          },
+          {
+            "authoritative_value": "driver.authority.001",
+            "authority_hash": "35b6881ec91c1b9d4c9ee5416d14449e4d276e11dac398d7bdf070f979a34fed",
+            "decision_id": "ride.authority.001:matched_driver",
+            "decision_type": "matched_driver",
+            "evidence_event_ids": [
+              "authority.event.001"
+            ],
+            "replay_hash": "ed51f87102ff26d143f51daeb651fa7637643c46a270a2cc00563b67bf23b52e",
+            "subject_id": "ride.authority.001"
+          },
+          {
+            "authoritative_value": "completed",
+            "authority_hash": "62f07e0fd50fac1b599f2f59872b946b989c6464a4ea10c5838a2e2967fccf95",
+            "decision_id": "ride.authority.001:ride_status",
+            "decision_type": "ride_status",
+            "evidence_event_ids": [
+              "authority.event.000",
+              "authority.event.001",
+              "authority.event.002",
+              "authority.event.003",
+              "authority.event.004",
+              "authority.event.005",
+              "authority.event.006"
+            ],
+            "replay_hash": "ed51f87102ff26d143f51daeb651fa7637643c46a270a2cc00563b67bf23b52e",
+            "subject_id": "ride.authority.001"
+          }
+        ],
+        "decisions_hash": "c5d806915d2b607ff4cd952c56f2a397cd717a5259d590f30e270d29742e53d3",
+        "replay_authority_hash": "639a92d7146bd78e9e42429631fb58ef547f8628c8d146c95eefc30df0922d17"
+      },
+      "resolution_hash": "655b8085ce5200776870d6a071d5eb7ffaf7dca6fdfa64c28449108b93b8e2b4",
+      "resolutions": [
+        {
+          "admitted": false,
+          "authoritative_value": 1500,
+          "authority_hash": "765808d3c16ebbfb64cb435d226b2d9b290c0f8f492477c8e864830331bc64fb",
+          "claim": {
+            "asserted_value": 9999,
+            "claim_id": "claim.driver.fare",
+            "claimant_id": "driver.authority.001",
+            "decision_id": "ride.authority.001:fare_cents",
+            "supporting_event_ids": [
+              "authority.event.002"
+            ]
+          },
+          "reason": "claim_conflicts_with_replay_authority"
+        },
+        {
+          "admitted": true,
+          "authoritative_value": 1500,
+          "authority_hash": "765808d3c16ebbfb64cb435d226b2d9b290c0f8f492477c8e864830331bc64fb",
+          "claim": {
+            "asserted_value": 1500,
+            "claim_id": "claim.rider.fare",
+            "claimant_id": "rider.authority.001",
+            "decision_id": "ride.authority.001:fare_cents",
+            "supporting_event_ids": [
+              "authority.event.002"
+            ]
+          },
+          "reason": "claim_matches_replay_authority"
+        }
+      ],
+      "verified": true
+    },
+    "replay_authority_hash": "639a92d7146bd78e9e42429631fb58ef547f8628c8d146c95eefc30df0922d17",
+    "resolution_hash": "655b8085ce5200776870d6a071d5eb7ffaf7dca6fdfa64c28449108b93b8e2b4",
+    "schema": "afritech.replay_authority.audit_packet.v1",
+    "verified": true
+  },
+  "authority_law": "All decisions must be reconstructable as authoritative, dispute-grade truth.",
+  "baseline_trace": [
+    {
+      "event_id": "authority.event.000",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "request",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 0,
+      "sequence": 0,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:00Z"
+    },
+    {
+      "event_id": "authority.event.001",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "match",
+        "driver_id": "driver.authority.001",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 1,
+      "sequence": 1,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:01Z"
+    },
+    {
+      "event_id": "authority.event.002",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "price_quote",
+        "fare_cents": 1500,
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 2,
+      "sequence": 2,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:02Z"
+    },
+    {
+      "event_id": "authority.event.003",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "accept",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 3,
+      "sequence": 3,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:03Z"
+    },
+    {
+      "event_id": "authority.event.004",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "pickup",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 4,
+      "sequence": 4,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:04Z"
+    },
+    {
+      "event_id": "authority.event.005",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "dropoff",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 5,
+      "sequence": 5,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:05Z"
+    },
+    {
+      "event_id": "authority.event.006",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "complete",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 6,
+      "sequence": 6,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:06Z"
+    }
+  ],
+  "claims": [
+    {
+      "asserted_value": 1500,
+      "claim_id": "claim.rider.fare",
+      "claimant_id": "rider.authority.001",
+      "decision_id": "ride.authority.001:fare_cents",
+      "supporting_event_ids": [
+        "authority.event.002"
+      ]
+    },
+    {
+      "asserted_value": 9999,
+      "claim_id": "claim.driver.fare",
+      "claimant_id": "driver.authority.001",
+      "decision_id": "ride.authority.001:fare_cents",
+      "supporting_event_ids": [
+        "authority.event.002"
+      ]
+    }
+  ],
+  "conflicting_claims_resolved": true,
+  "observed_trace": [
+    {
+      "event_id": "authority.event.000",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "request",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 0,
+      "sequence": 0,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:00Z"
+    },
+    {
+      "event_id": "authority.event.001",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "match",
+        "driver_id": "driver.authority.001",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 1,
+      "sequence": 1,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:01Z"
+    },
+    {
+      "event_id": "authority.event.002",
+      "identity_id": "rider.authority.001",
+      "partition_id": "partition.0",
+      "payload": {
+        "action": "price_quote",
+        "fare_cents": 1500,
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 2,
+      "sequence": 2,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:02Z"
+    },
+    {
+      "event_id": "authority.event.003",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "accept",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 3,
+      "sequence": 3,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:03Z"
+    },
+    {
+      "event_id": "authority.event.004",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "pickup",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 4,
+      "sequence": 4,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:04Z"
+    },
+    {
+      "event_id": "authority.event.005",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "dropoff",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 5,
+      "sequence": 5,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:05Z"
+    },
+    {
+      "event_id": "authority.event.006",
+      "identity_id": "driver.authority.001",
+      "partition_id": "partition.2",
+      "payload": {
+        "action": "complete",
+        "ride_id": "ride.authority.001"
+      },
+      "received_order": 6,
+      "sequence": 6,
+      "source": "mobile_adapter",
+      "source_timestamp": "2026-05-27T00:01:06Z"
+    }
+  ],
+  "same_replay_authority": true,
+  "same_resolution": true,
+  "scenario": "conflicting_claims_resolution",
+  "verified": true
+}

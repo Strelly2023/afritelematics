@@ -1,0 +1,4 @@
+=== afriride_field_validator ===
+AfriRide field validation PASSED: scenarios=5 afriride_field_hash=0b9417ace0e384d5917974896b3ad888a05ae938975a5a472e1b991896cb4fc0 validation_hash=cb3aa0d364a44fe781df4e67ea847882d6aa412663ccb0c19cde8817aa1a3d8f
+=== afriride_field_observability_validator ===
+AfriRide field observability validation PASSED: dashboard_hash=4e708a9d5b1be379fb544cc16f589e8ea28a625b658113318fb0ff36f63e3e50 validation_hash=2d8d065e47b15a0da17c416064cd675dccb17560db55a19d1833e8145c55edd4

@@ -1,0 +1,1701 @@
+schema: afritech.sub_modules_registry.v1
+version: 1
+metadata:
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+  registry_class: CONSTITUTIONAL_SUB_MODULES_REGISTRY
+  parent_registry: afritech/architecture/implementation_registry.yaml
+  description: Declared AfriTech implementation/module surfaces. This registry answers
+    what exists, what is implemented, and which module surfaces are admitted for runtime,
+    replay, and proof participation.
+implementation_states:
+  PLANNED:
+    executable: false
+    runtime_admissible: false
+    replay_admissible: false
+    proof_admissible: false
+    deterministic_execution: false
+    closed_world_aligned: false
+    description: 'Constitutionally declared but operationally non-admissible implementation
+      state.
+
+      '
+  PARTIAL:
+    executable: constrained
+    runtime_admissible: conditional
+    replay_admissible: true
+    proof_admissible: true
+    deterministic_execution: true
+    closed_world_aligned: true
+    description: 'Partially implemented deterministic replay-safe implementation state.
+
+      '
+  IMPLEMENTED:
+    executable: true
+    runtime_admissible: true
+    replay_admissible: true
+    proof_admissible: true
+    deterministic_execution: true
+    closed_world_aligned: true
+    description: 'Fully implemented deterministic replay-safe implementation state.
+
+      '
+  FROZEN:
+    executable: false
+    runtime_admissible: false
+    replay_admissible: false
+    proof_admissible: false
+    deterministic_execution: true
+    closed_world_aligned: true
+    description: 'Constitutionally declared and explicitly non-operational surface.
+      FROZEN surfaces are complete as inert artifacts and may not participate in runtime,
+      replay, proof, or witness generation.
+
+      '
+  DOCUMENTARY:
+    executable: false
+    runtime_admissible: false
+    replay_admissible: false
+    proof_admissible: false
+    deterministic_execution: false
+    closed_world_aligned: false
+    description: 'Documentation-only implementation surface.
+
+      '
+  FORBIDDEN_ALIAS:
+    executable: false
+    runtime_admissible: false
+    replay_admissible: false
+    proof_admissible: false
+    deterministic_execution: false
+    closed_world_aligned: false
+    description: 'Constitutionally forbidden alias identity.
+
+      '
+implementations:
+  afritech.proof.constitutional_receipt:
+    implementation_state: IMPLEMENTED
+    category: PROOF
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/constitutional_receipt.py
+    authority_scope:
+    - receipt_generation
+    - replay_attestation
+    - seal_validation
+    - invariant_binding
+    - witness_binding
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies:
+    - afritech.proof.witness.replay_witness
+    - afritech.proof.witness.execution_witness
+    - afritech.proof.witness.transcript_witness
+    - afritech.proof.witness.mutation_witness
+    - afritech.proof.witness.witness_bundle
+    enforced_by:
+    - afritech.ci.witness_validation
+    - afritech.ci.replay_validation
+    - afritech.runtime.admission
+    generated_artifacts:
+    - constitutional_receipt
+    - replay_hash
+    - invariant_hash
+    - execution_surface_hash
+    completed_capabilities:
+    - transcript_hash_generation
+    - mutation_trace_hash_generation
+    - full_execution_trace_reconstruction
+    - global_replay_equivalence_validation
+    forbidden_behaviors:
+    - observer_relative_receipts
+    - probabilistic_reconstruction
+    - filesystem_identity_resolution
+    - undeclared_execution_surfaces
+    description: 'Deterministic constitutional receipt generation surface.
+
+      Fully implemented through deterministic receipt bundles, transcript hashes,
+      mutation trace hashes, execution-chain hashes, replay hashes, and reconstruction
+      validation.
+
+      '
+  afritech.proof.witness.replay_witness:
+    implementation_state: IMPLEMENTED
+    category: WITNESS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/witness/replay_witness.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Deterministic replay witness generation surface.
+
+      '
+  afritech.proof.witness.execution_witness:
+    implementation_state: IMPLEMENTED
+    category: WITNESS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/witness/execution_witness.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Deterministic execution witness generation surface.
+
+      '
+  afritech.proof.witness.transcript_witness:
+    implementation_state: IMPLEMENTED
+    category: WITNESS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/witness/transcript_witness.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - full_transcript_lineage
+    - replay_equivalence_validation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Fully implemented transcript witness surface.
+
+      '
+  afritech.proof.witness.mutation_witness:
+    implementation_state: IMPLEMENTED
+    category: WITNESS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/witness/mutation_witness.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - deterministic_mutation_lineage
+    - mutation_equivalence_reconstruction
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Fully implemented mutation witness surface.
+
+      '
+  afritech.proof.witness.witness_bundle:
+    implementation_state: IMPLEMENTED
+    category: WITNESS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/proof/witness/witness_bundle.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Deterministic witness aggregation and validation surface.
+
+      '
+  afritech.trace.trace_reconstructor:
+    implementation_state: IMPLEMENTED
+    category: TRACE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: CRITICAL
+    canonical_path: afritech/trace/trace_reconstructor.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - deterministic_trace_reconstruction
+    - receipt_reconstruction
+    - transcript_hash_validation
+    - mutation_trace_hash_validation
+    - execution_chain_hash_validation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented deterministic replay trace reconstruction surface bound
+      to receipt reconstruction and CI validation.
+
+      '
+  afritech.ci.claim_discipline_validator:
+    implementation_state: IMPLEMENTED
+    category: VALIDATOR
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/ci/claim_discipline_validator.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - claim_evidence_binding_validation
+    - forbidden_readiness_claim_rejection
+    - scoped_claim_enforcement
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented claim discipline validator enforcing scoped claims,
+      executable evidence bindings, non-claims, and readiness boundaries.
+
+      '
+  afritech.ci.four_gate_validator:
+    implementation_state: IMPLEMENTED
+    category: VALIDATOR
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/ci/four_gate_validator.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - proof_meaning_preservation_check
+    - authority_boundary_check
+    - afriride_scope_check
+    - claim_discipline_check
+    - enforcement_integrity_check
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented four-gate validator enforcing proof meaning, authority
+      boundaries, AfriRide scope, claim discipline, and enforcement integrity.
+
+      '
+  afritech.ci.enforcement_integrity_validator:
+    implementation_state: IMPLEMENTED
+    category: VALIDATOR
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/ci/enforcement_integrity_validator.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - five_invariant_contract_serialization_check
+    - mandatory_four_gate_check
+    - enforcement_bypass_detection
+    - preserve_or_isolate_boundary_check
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented enforcement integrity validator preserving validator
+      mandatory status and product/core isolation.
+
+      '
+  afritech.edge.adapter.runtime_adapter:
+    implementation_state: IMPLEMENTED
+    category: EDGE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/edge/adapter/runtime_adapter.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - external_request_to_canonical_envelope
+    - required_field_validation
+    - deterministic_type_coercion
+    - payload_copy_isolation
+    forbidden_behaviors:
+    - direct_runtime_execution
+    - observer_relative_adaptation
+    - filesystem_identity_resolution
+    - nondeterministic_payload_mutation
+    description: 'Implemented deterministic edge adapter converting external request
+      mappings into canonical replay-safe request envelopes.
+
+      '
+  afritech.edge.adapter.validation:
+    implementation_state: IMPLEMENTED
+    category: EDGE_VALIDATOR
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/edge/adapter/validation.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - adapted_request_shape_validation
+    - request_id_type_validation
+    - timestamp_type_validation
+    - payload_mapping_validation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented validation surface for canonical edge adapter request
+      envelopes.
+
+      '
+  afritech.edge.normalization.normalizer:
+    implementation_state: IMPLEMENTED
+    category: EDGE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/edge/normalization/normalizer.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - canonical_json_payload_serialization
+    - sha256_payload_hashing
+    - deterministic_timestamp_bucket_generation
+    - replay_stable_normalized_input_generation
+    forbidden_behaviors:
+    - python_process_hashing
+    - unordered_payload_hashing
+    - observer_relative_timestamp_interpretation
+    - unnormalized_external_input_admission
+    description: 'Implemented deterministic edge normalizer using canonical JSON serialization
+      and SHA-256 payload hashing to produce replay-stable normalized inputs.
+
+      '
+  afritech.edge.normalization.validation:
+    implementation_state: IMPLEMENTED
+    category: EDGE_VALIDATOR
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/edge/normalization/validation.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - normalized_request_id_validation
+    - sha256_payload_hash_validation
+    - timestamp_bucket_validation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented validation surface for replay-stable normalized edge
+      input structures.
+
+      '
+  afritech.edge.ingestion.queue_ingestor:
+    implementation_state: IMPLEMENTED
+    category: EDGE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/edge/ingestion/queue_ingestor.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - normalized_event_queue_publish
+    - queue_protocol_boundary
+    - event_copy_isolation
+    forbidden_behaviors:
+    - direct_core_invocation
+    - unqueued_external_admission
+    - mutable_event_aliasing
+    - observer_relative_queue_selection
+    description: 'Implemented deterministic edge ingestion surface admitting normalized
+      inputs through explicit queue publish semantics.
+
+      '
+  afritech.guards.edge_input_guard:
+    implementation_state: IMPLEMENTED
+    category: GUARD
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/guards/edge_input_guard.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - adapter_normalization_ingestion_order_validation
+    - malformed_trace_rejection
+    - direct_external_execution_rejection
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented edge input guard enforcing adapter to normalization
+      to ingestion ordering before execution admission.
+
+      '
+  afritech.api.app:
+    implementation_state: IMPLEMENTED
+    category: API
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/api/app.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - mvp_api_entrypoint
+    - edge_adapter_invocation
+    - edge_normalization_invocation
+    - edge_ingestion_invocation
+    - partitioned_queue_admission
+    - asynchronous_worker_drain_control
+    forbidden_behaviors:
+    - direct_core_execution_without_edge
+    - system_clock_authority
+    - unnormalized_input_admission
+    - synchronous_core_execution_in_api_request_path
+    description: 'Implemented FastAPI-compatible MVP entrypoint routing external requests
+      through adapter, normalization, ingestion, partition routing, queue admission,
+      worker drain control, event log, and replay-compatible output.
+
+      '
+  afritech.execution.queue.simple_queue:
+    implementation_state: IMPLEMENTED
+    category: QUEUE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/execution/queue/simple_queue.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - fifo_publish
+    - fifo_consume
+    - empty_queue_refusal
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented in-process FIFO queue for deterministic MVP production
+      pipeline replay tests.
+
+      '
+  afritech.execution.queue.partitioned_queue:
+    implementation_state: IMPLEMENTED
+    category: QUEUE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/execution/queue/partitioned_queue.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - partitioned_fifo_publish
+    - partitioned_fifo_consume
+    - empty_partition_non_execution
+    - deterministic_partition_isolation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented in-process partitioned queue for deterministic multi-worker
+      production pipeline validation.
+
+      '
+  afritech.execution.partition.router:
+    implementation_state: IMPLEMENTED
+    category: PARTITIONING
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/execution/partition/router.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - stable_partition_assignment
+    - declared_routing_key_selection
+    - invalid_partition_count_rejection
+    forbidden_behaviors:
+    - random_partition_assignment
+    - system_clock_partition_assignment
+    - filesystem_identity_partitioning
+    description: 'Implemented deterministic partition router assigning normalized
+      edge events to stable execution partitions through declared routing keys.
+
+      '
+  afritech.execution.worker.worker_pool:
+    implementation_state: IMPLEMENTED
+    category: WORKER
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/execution/worker/worker_pool.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - partition_worker_cycle
+    - deterministic_partition_drain
+    - partition_id_event_binding
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented partition-aware worker pool controls for deterministic
+      queue draining and replay ledger generation.
+
+      '
+  afritech.core.engine:
+    implementation_state: IMPLEMENTED
+    category: CORE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/core/engine.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - deterministic_normalized_input_execution
+    - payload_hash_result_binding
+    - request_identity_preservation
+    - deterministic_matching_engine_invocation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented deterministic core execution entrypoint for the MVP
+      edge pipeline.
+
+      '
+  afritech.core.matching_engine:
+    implementation_state: IMPLEMENTED
+    category: CORE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/core/matching_engine.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - deterministic_driver_candidate_scoring
+    - driver_id_tie_breaking
+    - recorded_input_matching_only
+    - replay_stable_ranking_output
+    forbidden_behaviors:
+    - random_driver_selection
+    - live_external_map_lookup
+    - first_acceptance_wins_race_condition
+    - unrecorded_distance_calculation
+    description: 'Implemented deterministic AfriRide matching engine selecting a driver
+      from recorded candidate inputs using replay-stable scoring and explicit driver
+      identity tie-breaking.
+
+      '
+  afritech.core.runtime.worker.worker:
+    implementation_state: IMPLEMENTED
+    category: WORKER
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/core/runtime/worker/worker.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - edge_pipeline_guard_enforcement
+    - deterministic_core_execution
+    - partition_id_replay_ledger_binding
+    - replay_ledger_record_generation
+    - replay_hash_generation
+    forbidden_behaviors:
+    - worker_execution_without_edge_trace
+    - unguarded_core_invocation
+    - hidden_event_log_mutation
+    description: 'Implemented MVP worker consuming normalized events, enforcing edge
+      pipeline order, invoking deterministic core execution, and appending replay
+      ledger records.
+
+      '
+  afritech.storage.event_schema:
+    implementation_state: IMPLEMENTED
+    category: STORAGE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/storage/event_schema.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - immutable_event_record
+    - partition_identity_capture
+    - canonical_json_hashing
+    - replay_hash_generation
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented replay-safe event schema for immutable MVP event records
+      and deterministic SHA-256 replay hashes.
+
+      '
+  afritech.storage.event_log:
+    implementation_state: IMPLEMENTED
+    category: STORAGE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/storage/event_log.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - append_only_event_storage
+    - event_snapshot_read
+    - test_log_reset
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented in-memory MVP event log for replay-safe production pipeline
+      validation.
+
+      '
+  afritech.storage.replay_engine:
+    implementation_state: IMPLEMENTED
+    category: REPLAY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/storage/replay_engine.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - event_reexecution
+    - replay_hash_recalculation
+    - replay_equivalence_check_support
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: 'Implemented MVP replay engine recalculating execution hashes from
+      stored normalized input records.
+
+      '
+  afritech.distributed.partition.partition_assignment:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_PARTITION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/partition/partition_assignment.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.partition.partition_assignment.
+  afritech.distributed.partition.partition_registry:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_PARTITION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/partition/partition_registry.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.partition.partition_registry.
+  afritech.distributed.queue.queue_record:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_QUEUE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/queue/queue_record.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.queue.queue_record.
+  afritech.distributed.queue.distributed_queue_adapter:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_QUEUE
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/queue/distributed_queue_adapter.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.queue.distributed_queue_adapter.
+  afritech.distributed.worker.worker_node:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_WORKER
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/worker/worker_node.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.worker.worker_node.
+  afritech.distributed.worker.worker_result:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_WORKER
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/worker/worker_result.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.worker.worker_result.
+  afritech.distributed.replay.distributed_replay_verifier:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_REPLAY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/replay/distributed_replay_verifier.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.replay.distributed_replay_verifier.
+  afritech.distributed.replay.distributed_ledger:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_REPLAY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/replay/distributed_ledger.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.replay.distributed_ledger.
+  afritech.distributed.replay.distributed_execution_transcript:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_REPLAY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/replay/distributed_execution_transcript.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.replay.distributed_execution_transcript.
+  afritech.distributed.recovery.recovery_protocol:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_RECOVERY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/recovery/recovery_protocol.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.recovery.recovery_protocol.
+  afritech.distributed.recovery.partition_rebuild:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_RECOVERY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/recovery/partition_rebuild.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.recovery.partition_rebuild.
+  afritech.distributed.recovery.node_recovery:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_RECOVERY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/recovery/node_recovery.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.recovery.node_recovery.
+  afritech.distributed.coordinator.coordinator:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_COORDINATION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/coordinator/coordinator.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.coordinator.coordinator.
+  afritech.distributed.coordinator.batch_coordinator:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_COORDINATION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/coordinator/batch_coordinator.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.coordinator.batch_coordinator.
+  afritech.runtime.locality.scheduler:
+    implementation_state: IMPLEMENTED
+    category: RUNTIME_LOCALITY
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/runtime/locality/scheduler.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.runtime.locality.scheduler.
+  afritech.runtime.orchestration.execution_graph_optimizer:
+    implementation_state: IMPLEMENTED
+    category: RUNTIME_ORCHESTRATION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/runtime/orchestration/execution_graph_optimizer.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.runtime.orchestration.execution_graph_optimizer.
+  afritech.distributed.fabric.execution_fabric:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_FABRIC
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/fabric/execution_fabric.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.fabric.execution_fabric.
+  afritech.distributed.os.distributed_os:
+    implementation_state: IMPLEMENTED
+    category: DISTRIBUTED_OS
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/distributed/os/distributed_os.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.distributed.os.distributed_os.
+  afritech.ecosystems.afriprogramming.execution.sandbox:
+    implementation_state: IMPLEMENTED
+    category: AFRIPROGRAMMING_EXECUTION
+    ontology: CANONICAL_MODULE_PATH
+    replay_significance: REQUIRED
+    canonical_path: afritech/ecosystems/afriprogramming/execution/sandbox.py
+    authority_scope:
+    - deterministic_execution
+    - replay_participation
+    - closed_world_boundary_preservation
+    semantic_properties:
+      deterministic_execution: true
+      replay_admissible: true
+      proof_admissible: true
+      closed_world_aligned: true
+      observer_independent: true
+      replay_safe: true
+    witness_dependencies: []
+    enforced_by:
+    - afritech.ci.implementation_state_validation
+    - afritech.ci.execution_surface_validation
+    - afritech.ci.replay_validation
+    generated_artifacts: []
+    completed_capabilities:
+    - declared_implementation_identity
+    - deterministic_module_path_binding
+    - closed_world_surface_registration
+    forbidden_behaviors:
+    - filesystem_identity_resolution
+    - observer_relative_execution
+    - probabilistic_execution
+    - undeclared_surface_binding
+    description: Constitutionally registered implementation surface for afritech.ecosystems.afriprogramming.execution.sandbox.

@@ -1,0 +1,22 @@
+{
+  "authority_law": "Failure may enter execution. Failure may not define truth.",
+  "equivalent": true,
+  "replay_hashes": {
+    "clock_drift": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "duplicate_messages": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "network_partition": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "offline_recovery": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "out_of_order_events": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1",
+    "partial_corruption": "7a75a519972f678a3ca4870d008743f4667e2f4e52436d7a41bb19300f7133c1"
+  },
+  "report_hash": "71f254d8d5956efcd09d1c2d0ffa5c27eec0917bf558d39eb61fc7d77e4ad4cf",
+  "scenario_hashes": {
+    "clock_drift": "39425903a4595c134da8cb524624a099257cd395b41ae04cf75e4727f0f95b68",
+    "duplicate_messages": "536c50703b3a83458fa2039d772d86859b9bfb0114fe38042ee5e929d1a6e058",
+    "network_partition": "c8c05b212867eecbb303c2c6f12b395c97beca9eca1169392060f3b213cb287b",
+    "offline_recovery": "4f9f649b0882cb287e136df71116ea8208b621beaeaa03f221dfb101fb8ab40c",
+    "out_of_order_events": "1d58701607c89600e14d6326da88df8f821592fdacaee0155433cdab24498456",
+    "partial_corruption": "18cd9f7b5c1a0d9503ee9b22e1c0157d0caaa8f9fb3017ae1bc8be1d21a0f828"
+  },
+  "schema": "afritech.entropy_replay_equivalence_report.v1"
+}

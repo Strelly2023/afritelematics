@@ -1,0 +1,133 @@
+schema: afritech.sub_enforcement_registry.v1
+version: 1
+metadata:
+  authority: ARCHITECTURE
+  status: ACTIVE
+  mutability: CONTROLLED
+  registry_class: CONSTITUTIONAL_SUB_ENFORCEMENT_REGISTRY
+  parent_registry: afritech/architecture/implementation_registry.yaml
+  description: Enforcement, replay, closed-world, safety, and purity-gate rules for
+    implementation registry admissibility.
+rules:
+- id: IMPLEMENTATION_RULE_1
+  rule: 'Canonical implementation identity must resolve exclusively through deterministic
+    module-path ontology.
+
+    '
+- id: IMPLEMENTATION_RULE_2
+  rule: 'Filesystem paths must never independently define constitutional implementation
+    identity.
+
+    '
+- id: IMPLEMENTATION_RULE_3
+  rule: "Replay admissibility requires:\n  - deterministic execution\n  - replay-safe\
+    \ semantics\n  - invariant preservation\n  - closed-world alignment\n"
+- id: IMPLEMENTATION_RULE_4
+  rule: "PLANNED implementations must never participate in:\n  - runtime execution\n\
+    \  - replay execution\n  - proof generation\n  - witness generation\n"
+- id: IMPLEMENTATION_RULE_5
+  rule: 'PARTIAL implementations may participate in replay-safe constrained execution
+    only when explicitly declared.
+
+    '
+- id: IMPLEMENTATION_RULE_6
+  rule: 'Observer-relative implementation semantics are constitutionally forbidden.
+
+    '
+- id: IMPLEMENTATION_RULE_7
+  rule: 'Reflection-based implementation identity resolution is constitutionally forbidden.
+
+    '
+replay_alignment:
+  replay_safe_states:
+  - PARTIAL
+  - IMPLEMENTED
+  replay_forbidden_states:
+  - PLANNED
+  - FROZEN
+  - DOCUMENTARY
+  - FORBIDDEN_ALIAS
+  replay_requirements:
+  - deterministic_execution
+  - replay_safe_semantics
+  - invariant_preservation
+  - canonical_identity_resolution
+  replay_invalidators:
+  - observer_relative_execution
+  - probabilistic_execution
+  - undeclared_execution_surfaces
+  - filesystem_identity_resolution
+closed_world_alignment:
+  required:
+  - declared_execution_surfaces
+  - deterministic_identity_resolution
+  - replay_safe_execution
+  - invariant_preservation
+  forbidden:
+  - implicit_runtime_discovery
+  - reflection_based_execution
+  - dynamic_runtime_aliasing
+  - undeclared_surface_binding
+  constitutional_domain:
+    included:
+    - afritech/
+    excluded:
+    - node_modules/
+    - .venv/
+    - build/
+    - dist/
+    - afriride_system/mobile/*/node_modules/
+  external_dependency_rule:
+    may_support_execution: true
+    may_define_authority: false
+    may_define_identity: false
+    may_define_replay_truth: false
+safety:
+  guarantees:
+  - deterministic_implementation_resolution
+  - replay_safe_execution
+  - observer_independent_identity
+  - ontology_safe_binding
+  - invariant_preserving_execution
+  forbid:
+  - filesystem_authority_inference
+  - speculative_runtime_authority
+  - observer_relative_execution
+  - probabilistic_execution
+  - ambiguous_identity_resolution
+  enforcement:
+    violation_action: FAIL_FAST
+    replay_violation_action: REPLAY_INVALID
+    runtime_violation_action: EXECUTION_REFUSAL
+registry_consistency_requirements:
+  required_implementation_fields:
+  - implementation_state
+  - category
+  - ontology
+  - replay_significance
+  - canonical_path
+  - authority_scope
+  - semantic_properties
+  - witness_dependencies
+  - enforced_by
+  - generated_artifacts
+  - completed_capabilities
+  - forbidden_behaviors
+  - description
+  single_authority: ARCHITECTURE
+  fail_closed_on_missing_fields: true
+  forbid_top_level_implementation_entries: true
+  forbid_filesystem_identity_authority: true
+  forbid_undeclared_execution_surfaces: true
+purity_gate:
+  command: python3 -m afritech.ci.constitutional_purity_gate
+  failure_mode: CI_FAIL
+  checks:
+  - single_authority
+  - implementation_schema_completeness
+  - closed_world_boundary_integrity
+  - canonical_module_path_identity
+  - replay_alignment_consistency
+  - proof_admissibility_consistency
+  - planned_surface_isolation
+  - forbidden_alias_isolation

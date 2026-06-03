@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AfriRide Test Apps</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --panel: #ffffff;
+        --ink: #17202c;
+        --muted: #5d6675;
+        --line: #d8deea;
+        --accent: #116b5f;
+        --accent-ink: #ffffff;
+        --warn: #8a4b00;
+        --warn-bg: #fff3da;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(1040px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      header {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1.05;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .subtitle {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 17px;
+      }
+
+      .notice {
+        border: 1px solid #e5bf73;
+        background: var(--warn-bg);
+        color: var(--warn);
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin: 22px 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+        display: grid;
+        gap: 14px;
+        min-height: 100%;
+      }
+
+      .panel p {
+        color: var(--muted);
+      }
+
+      .actions {
+        display: grid;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      a.button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      a.secondary {
+        background: #edf2f7;
+        color: var(--ink);
+      }
+
+      .meta {
+        border-top: 1px solid var(--line);
+        margin-top: 4px;
+        padding-top: 12px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      section {
+        margin-top: 24px;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      code {
+        background: #eef1f6;
+        border-radius: 4px;
+        padding: 2px 5px;
+      }
+
+      @media (max-width: 820px) {
+        main {
+          width: min(100% - 24px, 1040px);
+          padding-top: 22px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="meta">AfriRide GA Elite controlled test distribution</p>
+        <h1>AfriRide Test Apps</h1>
+        <p class="subtitle">
+          Installable test builds for controlled field execution. These apps are
+          instrumented clients for evidence capture, not production releases.
+        </p>
+      </header>
+
+      <div class="notice">
+        Use only the assigned app and ID. Do not reinstall, force close, switch
+        devices, or manually retry outside the app during a controlled session.
+      </div>
+
+      <section class="grid" aria-label="Download links">
+        <article class="panel">
+          <h2>Rider App</h2>
+          <p>Install this if you were assigned a rider ID.</p>
+          <div class="actions">
+            <a class="button" href="REPLACE_WITH_RIDER_ANDROID_APK_URL">
+              Download Android APK
+            </a>
+            <a class="button secondary" href="REPLACE_WITH_RIDER_TESTFLIGHT_URL">
+              Join iPhone TestFlight
+            </a>
+          </div>
+          <p class="meta">App name: AfriRide Rider (Test)</p>
+        </article>
+
+        <article class="panel">
+          <h2>Driver App</h2>
+          <p>Install this if you were assigned a driver ID.</p>
+          <div class="actions">
+            <a class="button" href="REPLACE_WITH_DRIVER_ANDROID_APK_URL">
+              Download Android APK
+            </a>
+            <a class="button secondary" href="REPLACE_WITH_DRIVER_TESTFLIGHT_URL">
+              Join iPhone TestFlight
+            </a>
+          </div>
+          <p class="meta">App name: AfriRide Driver (Test)</p>
+        </article>
+
+        <article class="panel">
+          <h2>Operator Dashboard</h2>
+          <p>Open this if you are an observer or operator.</p>
+          <div class="actions">
+            <a class="button" href="REPLACE_WITH_OPERATOR_DASHBOARD_URL">
+              Open Dashboard
+            </a>
+          </div>
+          <p class="meta">Use a tablet or laptop during execution.</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Before the Session</h2>
+        <ul>
+          <li>Confirm your assigned ID: <code>R1</code>, <code>R2</code>, or <code>D1</code>, <code>D2</code>.</li>
+          <li>Open the app once and confirm it connects to the AfriRide test backend.</li>
+          <li>Keep normal mobile data enabled unless an observer asks for a specific network test.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>During the Session</h2>
+        <ul>
+          <li>Use the app naturally.</li>
+          <li>Do not reinstall, log out, switch devices, or manually clear app data.</li>
+          <li>Report visible issues to the observer; do not attempt to repair the run.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Test Classification</h2>
+        <p>
+          Installability is execution-enabling only. Operational legitimacy
+          requires field execution, complete trace capture, replay verification,
+          and post-run validation.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -5,10 +5,9 @@ adr:
   title: Guard Enforcement and Runtime Protection Model
   status: APPROVED
   type: ARCHITECTURAL
-
   epoch: 4
-
   approved_at: "2026-01-04T00:00:00Z"
+  registry_ref: ADR-0004
 
   context: >
     AfriTech now has deterministic identity (ADR-0001), temporal governance
@@ -37,31 +36,25 @@ adr:
   guard_types:
     invariant_guard:
       purpose: Enforces system invariants must never be violated
-
     authority_guard:
       purpose: Ensures only authorized execution surfaces are permitted
-
     epoch_guard:
       purpose: Ensures execution occurs within valid epoch boundaries
-
     rollback_engine:
       purpose: Restores last valid state on violation detection
-
     quarantine_manager:
       purpose: Isolates invalid or suspicious execution flows
-
     escalation_handler:
       purpose: Routes critical violations to higher governance layers
-
     halt_controller:
       purpose: Performs deterministic system halt on fatal violations
 
   invariants:
-    - all_execution_passes_guard_engine
-    - guards_are_deterministic_and_replay_consistent
-    - guards_do_not_modify_state_directly
-    - invariant_violation_triggers_halt_or_quarantine
-    - guard_decisions_must_be_traceable
+    - INVARIANT-GUARD-MANDATORY-EXECUTION
+    - INVARIANT-GUARD-DETERMINISM
+    - INVARIANT-GUARD-NO-STATE-MUTATION
+    - INVARIANT-VIOLATION-REQUIRES-HALT-OR-QUARANTINE
+    - INVARIANT-GUARD-TRACEABILITY
 
   execution_flow:
     - input_event
@@ -70,6 +63,17 @@ adr:
     - state_transition
     - state_commit
     - trace_recording
+
+  validation_pipeline:
+    - guard_engine
+    - invariant_guard
+    - epoch_guard
+    - authority_guard
+
+  enforced_by:
+    - afritech.guards.guard_engine
+    - afritech.guards.guard_validator
+    - afritech.guards.guard_runtime
 
   dependencies:
     - ADR-0001
@@ -110,10 +114,5 @@ adr:
       - Requires strict determinism in guard logic
 
   links:
-    dependencies:
-      - ADR-0001
-      - ADR-0002
-      - ADR-0003
-
     epochs:
       - EPOCH_0004

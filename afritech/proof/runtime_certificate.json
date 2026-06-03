@@ -1,15 +1,15 @@
 {
-  "certificate_hash": "c82f3ead3f1ebf9e01bd0bfc44376d019d89877276176704a3cc76db19185979",
+  "certificate_hash": "cfed102cb4101c6a9c31b5cec92a056fed97ccc18332c3b527d79fb2a9062c2f",
   "constitutional": {
-    "ci_completeness_hash": "689a43eef53a9159423cf36b8dfda3ed9dcfb7777810a505441a18013571be8c",
+    "ci_completeness_hash": "0dc9960a6ec3c99b3e4e04b53324ccc9af9811b344362701303845d9eb7acf51",
     "epoch_ir_hash": "52d6ca7cc9b96cb86ddf0925ce0f32e8b70506bf1e9b453d60faabfaba059d10",
-    "invariant_index_hash": "12e0a6555fda802f7c9742adef9c0360fdd8e0f4b23be285aa82110b00d169f1",
-    "invariant_ir_hash": "8fb8cc51fcef70e8f69f2f82da0ac46cab1dfb291c16753287bf045aafa5ac8f",
-    "lean_epoch_hash": "cf932c61cafa64062c9c67f69fe64840ed6d665965723406df879aab76708584",
-    "lean_invariant_hash": "521b6833d8da19842c4ca73b83003694f2886d942c0fd212dfb0ec92796fc4b2",
-    "semantic_compiler_hash": "8fb8cc51fcef70e8f69f2f82da0ac46cab1dfb291c16753287bf045aafa5ac8f"
+    "invariant_index_hash": "f449290d46fd6614726d521339b2c8eb9d45d2a5bd88472d63c64eab5b57df7e",
+    "invariant_ir_hash": "f45aaa0ab79b39ac629571a8f1815c4964b9bb4b07a34d2470828baf3c047bc7",
+    "lean_epoch_hash": "ceffe4e7b7a98ec3391834b82c1fc07f693af5c347afc11e487eed88f6642d0b",
+    "lean_invariant_hash": "f491d6674b31f870c6c643b0dfc7cbe395ad50058de6a6e053d154f58f466a99",
+    "semantic_compiler_hash": "f45aaa0ab79b39ac629571a8f1815c4964b9bb4b07a34d2470828baf3c047bc7"
   },
-  "created_at": "2026-05-17T02:27:03.760163Z",
+  "created_at": "2026-05-27T02:19:32.446464Z",
   "execution": {
     "context_hash": null,
     "proof_hash": null,

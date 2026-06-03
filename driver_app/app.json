@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "AfriRide Driver (Test)",
+    "slug": "afriride-driver-test",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d75288c7-a122-43ca-8c25-2a7443e6f499"
+      }
+    },
+    "android": {
+      "package": "com.ostrinov23.afriridedrivertest"
+    }
+  }
+}

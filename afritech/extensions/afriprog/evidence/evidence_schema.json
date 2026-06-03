@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "afritech.extensions.afriprog.evidence.evidence_schema",
+  "title": "AfriProgramming Evidence Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "phase",
+    "source",
+    "status",
+    "subject",
+    "payload",
+    "evidence_hash"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "PHASE_1_REPOSITORY_INTELLIGENCE",
+        "PHASE_2_READ_ONLY_PLANNING",
+        "PHASE_3_PROPOSAL_ONLY"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "repository_intelligence",
+        "task_planner",
+        "validator_runner",
+        "code_executor",
+        "evidence_generator"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payload": {
+      "type": "object"
+    },
+    "evidence_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

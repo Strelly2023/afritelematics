@@ -1,0 +1,12 @@
+{
+  "authority_law": "All decisions must be reconstructable as authoritative, dispute-grade truth.",
+  "equivalent": true,
+  "replay_authority_hash": "2d2dcadf4bcdc11206f9dae1b9a40b221eac88f6d06a1c086f2d35bbfd34e4ba",
+  "scenario_hashes": {
+    "audit_grade_determinism": "8a8fcd8af1311314c418cdc62f4978cc79057a8fcfc6a52c16092bf605f25a24",
+    "conflicting_claims_resolution": "2e27d8aeeec52b30e3fff8454632521e875cef3212f35b083e8a7f8521772f75",
+    "dispute_reproducibility": "5afa3d56f88e916d2b9fc77ea640b2cbe219f42c14a28959f528486d238e8944",
+    "trace_reconstruction": "eae995b4a0c79e112469b2fa18c00a030bbb98f6044cc44d30ff188864190d06"
+  },
+  "schema": "afritech.replay_authority_equivalence_report.v1"
+}

@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "afritech"
+version = "0.1.0"
+description = "AfriTech constitutional execution and replay verification system"
+requires-python = ">=3.10"
+
+# Optional but recommended
+dependencies = [
+    "fastapi",
+    "httpx",
+    "pydantic",
+]
+
+# --------------------------------------------------
+# ✅ PACKAGE DISCOVERY
+# --------------------------------------------------
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "afritech*",
+    "ecosystems*",
+    "afriride_system*"
+]
+
+# --------------------------------------------------
+# ✅ PYTEST CONFIG (FIXES YOUR ORIGINAL ERROR)
+# --------------------------------------------------
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["ecosystems/afriride/tests", "afriride_system/tests"]
+addopts = "-ra -q"
+
+# --------------------------------------------------
+# ✅ OPTIONAL: TYPE CHECKING / FUTURE USE
+# --------------------------------------------------
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.mutmut]
+paths_to_mutate = [
+    "afritech/afripower/",
+    "afritech/ci/afripower_intelligence_validator.py"
+]
+
+tests_dir = "tests"
+
+runner = "pytest -q"
+
+use_coverage = true
+
+max_stack_depth = 10

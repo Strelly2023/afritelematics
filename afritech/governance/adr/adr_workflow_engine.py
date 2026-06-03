@@ -1,12 +1,13 @@
 import hashlib
 from datetime import datetime
 
-from governance.adr.adr_models import ADR, ADRStatus
-from governance.adr.adr_repository import ADRRepository
+from afritech.governance.adr.adr_models import ADR, ADRStatus
+from afritech.governance.adr.adr_repository import ADRRepository
 
 # ✅ Policy engine
-from governance.policy.policy_rules_engine import PolicyRulesEngine
-from governance.policy.policy_models import PolicyDecision
+
+from afritech.governance.policy.policy_rules_engine import PolicyRulesEngine
+from afritech.governance.policy.policy_models import PolicyDecision
 
 
 class ADRWorkflowError(Exception):

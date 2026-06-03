@@ -47,3 +47,30 @@ completion_rule:
   unresolved_states_forbidden: [PLANNED, PARTIAL, DOCUMENTARY]
   implemented_requires_tests: true
   frozen_requires_freeze_reason: true
+afritech.distributed:
+
+  partition:
+    partition_assignment: complete
+    partition_registry: complete
+
+  queue:
+    queue_record: complete
+    distributed_queue_adapter: complete
+
+  worker:
+    worker_node: complete
+    worker_result: complete
+
+  replay:
+    distributed_replay_verifier: complete
+    distributed_ledger: complete
+    distributed_execution_transcript: complete
+
+  recovery:
+    recovery_protocol: complete
+    partition_rebuild: complete
+    node_recovery: complete
+
+  coordinator:
+    coordinator: complete
+    batch_coordinator: complete

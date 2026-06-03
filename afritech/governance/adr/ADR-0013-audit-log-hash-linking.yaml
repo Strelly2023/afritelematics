@@ -1,0 +1,261 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0013
+  title: Audit Log Hash Linking (Tamper-Proof Chain)
+  status: APPROVED
+  type: CONSTITUTIONAL_AUDIT_INTEGRITY
+  proposed_epoch: 7
+  approved_at: "2026-05-22T00:00:00Z"
+  registry_ref: ADR-0013
+
+  authors:
+    - AfriTech Governance
+
+  related_artifacts:
+    - afritech/audit/hash_engine.py
+    - afritech/audit/chain_validator.py
+    - afritech/models/audit_log.py
+    - afritech/guards/audit_chain_guard.py
+    - afritech/governance/rules/RULE-AUDIT-001.yaml
+
+  dependencies:
+    - ADR-0002
+    - ADR-0003
+    - ADR-0005
+    - ADR-0009
+    - ADR-0012
+
+# =====================================================
+# CONTEXT
+# =====================================================
+
+  context: >
+    AfriTech guarantees deterministic execution (ADR-0003),
+    replay-valid state reconstruction (ADR-0009), and registry
+    sealing (ADR-0005). However, audit logs remain vulnerable to
+    undetected tampering if entries are stored independently.
+
+    Replay correctness depends on historical integrity. Without a
+    cryptographically linked audit chain, malicious or accidental
+    modification of past records cannot be detected reliably.
+
+# =====================================================
+# PROBLEM STATEMENT
+# =====================================================
+
+  problem_statement: >
+    The system lacks a cryptographic mechanism to enforce
+    forward-linked audit history integrity.
+
+    Without hash chaining:
+      - audit entries can be altered without detection
+      - replay history may be corrupted silently
+      - registry sealing relies on unverified history inputs
+      - forensic traceability is incomplete
+
+# =====================================================
+# DECISION
+# =====================================================
+
+  decision: >
+    Introduce a cryptographic hash chain across all audit log entries.
+
+    Each audit entry MUST:
+      - include previous_hash
+      - include entry_hash
+      - be deterministically hashed using payload and previous_hash
+
+    Chain integrity MUST be enforced at:
+      - insertion time
+      - replay verification
+      - registry sealing
+
+    Any hash mismatch MUST invalidate the audit chain
+    and trigger system-level rejection.
+
+# =====================================================
+# MODEL
+# =====================================================
+
+  model:
+    inputs:
+      - previous_hash
+      - audit_payload
+
+    outputs:
+      - entry_hash
+
+    hash_formula: >
+      entry_hash = SHA256(previous_hash + serialize(audit_payload))
+
+# =====================================================
+# CONSTRAINTS
+# =====================================================
+
+  constraints:
+    - payload serialization MUST be deterministic
+    - hash algorithm MUST be stable and consistent
+    - ordering MUST follow temporal determinism (ADR-0002)
+    - no entry may be inserted out of sequence
+    - previous_hash MUST match prior entry_hash
+    - genesis entry MUST have null previous_hash
+
+# =====================================================
+# INVARIANTS
+# =====================================================
+
+  invariants:
+    - INVARIANT-HASH-CHAIN-INTEGRITY
+    - INVARIANT-FORWARD-ONLY-LINKING
+    - INVARIANT-TAMPER-DETECTION
+    - INVARIANT-REPLAY-HASH-CONSISTENCY
+    - INVARIANT-AUDIT-CHAIN-CONTINUITY
+
+  invariant_assertions:
+    - each entry MUST reference the previous hash
+    - computed hash MUST match stored hash
+    - any modification MUST break the chain
+    - replay MUST recompute identical hash chain
+    - chain termination MUST match registry seal
+
+# =====================================================
+# VALIDATION PIPELINE
+# =====================================================
+
+  validation_pipeline:
+    - edge_ingestion
+    - runtime_admission
+    - runtime_engine
+    - audit_log_write
+    - hash_engine
+    - chain_validator
+    - replay_verification
+    - registry_seal
+
+# =====================================================
+# ENFORCEMENT
+# =====================================================
+
+  enforced_by:
+    - afritech.audit.hash_engine
+    - afritech.audit.chain_validator
+    - afritech.guards.audit_chain_guard
+    - afritech.verify.replay
+    - afritech.registry.seal
+
+  required_rule:
+    - RULE-AUDIT-001
+
+  required_guard:
+    - afritech.guards.audit_chain_guard
+
+  required_ci_checks:
+    - CI-AUDIT-CHAIN-001
+    - afritech.ci.audit_integrity_validator
+
+# =====================================================
+# FAILURE BEHAVIOR
+# =====================================================
+
+  failure_model:
+
+    hash_mismatch:
+      action: REJECT
+      severity: CRITICAL
+
+    broken_chain:
+      action: HALT_REPLAY
+      severity: CRITICAL
+
+    invalid_previous_hash:
+      action: REJECT_INSERT
+      severity: HIGH
+
+    replay_divergence:
+      action: SYSTEM_INVALIDATION
+      severity: CRITICAL
+
+# =====================================================
+# DATA MODEL REQUIREMENT
+# =====================================================
+
+  audit_log_schema:
+    required_fields:
+      - id
+      - payload
+      - previous_hash
+      - entry_hash
+      - timestamp
+      - epoch
+      - status
+
+# =====================================================
+# CLASSIFICATION
+# =====================================================
+
+  classification:
+    mutation_type: AUDIT_INTEGRITY_ENFORCEMENT
+    constitutional_scope: HISTORY_AUTHENTICITY
+    runtime_effect: AUDIT_CHAIN_VALIDATION
+    determinism_effect: PRESERVED
+    replay_effect: STRENGTHENED
+    semantic_effect: NONE
+    authority_effect: REPLAY_HARDENING
+    execution_surface_effect: NONE
+    mutation_visibility: EXPLICIT
+
+# =====================================================
+# CONSEQUENCES
+# =====================================================
+
+  consequences:
+
+    positive:
+      - enables tamper-proof audit history
+      - guarantees integrity of replay input
+      - strengthens registry sealing validity
+      - enables forensic verification
+      - ensures historical authenticity
+
+    negative:
+      - introduces hash computation overhead
+      - requires strict ordering enforcement
+      - chain corruption impacts full audit validity
+
+# =====================================================
+# LINKS
+# =====================================================
+
+  links:
+    epochs:
+      - EPOCH_0007
+
+    surfaces:
+      - audit_log
+      - runtime_engine
+      - replay_verification
+      - registry_seal
+
+    related_adrs:
+      - ADR-0012
+
+# =====================================================
+# TRACEABILITY
+# =====================================================
+
+  traceability:
+    related_files:
+      - afritech/audit/hash_engine.py
+      - afritech/audit/chain_validator.py
+      - afritech/guards/audit_chain_guard.py
+      - afritech/models/audit_log.py
+
+# =====================================================
+# INTEGRITY
+# =====================================================
+
+  integrity:
+    immutable: true
+    replay_protected: true
+    registry_included: true

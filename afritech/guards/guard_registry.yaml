@@ -72,6 +72,15 @@ guard_registry:
       target: EXECUTION_CONTEXT
       rule: "No undefined behavior or malformed context allowed at runtime"
 
+    - id: GUARD-LOCALITY-001
+      type: DATA_LOCALITY_GUARD
+      target: EXECUTION_CONTEXT
+      path: afritech.guards.data_locality_guard.validate_data_locality
+      applies_to:
+        - runtime_execution
+        - replay_validation
+      rule: "Execution data access must remain inside declared data, surface, and partition locality bounds"
+
   invariants:
 
     - I23_GUARD_MANDATORY
@@ -79,6 +88,7 @@ guard_registry:
     - I23_2_FAIL_FAST
     - I23_3_FULL_COVERAGE
     - I23_4_DETERMINISTIC_ENFORCEMENT
+    - I36_DATA_LOCALITY_BOUND
 
   enforcement:
 
@@ -90,3 +100,119 @@ guard_registry:
     ordering: defined
     evaluation: deterministic
     side_effects: disallowed
+# ---------------------------------------------------------
+# GUARD REGISTRY — CROSS SYSTEM PROOF VALIDATION
+# ---------------------------------------------------------
+
+guards:
+
+  - id: GUARD-014-1
+    name: guard_validate_proof_structure
+    description: >
+      Validates that the proof contains all required fields and
+      follows the expected schema structure.
+
+    implementation: afritech.guards.guard_cross_proof.guard_validate_proof_structure
+
+    linked_rules:
+      - RULE-014-1   # merkle_root required
+      - RULE-014-2   # signature required
+      - RULE-014-3   # public_key_id required
+      - RULE-014-4   # data.logs required
+
+    input:
+      - proof
+
+    output: boolean
+
+
+  - id: GUARD-014-2
+    name: guard_validate_merkle
+    description: >
+      Ensures the recomputed Merkle root matches the provided root,
+      guaranteeing data integrity.
+
+    implementation: afritech.guards.guard_cross_proof.guard_validate_merkle
+
+    linked_rules:
+      - RULE-014-6
+
+    input:
+      - proof
+      - computed_root
+
+    output: boolean
+
+
+  - id: GUARD-014-3
+    name: guard_validate_signature
+    description: >
+      Validates the result of cryptographic signature verification.
+
+    implementation: afritech.guards.guard_cross_proof.guard_validate_signature
+
+    linked_rules:
+      - RULE-014-7
+
+    input:
+      - signature_valid
+
+    output: boolean
+
+
+# ---------------------------------------------------------
+# ✅ EXECUTION PIPELINE
+# ---------------------------------------------------------
+
+execution_order:
+  - GUARD-014-1   # structure first
+  - GUARD-014-2   # then integrity
+  - GUARD-014-3   # then trust/authenticity
+
+
+# ---------------------------------------------------------
+# ✅ FAILURE POLICY
+# ---------------------------------------------------------
+
+failure_policy:
+  mode: fail_fast
+
+  rules:
+    - on_failure: STOP_EXECUTION
+    - reject_proof: true
+    - log_failure: true
+    - emit_alert: true
+
+
+# ---------------------------------------------------------
+# ✅ TRACEABILITY
+# ---------------------------------------------------------
+
+linked_adr:
+  - ADR-0014
+
+linked_invariants:
+  - INVARIANT-014
+  - INVARIANT-014B
+  - INVARIANT-014C
+
+linked_bindings:
+  - BIND-014
+
+
+# ---------------------------------------------------------
+# ✅ CI ENFORCEMENT
+# ---------------------------------------------------------
+
+ci:
+  validations:
+    - each guard must have implementation path
+    - each guard must return boolean
+    - execution_order must include all guards
+    - no duplicate guard entries
+
+  tests:
+    - test_guard_structure_validation
+    - test_guard_merkle_validation
+    - test_guard_signature_validation
+    - test_guard_execution_order  

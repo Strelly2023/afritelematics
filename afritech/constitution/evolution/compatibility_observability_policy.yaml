@@ -1,0 +1,67 @@
+schema: afritech.constitution.evolution.compatibility_observability_policy.v1
+classification: compatibility_observability_boundary
+authority: non_authoritative_observability_policy
+
+boundary:
+  constitution: defines_legitimacy
+  replay: validates_truth
+  validators: enforce_governance
+  observability: explains_validator_derived_state
+
+required_scope: OBSERVATION_ONLY
+
+required_forbidden_actions:
+  - approve_exception
+  - define_legitimacy
+  - mutate_epoch_registry
+  - mutate_translator_registry
+  - reinterpret_replay_truth
+  - validate_truth
+
+observability_surfaces:
+  compat_status_cli:
+    path: afritech/tools/compat_status.py
+    command: python3 -m afritech.tools.compat_status status
+    authority_scope: OBSERVATION_ONLY
+    blocking: false
+    data_sources:
+      - afritech/constitution/evolution/epoch_lifecycle_registry.yaml
+      - afritech/constitution/evolution/replay_translator_registry.yaml
+      - afritech.ci.epoch_lifecycle_validator
+    allowed_actions:
+      - emit_human_readable_status
+      - emit_json_status
+      - report_budget_violations
+      - report_fixture_failures
+      - report_lifecycle_validity
+    forbidden_actions:
+      - approve_exception
+      - define_legitimacy
+      - mutate_epoch_registry
+      - mutate_translator_registry
+      - reinterpret_replay_truth
+      - validate_truth
+    ga_integration:
+      workflow: .github/workflows/ga_plus_plus_plus.yml
+      step_name: Report compatibility observability status
+      continue_on_error_required: true
+
+  future_compatibility_dashboard:
+    path: docs/roadmap/AfriTech_Wave2_Compatibility_Observability_Plan.md
+    authority_scope: OBSERVATION_ONLY
+    blocking: false
+    data_sources:
+      - validator_derived_state
+      - compatibility_status_json
+    allowed_actions:
+      - explain_epoch_lineage
+      - explain_translator_pressure
+      - show_compatibility_health
+      - show_retirement_readiness
+    forbidden_actions:
+      - approve_exception
+      - define_legitimacy
+      - mutate_epoch_registry
+      - mutate_translator_registry
+      - reinterpret_replay_truth
+      - validate_truth

@@ -5,10 +5,9 @@ adr:
   title: Replay Validity and Temporal Sovereignty Enforcement
   status: APPROVED
   type: CONSTITUTIONAL_VALIDITY_GUARANTEE
-
   epoch: 6
-
   approved_at: "2026-05-07T00:00:00Z"
+  registry_ref: ADR-0009
 
   context: >
     Following the introduction of runtime refinement (ADR-0006),
@@ -29,7 +28,7 @@ adr:
 
     The system MUST enforce:
 
-      - replay must reconstruct the full execution history
+      - replay must reconstruct the full execution lifecycle
       - replay must reach the current registry epoch
       - runtime state MUST match replay result
       - epoch history is the single source of temporal truth
@@ -37,10 +36,17 @@ adr:
 
     The execution and evolution model is finalized as:
 
-      admission → orchestration → state → transition → result
-      → proof → evaluation → epoch → replay_verification
+      admission → orchestration → activation → guard → state → transition → result
+      → proof → evaluation → epoch → replay_verification → registry_seal
 
     Replay validation is the final authority gate for system truth.
+
+  constraints:
+    - replay must be fully deterministic
+    - replay must not depend on external or non-deterministic inputs
+    - replay outputs must match runtime outputs exactly
+    - epoch transitions must be verifiable via replay
+    - replay failure invalidates system state
 
   implementation:
     enforcement_layers:
@@ -57,12 +63,33 @@ adr:
     breaking_changes: false
 
   invariants:
-    - replay_is_required_for_validity
-    - runtime_state_must_match_replay
-    - history_is_single_source_of_truth
-    - no_unreplayable_state_is_allowed
-    - epoch_lineage_must_be_complete
-    - registry_and_runtime_must_be_consistent
+    - INVARIANT-REPLAY-REQUIRED-FOR-VALIDITY
+    - INVARIANT-RUNTIME-REPLAY-CONSISTENCY
+    - INVARIANT-HISTORY-SINGLE-SOURCE-OF-TRUTH
+    - INVARIANT-NO-UNREPLAYABLE-STATE
+    - INVARIANT-EPOCH-LINEAGE-COMPLETE
+    - INVARIANT-REGISTRY-RUNTIME-CONSISTENCY
+
+  validation_pipeline:
+    - runtime_admission
+    - runtime_orchestration
+    - runtime_activation
+    - guard_engine
+    - runtime_engine
+    - proof_generator
+    - evaluation_engine
+    - epoch_transition
+    - replay_verification
+    - registry_seal
+
+  enforced_by:
+    - afritech.verify.replay
+    - afritech.epoch.epoch_manager
+    - afritech.epoch.epoch_transition
+    - afritech.epoch.epoch_validator
+    - afritech.guards.epoch_sync_guard
+    - afritech.guards.invariant_guard
+    - afritech.registry.seal
 
   validation:
     replay_required: true
@@ -93,9 +120,17 @@ adr:
     The system MUST enforce:
       1. Full reconstruction of execution history
       2. Validation of epoch chain integrity
-      3. Validation of proof and evaluation outputs
-      4. Alignment between runtime and replay-derived state
-      5. Rejection of any inconsistent or incomplete history
+      3. Validation of proof artifact reproducibility
+      4. Validation of evaluation output determinism
+      5. Alignment between runtime and replay-derived state
+      6. Rejection of any inconsistent or incomplete history
+
+    Replay MUST validate:
+      - execution determinism
+      - proof reproducibility
+      - evaluation consistency
+      - epoch continuity
+      - lifecycle completeness
 
     Any failure in replay MUST invalidate system state.
 
@@ -121,6 +156,7 @@ adr:
     surfaces:
       - runtime.admission
       - runtime.orchestration
+      - runtime.activation
       - runtime.engine
       - proof
       - evaluation
@@ -137,8 +173,10 @@ adr:
       - afritech/guards/epoch_sync_guard.py
       - afritech/epoch/epoch_manager.py
       - afritech/epoch/epoch_transition.py
+      - afritech/epoch/epoch_validator.py
       - afritech/registry/history/
       - afritech/proof/
+      - afritech/evaluation/
 
   integrity:
     immutable: true

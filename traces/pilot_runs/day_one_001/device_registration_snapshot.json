@@ -1,0 +1,8 @@
+{
+  "receipt": "device_registration_snapshot",
+  "run_id": "day_one_001",
+  "minute": 15,
+  "status": "captured",
+  "devices": [],
+  "claim_boundary_preserved": true
+}

@@ -1,0 +1,41 @@
+{
+  "all_attacks_rejected": true,
+  "attacks": [
+    {
+      "attack_name": "raw_external_input_to_core",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "edge",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "raw external input lacks canonical mutation structure",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "provider_response_injection",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "provider_response",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "provider response attempted to inject authority metadata",
+      "truth_authority": "replay_validation",
+      "verified": true
+    },
+    {
+      "attack_name": "timestamp_manipulation",
+      "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "disposition": "rejected",
+      "hostile_surface": "timestamp",
+      "observed_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+      "reason": "hostile timestamp is not canonical replay-safe integer time",
+      "truth_authority": "replay_validation",
+      "verified": true
+    }
+  ],
+  "authority_isolated": true,
+  "authority_law": "Malicious behavior must not create valid truth.",
+  "baseline_replay_hash": "32ec7968c7caedfd50b579601f2714339da16242bd053baf8a7e454fe29984f9",
+  "replay_truth_preserved": true,
+  "scenario": "injection_resistance",
+  "verified": true
+}

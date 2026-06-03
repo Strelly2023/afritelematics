@@ -1,0 +1,15 @@
+{
+    "exit_code_by_key": {
+        "afritech.afripower.graph.serializers.x_serialize_graph_payload__mutmut_1": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph_payload__mutmut_2": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_1": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_2": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_3": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_4": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_5": null,
+        "afritech.afripower.graph.serializers.x_serialize_graph__mutmut_6": null
+    },
+    "durations_by_key": {},
+    "type_check_error_by_key": {},
+    "estimated_durations_by_key": {}
+}

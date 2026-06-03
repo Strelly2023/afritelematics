@@ -1,0 +1,13 @@
+{
+  "authority_law": "Region-local disruption must not create region-relative truth.",
+  "equivalent": true,
+  "multiregion_convergence_hash": "299a5a29fa0354e596f09b902627ef96514f603f59bf6ecef8771a32374f3ec2",
+  "scenario_hashes": {
+    "conflicting_local_order": "10a8b4f0c8d7db4064daa4e90c786d87c337dbac44b3c722d536dcde21109c62",
+    "delayed_cross_region_sync": "1f8b734c247b88763ec0831580b06a7b2470e3c255ed7504eb306281d0ce33b9",
+    "duplicate_cross_region_messages": "1a5672e3534dc410dbd30f995eeeabb133d4219124dc45a3a59c837f0851cd70",
+    "full_partition": "5962784ddde7273a25fc2afbb9670df6bafd2207ec828f39802a9cdf25853794",
+    "independent_recovery": "65edb38e292c78df83c5b4c241c35e1528ee743c6ace58cd1c3dd1b9e7781f80"
+  },
+  "schema": "afritech.multiregion_equivalence_report.v1"
+}

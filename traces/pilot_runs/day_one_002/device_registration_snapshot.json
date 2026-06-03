@@ -1,0 +1,20 @@
+{
+  "receipt": "device_registration_snapshot",
+  "run_id": "day_one_002",
+  "minute": 15,
+  "status": "captured",
+  "devices": [
+    {
+      "device_id": "ostrinov_phone_001",
+      "device_type": "smartphone",
+      "role": "test_driver_device",
+      "owner": "ostrinov",
+      "binding_status": "bound",
+      "signed_event_capable": false,
+      "gps_capture_capable": true,
+      "offline_buffer_capable": false,
+      "claim_boundary_preserved": true
+    }
+  ],
+  "claim_boundary_preserved": true
+}

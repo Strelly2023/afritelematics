@@ -2,13 +2,12 @@ schema: afritech.governance.adr.v1
 
 adr:
   id: ADR-0008
-  title: Introduction of Admission Control and Execution Orchestration Layer
+  title: Admission Control and Execution Orchestration Layer
   status: APPROVED
   type: CONSTITUTIONAL_EXECUTION_CONTROL
-
   epoch: 6
-
   approved_at: "2026-05-07T00:00:00Z"
+  registry_ref: ADR-0008
 
   context: >
     Following the integration of proof and evaluation into the execution
@@ -29,10 +28,17 @@ adr:
 
     The execution lifecycle is updated to:
 
-      admission → orchestration → state → transition → result → proof → evaluation
+      admission → orchestration → activation → guard → state → transition → result → proof → evaluation → seal
 
     Admission and orchestration are REQUIRED stages of execution and
     MUST enforce deterministic and replay-consistent control of execution.
+
+  constraints:
+    - admission must be a deterministic function of request and system state
+    - orchestration must not modify system state
+    - orchestration must only define execution ordering
+    - admission decisions must be replay-verifiable
+    - orchestration decisions must be replay-reconstructible
 
   implementation:
     new_layers:
@@ -42,32 +48,56 @@ adr:
     execution_pipeline_updated: true
 
     lifecycle:
-      - admission
-      - orchestration
-      - state
-      - transition
-      - result
-      - proof
-      - evaluation
-
-    surfaces_affected:
-      - runtime.activation
-      - runtime.engine
       - runtime.admission
       - runtime.orchestration
+      - runtime.activation
+      - guard_engine
+      - state_engine
+      - result_generation
+      - proof_generation
+      - evaluation
+      - registry_seal
+
+    surfaces_affected:
+      - runtime.admission
+      - runtime.orchestration
+      - runtime.activation
+      - runtime.engine
       - guards
-      - schema_validation
+      - proof
+      - evaluation
 
     breaking_changes: false
 
   invariants:
-    - admission_is_mandatory_before_execution
-    - orchestration_controls_execution_order
-    - execution_pipeline_is_deterministic_and_replayable
-    - guard_sequencing_is_enforced
-    - unauthorized_execution_is_rejected
-    - orchestration_does_not_modify_state
-    - admission_and_orchestration_are_replay_verifiable
+    - INVARIANT-ADMISSION-MANDATORY
+    - INVARIANT-ORCHESTRATION-DETERMINISTIC
+    - INVARIANT-EXECUTION-PIPELINE-DETERMINISTIC
+    - INVARIANT-GUARD-SEQUENCING-ENFORCED
+    - INVARIANT-UNAUTHORIZED-EXECUTION-REJECTED
+    - INVARIANT-ORCHESTRATION-NO-STATE-MUTATION
+    - INVARIANT-ADMISSION-REPLAY-VERIFIABLE
+    - INVARIANT-ORCHESTRATION-REPLAY-RECONSTRUCTIBLE
+
+  validation_pipeline:
+    - runtime_admission
+    - runtime_orchestration
+    - runtime_activation
+    - guard_engine
+    - runtime_engine
+    - proof_generator
+    - evaluation_engine
+    - registry_seal
+
+  enforced_by:
+    - afritech.runtime.admission
+    - afritech.runtime.orchestration
+    - afritech.runtime.activation
+    - afritech.runtime.engine
+    - afritech.guards.guard_engine
+    - afritech.proof
+    - afritech.evaluation
+    - afritech.registry.seal
 
   validation:
     replay_required: true
@@ -96,14 +126,16 @@ adr:
     The system MUST enforce:
       1. All execution requests pass admission validation
       2. Orchestration defines deterministic execution ordering
-      3. Guard checks occur before state transition
-      4. Execution continues only if admission and guards succeed
-      5. Orchestration MUST NOT alter system state
+      3. runtime.activation validates execution readiness
+      4. Guard checks occur before state transition
+      5. Execution continues only if admission and guards succeed
+      6. Orchestration MUST NOT alter system state
 
     Replay MUST:
       - reconstruct admission decisions
       - reconstruct orchestration ordering
       - verify identical execution sequencing
+      - verify guard evaluation order
 
   consequences:
     positive:
@@ -125,6 +157,7 @@ adr:
     surfaces:
       - runtime.admission
       - runtime.orchestration
+      - runtime.activation
       - runtime.engine
       - proof
       - evaluation
@@ -137,6 +170,8 @@ adr:
     related_files:
       - afritech/runtime/admission/
       - afritech/runtime/orchestration/
+      - afritech/runtime/activation.py
+      - afritech/runtime/engine.py
       - afritech/guards/
       - afritech/state/
       - afritech/proof/

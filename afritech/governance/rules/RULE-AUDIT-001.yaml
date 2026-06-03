@@ -1,0 +1,13 @@
+id: RULE-AUDIT-CHAIN-INTEGRITY
+description: >
+  Enforces cryptographic audit chain integrity for all AuditLog entries.
+
+enforcement:
+  - every entry must include previous_hash
+  - entry_hash must be computed deterministically
+  - chain linkage must be verified before insert
+  - replay must validate entire chain
+
+actions:
+  - reject invalid insert
+  - halt replay on chain break

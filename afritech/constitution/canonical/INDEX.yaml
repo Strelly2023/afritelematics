@@ -9,6 +9,7 @@ canonical_sources:
     - afritech/constitution/canonical/concepts/admissibility.yaml
     - afritech/constitution/canonical/concepts/authority_declaration.yaml
     - afritech/constitution/canonical/concepts/closed_world.yaml
+    - afritech/constitution/canonical/concepts/data_locality.yaml
     - afritech/constitution/canonical/concepts/deterministic_execution.yaml
     - afritech/constitution/canonical/concepts/mutation_traceability.yaml
     - afritech/constitution/canonical/concepts/replay_admissibility.yaml

@@ -1,0 +1,441 @@
+schema: afritech.distributed.worker_contract.v1
+
+version: 1
+
+metadata:
+  authority: OPERATIONAL
+  status: ACTIVE
+  mutability: CONTROLLED
+  registry_class: DISTRIBUTED_WORKER_CONTRACT
+  description: >
+    Canonical distributed worker contract governing deterministic
+    worker execution, replay-bound worker output, explicit worker
+    registration, partition-safe execution, append-only transcript
+    generation, and non-sovereign distributed execution within
+    AfriTech.
+
+    Distributed workers exist only to execute assigned replay-safe
+    partition records and produce deterministic execution outputs.
+
+    Workers must never define truth, bypass replay, mutate core state
+    directly, or create infrastructure-derived authority.
+
+
+# ============================================================
+# WORKER CONTRACT
+# ============================================================
+
+worker_contract:
+  truth_authority: false
+  replay_authority: false
+  semantic_authority: false
+  constitutional_authority: false
+
+  role:
+    - consume_assigned_partition_records
+    - execute_deterministically
+    - preserve_partition_order
+    - produce_worker_result
+    - produce_execution_hash
+    - produce_replay_hash
+    - append_execution_transcript
+    - support_replay_reconstruction
+    - fail_closed_on_divergence
+
+  forbidden:
+    - define_execution_truth
+    - bypass_replay
+    - mutate_core_state_directly
+    - consume_unassigned_partition_records
+    - execute_undeclared_partition
+    - produce_unrecorded_output
+    - use_random_output_generation
+    - use_wall_clock_as_authority
+    - use_filesystem_identity_as_authority
+    - perform_hidden_retry
+    - accept_first_worker_wins_resolution
+    - override_coordinator_ordering
+    - override_replay_verification
+    - emit_observer_relative_output
+    - execute_without_normalized_input_hash
+    - execute_without_canonical_event_hash
+    - execute_without_partition_sequence
+    - mutate_execution_transcript_after_write
+
+  required:
+    - explicit_worker_identity
+    - declared_partition_assignment
+    - canonical_partition_identity
+    - canonical_event_identity
+    - partition_sequence
+    - normalized_input_hash
+    - canonical_event_hash
+    - deterministic_execution_hash
+    - deterministic_output_hash
+    - replay_hash
+    - append_only_execution_transcript
+    - replay_equivalent_output
+    - fail_closed_on_divergence
+
+
+# ============================================================
+# WORKER IDENTITY
+# ============================================================
+
+worker_identity:
+  canonical_form: module_path
+  explicit_registration_required: true
+  deterministic_resolution: true
+  replay_safe: true
+  observer_independent: true
+
+  filesystem_identity_forbidden: true
+  symbolic_identity_forbidden: true
+  dynamic_discovery_forbidden: true
+
+  allowed_examples:
+    - afritech.distributed.worker.node.worker_01
+    - afritech.distributed.worker.node.worker_02
+    - afritech.distributed.worker.node.worker_03
+
+  forbidden_examples:
+    - worker_01
+    - current_worker
+    - active_worker
+    - ./worker.py
+    - afritech/distributed/worker/worker_node.py
+
+
+# ============================================================
+# PARTITION ASSIGNMENT
+# ============================================================
+
+partition_assignment:
+  assignment_required: true
+  deterministic_assignment_required: true
+  assigned_partition_only: true
+  preserve_fifo_per_partition: true
+  partition_sequence_required: true
+
+  forbidden:
+    - unassigned_partition_consumption
+    - dynamic_partition_claiming
+    - runtime_partition_creation
+    - random_worker_partition_assignment
+    - worker_selected_partition_authority
+    - partition_sequence_skipping
+    - partition_sequence_reordering
+
+  required_fields:
+    - worker_id
+    - partition_id
+    - partition_sequence
+    - assignment_hash
+
+
+# ============================================================
+# EXECUTION INPUT CONTRACT
+# ============================================================
+
+execution_input:
+  required_fields:
+    - event_id
+    - partition_id
+    - partition_sequence
+    - normalized_payload_hash
+    - canonical_event_hash
+    - assignment_hash
+
+  validation_required: true
+  immutable: true
+  replay_safe: true
+
+  forbidden:
+    - mutable_input_payload
+    - unnormalized_input
+    - missing_payload_hash
+    - missing_event_hash
+    - missing_partition_identity
+    - missing_partition_sequence
+    - observer_relative_input_interpretation
+    - live_external_lookup_as_execution_input
+
+
+# ============================================================
+# EXECUTION OUTPUT CONTRACT
+# ============================================================
+
+execution_output:
+  required_fields:
+    - worker_id
+    - event_id
+    - partition_id
+    - partition_sequence
+    - normalized_input_hash
+    - canonical_event_hash
+    - deterministic_output_hash
+    - execution_hash
+    - replay_hash
+    - status
+
+  allowed_statuses:
+    - EXECUTED
+    - REFUSED
+    - REPLAY_INVALID
+    - DIVERGENCE_DETECTED
+
+  deterministic_hashing_required: true
+  replay_equivalence_required: true
+  append_only_transcript_required: true
+
+  forbidden:
+    - output_without_replay_hash
+    - output_without_execution_hash
+    - output_without_input_hash
+    - output_without_partition_sequence
+    - mutable_output_after_write
+    - hidden_side_effect_output
+    - probabilistic_output
+    - observer_relative_output
+
+
+# ============================================================
+# TRANSCRIPT REQUIREMENTS
+# ============================================================
+
+execution_transcript:
+  append_only: true
+  immutable_after_write: true
+  canonical_ordering_required: true
+  replay_reconstructable: true
+
+  required_fields:
+    - worker_id
+    - event_id
+    - partition_id
+    - partition_sequence
+    - input_hash
+    - output_hash
+    - execution_hash
+    - replay_hash
+    - transcript_hash
+
+  forbidden:
+    - transcript_mutation
+    - transcript_deletion
+    - transcript_reordering
+    - missing_worker_identity
+    - missing_partition_identity
+    - missing_replay_hash
+    - observer_relative_transcript_ordering
+
+
+# ============================================================
+# REPLAY ALIGNMENT
+# ============================================================
+
+replay_alignment:
+  replay_safe_required: true
+  deterministic_execution_required: true
+  invariant_preservation_required: true
+  witness_alignment_required: true
+  replay_confirmation_required_before_final_acceptance: true
+
+  replay_success_condition: >
+    worker_output_hash == replay_reconstructed_output_hash
+
+  replay_invalidators:
+    - worker_output_divergence
+    - missing_replay_hash
+    - missing_execution_transcript
+    - undeclared_worker_execution
+    - unassigned_partition_execution
+    - partition_sequence_divergence
+    - observer_relative_execution
+    - probabilistic_execution
+
+  failure_effects:
+    worker_output_divergence:
+      DIVERGENCE_DETECTED
+
+    missing_replay_hash:
+      REPLAY_INVALID
+
+    undeclared_worker_execution:
+      EXECUTION_REFUSAL   # ✅ FIXED (was inconsistent)
+
+    unassigned_partition_execution:
+      EXECUTION_REFUSAL   # ✅ FIXED
+
+    partition_sequence_divergence:
+      REPLAY_INVALID
+
+
+# ============================================================
+# RECOVERY ALIGNMENT
+# ============================================================
+
+recovery_alignment:
+  worker_failure_recoverable: true
+  recovery_truth_authority: false
+  replacement_worker_allowed: true
+  replacement_requires_replay_validation: true
+
+  recovery_required_inputs:
+    - partition_id
+    - partition_sequence
+    - execution_transcript
+    - replay_hash
+    - canonical_event_hash
+
+  forbidden:
+    - recovery_without_replay
+    - recovery_with_partial_transcript
+    - recovery_that_mutates_past_output
+    - recovery_that_skips_partition_sequence
+    - recovery_that_accepts_duplicate_worker_output
+    - recovery_that_creates_new_truth
+
+  guarantees:
+    - deterministic_worker_replacement
+    - replay_safe_recovery
+    - duplicate_output_rejection
+    - canonical_partition_rebuild
+    - deterministic_rejoin_after_validation
+
+
+# ============================================================
+# CLOSED-WORLD ALIGNMENT
+# ============================================================
+
+closed_world_alignment:
+  required:
+    - explicit_worker_registration
+    - declared_partition_assignment
+    - declared_execution_surface
+    - canonical_worker_identity
+    - canonical_partition_identity
+    - immutable_execution_input
+    - append_only_execution_transcript
+
+  forbidden:
+    - dynamic_worker_discovery
+    - runtime_worker_registration
+    - reflection_based_worker_resolution
+    - undeclared_partition_execution
+    - undeclared_execution_surface
+    - implicit_execution_authority
+    - speculative_worker_execution
+
+  description: >
+    Worker execution must remain explicitly declared,
+    deterministic, replay-safe, and closed-world aligned.
+
+
+# ============================================================
+# FAILURE MODES
+# ============================================================
+
+failure_modes:
+  undeclared_worker_execution:
+    effect: HARD_FAIL
+
+  unassigned_partition_execution:
+    effect: EXECUTION_REFUSAL
+
+  missing_replay_hash:
+    effect: REPLAY_INVALID
+
+  worker_output_divergence:
+    effect: DIVERGENCE_DETECTED
+
+  partition_sequence_divergence:
+    effect: BATCH_INVALID
+
+  transcript_mutation:
+    effect: HARD_FAIL
+
+  hidden_retry_detected:
+    effect: EXECUTION_REFUSAL
+
+  infrastructure_authority_escalation:
+    effect: HARD_FAIL
+
+
+# ============================================================
+# CI ENFORCEMENT
+# ============================================================
+
+ci_enforcement:
+  validators:
+    - distributed_worker_validator
+    - distributed_replay_validator
+    - distributed_transcript_validator
+    - distributed_recovery_validator
+
+  required_checks:
+    - explicit_worker_registration_check
+    - declared_partition_assignment_check
+    - no_unassigned_partition_execution
+    - no_worker_truth_authority
+    - no_hidden_retry_semantics
+    - worker_output_replay_hash_required
+    - execution_transcript_append_only_check
+    - worker_output_replay_equivalence_check
+    - no_infrastructure_authority_escalation
+
+  failure_mode: CI_FAIL
+
+
+# ============================================================
+# SAFETY GUARANTEES
+# ============================================================
+
+safety:
+  guarantees:
+    - deterministic_worker_execution
+    - replay_bound_worker_output
+    - partition_safe_worker_consumption
+    - append_only_worker_transcripts
+    - infrastructure_independent_worker_legitimacy
+    - fail_closed_worker_divergence
+
+  forbid:
+    - worker_sovereignty
+    - replay_bypass
+    - probabilistic_worker_execution
+    - observer_relative_worker_output
+    - mutable_worker_transcripts
+    - unassigned_partition_consumption
+    - hidden_worker_retry
+
+  enforcement:
+    violation_action: FAIL_FAST
+    replay_violation_action: REPLAY_INVALID
+    runtime_violation_action: EXECUTION_REFUSAL
+
+
+# ============================================================
+# CONSTITUTIONAL ASSERTION
+# ============================================================
+
+constitutional_assertion:
+  description: >
+    A distributed worker is a non-sovereign operational executor.
+
+    A worker may consume only assigned replay-safe partition
+    records, execute deterministically, and emit replay-bound
+    outputs.
+
+    A worker must never define truth, bypass replay, mutate core
+    state directly, create hidden retry semantics, or derive
+    authority from infrastructure.
+
+    Worker legitimacy exists only when:
+      - worker identity is explicit
+      - partition assignment is declared
+      - input is normalized and hash-bound
+      - output is deterministic and replay-bound
+      - execution transcript is append-only
+      - replay equivalence is preserved
+      - closed-world execution semantics remain intact

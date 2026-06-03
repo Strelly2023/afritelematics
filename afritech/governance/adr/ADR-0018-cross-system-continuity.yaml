@@ -1,0 +1,185 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0018
+  title: Cross-System Continuity and Federated Proof
+  status: ACCEPTED
+  type: CONSTITUTIONAL_FEDERATED_CONTINUITY
+  proposed_epoch: 7
+  approved_at: "2026-05-28T21:47:22Z"
+  registry_ref: ADR-0018
+
+  authors:
+    - AfriTech Governance
+
+  context:
+    problem: >
+      AfriTech systems increasingly need to preserve continuity across system
+      boundaries: AfriRide, AfriProgramming, mobile clients, edge ingestion,
+      partner services, audit stores, and external proof consumers. A single
+      local proof is insufficient when continuity depends on evidence moving
+      across independently governed systems.
+
+    goal: >
+      Define a federated proof and cross-system continuity doctrine that keeps
+      evidence portable, independently verifiable, causally linked, and bounded
+      by AfriTech constitutional authority.
+
+    constraints:
+      - Federated proof must not require a shared database.
+      - Every participating system must retain source evidence authority.
+      - Cross-system continuity must preserve causal order and hash linkage.
+      - External systems must not define AfriTech runtime truth.
+      - Federation must be replay-verifiable from declared proof packets.
+
+  decision: >
+    Adopt a cross-system continuity and federated proof model. Participating
+    systems exchange federated proof packets containing source proof hashes,
+    issuer identity, continuity links, causality metadata, signatures, and
+    declared limitations. AfriTech may verify and aggregate these packets, but
+    the federation layer remains a governance and proof boundary, not a runtime
+    authority boundary.
+
+  federated_proof_contract:
+    artifact_type: federated_proof_packet
+    version: v1
+    required_fields:
+      - federation_id
+      - issuer_system
+      - subject_system
+      - issued_at
+      - proof_type
+      - source_proof_hash
+      - continuity_link_hash
+      - causal_sequence
+      - signature
+      - public_key_id
+      - limitations
+      - non_claims
+
+    continuity_link_fields:
+      - previous_packet_hash
+      - current_packet_hash
+      - source_event_hash
+      - target_event_hash
+      - replay_status
+      - continuity_property
+
+  federation_model:
+    topology: DECLARED_PARTICIPANTS
+    participant_requirements:
+      - stable system identity
+      - declared public key reference
+      - proof packet schema support
+      - source proof retention
+      - replay status declaration
+
+    forbidden_federation_behaviors:
+      - implicit participant authority
+      - unverifiable proof forwarding
+      - hash-link rewriting
+      - hidden participant scoring
+      - external runtime truth injection
+
+  validation_flow:
+    - validate packet schema
+    - resolve issuer public key
+    - verify packet signature
+    - verify source_proof_hash format
+    - verify continuity_link_hash
+    - validate causal_sequence monotonicity within packet scope
+    - preserve limitations and non_claims
+    - emit federation verification result
+
+  constitutional_boundary:
+    federation_authority: PROOF_TRANSPORT_AND_VALIDATION
+    source_truth_authority: SOURCE_SYSTEM_PROOF
+    afritech_truth_authority: AFRITECH_REPLAY_AND_GOVERNANCE
+    runtime_authoritative: false
+    replay_authoritative: false
+    governance_authoritative: true
+    external_system_may_define_afritech_truth: false
+    federation_may_trigger_governance_review: true
+
+  invariants:
+    - id: INVARIANT-018
+      description: >
+        Federated proof packets must preserve source proof identity and causal
+        continuity links across system boundaries.
+    - id: INVARIANT-018B
+      description: >
+        Cross-system continuity must be independently verifiable without shared
+        mutable database state.
+    - id: INVARIANT-018C
+      description: >
+        External systems must not define AfriTech runtime truth through
+        federation.
+
+  rules:
+    - id: RULE-018-1
+      description: Federated packets must include issuer and subject system identity.
+    - id: RULE-018-2
+      description: Federated packets must include source_proof_hash and continuity_link_hash.
+    - id: RULE-018-3
+      description: Federated signatures must verify against declared public keys.
+    - id: RULE-018-4
+      description: Causal sequence must be preserved within packet scope.
+    - id: RULE-018-5
+      description: External systems must not declare AfriTech runtime authority.
+
+  bindings:
+    - id: BIND-018-1
+      description: Cross-system proof verifier binding.
+      target: afritech.services.cross_proof_verifier.verify_cross_system_proof
+    - id: BIND-018-2
+      description: Cross-system proof API binding.
+      target: afritech/api/cross_proof_views.py
+    - id: BIND-018-3
+      description: Public key registry binding.
+      target: afritech.crypto.key_registry.PUBLIC_KEY_REGISTRY
+    - id: BIND-018-4
+      description: Cross-system continuity test binding.
+      target: tests/integration/test_cross_system_proof.py
+
+  ci:
+    required_checks:
+      - federated_packet_schema_valid
+      - issuer_key_resolves
+      - signature_verifies
+      - continuity_link_hash_present
+      - source_proof_hash_preserved
+      - external_runtime_authority_forbidden
+
+    tests:
+      - test_valid_cross_proof
+      - test_cross_system_proof_valid
+      - test_invalid_signature_rejected
+      - test_unknown_public_key_fails
+      - test_merkle_mismatch_rejected
+
+  non_claims:
+    - Federation does not create shared runtime authority.
+    - Federation does not replace local replay.
+    - Federation does not certify external systems as globally trusted.
+    - Federation does not remove the need for source proof retention.
+
+  consequences:
+    positives:
+      - Cross-system proof can be verified without shared databases.
+      - Federated evidence becomes portable and auditable.
+      - Causal continuity can be preserved across independently governed systems.
+      - AfriTech can participate in trust federation without surrendering authority.
+    negatives:
+      - Participant identity and key lifecycle must be governed.
+      - Federated proof packets require stable schema versioning.
+
+  supersedes: []
+
+  depends_on:
+    - ADR-0014
+    - ADR-0015
+    - ADR-0016
+
+  next_admissible_step: >
+    Introduce RULE-018 and BIND-018 after federated packet fixtures and CI
+    schema validation are declared.

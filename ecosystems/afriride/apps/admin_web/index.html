@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AfriRide Audit Console</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17201b;
+        --muted: #637168;
+        --line: #d8ded8;
+        --line-strong: #b9c4bd;
+        --paper: #fbfcfa;
+        --surface: #ffffff;
+        --green: #174634;
+        --green-soft: #e8f1ec;
+        --blue: #214f7a;
+        --blue-soft: #e8f0f7;
+        --amber: #8a5a12;
+        --amber-soft: #f7efe0;
+        --red: #8f2e2e;
+        --red-soft: #f8e7e7;
+        --shadow: 0 10px 28px rgba(28, 39, 33, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        margin: 0;
+      }
+
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .input-pane {
+        background: #f4f7f4;
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .brand {
+        border-bottom: 1px solid var(--line);
+        padding: 22px 24px 18px;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+        line-height: 1.1;
+        margin: 0;
+      }
+
+      .brand p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 8px 0 0;
+      }
+
+      .controls {
+        display: grid;
+        gap: 12px;
+        padding: 18px 20px 20px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        color: #334039;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      input {
+        background: var(--surface);
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        color: var(--ink);
+        min-width: 0;
+        padding: 10px 11px;
+      }
+
+      textarea {
+        background: #101713;
+        border: 1px solid #2b3930;
+        border-radius: 6px;
+        color: #edf5ef;
+        flex: 1;
+        min-height: 440px;
+        overflow: auto;
+        padding: 14px;
+        resize: vertical;
+        white-space: pre;
+      }
+
+      .button-row {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      button {
+        align-items: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 10px;
+      }
+
+      .primary {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+
+      .secondary {
+        background: var(--surface);
+        color: var(--ink);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-width: 0;
+      }
+
+      .toolbar {
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        padding: 18px 24px;
+      }
+
+      .toolbar h2 {
+        font-size: 18px;
+        margin: 0;
+      }
+
+      .status-strip {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .badge {
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 10px;
+      }
+
+      .badge.valid {
+        background: var(--green-soft);
+        border-color: #a9c6b6;
+        color: var(--green);
+      }
+
+      .badge.pending {
+        background: var(--amber-soft);
+        border-color: #dcc690;
+        color: var(--amber);
+      }
+
+      .badge.invalid {
+        background: var(--red-soft);
+        border-color: #e2a7a7;
+        color: var(--red);
+      }
+
+      .content {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        overflow: auto;
+        padding: 20px 24px 28px;
+      }
+
+      .section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        min-width: 0;
+        padding: 16px;
+      }
+
+      .wide {
+        grid-column: 1 / -1;
+      }
+
+      .section h3 {
+        font-size: 14px;
+        margin: 0 0 12px;
+      }
+
+      .section-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .kv {
+        display: grid;
+        gap: 8px;
+      }
+
+      .kv-row {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 130px minmax(0, 1fr);
+      }
+
+      .kv-row span:first-child {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .hash {
+        color: #21362b;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      pre {
+        background: #101713;
+        border-radius: 6px;
+        color: #edf5ef;
+        margin: 0;
+        max-height: 340px;
+        overflow: auto;
+        padding: 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 10px;
+      }
+
+      .step {
+        align-items: center;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 28px minmax(0, 1fr);
+      }
+
+      .dot {
+        align-items: center;
+        background: var(--blue-soft);
+        border: 1px solid #b4cbe0;
+        border-radius: 999px;
+        color: var(--blue);
+        display: flex;
+        font-size: 12px;
+        font-weight: 800;
+        height: 28px;
+        justify-content: center;
+        width: 28px;
+      }
+
+      .step-body {
+        border-left: 3px solid var(--blue);
+        padding-left: 10px;
+      }
+
+      .step-title {
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .step-sub {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+        overflow-wrap: anywhere;
+      }
+
+      .route-line {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .node {
+        background: var(--blue-soft);
+        border: 1px solid #b4cbe0;
+        border-radius: 6px;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 800;
+        padding: 7px 9px;
+      }
+
+      .arrow {
+        color: var(--muted);
+      }
+
+      .error {
+        background: var(--red-soft);
+        border: 1px solid #e2a7a7;
+        border-radius: 6px;
+        color: var(--red);
+        padding: 10px;
+      }
+
+      .empty {
+        color: var(--muted);
+        padding: 16px;
+      }
+
+      .inspector {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+
+      .inspect-card {
+        background: #f8faf8;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        cursor: pointer;
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .inspect-card:focus-visible {
+        outline: 3px solid #86afd3;
+        outline-offset: 2px;
+      }
+
+      .inspect-card.valid {
+        background: var(--green-soft);
+        border-color: #a9c6b6;
+      }
+
+      .inspect-card.invalid {
+        background: var(--red-soft);
+        border-color: #e2a7a7;
+      }
+
+      .inspect-card.pending {
+        background: var(--amber-soft);
+        border-color: #dcc690;
+      }
+
+      .inspect-head {
+        align-items: center;
+        display: flex;
+        gap: 7px;
+        justify-content: space-between;
+      }
+
+      .inspect-title {
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .inspect-state {
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 7px;
+      }
+
+      .inspect-state.valid {
+        background: #d5e7dc;
+        color: var(--green);
+      }
+
+      .inspect-state.invalid {
+        background: #f1caca;
+        color: var(--red);
+      }
+
+      .inspect-state.pending {
+        background: #ead9ae;
+        color: var(--amber);
+      }
+
+      .inspect-hash {
+        color: #21362b;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        min-height: 28px;
+        overflow-wrap: anywhere;
+      }
+
+      .artifact-head {
+        align-items: center;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .artifact-head h3 {
+        margin: 0;
+      }
+
+      .artifact-name {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .artifact-actions {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .small-button {
+        background: var(--surface);
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 800;
+        min-height: 32px;
+        padding: 6px 9px;
+      }
+
+      .cli-hint {
+        align-items: center;
+        background: #f4f7f4;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--muted);
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        margin-bottom: 10px;
+        overflow-wrap: anywhere;
+        padding: 8px 10px;
+      }
+
+      .expected-output {
+        color: var(--muted);
+        font-size: 12px;
+        margin: -4px 0 10px;
+      }
+
+      @media (max-width: 980px) {
+        .shell,
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .input-pane {
+          border-bottom: 1px solid var(--line);
+          border-right: 0;
+        }
+
+        textarea {
+          min-height: 320px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <aside class="input-pane">
+        <div class="brand">
+          <h1>AfriRide Audit Console</h1>
+          <p>Read-only replay surface for deterministic ride proofs.</p>
+        </div>
+        <div class="controls">
+          <div class="field">
+            <label for="apiBase">Proof API</label>
+            <input id="apiBase" value="http://localhost:8000" />
+          </div>
+          <div class="button-row">
+            <button class="primary" id="runAudit" type="button">Run audit</button>
+            <button class="secondary" id="loadSample" type="button">Sample</button>
+            <button class="secondary" id="clearReport" type="button">Clear</button>
+          </div>
+          <textarea id="payload" spellcheck="false"></textarea>
+          <div id="inputError" class="error" hidden></div>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="toolbar">
+          <h2>Audit Report</h2>
+          <div class="status-strip">
+            <span id="replayBadge" class="badge pending">No replay</span>
+            <span id="traceBadge" class="badge pending">No trace</span>
+          </div>
+        </header>
+        <div class="content">
+          <section class="section wide">
+            <h3>Replay Inspector</h3>
+            <div id="inspectorView" class="empty">No proof chain loaded.</div>
+          </section>
+
+          <div class="section-grid">
+            <section class="section">
+              <h3>Ride</h3>
+              <div id="rideView" class="empty">No audit loaded.</div>
+            </section>
+            <section class="section">
+              <h3>Execution Timeline</h3>
+              <div id="timelineView" class="empty">No execution steps.</div>
+            </section>
+            <section class="section">
+              <h3>Route</h3>
+              <div id="routeView" class="empty">No route plan.</div>
+            </section>
+            <section class="section">
+              <h3>Explanation</h3>
+              <div id="explainView" class="empty">No explanation loaded.</div>
+            </section>
+          </div>
+
+          <div class="section-grid">
+            <section class="section">
+              <h3>Optimization</h3>
+              <div id="optimizationView" class="empty">No optimization artifacts.</div>
+            </section>
+            <section class="section">
+              <div class="artifact-head">
+                <h3>Artifact Detail</h3>
+                <div class="artifact-actions">
+                  <span id="artifactName" class="artifact-name">None selected</span>
+                  <button class="small-button" id="copyArtifact" type="button">
+                    Copy JSON
+                  </button>
+                  <button class="small-button" id="copyBundle" type="button">
+                    Copy Bundle
+                  </button>
+                </div>
+              </div>
+              <div class="cli-hint">
+                <span>Verify copied bundle with: afriride-proof replay bundle.json</span>
+                <button class="small-button" id="copyCommand" type="button">
+                  Copy command
+                </button>
+              </div>
+              <div class="expected-output">
+                Expected success: { "replay_valid": true }
+              </div>
+              <pre id="artifactView">{}</pre>
+            </section>
+            <section class="section">
+              <h3>Replay</h3>
+              <div id="replayView" class="empty">No replay report.</div>
+            </section>
+            <section class="section">
+              <h3>Trace</h3>
+              <pre id="traceView">{}</pre>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const samplePayload = {
+        ride: {
+          id: "RIDE-001",
+          passenger_id: "PASSENGER-001",
+          pickup_location: { zone: "ZONE-A", node_id: "A", lat: 0, lng: 0 },
+          dropoff_location: { zone: "ZONE-B", node_id: "D", lat: 1, lng: 1 },
+          requested_at: "2026-05-25T09:00:00Z"
+        },
+        drivers: [
+          { id: "DRIVER-002", zone: "ZONE-A", lat: 0.2, lng: 0 },
+          { id: "DRIVER-001", zone: "ZONE-A", lat: 0.1, lng: 0 }
+        ],
+        map_graph: {
+          nodes: {
+            A: { zone: "ZONE-A" },
+            B: { zone: "ZONE-A" },
+            D: { zone: "ZONE-B" }
+          },
+          edges: [
+            { from: "A", to: "B", distance: 2, estimated_time: 3 },
+            { from: "B", to: "D", distance: 3, estimated_time: 7 }
+          ]
+        },
+        pricing_config: {
+          base_fare: "4.00",
+          per_distance_rate: "1.50",
+          per_time_rate: "0.25",
+          currency: "AUD"
+        },
+        execution_requests: [
+          { current_state: "REQUESTED", target_state: "MATCHED" },
+          { current_state: "MATCHED", target_state: "DRIVER_ACCEPTED" },
+          { current_state: "DRIVER_ACCEPTED", target_state: "IN_PROGRESS" }
+        ]
+      };
+
+      const payload = document.getElementById("payload");
+      const apiBase = document.getElementById("apiBase");
+      const inputError = document.getElementById("inputError");
+      const replayBadge = document.getElementById("replayBadge");
+      const traceBadge = document.getElementById("traceBadge");
+      let latestArtifacts = {};
+      let latestBundle = null;
+
+      payload.value = JSON.stringify(samplePayload, null, 2);
+
+      document.getElementById("loadSample").addEventListener("click", () => {
+        payload.value = JSON.stringify(samplePayload, null, 2);
+        hideError();
+      });
+
+      document.getElementById("clearReport").addEventListener("click", () => {
+        clearReport();
+        hideError();
+      });
+
+      document.getElementById("runAudit").addEventListener("click", runAudit);
+      document.getElementById("copyArtifact").addEventListener("click", copyArtifact);
+      document.getElementById("copyBundle").addEventListener("click", copyBundle);
+      document.getElementById("copyCommand").addEventListener("click", copyCommand);
+
+      async function runAudit() {
+        hideError();
+        let body;
+        try {
+          body = JSON.parse(payload.value);
+        } catch (error) {
+          showError("Invalid JSON input.");
+          return;
+        }
+
+        try {
+          const base = apiBase.value.replace(/\/$/, "");
+          const [auditResponse, explainResponse] = await Promise.all([
+            fetch(`${base}/proof/audit`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body)
+            }),
+            fetch(`${base}/proof/explain`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body)
+            })
+          ]);
+
+          if (!auditResponse.ok) {
+            const failure = await auditResponse.json();
+            throw new Error(failure.detail || `Audit failed (${auditResponse.status})`);
+          }
+          if (!explainResponse.ok) {
+            const failure = await explainResponse.json();
+            throw new Error(failure.detail || `Explain failed (${explainResponse.status})`);
+          }
+
+          renderAudit(await auditResponse.json(), await explainResponse.json());
+        } catch (error) {
+          showError(error.message);
+        }
+      }
+
+      function renderAudit(audit, explanation) {
+        const declaredBundle = parseDeclaredBundle();
+        replayBadge.textContent = audit.replay.replay_valid ? "Replay valid" : "Replay failed";
+        replayBadge.className = `badge ${audit.replay.replay_valid ? "valid" : "invalid"}`;
+        traceBadge.textContent = audit.trace_hash ? "Trace recorded" : "No trace";
+        traceBadge.className = `badge ${audit.trace_hash ? "valid" : "pending"}`;
+
+        document.getElementById("rideView").innerHTML = kv([
+          ["Ride hash", audit.ride_hash],
+          ["Passenger", audit.canonical_ride.passenger_id],
+          ["Pickup", audit.canonical_ride.pickup_location.node_id || "declared"],
+          ["Dropoff", audit.canonical_ride.dropoff_location.node_id || "declared"]
+        ]);
+
+        document.getElementById("optimizationView").innerHTML = kv([
+          ["Driver", audit.assignment.driver_id],
+          ["Assignment", audit.assignment_hash],
+          ["Route", audit.route_hash],
+          ["Price", audit.price_hash],
+          ["Total", `${audit.price_plan.total_cost} ${audit.price_plan.currency}`]
+        ]);
+
+        document.getElementById("timelineView").innerHTML = timeline(audit.execution_steps);
+        document.getElementById("routeView").innerHTML = routeLine(audit.route_plan.path);
+        document.getElementById("replayView").innerHTML = kv([
+          ["Valid", String(audit.replay.replay_valid)],
+          ["Ride", String(audit.replay.ride_hash_match)],
+          ["DAG", String(audit.replay.dag_hash_match)],
+          ["Assignment", String(audit.replay.assignment_hash_match)],
+          ["Route", String(audit.replay.route_hash_match)],
+          ["Price", String(audit.replay.price_hash_match)],
+          ["Execution", String(audit.replay.execution_steps_hash_match)]
+        ]);
+        document.getElementById("traceView").textContent = JSON.stringify(
+          audit.trace,
+          null,
+          2
+        );
+        document.getElementById("explainView").innerHTML = kv([
+          ["Assignment", explanation.assignment_reason],
+          ["Route", explanation.route_reason],
+          ["Price", explanation.price_reason],
+          ["Replay", explanation.replay_reason]
+        ]);
+        latestArtifacts = artifactMap(audit);
+        latestBundle = proofBundle(declaredBundle, audit);
+        document.getElementById("inspectorView").innerHTML = inspector(audit);
+        renderArtifact("trace");
+      }
+
+      function kv(rows) {
+        return `<div class="kv">${rows
+          .map(
+            ([label, value]) =>
+              `<div class="kv-row"><span>${escapeHtml(label)}</span><span class="hash">${escapeHtml(
+                value
+              )}</span></div>`
+          )
+          .join("")}</div>`;
+      }
+
+      function timeline(steps) {
+        if (!steps || !steps.length) return '<div class="empty">No execution steps.</div>';
+        return `<div class="timeline">${steps
+          .map(
+            (entry, index) =>
+              `<div class="step"><div class="dot">${index + 1}</div><div class="step-body"><div class="step-title">${escapeHtml(
+                entry.step.from_state
+              )} to ${escapeHtml(entry.step.to_state)}</div><div class="step-sub">${escapeHtml(
+                entry.step_hash
+              )}</div></div></div>`
+          )
+          .join("")}</div>`;
+      }
+
+      function routeLine(path) {
+        if (!path || !path.length) return '<div class="empty">No route plan.</div>';
+        return `<div class="route-line">${path
+          .map((node, index) => {
+            const segment = `<span class="node">${escapeHtml(node)}</span>`;
+            return index === path.length - 1
+              ? segment
+              : `${segment}<span class="arrow">→</span>`;
+          })
+          .join("")}</div>`;
+      }
+
+      function inspector(audit) {
+        const nodes = [
+          {
+            label: "Ride",
+            key: "ride",
+            hash: audit.ride_hash,
+            match: audit.replay.ride_hash_match
+          },
+          {
+            label: "DAG",
+            key: "dag",
+            hash: audit.trace.dag_hash,
+            match: audit.replay.dag_hash_match
+          },
+          {
+            label: "Assignment",
+            key: "assignment",
+            hash: audit.assignment_hash,
+            match: audit.replay.assignment_hash_match
+          },
+          {
+            label: "Route",
+            key: "route",
+            hash: audit.route_hash,
+            match: audit.replay.route_hash_match
+          },
+          {
+            label: "Price",
+            key: "price",
+            hash: audit.price_hash,
+            match: audit.replay.price_hash_match
+          },
+          {
+            label: "Execution",
+            key: "execution",
+            hash: audit.trace.execution_steps_hash,
+            match: audit.replay.execution_steps_hash_match
+          },
+          {
+            label: "Trace",
+            key: "trace",
+            hash: audit.trace_hash,
+            match: audit.replay.replay_valid
+          }
+        ];
+        return `<div class="inspector">${nodes
+          .map((node) => inspectCard(node))
+          .join("")}</div>`;
+      }
+
+      function inspectCard(node) {
+        const state = node.match === true ? "valid" : node.match === false ? "invalid" : "pending";
+        const label = state === "valid" ? "match" : state === "invalid" ? "drift" : "pending";
+        return `<button class="inspect-card ${state}" type="button" onclick="renderArtifact('${escapeHtml(
+          node.key
+        )}')"><div class="inspect-head"><span class="inspect-title">${escapeHtml(
+          node.label
+        )}</span><span class="inspect-state ${state}">${label}</span></div><div class="inspect-hash">${escapeHtml(
+          node.hash || "not recorded"
+        )}</div></button>`;
+      }
+
+      function artifactMap(audit) {
+        return {
+          ride: audit.canonical_ride,
+          dag: {
+            dag_hash: audit.trace.dag_hash,
+            lifecycle: "REQUESTED -> MATCHED -> DRIVER_ACCEPTED -> IN_PROGRESS -> COMPLETED"
+          },
+          assignment: audit.assignment,
+          route: audit.route_plan,
+          price: audit.price_plan,
+          execution: audit.execution_steps,
+          trace: audit.trace
+        };
+      }
+
+      function renderArtifact(key) {
+        const artifact = latestArtifacts[key];
+        document.getElementById("artifactName").textContent = artifact
+          ? key
+          : "None selected";
+        document.getElementById("artifactView").textContent = JSON.stringify(
+          artifact || {},
+          null,
+          2
+        );
+      }
+
+      async function copyArtifact() {
+        const text = document.getElementById("artifactView").textContent;
+        if (!text || text === "{}") {
+          showError("No artifact selected to copy.");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          document.getElementById("artifactName").textContent = "Copied";
+          hideError();
+        } catch (error) {
+          showError("Clipboard unavailable. Select the JSON manually.");
+        }
+      }
+
+      async function copyBundle() {
+        if (!latestBundle) {
+          showError("No proof bundle available to copy.");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(latestBundle, null, 2));
+          document.getElementById("artifactName").textContent = "Bundle copied";
+          hideError();
+        } catch (error) {
+          showError("Clipboard unavailable. Select and copy the payload manually.");
+        }
+      }
+
+      async function copyCommand() {
+        try {
+          await navigator.clipboard.writeText("afriride-proof replay bundle.json");
+          document.getElementById("artifactName").textContent = "Command copied";
+          hideError();
+        } catch (error) {
+          showError("Clipboard unavailable. Copy the command manually.");
+        }
+      }
+
+      function clearReport() {
+        latestArtifacts = {};
+        latestBundle = null;
+        replayBadge.textContent = "No replay";
+        replayBadge.className = "badge pending";
+        traceBadge.textContent = "No trace";
+        traceBadge.className = "badge pending";
+        document.getElementById("inspectorView").innerHTML = '<div class="empty">No proof chain loaded.</div>';
+        document.getElementById("rideView").innerHTML = '<div class="empty">No audit loaded.</div>';
+        document.getElementById("timelineView").innerHTML = '<div class="empty">No execution steps.</div>';
+        document.getElementById("routeView").innerHTML = '<div class="empty">No route plan.</div>';
+        document.getElementById("optimizationView").innerHTML = '<div class="empty">No optimization artifacts.</div>';
+        document.getElementById("replayView").innerHTML = '<div class="empty">No replay report.</div>';
+        document.getElementById("explainView").innerHTML = '<div class="empty">No explanation loaded.</div>';
+        document.getElementById("artifactName").textContent = "None selected";
+        document.getElementById("artifactView").textContent = "{}";
+        document.getElementById("traceView").textContent = "{}";
+      }
+
+      function showError(message) {
+        inputError.hidden = false;
+        inputError.textContent = message;
+      }
+
+      function hideError() {
+        inputError.hidden = true;
+        inputError.textContent = "";
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function parseDeclaredBundle() {
+        return JSON.parse(payload.value);
+      }
+
+      function proofBundle(declaredBundle, audit) {
+        return {
+          ...declaredBundle,
+          trace: audit.trace
+        };
+      }
+    </script>
+  </body>
+</html>

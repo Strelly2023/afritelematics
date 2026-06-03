@@ -1,0 +1,190 @@
+{
+  "authority_boundary": "The live pilot protocol schedules evidence collection only. It does not define truth, certify production readiness, or claim completed deployment.",
+  "claim_boundary": {
+    "allowed_claim": "AfriRide is approved to collect bounded real-pilot evidence for Gates 1-7 and field-validation reproducibility.",
+    "non_claims": [
+      "public_launch_readiness",
+      "production_reliability",
+      "regulatory_approval",
+      "market_validation",
+      "internet_scale_resilience",
+      "completed_real_world_pilot"
+    ]
+  },
+  "core_law": "Modeled guarantees must not degrade under physical constraints.",
+  "device_plan": {
+    "driver_devices": {
+      "count": "5-20",
+      "requirements": [
+        "signed event emission",
+        "offline event buffer",
+        "GPS observation capture",
+        "logical clock",
+        "connectivity transition logs"
+      ]
+    },
+    "operations_devices": {
+      "count": 2,
+      "requirements": [
+        "trace inspection",
+        "validator execution",
+        "incident logging"
+      ]
+    },
+    "rider_devices": {
+      "count": "10-60",
+      "requirements": [
+        "signed request events",
+        "pickup and dropoff confirmation events",
+        "dispute submission event",
+        "projection-only ride status view"
+      ]
+    }
+  },
+  "evidence_outputs": [
+    "offline_trip.json",
+    "delayed_sync.json",
+    "gps_drift.json",
+    "duplicate_events.json",
+    "dispute_resolution.json",
+    "field_equivalence.json",
+    "proof_dashboard.json",
+    "pilot_trace_manifest.json"
+  ],
+  "metrics": {
+    "admissibility_divergence": 0,
+    "authentication_bypass": 0,
+    "dispute_reproducibility_rate": 1.0,
+    "identity_divergence": 0,
+    "pricing_deviation": 0,
+    "replay_equivalence_rate": 1.0,
+    "trace_completeness_rate": 1.0
+  },
+  "operator_roles": [
+    {
+      "count": 1,
+      "duties": [
+        "opens and closes pilot windows",
+        "enforces stop conditions",
+        "approves evidence package submission"
+      ],
+      "role": "pilot_controller"
+    },
+    {
+      "count": 1,
+      "duties": [
+        "runs replay validators",
+        "publishes proof dashboard artifacts",
+        "records hash commitments"
+      ],
+      "role": "proof_operator"
+    },
+    {
+      "count": 2,
+      "duties": [
+        "captures rider and driver dispute reports",
+        "routes disputes through replay authority",
+        "blocks manual truth overrides"
+      ],
+      "role": "support_operator"
+    },
+    {
+      "count": 1,
+      "duties": [
+        "monitors non-computational rider and driver safety",
+        "can stop field activity without changing proof truth"
+      ],
+      "role": "safety_observer"
+    }
+  ],
+  "pilot_phases": [
+    {
+      "exit_rule": "all devices registered and dry-run traces replay cleanly",
+      "minimum_runs": 5,
+      "phase": "preflight"
+    },
+    {
+      "exit_rule": "field traces match simulated baselines without live riders",
+      "minimum_runs": 10,
+      "phase": "shadow_trips"
+    },
+    {
+      "exit_rule": "all required scenarios pass with real driver/rider flow",
+      "minimum_runs": 20,
+      "phase": "controlled_live_trips"
+    },
+    {
+      "exit_rule": "support disputes resolve from replay authority only",
+      "minimum_runs": 5,
+      "phase": "dispute_drills"
+    },
+    {
+      "exit_rule": "pilot trace manifest and proof dashboard are hash-bound",
+      "minimum_runs": 1,
+      "phase": "evidence_review"
+    }
+  ],
+  "protocol_hash": "207eef31e3dea248030b64b7644352505997a0ab59c118d3020ff5534d8e6898",
+  "scale": {
+    "drivers_max": 20,
+    "drivers_min": 5,
+    "pilot_days_max": 14,
+    "pilot_days_min": 3,
+    "riders_max": 60,
+    "riders_min": 10
+  },
+  "scenario_scripts": [
+    {
+      "must_produce": [
+        "offline_trip.json",
+        "pilot_trace_manifest.json"
+      ],
+      "scenario": "offline_trip",
+      "script": "driver accepts ride, disconnects mid-trip, buffers events locally, reconnects, syncs through normalization, and replay is compared"
+    },
+    {
+      "must_produce": [
+        "delayed_sync.json",
+        "field_equivalence.json"
+      ],
+      "scenario": "delayed_sync",
+      "script": "driver and rider events are held for delayed delivery, then submitted after the trip boundary and replayed in canonical order"
+    },
+    {
+      "must_produce": [
+        "gps_drift.json",
+        "proof_dashboard.json"
+      ],
+      "scenario": "gps_drift",
+      "script": "real GPS jitter, loss, and implausible jumps are captured as observations and normalized without changing pricing truth"
+    },
+    {
+      "must_produce": [
+        "duplicate_events.json",
+        "field_equivalence.json"
+      ],
+      "scenario": "duplicate_events",
+      "script": "same signed event batch is sent more than once and must not produce duplicate execution"
+    },
+    {
+      "must_produce": [
+        "dispute_resolution.json",
+        "proof_dashboard.json"
+      ],
+      "scenario": "dispute_resolution",
+      "script": "rider or driver submits a conflicting claim and support resolves it through replay authority without manual truth override"
+    }
+  ],
+  "schema": "afriride.live_pilot_protocol.v1",
+  "stop_conditions": [
+    "replay mismatch",
+    "identity inconsistency",
+    "pricing deviation",
+    "admissibility divergence",
+    "dispute mismatch",
+    "authentication bypass",
+    "missing mandatory lifecycle events",
+    "manual truth override attempted",
+    "pilot scope escape"
+  ]
+}

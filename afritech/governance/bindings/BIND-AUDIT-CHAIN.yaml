@@ -1,0 +1,13 @@
+id: BIND-AUDIT-CHAIN
+
+targets:
+  - model: AuditLog
+    fields:
+      - previous_hash
+      - entry_hash
+      - payload
+
+guards:
+  - afritech.guards.audit_chain_guard
+rules:
+  - RULE-AUDIT-CHAIN-INTEGRITY

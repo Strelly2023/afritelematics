@@ -105,6 +105,10 @@ INDEX_FILE = (
 # =============================================================
 
 INVARIANT_PATTERN = re.compile(
+    r"^(I[0-9]+_[A-Z0-9_]+|INVARIANT-[0-9]+[A-Z]*)$"
+)
+
+SEMANTIC_INVARIANT_PATTERN = re.compile(
     r"^I[0-9]+_[A-Z0-9_]+$"
 )
 
@@ -354,7 +358,7 @@ def load_semantic_projection_ids() -> Set[str]:
                 "invariant id"
             )
 
-        if not INVARIANT_PATTERN.fullmatch(
+        if not SEMANTIC_INVARIANT_PATTERN.fullmatch(
             inv_id
         ):
 

@@ -1,0 +1,37 @@
+schema: afritech.anticipatory_suppression_policy.v1
+classification: autonomous_constitutional_anticipatory_suppression_policy
+authority: PREVENTIVE_CLOSURE_CONTAINMENT_ONLY
+inherits_policy: afritech.predictive_future_space_policy.v1
+
+lock: >
+  Anticipatory analysis may warn. Constitutional possibility cannot be
+  preemptively closed. Prediction informs. Risk informs. Authority decides.
+
+required_payload_fields:
+  - admissible_future_space
+  - authority_disclaimer
+  - divergence_visibility
+  - future_space_scope
+  - instability_classification
+  - ratification_status
+  - replay_reference
+  - uncertainty_disclosure
+
+allowed_actions:
+  - compare_alternative_futures
+  - expose_instability_risk
+  - identify_preventive_closure_pressure
+  - preserve_authorized_divergence_visibility
+  - surface_uncertainty
+  - recommend_authority_review
+
+forbidden_drift:
+  - close_admissible_future_space
+  - convert_risk_into_exclusion
+  - suppress_authorized_divergence
+  - treat_instability_as_illegitimacy
+  - treat_uncertainty_as_inadmissibility
+
+required_authority_disclaimer: >
+  This anticipatory analysis warns about instability and uncertainty. It does
+  not suppress, close, or delegitimize admissible constitutional futures.

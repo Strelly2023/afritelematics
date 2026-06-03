@@ -1,0 +1,124 @@
+{
+  "authority_law": "Externally consumed truth must not be replaceable without loss of institutional trust.",
+  "dependency_graph": {
+    "dependencies": [
+      {
+        "consumer_id": "partner.audit_export",
+        "required_evidence": [
+          "audit_hash",
+          "claims_hash",
+          "decisions_hash",
+          "replay_authority_hash",
+          "resolution_hash"
+        ],
+        "trust_requirement": "external_audit_requires_hash_bound_packet",
+        "workflow": "export_dispute_audit_packet"
+      },
+      {
+        "consumer_id": "payments.settlement",
+        "required_evidence": [
+          "audit_hash",
+          "claims_hash",
+          "decisions_hash",
+          "replay_authority_hash",
+          "resolution_hash"
+        ],
+        "trust_requirement": "fare_dispute_requires_replay_authority",
+        "workflow": "settle_authoritative_fare"
+      },
+      {
+        "consumer_id": "support.disputes",
+        "required_evidence": [
+          "audit_hash",
+          "claims_hash",
+          "decisions_hash",
+          "replay_authority_hash",
+          "resolution_hash"
+        ],
+        "trust_requirement": "conflicting_claims_require_replay_resolution",
+        "workflow": "close_driver_rider_dispute"
+      }
+    ],
+    "graph_hash": "9f9a4418723d0db46723212b2ed2c59701cf3f285c5ab7e622b848d2963eb5bf",
+    "schema": "afritech.trust_dependency_graph.v1"
+  },
+  "replay_authority_hash": "2d2dcadf4bcdc11206f9dae1b9a40b221eac88f6d06a1c086f2d35bbfd34e4ba",
+  "scenario": "replacement_failure",
+  "simulation": {
+    "baseline_results": [
+      {
+        "accepted": true,
+        "consumer_id": "partner.audit_export",
+        "evidence_hash": "bf5bcc2fe95274be7ff5e0136ff953d62e26e8cf8e2be2ae0ef38056f7746ee9",
+        "reason": "accepted_replay_authority_evidence",
+        "workflow": "export_dispute_audit_packet"
+      },
+      {
+        "accepted": true,
+        "consumer_id": "payments.settlement",
+        "evidence_hash": "bf5bcc2fe95274be7ff5e0136ff953d62e26e8cf8e2be2ae0ef38056f7746ee9",
+        "reason": "accepted_replay_authority_evidence",
+        "workflow": "settle_authoritative_fare"
+      },
+      {
+        "accepted": true,
+        "consumer_id": "support.disputes",
+        "evidence_hash": "bf5bcc2fe95274be7ff5e0136ff953d62e26e8cf8e2be2ae0ef38056f7746ee9",
+        "reason": "accepted_replay_authority_evidence",
+        "workflow": "close_driver_rider_dispute"
+      }
+    ],
+    "baseline_trusted": true,
+    "removal_breaks_workflows": true,
+    "removed_results": [
+      {
+        "accepted": false,
+        "consumer_id": "partner.audit_export",
+        "evidence_hash": null,
+        "reason": "missing_replay_authority_packet",
+        "workflow": "export_dispute_audit_packet"
+      },
+      {
+        "accepted": false,
+        "consumer_id": "payments.settlement",
+        "evidence_hash": null,
+        "reason": "missing_replay_authority_packet",
+        "workflow": "settle_authoritative_fare"
+      },
+      {
+        "accepted": false,
+        "consumer_id": "support.disputes",
+        "evidence_hash": null,
+        "reason": "missing_replay_authority_packet",
+        "workflow": "close_driver_rider_dispute"
+      }
+    ],
+    "replacement_breaks_trust": true,
+    "replacement_results": [
+      {
+        "accepted": false,
+        "consumer_id": "partner.audit_export",
+        "evidence_hash": null,
+        "reason": "missing_required_evidence:replay_authority_hash",
+        "workflow": "export_dispute_audit_packet"
+      },
+      {
+        "accepted": false,
+        "consumer_id": "payments.settlement",
+        "evidence_hash": null,
+        "reason": "missing_required_evidence:replay_authority_hash",
+        "workflow": "settle_authoritative_fare"
+      },
+      {
+        "accepted": false,
+        "consumer_id": "support.disputes",
+        "evidence_hash": null,
+        "reason": "missing_required_evidence:replay_authority_hash",
+        "workflow": "close_driver_rider_dispute"
+      }
+    ],
+    "simulation_hash": "252b98b65b22d3688f3f8d5ac1dc5545541fab2a91a014f895c39a027d0c9244",
+    "trust_lock_verified": true
+  },
+  "verified": true
+}

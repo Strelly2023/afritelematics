@@ -1,0 +1,83 @@
+{
+  "allowed_pass_claim": "AfriRide pilot evidence is accepted as bounded evidence that the sealed proof stack remained reproducible during the analyzed pilot window.",
+  "analysis_hash": "e109c5839035da140fb3432fd47ff5762ec9c080af36ef1e1665f7cfe5ccc9d7",
+  "authority_boundary": "Post-pilot analysis evaluates submitted evidence only. It does not define truth, certify production readiness, or convert pilot completion into public launch authority.",
+  "core_question": "Did the collected pilot evidence remain replay-compatible, complete, admissibility-bound, and claim-bounded?",
+  "decisions": [
+    "accepted",
+    "deferred",
+    "rejected"
+  ],
+  "evidence_inputs": [
+    "device_registration_snapshot",
+    "preflight_validator_receipt",
+    "dry_run_trace_receipt",
+    "offline_trip_trace",
+    "delayed_sync_trace",
+    "gps_drift_trace",
+    "duplicate_events_trace",
+    "dispute_resolution_trace",
+    "proof_dashboard_snapshot",
+    "pilot_controller_closeout"
+  ],
+  "gates": [
+    {
+      "failure_action": "defer claim until missing evidence is supplied",
+      "name": "trace_manifest_complete",
+      "pass_condition": "all required evidence checkpoints are present and hash-bound"
+    },
+    {
+      "failure_action": "reject evidence package for replay mismatch",
+      "name": "replay_equivalence_verified",
+      "pass_condition": "field replay equals simulated baseline replay for every scenario"
+    },
+    {
+      "failure_action": "reject evidence package for identity inconsistency",
+      "name": "identity_consistency_verified",
+      "pass_condition": "identity resolves identically across all submitted traces"
+    },
+    {
+      "failure_action": "reject evidence package for pricing deviation",
+      "name": "pricing_consistency_verified",
+      "pass_condition": "pricing outputs match replay-derived authority"
+    },
+    {
+      "failure_action": "reject evidence package for admissibility divergence",
+      "name": "admissibility_consistency_verified",
+      "pass_condition": "admissibility decisions match admitted and rejected events"
+    },
+    {
+      "failure_action": "reject evidence package for dispute mismatch",
+      "name": "dispute_reproducibility_verified",
+      "pass_condition": "dispute support decisions reproduce from replay authority only"
+    },
+    {
+      "failure_action": "defer claim until dashboard artifact is regenerated and validated",
+      "name": "proof_dashboard_healthy",
+      "pass_condition": "dashboard reports proof health without influencing replay truth"
+    },
+    {
+      "failure_action": "reject evidence package for claim boundary violation",
+      "name": "non_claims_preserved",
+      "pass_condition": "analysis output contains no production, launch, regulatory, or market claims"
+    }
+  ],
+  "non_claims": [
+    "production_ready",
+    "public_launch_ready",
+    "regulatory_approved",
+    "market_validated",
+    "fleet_scale_validated",
+    "long_duration_validated"
+  ],
+  "required_scenarios": [
+    "offline_trip",
+    "delayed_sync",
+    "gps_drift",
+    "duplicate_events",
+    "dispute_resolution"
+  ],
+  "runbook_boundary": "The day-one runbook coordinates controlled pilot execution only. It does not define replay truth, certify pilot completion, or authorize production readiness.",
+  "runbook_hash": "d786bad0ce7f4aa922ec9663328272068105e18e2d3a35e4f1819264d157ff34",
+  "schema": "afriride.post_pilot_analysis_protocol.v1"
+}

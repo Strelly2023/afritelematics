@@ -1,0 +1,100 @@
+{
+  "analysis_boundary": "Post-pilot analysis evaluates submitted evidence only. It does not define truth, certify production readiness, or convert pilot completion into public launch authority.",
+  "analysis_hash": "e109c5839035da140fb3432fd47ff5762ec9c080af36ef1e1665f7cfe5ccc9d7",
+  "audiences": [
+    "investor",
+    "partner",
+    "auditor"
+  ],
+  "authority_boundary": "Stakeholder evidence reports communicate validated evidence status only. They do not define truth, certify compliance, authorize launch, or replace replay and CI validators.",
+  "hash_lineage": {
+    "post_pilot_analysis_hash": "e109c5839035da140fb3432fd47ff5762ec9c080af36ef1e1665f7cfe5ccc9d7",
+    "runbook_hash": "d786bad0ce7f4aa922ec9663328272068105e18e2d3a35e4f1819264d157ff34"
+  },
+  "non_claims": [
+    "production_ready",
+    "public_launch_ready",
+    "regulatory_approved",
+    "market_validated",
+    "fleet_scale_validated",
+    "long_duration_validated"
+  ],
+  "report_template_hash": "76dfc522ec7b1bc729273563ab8569082a198ee2a153b88f4296c10e06b61f85",
+  "required_sections": [
+    "executive_boundary",
+    "hash_lineage",
+    "evidence_status",
+    "analysis_gate_summary",
+    "reproduction_instructions",
+    "non_claims",
+    "required_next_evidence"
+  ],
+  "schema": "afriride.stakeholder_evidence_report_template.v1",
+  "sections": {
+    "analysis_gate_summary": {
+      "required_gates": [
+        "trace_manifest_complete",
+        "replay_equivalence_verified",
+        "identity_consistency_verified",
+        "pricing_consistency_verified",
+        "admissibility_consistency_verified",
+        "dispute_reproducibility_verified",
+        "proof_dashboard_healthy",
+        "non_claims_preserved"
+      ],
+      "source": "post_pilot_analysis_protocol",
+      "valid_status_values": [
+        "accepted",
+        "deferred",
+        "rejected"
+      ]
+    },
+    "evidence_status": {
+      "allowed_values": [
+        "not_submitted",
+        "accepted",
+        "deferred",
+        "rejected"
+      ],
+      "default": "not_submitted",
+      "rule": "no success language is allowed until post-pilot analysis accepts evidence"
+    },
+    "executive_boundary": {
+      "allowed_pass_claim": "AfriRide pilot evidence is accepted as bounded evidence that the sealed proof stack remained reproducible during the analyzed pilot window.",
+      "must_include": "Stakeholder evidence reports communicate validated evidence status only. They do not define truth, certify compliance, authorize launch, or replace replay and CI validators."
+    },
+    "hash_lineage": {
+      "must_include": [
+        "live_pilot_protocol_hash",
+        "day_one_runbook_hash",
+        "post_pilot_analysis_hash",
+        "report_template_hash"
+      ]
+    },
+    "non_claims": {
+      "must_include": [
+        "production_ready",
+        "public_launch_ready",
+        "regulatory_approved",
+        "market_validated",
+        "fleet_scale_validated",
+        "long_duration_validated"
+      ]
+    },
+    "reproduction_instructions": {
+      "commands": [
+        "python3 -m afritech.ci.afriride_field_validator",
+        "python3 -m afritech.ci.afriride_field_observability_validator",
+        "python3 -m afritech.ci.afriride_live_pilot_protocol_validator",
+        "python3 -m afritech.ci.afriride_day_one_runbook_validator",
+        "python3 -m afritech.ci.afriride_post_pilot_analysis_validator"
+      ],
+      "rule": "stakeholder readers must be able to reproduce validator status locally"
+    },
+    "required_next_evidence": {
+      "if_accepted": "state only bounded evidence acceptance, not readiness expansion",
+      "if_deferred": "list missing trace, dashboard, or replay artifacts",
+      "if_rejected": "list invariant that failed and preserve failure evidence"
+    }
+  }
+}

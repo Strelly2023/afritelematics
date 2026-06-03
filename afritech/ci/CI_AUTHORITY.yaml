@@ -43,3 +43,4 @@ rules:
     statement: Workflows may invoke validators but may not redefine proof truth, invariants, or admissibility.
   - id: no_supporting_gate_independence
     statement: Supporting workflows must invoke the canonical constitutional pipeline before making completion claims.
+    

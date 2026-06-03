@@ -1,0 +1,74 @@
+schema: afritech.governance.adr.v1
+
+adr:
+  id: ADR-0019
+  title: AfriTech Constitution v1.0 Declared Binding
+  status: ACCEPTED
+  type: CONSTITUTIONAL_DECLARED_BINDING
+  proposed_epoch: 7
+  approved_at: "2026-05-28T21:47:22Z"
+  registry_ref: ADR-0019
+
+  authors:
+    - AfriTech Governance
+
+  context: >
+    AfriTech Constitution v1.0 is documented, parseable, validated,
+    test-preserved, pipeline-preserved, and checkpointed. The Constitution
+    remains doctrine and is not yet active runtime authority.
+
+  problem_statement: >
+    The Constitution now requires a declared executable binding layer so future
+    implementation work can reference it through traceable governance artifacts
+    without silently promoting doctrine into runtime truth.
+
+  decision: >
+    Introduce a declared non-runtime binding layer for AfriTech Constitution v1.0.
+    The binding layer admits the Constitution doctrine, machine-readable spec,
+    validator, and checkpoint as governed executable surfaces for validation and
+    traceability only.
+
+  constitutional_boundary:
+    runtime_authoritative: false
+    governance_authoritative: true
+    doctrine_authoritative: true
+    binding_required_before_runtime_enforcement: true
+    silent_runtime_promotion_forbidden: true
+
+  admitted_surfaces:
+    - afritech/constitution/AFRITECH_CONSTITUTION_V1.md
+    - afritech/constitution/AFRITECH_CONSTITUTION_V1.yaml
+    - afritech/ci/afritech_constitution_v1_validator.py
+    - docs/proof/AFRITECH_CONSTITUTION_V1_CHECKPOINT.md
+
+  linked_invariants:
+    - INVARIANT-019
+
+  required_rule:
+    - RULE-019
+
+  required_binding:
+    - BIND-019
+
+  required_ci_checks:
+    - afritech.ci.afritech_constitution_v1_binding_validator
+
+  constraints:
+    - Constitution v1.0 binding must validate doctrine shape.
+    - Constitution v1.0 binding must validate checkpoint preservation.
+    - Constitution v1.0 binding must not invoke runtime execution.
+    - Constitution v1.0 binding must not modify active canonical registry authority.
+    - Runtime enforcement requires a future ADR, rule, binding, guard, and CI chain.
+
+  consequences:
+    positives:
+      - Constitution v1.0 becomes traceably bindable.
+      - Future implementation work can reference declared surfaces.
+      - Runtime authority remains protected.
+      - Governance evolution remains reversible.
+    negatives:
+      - One additional validation layer is required before runtime binding.
+
+  next_admissible_step: >
+    Define runtime enforcement only through a future ADR after the declared
+    binding layer remains green.

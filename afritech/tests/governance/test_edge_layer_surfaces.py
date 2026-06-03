@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 import yaml
 
+from afritech.architecture.registry_loader import load_implementation_registry
 from afritech.edge.adapter.runtime_adapter import adapt_request
 from afritech.edge.adapter.validation import validate_adapted_request
 from afritech.edge.ingestion.queue_ingestor import ingest_event
@@ -102,7 +103,7 @@ def test_edge_surfaces_are_bound_to_implementations() -> None:
 
 
 def test_edge_implementations_are_registered_as_replay_safe() -> None:
-    registry = load_yaml(IMPLEMENTATION_REGISTRY)
+    registry = load_implementation_registry()
     implementations = registry["implementations"]
 
     for implementation in EDGE_IMPLEMENTATIONS:

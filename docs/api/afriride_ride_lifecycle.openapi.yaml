@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: AfriRide Ride Lifecycle API
+  version: 0.1.0
+  description: Interface-only API contract for ride lifecycle, replay, receipt, and support.
+
+paths:
+  /ride/request:
+    post:
+      summary: Request a ride
+      responses:
+        "200":
+          description: Ride requested
+
+  /ride/accept:
+    post:
+      summary: Driver accepts ride
+      responses:
+        "200":
+          description: Ride accepted
+
+  /ride/start:
+    post:
+      summary: Start ride
+      responses:
+        "200":
+          description: Ride started
+
+  /ride/complete:
+    post:
+      summary: Complete ride
+      responses:
+        "200":
+          description: Ride completed
+
+  /ride/{ride_id}/receipt:
+    get:
+      summary: Get completed ride receipt
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Receipt returned
+
+  /ride/{ride_id}/replay:
+    get:
+      summary: Get ride replay explanation
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Replay returned
+
+  /ride/{ride_id}/price-explanation:
+    get:
+      summary: Get price explanation
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Price explanation returned
+
+  /support/ticket:
+    post:
+      summary: Create replay-first support ticket
+      responses:
+        "200":
+          description: Support ticket created

@@ -1,0 +1,135 @@
+{
+  "allowed_claim": "AfriRide has a governed first-day execution script for collecting bounded pilot evidence.",
+  "authority_boundary": "The day-one runbook coordinates controlled pilot execution only. It does not define replay truth, certify pilot completion, or authorize production readiness.",
+  "non_claims": [
+    "pilot_completed",
+    "production_ready",
+    "public_launch_ready",
+    "regulatory_approved",
+    "market_validated"
+  ],
+  "pilot_protocol_boundary": "The live pilot protocol schedules evidence collection only. It does not define truth, certify production readiness, or claim completed deployment.",
+  "protocol_hash": "207eef31e3dea248030b64b7644352505997a0ab59c118d3020ff5534d8e6898",
+  "required_evidence_checkpoints": [
+    "device_registration_snapshot",
+    "preflight_validator_receipt",
+    "dry_run_trace_receipt",
+    "offline_trip_trace",
+    "delayed_sync_trace",
+    "gps_drift_trace",
+    "duplicate_events_trace",
+    "dispute_resolution_trace",
+    "proof_dashboard_snapshot",
+    "pilot_controller_closeout"
+  ],
+  "required_scenarios": [
+    "offline_trip",
+    "delayed_sync",
+    "gps_drift",
+    "duplicate_events",
+    "dispute_resolution"
+  ],
+  "runbook_hash": "d786bad0ce7f4aa922ec9663328272068105e18e2d3a35e4f1819264d157ff34",
+  "schema": "afriride.day_one_runbook.v1",
+  "steps": [
+    {
+      "action": "Open pilot window and restate claim boundary to all roles.",
+      "evidence": [
+        "pilot_controller_closeout"
+      ],
+      "minute": 0,
+      "owner": "pilot_controller",
+      "stop_check": "stop if any participant treats runbook as production authority"
+    },
+    {
+      "action": "Register devices and capture signed device roster snapshot.",
+      "evidence": [
+        "device_registration_snapshot"
+      ],
+      "minute": 15,
+      "owner": "proof_operator",
+      "stop_check": "stop if any driver or rider device is unbound or unsigned"
+    },
+    {
+      "action": "Run preflight validators before any field movement begins.",
+      "evidence": [
+        "preflight_validator_receipt"
+      ],
+      "minute": 30,
+      "owner": "proof_operator",
+      "stop_check": "stop if any validator fails"
+    },
+    {
+      "action": "Execute dry-run trip with stationary devices and replay the trace.",
+      "evidence": [
+        "dry_run_trace_receipt"
+      ],
+      "minute": 45,
+      "owner": "pilot_controller",
+      "stop_check": "stop if replay readiness is not ready"
+    },
+    {
+      "action": "Run offline trip script with controlled disconnect and reconnect.",
+      "evidence": [
+        "offline_trip_trace"
+      ],
+      "minute": 75,
+      "owner": "driver_cohort",
+      "stop_check": "stop if buffered events cannot replay equivalently"
+    },
+    {
+      "action": "Run delayed sync script and replay late-arriving events.",
+      "evidence": [
+        "delayed_sync_trace"
+      ],
+      "minute": 105,
+      "owner": "proof_operator",
+      "stop_check": "stop if canonical replay changes final truth"
+    },
+    {
+      "action": "Collect GPS drift observations along the bounded route.",
+      "evidence": [
+        "gps_drift_trace"
+      ],
+      "minute": 135,
+      "owner": "driver_cohort",
+      "stop_check": "stop if GPS normalization changes pricing truth"
+    },
+    {
+      "action": "Submit duplicate signed event batches and verify idempotence.",
+      "evidence": [
+        "duplicate_events_trace"
+      ],
+      "minute": 165,
+      "owner": "proof_operator",
+      "stop_check": "stop if duplicate delivery causes duplicate execution"
+    },
+    {
+      "action": "Run dispute drill through replay authority with no manual override.",
+      "evidence": [
+        "dispute_resolution_trace"
+      ],
+      "minute": 195,
+      "owner": "support_operator",
+      "stop_check": "stop if support outcome diverges from replay authority"
+    },
+    {
+      "action": "Generate proof dashboard snapshot from collected pilot traces.",
+      "evidence": [
+        "proof_dashboard_snapshot"
+      ],
+      "minute": 225,
+      "owner": "proof_operator",
+      "stop_check": "stop if dashboard reports drift or missing evidence"
+    },
+    {
+      "action": "Close pilot window and record no-claim escalation decision.",
+      "evidence": [
+        "pilot_controller_closeout"
+      ],
+      "minute": 240,
+      "owner": "pilot_controller",
+      "stop_check": "stop external reporting if any non-claim is violated"
+    }
+  ]
+}

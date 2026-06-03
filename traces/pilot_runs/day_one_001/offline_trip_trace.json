@@ -1,0 +1,64 @@
+{
+  "receipt": "offline_trip_trace",
+  "run_id": "day_one_001",
+  "minute": 75,
+  "status": "captured",
+  "scenario": "offline_trip",
+  "trace_id": "day_one_001_offline_trip_001",
+  "offline_window": {
+    "started_after_event": "offline_003",
+    "ended_before_event": "offline_007",
+    "buffered_events": [
+      "offline_004",
+      "offline_005",
+      "offline_006"
+    ]
+  },
+  "events": [
+    {
+      "event_id": "offline_001",
+      "event_type": "RIDER_REQUESTED_RIDE",
+      "sequence": 1,
+      "connectivity": "online"
+    },
+    {
+      "event_id": "offline_002",
+      "event_type": "DRIVER_ACCEPTED_RIDE",
+      "sequence": 2,
+      "connectivity": "online"
+    },
+    {
+      "event_id": "offline_003",
+      "event_type": "TRIP_STARTED",
+      "sequence": 3,
+      "connectivity": "online"
+    },
+    {
+      "event_id": "offline_004",
+      "event_type": "DRIVER_LOCATION_UPDATE",
+      "sequence": 4,
+      "connectivity": "offline_buffered"
+    },
+    {
+      "event_id": "offline_005",
+      "event_type": "DRIVER_LOCATION_UPDATE",
+      "sequence": 5,
+      "connectivity": "offline_buffered"
+    },
+    {
+      "event_id": "offline_006",
+      "event_type": "TRIP_COMPLETED",
+      "sequence": 6,
+      "connectivity": "offline_buffered"
+    },
+    {
+      "event_id": "offline_007",
+      "event_type": "BUFFER_SYNCED",
+      "sequence": 7,
+      "connectivity": "online"
+    }
+  ],
+  "replay_equivalence": true,
+  "buffer_order_preserved": true,
+  "claim_boundary_preserved": true
+}

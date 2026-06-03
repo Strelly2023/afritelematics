@@ -8,3 +8,13 @@ services:
     envVars:
       - key: AFRIRIDE_TEST_MODE
         value: "true"
+      - key: AFRIRIDE_PILOT_MODE
+        value: "true"
+      - key: AFRIRIDE_EVIDENCE_CAPTURE
+        value: "true"
+      - key: AFRIRIDE_REPLAY_REQUIRED
+        value: "true"
+      - key: AFRIRIDE_ALLOW_REAL_DEVICES
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.11"

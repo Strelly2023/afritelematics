@@ -1,0 +1,90 @@
+id: BIND-019
+
+description: >
+  Declares the non-runtime executable binding surface for AfriTech Constitution
+  v1.0. This binding makes the doctrine validateable through CI while preserving
+  the boundary that Constitution v1.0 is not active runtime authority.
+
+bindings:
+  - id: BIND-019-1
+    name: constitution_v1_doctrine
+    target: afritech/constitution/AFRITECH_CONSTITUTION_V1.md
+    binding_type: DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - preserve human-readable canonical doctrine
+      - provide source language for future governance work
+    linked_rules:
+      - RULE-019-1
+
+  - id: BIND-019-2
+    name: constitution_v1_machine_spec
+    target: afritech/constitution/AFRITECH_CONSTITUTION_V1.yaml
+    binding_type: MACHINE_SPEC
+    runtime_authoritative: false
+    responsibilities:
+      - provide parseable doctrine structure
+      - support deterministic validation
+    linked_rules:
+      - RULE-019-2
+
+  - id: BIND-019-3
+    name: constitution_v1_validator
+    target: afritech.ci.afritech_constitution_v1_validator
+    binding_type: CI_VALIDATOR
+    runtime_authoritative: false
+    responsibilities:
+      - validate Constitution v1.0 structure
+      - validate hierarchy and canonical relationship
+    linked_rules:
+      - RULE-019-3
+
+  - id: BIND-019-4
+    name: constitution_v1_checkpoint
+    target: docs/proof/AFRITECH_CONSTITUTION_V1_CHECKPOINT.md
+    binding_type: PROOF_DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - preserve green checkpoint evidence
+      - record next admissible binding step
+    linked_rules:
+      - RULE-019-4
+
+execution_flow:
+  - step: validate_doctrine_exists
+    binding: BIND-019-1
+  - step: validate_machine_spec
+    binding: BIND-019-2
+  - step: run_constitution_validator
+    binding: BIND-019-3
+  - step: validate_checkpoint
+    binding: BIND-019-4
+  - step: assert_non_runtime_authority
+    binding: BIND-019-1
+
+failure_policy:
+  on_any_failure: REJECT_BINDING
+  behavior:
+    - stop_binding_progression: true
+    - preserve_existing_runtime_authority: true
+    - require_governance_review: true
+
+linked_rules:
+  - RULE-019
+
+linked_invariants:
+  - INVARIANT-019
+
+linked_adr:
+  - ADR-0019
+
+ci:
+  enforcement:
+    - Binding targets must resolve.
+    - Constitution v1.0 validator must pass.
+    - Runtime authoritative flags must remain false.
+    - Checkpoint proof must record green test, validator, and pipeline status.
+  tests:
+    - test_constitution_v1_binding_validator_passes
+    - test_constitution_v1_binding_is_not_runtime_authoritative
+    - test_constitution_v1_binding_targets_resolve

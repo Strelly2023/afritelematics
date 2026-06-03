@@ -1,0 +1,10 @@
+{
+  "authority_law": "Repeated disorder must not accumulate drift in truth.",
+  "chaos_stability_hash": "e1e42b659f84561515f998041dfadb7b03e1114a5bcf25a7f8471e8d62c22e76",
+  "equivalent": true,
+  "run_hashes": {
+    "10": "714571b2d05750f84768bb7324f0b7de4848629114d72082c8e12897e214ac91",
+    "100": "d5a6910257bc09e495f0f17ed22580ec8c2c7ff1302cee3e090a052778d1f0a5"
+  },
+  "schema": "afritech.chaos_stability_equivalence_report.v1"
+}

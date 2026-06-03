@@ -1,0 +1,116 @@
+schema: afritech.temporal_cognition_policy.v1
+classification: temporal_cognition_policy
+authority: TEMPORAL_CONSISTENCY_ONLY
+
+lock: >
+  Evolution may improve cognition. Evidence meaning must persist.
+  Operational reality must remain time-stable.
+
+required_context:
+  - authority_disclaimer
+  - cognitive_complexity_budget_version
+  - composition_schema_version
+  - evidence_id
+  - explanation_schema_version
+  - salience_policy_version
+  - summary_template_version
+
+conditional_context:
+  - ai_model_version
+  - epoch_context
+  - translator_context
+
+temporal_drift_surfaces:
+  - ai_model_upgrade
+  - epoch_evolution
+  - policy_evolution
+  - summary_template_evolution
+  - translator_evolution
+  - ui_redesign
+
+temporal_explanation_equivalence:
+  required_preservation:
+    - authority_boundary
+    - explanation_identifiers
+    - replay_implications
+    - source_references
+    - status_meaning
+    - validator_semantics
+  forbidden_changes:
+    - changing_replay_mismatch_meaning_through_wording
+    - hiding_old_hard_failures_in_modernized_summaries
+    - presenting_translated_explanation_as_original_evidence
+    - red_failure_to_yellow_warning_without_source_change
+    - removing_source_evidence_from_newer_explanations
+
+temporal_salience_stability:
+  required_visible_versions:
+    - ai_salience_model_version_when_ai_is_used
+    - ordering_rule_version
+    - salience_policy_version
+    - urgency_classification_version
+  forbidden_changes:
+    - ai_only_reprioritization
+    - hidden_salience_weighting_change
+    - silent_priority_downgrade
+    - silent_urgency_inflation
+    - visual_redesign_hides_critical_historical_failures
+
+temporal_narrative_stability:
+  required_preservation:
+    - authority_disclaimers
+    - composition_source_ids
+    - narrative_template_version
+    - summarization_policy_version
+    - transformation_steps
+  forbidden_changes:
+    - advisory_narrative_to_evidence
+    - adding_synthetic_legitimacy
+    - changing_incident_meaning_without_source_change
+    - inferring_new_causality
+    - removing_omitted_detail_indicators
+
+ai_temporal_stability:
+  required_fields:
+    - advisory_status
+    - authority_disclaimer
+    - model_identifier
+    - omitted_detail_indicator
+    - prompt_or_template_version
+    - salience_policy_version
+    - source_explanation_ids
+  forbidden_changes:
+    - changing_hard_failure_severity
+    - creating_model_version_dependent_operational_reality
+    - hiding_old_evidence
+    - inferring_legitimacy_from_old_evidence
+    - synthesizing_replay_truth
+
+temporal_ordering_stability:
+  allowed_evolution:
+    - accessibility_ordering_with_preserved_semantics
+    - clearer_grouping_with_preserved_source_ids
+    - new_declared_tie_breaker
+    - role_scoped_ordering_with_declared_policy_version
+  forbidden_evolution:
+    - ai_model_preference_ordering
+    - dashboard_redesign_ordering_without_declaration
+    - hidden_priority_rewrite
+    - removing_hard_failures_from_top_level_historical_view
+    - runtime_order_dependent_historical_replay_display
+
+forbidden_temporal_drift:
+  - ai_model_cognition_instability
+  - authority_disclaimer_loss
+  - epoch_context_loss
+  - explanation_reinterpretation
+  - hard_failure_softening
+  - narrative_divergence
+  - salience_drift
+  - source_reference_loss
+  - summary_drift
+  - translator_context_loss
+
+required_authority_disclaimer: >
+  This cognition artifact presents evidence under declared temporal context.
+  It does not validate truth or define legitimacy.

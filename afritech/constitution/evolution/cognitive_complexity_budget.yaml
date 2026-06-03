@@ -1,0 +1,73 @@
+schema: afritech.cognitive_complexity_budget.v1
+classification: cognitive_complexity_budget
+authority: BUDGET_ONLY
+
+lock: >
+  Bounded cognition. Preserved evidence. No hidden meaning.
+
+core_tests:
+  reduce_cognitive_load: true
+  preserve_source_evidence: true
+  avoid_changing_meaning: true
+
+view_density:
+  max_visible_units: 12
+
+narrative_branching:
+  max_branches: 5
+
+diagnostic_fan_out:
+  max_next_actions: 7
+
+role_complexity:
+  max_role_specific_dimensions: 6
+
+ai_summarization_scope:
+  max_source_records: 20
+  must_preserve_source_refs: true
+  may_infer_legitimacy: false
+
+lineage_depth:
+  max_default_depth: 3
+  expandable_with_source_refs: true
+
+replay_relationship_exposure:
+  max_default_relationships: 15
+  requires_progressive_disclosure: true
+
+forbidden_patterns:
+  - ai_legitimacy_inference
+  - dashboards_that_obscure_source_references
+  - hidden_evidence_omission
+  - meaning_changing_compression
+  - role_views_with_conflicting_semantics
+  - synthetic_causality
+  - unbounded_diagnostic_branching
+  - unbounded_lineage_expansion
+
+required_warning_fields:
+  - actual_count
+  - allowed_count
+  - drill_down_path
+  - exceeded_budget_name
+  - omitted_detail_count
+
+required_source_preservation:
+  - source_explanation_ids
+  - source_refs
+  - authority_disclaimer
+  - omitted_detail_count
+  - drill_down_path
+
+future_surfaces:
+  dashboards:
+    must_use_canonical_explanation_schema: true
+    must_use_canonical_composition_schema_for_narratives: true
+    must_preserve_source_refs: true
+  cli:
+    must_match_dashboard_health_language: true
+    must_preserve_source_refs: true
+  ai_assistants:
+    advisory_only: true
+    must_preserve_source_refs: true
+    may_infer_legitimacy: false

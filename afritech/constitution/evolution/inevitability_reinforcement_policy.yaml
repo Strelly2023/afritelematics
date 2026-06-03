@@ -1,0 +1,38 @@
+schema: afritech.inevitability_reinforcement_policy.v1
+classification: autonomous_constitutional_inevitability_reinforcement_policy
+authority: SELF_FULFILLING_PRESSURE_CONTAINMENT_ONLY
+inherits_policy: afritech.predictive_future_space_policy.v1
+
+lock: >
+  Reinforcement monitoring may expose prediction effects. Constitutional
+  futures cannot be operationally preselected. Prediction informs.
+  Risk informs. Authority decides.
+
+required_payload_fields:
+  - authority_disclaimer
+  - forecast_lineage
+  - operational_influence_scope
+  - ratification_status
+  - recommendation_pressure
+  - replay_reference
+  - resource_routing_signal
+  - salience_amplification_signal
+
+allowed_actions:
+  - detect_forecast_amplification
+  - expose_self_fulfilling_pressure
+  - identify_recommendation_pressure
+  - monitor_resource_concentration
+  - surface_operational_preselection_risk
+  - recommend_authority_review
+
+forbidden_drift:
+  - convert_forecast_confidence_into_operational_priority
+  - operationally_preselect_constitutional_future
+  - optimize_toward_predicted_legitimacy
+  - reinforce_prediction_as_authority
+  - route_resources_toward_predicted_future
+
+required_authority_disclaimer: >
+  This reinforcement analysis exposes self-fulfilling prediction pressure. It
+  does not prioritize, select, or legitimize constitutional futures.

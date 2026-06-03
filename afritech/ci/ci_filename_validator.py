@@ -23,6 +23,20 @@ ALLOWED_SUFFIXES = (
 # ✅ Explicit allowed special files
 WHITELIST = {
     "__init__.py",
+    "CI_AUTHORITY.yaml",
+    "completion_utils.py",
+    "completeness_policy.yaml",
+    "constitutional_validation.py",
+    "execution_completion_matrix.yaml",
+    "forbid_speculative_runtime_access.py",
+    "forbid_raw_epoch_access.py",
+    "forbid_topology_change.py",
+    "governance_size_policy.yaml",
+    "implementation_state_validation.py",
+    "partial_planned_audit.yaml",
+    "replay_validation.py",
+    "semantic_integrity_checks.yaml",
+    "validator_groups.py",
 }
 
 

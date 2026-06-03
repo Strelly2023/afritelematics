@@ -1,0 +1,21 @@
+name: App Surface Guard
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  app-surface-validator:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate app surfaces
+        run: python3 -m afritech.ci.app_surface_validator

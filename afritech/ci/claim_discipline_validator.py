@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
+# afritech.ci.claim_discipline_validator
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = ROOT / "afritech/constitution/CLAIM_DISCIPLINE.yaml"
@@ -79,12 +79,79 @@ def load_bindings() -> dict[str, Any]:
     return payload
 
 
-def load_implementation_registry() -> dict[str, Any]:
+'''def load_implementation_registry() -> dict[str, Any]:
     payload = yaml.safe_load(IMPLEMENTATION_REGISTRY.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         fail("implementation registry must be a mapping")
     return payload
+'''
+def load_implementation_registry() -> dict[str, Any]:
+    """
+    Load the canonical implementation registry.
 
+    Preferred path:
+        use registry_loader if available.
+
+    Fallback path:
+        deterministically compose the split registries.
+    """
+
+    try:
+        from afritech.architecture.registry_loader import (  # type: ignore
+            load_implementation_registry as composed_loader,
+        )
+
+        payload = composed_loader()
+
+        if not isinstance(payload, dict):
+            fail("registry_loader returned non-mapping implementation registry")
+
+        return payload
+
+    except ModuleNotFoundError:
+        payload = yaml.safe_load(
+            IMPLEMENTATION_REGISTRY.read_text(encoding="utf-8")
+        )
+
+        if not isinstance(payload, dict):
+            fail("implementation registry must be a mapping")
+
+        architecture_dir = IMPLEMENTATION_REGISTRY.parent
+
+        sub_modules = architecture_dir / "sub_modules_registry.yaml"
+        sub_enforcement = architecture_dir / "sub_enforcement_registry.yaml"
+
+        if sub_modules.exists():
+            modules_payload = yaml.safe_load(
+                sub_modules.read_text(encoding="utf-8")
+            )
+
+            if not isinstance(modules_payload, dict):
+                fail("sub modules registry must be a mapping")
+
+            payload["implementations"] = modules_payload.get(
+                "implementations",
+                {},
+            )
+
+        if sub_enforcement.exists():
+            enforcement_payload = yaml.safe_load(
+                sub_enforcement.read_text(encoding="utf-8")
+            )
+
+            if not isinstance(enforcement_payload, dict):
+                fail("sub enforcement registry must be a mapping")
+
+            for key, value in enforcement_payload.items():
+                if key not in {"metadata", "registry"}:
+                    payload[key] = value
+
+        implementations = payload.get("implementations")
+
+        if not isinstance(implementations, dict) or not implementations:
+            fail("implementation registry must define implementations")
+
+        return payload
 
 def validate_forbidden_terms(
     text: str,

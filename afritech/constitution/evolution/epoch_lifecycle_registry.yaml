@@ -1,0 +1,43 @@
+schema: afritech.constitution.evolution.epoch_lifecycle_registry.v1
+classification: compatibility_containment_metadata
+authority: non_authoritative_lifecycle_registry
+boundary:
+  - constitution_defines_legitimacy
+  - replay_validates_truth
+  - registry_controls_lifecycle_visibility_only
+
+allowed_statuses:
+  - DRAFT
+  - ACTIVE
+  - LEGACY_SUPPORTED
+  - SEALED
+  - RETIRED
+
+required_interface_versions:
+  - replay
+  - witness
+  - admission
+  - invariant
+  - execution_contract
+
+epochs:
+  EPOCH-1:
+    status: ACTIVE
+    semantic_role: current_constitutional_baseline
+    interface_versions:
+      replay: replay.v1
+      witness: witness.v1
+      admission: admission.v1
+      invariant: invariant.v1
+      execution_contract: execution_contract.v1
+    active_trace_policy: accepts_new_traces
+    compatibility_fixtures:
+      status: REQUIRED
+      fixture_set: epoch_1_baseline
+    translators:
+      required: false
+      inbound: []
+      outbound: []
+    retirement:
+      eligible: false
+      reason: active_baseline_epoch

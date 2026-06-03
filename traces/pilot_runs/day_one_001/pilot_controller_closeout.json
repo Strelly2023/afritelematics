@@ -1,0 +1,20 @@
+{
+  "receipt": "pilot_controller_closeout",
+  "run_id": "day_one_001",
+  "minute": 240,
+  "status": "closed",
+  "pilot_window_closed": true,
+  "run_classification": "dry_run_rehearsal",
+  "live_pilot_evidence": false,
+  "reason_not_live_evidence": "device_registration_snapshot contains no bound real devices",
+  "stop_conditions_triggered": [],
+  "non_claims_preserved": true,
+  "forbidden_claims_not_made": [
+    "pilot completed",
+    "production ready",
+    "public launch ready",
+    "regulatory approved",
+    "market validated"
+  ],
+  "next_allowed_state": "not_submitted"
+}

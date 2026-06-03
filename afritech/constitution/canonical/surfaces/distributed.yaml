@@ -1,0 +1,42 @@
+surface_id: SURFACE-DISTRIBUTED
+
+name: afritech.distributed
+
+status: active
+
+type: execution
+
+visibility: internal
+
+description: >
+  Distributed execution system for AfriTech, including partitioning,
+  queue processing, worker execution, replay verification, recovery,
+  and coordination layers.
+
+modules:
+
+  partition:
+    - afritech.distributed.partition.partition_assignment
+    - afritech.distributed.partition.partition_registry
+
+  queue:
+    - afritech.distributed.queue.queue_record
+    - afritech.distributed.queue.distributed_queue_adapter
+
+  worker:
+    - afritech.distributed.worker.worker_node
+    - afritech.distributed.worker.worker_result
+
+  replay:
+    - afritech.distributed.replay.distributed_replay_verifier
+    - afritech.distributed.replay.distributed_ledger
+    - afritech.distributed.replay.distributed_execution_transcript
+
+  recovery:
+    - afritech.distributed.recovery.recovery_protocol
+    - afritech.distributed.recovery.partition_rebuild
+    - afritech.distributed.recovery.node_recovery
+
+  coordinator:
+    - afritech.distributed.coordinator.coordinator
+    - afritech.distributed.coordinator.batch_coordinator

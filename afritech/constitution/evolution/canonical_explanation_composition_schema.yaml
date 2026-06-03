@@ -1,0 +1,133 @@
+schema: afritech.canonical_explanation_composition.v1
+classification: canonical_explanation_composition_schema
+authority: COMPOSITION_ONLY
+
+purpose: >
+  Define how canonical explanation records may be safely aggregated into
+  timelines, lineage summaries, replay traces, validator clusters, and
+  diagnostic sequences without synthesizing truth.
+
+source_schema: afritech.canonical_explanation.v1
+
+composition_types:
+  - diagnostic_sequence
+  - lineage_group
+  - replay_trace
+  - timeline
+  - validator_cluster
+
+status_values:
+  - green
+  - yellow
+  - red
+  - unknown
+
+source_ref_types:
+  - artifact
+  - registry
+  - replay
+  - validator
+
+forbidden_authority:
+  - inferred_legitimacy
+  - narrative_truth_generation
+  - replay_truth_validation
+  - semantic_interpolation
+  - synthetic_causality
+
+complexity_budget:
+  max_source_explanation_records: 20
+  max_nesting_levels: 3
+  max_cross_reference_groups: 5
+  max_primary_narrative_summaries: 1
+  max_recommended_investigation_paths: 1
+
+required_authority_disclaimer: >
+  This composition organizes explanations. It does not validate truth or define legitimacy.
+
+composition_record:
+  id:
+    type: string
+    required: true
+  type:
+    type: enum
+    values:
+      - diagnostic_sequence
+      - lineage_group
+      - replay_trace
+      - timeline
+      - validator_cluster
+    required: true
+  status:
+    type: enum
+    values:
+      - green
+      - yellow
+      - red
+      - unknown
+    required: true
+  summary:
+    type: string
+    required: true
+  source_explanation_ids:
+    type: list
+    required: true
+    min_items: 1
+    max_items: 20
+  source_refs:
+    type: list
+    required: true
+    item_shape:
+      type:
+        type: enum
+        values:
+          - artifact
+          - registry
+          - replay
+          - validator
+        required: true
+      name:
+        type: string
+        required: true
+      result:
+        type: string
+        required: true
+  transformation_steps:
+    type: list
+    required: true
+    min_items: 1
+  omitted_detail_count:
+    type: integer
+    required: true
+    minimum: 0
+  advisory:
+    type: boolean
+    required: true
+    required_value: true
+  authority_disclaimer:
+    type: string
+    required: true
+    required_value: >
+      This composition organizes explanations. It does not validate truth or define legitimacy.
+
+canonical_examples:
+  compatibility_timeline:
+    id: composition.compatibility.timeline.current
+    type: timeline
+    status: green
+    summary: Compatibility explanation records are ordered for inspection only.
+    source_explanation_ids:
+      - compatibility.health.current
+    source_refs:
+      - type: validator
+        name: afritech.ci.epoch_lifecycle_validator
+        result: passed
+    transformation_steps:
+      - ordered_by_declared_explanation_id
+    omitted_detail_count: 0
+    advisory: true
+    authority_disclaimer: >
+      This composition organizes explanations. It does not validate truth or define legitimacy.
+
+lock: >
+  Safe units. Safe aggregation. No synthetic truth.

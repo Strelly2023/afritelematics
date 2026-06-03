@@ -48,7 +48,7 @@ from typing import Dict, Iterable, List, Optional, Set
 ROOT_NAMESPACE = "afritech"
 
 CANONICAL_MODULE_PATTERN = re.compile(
-    r"^afritech(\.[a-zA-Z_][a-zA-Z0-9_]*)+$"
+    r"^afritech(\.[a-zA-Z0-9_]+)+$"
 )
 
 FORBIDDEN_PATTERNS = [

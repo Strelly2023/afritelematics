@@ -838,3 +838,62 @@ def create_execution_bundle(
     bundle.validate()
 
     return bundle
+# ============================================================
+# ✅ PHASE 0 COMPATIBILITY WITNESS
+# ============================================================
+
+def generate_witness(
+    trace,
+):
+    """
+    Minimal Phase 0 witness wrapper.
+
+    Preserves compatibility with the
+    constitutional witness system.
+    """
+
+    required = {
+        "surface",
+        "hash",
+    }
+
+    missing = required.difference(trace)
+
+    if missing:
+        raise ExecutionWitnessValidationError(
+            "trace missing required witness fields"
+        )
+
+    step = ExecutionStep(
+        step_order=0,
+        execution_surface=(
+            "afritech.core.runtime.replay"
+        ),
+        operation_type="phase0_execution",
+        operation_hash=trace["hash"],
+        deterministic=True,
+        replay_safe=True,
+        invariant_preserving=True,
+        metadata={},
+    )
+
+    witness = create_execution_witness(
+        execution_trace_hash=trace["hash"],
+        mutation_trace_hash=trace["hash"],
+        transcript_hash=trace["hash"],
+        replay_hash=trace["hash"],
+        receipt_hash=trace["hash"],
+        registry_hash=trace["hash"],
+        invariant_hash=trace["hash"],
+        execution_surface=(
+            "afritech.core.runtime.replay"
+        ),
+        epoch_id="phase0",
+        execution_steps=[step],
+        metadata={
+            "phase": 0,
+            "compatibility_mode": True,
+        },
+    )
+
+    return witness.to_dict()

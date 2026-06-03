@@ -220,3 +220,7 @@ validation:
   boundary_layer:
     closed_world_required: true
     undefined_semantics_forbidden: true
+
+canonical_surfaces:
+  - afritech.distributed
+

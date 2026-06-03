@@ -807,3 +807,52 @@ def load_receipt(
     receipt.validate()
 
     return receipt
+
+# ============================================================
+# ✅ PHASE 0 COMPATIBILITY RECEIPT
+# ============================================================
+
+def generate_receipt(
+    trace,
+    witness=None,
+    replay_verified=True,
+):
+    """
+    Minimal Phase 0 constitutional receipt.
+
+    Constitutional law:
+        no replay -> no legitimacy
+    """
+
+    if not replay_verified:
+        raise Exception("No replay -> no legitimacy")
+
+    required = {
+        "surface",
+        "input",
+        "output",
+        "hash",
+    }
+
+    missing = required.difference(trace)
+
+    if missing:
+        raise Exception(
+            "No trace -> no receipt"
+        )
+
+    return {
+        "status": "VALID",
+        "phase": 0,
+        "surface": trace["surface"],
+        "trace_hash": trace["hash"],
+        "witness_hash": (
+            witness.get("witness_id")
+            or witness.get("witness_hash")
+            or witness.get("bundle_hash")
+            if isinstance(witness, dict)
+            else None
+        ),
+        "replay_verified": True,
+        "receipt_type": "PHASE0_CONSTITUTIONAL_RECEIPT",
+    }

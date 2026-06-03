@@ -1,0 +1,12 @@
+{
+  "adversarial_integrity_hash": "07c2aa1b65516d8fa37132df51a316220c32b7963824729b661d9fa96f189df1",
+  "authority_law": "Malicious behavior must not create valid truth.",
+  "equivalent": true,
+  "scenario_hashes": {
+    "authority_isolation": "eb42bae9180e2b33a268ea2ebeec265d874febb218711dcb8af81e7638a34139",
+    "identity_spoofing_resistance": "aa8fce4f6d6b72665ab3b87d8e59a4e84c8f191d331156ebc96c7337876711df",
+    "injection_resistance": "16f314918ca6a98ee6601a777ebb2b34cb346effd7a211b453469191e114d381",
+    "replay_forgery_resistance": "f69991c9e99fe25445edd5e7d82b0def4c520daac473f544ee63e7c3227959c8"
+  },
+  "schema": "afritech.adversarial_integrity_equivalence_report.v1"
+}

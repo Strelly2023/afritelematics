@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "afritech.api.contracts.event.v1",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "device_id",
+    "entity_id",
+    "timestamp",
+    "logical_clock",
+    "payload",
+    "signature"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "RIDER_REQUESTED_RIDE",
+        "RIDER_CANCELLED_RIDE",
+        "DRIVER_ACCEPTED_RIDE",
+        "DRIVER_ARRIVED",
+        "TRIP_STARTED",
+        "TRIP_COMPLETED",
+        "DRIVER_LOCATION_UPDATE",
+        "PAYMENT_TRIGGERED",
+        "PAYMENT_CONFIRMED"
+      ]
+    },
+    "device_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "logical_clock": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "payload": {
+      "type": "object"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

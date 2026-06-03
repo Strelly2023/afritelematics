@@ -4,6 +4,7 @@ from pathlib import Path
 
 import yaml
 
+from afritech.architecture.registry_loader import load_implementation_registry
 from afritech.ci.claim_discipline_validator import validate
 
 
@@ -40,7 +41,7 @@ def test_claim_evidence_bindings_are_validated_by_claim_gate() -> None:
 
 def test_claim_evidence_bindings_reference_implemented_registry_surfaces() -> None:
     bindings = yaml.safe_load(CLAIM_BINDINGS.read_text(encoding="utf-8"))
-    registry = yaml.safe_load(IMPLEMENTATION_REGISTRY.read_text(encoding="utf-8"))
+    registry = load_implementation_registry()
     implementations = registry["implementations"]
 
     for claim in bindings["claims"]:
