@@ -1,0 +1,8 @@
+{
+  "device_id": "operator_laptop_001",
+  "role": "operator",
+  "pilot_run_id": "live_pilot_001",
+  "signed_event_capable": false,
+  "gps_capture_capable": false,
+  "status": "registered"
+}

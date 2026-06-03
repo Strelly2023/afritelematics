@@ -1,0 +1,8 @@
+{
+  "device_id": "driver_phone_001",
+  "role": "driver",
+  "pilot_run_id": "live_pilot_001",
+  "signed_event_capable": true,
+  "gps_capture_capable": true,
+  "status": "registered"
+}
