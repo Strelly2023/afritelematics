@@ -6,13 +6,17 @@ from afritech.distributed.p2p.message import (
     build_message,
     validate_message_structure,
 )
+from afritech.distributed.contracts.p2p_interface import (
+    GossipMessage,
+    NodeInterface,
+)
 from afritech.distributed.p2p.gossip import GossipEngine
 from afritech.distributed.zt_node import ZeroTrustNode
 from afritech.runtime.kernel.execute import ExecutionContext
 from afritech.epoch.epoch_snapshot import EpochSnapshot
 
 
-class P2PNode:
+class P2PNode(NodeInterface):
     """
     Fully autonomous peer node (GA Elite compliant).
 
@@ -46,27 +50,26 @@ class P2PNode:
     # ✅ PEER MANAGEMENT
     # =====================================================
 
-    def connect(self, peer: P2PNode) -> None:
+    def connect(self, peer: NodeInterface) -> None:
         """
         Connect to another node.
-
-        Gossip engine only depends on interface behavior.
         """
 
-        if not isinstance(peer, P2PNode):
+        if peer is None:
+            return
+
+        if peer.get_node_id() == self._node_id:
             return
 
         self._gossip.add_peer(peer)
 
     # =====================================================
-    # ✅ CONTRACT ENTRYPOINT (CRITICAL FIX)
+    # ✅ CONTRACT ENTRYPOINT (STRICT)
     # =====================================================
 
-    def receive_message(self, message: Dict[str, Any]) -> None:
+    def receive_message(self, message: GossipMessage) -> None:
         """
-        Contract-compliant entrypoint used by gossip engine.
-
-        This replaces `receive()` to match NodeInterface.
+        Entry point required by NodeInterface.
         """
 
         self._receive_internal(message)
@@ -75,47 +78,40 @@ class P2PNode:
     # ✅ INTERNAL RECEIVE
     # =====================================================
 
-    def _receive_internal(self, message: Dict[str, Any]) -> None:
+    def _receive_internal(self, message: GossipMessage) -> None:
         """
         Internal message processing.
-
-        Flow:
-        - validate message
-        - process based on type
-        - delegate propagation to gossip engine
         """
 
         try:
-            # ✅ Validate structure
             if not validate_message_structure(message):
                 return
 
-            msg_type = message.get("type")
+            # ✅ Extract structured payload
+            payload_root = message.payload
+            msg_type = payload_root.get("type")
+            payload = payload_root.get("payload", {})
 
             if msg_type == "EXECUTE":
-                self._handle_execute(message)
+                self._handle_execute(payload)
 
             elif msg_type == "PROOF":
-                self._handle_proof(message)
+                self._handle_proof(payload)
 
-            # ✅ Let gossip engine manage propagation
+            # ✅ Propagation handled by gossip engine
             self._gossip.broadcast(message)
 
         except Exception:
-            # Fail-safe: never crash node
-            return
+            return  # fail-safe
 
     # =====================================================
     # ✅ EXECUTION HANDLER
     # =====================================================
 
-    def _handle_execute(self, message: Dict[str, Any]) -> None:
-        payload = message.get("payload", {})
-
+    def _handle_execute(self, payload: Dict[str, Any]) -> None:
         fn = payload.get("fn")
         epoch_snapshot = payload.get("epoch")
 
-        # ✅ Strict validation
         if not callable(fn):
             return
 
@@ -132,19 +128,16 @@ class P2PNode:
                 self._node_id,
             )
 
-            # ✅ Broadcast proof to network
             self._gossip.broadcast(proof_msg)
 
         except Exception:
-            # Fail-safe
             return
 
     # =====================================================
     # ✅ PROOF HANDLER
     # =====================================================
 
-    def _handle_proof(self, message: Dict[str, Any]) -> None:
-        payload = message.get("payload", {})
+    def _handle_proof(self, payload: Dict[str, Any]) -> None:
         proof = payload.get("proof")
 
         if not isinstance(proof, dict):
@@ -163,8 +156,6 @@ class P2PNode:
     ) -> None:
         """
         Inject execution into the P2P network.
-
-        This is the external trigger.
         """
 
         if not callable(fn):
@@ -182,7 +173,6 @@ class P2PNode:
             self._node_id,
         )
 
-        # ✅ Start propagation
         self._gossip.broadcast(message)
 
     # =====================================================

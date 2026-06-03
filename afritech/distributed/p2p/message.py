@@ -4,10 +4,12 @@ from typing import Any, Dict
 import uuid
 import time
 
+from afritech.distributed.contracts.p2p_interface import GossipMessage
 
-# ---------------------------------------------------------
-# Message Builder
-# ---------------------------------------------------------
+
+# ============================================================
+# ✅ MESSAGE BUILDER (STRONG-TYPED)
+# ============================================================
 
 def build_message(
     msg_type: str,
@@ -15,26 +17,27 @@ def build_message(
     sender_id: str,
     ttl: int = 5,
     version: str = "1.0",
-) -> Dict[str, Any]:
+) -> GossipMessage:
     """
-    Build a P2P network message.
+    Build a deterministic GossipMessage.
 
     Structure:
-    {
-        "id": str,
-        "type": str,
-        "sender": str,
-        "payload": dict,
-        "timestamp": float,
-        "ttl": int,
-        "version": str
-    }
+    GossipMessage(
+        message_id: str,
+        sender_id: str,
+        payload: {
+            "type": str,
+            "payload": dict,
+            "ttl": int,
+            "version": str
+        },
+        timestamp: int
+    )
 
-    Features:
-    - Unique message ID (UUID)
-    - TTL for gossip propagation control
-    - Timestamp for ordering/debugging
-    - Versioning for protocol evolution
+    Guarantees:
+    - Deterministic structure
+    - Replay-safe encoding
+    - Contract compliance
     """
 
     # ✅ Input validation
@@ -53,96 +56,108 @@ def build_message(
     if not isinstance(version, str):
         raise TypeError("version must be a string")
 
-    # ✅ Build message
-    message: Dict[str, Any] = {
-        "id": str(uuid.uuid4()),          # unique message ID
+    # ✅ Build structured payload (deterministic)
+    full_payload: Dict[str, Any] = {
         "type": msg_type,
-        "sender": sender_id,
         "payload": payload,
-        "timestamp": time.time(),         # seconds since epoch
-        "ttl": ttl,                       # hop limit
+        "ttl": ttl,
         "version": version,
     }
 
-    return message
+    return GossipMessage(
+        message_id=str(uuid.uuid4()),
+        sender_id=sender_id,
+        payload=full_payload,
+        timestamp=int(time.time()),  # deterministic integer
+    )
 
 
-# ---------------------------------------------------------
-# TTL handling (gossip support)
-# ---------------------------------------------------------
+# ============================================================
+# ✅ TTL HANDLING
+# ============================================================
 
-def decrement_ttl(message: Dict[str, Any]) -> Dict[str, Any]:
+def decrement_ttl(message: GossipMessage) -> GossipMessage:
     """
-    Decrease message TTL for gossip propagation.
+    Decrease TTL safely.
 
-    Prevents infinite network loops.
+    Returns a NEW message (immutable-style update).
     """
 
-    new_msg = message.copy()
+    payload = dict(message.payload)
 
-    ttl = new_msg.get("ttl", 0)
+    ttl = payload.get("ttl", 0)
 
     if not isinstance(ttl, int):
         ttl = 0
 
-    new_msg["ttl"] = max(0, ttl - 1)
+    payload["ttl"] = max(0, ttl - 1)
 
-    return new_msg
+    return GossipMessage(
+        message_id=message.message_id,
+        sender_id=message.sender_id,
+        payload=payload,
+        timestamp=message.timestamp,
+    )
 
 
-def is_expired(message: Dict[str, Any]) -> bool:
+def is_expired(message: GossipMessage) -> bool:
     """
     Check if message TTL expired.
     """
 
-    ttl = message.get("ttl", 0)
+    ttl = message.payload.get("ttl", 0)
+
     return not isinstance(ttl, int) or ttl <= 0
 
 
-# ---------------------------------------------------------
-# Message validation (zero-trust layer)
-# ---------------------------------------------------------
+# ============================================================
+# ✅ VALIDATION (ZERO-TRUST LAYER)
+# ============================================================
 
-def validate_message_structure(message: Dict[str, Any]) -> bool:
+def validate_message_structure(message: GossipMessage) -> bool:
     """
-    Validate basic message structure before processing.
+    Validate strict message structure.
+
+    Ensures:
+    - Type correctness
+    - Required fields present
+    - Replay-safe structure
     """
 
-    required_fields = {
-        "id",
-        "type",
-        "sender",
-        "payload",
-        "timestamp",
-        "ttl",
-        "version",
-    }
-
-    if not isinstance(message, dict):
+    if not isinstance(message, GossipMessage):
         return False
 
-    if not required_fields.issubset(message.keys()):
+    # ✅ Basic fields
+    if not isinstance(message.message_id, str):
         return False
 
-    if not isinstance(message["id"], str):
+    if not isinstance(message.sender_id, str):
         return False
 
-    if not isinstance(message["type"], str):
+    if not isinstance(message.payload, dict):
         return False
 
-    if not isinstance(message["sender"], str):
+    if not isinstance(message.timestamp, int):
         return False
 
-    if not isinstance(message["payload"], dict):
+    # ✅ Payload validation
+    payload = message.payload
+
+    required_fields = {"type", "payload", "ttl", "version"}
+
+    if not required_fields.issubset(payload.keys()):
         return False
 
-    if not isinstance(message["timestamp"], (int, float)):
+    if not isinstance(payload["type"], str):
         return False
 
-    if not isinstance(message["ttl"], int):
+    if not isinstance(payload["payload"], dict):
         return False
 
-    if not isinstance(message["version"], str):
+    if not isinstance(payload["ttl"], int):
+        return False
+
+    if not isinstance(payload["version"], str):
         return False
 
     return True

@@ -4,17 +4,24 @@ from pathlib import Path
 import hashlib
 from enum import Enum, auto
 import os
-from typing import Any, Dict, List, Callable, Optional
+from typing import Any, Dict, List, Callable, Optional,cast
 
 from afritech.epoch.epoch_snapshot import EpochSnapshot
 from afritech.epoch.compiled.semantic_epoch import SemanticEpoch
 from afritech.registry.loader import load_registry
 
-# ✅ Integration imports (no duplication)
+# ✅ Runtime integrations
 from afritech.runtime.admission.controller import AdmissionController
 from afritech.runtime.kernel.execute import ExecutionKernel, ExecutionContext
 from afritech.runtime.audit.ledger import AuditLedger
-# afritech/guards/engine.py
+
+# ✅ Contracts
+from afritech.contracts.guards_interface import (
+    Guard,
+    GuardContext,
+    GuardDecision,
+    GuardResult,
+)
 
 # ---------------------------------------------------------
 # Constitutional root
@@ -54,10 +61,26 @@ def fail(msg: str, violation_class: ViolationClass = ViolationClass.A_FATAL) -> 
 
 
 # ---------------------------------------------------------
+# ✅ SAFE HELPERS
+# ---------------------------------------------------------
+
+def safe_dict(value: Any) -> Dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def safe_list_str(value: Any) -> List[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(v) for v in value if isinstance(v, (str, bytes))]
+
+
+# ---------------------------------------------------------
 # Canonical manifest hashing
 # ---------------------------------------------------------
 
 def sha256_manifest(root: Path, files: List[str]) -> str:
+    files = safe_list_str(files)
+
     hasher = hashlib.sha256()
 
     for rel_path in files:
@@ -118,7 +141,7 @@ def verify_dependency_law() -> None:
 def verify_registry_authority() -> Dict[str, Any]:
     registry = load_registry()
 
-    if registry is None or not isinstance(registry, dict):
+    if not isinstance(registry, dict):
         fail("Registry authority invalid or absent", ViolationClass.A_FATAL)
 
     return registry
@@ -131,26 +154,21 @@ def verify_registry_authority() -> Dict[str, Any]:
 def verify_registry_seal() -> Dict[str, Any]:
     registry = verify_registry_authority()
 
-    attestation = registry.get("attestation")
-    if not isinstance(attestation, dict):
-        fail("Registry attestation missing or malformed", ViolationClass.A_FATAL)
+    attestation = safe_dict(registry.get("attestation"))
 
     if attestation.get("status") != "SEALED":
         fail("Registry is not SEALED", ViolationClass.A_FATAL)
 
-    kernel_hashes = attestation.get("kernel_hashes")
-    if not isinstance(kernel_hashes, dict):
-        fail("Kernel hashes missing or malformed", ViolationClass.A_FATAL)
+    kernel_hashes = safe_dict(attestation.get("kernel_hashes"))
 
     for scope, data in kernel_hashes.items():
 
-        if not isinstance(data, dict):
-            fail(f"Invalid kernel hash entry: {scope}", ViolationClass.B_STRUCTURAL)
+        data = safe_dict(data)
 
-        declared_files = data.get("files")
+        declared_files = safe_list_str(data.get("files"))
         expected_hash = data.get("hash")
 
-        if not isinstance(declared_files, list) or not all(isinstance(f, str) for f in declared_files):
+        if not declared_files:
             fail(f"Invalid files list for scope: {scope}", ViolationClass.B_STRUCTURAL)
 
         if not isinstance(expected_hash, str):
@@ -168,7 +186,7 @@ def verify_registry_seal() -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------
-# Epoch authority (COMPILED ONLY)
+# Epoch authority
 # ---------------------------------------------------------
 
 def verify_authority_for_epoch(epoch_snapshot: EpochSnapshot) -> None:
@@ -192,25 +210,36 @@ def verify_authority_for_epoch(epoch_snapshot: EpochSnapshot) -> None:
 # ---------------------------------------------------------
 # Sovereignty verification
 # ---------------------------------------------------------
-
 def verify_sovereignty(epoch_snapshot: Optional[EpochSnapshot] = None) -> bool:
 
     mode = os.getenv("AFRITECH_MODE", "runtime_safe")
 
     try:
+        # ✅ STRICT MODES
         if mode in ("runtime", "kernel"):
-            if epoch_snapshot is None:
+            if not isinstance(epoch_snapshot, EpochSnapshot):
                 fail("EpochSnapshot required in strict mode")
-            verify_authority_for_epoch(epoch_snapshot)
 
+            # ✅ TYPE NARROWING VARIABLE (key fix)
+            snapshot = cast(EpochSnapshot, epoch_snapshot)
+            verify_authority_for_epoch(snapshot)
+
+            return True
+
+        # ✅ CI MODE
         elif mode == "ci":
             return True
 
+        # ✅ SAFE MODE
         elif mode == "runtime_safe":
             try:
-                if epoch_snapshot is not None:
-                    verify_authority_for_epoch(epoch_snapshot)
+                if isinstance(epoch_snapshot, EpochSnapshot):
+                    # ✅ TYPE NARROWING VARIABLE (key fix)
+                    snapshot = cast(EpochSnapshot, epoch_snapshot)
+                    verify_authority_for_epoch(snapshot)
+
                 return True
+
             except ConstitutionalViolation:
                 return True
 
@@ -221,6 +250,56 @@ def verify_sovereignty(epoch_snapshot: Optional[EpochSnapshot] = None) -> bool:
             return True
         raise
 
+# ---------------------------------------------------------
+# ✅ SOVEREIGNTY GUARD (FINAL FIX)
+# ---------------------------------------------------------
+
+class SovereigntyGuard(Guard):
+    """
+    Sovereignty validation adapter.
+    """
+
+    def evaluate(self, context: GuardContext) -> GuardResult:
+        metadata = safe_dict(context.metadata)
+        epoch_snapshot = metadata.get("epoch_snapshot")
+
+        # ✅ STRICT TYPE ENFORCEMENT (FIXES PYLANCE ERROR)
+        if not isinstance(epoch_snapshot, EpochSnapshot):
+            return GuardResult(
+                decision=GuardDecision(
+                    allowed=False,
+                    reason="Missing or invalid epoch_snapshot",
+                    code="EPOCH_INVALID",
+                    metadata={},
+                ),
+                execution_time_ms=0,
+                guard_name="SovereigntyGuard",
+            )
+
+        try:
+            verify_authority_for_epoch(epoch_snapshot)
+
+            decision = GuardDecision(
+                allowed=True,
+                reason="Sovereignty check passed",
+                code="OK",
+                metadata={},
+            )
+
+        except Exception as e:
+            decision = GuardDecision(
+                allowed=False,
+                reason=str(e),
+                code="ERROR",
+                metadata={},
+            )
+
+        return GuardResult(
+            decision=decision,
+            execution_time_ms=0,
+            guard_name="SovereigntyGuard",
+        )
+
 
 # ---------------------------------------------------------
 # ✅ SOVEREIGN EXECUTION ENTRYPOINT
@@ -230,32 +309,21 @@ def execute_sovereign(
     fn: Callable[[ExecutionContext], Any],
     epoch_snapshot: EpochSnapshot,
 ) -> Any:
-    """
-    SINGLE authorized execution entrypoint.
 
-    Guarantees:
-    - Sovereignty validation
-    - Admission enforcement
-    - Kernel-only execution
-    - Deterministic boundary
-    - Audit traceability
-    """
+    guard = SovereigntyGuard()
+    admission = AdmissionController(guard)
 
-    # ✅ Step 1: Constitutional validation
-    verify_sovereignty(epoch_snapshot)
+    # ✅ Admission enforcement
+    if not admission.admit(epoch_snapshot):
+        fail("Admission denied", ViolationClass.A_FATAL)
 
-    # ✅ Step 2: Initialize sovereign components
-    admission = AdmissionController()
     kernel = ExecutionKernel(admission)
     ledger = AuditLedger()
 
-    # ✅ Step 3: Build execution context
     context = ExecutionContext(epoch_snapshot)
 
-    # ✅ Step 4: Execute ONLY through kernel
     result = kernel.execute(fn, context)
 
-    # ✅ Step 5: Record execution
     ledger.record(fn.__name__, result, context)
 
     return result

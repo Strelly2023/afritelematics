@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import List, Dict, Any, Set, TYPE_CHECKING
+from typing import List, Set, TYPE_CHECKING
 
 from afritech.distributed.p2p.message import (
     validate_message_structure,
     decrement_ttl,
     is_expired,
 )
+from afritech.distributed.contracts.p2p_interface import GossipMessage
 
 if TYPE_CHECKING:
     from afritech.distributed.contracts.p2p_interface import NodeInterface
@@ -27,6 +28,10 @@ class GossipEngine:
     - Deterministic propagation behavior
     - Fail-safe execution (never crashes)
     """
+
+    # =====================================================
+    # ✅ INIT
+    # =====================================================
 
     def __init__(self, node_id: str) -> None:
         if not isinstance(node_id, str):
@@ -52,8 +57,8 @@ class GossipEngine:
         if peer is None:
             return
 
-        # Avoid self-loop if peer exposes get_node_id
         peer_id = getattr(peer, "get_node_id", lambda: None)()
+
         if peer_id == self.node_id:
             return
 
@@ -70,7 +75,7 @@ class GossipEngine:
     # ✅ BROADCAST
     # =====================================================
 
-    def broadcast(self, message: Dict[str, Any]) -> None:
+    def broadcast(self, message: GossipMessage) -> None:
         """
         Broadcast message to all peers.
 
@@ -78,8 +83,6 @@ class GossipEngine:
         - validate message
         - process locally
         - forward to peers (TTL-controlled)
-
-        Never raises exception (fail-safe).
         """
 
         try:
@@ -88,11 +91,10 @@ class GossipEngine:
                 return
 
             # ✅ Step 2: Process locally
-            should_propagate = self._handle_message(message)
-            if not should_propagate:
+            if not self._handle_message(message):
                 return
 
-            # ✅ Step 3: Decrement TTL (deterministic mutation)
+            # ✅ Step 3: Decrement TTL
             forwarded_message = decrement_ttl(message)
 
             # ✅ Step 4: Stop if expired
@@ -102,21 +104,18 @@ class GossipEngine:
             # ✅ Step 5: Forward to peers
             for peer in self._peers:
                 try:
-                    # ✅ Contract-compliant call
                     peer.receive_message(forwarded_message)
                 except Exception:
-                    # Fail-safe (gossip must never break)
-                    continue
+                    continue  # fail-safe
 
         except Exception:
-            # Global fail-safe
-            return
+            return  # global fail-safe
 
     # =====================================================
     # ✅ INTERNAL MESSAGE HANDLING
     # =====================================================
 
-    def _handle_message(self, message: Dict[str, Any]) -> bool:
+    def _handle_message(self, message: GossipMessage) -> bool:
         """
         Process incoming message.
 
@@ -125,13 +124,13 @@ class GossipEngine:
             False → stop propagation
         """
 
-        msg_id = message.get("id")
+        msg_id = message.message_id
 
         # ✅ Reject invalid ID
         if not isinstance(msg_id, str):
             return False
 
-        # ✅ Prevent duplicate processing (loop protection)
+        # ✅ Prevent duplicate processing
         if msg_id in self._seen_messages:
             return False
 
@@ -145,19 +144,15 @@ class GossipEngine:
         return True
 
     # =====================================================
-    # ✅ INBOUND ENTRYPOINT (CRITICAL)
+    # ✅ INBOUND ENTRYPOINT
     # =====================================================
 
-    def receive(self, message: Dict[str, Any]) -> None:
+    def receive(self, message: GossipMessage) -> None:
         """
         Receive message from external peer.
 
-        This is the entrypoint used by remote nodes.
-
-        Behavior:
-        - validates message
-        - processes locally
-        - forwards if valid
+        This method is optional if using NodeInterface correctly,
+        but kept for compatibility/debug/testing.
         """
 
         self.broadcast(message)
@@ -168,8 +163,9 @@ class GossipEngine:
 
     def get_peer_ids(self) -> List[str]:
         """
-        Return peer IDs (safe introspection).
+        Return peer IDs.
         """
+
         peer_ids: List[str] = []
 
         for peer in self._peers:
@@ -183,10 +179,6 @@ class GossipEngine:
     def reset(self) -> None:
         """
         Reset gossip state.
-
-        Useful for:
-        - testing
-        - replay resets
-        - node restart
         """
+
         self._seen_messages.clear()
