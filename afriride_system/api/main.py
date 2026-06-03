@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from afriride_system.api.driver_routes import router as driver_router
@@ -13,14 +14,28 @@ from afriride_system.api.trace_middleware import trace_enforcement_middleware
 from afriride_system.api.dispatcher_adapter import get_gateway
 from afriride_system.api.responses import error
 from afriride_system.backend.trace_enforcement import TRACE_LOG
+from afritech.api.ingestion.event_ingestion import EventIngestionAPI, build_router
 
 app = FastAPI(title="AfriRide API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://afriride-api.onrender.com",
+    ],
+    allow_origin_regex=r"https://.*\.onrender\.com",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.middleware("http")(compliance_metadata_middleware)
 app.middleware("http")(trace_enforcement_middleware)
 
 app.include_router(passenger_router, prefix="/passenger", tags=["passenger"])
 app.include_router(driver_router, prefix="/driver", tags=["driver"])
 app.include_router(ride_router, prefix="/ride", tags=["ride"])
+app.include_router(build_router(EventIngestionAPI(secret="pilot-secret")))
 
 
 @app.get("/")
@@ -30,7 +45,27 @@ def health() -> dict[str, str]:
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
-    return health()
+    return {
+        "status": "ok",
+        "service": "afriride-api",
+    }
+
+
+@app.websocket("/ws/{ride_id}")
+async def ride_tracking_socket(websocket: WebSocket, ride_id: str) -> None:
+    await websocket.accept()
+    await websocket.send_json(
+        {
+            "ride_id": ride_id,
+            "status": "connected",
+            "mode": "observation_only",
+        }
+    )
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        return
 
 
 @app.get("/rides/active")

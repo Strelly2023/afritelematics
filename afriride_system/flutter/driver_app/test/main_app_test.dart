@@ -11,6 +11,7 @@ class FakeMainAppHttpClient extends http.BaseClient {
   int assignedRideCalls = 0;
   int replayCalls = 0;
   int earningsCalls = 0;
+  int acceptCalls = 0;
   int startCalls = 0;
   int completeCalls = 0;
 
@@ -20,14 +21,13 @@ class FakeMainAppHttpClient extends http.BaseClient {
   ) async {
     final path = request.url.path;
 
-    if (request.method == 'GET' &&
-        path == '/driver/driver-1/rides/assigned') {
+    if (request.method == 'GET' && path == '/driver/driver-1/rides/assigned') {
       assignedRideCalls += 1;
 
       return _jsonResponse({
         'rides': [
           {
-            'ride_id': 'ride-1',
+            'ride_id': 'ride-live-1',
             'pickup': 'Pickup A',
             'dropoff': 'Dropoff B',
             'status': 'assigned',
@@ -37,34 +37,35 @@ class FakeMainAppHttpClient extends http.BaseClient {
       });
     }
 
-    if (request.method == 'POST' &&
-        path == '/ride/ride-1/start') {
+    if (request.method == 'POST' && path == '/ride/ride-live-1/accept') {
+      acceptCalls += 1;
+      return _jsonResponse({'ok': true});
+    }
+
+    if (request.method == 'POST' && path == '/ride/ride-live-1/start') {
       startCalls += 1;
       return _jsonResponse({'ok': true});
     }
 
-    if (request.method == 'POST' &&
-        path == '/ride/ride-1/complete') {
+    if (request.method == 'POST' && path == '/ride/ride-live-1/complete') {
       completeCalls += 1;
       return _jsonResponse({'ok': true});
     }
 
-    if (request.method == 'GET' &&
-        path == '/ride/ride-1/replay') {
+    if (request.method == 'GET' && path == '/ride/ride-live-1/replay') {
       replayCalls += 1;
 
       return _jsonResponse({
-        'ride_id': 'ride-1',
-        'replay_id': 'replay-1',
+        'ride_id': 'ride-live-1',
+        'replay_id': 'replay-live-1',
         'replay_verified': true,
         'replay_hash': 'hash-1',
-        'receipt_id': 'receipt-1',
+        'receipt_id': 'receipt-live-1',
         'replay_epoch': 1,
       });
     }
 
-    if (request.method == 'GET' &&
-        path == '/driver/driver-1/earnings') {
+    if (request.method == 'GET' && path == '/driver/driver-1/earnings') {
       earningsCalls += 1;
 
       return _jsonResponse({
@@ -135,7 +136,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Trip Lifecycle'), findsOneWidget);
+      expect(find.text('Select an assigned ride first'), findsOneWidget);
+
+      await tester.tap(find.text('Requests'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Accept'));
+      await tester.pumpAndSettle();
+
       expect(find.text('Assigned Trip'), findsOneWidget);
+      expect(find.text('Ride ID: ride-live-1'), findsOneWidget);
       expect(find.text('Assignment: Verified'), findsWidgets);
 
       await tester.tap(find.text('Replay'));
@@ -174,6 +183,9 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Accept'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Trip'));

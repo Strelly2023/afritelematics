@@ -22,6 +22,7 @@ void main() {
     );
 
     final controller = RiderController(
+      pilotRunId: 'live_pilot_001',
       signer: EventSigner('pilot-secret'),
       api: api,
     );
@@ -30,13 +31,15 @@ void main() {
       rideId: 'ride_123',
       pickup: 'A',
       dropoff: 'B',
-      pilotRunId: 'live_pilot_001',
     );
 
     final events = requestBody['events'] as List<dynamic>;
     final event = events.single as Map<String, dynamic>;
     final payload = event['payload'] as Map<String, dynamic>;
     expect(payload['pilot_run_id'], 'live_pilot_001');
+    expect(payload['ride_id'], 'ride_123');
+    expect(payload['rider_id'], 'rider_1');
+    expect(payload['previous_event_hash'], 'GENESIS');
     expect(result['accepted'], ['rider_1_1']);
   });
 }

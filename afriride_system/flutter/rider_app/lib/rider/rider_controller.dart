@@ -6,13 +6,16 @@ import 'event_factory.dart';
 
 class RiderController {
   final String deviceId;
+  final String pilotRunId;
   final LogicalClock clock;
   final EventStore store;
   final ApiClient api;
   final EventSigner signer;
+  String? _lastEventHash;
 
   RiderController({
     this.deviceId = 'rider_1',
+    this.pilotRunId = 'local_pilot',
     required this.signer,
     LogicalClock? clock,
     EventStore? store,
@@ -25,7 +28,6 @@ class RiderController {
     required String rideId,
     required String pickup,
     required String dropoff,
-    String? pilotRunId,
   }) {
     return _emit(
       eventType: 'RIDER_REQUESTED_RIDE',
@@ -34,8 +36,6 @@ class RiderController {
         'ride_id': rideId,
         'pickup': pickup,
         'dropoff': dropoff,
-        if (pilotRunId != null && pilotRunId.trim().isNotEmpty)
-          'pilot_run_id': pilotRunId,
       },
     );
   }
@@ -59,8 +59,12 @@ class RiderController {
       entityId: entityId,
       logicalClock: clock.next(),
       payload: payload,
+      pilotRunId: pilotRunId,
+      riderId: deviceId,
+      previousEventHash: _lastEventHash,
     );
     event['signature'] = signer.sign(event);
+    _lastEventHash = hashCanonical(event);
     store.add(event);
 
     final result = await api.sendBatch(store.pending());

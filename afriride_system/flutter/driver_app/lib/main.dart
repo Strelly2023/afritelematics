@@ -97,25 +97,13 @@ class DriverHomeShell extends StatefulWidget {
 
 class _DriverHomeShellState extends State<DriverHomeShell> {
   int _selectedIndex = 0;
+  RideContract? _selectedRide;
 
-  /// Temporary contract-bound ride reference for screen integration.
-  ///
-  /// This is not dispatch authority.
-  /// It does not assign a driver.
-  /// It does not calculate pricing.
-  /// It only supplies the already-assigned ride identity needed by
-  /// currently verified screens until navigation is wired to selected
-  /// ride state from RideRequestsScreen.
-  RideContract get _selectedRide {
-    return RideContract(
-      rideId: 'ride-1',
-      pickup: 'Pickup A',
-      dropoff: 'Dropoff B',
-      status: RideStatus.accepted,
-      assignedDriverId: widget.driverId,
-      receiptId: 'receipt-1',
-      replayId: 'replay-1',
-    );
+  void _selectRide(RideContract ride) {
+    setState(() {
+      _selectedRide = ride;
+      _selectedIndex = 1;
+    });
   }
 
   void _selectTab(int index) {
@@ -130,16 +118,29 @@ class _DriverHomeShellState extends State<DriverHomeShell> {
       RideRequestsScreen(
         driverId: widget.driverId,
         apiClient: widget.apiClient,
+        onRideSelected: _selectRide,
       ),
-      TripLifecycleScreen(
-        driverId: widget.driverId,
-        ride: _selectedRide,
-        apiClient: widget.apiClient,
-      ),
-      ReplayScreen(
-        rideId: _selectedRide.rideId,
-        apiClient: widget.apiClient,
-      ),
+      if (_selectedRide == null)
+        const _NoSelectedRideScreen(
+          title: 'Trip Lifecycle',
+          message: 'Select an assigned ride first',
+        )
+      else
+        TripLifecycleScreen(
+          driverId: widget.driverId,
+          ride: _selectedRide!,
+          apiClient: widget.apiClient,
+        ),
+      if (_selectedRide == null)
+        const _NoSelectedRideScreen(
+          title: 'Replay Evidence',
+          message: 'Select an assigned ride first',
+        )
+      else
+        ReplayScreen(
+          rideId: _selectedRide!.rideId,
+          apiClient: widget.apiClient,
+        ),
       EarningsScreen(
         driverId: widget.driverId,
         apiClient: widget.apiClient,
@@ -176,6 +177,28 @@ class _DriverHomeShellState extends State<DriverHomeShell> {
             label: 'Earnings',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _NoSelectedRideScreen extends StatelessWidget {
+  final String title;
+  final String message;
+
+  const _NoSelectedRideScreen({
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Text(message),
       ),
     );
   }

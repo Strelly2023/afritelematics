@@ -28,20 +28,20 @@ import '../widgets/ride_card.dart';
 class RideRequestsScreen extends StatefulWidget {
   final String driverId;
   final AfriRideApiClient apiClient;
+  final ValueChanged<RideContract>? onRideSelected;
 
   const RideRequestsScreen({
     super.key,
     required this.driverId,
     required this.apiClient,
+    this.onRideSelected,
   });
 
   @override
-  State<RideRequestsScreen> createState() =>
-      _RideRequestsScreenState();
+  State<RideRequestsScreen> createState() => _RideRequestsScreenState();
 }
 
-class _RideRequestsScreenState
-    extends State<RideRequestsScreen> {
+class _RideRequestsScreenState extends State<RideRequestsScreen> {
   late Future<List<RideContract>> _ridesFuture;
 
   @override
@@ -51,8 +51,7 @@ class _RideRequestsScreenState
   }
 
   Future<List<RideContract>> _loadAssignedRides() async {
-    final rides =
-        await widget.apiClient.getAssignedRideRequests(
+    final rides = await widget.apiClient.getAssignedRideRequests(
       driverId: widget.driverId,
     );
 
@@ -87,6 +86,8 @@ class _RideRequestsScreenState
       driverId: widget.driverId,
     );
 
+    widget.onRideSelected?.call(ride);
+
     await _refresh();
   }
 
@@ -115,8 +116,7 @@ class _RideRequestsScreenState
       body: FutureBuilder<List<RideContract>>(
         future: _ridesFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -187,8 +187,7 @@ class _ErrorState extends StatelessWidget {
           children: [
             Text(
               "Unable to load ride requests",
-              style:
-                  Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

@@ -6,13 +6,16 @@ import 'event_factory.dart';
 
 class DriverController {
   final String deviceId;
+  final String pilotRunId;
   final LogicalClock clock;
   final EventStore store;
   final ApiClient api;
   final EventSigner signer;
+  String? _lastEventHash;
 
   DriverController({
     this.deviceId = 'driver_1',
+    this.pilotRunId = 'local_pilot',
     required this.signer,
     LogicalClock? clock,
     EventStore? store,
@@ -29,11 +32,19 @@ class DriverController {
     );
   }
 
-  Future<Map<String, dynamic>> recordLocation(String rideId, double lat, double lon) {
+  Future<Map<String, dynamic>> recordLocation(
+    String rideId,
+    double lat,
+    double lon,
+  ) {
     return _emit(
       eventType: 'DRIVER_LOCATION_UPDATE',
       entityId: rideId,
-      payload: {'ride_id': rideId, 'lat': lat, 'lon': lon},
+      payload: {'ride_id': rideId},
+      locationSnapshot: {
+        'lat': lat,
+        'lon': lon,
+      },
     );
   }
 
@@ -68,6 +79,7 @@ class DriverController {
     required String eventType,
     required String entityId,
     required Map<String, dynamic> payload,
+    Map<String, dynamic>? locationSnapshot,
   }) async {
     final event = createEvent(
       eventType: eventType,
@@ -75,8 +87,13 @@ class DriverController {
       entityId: entityId,
       logicalClock: clock.next(),
       payload: payload,
+      pilotRunId: pilotRunId,
+      driverId: deviceId,
+      previousEventHash: _lastEventHash,
+      locationSnapshot: locationSnapshot,
     );
     event['signature'] = signer.sign(event);
+    _lastEventHash = hashCanonical(event);
     store.add(event);
 
     final result = await api.sendBatch(store.pending());

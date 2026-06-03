@@ -22,6 +22,7 @@ void main() {
   const rideId = 'ride_123';
   final controller = RiderController(
     deviceId: '${deviceRole}_1',
+    pilotRunId: pilotRunId,
     signer: EventSigner('pilot-secret'),
     api: ApiClient(baseUrl: apiBaseUrl),
   );
@@ -29,7 +30,6 @@ void main() {
     rideId: rideId,
     pickup: 'A',
     dropoff: 'B',
-    pilotRunId: pilotRunId,
   );
 
   final tracking = RideTrackingClient(
