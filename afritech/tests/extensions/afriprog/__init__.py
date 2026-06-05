@@ -1,0 +1,1 @@
+"""AfriProg extension test package."""

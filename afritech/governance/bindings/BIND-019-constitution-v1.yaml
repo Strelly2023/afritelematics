@@ -16,6 +16,7 @@ bindings:
       - provide source language for future governance work
     linked_rules:
       - RULE-019-1
+      - RULE-019-5
 
   - id: BIND-019-2
     name: constitution_v1_machine_spec

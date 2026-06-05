@@ -8,7 +8,17 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-from afritech.afritpps import constants, metrics, models, services
+from afritech.afritpps import (
+    constants,
+    domain_contracts,
+    execution_engine,
+    metrics,
+    models,
+    observability,
+    orchestration,
+    persistent,
+    services,
+)
 from afritech.afritpps.constants import (
     AFRITPPS_COMPONENT,
     AFRITPPS_COMPONENT_ID,
@@ -37,16 +47,26 @@ AFRITPPS_TEST_ROOT = Path("afritech/tests/afritpps")
 REQUIRED_IMPLEMENTATION_FILES = (
     AFRITPPS_ROOT / "__init__.py",
     AFRITPPS_ROOT / "constants.py",
+    AFRITPPS_ROOT / "domain_contracts.py",
+    AFRITPPS_ROOT / "execution_engine.py",
     AFRITPPS_ROOT / "models.py",
     AFRITPPS_ROOT / "metrics.py",
+    AFRITPPS_ROOT / "observability.py",
+    AFRITPPS_ROOT / "orchestration.py",
+    AFRITPPS_ROOT / "persistent.py",
     AFRITPPS_ROOT / "services.py",
 )
 
 REQUIRED_TEST_FILES = (
     AFRITPPS_TEST_ROOT / "__init__.py",
     AFRITPPS_TEST_ROOT / "test_constants.py",
+    AFRITPPS_TEST_ROOT / "test_domain_contracts.py",
+    AFRITPPS_TEST_ROOT / "test_execution_engine.py",
     AFRITPPS_TEST_ROOT / "test_models.py",
     AFRITPPS_TEST_ROOT / "test_metrics.py",
+    AFRITPPS_TEST_ROOT / "test_observability.py",
+    AFRITPPS_TEST_ROOT / "test_orchestration.py",
+    AFRITPPS_TEST_ROOT / "test_persistent_orchestration.py",
     AFRITPPS_TEST_ROOT / "test_services.py",
     AFRITPPS_TEST_ROOT / "test_validator.py",
 )
@@ -68,8 +88,13 @@ FORBIDDEN_CALL_NAMES = (
 
 VALIDATED_MODULES: tuple[ModuleType, ...] = (
     constants,
+    domain_contracts,
+    execution_engine,
     models,
     metrics,
+    observability,
+    orchestration,
+    persistent,
     services,
 )
 
@@ -229,6 +254,89 @@ def validate_behavior() -> None:
         _fail("AfriTPPS operational model must define execution")
 
 
+def validate_trust_kernel_binding() -> None:
+    source = _source(execution_engine)
+    required_text = (
+        "process_command",
+        "process_client_command",
+        "EvidenceBundle",
+        "projection_hash",
+        "AfriTPPSExecutionOutcome",
+        "verified=True",
+    )
+    for needle in required_text:
+        if needle not in source:
+            _fail(f"AfriTPPS execution engine missing trust binding: {needle}")
+
+
+def validate_domain_contracts() -> None:
+    expected_domains = {
+        "AfriRide",
+        "AfriConnect",
+        "AfriPay",
+        "AfriHealth",
+        "AfriLearning",
+        "AfriTalent",
+        "AfriMarket",
+        "AfriHome",
+        "AfriID",
+        "AfriCloud",
+    }
+    if set(domain_contracts.DOMAIN_CONTRACTS) != expected_domains:
+        _fail("AfriTPPS domain contract registry mismatch")
+    if domain_contracts.DOMAIN_CONTRACTS["AfriPay"].execution_allowed is not False:
+        _fail("AfriPay domain contract must remain execution-blocked")
+
+    source = _source(domain_contracts)
+    required_text = (
+        "execute_operation",
+        "execute_domain_operation",
+        "AfriTPPSContractError",
+        "execution_allowed=False",
+        "DESIGNED_BLOCKED",
+    )
+    for needle in required_text:
+        if needle not in source:
+            _fail(f"AfriTPPS domain contracts missing enforcement text: {needle}")
+
+
+def validate_orchestration_binding() -> None:
+    source = _source(orchestration)
+    required_text = (
+        "execute_domain_operation",
+        "dependencies",
+        "outcome.verified",
+        "projection_hash",
+        "fully_verified=True",
+    )
+    for needle in required_text:
+        if needle not in source:
+            _fail(f"AfriTPPS orchestration missing enforcement text: {needle}")
+
+
+def validate_observability_and_control() -> None:
+    observability_source = _source(observability)
+    persistent_source = _source(persistent)
+    for needle in (
+        "OrchestrationView",
+        "StepView",
+        "DependencyEdge",
+        "build_orchestration_view",
+    ):
+        if needle not in observability_source:
+            _fail(f"AfriTPPS observability missing graph view text: {needle}")
+    for needle in (
+        "pause_orchestration",
+        "resume_orchestration",
+        "abort_orchestration",
+        "OperatorActionLog",
+        "PersistentOrchestration",
+        "OrchestrationStepState",
+    ):
+        if needle not in persistent_source:
+            _fail(f"AfriTPPS persistent control missing text: {needle}")
+
+
 def validate_afritpps_execution_surface() -> None:
     validate_required_files()
     validate_required_tests()
@@ -236,6 +344,10 @@ def validate_afritpps_execution_surface() -> None:
     validate_boundary_flags()
     validate_forbidden_imports_and_calls()
     validate_behavior()
+    validate_trust_kernel_binding()
+    validate_domain_contracts()
+    validate_orchestration_binding()
+    validate_observability_and_control()
 
 
 def main() -> int:

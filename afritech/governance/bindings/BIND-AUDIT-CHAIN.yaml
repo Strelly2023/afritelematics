@@ -11,3 +11,13 @@ guards:
   - afritech.guards.audit_chain_guard
 rules:
   - RULE-AUDIT-CHAIN-INTEGRITY
+
+ci:
+  tests:
+    - test_audit_chain_integrity
+    - test_tamper_detection
+    - test_forced_tamper_detection
+  enforcement:
+    - Audit chain guard must preserve hash linkage.
+    - Tampered ORM writes must be rejected.
+    - Raw DB tampering must be detected during replay validation.

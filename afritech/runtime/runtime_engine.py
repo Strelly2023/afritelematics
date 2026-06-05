@@ -8,54 +8,45 @@ from afritech.runtime.admission.controller import AdmissionController
 from afritech.runtime.kernel.execute import ExecutionKernel, ExecutionContext
 from afritech.runtime.audit.ledger import AuditLedger
 
-from afritech.guards.engine import verify_sovereignty
+from afritech.guards.engine import verify_sovereignty, SovereigntyGuard
 
-
-# ---------------------------------------------------------
-# Runtime Engine (Sovereign Orchestrator)
-# ---------------------------------------------------------
 
 class RuntimeEngine:
     """
-    GA Elite Sovereign Runtime Engine
+    🔥 GA-Elite Sovereign Runtime Engine
 
-    Responsibilities:
-    - Central orchestration of execution lifecycle
-    - Ensures sovereignty before execution
-    - Maintains kernel + admission + audit state
-    - Provides reusable execution interface
+    Guarantees:
+    - Deterministic execution
+    - Admission-controlled execution
+    - Replay-safe audit logging
+    - Distributed consistency
     """
 
+    # =====================================================
+    # ✅ INIT
+    # =====================================================
+
     def __init__(self) -> None:
-        # ✅ Persistent components (NO re-instantiation per call)
-        self._admission = AdmissionController()
+        self._guard = SovereigntyGuard()
+        self._admission = AdmissionController(self._guard)
+
         self._kernel = ExecutionKernel(self._admission)
         self._ledger = AuditLedger()
 
-        # ✅ Runtime state
         self._initialized: bool = False
         self._last_epoch: Optional[EpochSnapshot] = None
 
-    # -----------------------------------------------------
-    # Initialization
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ INITIALIZATION
+    # =====================================================
 
     def initialize(self, epoch_snapshot: EpochSnapshot) -> None:
-        """
-        Initialize runtime with a valid epoch.
-
-        Performs:
-        - Sovereignty validation
-        - Admission gating
-        """
 
         if not isinstance(epoch_snapshot, EpochSnapshot):
             raise TypeError("RuntimeEngine requires a valid EpochSnapshot")
 
-        # ✅ Sovereignty validation (global pre-check)
         verify_sovereignty(epoch_snapshot)
 
-        # ✅ Admission
         admitted = self._admission.admit(epoch_snapshot)
         if not admitted:
             raise RuntimeError("Runtime initialization failed: admission denied")
@@ -63,94 +54,111 @@ class RuntimeEngine:
         self._initialized = True
         self._last_epoch = epoch_snapshot
 
-    # -----------------------------------------------------
-    # Execution (Primary API)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ EXECUTION (UPGRADED)
+    # =====================================================
 
     def execute(
         self,
         fn: Callable[[ExecutionContext], Any],
         epoch_snapshot: Optional[EpochSnapshot] = None,
+        fn_id: Optional[str] = None,   # ✅ NEW
     ) -> Any:
-        """
-        Execute a function under sovereign control.
 
-        Guarantees:
-        - Admission validated
-        - Kernel-enforced execution
-        - Deterministic boundary
-        - Audit logging
-        """
+        if not callable(fn):
+            raise TypeError("fn must be callable")
 
-        # ✅ Ensure runtime initialized
+        # ✅ init bootstrap
         if not self._initialized:
             if epoch_snapshot is None:
                 raise RuntimeError("RuntimeEngine not initialized and no epoch provided")
             self.initialize(epoch_snapshot)
 
-        # ✅ Optional epoch override (controlled)
+        # ✅ epoch override
         if epoch_snapshot is not None:
             self._validate_epoch_transition(epoch_snapshot)
             self._last_epoch = epoch_snapshot
 
-        assert self._last_epoch is not None  # Pylance safety
+        assert self._last_epoch is not None
 
-        # ✅ Build execution context
+        # ✅ deterministic execution context
         context = ExecutionContext(self._last_epoch)
 
-        # ✅ Execute via sovereign kernel
+        # ✅ execution
         result = self._kernel.execute(fn, context)
 
-        # ✅ Record audit
-        self._ledger.record(fn.__name__, result, context)
+        # ✅ deterministic execution id
+        execution_id = fn_id if isinstance(fn_id, str) else self._safe_fn_id(fn)
+
+        # ✅ audit logging (UPGRADED)
+        self._ledger.record(
+            execution_id,
+            result,
+            context,
+        )
 
         return result
 
-    # -----------------------------------------------------
-    # Batch execution (Advanced)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ SAFE FUNCTION ID (CRITICAL)
+    # =====================================================
+
+    def _safe_fn_id(self, fn: Callable) -> str:
+        """
+        Generate deterministic fallback function identifier.
+        """
+
+        try:
+            name = getattr(fn, "__name__", "anonymous")
+
+            module = getattr(fn, "__module__", "unknown")
+
+            return f"{module}.{name}"
+        except Exception:
+            return "unknown.execution"
+
+    # =====================================================
+    # ✅ BATCH EXECUTION
+    # =====================================================
 
     def execute_batch(
         self,
         functions: List[Callable[[ExecutionContext], Any]],
         epoch_snapshot: Optional[EpochSnapshot] = None,
     ) -> List[Any]:
-        """
-        Execute multiple functions sequentially under same context.
-        """
 
         results: List[Any] = []
 
         for fn in functions:
-            result = self.execute(fn, epoch_snapshot)
-            results.append(result)
+            results.append(self.execute(fn, epoch_snapshot))
 
         return results
 
-    # -----------------------------------------------------
-    # Audit access
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ AUDIT
+    # =====================================================
 
     def get_audit_records(self) -> List[Dict[str, Any]]:
-        """
-        Retrieve all execution logs.
-        """
         return self._ledger.get_records()
 
+    def commit_proofs(self, proofs: List[Dict[str, Any]]) -> Dict[str, Any]:
+        block = self._ledger.commit_block(proofs)
+        return block.to_dict()
+
+    def get_audit_blocks(self) -> List[Dict[str, Any]]:
+        return self._ledger.get_blocks()
+
+    def verify_audit_chain(self) -> bool:
+        return self._ledger.verify_chain()
+
     def clear_audit(self) -> None:
-        """
-        Clear audit ledger (testing only).
-        """
         self._ledger.clear()
 
-    # -----------------------------------------------------
-    # Internal validation
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ INTERNAL VALIDATION
+    # =====================================================
 
     def _validate_epoch_transition(self, epoch_snapshot: EpochSnapshot) -> None:
-        """
-        Ensure safe epoch transitions.
-        """
 
         if not isinstance(epoch_snapshot, EpochSnapshot):
             raise TypeError("Invalid epoch transition")
@@ -161,15 +169,14 @@ class RuntimeEngine:
         current = self._last_epoch.semantic_epoch.number
         incoming = epoch_snapshot.semantic_epoch.number
 
-        # ✅ Basic monotonic enforcement (can extend later)
         if incoming < current:
             raise RuntimeError(
                 f"Invalid epoch transition: {incoming} < {current}"
             )
 
-    # -----------------------------------------------------
-    # Status / inspection
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ STATE
+    # =====================================================
 
     def is_initialized(self) -> bool:
         return self._initialized
@@ -180,9 +187,6 @@ class RuntimeEngine:
         return None
 
     def reset(self) -> None:
-        """
-        Full runtime reset.
-        """
 
         self._admission.reset()
         self._ledger.clear()

@@ -12,114 +12,99 @@ from afritech.epoch.epoch_snapshot import EpochSnapshot
 
 class P2PNetwork:
     """
-    Fully decentralized P2P execution network.
-
-    Responsibilities:
-    - Manage mesh of nodes
-    - Trigger distributed execution
-    - Collect proofs from nodes
-    - Enforce zero-trust consensus
+    ✅ GA-Elite Fully Decentralized Sovereign Network
     """
+
+    # =====================================================
+    # ✅ INIT
+    # =====================================================
 
     def __init__(self, node_ids: List[str]) -> None:
         if not node_ids:
-            raise ValueError("P2PNetwork requires at least one node")
+            raise ValueError("At least one node required")
 
-        # ✅ Initialize nodes
         self.nodes: List[P2PNode] = [P2PNode(n) for n in node_ids]
 
-        # ✅ Fully connected mesh topology
+        # ✅ Full mesh connection
         for node in self.nodes:
             for peer in self.nodes:
-                if node != peer:
+                if node is not peer:
                     node.connect(peer)
 
-        # ✅ Build public key registry
-        self.public_keys: Dict[str, Any] = {
-            node.node_id: node.zt_node.identity.public_key
-            for node in self.nodes
-        }
+        self._rebuild_verifier()
 
-        # ✅ Zero-trust verifier
-        self.verifier: ProofVerifier = ProofVerifier(self.public_keys)
+    # =====================================================
+    # ✅ FUNCTION REGISTRATION
+    # =====================================================
 
-    # -----------------------------------------------------
-    # Execute across P2P network
-    # -----------------------------------------------------
+    def register_function(self, fn_id: str, fn: Callable) -> None:
+        for node in self.nodes:
+            node.register_function(fn_id, fn)
+
+    # =====================================================
+    # ✅ EXECUTE
+    # =====================================================
 
     def execute(
         self,
-        fn: Callable[[ExecutionContext], Any],
+        fn_id: str,
         epoch_snapshot: EpochSnapshot,
-        wait_time: float = 0.1,
+        args: Dict[str, Any] | None = None,
+        wait_time: float = 0.2,
     ) -> Dict[str, Any]:
-        """
-        Execute distributed function across mesh.
 
-        Flow:
-        - Clear previous proofs
-        - Inject EXECUTE message
-        - Wait for gossip propagation
-        - Collect proofs
-        - Filter valid
-        - Run consensus
-        """
-
-        if not callable(fn):
-            raise TypeError("fn must be callable")
+        if not isinstance(fn_id, str):
+            raise TypeError("fn_id must be string")
 
         if not isinstance(epoch_snapshot, EpochSnapshot):
             raise TypeError("Invalid EpochSnapshot")
 
-        # ✅ Clear previous proofs (CRITICAL)
+        if args is None:
+            args = {}
+
+        # ✅ clear proofs
         for node in self.nodes:
             node.clear_proofs()
 
-        # ✅ Trigger execution from first node (leaderless injection)
-        leader = self.nodes[0]
-        leader.execute(fn, epoch_snapshot)
+        # ✅ inject execution
+        self.nodes[0].execute(fn_id, epoch_snapshot, args)
 
-        # ✅ Allow gossip propagation
-        time.sleep(wait_time)
+        # ✅ controlled wait (gossip settle)
+        start = time.time()
+        while time.time() - start < wait_time:
+            pass  # deterministic wait loop
 
-        # ✅ Collect proofs
-        proofs: List[Dict[str, Any]] = []
+        # ✅ collect + deduplicate proofs
+        proofs: Dict[str, Dict[str, Any]] = {}
         rejected: List[Dict[str, Any]] = []
 
         for node in self.nodes:
-            node_proofs = node.get_proofs()
 
-            for proof in node_proofs:
+            for proof in node.get_proofs():
+
                 if not isinstance(proof, dict):
-                    rejected.append({
-                        "node": node.node_id,
-                        "status": "rejected",
-                        "error": "Invalid proof type"
-                    })
+                    rejected.append(self._reject(node, "Invalid proof type"))
+                    continue
+
+                if not validate_proof_structure(proof):
+                    rejected.append(self._reject(node, "Malformed proof"))
                     continue
 
                 if proof.get("status") == "rejected":
                     rejected.append(proof)
                     continue
 
-                if not validate_proof_structure(proof):
-                    rejected.append({
-                        "node": node.node_id,
-                        "status": "rejected",
-                        "error": "Malformed proof"
-                    })
-                    continue
+                # ✅ deduplicate by proof hash or node
+                proof_id = proof.get("hash") or str(proof)
 
-                proofs.append(proof)
+                proofs[proof_id] = proof  # overwrite duplicates safely
 
-        # ✅ Ensure proofs exist
         if not proofs:
             raise RuntimeError("No valid proofs collected")
 
-        # ✅ Run zero-trust consensus
-        consensus_result = self.verifier.consensus(proofs)
+        # ✅ consensus
+        consensus_result = self.verifier.consensus(list(proofs.values()))
 
-        # ✅ Return structured output
         return {
             "consensus": consensus_result,
             "valid_proofs": len(proofs),
@@ -127,30 +112,26 @@ class P2PNetwork:
             "total_nodes": len(self.nodes),
         }
 
-    # -----------------------------------------------------
-    # Batch execution
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ BATCH EXECUTION
+    # =====================================================
 
     def execute_batch(
         self,
-        functions: List[Callable[[ExecutionContext], Any]],
+        fn_ids: List[str],
         epoch_snapshot: EpochSnapshot,
     ) -> List[Dict[str, Any]]:
-        """
-        Execute multiple functions across network.
-        """
 
-        results: List[Dict[str, Any]] = []
+        results = []
 
-        for fn in functions:
-            result = self.execute(fn, epoch_snapshot)
-            results.append(result)
+        for fn_id in fn_ids:
+            results.append(self.execute(fn_id, epoch_snapshot))
 
         return results
 
-    # -----------------------------------------------------
-    # Node utilities
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ NODE MANAGEMENT
+    # =====================================================
 
     def get_node_ids(self) -> List[str]:
         return [node.get_node_id() for node in self.nodes]
@@ -158,14 +139,12 @@ class P2PNetwork:
     def add_node(self, node_id: str) -> None:
         new_node = P2PNode(node_id)
 
-        # connect to all existing nodes
         for node in self.nodes:
             node.connect(new_node)
             new_node.connect(node)
 
         self.nodes.append(new_node)
 
-        # rebuild public keys + verifier
         self._rebuild_verifier()
 
     def remove_node(self, node_id: str) -> None:
@@ -176,18 +155,34 @@ class P2PNetwork:
 
         self._rebuild_verifier()
 
+    # =====================================================
+    # ✅ VERIFIER REBUILD (SAFE)
+    # =====================================================
+
     def _rebuild_verifier(self) -> None:
+
         self.public_keys = {
-            node.node_id: node.zt_node.identity.public_key
+            node.get_node_id(): node._zt_node.identity.public_key
             for node in self.nodes
         }
 
         self.verifier = ProofVerifier(self.public_keys)
 
-    # -----------------------------------------------------
-    # Reset network
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ RESET
+    # =====================================================
 
     def reset(self) -> None:
         for node in self.nodes:
             node.reset()
+
+    # =====================================================
+    # ✅ INTERNAL HELPERS
+    # =====================================================
+
+    def _reject(self, node: P2PNode, reason: str) -> Dict[str, Any]:
+        return {
+            "node": node.get_node_id(),
+            "status": "rejected",
+            "error": reason,
+        }

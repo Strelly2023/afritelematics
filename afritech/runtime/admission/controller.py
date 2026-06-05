@@ -117,6 +117,7 @@ class AdmissionController:
             metadata={
                 "epoch": getattr(epoch_snapshot, "epoch_id", None),
                 "state": getattr(epoch_snapshot, "state", None),
+                "epoch_snapshot": epoch_snapshot,
             },
         )
 

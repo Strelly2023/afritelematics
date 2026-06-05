@@ -2,81 +2,206 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+import ssl
+import time
 import websockets
 
 from typing import Set, Dict, Any, Optional
 
 from afritech.distributed.p2p.node import P2PNode
-from afritech.distributed.p2p.message import validate_message_structure
+from afritech.distributed.contracts.p2p_interface import GossipMessage
+from afritech.distributed.p2p.message import (
+    message_from_dict,
+    message_to_dict,
+    validate_message_structure,
+)
+from afritech.network.handshake import verify_handshake
+from afritech.network.rate_limit import RateLimiter
 
 
 class NodeServer:
     """
-    WebSocket server for a node.
+    🔐 GA-Elite TLS + Zero-Trust WebSocket server
 
     Responsibilities:
-    - Accept incoming peer connections
-    - Receive and validate messages
-    - Forward valid messages to P2P node
-    - Broadcast outbound messages
-    - Manage connection lifecycle safely
+    - Secure WSS transport
+    - Signed handshake verification
+    - Replay protection (nonce + timestamp)
+    - Rate limiting (DoS protection)
+    - Message validation + forwarding
+    - Safe connection lifecycle
     """
+
+    # =====================================================
+    # ✅ INIT
+    # =====================================================
 
     def __init__(
         self,
         node: P2PNode,
         host: str = "localhost",
         port: int = 8765,
+        certfile: Optional[str] = "server.crt",
+        keyfile: Optional[str] = "server.key",
+        ssl_context: Optional[ssl.SSLContext] = None,
+        require_tls: bool = False,
     ) -> None:
 
         if not isinstance(node, P2PNode):
             raise TypeError("node must be a P2PNode")
 
         self.node: P2PNode = node
-        self.host: str = host
-        self.port: int = port
+        self.host = host
+        self.port = port
 
-        # ✅ Generic connection abstraction (stable across websockets versions)
+        # ✅ TLS configuration (WSS when certificates/context are present)
+        self.ssl_context = ssl_context or self._build_ssl_context(
+            certfile,
+            keyfile,
+            require_tls,
+        )
+
+        # ✅ Active connections
         self.connections: Set[Any] = set()
 
-        # ✅ runtime server instance (no brittle typing)
-        self._server: Optional[Any] = None
+        # ✅ Peer identities
+        self.peer_ids: Dict[Any, str] = {}
 
+        # ✅ Rate limiter
+        self.rate_limiter = RateLimiter()
+
+        # ✅ Replay protection (nonce cache)
+        self._seen_nonces: Dict[str, int] = {}
+        self._nonce_ttl: int = 60  # seconds
+
+        self._server: Optional[Any] = None
         self._running: bool = False
 
-    # -----------------------------------------------------
-    # Connection handler
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ NONCE PROTECTION (GA-ELITE)
+    # =====================================================
+
+    def _cleanup_nonces(self) -> None:
+        """
+        Remove expired nonces (prevents memory growth).
+        """
+        now = int(time.time())
+
+        expired = [
+            nonce for nonce, ts in self._seen_nonces.items()
+            if now - ts > self._nonce_ttl
+        ]
+
+        for nonce in expired:
+            del self._seen_nonces[nonce]
+
+    def _validate_nonce(self, nonce: Any, timestamp: Any) -> bool:
+        """
+        Prevent replay attacks using nonce + timestamp.
+        """
+
+        if not isinstance(nonce, str):
+            return False
+
+        if not isinstance(timestamp, int):
+            return False
+
+        self._cleanup_nonces()
+
+        now = int(time.time())
+
+        # ✅ timestamp validity
+        if abs(now - timestamp) > self._nonce_ttl:
+            return False
+
+        # ✅ replay protection
+        if nonce in self._seen_nonces:
+            return False
+
+        # ✅ store nonce
+        self._seen_nonces[nonce] = timestamp
+
+        return True
+
+    # =====================================================
+    # ✅ CONNECTION HANDLER
+    # =====================================================
 
     async def handler(self, websocket: Any) -> None:
         """
-        Handle a connected peer.
+        Secure connection lifecycle.
         """
 
-        self.connections.add(websocket)
-
         try:
+            # -------------------------------------------------
+            # ✅ STEP 1 — HANDSHAKE
+            # -------------------------------------------------
+
+            raw = await websocket.recv()
+
+            try:
+                handshake = json.loads(raw)
+            except Exception:
+                await websocket.close()
+                return
+
+            if not verify_handshake(handshake):
+                await websocket.close()
+                return
+
+            peer_id = handshake.get("node_id")
+            nonce = handshake.get("nonce")
+            timestamp = handshake.get("timestamp")
+
+            # -------------------------------------------------
+            # ✅ STEP 2 — NONCE VALIDATION (NEW)
+            # -------------------------------------------------
+
+            if not self._validate_nonce(nonce, timestamp):
+                await websocket.close()
+                return
+
+            # -------------------------------------------------
+            # ✅ STEP 3 — RATE LIMIT
+            # -------------------------------------------------
+
+            if not self.rate_limiter.allow(peer_id):
+                await websocket.close()
+                return
+
+            # -------------------------------------------------
+            # ✅ ACCEPT CONNECTION
+            # -------------------------------------------------
+
+            self.connections.add(websocket)
+            self.peer_ids[websocket] = peer_id
+
+            print(f"✅ Secure peer connected: {peer_id}")
+
+            # -------------------------------------------------
+            # ✅ MESSAGE LOOP
+            # -------------------------------------------------
+
             async for raw_message in websocket:
 
-                # ✅ Safe JSON decoding
                 try:
                     data: Dict[str, Any] = json.loads(raw_message)
                 except json.JSONDecodeError:
                     continue
 
-                # ✅ Structural validation (zero-trust boundary)
-                if not validate_message_structure(data):
+                try:
+                    message = message_from_dict(data)
+                except Exception:
                     continue
 
-                # ✅ Forward to P2P node (supports async & sync)
                 try:
-                    result = self.node.receive(data)
+                    result = self.node.receive_message(message)
 
                     if asyncio.iscoroutine(result):
                         await result
 
                 except Exception:
-                    # isolate node-level failures
                     continue
 
         except websockets.exceptions.ConnectionClosed:
@@ -84,15 +209,13 @@ class NodeServer:
 
         finally:
             self.connections.discard(websocket)
+            self.peer_ids.pop(websocket, None)
 
-    # -----------------------------------------------------
-    # Start server
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ START SERVER (TLS ENABLED)
+    # =====================================================
 
     async def start(self) -> None:
-        """
-        Start WebSocket server.
-        """
 
         if self._running:
             return
@@ -101,20 +224,19 @@ class NodeServer:
             self.handler,
             self.host,
             self.port,
+            ssl=self.ssl_context,
             ping_interval=20,
             ping_timeout=20,
         )
 
         self._running = True
 
-        print(f"🌐 Node running at ws://{self.host}:{self.port}")
+        scheme = "wss" if self.ssl_context is not None else "ws"
+        print(f"🌐 Secure node running at {scheme}://{self.host}:{self.port}")
 
         await self._wait_until_closed()
 
     async def _wait_until_closed(self) -> None:
-        """
-        Safe wait loop that avoids typing issues.
-        """
         if self._server is None:
             return
 
@@ -123,31 +245,17 @@ class NodeServer:
         except Exception:
             pass
 
-    # -----------------------------------------------------
-    # Background run
-    # -----------------------------------------------------
-
-    def run_background(self) -> asyncio.Task:
-        """
-        Start server as background task.
-        """
-        return asyncio.create_task(self.start())
-
-    # -----------------------------------------------------
-    # Stop server
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ STOP SERVER
+    # =====================================================
 
     async def stop(self) -> None:
-        """
-        Stop server gracefully.
-        """
 
         if not self._running:
             return
 
         self._running = False
 
-        # ✅ Close server safely
         if self._server is not None:
             try:
                 self._server.close()
@@ -155,13 +263,14 @@ class NodeServer:
             except Exception:
                 pass
 
-        # ✅ Close all active connections
         await asyncio.gather(
             *(self._safe_close(conn) for conn in list(self.connections)),
             return_exceptions=True,
         )
 
         self.connections.clear()
+        self.peer_ids.clear()
+        self._seen_nonces.clear()
 
     async def _safe_close(self, conn: Any) -> None:
         try:
@@ -169,22 +278,24 @@ class NodeServer:
         except Exception:
             pass
 
-    # -----------------------------------------------------
-    # Broadcast
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ BROADCAST
+    # =====================================================
 
-    async def broadcast(self, message: Dict[str, Any]) -> None:
-        """
-        Send message to all connected peers.
-        """
+    async def broadcast(self, message: GossipMessage | Dict[str, Any]) -> None:
 
         if not self.connections:
             return
 
-        # ✅ Deterministic serialization (important for distributed systems)
         try:
+            wire_message = (
+                message_to_dict(message)
+                if isinstance(message, GossipMessage)
+                else message
+            )
+
             payload = json.dumps(
-                message,
+                wire_message,
                 separators=(",", ":"),
                 sort_keys=True,
                 default=str,
@@ -192,44 +303,48 @@ class NodeServer:
         except Exception:
             return
 
-        # ✅ Concurrent broadcast (faster + scalable)
-        tasks = []
-        dead_connections: Set[Any] = set()
+        dead: Set[Any] = set()
 
-        for conn in self.connections:
-            tasks.append(self._send_safe(conn, payload, dead_connections))
+        await asyncio.gather(
+            *(self._send_safe(conn, payload, dead) for conn in self.connections),
+            return_exceptions=True,
+        )
 
-        await asyncio.gather(*tasks, return_exceptions=True)
-
-        # ✅ Cleanup dead connections
-        for conn in dead_connections:
+        for conn in dead:
             self.connections.discard(conn)
+            self.peer_ids.pop(conn, None)
 
     async def _send_safe(
         self,
         conn: Any,
         payload: str,
-        dead_connections: Set[Any],
+        dead: Set[Any],
     ) -> None:
         try:
             await conn.send(payload)
         except Exception:
-            dead_connections.add(conn)
+            dead.add(conn)
 
-    # -----------------------------------------------------
-    # Local injection
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ LOCAL INJECTION
+    # =====================================================
 
-    def inject(self, message: Dict[str, Any]) -> None:
-        """
-        Inject message directly into node (no network).
-        """
+    def inject(self, message: GossipMessage | Dict[str, Any]) -> None:
 
-        if not validate_message_structure(message):
+        try:
+            gossip_message = (
+                message
+                if isinstance(message, GossipMessage)
+                else message_from_dict(message)
+            )
+        except Exception:
+            return
+
+        if not validate_message_structure(gossip_message):
             return
 
         try:
-            result = self.node.receive(message)
+            result = self.node.receive_message(gossip_message)
 
             if asyncio.iscoroutine(result):
                 asyncio.create_task(result)
@@ -237,9 +352,25 @@ class NodeServer:
         except Exception:
             pass
 
-    # -----------------------------------------------------
-    # State
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ STATE
+    # =====================================================
 
     def is_running(self) -> bool:
         return self._running
+
+    def _build_ssl_context(
+        self,
+        certfile: Optional[str],
+        keyfile: Optional[str],
+        require_tls: bool,
+    ) -> Optional[ssl.SSLContext]:
+        if certfile and keyfile and os.path.exists(certfile) and os.path.exists(keyfile):
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+            return context
+
+        if require_tls:
+            raise FileNotFoundError("TLS certificate and key are required")
+
+        return None

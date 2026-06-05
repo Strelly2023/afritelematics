@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
@@ -12,24 +12,23 @@ from cryptography.hazmat.primitives import serialization
 
 class NodeIdentity:
     """
-    Cryptographic identity for a sovereign node.
+    🔐 GA-Elite Sovereign Node Identity
 
     Capabilities:
-    - Sign execution results
-    - Verify signatures
-    - Export public key for network sharing
-    - Deterministic message encoding
+    - Deterministic signing (dict + bytes)
+    - Signature verification (local + external)
+    - Network-safe public key encoding (hex)
+    - Compatible with handshake + zero-trust layer
     """
 
-    def __init__(self, private_key: Ed25519PrivateKey | None = None) -> None:
-        """
-        Initialize identity.
+    # =====================================================
+    # ✅ INIT
+    # =====================================================
 
-        If no private key is provided, a new one is generated.
-        """
+    def __init__(self, private_key: Ed25519PrivateKey | None = None) -> None:
 
         if private_key is None:
-            self._private_key: Ed25519PrivateKey = Ed25519PrivateKey.generate()
+            self._private_key = Ed25519PrivateKey.generate()
         else:
             if not isinstance(private_key, Ed25519PrivateKey):
                 raise TypeError("Invalid private key")
@@ -37,55 +36,67 @@ class NodeIdentity:
 
         self.public_key: Ed25519PublicKey = self._private_key.public_key()
 
-    # -----------------------------------------------------
-    # Signing
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ SIGNING
+    # =====================================================
 
-    def sign(self, data: Dict[str, Any]) -> bytes:
+    def sign(self, data: Union[Dict[str, Any], bytes]) -> bytes:
         """
-        Sign structured data deterministically.
+        Sign structured or raw data deterministically.
         """
 
-        message = self._serialize(data)
+        if isinstance(data, bytes):
+            message = data
+        else:
+            message = self._serialize(data)
+
         return self._private_key.sign(message)
 
-    # -----------------------------------------------------
-    # Verification (self)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ VERIFY (SELF)
+    # =====================================================
 
-    def verify(self, signature: bytes, data: Dict[str, Any]) -> bool:
+    def verify(
+        self,
+        signature: bytes,
+        data: Union[Dict[str, Any], bytes],
+    ) -> bool:
         """
-        Verify signature using this node's public key.
+        Verify using own public key.
         """
 
         try:
-            message = self._serialize(data)
+            message = data if isinstance(data, bytes) else self._serialize(data)
             self.public_key.verify(signature, message)
             return True
-
         except Exception:
             return False
 
-    # -----------------------------------------------------
-    # Verification (external key)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ VERIFY (EXTERNAL - HEX KEY)
+    # =====================================================
 
     @staticmethod
-    def verify_with_public_key(
-        public_key: Ed25519PublicKey,
+    def verify_hex(
+        public_key_hex: str,
         signature: bytes,
-        data: Dict[str, Any],
+        data: Union[Dict[str, Any], bytes],
     ) -> bool:
         """
-        Verify signature using an external public key.
+        Verify signature using public key in hex format.
         """
 
         try:
-            message = json.dumps(
-                data,
-                sort_keys=True,
-                default=str
-            ).encode("utf-8")
+            if not isinstance(public_key_hex, str):
+                return False
+
+            public_key_bytes = bytes.fromhex(public_key_hex)
+            public_key = Ed25519PublicKey.from_public_bytes(public_key_bytes)
+
+            if isinstance(data, bytes):
+                message = data
+            else:
+                message = NodeIdentity._serialize_static(data)
 
             public_key.verify(signature, message)
             return True
@@ -93,84 +104,81 @@ class NodeIdentity:
         except Exception:
             return False
 
-    # -----------------------------------------------------
-    # Serialization (deterministic)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ SERIALIZATION (DETERMINISTIC)
+    # =====================================================
 
     def _serialize(self, data: Dict[str, Any]) -> bytes:
+        return self._serialize_static(data)
+
+    @staticmethod
+    def _serialize_static(data: Dict[str, Any]) -> bytes:
         """
-        Deterministic JSON serialization for signing.
+        Canonical JSON encoding.
         """
 
         try:
             serialized = json.dumps(
                 data,
-                sort_keys=True,   # ✅ deterministic ordering
-                separators=(",", ":"),  # ✅ no whitespace differences
-                default=str       # ✅ fallback for non-serializable data
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
             )
         except Exception:
-            # fallback safety
             serialized = str(data)
 
         return serialized.encode("utf-8")
 
-    # -----------------------------------------------------
-    # Public key export
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ PUBLIC KEY EXPORT (NETWORK FRIENDLY)
+    # =====================================================
 
-    def serialize_public_key(self) -> bytes:
-        """
-        Export public key (raw bytes).
-        """
-
+    def get_public_key_bytes(self) -> bytes:
         return self.public_key.public_bytes(
             encoding=serialization.Encoding.Raw,
             format=serialization.PublicFormat.Raw,
         )
 
-    # -----------------------------------------------------
-    # Public key import
-    # -----------------------------------------------------
+    def get_public_key_hex(self) -> str:
+        """
+        ✅ Used as node_id in network layer
+        """
+        return self.get_public_key_bytes().hex()
+
+    def serialize_public_key(self) -> bytes:
+        """
+        Backward-compatible public key export used by zero-trust nodes.
+        """
+        return self.get_public_key_bytes()
+
+    # =====================================================
+    # ✅ PUBLIC KEY IMPORT
+    # =====================================================
 
     @staticmethod
     def load_public_key(data: bytes) -> Ed25519PublicKey:
-        """
-        Load public key from raw bytes.
-        """
-
         if not isinstance(data, (bytes, bytearray)):
             raise TypeError("Public key must be bytes")
 
         return Ed25519PublicKey.from_public_bytes(data)
 
-    # -----------------------------------------------------
-    # Private key export (secure use only)
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ PRIVATE KEY EXPORT
+    # =====================================================
 
     def export_private_key(self) -> bytes:
-        """
-        Export private key (raw bytes).
-
-        ⚠️ WARNING: Store securely.
-        """
-
         return self._private_key.private_bytes(
             encoding=serialization.Encoding.Raw,
             format=serialization.PrivateFormat.Raw,
             encryption_algorithm=serialization.NoEncryption(),
         )
 
-    # -----------------------------------------------------
-    # Private key import
-    # -----------------------------------------------------
+    # =====================================================
+    # ✅ PRIVATE KEY IMPORT
+    # =====================================================
 
     @staticmethod
     def load_private_key(data: bytes) -> Ed25519PrivateKey:
-        """
-        Load private key from raw bytes.
-        """
-
         if not isinstance(data, (bytes, bytearray)):
             raise TypeError("Private key must be bytes")
 

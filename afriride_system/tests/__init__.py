@@ -1,0 +1,1 @@
+"""AfriRide system test package."""

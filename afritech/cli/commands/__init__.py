@@ -1,0 +1,1 @@
+"""AfriTech CLI commands."""

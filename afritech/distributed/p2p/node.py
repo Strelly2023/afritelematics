@@ -18,18 +18,7 @@ from afritech.epoch.epoch_snapshot import EpochSnapshot
 
 class P2PNode(NodeInterface):
     """
-    Fully autonomous peer node (GA Elite compliant).
-
-    Responsibilities:
-    - Participate in gossip network
-    - Execute distributed functions
-    - Generate zero-trust proofs
-    - Propagate results across mesh
-
-    Guarantees:
-    - Deterministic behavior
-    - No circular dependencies with gossip
-    - Contract-compliant message handling
+    GA-Elite Autonomous Sovereign P2P Node
     """
 
     # =====================================================
@@ -40,21 +29,30 @@ class P2PNode(NodeInterface):
         if not isinstance(node_id, str):
             raise TypeError("node_id must be a string")
 
-        self._node_id: str = node_id
-        self._zt_node: ZeroTrustNode = ZeroTrustNode(node_id)
-        self._gossip: GossipEngine = GossipEngine(node_id)
+        self._node_id = node_id
+        self._zt_node = ZeroTrustNode(node_id)
+        self._gossip = GossipEngine(node_id)
 
         self._proofs: List[Dict[str, Any]] = []
+
+        # ✅ FUNCTION REGISTRY (CRITICAL FIX)
+        self._registry: Dict[str, Callable] = {}
+
+    # =====================================================
+    # ✅ FUNCTION REGISTRATION
+    # =====================================================
+
+    def register_function(self, fn_id: str, fn: Callable) -> None:
+        if not isinstance(fn_id, str) or not callable(fn):
+            raise TypeError("Invalid function registration")
+
+        self._registry[fn_id] = fn
 
     # =====================================================
     # ✅ PEER MANAGEMENT
     # =====================================================
 
     def connect(self, peer: NodeInterface) -> None:
-        """
-        Connect to another node.
-        """
-
         if peer is None:
             return
 
@@ -64,14 +62,10 @@ class P2PNode(NodeInterface):
         self._gossip.add_peer(peer)
 
     # =====================================================
-    # ✅ CONTRACT ENTRYPOINT (STRICT)
+    # ✅ ENTRYPOINT
     # =====================================================
 
     def receive_message(self, message: GossipMessage) -> None:
-        """
-        Entry point required by NodeInterface.
-        """
-
         self._receive_internal(message)
 
     # =====================================================
@@ -79,18 +73,13 @@ class P2PNode(NodeInterface):
     # =====================================================
 
     def _receive_internal(self, message: GossipMessage) -> None:
-        """
-        Internal message processing.
-        """
-
         try:
             if not validate_message_structure(message):
                 return
 
-            # ✅ Extract structured payload
             payload_root = message.payload
-            msg_type = payload_root.get("type")
-            payload = payload_root.get("payload", {})
+            msg_type = payload_root.type
+            payload = payload_root.payload
 
             if msg_type == "EXECUTE":
                 self._handle_execute(payload)
@@ -98,29 +87,42 @@ class P2PNode(NodeInterface):
             elif msg_type == "PROOF":
                 self._handle_proof(payload)
 
-            # ✅ Propagation handled by gossip engine
+            # ✅ Gossip propagation (loop-safe in engine)
             self._gossip.broadcast(message)
 
         except Exception:
-            return  # fail-safe
+            return
 
     # =====================================================
-    # ✅ EXECUTION HANDLER
+    # ✅ EXECUTION HANDLER (FIXED)
     # =====================================================
 
     def _handle_execute(self, payload: Dict[str, Any]) -> None:
-        fn = payload.get("fn")
+
+        fn_id = payload.get("fn_id")
+        args = payload.get("args", {})
         epoch_snapshot = payload.get("epoch")
 
-        if not callable(fn):
+        if not isinstance(fn_id, str):
             return
 
         if not isinstance(epoch_snapshot, EpochSnapshot):
             return
 
+        fn = self._registry.get(fn_id)
+
+        if not callable(fn):
+            return
+
         try:
-            # ✅ Execute via zero-trust node
-            proof = self._zt_node.execute(fn, epoch_snapshot)
+            proof = self._zt_node.execute(
+                lambda ctx: fn(ctx, **args),
+                epoch_snapshot,
+                fn_id=fn_id,
+            )
+
+            if isinstance(proof, dict):
+                self._proofs.append(proof)
 
             proof_msg = build_message(
                 "PROOF",
@@ -140,43 +142,45 @@ class P2PNode(NodeInterface):
     def _handle_proof(self, payload: Dict[str, Any]) -> None:
         proof = payload.get("proof")
 
-        if not isinstance(proof, dict):
-            return
-
-        self._proofs.append(proof)
+        if isinstance(proof, dict):
+            self._proofs.append(proof)
 
     # =====================================================
-    # ✅ EXECUTION ENTRYPOINT
+    # ✅ EXECUTION ENTRYPOINT (FIXED)
     # =====================================================
 
     def execute(
         self,
-        fn: Callable[[ExecutionContext], Any],
+        fn_id: str,
         epoch_snapshot: EpochSnapshot,
-    ) -> None:
-        """
-        Inject execution into the P2P network.
-        """
+        args: Dict[str, Any] | None = None,
+    ) -> GossipMessage:
 
-        if not callable(fn):
-            raise TypeError("fn must be callable")
+        if not isinstance(fn_id, str):
+            raise TypeError("fn_id must be string")
 
         if not isinstance(epoch_snapshot, EpochSnapshot):
             raise TypeError("Invalid EpochSnapshot")
 
+        if args is None:
+            args = {}
+
         message = build_message(
             "EXECUTE",
             {
-                "fn": fn,
+                "fn_id": fn_id,
+                "args": args,
                 "epoch": epoch_snapshot,
             },
             self._node_id,
         )
 
-        self._gossip.broadcast(message)
+        self._receive_internal(message)
+
+        return message
 
     # =====================================================
-    # ✅ STATE MANAGEMENT
+    # ✅ STATE
     # =====================================================
 
     def get_proofs(self) -> List[Dict[str, Any]]:
@@ -192,10 +196,7 @@ class P2PNode(NodeInterface):
         return self._gossip.get_peer_ids()
 
     def reset(self) -> None:
-        """
-        Reset node state.
-        """
-
         self._zt_node.reset()
         self._gossip.reset()
         self._proofs.clear()
+        self._registry.clear()

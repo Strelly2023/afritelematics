@@ -39,6 +39,7 @@ class ZeroTrustNode:
         self,
         fn: Callable[[ExecutionContext], Any],
         epoch_snapshot: EpochSnapshot,
+        fn_id: str | None = None,
     ) -> Dict[str, Any]:
         """
         Execute and return a signed cryptographic proof.
@@ -64,10 +65,10 @@ class ZeroTrustNode:
             self._validate_epoch(epoch_snapshot)
 
             # ✅ Execute under sovereign runtime
-            result = self.engine.execute(fn, epoch_snapshot)
+            result = self.engine.execute(fn, epoch_snapshot, fn_id=fn_id)
 
             # ✅ Deterministic signing payload
-            payload = self._build_payload(result, epoch_snapshot)
+            payload = self._build_payload(result, epoch_snapshot, fn_id)
 
             signature = self.identity.sign(payload)
 
@@ -99,6 +100,7 @@ class ZeroTrustNode:
         self,
         result: Any,
         epoch_snapshot: EpochSnapshot,
+        fn_id: str | None = None,
     ) -> Dict[str, Any]:
         """
         Canonical payload used for signing.
@@ -109,6 +111,7 @@ class ZeroTrustNode:
             "result": result,
             "metadata": {
                 "epoch": epoch_snapshot.semantic_epoch.number,
+                "contract_id": fn_id,
             },
         }
 

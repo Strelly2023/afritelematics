@@ -1,4 +1,4 @@
-"""Validate economic trust proof for production readiness."""
+"""Validate simulated economic trust proof without activating AfriPay."""
 
 from __future__ import annotations
 
@@ -96,7 +96,7 @@ def main() -> int:
         print(f"Economic trust validation FAILED: {exc}")
         return 1
     print(
-        "Economic trust validation PASSED: "
+        "Economic trust validation PASSED (simulation only; AfriPay inactive): "
         f"economic_replay_hash={report.economic_replay_hash} "
         f"report_hash={report.report_hash()}"
     )

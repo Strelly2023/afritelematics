@@ -277,13 +277,21 @@ class SovereigntyGuard(Guard):
             )
 
         try:
-            verify_authority_for_epoch(epoch_snapshot)
+            verify_sovereignty(epoch_snapshot)
 
             decision = GuardDecision(
                 allowed=True,
                 reason="Sovereignty check passed",
                 code="OK",
                 metadata={},
+            )
+
+        except ConstitutionalViolation as e:
+            decision = GuardDecision(
+                allowed=False,
+                reason=str(e),
+                code="CONSTITUTIONAL_VIOLATION",
+                metadata={"violation_class": e.violation_class.name},
             )
 
         except Exception as e:

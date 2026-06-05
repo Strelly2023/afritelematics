@@ -90,6 +90,11 @@ bindings:
       - RULE-014-2
       - RULE-014-3
       - RULE-014-4
+      - RULE-014-8
+      - RULE-014-9
+      - RULE-014-10
+      - RULE-014-11
+      - RULE-014-12
 
   # ---------------------------------------------------------
   # ✅ MERKLE VALIDATION GUARD
@@ -184,4 +189,4 @@ ci:
     - test_verifier_executes_all_steps
     - test_missing_binding_fails
     - test_invalid_guard_output_fails
-    - test_successful_proof_verification    
+    - test_successful_proof_verification

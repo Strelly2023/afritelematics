@@ -1,11 +1,32 @@
 from __future__ import annotations
 
-from typing import Protocol, List, Any
+from typing import Protocol, List, Dict, Any
 from dataclasses import dataclass
 
 
 # ============================================================
-# ✅ Message Model (Deterministic)
+# ✅ Payload Model (Deterministic Schema)
+# ============================================================
+
+@dataclass(frozen=True)
+class MessagePayload:
+    """
+    Strongly-typed message payload structure.
+
+    Guarantees:
+    - deterministic shape
+    - JSON-serializable
+    - replay-safe
+    """
+
+    type: str
+    payload: Dict[str, Any]
+    ttl: int
+    version: str
+
+
+# ============================================================
+# ✅ Gossip Message (FINAL MODEL)
 # ============================================================
 
 @dataclass(frozen=True)
@@ -13,26 +34,29 @@ class GossipMessage:
     """
     Deterministic gossip message.
 
-    Must be:
+    MUST be:
+    - immutable
+    - hashable
     - serializable
     - replay-safe
     """
 
     message_id: str
     sender_id: str
-    payload: Any
+    payload: MessagePayload
     timestamp: int
 
 
 # ============================================================
-# ✅ Node Interface
+# ✅ Node Interface (STRICT CONTRACT)
 # ============================================================
 
 class NodeInterface(Protocol):
     """
     Contract for P2P nodes.
 
-    MUST NOT import gossip implementation.
+    MUST NOT depend on gossip implementation.
+    MUST remain minimal and stable.
     """
 
     def get_node_id(self) -> str:
@@ -43,14 +67,15 @@ class NodeInterface(Protocol):
 
 
 # ============================================================
-# ✅ Gossip Interface
+# ✅ Gossip Interface (STRICT CONTRACT)
 # ============================================================
 
 class GossipInterface(Protocol):
     """
     Contract for gossip layer.
 
-    MUST NOT import node implementation.
+    MUST NOT depend on node implementation.
+    MUST enforce deterministic message flow.
     """
 
     def broadcast(self, message: GossipMessage) -> None:
@@ -64,11 +89,12 @@ class GossipInterface(Protocol):
 
 
 # ============================================================
-# ✅ Export
+# ✅ EXPORTS
 # ============================================================
 
 __all__ = [
     "GossipMessage",
+    "MessagePayload",
     "NodeInterface",
     "GossipInterface",
 ]

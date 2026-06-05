@@ -18,6 +18,33 @@ from afritech.afritpps.models import (
     AfriTPPSProgram,
     AfriTPPSWorkflow,
 )
+from afritech.afritpps.execution_engine import (
+    AfriTPPSExecutionOutcome,
+    AfriTPPSOperationIntent,
+    execute_operation,
+)
+from afritech.afritpps.domain_contracts import (
+    DOMAIN_CONTRACTS,
+    execute_domain_operation,
+    get_domain_contract,
+)
+from afritech.afritpps.orchestration import (
+    AfriTPPSOrchestrationIntent,
+    AfriTPPSOrchestrationOutcome,
+    OrchestrationStep,
+    execute_orchestration,
+)
+from afritech.afritpps.observability import (
+    build_orchestration_view,
+    list_orchestration_views,
+)
+from afritech.afritpps.persistent import (
+    abort_orchestration,
+    create_persistent_orchestration,
+    execute_persistent_orchestration,
+    pause_orchestration,
+    resume_orchestration,
+)
 
 
 def build_program_from_mappings(
@@ -59,4 +86,21 @@ def build_operational_model(program: AfriTPPSProgram) -> dict[str, object]:
 __all__ = [
     "build_program_from_mappings",
     "build_operational_model",
+    "AfriTPPSExecutionOutcome",
+    "AfriTPPSOperationIntent",
+    "DOMAIN_CONTRACTS",
+    "AfriTPPSOrchestrationIntent",
+    "AfriTPPSOrchestrationOutcome",
+    "OrchestrationStep",
+    "execute_domain_operation",
+    "execute_orchestration",
+    "execute_operation",
+    "execute_persistent_orchestration",
+    "get_domain_contract",
+    "build_orchestration_view",
+    "create_persistent_orchestration",
+    "list_orchestration_views",
+    "pause_orchestration",
+    "resume_orchestration",
+    "abort_orchestration",
 ]

@@ -86,6 +86,22 @@ allowed_occurrences:
     class: validator_policy
     reason: implementation-state validator composes split registry state vocabulary
 
+  - path: afritech/ci/africonnecttl_phase2_validator.py
+    class: validator_policy
+    reason: validates AfriConnectTL Phase 2 planned-only expansion contract
+
+  - path: afritech/services/africonnecttl/contracts.py
+    class: transition_policy
+    reason: declares AfriConnectTL as planned-only and forbids live deployment claims
+
+  - path: afritech/services/africonnecttl/models.py
+    class: state_vocabulary
+    reason: defines AfriConnectTL planned status vocabulary without activating runtime deployment
+
+  - path: afritech/services/africonnecttl/registry.py
+    class: transition_policy
+    reason: declares AfriConnectTL Phase 2 lifecycle, evidence, and planned-only replay authority
+
   - path: afritech/proof/constitutional_profiles.py
     class: documentation_history
     reason: module docstring asserts non-partial profile semantics
@@ -145,6 +161,14 @@ allowed_occurrences:
   - path: afritech/tests/ci/test_afriride_phase5_closure_validator.py
     class: documentation_history
     reason: validates historical Wave 6 planned-state references without creating unresolved runtime surfaces
+
+  - path: afritech/tests/distributed/test_africonnecttl_surface.py
+    class: validator_policy
+    reason: validates AfriConnectTL planned-only authority boundary without declaring live deployment
+
+  - path: afritech/tests/distributed/test_africonnecttl_phase2_validator.py
+    class: validator_policy
+    reason: validates AfriConnectTL Phase 2 planned-only lifecycle and stop-condition contract
 
 completion:
   empty: false

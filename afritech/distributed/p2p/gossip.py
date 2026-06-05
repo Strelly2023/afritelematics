@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import List, Set, TYPE_CHECKING
+import time
+from typing import List, Dict, TYPE_CHECKING
 
 from afritech.distributed.p2p.message import (
     validate_message_structure,
@@ -15,18 +16,13 @@ if TYPE_CHECKING:
 
 class GossipEngine:
     """
-    Gossip propagation layer (GA Elite compliant).
-
-    Responsibilities:
-    - Broadcast messages across peers
-    - Prevent message loops (seen set)
-    - Control propagation using TTL
-    - Validate messages before forwarding
+    🔥 GA-Elite Gossip Propagation Engine
 
     Guarantees:
-    - No circular dependencies (uses NodeInterface only)
-    - Deterministic propagation behavior
-    - Fail-safe execution (never crashes)
+    - loop prevention
+    - bounded memory (seen cache)
+    - TTL propagation control
+    - deterministic behavior
     """
 
     # =====================================================
@@ -37,27 +33,28 @@ class GossipEngine:
         if not isinstance(node_id, str):
             raise TypeError("node_id must be a string")
 
-        self.node_id: str = node_id
+        self.node_id = node_id
+
         self._peers: List[NodeInterface] = []
-        self._seen_messages: Set[str] = set()
+
+        # ✅ message_id → timestamp
+        self._seen_messages: Dict[str, float] = {}
+
+        # ✅ cache TTL (seconds)
+        self._seen_ttl: float = 60.0
 
     # =====================================================
     # ✅ PEER MANAGEMENT
     # =====================================================
 
     def add_peer(self, peer: NodeInterface) -> None:
-        """
-        Add a peer to gossip network.
-
-        Rules:
-        - No self-reference
-        - No duplicates
-        """
-
         if peer is None:
             return
 
-        peer_id = getattr(peer, "get_node_id", lambda: None)()
+        try:
+            peer_id = peer.get_node_id()
+        except Exception:
+            return
 
         if peer_id == self.node_id:
             return
@@ -66,95 +63,88 @@ class GossipEngine:
             self._peers.append(peer)
 
     def get_peers(self) -> List[NodeInterface]:
-        """
-        Return peer list (read-only copy).
-        """
         return list(self._peers)
 
     # =====================================================
-    # ✅ BROADCAST
+    # ✅ BROADCAST (CORE)
     # =====================================================
 
     def broadcast(self, message: GossipMessage) -> None:
-        """
-        Broadcast message to all peers.
-
-        Flow:
-        - validate message
-        - process locally
-        - forward to peers (TTL-controlled)
-        """
-
         try:
             # ✅ Step 1: Validate structure
             if not validate_message_structure(message):
                 return
 
-            # ✅ Step 2: Process locally
+            # ✅ Step 2: Local handling + dedup
             if not self._handle_message(message):
                 return
 
-            # ✅ Step 3: Decrement TTL
-            forwarded_message = decrement_ttl(message)
+            # ✅ Step 3: TTL decrement
+            forwarded = decrement_ttl(message)
 
-            # ✅ Step 4: Stop if expired
-            if is_expired(forwarded_message):
+            if is_expired(forwarded):
                 return
 
-            # ✅ Step 5: Forward to peers
+            # ✅ Step 4: Propagate
             for peer in self._peers:
                 try:
-                    peer.receive_message(forwarded_message)
+                    peer.receive_message(forwarded)
                 except Exception:
-                    continue  # fail-safe
+                    continue
 
         except Exception:
-            return  # global fail-safe
+            return  # fail-safe
 
     # =====================================================
     # ✅ INTERNAL MESSAGE HANDLING
     # =====================================================
 
     def _handle_message(self, message: GossipMessage) -> bool:
-        """
-        Process incoming message.
+        msg_id = getattr(message, "message_id", None)
 
-        Returns:
-            True → propagate further
-            False → stop propagation
-        """
-
-        msg_id = message.message_id
-
-        # ✅ Reject invalid ID
         if not isinstance(msg_id, str):
             return False
 
-        # ✅ Prevent duplicate processing
+        now = time.time()
+
+        # ✅ cleanup BEFORE check
+        self._cleanup_seen(now)
+
+        # ✅ duplicate filtering
         if msg_id in self._seen_messages:
             return False
 
-        # ✅ Mark as seen
-        self._seen_messages.add(msg_id)
-
-        # ✅ Reject expired messages
+        # ✅ TTL enforcement
         if is_expired(message):
             return False
 
+        # ✅ mark as seen
+        self._seen_messages[msg_id] = now
+
         return True
+
+    # =====================================================
+    # ✅ CLEANUP (CRITICAL FIX)
+    # =====================================================
+
+    def _cleanup_seen(self, now: float) -> None:
+        """
+        Prevent unbounded memory growth.
+        """
+
+        expired_keys = [
+            msg_id for msg_id, ts in self._seen_messages.items()
+            if now - ts > self._seen_ttl
+        ]
+
+        for key in expired_keys:
+            del self._seen_messages[key]
 
     # =====================================================
     # ✅ INBOUND ENTRYPOINT
     # =====================================================
 
     def receive(self, message: GossipMessage) -> None:
-        """
-        Receive message from external peer.
-
-        This method is optional if using NodeInterface correctly,
-        but kept for compatibility/debug/testing.
-        """
-
         self.broadcast(message)
 
     # =====================================================
@@ -162,10 +152,6 @@ class GossipEngine:
     # =====================================================
 
     def get_peer_ids(self) -> List[str]:
-        """
-        Return peer IDs.
-        """
-
         peer_ids: List[str] = []
 
         for peer in self._peers:
@@ -177,8 +163,4 @@ class GossipEngine:
         return peer_ids
 
     def reset(self) -> None:
-        """
-        Reset gossip state.
-        """
-
         self._seen_messages.clear()

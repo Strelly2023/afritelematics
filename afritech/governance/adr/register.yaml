@@ -2,6 +2,9 @@ schema: afritech.governance.adr.register.v1
 status: ACTIVE
 authority: GOVERNANCE
 adrs:
+  - id: ADR-0014
+    path: afritech/governance/adr/ADR-0014-cross-system-proof-format.yaml
+    status: ACCEPTED
   - id: ADR-0015
     path: afritech/governance/adr/ADR-0015-continuity-proof-aggregation.yaml
     status: ACCEPTED
@@ -10,4 +13,7 @@ adrs:
     status: ACCEPTED
   - id: ADR-0018
     path: afritech/governance/adr/ADR-0018-cross-system-continuity.yaml
+    status: ACCEPTED
+  - id: ADR-0019
+    path: afritech/governance/adr/ADR-0019-afritech-constitution-v1-binding.yaml
     status: ACCEPTED

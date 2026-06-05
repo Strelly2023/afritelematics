@@ -272,6 +272,13 @@ def run_validation(
     print(f"Total execution time: {total_duration:.4f}s")
     print("Deterministic constitutional closure achieved")
 
+    print("\nRunning classification enforcement...")
+    from afritech.ci.classification_ci_validator import (
+        run_classification_ci_validation,
+    )
+
+    run_classification_ci_validation()
+
     return tuple(results)
 
 
