@@ -15,6 +15,11 @@ import type {
   EarningsSummary,
   TripSnapshot,
 } from "../models/driver";
+import { PILOT_LATENCY_THRESHOLD_MS } from "../config/environment";
+import {
+  capturePilotEvidence,
+  latencyVerdict,
+} from "../services/pilotEvidence.service";
 
 type AvailabilityResponse = {
   driver_id: string;
@@ -120,6 +125,7 @@ export async function acceptRide(
   rideId: string,
   driverId = "D001",
 ): Promise<TripSnapshot> {
+  const startedAt = Date.now();
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "accepted");
   }
@@ -128,6 +134,19 @@ export async function acceptRide(
     method: "POST",
     body: { driver_id: driverId },
   });
+
+  const latencyMs = Date.now() - startedAt;
+  void capturePilotEvidence(
+    driverId,
+    "ride_accept_latency",
+    {
+      ride_id: rideId,
+      latency_ms: latencyMs,
+      status: result.status,
+    },
+    { expected_max_latency_ms: PILOT_LATENCY_THRESHOLD_MS },
+    latencyVerdict(latencyMs),
+  ).catch(() => undefined);
 
   return mapTrip(result);
 }
@@ -148,14 +167,17 @@ export async function rejectRide(
   return mapTrip(result);
 }
 
-export async function markArrived(rideId: string): Promise<TripSnapshot> {
+export async function markArrived(
+  rideId: string,
+  driverId = "D001",
+): Promise<TripSnapshot> {
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "arrived");
   }
 
   const result = await apiRequest<TripResponse>("/ride/arrive", {
     method: "POST",
-    body: { ride_id: rideId },
+    body: { ride_id: rideId, driver_id: driverId },
   });
 
   return mapTrip(result);

@@ -17,6 +17,7 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'readJson("/system/replay/health")' in source
     assert 'readJson("/system/evidence")' in source
     assert 'readJson("/system/guards")' in source
+    assert 'writeJson("/trust/conversation"' in source
 
 
 def test_operator_dashboard_sends_test_instrumentation_headers() -> None:
@@ -33,7 +34,8 @@ def test_operator_dashboard_sends_test_instrumentation_headers() -> None:
 def test_operator_dashboard_is_read_only_surface() -> None:
     source = read("src/App.jsx")
 
-    assert 'method: "POST"' not in source
+    assert source.count('method: "POST"') == 1
+    assert 'writeJson("/trust/conversation"' in source
     assert "override" not in source.lower()
     assert "certify" not in source.lower()
     assert "Replay & Evidence Control" in source

@@ -4,6 +4,11 @@ import {
   instrumentationHeaders,
   withClientEvent,
 } from "./testInstrumentation";
+import { PILOT_LATENCY_THRESHOLD_MS } from "../config/environment";
+import {
+  capturePilotEvidence,
+  latencyVerdict,
+} from "../services/pilotEvidence.service";
 
 type RequestOptions = {
   method?: "GET" | "POST";
@@ -30,6 +35,7 @@ export async function apiRequest<T>(
     method,
     payload: options.body,
   });
+  const startedAt = Date.now();
 
   try {
     const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -52,8 +58,49 @@ export async function apiRequest<T>(
       throw toApiError(payload, "api_request_failed");
     }
 
+    recordNetworkLatency(
+      clientEvent.actor_id,
+      path,
+      method,
+      response.status,
+      Date.now() - startedAt,
+    );
+
     return payload as T;
+  } catch (error) {
+    recordNetworkLatency(
+      clientEvent.actor_id,
+      path,
+      method,
+      0,
+      Date.now() - startedAt,
+      error instanceof Error ? error.message : "network_error",
+    );
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function recordNetworkLatency(
+  driverId: string,
+  path: string,
+  method: string,
+  statusCode: number,
+  latencyMs: number,
+  error?: string,
+) {
+  void capturePilotEvidence(
+    driverId || "unknown_driver",
+    "network_latency_event",
+    {
+      path,
+      method,
+      status_code: statusCode,
+      latency_ms: latencyMs,
+      error: error || null,
+    },
+    { expected_max_latency_ms: PILOT_LATENCY_THRESHOLD_MS },
+    error ? "violation" : latencyVerdict(latencyMs),
+  ).catch(() => undefined);
 }

@@ -348,3 +348,239 @@ class ReplayDivergenceRecord(models.Model):
 
     class Meta:
         ordering = ["-created_at", "id"]
+
+
+class TrustGraphRecord(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    node_id = models.CharField(max_length=128, unique=True, db_index=True)
+    event_id = models.CharField(max_length=128, db_index=True)
+    proposal_id = models.CharField(max_length=128, unique=True, db_index=True)
+    source = models.CharField(max_length=128, db_index=True)
+    action = models.CharField(max_length=255, db_index=True)
+    actor_id = models.CharField(max_length=128, blank=True, db_index=True)
+    subject_id = models.CharField(max_length=128, blank=True, db_index=True)
+    request_headers = models.JSONField(default=dict)
+    proposal = models.JSONField(default=dict)
+    validation = models.JSONField(default=dict)
+    decision = models.JSONField(default=dict)
+    execution = models.JSONField(default=dict)
+    linked_to = models.JSONField(default=list)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "node_id"]
+        indexes = [
+            models.Index(fields=["event_id"]),
+            models.Index(fields=["proposal_id"]),
+            models.Index(fields=["action"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+
+class GovernanceRule(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=128, unique=True, db_index=True)
+    active_version = models.ForeignKey(
+        "GovernanceRuleVersion",
+        null=True,
+        blank=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+    )
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return f"GovernanceRule<{self.name}>"
+
+
+class GovernanceRuleVersion(models.Model):
+    STATUS_CHOICES = (
+        ("draft", "Draft"),
+        ("pending", "Pending approval"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+        ("active", "Active"),
+    )
+    PRIORITY_CHOICES = (
+        ("critical", "Critical"),
+        ("warning", "Warning"),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    rule = models.ForeignKey(GovernanceRule, on_delete=models.CASCADE)
+    version = models.PositiveIntegerField()
+    condition_key = models.CharField(max_length=128)
+    expected_value = models.CharField(max_length=128)
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES,
+        default="critical",
+    )
+    description = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    created_by = models.CharField(max_length=128, default="system")
+    approved_by = models.CharField(max_length=128, blank=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    parent_version = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+    )
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        unique_together = ("rule", "version")
+        ordering = ["rule__name", "-version"]
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["condition_key"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.rule.name}@v{self.version}"
+
+
+class GovernanceChangeRequest(models.Model):
+    STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    rule_version = models.ForeignKey(GovernanceRuleVersion, on_delete=models.CASCADE)
+    requested_by = models.CharField(max_length=128, default="operator")
+    required_approvals = models.PositiveIntegerField(default=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    reviewer = models.CharField(max_length=128, blank=True)
+    decision_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at", "id"]
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+
+class ApprovalVote(models.Model):
+    VOTE_CHOICES = (
+        ("approve", "Approve"),
+        ("reject", "Reject"),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    change_request = models.ForeignKey(GovernanceChangeRequest, on_delete=models.CASCADE)
+    reviewer = models.CharField(max_length=128)
+    vote = models.CharField(max_length=10, choices=VOTE_CHOICES)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        unique_together = ("change_request", "reviewer")
+        ordering = ["created_at", "reviewer"]
+
+
+class RuleActivationLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    rule = models.ForeignKey(GovernanceRule, on_delete=models.CASCADE)
+    activated_version = models.ForeignKey(GovernanceRuleVersion, on_delete=models.CASCADE)
+    previous_version = models.ForeignKey(
+        GovernanceRuleVersion,
+        null=True,
+        blank=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+    )
+    reason = models.CharField(max_length=128)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "id"]
+
+
+class RuleDependency(models.Model):
+    TYPE_CHOICES = (
+        ("requires", "Requires"),
+        ("conflicts", "Conflicts"),
+        ("influences", "Influences"),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    from_rule = models.ForeignKey(
+        GovernanceRule,
+        related_name="outgoing_dependencies",
+        on_delete=models.CASCADE,
+    )
+    to_rule = models.ForeignKey(
+        GovernanceRule,
+        related_name="incoming_dependencies",
+        on_delete=models.CASCADE,
+    )
+    dependency_type = models.CharField(max_length=32, choices=TYPE_CHOICES)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        unique_together = ("from_rule", "to_rule", "dependency_type")
+        ordering = ["from_rule__name", "dependency_type", "to_rule__name"]
+
+
+class RiskScore(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    scope = models.CharField(max_length=64, db_index=True)
+    reference_id = models.CharField(max_length=128, db_index=True)
+    score = models.FloatField()
+    level = models.CharField(max_length=20, db_index=True)
+    breakdown = models.JSONField(default=dict)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "id"]
+        indexes = [
+            models.Index(fields=["scope", "reference_id"]),
+            models.Index(fields=["level"]),
+        ]
+
+
+class PredictionSignal(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    proposal_id = models.CharField(max_length=128, db_index=True)
+    predicted_failure = models.BooleanField(default=False, db_index=True)
+    confidence = models.FloatField(default=0)
+    risk_factors = models.JSONField(default=list)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "id"]
+
+
+class ProofCertificate(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    proposal_id = models.CharField(max_length=128, unique=True, db_index=True)
+    invariants_proven = models.JSONField(default=list)
+    proof_result = models.JSONField(default=dict)
+    proof_hash = models.CharField(max_length=128, unique=True, db_index=True)
+    status = models.CharField(max_length=20, db_index=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "proposal_id"]
+
+
+class AuditLogExport(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reference_id = models.CharField(max_length=128, db_index=True)
+    data = models.JSONField(default=dict)
+    format = models.CharField(max_length=16, default="json")
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "reference_id"]

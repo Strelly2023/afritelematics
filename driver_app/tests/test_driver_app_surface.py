@@ -27,6 +27,7 @@ def test_driver_app_is_locked_to_test_build_profile() -> None:
 
 def test_driver_api_layer_owns_required_http_paths() -> None:
     source = read("core/api/driver.service.ts")
+    evidence = read("core/services/pilotEvidence.service.ts")
 
     assert "USE_MOCK_API" in source
     assert '"/driver/availability"' in source
@@ -38,6 +39,7 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     assert "`/ride/${rideId}/complete`" in source
     assert "`/driver/${encodeURIComponent(driverId)}/earnings`" in source
     assert "`/driver/replay-history?driver_id=${encodeURIComponent(driverId)}`" in source
+    assert "/pilot/evidence" in evidence
 
 
 def test_driver_api_client_sends_test_instrumentation() -> None:
@@ -51,6 +53,7 @@ def test_driver_api_client_sends_test_instrumentation() -> None:
     assert "payload: options.body" in source
     assert "instrumentationHeaders(clientEvent)" in source
     assert "withClientEvent(options.body, clientEvent)" in source
+    assert '"network_latency_event"' in source
     assert '"X-AfriRide-Device-Id"' in instrumentation
     assert '"X-AfriRide-Event-Id"' in instrumentation
     assert "client_event" in instrumentation
@@ -69,6 +72,30 @@ def test_availability_screen_only_requests_state_changes() -> None:
     assert "onGoAvailable" in source
     assert "onGoOffline" in source
     assert "Go available" in source
+
+
+def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
+    app = read("App.tsx")
+    diagnostics = read("ui/screens/DiagnosticsScreen.tsx")
+    pilot_hook = read("state/providers/usePilotEvidence.ts")
+    evidence_service = read("core/services/pilotEvidence.service.ts")
+    models = read("core/models/pilotEvidence.ts")
+
+    assert "DiagnosticsScreen" in app
+    assert "usePilotEvidence" in app
+    assert "Start evidence shift" in diagnostics
+    assert "driver_shift_started" in pilot_hook
+    assert "driver_location_event" in pilot_hook
+    assert "gps_accuracy_event" in evidence_service
+    assert "route_deviation_event" in evidence_service
+    assert "speed_consistency_event" in evidence_service
+    assert "gps_signal_loss_event" in pilot_hook
+    assert "routeDeviationEvents" in diagnostics
+    assert "gpsSignalLossEvents" in diagnostics
+    assert "app_backgrounded" in pilot_hook
+    assert "app_resumed" in pilot_hook
+    assert "crash_event" in app
+    assert "ride_accept_latency" in models
 
 
 def test_ride_requests_screen_exposes_accept_and_reject_only() -> None:

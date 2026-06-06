@@ -48,7 +48,7 @@ export function useDriverFlow(driverId: string) {
     setState((current) => ({ ...current, loading: true, error: "" }));
 
     try {
-      const trip = await acceptRide(rideId);
+      const trip = await acceptRide(rideId, driverId);
       setState((current) => ({
         ...current,
         trip,
@@ -63,7 +63,7 @@ export function useDriverFlow(driverId: string) {
     setState((current) => ({ ...current, loading: true, error: "" }));
 
     try {
-      const trip = await rejectRide(rideId);
+      const trip = await rejectRide(rideId, driverId);
       setState((current) => ({
         ...current,
         trip,
@@ -85,7 +85,7 @@ export function useDriverFlow(driverId: string) {
     try {
       const trip =
         action === "arrived"
-          ? await markArrived(rideId)
+          ? await markArrived(rideId, driverId)
           : action === "started"
             ? await startTrip(rideId)
             : await completeTrip(rideId);

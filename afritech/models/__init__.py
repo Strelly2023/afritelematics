@@ -2,6 +2,8 @@
 from .audit_log import AuditLog
 from .audit_seal import AuditSeal
 from .trust_kernel import (
+    ApprovalVote,
+    AuditLogExport,
     DeviceKey,
     ConsensusIncident,
     CrossNodeEventShare,
@@ -10,6 +12,9 @@ from .trust_kernel import (
     FederatedPolicyRecord,
     FederationNode,
     ExternalProofReference,
+    GovernanceChangeRequest,
+    GovernanceRule,
+    GovernanceRuleVersion,
     LegalEvidenceExport,
     LedgerRootLog,
     NodeAnnouncementRecord,
@@ -20,6 +25,12 @@ from .trust_kernel import (
     ReplayAttestation,
     ReplayDivergenceRecord,
     ReplaySubmission,
+    PredictionSignal,
+    ProofCertificate,
+    RiskScore,
+    RuleActivationLog,
+    RuleDependency,
+    TrustGraphRecord,
     VerifierNode,
     WitnessSignature,
 )
