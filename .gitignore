@@ -86,3 +86,7 @@ db.sqlite3
 .coverage
 coverage.xml
 htmlcov/
+#live secrets, Infura credentials, wallet addresses, and blockchain settings.
+deploy/production/.env.production
+deploy/production/.env.production.save
+*.pem
