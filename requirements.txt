@@ -11,3 +11,6 @@ web3
 hexbytes
 eth-typing
 joblib
+numpy
+scikit-learn
+
