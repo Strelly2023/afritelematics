@@ -52,6 +52,7 @@ export function useDriverFlow(driverId: string) {
       setState((current) => ({
         ...current,
         trip,
+        requests: current.requests.filter((request) => request.rideId !== rideId),
         loading: false,
       }));
     } catch (error) {
@@ -67,6 +68,7 @@ export function useDriverFlow(driverId: string) {
       setState((current) => ({
         ...current,
         trip,
+        requests: current.requests.filter((request) => request.rideId !== rideId),
         loading: false,
       }));
     } catch (error) {
@@ -87,14 +89,19 @@ export function useDriverFlow(driverId: string) {
         action === "arrived"
           ? await markArrived(rideId, driverId)
           : action === "started"
-            ? await startTrip(rideId)
+            ? await startTrip(rideId, driverId)
             : await completeTrip(rideId);
       const evidence =
         trip.status === "completed" ? await loadDriverEvidence(driverId) : null;
+      const requests =
+        trip.status === "completed" && state.availability?.status === "available"
+          ? await getRideRequests(driverId)
+          : state.requests;
 
       setState((current) => ({
         ...current,
-        trip,
+        trip: trip.status === "completed" ? null : trip,
+        requests,
         earnings: evidence?.earnings || current.earnings,
         replayHistory: evidence?.replayHistory || current.replayHistory,
         loading: false,

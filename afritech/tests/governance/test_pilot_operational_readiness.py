@@ -40,7 +40,7 @@ def test_fastapi_auth_token_and_device_registration() -> None:
     client = TestClient(app)
     _, public_key = generate_keypair()
 
-    token_response = client.post("/v1/auth/token", json={"user_id": "driver_45"})
+    token_response = client.post("/v1/auth/token", json={"user_id": "driver_45", "role": "DEVICE"})
     assert token_response.status_code == 200
     token = token_response.json()["token"]
 
@@ -62,7 +62,9 @@ def test_fastapi_auth_token_and_device_registration() -> None:
 def test_jwt_rejects_tampered_token() -> None:
     service = JWTService("secret", ttl_seconds=60)
     token = service.create_token("driver_45", issued_at=100)
-    tampered = token[:-1] + ("a" if token[-1] != "a" else "b")
+    head, body, signature = token.split(".")
+    tampered_signature = ("a" if signature[0] != "a" else "b") + signature[1:]
+    tampered = ".".join((head, body, tampered_signature))
 
     try:
         service.verify_token(tampered, now=120)

@@ -38,3 +38,20 @@ def test_real_device_runbook_requires_evidence_and_stop_conditions():
     assert "replay_result.json" in text
     assert "Stop Conditions" in text
     assert "operator cannot observe" in text
+
+
+def test_real_device_runbook_defines_first_mobile_pilot_token_lifecycle():
+    text = Path("docs/pilot/AFRIRIDE_REAL_DEVICE_INSTALLATION_PATH.md").read_text(
+        encoding="utf-8"
+    )
+
+    for required in (
+        "First Mobile Pilot Execution (Device + Token Lifecycle)",
+        "short-lived access token plus a refresh token",
+        "`device_id`, `actor_id`, and `token_jti`",
+        "refresh token rotation is single-use",
+        "expired_token_rejection_receipt.json",
+        "revoked_device_block_trace.json",
+        "revoked or reinstalled device is accepted without re-enrollment",
+    ):
+        assert required in text

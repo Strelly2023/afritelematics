@@ -1,0 +1,37 @@
+{
+  "authority_boundary": "architecture proof exposes startup-safety, artifact hashes, and anchor evidence only; replay and governed execution remain the authority; public chain receipts prove publication only",
+  "base_url": "http://16.176.215.89",
+  "chain": {
+    "expected_network": "papc-testnet",
+    "expected_network_matched": true,
+    "live_publication_status": null,
+    "network": "papc-testnet",
+    "status": "READY",
+    "transaction_hash": null
+  },
+  "classification": "EXTERNAL_PARTNER_VERIFICATION_SESSION",
+  "dashboard": {
+    "headline": "AfriTech public trust dashboard",
+    "partner_session_cli": "afritech-verify-session",
+    "status": "READY",
+    "surface_count": 5,
+    "verifier_cli": "afritech-verify"
+  },
+  "demo": {
+    "readiness": "PARTNER_READY",
+    "walkthrough_steps": 4
+  },
+  "next_step": "review_before_promotion",
+  "notes": "",
+  "outcome": "REVIEW_REQUIRED",
+  "partner": "First Partner",
+  "session_id": "partner-session-arch-anchor-",
+  "verification": {
+    "anchor_id": "arch-anchor-7740876d69f8",
+    "authority_boundary": "architecture proof exposes startup-safety, artifact hashes, and anchor evidence only; replay and governed execution remain the authority; public chain receipts prove publication only",
+    "chain_receipt_matches": false,
+    "proof_id": "arch-proof-7740876d69f8",
+    "verification_status": "REJECTED"
+  },
+  "verified_at": "2026-06-10T16:56:59.201454+00:00"
+}

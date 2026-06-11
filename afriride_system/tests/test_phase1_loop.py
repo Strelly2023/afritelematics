@@ -7,7 +7,7 @@ from afriride_system.clients.passenger_app.client import PassengerApp
 
 
 def test_passenger_driver_trip_completes_with_replay_hashes() -> None:
-    gateway = build_gateway()
+    gateway = build_gateway(reset=True)
     passenger = PassengerApp("passenger-1", gateway.passenger)
     driver = DriverApp("A", gateway.driver)
 
@@ -29,6 +29,9 @@ def test_passenger_driver_trip_completes_with_replay_hashes() -> None:
     assert accepted["trace_hash"]
     assert accepted["state_hash"]
 
+    arrived = driver.arrive("ride-phase-1")
+    assert arrived["status"] == "DRIVER_ARRIVED"
+
     started = driver.start("ride-phase-1")
     assert started["status"] == "IN_TRIP"
 
@@ -37,6 +40,7 @@ def test_passenger_driver_trip_completes_with_replay_hashes() -> None:
     assert completed["events"] == [
         "ride_requested",
         "driver_assigned",
+        "driver_arrived",
         "trip_started",
         "trip_completed",
     ]
@@ -50,13 +54,14 @@ def test_passenger_driver_trip_completes_with_replay_hashes() -> None:
     ]
     assert event_types == [
         "driver_assigned",
+        "driver_arrived",
         "trip_started",
         "trip_completed",
     ]
 
 
 def test_illegal_transition_is_rejected() -> None:
-    gateway = build_gateway()
+    gateway = build_gateway(reset=True)
     passenger = PassengerApp("passenger-1", gateway.passenger)
     driver = DriverApp("A", gateway.driver)
 

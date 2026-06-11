@@ -1,4 +1,12 @@
+django
+djangorestframework
 fastapi
 httpx
 pydantic
+psycopg[binary]
+cryptography
+PyNaCl
 uvicorn[standard]
+web3
+hexbytes
+eth-typing

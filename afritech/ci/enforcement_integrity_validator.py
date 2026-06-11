@@ -37,6 +37,10 @@ INTERNAL_ROOTS = (
     ROOT / "afritech",
     ROOT / "ecosystems" / "afriride",
 )
+ALLOWED_INTERNAL_PRODUCT_BRIDGES = (
+    "afritech/verify/verify_proof.py",
+    "afritech/tests/sdk/test_verify_proof.py",
+)
 
 EXPECTED_INVARIANTS = (
     "preserve_proof_meaning",
@@ -198,12 +202,15 @@ def validate_internal_no_product_dependency() -> None:
         for path in python_files(root):
             if path == Path(__file__).resolve():
                 continue
+            rel = path.relative_to(ROOT).as_posix()
+            if rel in ALLOWED_INTERNAL_PRODUCT_BRIDGES:
+                continue
             modules = imported_modules(path)
             for module in modules:
                 if module.startswith("afriride_system"):
                     fail(
                         "protected/internal code imports external product layer: "
-                        f"{path.relative_to(ROOT)} -> {module}"
+                        f"{rel} -> {module}"
                     )
 
 

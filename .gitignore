@@ -20,10 +20,46 @@ AfriTech_V*.txt
 Architecture_H.txt
 Law_v1.txt
 afritech_v1.txt
+AfriTech_Main.txt
+Afritech2.txt
+afritechPower.txt
+ecosystem*.txt
+test.txt
+Witness_*.txt
 
 # Build / packaging artifacts
 afritech.egg-info/
 *.egg-info/
+build/
+dist/
+tmp/
+out/
+
+# Mobile / frontend generated artifacts
+node_modules/
+.expo/
+.dart_tool/
+.gradle/
+Pods/
+DerivedData/
+*.apk
+*.aab
+*.ipa
+*.dmg
+
+# Flutter / React Native generated outputs
+afriride_system/flutter/**/build/
+afriride_system/flutter/**/.dart_tool/
+afriride_system/flutter/**/.packages
+afriride_system/flutter/**/.flutter-plugins
+afriride_system/flutter/**/.flutter-plugins-dependencies
+afriride_system/flutter/**/ios/Pods/
+afriride_system/flutter/**/android/.gradle/
+driver_app/android/app/build/
+driver_app/ios/build/
+driver_app/dist/
+driver_app/.expo/
+driver_app/node_modules/
 
 # Generated proof artifacts
 *institutional_proof_packet.zip

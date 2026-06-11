@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
 from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 
-from afriride_system.api.dispatcher_adapter import get_gateway
+from afriride_system.api.dependencies.runtime import get_gateway, get_trace_log
 from afriride_system.api.idempotency import (
     IdempotencyConflict,
     command_fingerprint,
@@ -28,7 +26,15 @@ from afriride_system.backend.event_signatures import (
     SignerRegistry,
 )
 from afriride_system.backend.ledger_receipts import LedgerReceiptGenerator
+from afriride_system.backend.evidence_engine import EvidenceEngine
+from afriride_system.backend.proof_material import (
+    completed_ride,
+    proof_events_for_ride,
+)
+from afriride_system.backend.receipt_engine import ReceiptEngine
+from afriride_system.backend.replay_engine import ReplayEngine
 from afriride_system.backend.state import RideSession
+from afriride_system.backend.trace_enforcement import TraceEvent
 
 router = APIRouter()
 
@@ -80,6 +86,22 @@ def start_ride_contract(
     )
 
 
+@router.post("/{ride_id}/arrive")
+def arrive_ride_contract(
+    ride_id: str,
+    payload: dict[str, Any],
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    gateway: AfriRideGateway = Depends(get_gateway),
+) -> dict:
+    return _ride_action(
+        "arrive_trip_contract",
+        gateway.driver.arrive,
+        ride_id,
+        payload,
+        idempotency_key,
+    )
+
+
 @router.post("/{ride_id}/complete")
 def complete_ride_contract(
     ride_id: str,
@@ -102,22 +124,8 @@ def ride_receipt_contract(
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
-    replay_id = f"replay-{ride.ride_id}"
-    return {
-        "ride_id": ride.ride_id,
-        "receipt_id": f"receipt-{ride.ride_id}",
-        "status": "completed",
-        "replay_id": replay_id,
-        "receipt_hash": _stable_hash(
-            {
-                "ride_id": ride.ride_id,
-                "status": ride.status,
-                "events": ride.events,
-                "replay_id": replay_id,
-            }
-        ),
-        "issued_at": "2026-06-01T00:00:00Z",
-    }
+    receipt = ReceiptEngine().derive(ride.ride_id, _proof_events_for_ride(ride))
+    return receipt.canonical_dict()
 
 
 @router.get("/{ride_id}/replay")
@@ -126,21 +134,29 @@ def ride_replay_contract(
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
-    return {
-        "ride_id": ride.ride_id,
-        "replay_id": f"replay-{ride.ride_id}",
-        "replay_verified": True,
-        "replay_hash": _stable_hash(
-            {
-                "ride_id": ride.ride_id,
-                "state_hash": ride.state_hash,
-                "trace_hash": ride.trace_hash,
-                "events": ride.events,
-            }
-        ),
-        "receipt_id": f"receipt-{ride.ride_id}",
-        "replay_epoch": 1,
-    }
+    replay = ReplayEngine().replay(ride_id, _proof_events_for_ride(ride))
+    payload = replay.canonical_dict()
+    payload.update(
+        {
+            "ride_id": ride.ride_id,
+            "replay_id": f"replay-{ride.ride_id}",
+            "receipt_id": f"receipt-{ride.ride_id}",
+            "replay_epoch": 1,
+            "reconstructed_status": replay.status,
+            "reconstructed_assigned_driver": replay.assigned_driver,
+        }
+    )
+    return payload
+
+
+@router.get("/{ride_id}/evidence")
+def ride_evidence_contract(
+    ride_id: str,
+    gateway: AfriRideGateway = Depends(get_gateway),
+) -> dict:
+    ride = _completed_ride(gateway, ride_id)
+    evidence = EvidenceEngine().derive(ride.ride_id, _proof_events_for_ride(ride))
+    return evidence.canonical_dict()
 
 
 @router.get("/{ride_id}/ledger-receipt")
@@ -194,19 +210,16 @@ def _driver_id(payload: dict[str, Any]) -> str:
 
 
 def _completed_ride(gateway: AfriRideGateway, ride_id: str) -> RideSession:
-    try:
-        ride = gateway.dispatcher._require_ride(ride_id)  # noqa: SLF001
-    except AfriRidePhase1Error as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    if ride.status != "COMPLETED":
+    ride = completed_ride(gateway, ride_id)
+    if ride is None:
+        if ride_id not in gateway.dispatcher.rides:
+            raise HTTPException(status_code=404, detail="ride_not_found")
         raise HTTPException(status_code=400, detail="ride_not_completed")
     return ride
 
 
-def _stable_hash(payload: dict[str, Any]) -> str:
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
-
+def _proof_events_for_ride(ride: RideSession) -> tuple[TraceEvent, ...]:
+    return proof_events_for_ride(get_trace_log(), ride)
 
 def _signed_ride_events(
     ride: RideSession,
@@ -279,12 +292,18 @@ def _ride_ledger_events(ride: RideSession) -> list[dict[str, Any]]:
         },
         {
             "event_id": f"{ride.ride_id}-evt-005",
+            "type": "DRIVER_ARRIVED",
+            "ride_id": ride.ride_id,
+            "timestamp": "2026-06-01T00:02:30Z",
+        },
+        {
+            "event_id": f"{ride.ride_id}-evt-006",
             "type": "RIDE_STARTED",
             "ride_id": ride.ride_id,
             "timestamp": "2026-06-01T00:03:00Z",
         },
         {
-            "event_id": f"{ride.ride_id}-evt-006",
+            "event_id": f"{ride.ride_id}-evt-007",
             "type": "RIDE_COMPLETED",
             "ride_id": ride.ride_id,
             "distance_km": 0,
@@ -292,7 +311,7 @@ def _ride_ledger_events(ride: RideSession) -> list[dict[str, Any]]:
             "timestamp": "2026-06-01T00:15:00Z",
         },
         {
-            "event_id": f"{ride.ride_id}-evt-007",
+            "event_id": f"{ride.ride_id}-evt-008",
             "type": "RECEIPT_GENERATED",
             "ride_id": ride.ride_id,
             "fare": 0,

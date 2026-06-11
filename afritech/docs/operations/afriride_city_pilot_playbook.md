@@ -75,11 +75,22 @@ scenarios:
       - convergence after reconnect
       - duplicate delivery collapse
       - clock drift normalization
+  - name: device_token_lifecycle
+    verifies:
+      - registered device binding
+      - short-lived access token rotation
+      - revoked token rejection
+      - replay-safe re-authentication
   - name: adversarial_injection
     verifies:
       - rejection of invalid events
       - payload tamper rejection
       - unauthorized mutation rejection
+  - name: failure_injection_determinism_break
+    verifies:
+      - replay divergence is surfaced
+      - silent corruption is rejected
+      - recovery evidence remains trace-linked
   - name: network_delay
     verifies:
       - convergence under reordering
@@ -102,6 +113,12 @@ metrics:
     target: 0 successful
   determinism_variance:
     target: 0
+  replay_divergence_detection:
+    target: 100% surfaced
+  token_replay_rejection:
+    target: 100%
+  observability_trace_linkage:
+    target: 100%
   unauthorized_mutation:
     target: 0
 
@@ -122,10 +139,14 @@ evidence_package:
   - pilot_scope_receipt
   - normalized_event_trace
   - authenticated_mutation_trace
+  - device_registration_snapshot
+  - token_lifecycle_audit
   - network_event_replay
   - convergence_trace_validation
+  - replay_divergence_receipt
   - pricing_replay_equivalence
   - fairness_trace_validation
+  - observability_trace_export
   - real_trip_reconstruction
   - production_replay_trace
 ```
@@ -154,6 +175,37 @@ REALITY EVENT
 -> WITNESS
 -> REPLAY
 ```
+
+## Observability Design Tied to Trace/Replay
+
+Pilot observability is admissible only when it explains trace-backed state
+without becoming an authority surface.
+
+Required linkage fields:
+
+```text
+ride_id
+trace_id
+event_id
+device_id
+actor_id
+token_jti
+request_id
+replay_hash
+receipt_hash
+```
+
+Required operational views:
+
+```text
+trace ingestion timeline
+device and token exception board
+replay divergence board
+receipt verification board
+failure injection evidence board
+```
+
+Observability may summarize or alert, but every operator action must resolve back to trace evidence and replay-derived outputs before any claim is made.
 
 ## Termination Rule
 

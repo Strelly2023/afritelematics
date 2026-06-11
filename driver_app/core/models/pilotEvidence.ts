@@ -13,6 +13,17 @@ export type PilotEvidenceType =
 
 export type PilotEvidenceVerdict = "observed" | "pass" | "violation";
 
+export type EvidenceErrorSeverity = "info" | "warning" | "error" | "critical";
+
+export type EvidenceError = {
+  type: "timeout" | "network" | "validation" | "shift_gated" | "server" | "unknown";
+  severity: EvidenceErrorSeverity;
+  endpoint: string;
+  durationMs: number;
+  message: string;
+  traceId: string;
+};
+
 export type PilotEvidenceEvent = {
   type: PilotEvidenceType;
   driverId: string;
@@ -40,5 +51,6 @@ export type DiagnosticsSnapshot = {
     latitude: number;
     longitude: number;
   };
+  lastEvidenceError?: EvidenceError;
   lastError?: string;
 };

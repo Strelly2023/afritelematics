@@ -3,7 +3,7 @@ import redis
 
 class RedisResultStore:
 
-    def __init__(self, url="redis://localhost:6379/0"):
+    def __init__(self, url="redis://redis:6379/0"):
         self.client = redis.Redis.from_url(url)
 
     def save(self, task):

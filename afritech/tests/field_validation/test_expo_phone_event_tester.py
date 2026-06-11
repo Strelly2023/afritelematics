@@ -6,33 +6,35 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "afriride_system/mobile/driver_app/App.js"
+SHARED_CLIENT = ROOT / "afriride_system/mobile/shared/apiClient.js"
 PACKAGE = ROOT / "afriride_system/mobile/driver_app/package.json"
 README = ROOT / "afriride_system/mobile/README.md"
 
 
 def test_expo_phone_tester_signs_events_for_v1_ingestion():
-    text = APP.read_text(encoding="utf-8")
+    text = SHARED_CLIENT.read_text(encoding="utf-8")
 
-    assert 'import CryptoJS from "crypto-js"' in text
-    assert "/v1/events" in text
-    assert "HmacSHA256" in text
-    assert "stableStringify" in text
-    assert "pilot-secret" in text
-    assert "ostrinov_phone_001" in text
+    assert "/auth/token" in text
+    assert "client_event" in text
+    assert "acceptRide({" in text
+    assert "arriveRide({" in text
+    assert "startTrip({" in text
+    assert "completeTrip({" in text
+    assert "setDriverStatus({" in text
 
 
 def test_expo_phone_tester_emits_day_one_driver_sequence():
     text = APP.read_text(encoding="utf-8")
 
     for event_type in (
-        "DRIVER_ACCEPTED_RIDE",
-        "TRIP_STARTED",
-        "DRIVER_LOCATION_UPDATE",
-        "TRIP_COMPLETED",
+        "Accept",
+        "Arrive",
+        "Start",
+        "Complete",
     ):
         assert event_type in text
 
-    for label in ("Accept", "Start", "Location", "Complete", "Send Sequence", "Sync Pending"):
+    for label in ("Go online", "Go offline", "Accept", "Arrive", "Start", "Complete"):
         assert label in text
 
 

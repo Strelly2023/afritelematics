@@ -148,7 +148,7 @@ class AfriRideCommandDispatcher:
     def start_trip(self, *, driver_id: str, ride_id: str) -> dict[str, Any]:
         with self._mutation_lock:
             ride = self._require_driver_ride(driver_id, ride_id)
-            if ride.status != "DRIVER_ASSIGNED":
+            if ride.status != "DRIVER_ARRIVED":
                 raise AfriRidePhase1Error("trip_not_ready_to_start")
 
             updated = ride.with_update(
@@ -164,6 +164,29 @@ class AfriRideCommandDispatcher:
             self.event_bridge.publish(
                 f"ride_updates:{ride_id}",
                 "trip_started",
+                updated.snapshot(),
+            )
+            return updated.snapshot()
+
+    def arrive_trip(self, *, driver_id: str, ride_id: str) -> dict[str, Any]:
+        with self._mutation_lock:
+            ride = self._require_driver_ride(driver_id, ride_id)
+            if ride.status != "DRIVER_ASSIGNED":
+                raise AfriRidePhase1Error("trip_not_ready_to_arrive")
+
+            updated = ride.with_update(
+                status="DRIVER_ARRIVED",
+                events=(*ride.events, "driver_arrived"),
+            )
+            self.ride_repository.save(updated)
+            self.event_repository.append(
+                ride_id,
+                "driver_arrived",
+                updated.snapshot(),
+            )
+            self.event_bridge.publish(
+                f"ride_updates:{ride_id}",
+                "driver_arrived",
                 updated.snapshot(),
             )
             return updated.snapshot()

@@ -17,3 +17,12 @@ adrs:
   - id: ADR-0019
     path: afritech/governance/adr/ADR-0019-afritech-constitution-v1-binding.yaml
     status: ACCEPTED
+  - id: ADR-0020
+    path: afritech/governance/adr/ADR-0020-data-decentralization.yaml
+    status: ACCEPTED
+  - id: ADR-0021
+    path: afritech/governance/adr/ADR-0021-afroprog-codex-workspace.yaml
+    status: ACCEPTED
+  - id: ADR-0022
+    path: afritech/governance/adr/ADR-0022-runtime-boundary-governance-activation.yaml
+    status: ACCEPTED

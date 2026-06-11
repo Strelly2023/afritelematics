@@ -1,9 +1,12 @@
-SECRET_KEY = "dev-key"
+import os
 
-DEBUG = True
-ALLOWED_HOSTS = ['*']  # ✅ ADD THIS
+
+SECRET_KEY = os.environ.get("AFRIRIDE_DJANGO_SECRET_KEY", "local-dev-only-not-for-production")
+
+DEBUG = os.environ.get("AFRIRIDE_DJANGO_DEBUG", "0") == "1"
+ALLOWED_HOSTS = ['*']  # ✅ 
 ROOT_URLCONF = "config.urls"
-AUDIT_API_KEY = "super-secret-key-123"
+AUDIT_API_KEY = os.environ.get("AFRIRIDE_AUDIT_API_KEY", "local-audit-key-not-for-production")
 
 MIDDLEWARE = [
     "config.middleware.DevelopmentCorsMiddleware",
@@ -27,6 +30,7 @@ INSTALLED_APPS = [
 
     # ✅ Your app
     "afritech",
+    "blockchain",
 ]
 
 STATIC_URL = "/static/"

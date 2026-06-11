@@ -8,15 +8,17 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
+import pytest
 import uvicorn
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
 
 
 class HttpClient(Protocol):
-    def get(self, url: str) -> Any:
+    def get(self, url: str, *, headers: dict[str, str] | None = None) -> Any:
         ...
 
     def post(
@@ -33,6 +35,12 @@ class HttpClient(Protocol):
 class RiderHarnessClient:
     client: HttpClient
 
+    def _headers(self, rider_id: str, *, idempotency_key: str | None = None) -> dict[str, str]:
+        headers = {"Authorization": f"Bearer {JWT.create_token(rider_id, 'RIDER')}"}
+        if idempotency_key is not None:
+            headers["Idempotency-Key"] = idempotency_key
+        return headers
+
     def request_ride(self, *, ride_id: str, rider_id: str) -> dict[str, Any]:
         response = self.client.post(
             "/passenger/request-ride",
@@ -42,28 +50,40 @@ class RiderHarnessClient:
                 "destination": "Nakasero",
                 "ride_id": ride_id,
             },
-            headers={"Idempotency-Key": f"{ride_id}-rider-request"},
+            headers=self._headers(rider_id, idempotency_key=f"{ride_id}-rider-request"),
         )
         assert response.status_code == 200
         return response.json()["data"]
 
-    def status(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/passenger/status/{ride_id}")
+    def status(self, ride_id: str, rider_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/passenger/status/{ride_id}",
+            headers=self._headers(rider_id),
+        )
         assert response.status_code == 200
         return response.json()["data"]
 
-    def receipt(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/receipt")
+    def receipt(self, ride_id: str, rider_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/receipt",
+            headers=self._headers(rider_id),
+        )
         assert response.status_code == 200
         return response.json()
 
-    def replay(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/replay")
+    def replay(self, ride_id: str, rider_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/replay",
+            headers=self._headers(rider_id),
+        )
         assert response.status_code == 200
         return response.json()
 
-    def ledger_receipt(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/ledger-receipt")
+    def ledger_receipt(self, ride_id: str, rider_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/ledger-receipt",
+            headers=self._headers(rider_id),
+        )
         assert response.status_code == 200
         return response.json()
 
@@ -72,17 +92,26 @@ class RiderHarnessClient:
 class DriverHarnessClient:
     client: HttpClient
 
+    def _headers(self, driver_id: str, *, idempotency_key: str | None = None) -> dict[str, str]:
+        headers = {"Authorization": f"Bearer {JWT.create_token(driver_id, 'DRIVER')}"}
+        if idempotency_key is not None:
+            headers["Idempotency-Key"] = idempotency_key
+        return headers
+
     def go_online(self, driver_id: str) -> dict[str, Any]:
         response = self.client.post(
             "/driver/status",
             json={"driver_id": driver_id, "online": True},
-            headers={"Idempotency-Key": f"{driver_id}-live-local-online"},
+            headers=self._headers(driver_id, idempotency_key=f"{driver_id}-live-local-online"),
         )
         assert response.status_code == 200
         return response.json()["data"]
 
     def assigned_rides(self, driver_id: str) -> list[dict[str, Any]]:
-        response = self.client.get(f"/driver/{driver_id}/rides/assigned")
+        response = self.client.get(
+            f"/driver/{driver_id}/rides/assigned",
+            headers=self._headers(driver_id),
+        )
         assert response.status_code == 200
         return response.json()["rides"]
 
@@ -92,21 +121,33 @@ class DriverHarnessClient:
     def start(self, *, ride_id: str, driver_id: str) -> dict[str, Any]:
         return self._ride_action("start", ride_id=ride_id, driver_id=driver_id)
 
+    def arrive(self, *, ride_id: str, driver_id: str) -> dict[str, Any]:
+        return self._ride_action("arrive", ride_id=ride_id, driver_id=driver_id)
+
     def complete(self, *, ride_id: str, driver_id: str) -> dict[str, Any]:
         return self._ride_action("complete", ride_id=ride_id, driver_id=driver_id)
 
-    def receipt(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/receipt")
+    def receipt(self, ride_id: str, driver_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/receipt",
+            headers=self._headers(driver_id),
+        )
         assert response.status_code == 200
         return response.json()
 
-    def replay(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/replay")
+    def replay(self, ride_id: str, driver_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/replay",
+            headers=self._headers(driver_id),
+        )
         assert response.status_code == 200
         return response.json()
 
-    def ledger_receipt(self, ride_id: str) -> dict[str, Any]:
-        response = self.client.get(f"/ride/{ride_id}/ledger-receipt")
+    def ledger_receipt(self, ride_id: str, driver_id: str) -> dict[str, Any]:
+        response = self.client.get(
+            f"/ride/{ride_id}/ledger-receipt",
+            headers=self._headers(driver_id),
+        )
         assert response.status_code == 200
         return response.json()
 
@@ -120,7 +161,7 @@ class DriverHarnessClient:
         response = self.client.post(
             f"/ride/{ride_id}/{action}",
             json={"driver_id": driver_id},
-            headers={"Idempotency-Key": f"{ride_id}-{driver_id}-{action}"},
+            headers=self._headers(driver_id, idempotency_key=f"{ride_id}-{driver_id}-{action}"),
         )
         assert response.status_code == 200
         return response.json()
@@ -214,22 +255,24 @@ def _assert_rider_driver_shared_proof_lifecycle(
     ]
 
     accepted = driver.accept(ride_id=ride_id, driver_id=driver_id)
+    arrived = driver.arrive(ride_id=ride_id, driver_id=driver_id)
     started = driver.start(ride_id=ride_id, driver_id=driver_id)
     completed = driver.complete(ride_id=ride_id, driver_id=driver_id)
-    rider_status = rider.status(ride_id)
+    rider_status = rider.status(ride_id, rider_id)
 
     assert accepted["status"] == "DRIVER_ASSIGNED"
+    assert arrived["status"] == "DRIVER_ARRIVED"
     assert started["status"] == "IN_TRIP"
     assert completed["status"] == "COMPLETED"
     assert rider_status["status"] == "COMPLETED"
     assert rider_status["assigned_driver"] == driver_id
 
-    rider_receipt = rider.receipt(ride_id)
-    driver_receipt = driver.receipt(ride_id)
-    rider_replay = rider.replay(ride_id)
-    driver_replay = driver.replay(ride_id)
-    rider_ledger = rider.ledger_receipt(ride_id)
-    driver_ledger = driver.ledger_receipt(ride_id)
+    rider_receipt = rider.receipt(ride_id, rider_id)
+    driver_receipt = driver.receipt(ride_id, driver_id)
+    rider_replay = rider.replay(ride_id, rider_id)
+    driver_replay = driver.replay(ride_id, driver_id)
+    rider_ledger = rider.ledger_receipt(ride_id, rider_id)
+    driver_ledger = driver.ledger_receipt(ride_id, driver_id)
 
     assert rider_receipt == driver_receipt
     assert rider_replay == driver_replay
@@ -239,7 +282,7 @@ def _assert_rider_driver_shared_proof_lifecycle(
     assert rider_ledger["identity_validation"] == driver_ledger["identity_validation"]
 
     assert rider_ledger["verdict"] == "VALID"
-    assert rider_ledger["ledger_proof"]["event_count"] == 7
+    assert rider_ledger["ledger_proof"]["event_count"] == 8
     assert rider_ledger["ledger_proof"]["hash_mode"] == "sha256_canonical_chain"
     assert rider_ledger["signature_validation"]["signature_mode"] == "rsa_pss_sha256"
     assert rider_ledger["signature_validation"]["all_signatures_valid"] is True
@@ -251,5 +294,8 @@ def _assert_rider_driver_shared_proof_lifecycle(
 
 def _free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.bind(("127.0.0.1", 0))
+        try:
+            sock.bind(("127.0.0.1", 0))
+        except PermissionError as exc:
+            pytest.skip(f"local port binding not permitted in this environment: {exc}")
         return int(sock.getsockname()[1])

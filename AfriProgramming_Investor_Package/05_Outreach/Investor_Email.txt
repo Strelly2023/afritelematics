@@ -1,0 +1,16 @@
+Subject: Building the trust layer for AI-generated software
+
+Hi [Investor Name],
+
+I’m building AfriProgramming: a controlled-pilot-ready platform that ensures AI-assisted software systems can be proven correct, governed, and safely evolved.
+
+The platform integrates design validation, deterministic replay, contract inference, governance-controlled activation, and runtime drift detection.
+
+We have completed a full controlled-validation architecture with 103 validated subsystems and a working interactive demo.
+
+This is not another AI coding tool. It is the trust layer AI-generated software will require.
+
+Would you be open to a 20-minute walkthrough?
+
+Best,
+Djuma Kikombe

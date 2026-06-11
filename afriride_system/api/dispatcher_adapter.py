@@ -1,19 +1,11 @@
-"""FastAPI dependency bridge to the Phase 1 command dispatcher."""
+"""Backward-compatible gateway dependency exports.
 
-from __future__ import annotations
+The API storage selector remains governed by the Phase 1 setup contract:
+`AFRIRIDE_DATABASE_URL` takes precedence, with `AFRIRIDE_DB_PATH` as the
+SQLite fallback override. The implementation lives in
+`afriride_system.api.dependencies.runtime`.
+"""
 
-from afriride_system.backend.api_gateway.gateway import AfriRideGateway, build_gateway
-from afriride_system.api.idempotency import reset_idempotency_store
+from afriride_system.api.dependencies.runtime import get_gateway, reset_gateway
 
-_gateway = build_gateway()
-
-
-def get_gateway() -> AfriRideGateway:
-    return _gateway
-
-
-def reset_gateway() -> AfriRideGateway:
-    global _gateway
-    _gateway = build_gateway()
-    reset_idempotency_store()
-    return _gateway
+__all__ = ["get_gateway", "reset_gateway"]

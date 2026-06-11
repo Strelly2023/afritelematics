@@ -4,7 +4,8 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from afritech.api.app import app
+from afritech.api.app import app, runtime_event_ingestion_secret
+from afritech.api.auth.jwt_device_auth import JWT
 from afritech.api.ingestion.event_ingestion import MobileEventAuthenticator
 
 
@@ -72,9 +73,14 @@ def test_fastapi_pilot_ingestion_accepts_signed_mobile_event() -> None:
         "payload": {"ride_id": "ride_123"},
         "signature": "",
     }
-    event["signature"] = MobileEventAuthenticator().generate_signature(event, "pilot-secret")
+    event["signature"] = MobileEventAuthenticator().generate_signature(event, runtime_event_ingestion_secret())
+    token = JWT.create_token("pilot_driver_1", role="DEVICE")
 
-    response = client.post("/v1/events", json={"received_at_ms": 1710000000100, "events": [event]})
+    response = client.post(
+        "/v1/events",
+        json={"received_at_ms": 1710000000100, "events": [event]},
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     assert response.json()["accepted"] == ["pilot_driver_1_101"]
@@ -83,10 +89,12 @@ def test_fastapi_pilot_ingestion_accepts_signed_mobile_event() -> None:
 
 def test_realtime_projection_endpoint_is_observation_only() -> None:
     client = TestClient(app)
+    token = JWT.create_token("operator-1", role="OPERATOR")
 
     response = client.post(
         "/v1/realtime/ride/ride_123/projection",
         json={"data": {"status": "DRIVER_EN_ROUTE"}},
+        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert response.status_code == 200

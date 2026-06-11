@@ -1,0 +1,95 @@
+{
+  "schema": "afritech.driver_api_contract.v1",
+  "status": "CONTROLLED_PILOT_API_CONTRACT",
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/driver/availability",
+      "view": "driver_availability",
+      "source": "root",
+      "mutation": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/driver/availability",
+      "view": "driver_availability",
+      "source": "api_prefix",
+      "mutation": true
+    },
+    {
+      "method": "POST",
+      "path": "/driver/status",
+      "view": "driver_status",
+      "source": "root",
+      "mutation": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/driver/status",
+      "view": "driver_status",
+      "source": "api_prefix",
+      "mutation": true
+    },
+    {
+      "method": "GET",
+      "path": "/driver/D001/queue",
+      "view": "driver_queue",
+      "source": "root",
+      "mutation": false
+    },
+    {
+      "method": "GET",
+      "path": "/driver/D001/earnings",
+      "view": "driver_earnings",
+      "source": "root",
+      "mutation": false
+    },
+    {
+      "method": "GET",
+      "path": "/driver/replay-history",
+      "view": "driver_replay_history",
+      "source": "root",
+      "mutation": false
+    },
+    {
+      "method": "POST",
+      "path": "/ride/ride-demo-1/accept",
+      "view": "ride_accept",
+      "source": "root",
+      "mutation": true
+    },
+    {
+      "method": "POST",
+      "path": "/ride/ride-demo-1/start",
+      "view": "ride_start",
+      "source": "root",
+      "mutation": true
+    },
+    {
+      "method": "POST",
+      "path": "/ride/ride-demo-1/complete",
+      "view": "ride_complete",
+      "source": "root",
+      "mutation": true
+    }
+  ],
+  "invalid_examples": [
+    {
+      "method": "GET",
+      "path": "/driver/availability",
+      "expected_status": 405,
+      "reason": "method_mismatch"
+    },
+    {
+      "method": "POST",
+      "path": "/api/driver/availability/",
+      "expected_status": 404,
+      "reason": "trailing_slash_not_declared"
+    }
+  ],
+  "truth_boundary": {
+    "live_pilot_authorized": false,
+    "production_proven": false,
+    "economic_activation": false
+  }
+}

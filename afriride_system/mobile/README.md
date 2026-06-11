@@ -1,13 +1,17 @@
 # AfriRide Mobile Apps
 
-STATUS: PHONE TEST IMPLEMENTATION SURFACE
+STATUS: MOBILE EXECUTION SURFACES
 
 These Expo apps are interface layers over the AfriRide FastAPI service.
 
 They do not define AfriTech correctness and are not part of `afritech.demo.proof`.
 
-The driver app is currently a simple signed phone-event tester for Android
-rehearsals. It can emit signed AfriRide events to `/v1/events`.
+The rider, driver, and operator apps now execute against the authoritative
+AfriRide API. They remain non-authoritative clients over replay, evidence,
+receipt, and operational read surfaces.
+
+The earlier signed phone-event tester concept is retained only as a historical
+claim boundary, not as the current driver-app implementation.
 
 It does not certify pilot completion or production readiness.
 
@@ -50,20 +54,21 @@ In the app, set:
 
 ```text
 API base URL: http://<mac-lan-ip>:8000
-Device ID: ostrinov_phone_001
-Ride ID: day_one_002_phone_trip_001
-Pilot secret: pilot-secret
+Driver ID: driver-1
+Ride ID: live-smoke-ride-001
 ```
 
-Tap:
+Use the real lifecycle controls:
 
 ```text
-Send Sequence
+Go online
+Accept ride
+Driver arrived
+Start ride
+Complete ride
 ```
 
-The phone must show `/v1/events` results with accepted or rejected event IDs.
-
-If signed events are accepted by the API, the run can be documented as:
+If mobile execution succeeds against the live API, the run can still only be documented as:
 
 ```text
 candidate live pilot evidence
@@ -76,6 +81,7 @@ until post-pilot analysis decides otherwise.
 ```text
 passenger_app/
 driver_app/
+operator_app/
 ```
 
 Both apps use polling first. WebSockets are intentionally excluded from Phase 1.

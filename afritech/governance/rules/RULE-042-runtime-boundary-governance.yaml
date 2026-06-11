@@ -1,0 +1,52 @@
+id: RULE-042
+name: runtime_boundary_governance_activation
+status: ACTIVE
+classification: RUNTIME_BOUNDARY_GOVERNANCE_RULE
+
+description: >
+  Enforces the FastAPI vs Django runtime boundary as an active governance
+  layer, requires the runtime-boundary scan and full architecture graph to stay
+  current, and binds CI to fail on violations or stale generated artifacts.
+
+linked_artifacts:
+  adr: afritech/governance/adr/ADR-0022-runtime-boundary-governance-activation.yaml
+  binding: afritech/governance/bindings/BIND-021-runtime-boundary-governance.yaml
+  guard: afritech/guards/guard_runtime_boundary_governance.py
+  validator: afritech/ci/runtime_boundary_validator.py
+  graph_generator: afritech/architecture/full_architecture_graph.py
+  graph_script: scripts/generate_architecture_graph.py
+  scan_report: docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md
+  graph_report: docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+  workflow:
+    - .github/workflows/architecture.yml
+  tests:
+    - afritech/tests/ci/test_runtime_boundary_validator.py
+    - afritech/tests/governance/test_full_architecture_graph.py
+    - afritech/tests/governance/test_runtime_boundary_governance_chain.py
+
+contract:
+  runtime_boundary:
+    startup_module: afritech.api.app
+    required_result: zero_violations
+    required_docs:
+      - docs/architecture/AFRITECH_FASTAPI_DJANGO_BOUNDARY_CONTRACT.md
+      - docs/operations/AFRITECH_SAFE_IMPORT_RULES_CHECKLIST.md
+  generated_artifacts:
+    drift_policy: FAIL_CLOSED
+    required_outputs:
+      - docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md
+      - docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
+    required_graph_sections:
+      - "## Runtime Architecture Graph"
+      - "## Repository Architecture Inventory"
+      - "## Startup Inventory"
+  ci_activation:
+    required_workflow_strings:
+      - afritech.guards.guard_runtime_boundary_governance
+      - AFRITECH_RUNTIME_BOUNDARY_SCAN
+      - AFRITECH_FULL_ARCHITECTURE_GRAPH
+      - upload-artifact
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

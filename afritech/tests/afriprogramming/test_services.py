@@ -5,6 +5,11 @@ from afritech.afriprogramming.services import (
     build_engineering_platform,
     build_pr_intelligence_summary,
 )
+from afritech.afriprogramming.integration import (
+    build_afriprog_boundary_profile,
+    build_afriprog_to_afriprogramming_view,
+)
+from afritech.extensions.afriprog.copilot_assist import generate_context_aware_proposal
 
 
 def _task():
@@ -126,3 +131,28 @@ def test_build_engineering_platform_is_ga_elite_view():
     assert platform["creates_proof_authority"] is False
     assert platform["creates_replay_authority"] is False
     assert platform["mutates_proof"] is False
+
+
+def test_afriprog_boundary_profile_keeps_productivity_and_governance_separate():
+    profile = build_afriprog_boundary_profile()
+
+    assert profile.source_layer == "AfriProg"
+    assert profile.target_layer == "AfriProgramming"
+    assert profile.handoff_mode == "proposal_only"
+    assert profile.truth_authority_transferred is False
+
+
+def test_afriprog_proposals_integrate_only_through_governed_handoff():
+    proposal = generate_context_aware_proposal(
+        intent="prepare governed driver route proposal",
+        affected_files=("afritech/api/driver_routes.py",),
+    )
+
+    view = build_afriprog_to_afriprogramming_view(proposal)
+
+    assert view["source_is_productivity_only"] is True
+    assert view["target_is_governed_execution"] is True
+    assert view["authority_boundary_preserved"] is True
+    assert view["integration_record"]["source_validation_status"] == "ready_for_governance"
+    assert view["integration_record"]["target_validation_status"] == "pass"
+    assert view["integration_record"]["activation_allowed"] is False

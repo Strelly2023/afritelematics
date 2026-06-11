@@ -46,6 +46,9 @@ def test_required_metrics() -> None:
         "trace_completeness",
         "convergence_divergence",
         "determinism_variance",
+        "replay_divergence_detection",
+        "token_replay_rejection",
+        "observability_trace_linkage",
     ]
 
     for key in required:
@@ -60,7 +63,9 @@ def test_required_scenarios() -> None:
         "trip_execution",
         "gps_noise",
         "offline_sync",
+        "device_token_lifecycle",
         "adversarial_injection",
+        "failure_injection_determinism_break",
         "network_delay",
         "surge_conditions",
     ]
@@ -111,7 +116,29 @@ def test_evidence_package_requires_replay_backed_outputs() -> None:
         "pilot_scope_receipt",
         "normalized_event_trace",
         "authenticated_mutation_trace",
+        "device_registration_snapshot",
+        "token_lifecycle_audit",
         "convergence_trace_validation",
+        "replay_divergence_receipt",
+        "observability_trace_export",
         "real_trip_reconstruction",
     ):
         assert required in evidence
+
+
+def test_observability_section_stays_trace_and_replay_linked() -> None:
+    text = DOC.read_text(encoding="utf-8")
+
+    for required in (
+        "Observability Design Tied to Trace/Replay",
+        "trace_id",
+        "device_id",
+        "token_jti",
+        "replay_hash",
+        "receipt_hash",
+        "device and token exception board",
+        "replay divergence board",
+        "failure injection evidence board",
+        "must resolve back to trace evidence and replay-derived outputs",
+    ):
+        assert required in text

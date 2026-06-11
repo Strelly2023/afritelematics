@@ -1,6 +1,7 @@
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.driver_routes import (
     accept_ride,
+    arrive_trip,
     complete_trip,
     driver_requests,
     driver_status,
@@ -63,6 +64,13 @@ def test_fastapi_full_ride_flow() -> None:
         gateway=gateway,
     )
     assert duplicate_accept == accepted
+
+    arrived = arrive_trip(
+        RideAction(driver_id="A", ride_id="ride-api-1"),
+        idempotency_key="arrive-api-1",
+        gateway=gateway,
+    )
+    assert arrived["data"]["status"] == "DRIVER_ARRIVED"
 
     started = start_trip(
         RideAction(driver_id="A", ride_id="ride-api-1"),

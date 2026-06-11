@@ -20,7 +20,17 @@
       }
     },
     "android": {
-      "package": "com.ostrinov23.afriridedrivertest"
+      "package": "com.ostrinov23.afriridedrivertest",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.ostrinov23.afriridedrivertest",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during pilot shifts to capture GPS evidence for controlled validation."
+      }
     }
   }
 }

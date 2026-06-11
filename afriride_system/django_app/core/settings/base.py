@@ -1,8 +1,9 @@
 """Base settings for the isolated AfriRide Django skeleton."""
 
 from __future__ import annotations
+import os
 
-SECRET_KEY = "afriride-dev-only"
+SECRET_KEY = os.environ.get("AFRIRIDE_DJANGO_SECRET_KEY", "local-dev-only-not-for-production")
 DEBUG = False
 ROOT_URLCONF = "afriride_system.django_app.core.urls"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

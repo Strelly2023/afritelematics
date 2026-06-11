@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AfriTech Public Proof Bundle",
+  "type": "object",
+  "required": [
+    "ride_id",
+    "events",
+    "replay",
+    "evidence",
+    "receipt",
+    "authority"
+  ],
+  "properties": {
+    "ride_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1
+    },
+    "replay": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "receipt": {
+      "type": "object"
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "doc_id",
+        "doc_version",
+        "governed_invariants",
+        "authority_hash"
+      ],
+      "properties": {
+        "doc_id": {
+          "type": "string"
+        },
+        "doc_version": {
+          "type": "string"
+        },
+        "governed_invariants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authority_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

@@ -34,6 +34,12 @@ class DriverRoutes:
             ride_id=payload["ride_id"],
         )
 
+    def arrive(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.dispatcher.arrive_trip(
+            driver_id=payload["driver_id"],
+            ride_id=payload["ride_id"],
+        )
+
     def complete(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self.dispatcher.complete_trip(
             driver_id=payload["driver_id"],

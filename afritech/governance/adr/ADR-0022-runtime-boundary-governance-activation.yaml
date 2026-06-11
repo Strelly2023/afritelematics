@@ -1,0 +1,35 @@
+adr:
+  id: ADR-0022
+  title: Runtime boundary governance activation
+  status: ACCEPTED
+  classification: RUNTIME_BOUNDARY_GOVERNANCE
+  context: >
+    The FastAPI vs Django boundary is now defined, validated, and represented
+    through generated architecture artifacts. Without a governed activation
+    layer, those checks can exist as useful tools while still drifting away
+    from the active CI and operator workflow.
+  decision: >
+    Admit the runtime boundary validator, runtime boundary scan artifact, and
+    full architecture graph as a governed chain. CI must run the governance
+    guard. CI must run the governance guard, fail on runtime-boundary violations, fail on stale generated
+    artifacts, and publish the resulting reports for review.
+  consequences:
+    - Runtime-boundary safety becomes an enforced governance surface instead of an optional check.
+    - Generated architecture and scan artifacts must remain current with the source tree.
+    - CI becomes the activation path for runtime-boundary governance and artifact drift detection.
+    - Future startup-safety rules must extend this ADR -> RULE -> BIND -> GUARD chain.
+  constraints:
+    - runtime boundary validator must fail closed on violations
+    - architecture graph and boundary scan must be reproducible from source
+    - committed governance artifacts must not silently drift from generated output
+    - architecture workflow must upload current review artifacts
+  rules:
+    - RULE-042
+  linked_rule: RULE-042
+  linked_binding: BIND-021
+  linked_guard: afritech/guards/guard_runtime_boundary_governance.py
+  linked_surfaces:
+    - afritech/ci/runtime_boundary_validator.py
+    - afritech/architecture/full_architecture_graph.py
+    - docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md
+    - docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md

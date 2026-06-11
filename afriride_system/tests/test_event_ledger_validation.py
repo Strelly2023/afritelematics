@@ -21,13 +21,13 @@ def test_phase5_declared_event_ledger_is_internally_admissible() -> None:
     report = EventLedgerValidator().validate(_phase5_events())
     data = report.canonical_dict()
 
-    assert data["event_count"] == 70
+    assert data["event_count"] == 80
     assert data["ride_count"] == 10
     assert data["completed_ride_count"] == 10
     assert data["total_distance_km"] == 69
     assert data["total_duration_min"] == 148
     assert data["total_fare"] == 220.8
-    assert data["declared_chain_terminal_hash"] == "h070"
+    assert data["declared_chain_terminal_hash"] == "h080"
     assert data["hash_mode"] == "declared_token_chain"
     assert data["signature_mode"] == "unsigned"
     assert data["write_enabled"] is False
@@ -44,7 +44,7 @@ def test_phase5_declared_event_ledger_rejects_hash_chain_break() -> None:
 
 def test_phase5_declared_event_ledger_rejects_incomplete_lifecycle() -> None:
     events = _phase5_events()
-    events[5]["type"] = "RIDE_STARTED"
+    events[4]["type"] = "RIDE_STARTED"
 
     with pytest.raises(EventLedgerValidationError, match="invalid lifecycle sequence"):
         EventLedgerValidator().validate(events)
@@ -55,7 +55,7 @@ def test_phase5_cryptographic_event_ledger_is_sha256_verifiable() -> None:
     report = EventLedgerValidator(require_cryptographic_hashes=True).validate(events)
     data = report.canonical_dict()
 
-    assert data["event_count"] == 70
+    assert data["event_count"] == 80
     assert data["ride_count"] == 10
     assert data["completed_ride_count"] == 10
     assert data["total_fare"] == 220.8
@@ -88,7 +88,7 @@ def test_phase5_signed_cryptographic_event_ledger_is_origin_verified() -> None:
     ).validate(events)
     data = report.canonical_dict()
 
-    assert data["event_count"] == 70
+    assert data["event_count"] == 80
     assert data["completed_ride_count"] == 10
     assert data["hash_mode"] == "sha256_canonical_chain"
     assert data["signature_mode"] == "rsa_pss_sha256"
@@ -194,16 +194,16 @@ def test_phase5_signed_event_ledger_rejects_terms_mismatch() -> None:
 
 def _phase5_events() -> list[dict[str, object]]:
     ride_specs = (
-        ("2026-05-25", "08:00:00", "08:01:00", "08:01:10", "08:01:30", "08:03:00", "08:15:00", "drv_001", "ride_001", "rdr_001", 5, 12, 17.50),
-        ("2026-05-25", "09:00:00", "09:02:00", "09:02:10", "09:02:40", "09:05:00", "09:25:00", "drv_002", "ride_002", "rdr_002", 10, 20, 30.00),
-        ("2026-05-26", "07:50:00", "07:55:00", "07:55:10", "07:55:20", "07:58:00", "08:06:00", "drv_003", "ride_003", "rdr_003", 3, 8, 12.50),
-        ("2026-05-26", "10:00:00", "10:02:00", "10:02:15", "10:02:30", "10:05:00", "10:20:00", "drv_001", "ride_004", "rdr_004", 7, 15, 22.00),
-        ("2026-05-27", "08:30:00", "08:32:00", "08:32:10", "08:32:25", "08:35:00", "08:48:00", "drv_002", "ride_005", "rdr_005", 6, 13, 19.80),
-        ("2026-05-27", "09:00:00", "09:02:00", "09:02:10", "09:02:25", "09:05:00", "09:23:00", "drv_003", "ride_006", "rdr_001", 9, 18, 27.50),
-        ("2026-05-28", "08:00:00", "08:02:00", "08:02:10", "08:02:20", "08:04:00", "08:14:00", "drv_001", "ride_007", "rdr_002", 4, 10, 15.00),
-        ("2026-05-29", "07:50:00", "07:52:00", "07:52:10", "07:52:20", "07:55:00", "08:17:00", "drv_002", "ride_008", "rdr_003", 11, 22, 31.00),
-        ("2026-05-30", "09:00:00", "09:02:00", "09:02:10", "09:02:20", "09:05:00", "09:21:00", "drv_003", "ride_009", "rdr_004", 8, 16, 25.00),
-        ("2026-05-31", "08:10:00", "08:12:00", "08:12:10", "08:12:20", "08:15:00", "08:29:00", "drv_001", "ride_010", "rdr_005", 6, 14, 20.50),
+        ("2026-05-25", "08:00:00", "08:01:00", "08:01:10", "08:01:30", "08:02:30", "08:03:00", "08:15:00", "drv_001", "ride_001", "rdr_001", 5, 12, 17.50),
+        ("2026-05-25", "09:00:00", "09:02:00", "09:02:10", "09:02:40", "09:04:00", "09:05:00", "09:25:00", "drv_002", "ride_002", "rdr_002", 10, 20, 30.00),
+        ("2026-05-26", "07:50:00", "07:55:00", "07:55:10", "07:55:20", "07:57:00", "07:58:00", "08:06:00", "drv_003", "ride_003", "rdr_003", 3, 8, 12.50),
+        ("2026-05-26", "10:00:00", "10:02:00", "10:02:15", "10:02:30", "10:04:00", "10:05:00", "10:20:00", "drv_001", "ride_004", "rdr_004", 7, 15, 22.00),
+        ("2026-05-27", "08:30:00", "08:32:00", "08:32:10", "08:32:25", "08:34:00", "08:35:00", "08:48:00", "drv_002", "ride_005", "rdr_005", 6, 13, 19.80),
+        ("2026-05-27", "09:00:00", "09:02:00", "09:02:10", "09:02:25", "09:04:00", "09:05:00", "09:23:00", "drv_003", "ride_006", "rdr_001", 9, 18, 27.50),
+        ("2026-05-28", "08:00:00", "08:02:00", "08:02:10", "08:02:20", "08:03:30", "08:04:00", "08:14:00", "drv_001", "ride_007", "rdr_002", 4, 10, 15.00),
+        ("2026-05-29", "07:50:00", "07:52:00", "07:52:10", "07:52:20", "07:54:00", "07:55:00", "08:17:00", "drv_002", "ride_008", "rdr_003", 11, 22, 31.00),
+        ("2026-05-30", "09:00:00", "09:02:00", "09:02:10", "09:02:20", "09:04:00", "09:05:00", "09:21:00", "drv_003", "ride_009", "rdr_004", 8, 16, 25.00),
+        ("2026-05-31", "08:10:00", "08:12:00", "08:12:10", "08:12:20", "08:14:00", "08:15:00", "08:29:00", "drv_001", "ride_010", "rdr_005", 6, 14, 20.50),
     )
     events: list[dict[str, object]] = []
     previous_hash: str | None = None
@@ -215,6 +215,7 @@ def _phase5_events() -> list[dict[str, object]]:
         requested_at,
         assigned_at,
         accepted_at,
+        arrived_at,
         started_at,
         completed_at,
         driver_id,
@@ -246,6 +247,11 @@ def _phase5_events() -> list[dict[str, object]]:
                 "type": "RIDE_ACCEPTED",
                 "ride_id": ride_id,
                 "timestamp": f"{day}T{accepted_at}Z",
+            },
+            {
+                "type": "DRIVER_ARRIVED",
+                "ride_id": ride_id,
+                "timestamp": f"{day}T{arrived_at}Z",
             },
             {
                 "type": "RIDE_STARTED",

@@ -1,16 +1,23 @@
 """FastAPI entrypoint for the deterministic MVP production pipeline."""
 
 from __future__ import annotations
+import os
 from typing import Any
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # ============================================================
 # API LAYERS
 # ============================================================
 
-from afritech.api.auth.jwt_device_auth import build_auth_router
+from afritech.api.auth.jwt_device_auth import (
+    authenticate_websocket,
+    build_auth_router,
+    reject_websocket,
+    require_roles,
+)
 from afritech.api.ingestion.event_ingestion import (
     EventIngestionAPI,
     build_router,
@@ -18,6 +25,14 @@ from afritech.api.ingestion.event_ingestion import (
 from afritech.api.realtime.ws_server import WebSocketHub
 from afritech.api.trace_api import build_trace_router
 from afritech.api.system_status import build_system_status_router
+from afritech.api.partner_verification_api import build_partner_verification_router
+from afritech.api.partner_registry_api import build_partner_registry_router
+from afritech.api.public_verification_api import build_public_verification_router
+from afritech.api.ops_governance_api import build_ops_governance_router
+from afritech.api.architecture_proof_api import build_architecture_proof_router
+from afritech.api.trust_network_api import build_trust_network_router
+from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
+from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
 
 # ============================================================
 # EDGE PIPELINE
@@ -36,6 +51,10 @@ from afritech.edge.normalization.validation import validate_normalized_input
 from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
+from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
+from afritech.partner_verification import PartnerVerificationStore
+from afritech.standards_dependency import StandardsDependencyStore
+from afritech.trust_network import TrustRegistryStore
 
 
 # ============================================================
@@ -63,8 +82,19 @@ app.add_middleware(
 queue = PartitionedQueue(num_partitions=8)
 worker_pool = WorkerPool(queue)
 
-mobile_event_ingestion = EventIngestionAPI(secret="pilot-secret")
+_EVENT_INGESTION_SECRET = os.environ.get("AFRITECH_EVENT_INGESTION_SECRET", "pilot-secret")
+
+
+def runtime_event_ingestion_secret() -> str:
+    return _EVENT_INGESTION_SECRET
+
+
+mobile_event_ingestion = EventIngestionAPI(secret=runtime_event_ingestion_secret())
 realtime_hub = WebSocketHub()
+partner_verification_store = PartnerVerificationStore()
+trust_registry_store = TrustRegistryStore()
+standards_dependency_store = StandardsDependencyStore()
+partner_registry_store = PartnerRegistryStore(seed_partner_registry())
 
 
 # ============================================================
@@ -84,6 +114,42 @@ app.include_router(trace_router)
 # ✅ System status API
 app.include_router(build_system_status_router())
 
+# ✅ Partner verification API
+app.include_router(build_partner_verification_router(store=partner_verification_store))
+
+# ✅ Partner registry API
+app.include_router(build_partner_registry_router(store=partner_registry_store))
+
+# ✅ Trust Network API
+app.include_router(
+    build_trust_network_router(
+        store=trust_registry_store,
+        dependency_store=standards_dependency_store,
+        verification_store=partner_verification_store,
+    )
+)
+
+# ✅ Controlled public verification API
+app.include_router(
+    build_public_verification_router(
+        verification_store=partner_verification_store,
+        registry_store=trust_registry_store,
+        partner_store=partner_registry_store,
+    )
+)
+
+# ✅ Public architecture proof and partner demo API
+app.include_router(build_architecture_proof_router())
+
+# ✅ Dashboard gateway API
+app.include_router(build_dashboard_gateway_router())
+
+# ✅ AfriPro workspace API
+app.include_router(build_afroprog_workspace_router())
+
+# ✅ Operator observability and audit APIs
+app.include_router(build_ops_governance_router())
+
 
 # ============================================================
 # ROOT
@@ -101,6 +167,12 @@ def root() -> dict[str, Any]:
         "event_ingestion": "/v1/events",
         "trace_api": "/v1/traces",
     }
+
+
+@app.get("/health")
+def health() -> dict[str, Any]:
+    """Lightweight probe for container health checks."""
+    return {"status": "ok"}
 
 
 # ============================================================
@@ -125,11 +197,25 @@ class FastAPIWebSocketClient:
 async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
     """Subscribe a client to observation-only projected ride state."""
 
+    claims = authenticate_websocket(websocket, roles={"OPERATOR", "VERIFIER", "PARTNER", "OBSERVER"})
+    if claims is None:
+        await reject_websocket(websocket)
+        return
+
     await websocket.accept()
     client = FastAPIWebSocketClient(websocket)
     realtime_hub.subscribe(ride_id, client)
 
     try:
+        await websocket.send_json(
+            {
+                "ride_id": ride_id,
+                "status": "connected",
+                "subscriber": claims.sub,
+                "role": claims.role,
+                "authority": "projection_only",
+            }
+        )
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
@@ -144,6 +230,7 @@ async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
 async def publish_ride_projection(
     ride_id: str,
     payload: dict[str, Any],
+    _: object = Depends(require_roles("OPERATOR", "VERIFIER")),
 ) -> dict[str, Any]:
     """Pilot-only projection publisher; does not mutate source-of-truth."""
 
@@ -161,7 +248,10 @@ async def publish_ride_projection(
 # ============================================================
 
 @app.post("/process")
-def process(payload: dict[str, Any]) -> dict[str, Any]:
+def process(
+    payload: dict[str, Any],
+    _: object = Depends(require_roles("OPERATOR", "DEVICE")),
+) -> dict[str, Any]:
     """Process one external request through the deterministic edge pipeline."""
 
     raw_input = {
@@ -197,7 +287,10 @@ def process(payload: dict[str, Any]) -> dict[str, Any]:
 # ============================================================
 
 @app.post("/workers/drain")
-def drain_workers(partition_id: int | None = None) -> dict[str, Any]:
+def drain_workers(
+    partition_id: int | None = None,
+    _: object = Depends(require_roles("OPERATOR", "VERIFIER")),
+) -> dict[str, Any]:
     """Run deterministic worker cycles for queued events."""
 
     outputs = worker_pool.drain(partition_id=partition_id)
@@ -207,3 +300,49 @@ def drain_workers(partition_id: int | None = None) -> dict[str, Any]:
         "processed": len(outputs),
         "outputs": [result.outputs for result in outputs],
     }
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": {
+                "code": str(exc.detail).upper(),
+                "message": str(exc.detail),
+            }
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if request.url.path == "/public/architecture/proof":
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "generation_failed",
+                "classification": "CONTROLLED_PUBLIC_ARCHITECTURE_PROOF",
+                "authority_boundary": (
+                    "architecture proof generation failed before publication; "
+                    "replay and governed execution remain the authority"
+                ),
+                "proof_id": None,
+                "runtime_boundary_status": "UNKNOWN",
+                "proof": None,
+                "error": {
+                    "code": "ARCHITECTURE_PROOF_GENERATION_FAILED",
+                    "type": type(exc).__name__,
+                    "message": str(exc) or "architecture proof generation failed",
+                },
+            },
+        )
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": {
+                "code": "SERVER_ERROR",
+                "message": "internal server error",
+            }
+        },
+    )

@@ -70,6 +70,15 @@ export function DiagnosticsScreen({
       {diagnostics.lastError ? (
         <Text style={styles.error}>Evidence error: {diagnostics.lastError}</Text>
       ) : null}
+
+      {diagnostics.shiftStarted &&
+      diagnostics.locationSamples === 0 &&
+      diagnostics.gpsSignalLossEvents > 0 ? (
+        <Text style={styles.warning}>
+          GPS evidence unavailable in this runtime. Rebuild the native driver app or use
+          Expo Go with location support before production readiness can pass.
+        </Text>
+      ) : null}
     </SurfacePanel>
   );
 }
@@ -131,5 +140,11 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 22,
     fontWeight: "900",
+  },
+  warning: {
+    color: colors.secondary,
+    fontSize: 14,
+    fontWeight: "800",
+    lineHeight: 20,
   },
 });

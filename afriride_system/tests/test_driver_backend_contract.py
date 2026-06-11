@@ -2,8 +2,13 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
+
+
+def auth(role: str, user_id: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {JWT.create_token(user_id, role)}"}
 
 
 def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> None:
@@ -13,7 +18,7 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     driver_status = client.post(
         "/driver/status",
         json={"driver_id": "driver-1", "online": True},
-        headers={"Idempotency-Key": "driver-contract-online"},
+        headers={"Idempotency-Key": "driver-contract-online", **auth("DRIVER", "driver-1")},
     )
     assert driver_status.status_code == 200
 
@@ -25,11 +30,11 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
             "destination": "Nakasero",
             "ride_id": "ride-contract-1",
         },
-        headers={"Idempotency-Key": "driver-contract-request"},
+        headers={"Idempotency-Key": "driver-contract-request", **auth("RIDER", "rider-1")},
     )
     assert request.status_code == 200
 
-    assigned = client.get("/driver/driver-1/rides/assigned")
+    assigned = client.get("/driver/driver-1/rides/assigned", headers=auth("DRIVER", "driver-1"))
     assert assigned.status_code == 200
     assigned_payload = assigned.json()
     assert assigned_payload["rides"] == [
@@ -47,15 +52,23 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     accepted = client.post(
         "/ride/ride-contract-1/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "driver-contract-accept"},
+        headers={"Idempotency-Key": "driver-contract-accept", **auth("DRIVER", "driver-1")},
     )
     assert accepted.status_code == 200
     assert accepted.json()["status"] == "DRIVER_ASSIGNED"
 
+    arrived = client.post(
+        "/ride/ride-contract-1/arrive",
+        json={"driver_id": "driver-1"},
+        headers={"Idempotency-Key": "driver-contract-arrive", **auth("DRIVER", "driver-1")},
+    )
+    assert arrived.status_code == 200
+    assert arrived.json()["status"] == "DRIVER_ARRIVED"
+
     started = client.post(
         "/ride/ride-contract-1/start",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "driver-contract-start"},
+        headers={"Idempotency-Key": "driver-contract-start", **auth("DRIVER", "driver-1")},
     )
     assert started.status_code == 200
     assert started.json()["status"] == "IN_TRIP"
@@ -63,12 +76,12 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     completed = client.post(
         "/ride/ride-contract-1/complete",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "driver-contract-complete"},
+        headers={"Idempotency-Key": "driver-contract-complete", **auth("DRIVER", "driver-1")},
     )
     assert completed.status_code == 200
     assert completed.json()["status"] == "COMPLETED"
 
-    receipt = client.get("/ride/ride-contract-1/receipt")
+    receipt = client.get("/ride/ride-contract-1/receipt", headers=auth("RIDER", "rider-1"))
     assert receipt.status_code == 200
     receipt_payload = receipt.json()
     assert receipt_payload["ride_id"] == "ride-contract-1"
@@ -76,7 +89,7 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     assert receipt_payload["status"] == "completed"
     assert len(receipt_payload["receipt_hash"]) == 64
 
-    replay = client.get("/ride/ride-contract-1/replay")
+    replay = client.get("/ride/ride-contract-1/replay", headers=auth("RIDER", "rider-1"))
     assert replay.status_code == 200
     replay_payload = replay.json()
     assert replay_payload["ride_id"] == "ride-contract-1"
@@ -84,12 +97,19 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     assert replay_payload["receipt_id"] == receipt_payload["receipt_id"]
     assert len(replay_payload["replay_hash"]) == 64
 
-    ledger_receipt = client.get("/ride/ride-contract-1/ledger-receipt")
+    evidence = client.get("/ride/ride-contract-1/evidence", headers=auth("RIDER", "rider-1"))
+    assert evidence.status_code == 200
+    evidence_payload = evidence.json()
+    assert evidence_payload["ride_id"] == "ride-contract-1"
+    assert evidence_payload["verification_status"] == "VERIFIED"
+    assert evidence_payload["replay_verified"] is True
+
+    ledger_receipt = client.get("/ride/ride-contract-1/ledger-receipt", headers=auth("RIDER", "rider-1"))
     assert ledger_receipt.status_code == 200
     ledger_payload = ledger_receipt.json()
     assert ledger_payload["receipt_id"] == "ledger-receipt-ride-contract-1"
     assert ledger_payload["verdict"] == "VALID"
-    assert ledger_payload["ledger_proof"]["event_count"] == 7
+    assert ledger_payload["ledger_proof"]["event_count"] == 8
     assert ledger_payload["ledger_proof"]["hash_mode"] == "sha256_canonical_chain"
     assert ledger_payload["signature_validation"]["signature_mode"] == "rsa_pss_sha256"
     assert ledger_payload["signature_validation"]["all_signatures_valid"] is True
@@ -97,7 +117,7 @@ def test_driver_app_backend_contract_completes_replay_visible_lifecycle() -> Non
     assert ledger_payload["replay_proof"]["replay_valid"] is True
     assert len(ledger_payload["receipt_hash"]) == 64
 
-    earnings = client.get("/driver/driver-1/earnings")
+    earnings = client.get("/driver/driver-1/earnings", headers=auth("DRIVER", "driver-1"))
     assert earnings.status_code == 200
     earnings_payload = earnings.json()
     assert earnings_payload["driver_id"] == "driver-1"
@@ -112,7 +132,7 @@ def test_rider_backend_driver_loop_exposes_same_derived_proof_to_rider() -> None
     client.post(
         "/driver/status",
         json={"driver_id": "driver-1", "online": True},
-        headers={"Idempotency-Key": "rider-loop-driver-online"},
+        headers={"Idempotency-Key": "rider-loop-driver-online", **auth("DRIVER", "driver-1")},
     )
     requested = client.post(
         "/passenger/request-ride",
@@ -122,33 +142,38 @@ def test_rider_backend_driver_loop_exposes_same_derived_proof_to_rider() -> None
             "destination": "Nakasero",
             "ride_id": "ride-rider-loop-1",
         },
-        headers={"Idempotency-Key": "rider-loop-request"},
+        headers={"Idempotency-Key": "rider-loop-request", **auth("RIDER", "rider-1")},
     )
     assert requested.status_code == 200
 
     client.post(
         "/ride/ride-rider-loop-1/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "rider-loop-accept"},
+        headers={"Idempotency-Key": "rider-loop-accept", **auth("DRIVER", "driver-1")},
+    )
+    client.post(
+        "/ride/ride-rider-loop-1/arrive",
+        json={"driver_id": "driver-1"},
+        headers={"Idempotency-Key": "rider-loop-arrive", **auth("DRIVER", "driver-1")},
     )
     client.post(
         "/ride/ride-rider-loop-1/start",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "rider-loop-start"},
+        headers={"Idempotency-Key": "rider-loop-start", **auth("DRIVER", "driver-1")},
     )
     client.post(
         "/ride/ride-rider-loop-1/complete",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "rider-loop-complete"},
+        headers={"Idempotency-Key": "rider-loop-complete", **auth("DRIVER", "driver-1")},
     )
 
-    rider_status = client.get("/passenger/status/ride-rider-loop-1")
+    rider_status = client.get("/passenger/status/ride-rider-loop-1", headers=auth("RIDER", "rider-1"))
     assert rider_status.status_code == 200
     assert rider_status.json()["data"]["status"] == "COMPLETED"
 
-    rider_receipt = client.get("/ride/ride-rider-loop-1/receipt")
-    rider_replay = client.get("/ride/ride-rider-loop-1/replay")
-    rider_ledger_receipt = client.get("/ride/ride-rider-loop-1/ledger-receipt")
+    rider_receipt = client.get("/ride/ride-rider-loop-1/receipt", headers=auth("RIDER", "rider-1"))
+    rider_replay = client.get("/ride/ride-rider-loop-1/replay", headers=auth("RIDER", "rider-1"))
+    rider_ledger_receipt = client.get("/ride/ride-rider-loop-1/ledger-receipt", headers=auth("RIDER", "rider-1"))
 
     assert rider_receipt.status_code == 200
     assert rider_replay.status_code == 200
@@ -169,7 +194,7 @@ def test_driver_app_backend_contract_rejects_receipt_before_completion() -> None
     client.post(
         "/driver/status",
         json={"driver_id": "driver-1", "online": True},
-        headers={"Idempotency-Key": "driver-contract-online-reject"},
+        headers={"Idempotency-Key": "driver-contract-online-reject", **auth("DRIVER", "driver-1")},
     )
     client.post(
         "/passenger/request-ride",
@@ -179,15 +204,15 @@ def test_driver_app_backend_contract_rejects_receipt_before_completion() -> None
             "destination": "Nakasero",
             "ride_id": "ride-contract-unfinished",
         },
-        headers={"Idempotency-Key": "driver-contract-request-reject"},
+        headers={"Idempotency-Key": "driver-contract-request-reject", **auth("RIDER", "rider-1")},
     )
 
-    receipt = client.get("/ride/ride-contract-unfinished/receipt")
+    receipt = client.get("/ride/ride-contract-unfinished/receipt", headers=auth("RIDER", "rider-1"))
 
     assert receipt.status_code == 400
     assert receipt.json()["error"]["code"] == "RIDE_NOT_COMPLETED"
 
-    ledger_receipt = client.get("/ride/ride-contract-unfinished/ledger-receipt")
+    ledger_receipt = client.get("/ride/ride-contract-unfinished/ledger-receipt", headers=auth("RIDER", "rider-1"))
 
     assert ledger_receipt.status_code == 400
     assert ledger_receipt.json()["error"]["code"] == "RIDE_NOT_COMPLETED"

@@ -45,9 +45,18 @@ def test_role_mismatch_is_rejected() -> None:
 
 def test_operator_can_read_system_surface() -> None:
     client = TestClient(app)
-    response = client.get("/system/evidence", headers=bearer("OPERATOR", "operator-1"))
-
-    assert response.status_code == 200
+    for path in (
+        "/system/evidence",
+        "/system/evidence/summary",
+        "/system/health",
+        "/system/drivers",
+        "/system/guards/summary",
+        "/system/trust-metrics",
+        "/system/pilot-metrics",
+        "/system/trust-sla",
+    ):
+        response = client.get(path, headers=bearer("OPERATOR", "operator-1"))
+        assert response.status_code == 200
 
 
 def test_cors_preflight_is_not_blocked_by_auth() -> None:
@@ -63,3 +72,14 @@ def test_cors_preflight_is_not_blocked_by_auth() -> None:
 
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
+def test_ride_websocket_requires_authentication() -> None:
+    client = TestClient(app)
+
+    try:
+        with client.websocket_connect("/ws/ride-1") as websocket:
+            websocket.receive_json()
+        assert False
+    except Exception:
+        assert True

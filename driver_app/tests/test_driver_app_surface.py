@@ -92,6 +92,21 @@ def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
     assert "gps_signal_loss_event" in pilot_hook
     assert "routeDeviationEvents" in diagnostics
     assert "gpsSignalLossEvents" in diagnostics
+    assert "describePilotEvidenceError" in pilot_hook
+    assert "extractPilotEvidenceError" in pilot_hook
+    assert "if (!diagnostics.shiftStarted)" in pilot_hook
+    assert "lastEvidenceError" in pilot_hook
+    assert 'type: "timeout" | "network" | "validation" | "shift_gated" | "server" | "unknown"' in models
+    assert 'severity: EvidenceErrorSeverity' in models
+    assert "durationMs: number" in models
+    assert "traceId: string" in models
+    assert "evidence_api_timeout" in evidence_service
+    assert "API_BASE_URL" in evidence_service
+    assert "buildEvidenceError" in evidence_service
+    assert "generateEvidenceTraceContext" in evidence_service
+    assert '"X-AfriRide-Trace-Id"' in evidence_service
+    assert "traceparent" in evidence_service
+    assert "`00-${traceId}-${spanId}-01`" in evidence_service
     assert "app_backgrounded" in pilot_hook
     assert "app_resumed" in pilot_hook
     assert "crash_event" in app

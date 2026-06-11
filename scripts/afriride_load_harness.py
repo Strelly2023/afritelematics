@@ -183,6 +183,25 @@ def run_full_lifecycle_case(
     if not _ok(accept):
         return {"ride_id": ride_id, "ok": False, "stage": "accept", "response": accept.payload}
 
+    arrive = harness.request(
+        "POST",
+        f"/ride/{ride_id}/arrive",
+        token=driver_token,
+        idempotency_key=_idempotency("arrive", run_id, "1"),
+        payload={
+            "driver_id": driver_id,
+            "client_event": _client_event(
+                event_id=f"{ride_id}-arrive",
+                actor_type="driver",
+                actor_id=driver_id,
+                action=f"POST /ride/{ride_id}/arrive",
+                payload={"driver_id": driver_id, "ride_id": ride_id},
+            ),
+        },
+    )
+    if not _ok(arrive):
+        return {"ride_id": ride_id, "ok": False, "stage": "arrive", "response": arrive.payload}
+
     start = harness.request(
         "POST",
         f"/ride/{ride_id}/start",

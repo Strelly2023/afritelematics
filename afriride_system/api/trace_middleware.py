@@ -10,10 +10,12 @@ from typing import Any
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 
-from afriride_system.backend.trace_enforcement import TRACE_LOG, TraceEnvelopeError
+from afriride_system.api.auth import AuthClaims
+from afriride_system.api.dependencies.runtime import get_trace_log
+from afriride_system.backend.trace_enforcement import TraceEnvelopeError
 
 
-RIDE_PATH_RE = re.compile(r"^/ride/([^/]+)/(accept|reject|start|complete)$")
+RIDE_PATH_RE = re.compile(r"^/ride/([^/]+)/(accept|reject|arrive|start|complete)$")
 
 
 async def trace_enforcement_middleware(
@@ -26,7 +28,7 @@ async def trace_enforcement_middleware(
 
     if envelope is not None:
         try:
-            event = TRACE_LOG.append(envelope, ride_id=_ride_id(request, payload))
+            event = get_trace_log().append(envelope, ride_id=_ride_id(request, payload))
         except TraceEnvelopeError as exc:
             return JSONResponse(
                 status_code=422,
@@ -76,12 +78,14 @@ def _extract_envelope(
 ) -> dict[str, Any] | None:
     envelope = payload.get("client_event")
     if isinstance(envelope, dict):
-        return envelope
+        return _bind_authenticated_identity(request, envelope)
     if request.method != "GET":
         return None
     if not _has_trace_headers(request):
         return None
-    return {
+    return _bind_authenticated_identity(
+        request,
+        {
         "event_id": request.headers.get("X-AfriRide-Event-Id"),
         "device_id": request.headers.get("X-AfriRide-Device-Id"),
         "actor_type": _actor_type_from_path(request.url.path),
@@ -91,7 +95,8 @@ def _extract_envelope(
         "local_timestamp": request.headers.get("X-AfriRide-Client-Timestamp"),
         "app_version": request.headers.get("X-AfriRide-App-Version"),
         "test_mode": request.headers.get("X-AfriRide-Test-Mode") == "true",
-    }
+        },
+    )
 
 
 def _has_trace_headers(request: Request) -> bool:
@@ -108,6 +113,20 @@ def _has_trace_headers(request: Request) -> bool:
 
 def _is_instrumented_request(request: Request) -> bool:
     return request.headers.get("X-AfriRide-Test-Mode") == "true"
+
+
+def _bind_authenticated_identity(request: Request, envelope: dict[str, Any]) -> dict[str, Any]:
+    claims: AuthClaims | None = getattr(request.state, "auth_claims", None)
+    if claims is None:
+        return envelope
+    bound = dict(envelope)
+    bound["actor_id"] = claims.sub
+    bound["actor_type"] = {
+        "RIDER": "rider",
+        "DRIVER": "driver",
+        "OPERATOR": "operator",
+    }[claims.role]
+    return bound
 
 
 def _actor_type_from_path(path: str) -> str:

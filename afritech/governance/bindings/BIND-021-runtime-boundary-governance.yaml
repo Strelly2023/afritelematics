@@ -1,0 +1,80 @@
+id: BIND-021
+
+description: >
+  Binds runtime-boundary enforcement to ADR-0022, RULE-042, the runtime
+  boundary validator, the generated architecture graph, and CI artifact drift
+  control.
+
+bindings:
+  - id: BIND-021-1
+    name: runtime_boundary_validator
+    target: afritech.ci.runtime_boundary_validator
+    binding_type: CI_VALIDATOR
+    runtime_authoritative: false
+    responsibilities:
+      - scan the FastAPI startup closure
+      - detect Django/DRF leakage into runtime-safe namespaces
+      - emit deterministic review artifacts
+    linked_rules:
+      - RULE-042
+
+  - id: BIND-021-2
+    name: full_architecture_graph_generator
+    target: afritech.architecture.full_architecture_graph
+    binding_type: GENERATED_ARCHITECTURE
+    runtime_authoritative: false
+    responsibilities:
+      - derive a repo-backed runtime architecture graph
+      - preserve startup inventory and repo area counts
+      - support drift comparison in governance guards
+    linked_rules:
+      - RULE-042
+
+  - id: BIND-021-3
+    name: runtime_boundary_governance_guard
+    target: afritech.guards.guard_runtime_boundary_governance
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - verify ADR/RULE/BIND linkage
+      - fail on runtime-boundary violations
+      - fail on stale generated governance artifacts
+      - verify CI activation strings remain present
+    linked_rules:
+      - RULE-042
+
+  - id: BIND-021-4
+    name: architecture_workflow_activation
+    target: .github/workflows/architecture.yml
+    binding_type: CI_WORKFLOW
+    runtime_authoritative: false
+    responsibilities:
+      - execute runtime-boundary governance guard
+      - publish runtime-boundary artifacts for review
+      - keep architecture governance active on push and pull request
+    linked_rules:
+      - RULE-042
+
+linked_rules:
+  - RULE-042
+
+linked_adr:
+  - ADR-0022
+
+linked_invariants:
+  - I10_EXPLICIT_DEPENDENCIES
+  - I11_AUTHORITY_DECLARATION
+  - I12_NO_AUTHORITY_ESCALATION
+
+guards:
+  - afritech.guards.guard_runtime_boundary_governance
+
+ci:
+  enforcement:
+    - Runtime boundary governance guard must pass with zero violations.
+    - Generated scan and architecture graph artifacts must not drift from source.
+    - Architecture workflow must upload current runtime-boundary artifacts.
+  tests:
+    - test_runtime_boundary_validator_detects_transitive_startup_violation
+    - test_full_architecture_graph_generator_writes_expected_sections
+    - test_runtime_boundary_governance_chain_passes

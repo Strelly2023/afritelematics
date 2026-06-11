@@ -101,6 +101,15 @@ def start_trip(
     return _driver_action("start_trip", gateway.driver.start, payload, idempotency_key)
 
 
+@router.post("/arrive")
+def arrive_trip(
+    payload: RideAction,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    gateway: AfriRideGateway = Depends(get_gateway),
+) -> dict:
+    return _driver_action("arrive_trip", gateway.driver.arrive, payload, idempotency_key)
+
+
 @router.post("/complete")
 def complete_trip(
     payload: RideAction,
@@ -156,6 +165,7 @@ def _driver_status(status: str) -> str:
     return {
         "REQUESTED": "assigned",
         "DRIVER_ASSIGNED": "accepted",
+        "DRIVER_ARRIVED": "arrived",
         "IN_TRIP": "in_progress",
         "COMPLETED": "completed",
         "CANCELED": "cancelled",

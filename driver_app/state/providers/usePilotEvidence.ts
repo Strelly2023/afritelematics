@@ -12,6 +12,8 @@ import type {
 import {
   captureLocationEvidence,
   capturePilotEvidence,
+  describePilotEvidenceError,
+  extractPilotEvidenceError,
 } from "../../core/services/pilotEvidence.service";
 
 const initialDiagnostics: DiagnosticsSnapshot = {
@@ -42,10 +44,12 @@ export function usePilotEvidence(driverId: string) {
   }, []);
 
   const markFailed = useCallback((error: unknown) => {
+    const evidenceError = extractPilotEvidenceError(error);
     setDiagnostics((current) => ({
       ...current,
       evidenceFailed: current.evidenceFailed + 1,
-      lastError: error instanceof Error ? error.message : "evidence_submit_failed",
+      lastEvidenceError: evidenceError,
+      lastError: describePilotEvidenceError(error),
     }));
   }, []);
 
@@ -88,6 +92,10 @@ export function usePilotEvidence(driverId: string) {
   }, [capture, driverId]);
 
   useEffect(() => {
+    if (!diagnostics.shiftStarted) {
+      return undefined;
+    }
+
     const subscription = AppState.addEventListener(
       "change",
       (nextState: AppStateStatus) => {
@@ -100,7 +108,7 @@ export function usePilotEvidence(driverId: string) {
       },
     );
     return () => subscription.remove();
-  }, [capture]);
+  }, [capture, diagnostics.shiftStarted]);
 
   useEffect(() => {
     if (!diagnostics.shiftStarted) {

@@ -5,6 +5,7 @@ from copy import deepcopy
 import pytest
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
 from afriride_system.backend.event_ledger import (
@@ -20,19 +21,29 @@ from afriride_system.backend.ledger_receipts import (
 from afriride_system.tests.test_ledger_receipts import _signed_events
 
 
+def _auth(role: str, user_id: str, *, idempotency_key: str | None = None) -> dict[str, str]:
+    headers = {"Authorization": f"Bearer {JWT.create_token(user_id, role)}"}
+    if idempotency_key is not None:
+        headers["Idempotency-Key"] = idempotency_key
+    return headers
+
+
 def test_duplicate_driver_acceptance_fails_closed() -> None:
     client = _prepared_client("ride-duplicate-accept")
     accepted = client.post(
         "/ride/ride-duplicate-accept/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "accept-driver-1"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key="accept-driver-1"),
     )
     duplicate = client.post(
         "/ride/ride-duplicate-accept/accept",
         json={"driver_id": "driver-2"},
-        headers={"Idempotency-Key": "accept-driver-2"},
+        headers=_auth("DRIVER", "driver-2", idempotency_key="accept-driver-2"),
     )
-    status = client.get("/passenger/status/ride-duplicate-accept")
+    status = client.get(
+        "/passenger/status/ride-duplicate-accept",
+        headers=_auth("RIDER", "rider-1"),
+    )
 
     assert accepted.status_code == 200
     assert duplicate.status_code == 400
@@ -56,13 +67,13 @@ def test_driver_mismatch_fails_closed() -> None:
     client.post(
         "/ride/ride-driver-mismatch/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "mismatch-accept"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key="mismatch-accept"),
     )
 
     start = client.post(
         "/ride/ride-driver-mismatch/start",
         json={"driver_id": "driver-2"},
-        headers={"Idempotency-Key": "mismatch-start"},
+        headers=_auth("DRIVER", "driver-2", idempotency_key="mismatch-start"),
     )
 
     assert start.status_code == 400
@@ -74,7 +85,7 @@ def test_cross_app_lifecycle_drift_fails_closed_after_completion() -> None:
     start_again = client.post(
         "/ride/ride-lifecycle-drift/start",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "drift-start-after-complete"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key="drift-start-after-complete"),
     )
 
     assert start_again.status_code == 400
@@ -86,7 +97,7 @@ def test_double_completion_fails_closed() -> None:
     complete_again = client.post(
         "/ride/ride-double-complete/complete",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": "double-complete"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key="double-complete"),
     )
 
     assert complete_again.status_code == 400
@@ -177,7 +188,7 @@ def _prepared_client(ride_id: str) -> TestClient:
         client.post(
             "/driver/status",
             json={"driver_id": driver_id, "online": True},
-            headers={"Idempotency-Key": f"{ride_id}-{driver_id}-online"},
+            headers=_auth("DRIVER", driver_id, idempotency_key=f"{ride_id}-{driver_id}-online"),
         )
     client.post(
         "/passenger/request-ride",
@@ -187,7 +198,7 @@ def _prepared_client(ride_id: str) -> TestClient:
             "destination": "Nakasero",
             "ride_id": ride_id,
         },
-        headers={"Idempotency-Key": f"{ride_id}-request"},
+        headers=_auth("RIDER", "rider-1", idempotency_key=f"{ride_id}-request"),
     )
     return client
 
@@ -197,17 +208,22 @@ def _completed_client(ride_id: str) -> TestClient:
     client.post(
         f"/ride/{ride_id}/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": f"{ride_id}-accept"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key=f"{ride_id}-accept"),
+    )
+    client.post(
+        f"/ride/{ride_id}/arrive",
+        json={"driver_id": "driver-1"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key=f"{ride_id}-arrive"),
     )
     client.post(
         f"/ride/{ride_id}/start",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": f"{ride_id}-start"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key=f"{ride_id}-start"),
     )
     client.post(
         f"/ride/{ride_id}/complete",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": f"{ride_id}-complete"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key=f"{ride_id}-complete"),
     )
     return client
 
@@ -217,7 +233,7 @@ def _assignment_result_for_request(ride_id: str) -> dict:
     response = client.post(
         f"/ride/{ride_id}/accept",
         json={"driver_id": "driver-1"},
-        headers={"Idempotency-Key": f"{ride_id}-deterministic-accept"},
+        headers=_auth("DRIVER", "driver-1", idempotency_key=f"{ride_id}-deterministic-accept"),
     )
     assert response.status_code == 200
     return response.json()

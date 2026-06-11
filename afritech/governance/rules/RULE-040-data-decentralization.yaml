@@ -1,0 +1,39 @@
+id: RULE-040
+name: governed_data_decentralization
+
+description: >
+  Enforces domain-owned data boundaries while allowing cross-domain
+  collaboration only through declared APIs, events, or approved contracts.
+
+linked_invariants:
+  - INV-DATA-001
+
+requirements:
+  - every_data_record_declares_owner_domain
+  - every_owned_resource_has_single_owner_domain
+  - cross_domain_access_uses_declared_contract
+  - direct_database_sharing_forbidden
+
+forbidden:
+  - direct_cross_domain_database_reads
+  - direct_cross_domain_database_writes
+  - shared_database_table_as_integration_surface
+  - undeclared_data_owner
+
+rules:
+  - id: RULE-040-1
+    rule: Every domain-owned record must declare owner_domain and stable id.
+    enforcement:
+      - afritech.data_governance.guards.guard_owner_domain
+  - id: RULE-040-2
+    rule: Only the owner domain may write its owned data resources.
+    enforcement:
+      - afritech.data_governance.guards.guard_data_write
+  - id: RULE-040-3
+    rule: Cross-domain access must use API, event, or approved contract mode.
+    enforcement:
+      - afritech.data_governance.guards.guard_cross_domain_access
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

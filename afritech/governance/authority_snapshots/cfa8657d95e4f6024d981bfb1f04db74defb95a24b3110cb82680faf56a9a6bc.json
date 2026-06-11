@@ -1,0 +1,45 @@
+{
+  "schema": "afritech.authority_snapshot.v1",
+  "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
+  "doc_id": "DOC-ARCH-001",
+  "doc_version": "1.0.0",
+  "governed_invariants": [
+    "I3_NO_SILENT_MUTATION",
+    "I4_DETERMINISTIC_EXECUTION",
+    "I5_REPLAY_REQUIRED",
+    "I6_REPLAY_AUTHORITY",
+    "I7_TRANSCRIPT_COMPLETENESS",
+    "I8_TRANSCRIPT_HASH_STABILITY",
+    "I11_AUTHORITY_DECLARATION"
+  ],
+  "bindings": {
+    "invariants": [
+      "I3_NO_SILENT_MUTATION",
+      "I4_DETERMINISTIC_EXECUTION",
+      "I5_REPLAY_REQUIRED",
+      "I6_REPLAY_AUTHORITY",
+      "I7_TRANSCRIPT_COMPLETENESS",
+      "I8_TRANSCRIPT_HASH_STABILITY",
+      "I11_AUTHORITY_DECLARATION"
+    ],
+    "code_surfaces": [
+      "afriride_system/backend/trace_enforcement.py",
+      "afriride_system/backend/replay_engine.py",
+      "afriride_system/backend/evidence_engine.py",
+      "afriride_system/backend/receipt_engine.py"
+    ]
+  },
+  "path": "docs/architecture/AFRITECH_UNIFIED_ARCHITECTURE.md",
+  "protocol_compatibility": {
+    "protocol_version": "1.0.0",
+    "verifier_version": "1.0.0",
+    "registry_current_version": "1.0.0",
+    "status": "CURRENT",
+    "breaking": false,
+    "compatible_with": [
+      "1.0.0",
+      "1.0.x"
+    ],
+    "supported": true
+  }
+}

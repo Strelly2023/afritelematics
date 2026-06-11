@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY dashboard/package*.json /app/
+RUN npm ci
+
+COPY dashboard /app
+
+ARG VITE_AFRIRIDE_API_URL=http://127.0.0.1:8000
+ARG VITE_AFRIRIDE_APP_VERSION=staging-1
+
+ENV VITE_AFRIRIDE_API_URL=${VITE_AFRIRIDE_API_URL}
+ENV VITE_AFRIRIDE_APP_VERSION=${VITE_AFRIRIDE_APP_VERSION}
+
+RUN npm run build
+
+EXPOSE 4173
+
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "4173"]

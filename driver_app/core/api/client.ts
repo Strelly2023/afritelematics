@@ -23,6 +23,23 @@ function toApiError(payload: unknown, fallback: string): Error {
   return new Error(fallback);
 }
 
+async function readResponsePayload(response: Response): Promise<unknown> {
+  const body = await response.text();
+  if (!body) {
+    return {};
+  }
+  try {
+    return JSON.parse(body);
+  } catch {
+    const preview = body.replace(/\s+/g, " ").slice(0, 160);
+    throw new Error(
+      `non_json_response status=${response.status} content_type=${response.headers.get(
+        "content-type",
+      ) || "unknown"} body=${preview}`,
+    );
+  }
+}
+
 export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {},
@@ -52,7 +69,7 @@ export async function apiRequest<T>(
       signal: controller.signal,
     });
 
-    const payload = await response.json();
+    const payload = await readResponsePayload(response);
 
     if (!response.ok) {
       throw toApiError(payload, "api_request_failed");

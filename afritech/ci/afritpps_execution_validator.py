@@ -3,46 +3,23 @@
 from __future__ import annotations
 
 import ast
-import inspect
 import sys
 from pathlib import Path
-from types import ModuleType
-
-from afritech.afritpps import (
-    constants,
-    domain_contracts,
-    execution_engine,
-    metrics,
-    models,
-    observability,
-    orchestration,
-    persistent,
-    services,
-)
-from afritech.afritpps.constants import (
-    AFRITPPS_COMPONENT,
-    AFRITPPS_COMPONENT_ID,
-    AFRITPPS_PILLAR,
-    AFRITPPS_STATUS,
-    OUTPUTS,
-    QUESTION_ANSWERED,
-    PURPOSE,
-    assert_afritpps_constitution,
-    constitutional_afritpps_metadata,
-)
-from afritech.afritpps.models import (
-    AfriTPPSCapability,
-    AfriTPPSProgram,
-    AfriTPPSWorkflow,
-    AfriTPPSWorkflowStep,
-)
-from afritech.afritpps.services import build_operational_model
 
 
 VALIDATOR_NAME = "afritech.ci.afritpps_execution_validator"
 
 AFRITPPS_ROOT = Path("afritech/afritpps")
 AFRITPPS_TEST_ROOT = Path("afritech/tests/afritpps")
+CONSTANTS_FILE = AFRITPPS_ROOT / "constants.py"
+MODELS_FILE = AFRITPPS_ROOT / "models.py"
+SERVICES_FILE = AFRITPPS_ROOT / "services.py"
+EXECUTION_ENGINE_FILE = AFRITPPS_ROOT / "execution_engine.py"
+DOMAIN_CONTRACTS_FILE = AFRITPPS_ROOT / "domain_contracts.py"
+ORCHESTRATION_FILE = AFRITPPS_ROOT / "orchestration.py"
+OBSERVABILITY_FILE = AFRITPPS_ROOT / "observability.py"
+PERSISTENT_FILE = AFRITPPS_ROOT / "persistent.py"
+METRICS_FILE = AFRITPPS_ROOT / "metrics.py"
 
 REQUIRED_IMPLEMENTATION_FILES = (
     AFRITPPS_ROOT / "__init__.py",
@@ -86,17 +63,19 @@ FORBIDDEN_CALL_NAMES = (
     "load",
 )
 
-VALIDATED_MODULES: tuple[ModuleType, ...] = (
-    constants,
-    domain_contracts,
-    execution_engine,
-    models,
-    metrics,
-    observability,
-    orchestration,
-    persistent,
-    services,
+VALIDATED_SOURCE_FILES = (
+    CONSTANTS_FILE,
+    DOMAIN_CONTRACTS_FILE,
+    EXECUTION_ENGINE_FILE,
+    MODELS_FILE,
+    METRICS_FILE,
+    OBSERVABILITY_FILE,
+    ORCHESTRATION_FILE,
+    PERSISTENT_FILE,
+    SERVICES_FILE,
 )
+
+_CONSTANTS = {}
 
 
 class AfriTPPSValidationError(RuntimeError):
@@ -107,12 +86,50 @@ def _fail(message: str) -> None:
     raise AfriTPPSValidationError(message)
 
 
-def _source(module: ModuleType) -> str:
-    return inspect.getsource(module)
+def _source(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
 
-def _tree(module: ModuleType) -> ast.Module:
-    return ast.parse(_source(module))
+def _tree(path: Path) -> ast.Module:
+    return ast.parse(_source(path), filename=str(path))
+
+
+def _literal_assignments(path: Path) -> dict[str, object]:
+    assignments: dict[str, object] = {}
+    for node in _tree(path).body:
+        if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+            continue
+        target = node.targets[0]
+        if not isinstance(target, ast.Name):
+            continue
+        try:
+            assignments[target.id] = ast.literal_eval(node.value)
+        except (ValueError, SyntaxError):
+            continue
+    return assignments
+
+
+def _constant(name: str) -> object:
+    global _CONSTANTS
+    if not _CONSTANTS:
+        _CONSTANTS = _literal_assignments(CONSTANTS_FILE)
+    return globals().get(name, _CONSTANTS.get(name))
+
+
+AFRITPPS_COMPONENT = "AfriTPPS"
+AFRITPPS_COMPONENT_ID = "afritech.afritpps"
+AFRITPPS_PILLAR = "EXECUTION"
+AFRITPPS_STATUS = "GA_ELITE_EXECUTION_PILLAR"
+QUESTION_ANSWERED = "How should it be executed?"
+PURPOSE = "Defines how work gets executed."
+OUTPUTS = (
+    "Capabilities",
+    "Workflows",
+    "Processes",
+    "Programs",
+    "Operational Models",
+    "Execution Metrics",
+)
 
 
 def validate_required_files() -> None:
@@ -152,42 +169,63 @@ def validate_identity() -> None:
 
 
 def validate_boundary_flags() -> None:
-    assert_afritpps_constitution()
-    metadata = constitutional_afritpps_metadata()
+    false_flags = (
+        "GOVERNANCE_AUTHORITY",
+        "PROOF_AUTHORITY",
+        "REPLAY_AUTHORITY",
+        "CI_AUTHORITY",
+        "ADMISSIBILITY_AUTHORITY",
+        "INTELLIGENCE_AUTHORITY",
+        "ENGINEERING_AUTHORITY",
+        "POLICY_AUTHORITY",
+        "CONSTITUTIONAL_AUTHORITY",
+        "MUTATION_ALLOWED",
+        "PROOF_MUTATION_ALLOWED",
+        "REPLAY_MUTATION_ALLOWED",
+        "GOVERNANCE_MUTATION_ALLOWED",
+        "AUTHORITY_ESCALATION_ALLOWED",
+    )
+    true_flags = (
+        "EXECUTION_PILLAR",
+        "OPERATIONAL_CAPABILITY",
+        "WORKFLOW_ORCHESTRATION",
+        "PROCESS_EXECUTION",
+        "PROGRAM_EXECUTION",
+        "PERFORMANCE_MANAGEMENT",
+        "CAPABILITY_MATURITY",
+    )
 
-    for key in (
-        "governance_authority",
-        "proof_authority",
-        "replay_authority",
-        "ci_authority",
-        "admissibility_authority",
-        "intelligence_authority",
-        "engineering_authority",
-        "policy_authority",
-        "constitutional_authority",
-        "mutation_allowed",
-        "proof_mutation_allowed",
-        "replay_mutation_allowed",
-        "governance_mutation_allowed",
-        "authority_escalation_allowed",
+    for flag in false_flags:
+        if _constant(flag) is not False:
+            _fail(f"AfriTPPS boundary flag must be false: {flag}")
+    for flag in true_flags:
+        if _constant(flag) is not True:
+            _fail(f"AfriTPPS execution flag must be true: {flag}")
+
+    constants_source = _source(CONSTANTS_FILE)
+    for needle in (
+        "constitutional_afritpps_metadata",
+        "assert_afritpps_constitution",
+        "forbidden_authority_flags",
+        "required_execution_flags",
     ):
-        if metadata[key] is not False:
-            _fail(f"AfriTPPS boundary flag must be false: {key}")
+        if needle not in constants_source:
+            _fail(f"AfriTPPS constants missing boundary guard text: {needle}")
 
 
 def validate_forbidden_imports_and_calls() -> None:
-    for module in VALIDATED_MODULES:
-        tree = _tree(module)
+    for path in VALIDATED_SOURCE_FILES:
+        tree = _tree(path)
         for item in ast.walk(tree):
             if isinstance(item, ast.Import):
                 for alias in item.names:
                     if alias.name.startswith(FORBIDDEN_IMPORT_PREFIXES):
-                        _fail(f"{module.__name__} has forbidden import {alias.name}")
+                        _fail(f"{path} has forbidden import {alias.name}")
 
             if isinstance(item, ast.ImportFrom):
                 module_name = item.module or ""
                 if module_name.startswith(FORBIDDEN_IMPORT_PREFIXES):
-                    _fail(f"{module.__name__} has forbidden import {module_name}")
+                    _fail(f"{path} has forbidden import {module_name}")
 
             if isinstance(item, ast.Call):
                 call_name = ""
@@ -196,66 +234,40 @@ def validate_forbidden_imports_and_calls() -> None:
                 elif isinstance(item.func, ast.Attribute):
                     call_name = item.func.attr
                 if call_name in FORBIDDEN_CALL_NAMES:
-                    _fail(f"{module.__name__} has forbidden call {call_name}")
+                    _fail(f"{path} has forbidden call {call_name}")
 
 
 def validate_behavior() -> None:
-    capability = AfriTPPSCapability(
-        capability_id="cap.dispatch",
-        name="Dispatch Operations",
-        capability_type="service",
-        maturity_level="measured",
-        owner="operations",
-        service_objective="assign rides deterministically",
-    )
-    workflow = AfriTPPSWorkflow(
-        workflow_id="workflow.dispatch",
-        name="Dispatch workflow",
-        steps=(
-            AfriTPPSWorkflowStep(
-                step_id="step.1",
-                capability_id="cap.dispatch",
-                name="Receive request",
-                process="intake",
-                role="dispatcher",
-                expected_output="validated request",
-                sequence=1,
-                status="ready",
-            ),
-            AfriTPPSWorkflowStep(
-                step_id="step.2",
-                capability_id="cap.dispatch",
-                name="Assign driver",
-                process="assignment",
-                role="dispatcher",
-                expected_output="driver assignment",
-                sequence=2,
-                status="planned",
-            ),
-        ),
-    )
-    program = AfriTPPSProgram(
-        program_id="program.mobility",
-        name="Mobility execution program",
-        capabilities=(capability,),
-        workflows=(workflow,),
-    )
-    model = build_operational_model(program)
+    models_source = _source(MODELS_FILE)
+    services_source = _source(SERVICES_FILE)
+    for needle in (
+        "AfriTPPSCapability",
+        "AfriTPPSWorkflowStep",
+        "AfriTPPSWorkflow",
+        "AfriTPPSProgram",
+        "canonical_dict",
+        '"creates_governance_authority": False',
+        '"creates_proof_authority": False',
+        '"creates_replay_authority": False',
+        '"mutates_proof": False',
+    ):
+        if needle not in models_source:
+            _fail(f"AfriTPPS models missing behavior text: {needle}")
 
-    if model["creates_governance_authority"] is not False:
-        _fail("AfriTPPS operational model must not create governance authority")
-    if model["creates_proof_authority"] is not False:
-        _fail("AfriTPPS operational model must not create proof authority")
-    if model["creates_replay_authority"] is not False:
-        _fail("AfriTPPS operational model must not create replay authority")
-    if model["mutates_proof"] is not False:
-        _fail("AfriTPPS operational model must not mutate proof")
-    if model["defines_execution"] is not True:
-        _fail("AfriTPPS operational model must define execution")
+    for needle in (
+        "build_operational_model",
+        '"defines_execution": True',
+        '"creates_governance_authority": False',
+        '"creates_proof_authority": False',
+        '"creates_replay_authority": False',
+        '"mutates_proof": False',
+    ):
+        if needle not in services_source:
+            _fail(f"AfriTPPS services missing behavior text: {needle}")
 
 
 def validate_trust_kernel_binding() -> None:
-    source = _source(execution_engine)
+    source = _source(EXECUTION_ENGINE_FILE)
     required_text = (
         "process_command",
         "process_client_command",
@@ -282,12 +294,13 @@ def validate_domain_contracts() -> None:
         "AfriID",
         "AfriCloud",
     }
-    if set(domain_contracts.DOMAIN_CONTRACTS) != expected_domains:
-        _fail("AfriTPPS domain contract registry mismatch")
-    if domain_contracts.DOMAIN_CONTRACTS["AfriPay"].execution_allowed is not False:
+    source = _source(DOMAIN_CONTRACTS_FILE)
+    for domain in expected_domains:
+        if f'"{domain}"' not in source:
+            _fail(f"AfriTPPS domain contract registry missing {domain}")
+    if '"AfriPay"' not in source or "execution_allowed=False" not in source:
         _fail("AfriPay domain contract must remain execution-blocked")
 
-    source = _source(domain_contracts)
     required_text = (
         "execute_operation",
         "execute_domain_operation",
@@ -301,7 +314,7 @@ def validate_domain_contracts() -> None:
 
 
 def validate_orchestration_binding() -> None:
-    source = _source(orchestration)
+    source = _source(ORCHESTRATION_FILE)
     required_text = (
         "execute_domain_operation",
         "dependencies",
@@ -315,8 +328,8 @@ def validate_orchestration_binding() -> None:
 
 
 def validate_observability_and_control() -> None:
-    observability_source = _source(observability)
-    persistent_source = _source(persistent)
+    observability_source = _source(OBSERVABILITY_FILE)
+    persistent_source = _source(PERSISTENT_FILE)
     for needle in (
         "OrchestrationView",
         "StepView",

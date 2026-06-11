@@ -1,0 +1,119 @@
+id: BIND-001
+
+description: >
+  Binds the governed Phase 1 setup runbook to the governed Phase 2 migration
+  boundary so that environment setup, migration equivalence, and cutover
+  execution remain one enforceable chain.
+
+bindings:
+  - id: BIND-001-1
+    name: phase1_setup_runbook
+    target: docs/pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md
+    binding_type: DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - preserve the bounded Phase 1 setup procedure
+      - preserve the non-authoritative setup claim boundary
+      - define the input contract for migration readiness
+    linked_rules:
+      - RULE-001
+      - RULE-001-1
+      - RULE-001-2
+      - RULE-001-3
+
+  - id: BIND-001-2
+    name: phase1_runbook_guard
+    target: afritech.guards.guard_phase1_runbook
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - detect runbook-to-code drift
+      - validate setup contract alignment
+      - preserve the bounded Phase 1 governance chain
+    linked_rules:
+      - RULE-001-1
+      - RULE-001-2
+      - RULE-001-4
+
+  - id: BIND-001-3
+    name: phase2_migration_spec
+    target: docs/pilot/AFRIRIDE_PHASE2_MIGRATION_GOVERNANCE_SPEC.md
+    binding_type: GOVERNANCE_SPEC
+    runtime_authoritative: false
+    responsibilities:
+      - define the SQLite-to-Postgres equivalence gate
+      - preserve migration claim discipline
+      - define the output contract for live operations governance
+    linked_rules:
+      - RULE-001-5
+
+  - id: BIND-001-4
+    name: phase2_migration_guard
+    target: afritech.guards.guard_phase2_migration
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - validate migration governance artifacts
+      - validate cutover gate wiring
+      - validate the Phase 2 to Phase 3 forward chain
+    linked_rules:
+      - RULE-001-5
+
+  - id: BIND-001-5
+    name: cutover_gate_runner
+    target: scripts/run_cutover_gate.sh
+    binding_type: EXECUTION_GATE
+    runtime_authoritative: false
+    responsibilities:
+      - execute the one-command go/no-go cutover gate
+      - require both setup and migration guards before cutover
+      - delegate live migration work to the cutover runbook script
+    linked_rules:
+      - RULE-001-4
+      - RULE-001-5
+
+execution_flow:
+  - step: validate_phase1_setup_contract
+    binding: BIND-001-1
+  - step: run_phase1_guard
+    binding: BIND-001-2
+  - step: validate_phase2_spec
+    binding: BIND-001-3
+  - step: run_phase2_guard
+    binding: BIND-001-4
+  - step: execute_cutover_gate
+    binding: BIND-001-5
+
+failure_policy:
+  on_any_failure: REJECT_BINDING
+  behavior:
+    - stop_binding_progression: true
+    - preserve_existing_runtime_authority: true
+    - require_governance_review: true
+
+linked_rules:
+  - RULE-001
+  - RULE-001-1
+  - RULE-001-2
+  - RULE-001-3
+  - RULE-001-4
+  - RULE-001-5
+
+linked_adr: []
+linked_invariants: []
+
+guards:
+  - afritech.guards.guard_phase1_runbook
+  - afritech.guards.guard_phase2_migration
+
+ci:
+  enforcement:
+    - Binding targets must resolve.
+    - Both Phase 1 and Phase 2 guards must pass.
+    - The cutover gate runner must invoke the guards before cutover execution.
+    - Phase 3 monitoring governance must remain linked as the next bounded step.
+  tests:
+    - test_bind001_targets_resolve
+    - test_phase2_guard_validates_binding_chain
+    - test_cutover_gate_runner_wires_setup_guard_and_cutover_runbook
+    - test_phase3_live_operations_monitoring_spec_is_linked

@@ -163,6 +163,11 @@ PIPELINE: tuple[PipelineStep, ...] = (
     module_step("verify_multi_epoch_replay", "afritech.verify.verify_multi_epoch_replay", "CONSTITUTION"),
     module_step("generate_completeness", "afritech.proof.generate_completeness", "CONSTITUTION"),
     module_step("ast_import_validator", "afritech.ci.ast_import_validator", "STATIC"),
+    module_step(
+        "guard_runtime_boundary_governance",
+        "afritech.guards.guard_runtime_boundary_governance",
+        "STATIC",
+    ),
     module_step("execution_integrity_validator", "afritech.ci.execution_integrity_validator", "STATIC"),
     module_step("proof_surface_validator", "afritech.ci.proof_surface_validator", "STATIC"),
     PipelineStep(

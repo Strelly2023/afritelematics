@@ -1,0 +1,14 @@
+{
+  "driver_api": {
+    "active": "driver_api_routes_v1",
+    "receipts": {
+      "driver_api_routes_v1": {
+        "path": "driver_api_routes_v1.json",
+        "contract": "driver_api_routes",
+        "version": "v1",
+        "effective_from": "2026-06-01T00:00:00Z",
+        "effective_to": null
+      }
+    }
+  }
+}

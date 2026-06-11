@@ -20,6 +20,9 @@ REQUIRED_TEXT = (
     "driver_phone_001",
     "rider_phone_001",
     "operator_laptop_001",
+    "First Mobile Pilot Execution (Device + Token Lifecycle)",
+    "token_jti",
+    "refresh token rotation is single-use",
     "Public production release is not authorized",
 )
 

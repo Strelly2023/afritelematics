@@ -2,8 +2,10 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY . .
+ENV PYTHONPATH=/app:/app/afritech
+
+COPY . /app/afritech
 
 RUN pip install --no-cache-dir fastapi uvicorn redis
 
-CMD ["uvicorn", "api.server.api_server:create_app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api.server.run_server:app", "--host", "0.0.0.0", "--port", "8000"]

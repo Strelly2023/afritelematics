@@ -1,0 +1,62 @@
+services:
+  afritech-api:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    expose:
+      - "8000"
+    command:
+      - uvicorn
+      - afritech.api.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "2"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health').read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  afritech-dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.dashboard
+      args:
+        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-http://127.0.0.1:8000}
+        VITE_AFRIRIDE_APP_VERSION: ${VITE_AFRIRIDE_APP_VERSION:-production-1}
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    expose:
+      - "4173"
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+
+  edge:
+    image: caddy:2
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+      afritech-dashboard:
+        condition: service_started
+
+volumes:
+  caddy_data:
+  caddy_config:

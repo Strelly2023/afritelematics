@@ -1,0 +1,83 @@
+id: BIND-020
+
+description: >
+  Binds governed data decentralization to ADR-0020, INV-DATA-001, RULE-040,
+  runtime-style guards, and CI validation.
+
+bindings:
+  - id: BIND-020-1
+    name: data_governance_contracts
+    target: afritech.data_governance.contracts
+    binding_type: SOURCE_CONTRACT
+    runtime_authoritative: false
+    responsibilities:
+      - define domain data ownership contracts
+      - define approved cross-domain access modes
+    linked_rules:
+      - RULE-040
+      - RULE-040-1
+      - RULE-040-2
+      - RULE-040-3
+
+  - id: BIND-020-2
+    name: data_governance_registry
+    target: afritech.data_governance.registry
+    binding_type: REGISTRY
+    runtime_authoritative: false
+    responsibilities:
+      - declare INV-DATA-001
+      - preserve governed decentralization status
+    linked_rules:
+      - RULE-040
+
+  - id: BIND-020-3
+    name: data_governance_guards
+    target: afritech.data_governance.guards.guard_data_write
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - block non-owner writes
+      - block direct cross-domain database access
+    linked_rules:
+      - RULE-040-1
+      - RULE-040-2
+      - RULE-040-3
+
+  - id: BIND-020-4
+    name: data_decentralization_validator
+    target: afritech.ci.data_decentralization_validator
+    binding_type: CI_VALIDATOR
+    runtime_authoritative: false
+    responsibilities:
+      - validate data governance files
+      - validate source-only boundary
+      - validate governance chain linkage
+    linked_rules:
+      - RULE-040
+
+linked_rules:
+  - RULE-040
+  - RULE-040-1
+  - RULE-040-2
+  - RULE-040-3
+
+linked_invariants:
+  - INV-DATA-001
+
+linked_adr:
+  - ADR-0020
+
+guards:
+  - afritech.data_governance.guards.guard_owner_domain
+  - afritech.data_governance.guards.guard_data_write
+  - afritech.data_governance.guards.guard_cross_domain_access
+
+ci:
+  enforcement:
+    - Data governance validator must pass.
+    - Guard tests must cover owner-domain, write, and cross-domain access failures.
+    - Data governance modules must not import Django runtime surfaces.
+  tests:
+    - test_data_decentralization_validator_passes
+    - test_guard_data_write_blocks_non_owner_domain
+    - test_guard_cross_domain_access_requires_owner_contract

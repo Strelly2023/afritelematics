@@ -46,21 +46,19 @@ jobs:
       # CONSTITUTIONAL PIPELINE (CI SAFE)
       # ------------------------------------------------------------
       - name: Canonical constitutional pipeline
+        run: python3 -m afritech.ci.constitutional_pipeline
+
+      - name: Activate runtime boundary governance
         run: |
-          python - <<EOF
-          import os
+          python -m afritech.guards.guard_runtime_boundary_governance --fail-on-drift
 
-          # Ensure CI-safe behavior
-          os.environ["AFRITECH_MODE"] = "ci"
-
-          try:
-              from afritech.ci.constitutional_pipeline import run_pipeline
-              run_pipeline()
-              print("✅ Constitutional pipeline passed (CI mode)")
-          except Exception as e:
-              print("❌ Constitutional pipeline failed")
-              raise e
-          EOF
+      - name: Upload runtime boundary governance artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-governance-artifacts
+          path: |
+            docs/reviews/AFRITECH_RUNTIME_BOUNDARY_SCAN.md
+            docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md
 
       # ------------------------------------------------------------
       # ARCHITECTURAL / AST ENFORCEMENT

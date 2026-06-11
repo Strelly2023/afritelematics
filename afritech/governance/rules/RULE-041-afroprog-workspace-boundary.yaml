@@ -1,0 +1,51 @@
+id: RULE-041
+name: afroprog_workspace_boundary
+status: ACTIVE
+classification: DEVELOPER_WORKSPACE_NON_AUTHORITY_RULE
+
+description: >
+  Enforces that the AfriPro chat + dashboard workspace remains a codex-style
+  developer environment, generates Django scaffolding as proposal artifacts, and
+  routes every candidate change through AfriProgramming governance.
+
+linked_artifacts:
+  adr: afritech/governance/adr/ADR-0021-afroprog-codex-workspace.yaml
+  guard: afritech/guards/guard_afroprog_workspace.py
+  api: afritech/api/afroprog_workspace_api.py
+  workspace:
+    - afritech/apps/afroprog/dashboard/workspace.py
+    - afritech/apps/afroprog/chat/ai_service.py
+    - afritech/apps/afroprog/chat/views.py
+  tests:
+    - afritech/tests/apps/test_afroprog_workspace.py
+    - dashboard/tests/test_operator_dashboard_surface.py
+
+contract:
+  workspace_identity:
+    required_strings:
+      - AfriPro Dashboard
+      - codex_style
+      - proposal_only
+      - Django Backend for AfriPro Chat + Dashboard
+  django_generation:
+    required_files:
+      - poultry/apps/farm/models.py
+      - poultry/apps/farm/serializers.py
+      - poultry/apps/farm/views.py
+      - poultry/apps/farm/urls.py
+    required_content_tokens:
+      - class PoultryHouse(models.Model)
+      - class Flock(models.Model)
+      - permission_classes = [HasFarmOperationsAccess]
+  governance_link:
+    required_paths:
+      - afritech/afriprogramming/integration.py
+      - afritech/extensions/afriprog/copilot_assist/proposal_intelligence.py
+    required_flags:
+      - authority_boundary_preserved
+      - target_is_governed_execution
+      - mutation_allowed is False
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

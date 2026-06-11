@@ -1,0 +1,26 @@
+{
+  "contract": "driver_api_routes",
+  "contract_payload_hash": "0af1b2ab09a32eab106abc4d2fb37957f4a085b99722ecac08df3bd30a5617b9",
+  "event_hash": "b4e92e84e8759e55742522dfb0c3d4ec0b96fbcbf726c685254bc1732f71bbb5",
+  "event_type": "APIContractValidated",
+  "generated_at": "deterministic-contract-snapshot-receipt-v2-simulated",
+  "previous_receipt_hash": "ee81969160896d23a02f4171be1157439434d1016b90f1ce0fcc59469f8df000",
+  "receipt_hash": "14278725a27d6a85244a184230e4f1ce4f75a4119f2d2e7c326a3120306492ed",
+  "schema": "afritech.proof.contract_snapshot_receipt.v1",
+  "signature": {
+    "mode": "deterministic_local_contract_signature",
+    "signature_hash": "503e5852687aca32d026232aad4399e2e74b848bdb89d0d0bf03b069aeaf8095",
+    "signer": "afritech-contract-snapshot-signer"
+  },
+  "snapshot_hash": "c1797f203f15ef4229a251440cd6c59462d875f757a22fd2d07dec4ac9c46cc3",
+  "snapshot_path": "afritech/ci/contracts/driver_routes.json",
+  "status": "MATCH",
+  "truth_boundary": {
+    "economic_activation": false,
+    "live_pilot_authorized": false,
+    "production_proven": false
+  },
+  "validator": "afritech.ci.driver_api_contract_validator",
+  "validator_version": "v1",
+  "version": "v2-simulated"
+}

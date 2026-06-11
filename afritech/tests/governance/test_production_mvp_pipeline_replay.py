@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from afritech.architecture.registry_loader import load_implementation_registry
 from afritech.api.app import app
+from afritech.api.auth.jwt_device_auth import JWT
 from afritech.storage.event_log import clear_event_log, get_all_events
 from afritech.storage.replay_engine import replay_event
 
@@ -28,6 +29,11 @@ MVP_IMPLEMENTATIONS = (
     "afritech.storage.event_log",
     "afritech.storage.replay_engine",
 )
+
+
+def auth_headers(role: str = "OPERATOR", user_id: str = "operator-1") -> dict[str, str]:
+    token = JWT.create_token(user_id, role=role)
+    return {"Authorization": f"Bearer {token}"}
 
 
 def load_yaml(path: Path) -> dict:
@@ -62,7 +68,7 @@ def test_api_to_worker_to_replay_pipeline_is_consistent() -> None:
         "destination": "Melbourne Airport",
     }
 
-    response = client.post("/process", json=payload)
+    response = client.post("/process", json=payload, headers=auth_headers())
 
     assert response.status_code == 200
     body = response.json()
@@ -70,7 +76,7 @@ def test_api_to_worker_to_replay_pipeline_is_consistent() -> None:
     assert body["request_id"] == "123"
     assert isinstance(body["partition_id"], int)
 
-    drain_response = client.post("/workers/drain")
+    drain_response = client.post("/workers/drain", headers=auth_headers(role="VERIFIER", user_id="verifier-1"))
     assert drain_response.status_code == 200
     drain_body = drain_response.json()
     assert drain_body["status"] == "drained"
@@ -110,14 +116,14 @@ def test_api_pipeline_replay_hash_is_stable_for_payload_order() -> None:
         "request_id": "stable",
     }
 
-    first_response = client.post("/process", json=first_payload)
-    first_drain = client.post("/workers/drain")
+    first_response = client.post("/process", json=first_payload, headers=auth_headers())
+    first_drain = client.post("/workers/drain", headers=auth_headers(role="VERIFIER", user_id="verifier-1"))
     first_event = get_all_events()[-1]
 
     clear_event_log()
 
-    second_response = client.post("/process", json=second_payload)
-    second_drain = client.post("/workers/drain")
+    second_response = client.post("/process", json=second_payload, headers=auth_headers())
+    second_drain = client.post("/workers/drain", headers=auth_headers(role="VERIFIER", user_id="verifier-1"))
     second_event = get_all_events()[-1]
 
     assert first_response.status_code == 200
@@ -148,8 +154,8 @@ def test_api_pipeline_routes_declared_city_to_stable_partition() -> None:
         "action": "ride_request",
     }
 
-    first_response = client.post("/process", json=first_payload)
-    second_response = client.post("/process", json=second_payload)
+    first_response = client.post("/process", json=first_payload, headers=auth_headers())
+    second_response = client.post("/process", json=second_payload, headers=auth_headers())
 
     assert first_response.status_code == 200
     assert second_response.status_code == 200
@@ -160,6 +166,7 @@ def test_api_pipeline_routes_declared_city_to_stable_partition() -> None:
     drain_response = client.post(
         "/workers/drain",
         params={"partition_id": first_body["partition_id"]},
+        headers=auth_headers(role="VERIFIER", user_id="verifier-1"),
     )
     assert drain_response.status_code == 200
     assert drain_response.json()["processed"] == 2
@@ -196,10 +203,10 @@ def test_api_pipeline_records_deterministic_matching_decision() -> None:
         ],
     }
 
-    response = client.post("/process", json=payload)
+    response = client.post("/process", json=payload, headers=auth_headers())
     assert response.status_code == 200
 
-    drain_response = client.post("/workers/drain")
+    drain_response = client.post("/workers/drain", headers=auth_headers(role="VERIFIER", user_id="verifier-1"))
     assert drain_response.status_code == 200
     output = drain_response.json()["outputs"][0]
 

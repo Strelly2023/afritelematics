@@ -1,0 +1,19 @@
+main_dashboard:
+  title: AfriTech Dashboard
+  subtitle: Gateway to mobility, productivity, and governed engineering surfaces.
+  links:
+    - key: afriride
+      name: AfriRide Dashboard
+      path: /afriride/dashboard/
+      icon: car
+      pillar: transport_and_logistics
+    - key: afroprog
+      name: AfroProg Dashboard
+      path: /afroprog/dashboard/
+      icon: code
+      pillar: freelance_and_productivity
+    - key: afriprogramming
+      name: AfriProgramming Dashboard
+      path: /afriprogramming/dashboard/
+      icon: laptop
+      pillar: learning_and_engineering

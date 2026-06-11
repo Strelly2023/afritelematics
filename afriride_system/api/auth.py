@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import json
 import os
+import secrets
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -83,7 +84,7 @@ class JWTService:
         return AuthClaims(sub=str(payload["sub"]), role=role, exp=int(payload["exp"]))
 
 
-JWT = JWTService(os.environ.get("AFRIRIDE_JWT_SECRET", "afriride-pilot-secret"))
+JWT = JWTService(os.environ.get("AFRIRIDE_JWT_SECRET", secrets.token_urlsafe(48)))
 
 
 def build_auth_router(jwt_service: JWTService = JWT) -> APIRouter:

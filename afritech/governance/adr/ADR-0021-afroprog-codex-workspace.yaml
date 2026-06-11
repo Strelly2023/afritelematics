@@ -1,0 +1,38 @@
+adr:
+  id: ADR-0021
+  title: AfriPro codex-style workspace admission
+  status: ACCEPTED
+  classification: DEVELOPER_WORKSPACE_GOVERNANCE
+  context: >
+    AfriPro exposes a codex-style developer workspace with chat, project
+    explorer, code generation, and Django-oriented scaffolding. Without an
+    explicit boundary, such a workspace could collapse productivity assistance
+    into runtime or governance authority.
+  decision: >
+    AfriPro is admitted as a proposal-only developer workspace. It may
+    generate Django backend templates, poultry system scaffolds, chat
+    responses, and project explorer surfaces, but it must route all candidate
+    changes through the AfriProg to AfriProgramming governed handoff before
+    activation is possible.
+  consequences:
+    - AfriPro remains a productivity surface and never becomes a runtime authority.
+    - All generated output must remain proposal_only until replay, rule, and guard
+      paths approve it.
+    - Dashboard, chat, and editor affordances must visibly preserve the boundary
+      between assistance and execution.
+    - Future workspace expansion must extend the same ADR -> RULE -> GUARD chain
+      instead of bypassing it.
+  constraints:
+    - workspace is read_only with respect to truth authority
+    - generated code is Django-style scaffolding, not activated runtime mutation
+    - chat and editor surfaces must remain codex_style and proposal_only
+    - governance linkage must point to ADR -> RULE -> GUARD enforcement
+    - replay, rollback, and approval remain required before execution
+  rules:
+    - RULE-041
+  linked_rule: RULE-041
+  linked_guard: afritech/guards/guard_afroprog_workspace.py
+  linked_surfaces:
+    - afritech/apps/afroprog/chat/ai_service.py
+    - afritech/apps/afroprog/dashboard/workspace.py
+    - afritech/api/afroprog_workspace_api.py

@@ -3,3 +3,16 @@ Name: afritech
 Version: 0.1.0
 Summary: AfriTech constitutional execution and replay verification system
 Requires-Python: >=3.10
+Requires-Dist: django
+Requires-Dist: djangorestframework
+Requires-Dist: fastapi
+Requires-Dist: httpx
+Requires-Dist: pydantic
+Requires-Dist: psycopg[binary]
+Requires-Dist: cryptography
+Requires-Dist: PyNaCl
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: coverage; extra == "dev"
+Requires-Dist: mutmut; extra == "dev"

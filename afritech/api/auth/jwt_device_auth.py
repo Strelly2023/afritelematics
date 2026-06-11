@@ -4,11 +4,13 @@ import base64
 import hashlib
 import hmac
 import json
+import os
+import secrets
 import time
 from dataclasses import dataclass
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, WebSocket, status
 
 from afritech.security.device_identity import DeviceIdentity, DeviceRegistry
 
@@ -25,6 +27,7 @@ def _b64url_decode(payload: str) -> bytes:
 @dataclass(frozen=True)
 class JWTClaims:
     sub: str
+    role: str
     exp: int
 
 
@@ -37,10 +40,16 @@ class JWTService:
         self.secret = secret.encode("utf-8")
         self.ttl_seconds = ttl_seconds
 
-    def create_token(self, user_id: str, *, issued_at: int | None = None) -> str:
+    def create_token(
+        self,
+        user_id: str,
+        *,
+        role: str = "OPERATOR",
+        issued_at: int | None = None,
+    ) -> str:
         now = int(time.time()) if issued_at is None else issued_at
         header = {"alg": "HS256", "typ": "JWT"}
-        payload = {"sub": user_id, "exp": now + self.ttl_seconds}
+        payload = {"sub": user_id, "role": role.upper(), "exp": now + self.ttl_seconds}
         signing_input = ".".join(
             (
                 _b64url_encode(json.dumps(header, sort_keys=True, separators=(",", ":")).encode()),
@@ -70,7 +79,10 @@ class JWTService:
         current_time = int(time.time()) if now is None else now
         if int(payload["exp"]) < current_time:
             raise ValueError("token_expired")
-        return JWTClaims(sub=str(payload["sub"]), exp=int(payload["exp"]))
+        role = str(payload.get("role", "OPERATOR")).upper()
+        if role not in AUTH_ROLES:
+            raise ValueError("invalid_role")
+        return JWTClaims(sub=str(payload["sub"]), role=role, exp=int(payload["exp"]))
 
 
 class DeviceBindingService:
@@ -90,20 +102,28 @@ class DeviceBindingService:
         return identity
 
 
+AUTH_ROLES = frozenset({"OPERATOR", "VERIFIER", "PARTNER", "DEVELOPER", "DEVICE", "OBSERVER"})
+_EPHEMERAL_JWT_SECRET = secrets.token_urlsafe(48)
+JWT = JWTService(os.environ.get("AFRITECH_JWT_SECRET", _EPHEMERAL_JWT_SECRET))
+
+
 def build_auth_router(
     jwt_service: JWTService | None = None,
     device_binding: DeviceBindingService | None = None,
 ) -> APIRouter:
-    jwt = jwt_service or JWTService("pilot-jwt-secret")
+    jwt = jwt_service or JWT
     binding = device_binding or DeviceBindingService()
     router = APIRouter(prefix="/v1", tags=["pilot-auth"])
 
     @router.post("/auth/token")
     def create_token(payload: dict[str, Any]) -> dict[str, str]:
         user_id = str(payload.get("user_id", ""))
+        role = str(payload.get("role", "OPERATOR")).upper()
         if not user_id:
             raise HTTPException(status_code=400, detail="user_id required")
-        return {"token": jwt.create_token(user_id)}
+        if role not in AUTH_ROLES:
+            raise HTTPException(status_code=400, detail="invalid_role")
+        return {"token": jwt.create_token(user_id, role=role)}
 
     @router.post("/devices/register")
     def register_device(payload: dict[str, Any], authorization: str = Header(default="")) -> dict[str, Any]:
@@ -134,3 +154,43 @@ def _claims_from_header(jwt: JWTService, authorization: str) -> JWTClaims:
         return jwt.verify_token(authorization[len(prefix) :])
     except ValueError as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
+
+
+def get_current_claims(authorization: str = Header(default="")) -> JWTClaims:
+    return _claims_from_header(JWT, authorization)
+
+
+def require_roles(*roles: str):
+    allowed = {role.upper() for role in roles}
+
+    def dependency(claims: JWTClaims = Depends(get_current_claims)) -> JWTClaims:
+        if allowed and claims.role not in allowed:
+            raise HTTPException(status_code=403, detail="insufficient_role")
+        return claims
+
+    return dependency
+
+
+def authenticate_websocket(
+    websocket: WebSocket,
+    *,
+    roles: set[str] | None = None,
+) -> JWTClaims | None:
+    token = websocket.query_params.get("token")
+    if token is None:
+        authorization = websocket.headers.get("authorization", "")
+        if authorization.startswith("Bearer "):
+            token = authorization[len("Bearer ") :]
+    if not token:
+        return None
+    try:
+        claims = JWT.verify_token(token)
+    except ValueError:
+        return None
+    if roles and claims.role not in roles:
+        return None
+    return claims
+
+
+async def reject_websocket(websocket: WebSocket) -> None:
+    await websocket.close(code=status.WS_1008_POLICY_VIOLATION)

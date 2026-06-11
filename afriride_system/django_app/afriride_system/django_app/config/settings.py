@@ -1,6 +1,9 @@
-SECRET_KEY = "dev-key"
+import os
 
-DEBUG = True
+
+SECRET_KEY = os.environ.get("AFRIRIDE_DJANGO_SECRET_KEY", "local-dev-only-not-for-production")
+
+DEBUG = os.environ.get("AFRIRIDE_DJANGO_DEBUG", "0") == "1"
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",

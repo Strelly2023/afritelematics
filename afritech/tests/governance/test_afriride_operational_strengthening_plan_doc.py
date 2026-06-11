@@ -75,6 +75,12 @@ COUNTER_TESTS = (
     "inject_worker_crash_during_mutation",
     "inject_partition_imbalance",
     "inject_non_canonical_partition_merge",
+    "inject_seed_mismatch_between_workers",
+    "inject_duplicate_sequence_claim",
+    "inject_ack_loss_then_redelivery",
+    "inject_stale_snapshot_resurrection",
+    "inject_cross_partition_clock_skew",
+    "inject_non_canonical_retry_order",
     "inject_noisy_coordinates",
     "inject_physically_impossible_jump",
     "inject_unrecorded_traffic_delay",
@@ -83,6 +89,10 @@ COUNTER_TESTS = (
     "inject_out_of_order_client_events",
     "inject_duplicate_delivery",
     "inject_client_side_authority_attempt",
+    "inject_expired_access_token_during_sync",
+    "inject_reused_refresh_token",
+    "inject_revoked_device_resubmission",
+    "inject_dual_device_identity_collision",
     "inject_surge_explosion",
     "inject_mass_cancellation_wave",
     "inject_driver_price_gaming",
@@ -200,6 +210,11 @@ def test_operational_strengthening_plan_defines_load_and_geo_validation() -> Non
         "route_correction",
         "traffic_delay_injection",
         "Movement must be physically plausible and replay-stable.",
+        "break determinism on purpose",
+        "silent corruption never allowed",
+        "replay hash mismatch surfaced immediately",
+        "failure_injection_plan_id",
+        "divergence_receipt",
     ):
         assert item in text
 
@@ -215,6 +230,11 @@ def test_operational_strengthening_plan_defines_client_market_and_security_valid
         "clock drift",
         "duplicate delivery",
         "Client-originated events must converge deterministically after normalization.",
+        "device registration",
+        "pilot token issuance",
+        "refresh token rotation",
+        "token_jti recorded for every authenticated session",
+        "revoked_device_block_trace",
         "supply shortage",
         "demand spikes",
         "cancellations",
@@ -227,6 +247,29 @@ def test_operational_strengthening_plan_defines_client_market_and_security_valid
         "queue poisoning",
         "unauthorized mutations",
         "Only admissible, authenticated, and traceable events may mutate system state.",
+    ):
+        assert item in text
+
+
+def test_operational_strengthening_plan_binds_observability_to_trace_and_replay() -> None:
+    text = read_doc()
+
+    for item in (
+        "Observability Design Tied to Trace/Replay",
+        "observability explains trace and replay",
+        "observability never overrides trace and replay",
+        "trace_id",
+        "token_jti",
+        "replay_hash",
+        "receipt_hash",
+        "trace ingestion timeline",
+        "device and token exception board",
+        "failure injection evidence board",
+        "every alert links back to trace evidence",
+        "afritech.ci.observability_authority_validator",
+        "afritech.ci.observability_evidence_validator",
+        "afritech.ci.traceability_bridge_validator",
+        "dashboard_non_authority_receipt",
     ):
         assert item in text
 

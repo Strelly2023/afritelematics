@@ -10,10 +10,13 @@ import {
   TEST_MODE,
 } from "../config/environment";
 import type {
+  EvidenceError,
   PilotEvidenceEvent,
   PilotEvidenceType,
   PilotEvidenceVerdict,
 } from "../models/pilotEvidence";
+
+const EVIDENCE_ENDPOINT = "/pilot/evidence";
 
 type GeoPosition = {
   coords: {
@@ -46,12 +49,162 @@ type NavigatorWithGeo = {
   };
 };
 
+type ExpoLocationModule = typeof import("expo-location");
+
 type EvidenceResponse = {
   status: "captured";
   evidence_id: string;
   node_id: string;
   proposal_id: string;
 };
+
+type EvidenceTraceContext = {
+  traceId: string;
+  traceparent: string;
+};
+
+type EvidenceErrorContext = {
+  durationMs: number;
+  endpoint?: string;
+  traceId: string;
+};
+
+class EvidenceRequestFailure extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "EvidenceRequestFailure";
+    this.status = status;
+  }
+}
+
+export class PilotEvidenceSubmitError extends Error {
+  evidenceError: EvidenceError;
+
+  constructor(evidenceError: EvidenceError) {
+    super(evidenceError.message);
+    this.name = "PilotEvidenceSubmitError";
+    this.evidenceError = evidenceError;
+  }
+}
+
+export function describePilotEvidenceError(error: unknown): string {
+  return extractPilotEvidenceError(error).message;
+}
+
+export function extractPilotEvidenceError(error: unknown): EvidenceError {
+  if (error instanceof PilotEvidenceSubmitError) {
+    return error.evidenceError;
+  }
+  return buildEvidenceError(error, {
+    durationMs: 0,
+    endpoint: EVIDENCE_ENDPOINT,
+    traceId: "unknown",
+  });
+}
+
+export function buildEvidenceError(
+  error: unknown,
+  context: EvidenceErrorContext,
+): EvidenceError {
+  const endpoint = context.endpoint || EVIDENCE_ENDPOINT;
+  if (error instanceof Error) {
+    if (error.name === "AbortError") {
+      return {
+        type: "timeout",
+        severity: "warning",
+        endpoint,
+        durationMs: context.durationMs,
+        message: `evidence_api_timeout after ${REQUEST_TIMEOUT_MS}ms at ${API_BASE_URL}${endpoint}`,
+        traceId: context.traceId,
+      };
+    }
+    if (/Network request failed|Failed to fetch|Load failed/i.test(error.message)) {
+      return {
+        type: "network",
+        severity: "warning",
+        endpoint,
+        durationMs: context.durationMs,
+        message: `evidence_api_unreachable at ${API_BASE_URL}${endpoint}`,
+        traceId: context.traceId,
+      };
+    }
+    if (error instanceof EvidenceRequestFailure) {
+      return {
+        type: error.status >= 500 ? "server" : "validation",
+        severity: error.status >= 500 ? "error" : "warning",
+        endpoint,
+        durationMs: context.durationMs,
+        message: error.message,
+        traceId: context.traceId,
+      };
+    }
+    return {
+      type: "unknown",
+      severity: "error",
+      endpoint,
+      durationMs: context.durationMs,
+      message: error.message,
+      traceId: context.traceId,
+    };
+  }
+  return {
+    type: "unknown",
+    severity: "error",
+    endpoint,
+    durationMs: context.durationMs,
+    message: "evidence_submit_failed",
+    traceId: context.traceId,
+  };
+}
+
+export function generateEvidenceTraceContext(): EvidenceTraceContext {
+  const traceId = randomHex(32);
+  const spanId = randomHex(16);
+  return {
+    traceId,
+    traceparent: `00-${traceId}-${spanId}-01`,
+  };
+}
+
+function randomHex(length: number): string {
+  const byteLength = Math.ceil(length / 2);
+  const bytes = new Uint8Array(byteLength);
+  const cryptoApi = (globalThis as {
+    crypto?: { getRandomValues?: (array: Uint8Array) => Uint8Array };
+  }).crypto;
+
+  if (cryptoApi?.getRandomValues) {
+    cryptoApi.getRandomValues(bytes);
+  } else {
+    for (let index = 0; index < byteLength; index += 1) {
+      bytes[index] = Math.floor(Math.random() * 256);
+    }
+  }
+
+  return Array.from(bytes)
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, length);
+}
+
+async function readEvidenceResponse(response: Response): Promise<unknown> {
+  const body = await response.text();
+  if (!body) {
+    return {};
+  }
+  try {
+    return JSON.parse(body);
+  } catch {
+    const preview = body.replace(/\s+/g, " ").slice(0, 160);
+    throw new Error(
+      `non_json_evidence_response status=${response.status} content_type=${response.headers.get(
+        "content-type",
+      ) || "unknown"} body=${preview}`,
+    );
+  }
+}
 
 export function buildEvidenceEvent(
   driverId: string,
@@ -81,17 +234,21 @@ export async function submitPilotEvidence(
 ): Promise<EvidenceResponse> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const startedAt = Date.now();
+  const traceContext = generateEvidenceTraceContext();
 
   try {
-    const response = await fetch(`${API_BASE_URL}/pilot/evidence`, {
+    const response = await fetch(`${API_BASE_URL}${EVIDENCE_ENDPOINT}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-AfriRide-Device-Id": DEVICE_ID,
         "X-AfriRide-App-Version": APP_VERSION,
         "X-AfriRide-Event-Id": `pilot-${event.type}-${Date.now()}`,
+        "X-AfriRide-Trace-Id": traceContext.traceId,
         "X-AfriRide-Client-Timestamp": event.capturedAt,
         "X-AfriRide-Test-Mode": String(TEST_MODE),
+        traceparent: traceContext.traceparent,
       },
       body: JSON.stringify({
         type: event.type,
@@ -105,15 +262,24 @@ export async function submitPilotEvidence(
       signal: controller.signal,
     });
 
-    const payload = await response.json();
+    const payload = await readEvidenceResponse(response);
     if (!response.ok) {
-      throw new Error(
+      throw new EvidenceRequestFailure(
         payload && typeof payload === "object" && "detail" in payload
           ? String(payload.detail)
           : "pilot_evidence_submit_failed",
+        response.status,
       );
     }
     return payload as EvidenceResponse;
+  } catch (error) {
+    throw new PilotEvidenceSubmitError(
+      buildEvidenceError(error, {
+        durationMs: Date.now() - startedAt,
+        endpoint: EVIDENCE_ENDPOINT,
+        traceId: traceContext.traceId,
+      }),
+    );
   } finally {
     clearTimeout(timeout);
   }
@@ -131,7 +297,58 @@ export async function capturePilotEvidence(
   return event;
 }
 
-export function readCurrentPosition(): Promise<GeoPosition> {
+export async function readCurrentPosition(): Promise<GeoPosition> {
+  const location = await loadExpoLocation();
+  if (location) {
+    try {
+      return await readExpoLocation(location);
+    } catch (error) {
+      if (!isMissingNativeLocation(error)) {
+        throw error;
+      }
+    }
+  }
+  return readNavigatorLocation();
+}
+
+async function loadExpoLocation(): Promise<ExpoLocationModule | null> {
+  try {
+    return await import("expo-location");
+  } catch {
+    return null;
+  }
+}
+
+async function readExpoLocation(location: ExpoLocationModule): Promise<GeoPosition> {
+  const permission = await location.requestForegroundPermissionsAsync();
+  if (permission.status !== location.PermissionStatus.GRANTED) {
+    throw new Error(`location_permission_${permission.status}`);
+  }
+
+  const position = await location.getCurrentPositionAsync({
+    accuracy: location.Accuracy.High,
+  });
+  return {
+    coords: {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+      altitude: position.coords.altitude,
+      heading: position.coords.heading,
+      speed: position.coords.speed,
+    },
+    timestamp: position.timestamp,
+  };
+}
+
+function isMissingNativeLocation(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    /ExpoLocation|native module|Cannot find native module/i.test(error.message)
+  );
+}
+
+function readNavigatorLocation(): Promise<GeoPosition> {
   const navigatorApi = (globalThis as { navigator?: NavigatorWithGeo }).navigator;
 
   if (!navigatorApi?.geolocation) {

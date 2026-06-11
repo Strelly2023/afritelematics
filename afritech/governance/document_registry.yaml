@@ -1,0 +1,171 @@
+schema: afritech.governance.document_registry.v1
+version: 1.0.0
+status: ACTIVE
+classification: DOCUMENT_AUTHORITY_REGISTRY
+
+purpose: >
+  Declare the small set of documentation surfaces that actively govern
+  navigation, constitutional interpretation, architecture explanation,
+  bounded pilot activation, and bounded commercial packaging.
+
+authority_rule: >
+  Only registered documents may act as active documentation authority
+  surfaces. Historical or review artifacts may inform readers but may not
+  silently supersede the registered authority order.
+
+enforcement:
+  missing_registered_doc: HARD_FAILURE
+  duplicate_registered_path: HARD_FAILURE
+  duplicate_registered_id: HARD_FAILURE
+  unregistered_authority_claim: HARD_FAILURE
+  undocumented_historical_conflict: HARD_FAILURE
+  invalid_protocol_compatibility: HARD_FAILURE
+
+protocol_compatibility:
+  current_version: 1.0.0
+  verifier_version: 1.0.0
+  versions:
+    - version: 1.0.0
+      status: CURRENT
+      breaking: false
+      compatible_with:
+        - 1.0.0
+        - 1.0.x
+    - version: 1.1.0
+      status: FORWARD_DECLARED
+      breaking: false
+      compatible_with:
+        - 1.0.0
+        - 1.0.x
+        - 1.1.0
+    - version: 2.0.0
+      status: BREAKING_RESERVED
+      breaking: true
+      compatible_with:
+        - 2.0.0
+
+documents:
+  - id: DOC-ROOT-001
+    path: docs/README.md
+    layer: NAVIGATION
+    authority: ROOT_NAVIGATION
+    scope: HUMAN_ENTRY
+
+  - id: DOC-GOV-001
+    path: afritech/constitution/AFRITECH_CONSTITUTION_V1.md
+    layer: GOVERNANCE
+    authority: CONSTITUTIONAL_ROOT
+    scope: GLOBAL
+    binds:
+      invariants:
+        - I11_AUTHORITY_DECLARATION
+        - I12_NO_AUTHORITY_ESCALATION
+        - I13_ADR_REQUIRED_FOR_MUTATION
+
+  - id: DOC-ARCH-001
+    path: docs/architecture/AFRITECH_UNIFIED_ARCHITECTURE.md
+    layer: ARCHITECTURE
+    authority: ARCHITECTURE_ROOT
+    scope: GLOBAL_EXPLANATION
+    binds:
+      invariants:
+        - I3_NO_SILENT_MUTATION
+        - I4_DETERMINISTIC_EXECUTION
+        - I5_REPLAY_REQUIRED
+        - I6_REPLAY_AUTHORITY
+        - I7_TRANSCRIPT_COMPLETENESS
+        - I8_TRANSCRIPT_HASH_STABILITY
+        - I11_AUTHORITY_DECLARATION
+      code_surfaces:
+        - afriride_system/backend/trace_enforcement.py
+        - afriride_system/backend/replay_engine.py
+        - afriride_system/backend/evidence_engine.py
+        - afriride_system/backend/receipt_engine.py
+
+  - id: DOC-PILOT-001
+    path: docs/pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md
+    layer: PILOT
+    authority: BOUNDED_OPERATIONAL_GATE
+    scope: PHASE1_SETUP
+    binds:
+      invariants:
+        - I3_NO_SILENT_MUTATION
+        - I4_DETERMINISTIC_EXECUTION
+        - I14_BOUND_EXECUTION_SURFACE
+
+  - id: DOC-PILOT-002
+    path: docs/pilot/AFRIRIDE_PHASE2_MIGRATION_GOVERNANCE_SPEC.md
+    layer: PILOT
+    authority: BOUNDED_OPERATIONAL_GATE
+    scope: PHASE2_MIGRATION
+    binds:
+      invariants:
+        - I5_REPLAY_REQUIRED
+        - I6_REPLAY_AUTHORITY
+        - I8_TRANSCRIPT_HASH_STABILITY
+        - I10_EXPLICIT_DEPENDENCIES
+
+  - id: DOC-PILOT-003
+    path: docs/pilot/AFRIRIDE_PHASE3_LIVE_OPERATIONS_MONITORING_GOVERNANCE_SPEC.md
+    layer: PILOT
+    authority: BOUNDED_OPERATIONAL_GATE
+    scope: PHASE3_LIVE_OPERATIONS
+    binds:
+      invariants:
+        - I3_NO_SILENT_MUTATION
+        - I5_REPLAY_REQUIRED
+        - I6_REPLAY_AUTHORITY
+        - I11_AUTHORITY_DECLARATION
+        - I12_NO_AUTHORITY_ESCALATION
+
+  - id: DOC-MOBILE-001
+    path: docs/mobile/AFRIRIDE_MOBILE_PLATFORM_READINESS.md
+    layer: MOBILE
+    authority: BOUNDED_READINESS_SURFACE
+    scope: DEVICE_AND_PLATFORM_READINESS
+    binds:
+      invariants:
+        - I3_NO_SILENT_MUTATION
+        - I4_DETERMINISTIC_EXECUTION
+        - I7_TRANSCRIPT_COMPLETENESS
+
+  - id: DOC-BIZ-001
+    path: docs/business/AFRITECH_FIRST_REVENUE_CONVERSION_PLAN.md
+    layer: COMMERCIAL
+    authority: BOUNDED_COMMERCIAL_PACKAGING
+    scope: FIRST_REVENUE_CONVERSION
+    binds:
+      invariants:
+        - I6_REPLAY_AUTHORITY
+        - I11_AUTHORITY_DECLARATION
+
+  - id: DOC-REVIEW-001
+    path: docs/reviews/AFRITECH_DOCUMENTATION_AUTHORITY_AUDIT.md
+    layer: REVIEW
+    authority: GOVERNANCE_REVIEW
+    scope: DOCUMENTATION_AUTHORITY_AUDIT
+
+  - id: DOC-REVIEW-002
+    path: docs/reviews/AFRITECH_CANONICAL_CONFLICT_SWEEP.md
+    layer: REVIEW
+    authority: GOVERNANCE_REVIEW
+    scope: CANONICAL_CONFLICT_SWEEP
+
+historical_conflicts:
+  - path: docs/AfriTech_Final_Canonical.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY
+
+  - path: docs/Afritech_Canonical_Specification_final.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY
+
+  - path: docs/afritech_canonical_specification.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY
+
+  - path: docs/AfriTech_Terminal_Canonical_Closure.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY
+
+  - path: docs/AfriTech_Final_Irreducible_Admissibility_Algebra.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY
+
+  - path: docs/AfriTech_Irreducible_Admissibility_Algebra.md
+    disposition: HISTORICAL_NARRATIVE_NOT_ACTIVE_AUTHORITY

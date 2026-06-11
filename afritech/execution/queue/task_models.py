@@ -24,6 +24,7 @@ class ExecutionTask:
     def to_dict(self):
         return {
             "id": self.id,
+            "payload": self.payload,
             "status": self.status,
             "result": self.result,
             "error": self.error,

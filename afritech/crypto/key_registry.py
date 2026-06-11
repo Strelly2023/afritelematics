@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 from typing import Optional
 
+from afritech.crypto.signature import current_public_key_pem
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,9 +72,17 @@ def get_public_key(key_id: str) -> Optional[str]:
         path = key_info.get("path")
 
         if not path or not os.path.exists(path):
+            configured = os.environ.get("AFRITECH_SIGNING_PUBLIC_KEY_PATH", "").strip()
+            if configured and Path(configured).exists():
+                return Path(configured).read_text(encoding="utf-8")
+            inline = os.environ.get("AFRITECH_SIGNING_PUBLIC_KEY_PEM", "").strip()
+            if inline:
+                return inline
             fallback = Path(__file__).resolve().parents[2] / "public_key.pem"
             if fallback.exists():
                 return fallback.read_text(encoding="utf-8")
+            if key_id == "afritech-key-01":
+                return current_public_key_pem()
             logger.error(f"[KEY_REGISTRY] Key file missing: {path}")
             return None
 

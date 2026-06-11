@@ -145,6 +145,44 @@ inject_partition_imbalance
 inject_non_canonical_partition_merge
 ```
 
+### Real Failure Injection Scenarios (break determinism on purpose)
+
+The next resilience layer must not only simulate load. It must deliberately try
+to force non-canonical outcomes and prove that AfriRide either rejects the
+execution or surfaces deterministic divergence immediately.
+
+Required failure-injection scenarios:
+
+```text
+inject_seed_mismatch_between_workers
+inject_duplicate_sequence_claim
+inject_ack_loss_then_redelivery
+inject_stale_snapshot_resurrection
+inject_cross_partition_clock_skew
+inject_non_canonical_retry_order
+```
+
+Expected validation result:
+
+```text
+silent corruption never allowed
+replay hash mismatch surfaced immediately
+canonical rejection path recorded
+trace lineage remains reconstructable
+recovery path produces bounded evidence
+```
+
+Evidence bundle additions:
+
+```text
+failure_injection_plan_id
+injection_point
+expected_invariant
+observed_replay_hash
+divergence_receipt
+recovery_trace
+```
+
 ## 2. Real GPS and Geo Simulation
 
 Objective:
@@ -307,6 +345,56 @@ inject_plus_10_minute_clock_skew
 inject_out_of_order_client_events
 inject_duplicate_delivery
 inject_client_side_authority_attempt
+```
+
+### First Mobile Pilot Execution (Device + Token Lifecycle)
+
+The first mobile pilot must prove that real devices can participate in the
+authenticated trace pipeline without promoting the client into an authority
+surface.
+
+Required mobile pilot lifecycle:
+
+```text
+device registration
+device role binding
+pilot token issuance
+short-lived access token use
+refresh token rotation
+offline queue and deferred sync
+token expiry handling
+device revoke and re-enrollment
+```
+
+Validation obligations:
+
+```text
+device_id bound to every submitted event
+token_jti recorded for every authenticated session
+expired tokens rejected without mutating state
+refresh rotation does not fork client sequence ordering
+reinstalled or revoked device cannot resume with stale credentials
+offline replay remains deterministic after re-authentication
+```
+
+Required pilot evidence:
+
+```text
+device_registration_snapshot
+token_issuance_audit
+token_refresh_rotation_trace
+expired_token_rejection_receipt
+revoked_device_block_trace
+offline_reauth_convergence_trace
+```
+
+Counter-tests:
+
+```text
+inject_expired_access_token_during_sync
+inject_reused_refresh_token
+inject_revoked_device_resubmission
+inject_dual_device_identity_collision
 ```
 
 ## 4. Economic and Marketplace Simulation
@@ -472,6 +560,75 @@ inject_fake_replay_history
 inject_modified_witness_hash
 inject_mutation_outside_gateway
 inject_malformed_queue_event
+```
+
+## 6. Observability Design Tied to Trace/Replay
+
+Objective:
+
+```text
+Expose operational visibility that is replay-linked, evidence-bearing, and
+strictly non-authoritative.
+```
+
+Design rule:
+
+```text
+observability explains trace and replay
+observability never overrides trace and replay
+```
+
+Required observability bindings:
+
+```text
+ride_id
+trace_id
+event_id
+device_id
+actor_id
+token_jti
+request_id
+replay_hash
+receipt_hash
+normalization_decision
+```
+
+Required views:
+
+```text
+trace ingestion timeline
+normalization decision log
+replay divergence board
+receipt verification board
+device and token exception board
+failure injection evidence board
+```
+
+Validation obligations:
+
+```text
+every alert links back to trace evidence
+every dashboard state links to replay-derived outputs
+no observability surface can mutate runtime state
+non-authoritative disclaimer preserved on all exports
+operator investigation path is replay-first
+```
+
+Validators required:
+
+```text
+afritech.ci.observability_authority_validator
+afritech.ci.observability_evidence_validator
+afritech.ci.traceability_bridge_validator
+```
+
+Evidence required:
+
+```text
+observability_trace_export
+replay_linkage_snapshot
+alert_to_trace_resolution_report
+dashboard_non_authority_receipt
 ```
 
 ## Final Operational Stack

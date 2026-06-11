@@ -18,12 +18,18 @@ void main() {
     'AFRIRIDE_PILOT_RUN_ID',
     defaultValue: 'local_pilot',
   );
+  const eventSecret = String.fromEnvironment(
+    'AFRIRIDE_EVENT_SECRET',
+    defaultValue: '',
+  );
 
   const rideId = 'ride_123';
   final controller = RiderController(
     deviceId: '${deviceRole}_1',
     pilotRunId: pilotRunId,
-    signer: EventSigner('pilot-secret'),
+    signer: EventSigner(
+      eventSecret.isEmpty ? 'local-dev-only-event-secret' : eventSecret,
+    ),
     api: ApiClient(baseUrl: apiBaseUrl),
   );
   controller.requestRide(

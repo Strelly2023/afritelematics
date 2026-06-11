@@ -45,6 +45,14 @@ class DriverApp:
             }
         )
 
+    def arrive(self, ride_id: str) -> dict:
+        return self.routes.arrive(
+            {
+                "driver_id": self.driver_id,
+                "ride_id": ride_id,
+            }
+        )
+
     def complete(self, ride_id: str) -> dict:
         return self.routes.complete(
             {

@@ -40,7 +40,7 @@ def test_ledger_receipt_exports_valid_derived_proof() -> None:
     data = receipt.canonical_dict()
 
     assert data["verdict"] == "VALID"
-    assert data["ledger_proof"]["event_count"] == 70
+    assert data["ledger_proof"]["event_count"] == 80
     assert data["ledger_proof"]["root_hash"] == events[-1]["hash"]
     assert data["signature_validation"]["signature_mode"] == "rsa_pss_sha256"
     assert data["signature_validation"]["all_signatures_valid"] is True

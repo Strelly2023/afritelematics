@@ -1,0 +1,23 @@
+adr:
+  id: ADR-0020
+  title: Governed Data Decentralization
+  status: ACCEPTED
+  context:
+    - AfriTech domains must scale without central database bottlenecks.
+    - Domain teams need autonomy without losing constitutional control.
+    - Cross-domain data access must remain explicit, auditable, and contract-bound.
+  decision: >
+    AfriTech adopts governed decentralized data ownership. Each domain owns
+    its write surface and data resources, while global invariants, local rules,
+    runtime guards, and CI validators enforce cross-domain boundaries.
+  consequences:
+    - Domains may own data independently.
+    - Cross-domain access must use declared APIs, events, or approved contracts.
+    - Direct cross-domain database sharing is forbidden.
+    - Data decentralization remains architecturally defined, not production proven.
+  invariants:
+    - INV-DATA-001
+  rules:
+    - RULE-040
+  bindings:
+    - BIND-020

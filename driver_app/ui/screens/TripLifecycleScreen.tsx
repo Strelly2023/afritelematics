@@ -28,6 +28,14 @@ export function TripLifecycleScreen({
   }
 
   assertTripSnapshot(trip);
+  const nextAction =
+    trip.status === "accepted"
+      ? { label: "Arrived", onPress: onArrived }
+      : trip.status === "arrived"
+        ? { label: "Start trip", onPress: onStart }
+        : trip.status === "started"
+          ? { label: "Complete", onPress: onComplete }
+          : null;
 
   return (
     <SurfacePanel>
@@ -38,18 +46,25 @@ export function TripLifecycleScreen({
       {trip.nextInstruction ? (
         <Text style={styles.instruction}>{trip.nextInstruction}</Text>
       ) : null}
-      <View style={styles.actions}>
-        <PrimaryButton label="Arrived" onPress={onArrived} disabled={loading} />
-        <PrimaryButton label="Start trip" onPress={onStart} disabled={loading} />
-        <PrimaryButton label="Complete" onPress={onComplete} disabled={loading} />
-      </View>
+      {trip.status === "completed" ? (
+        <Text style={styles.completeNote}>Trip closed and replay evidence captured.</Text>
+      ) : null}
+      {nextAction ? (
+        <PrimaryButton
+          label={nextAction.label}
+          onPress={nextAction.onPress}
+          disabled={loading}
+        />
+      ) : null}
     </SurfacePanel>
   );
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    gap: spacing.sm,
+  completeNote: {
+    color: colors.success,
+    fontSize: 14,
+    fontWeight: "800",
   },
   instruction: {
     color: colors.secondary,

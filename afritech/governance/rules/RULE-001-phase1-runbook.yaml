@@ -1,0 +1,86 @@
+id: RULE-001
+name: phase1_runbook_governance
+status: ACTIVE
+classification: OPERATOR_SETUP_GOVERNANCE_RULE
+
+description: >
+  Enforces that the AfriRide Phase 1 setup runbook remains repo-backed,
+  non-authoritative, and aligned with the actual API, storage, and setup
+  surfaces required to prepare the execution environment.
+
+linked_artifacts:
+  runbook_doc: docs/pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md
+  guard: afritech/guards/guard_phase1_runbook.py
+  runner: scripts/run_phase1_setup.sh
+  phase2_spec: docs/pilot/AFRIRIDE_PHASE2_MIGRATION_GOVERNANCE_SPEC.md
+  tests:
+    - afritech/tests/governance/test_phase1_runbook_governance_chain.py
+    - afritech/tests/governance/test_afriride_phase2_migration_governance_spec_doc.py
+
+contract:
+  authority_boundary:
+    required_phrase: This runbook is not runtime authority.
+    forbidden_claims:
+      - production readiness
+      - pilot readiness
+      - replay correctness
+      - receipt correctness
+  code_alignment:
+    default_sqlite_path: afriride_system/pilot_state.sqlite3
+    required_http_surfaces:
+      - /health
+      - /docs
+      - /auth/token
+      - /passenger/request-ride
+    required_runtime_sources:
+      - afriride_system/api/main.py
+      - afriride_system/api/auth.py
+      - afriride_system/api/dispatcher_adapter.py
+      - afriride_system/backend/storage.py
+      - scripts/sql/afriride_postgres_schema_v1.sql
+  setup_contract:
+    required_env_vars:
+      - AFRIRIDE_DB_PATH
+      - AFRIRIDE_DATABASE_URL
+    required_commands:
+      - python3 -m venv .venv
+      - pip install -r requirements.txt
+      - psql "$AFRIRIDE_DATABASE_URL" -c '\conninfo'
+      - uvicorn afriride_system.api.main:app --reload
+      - curl http://127.0.0.1:8000/health
+      - curl -X POST http://127.0.0.1:8000/auth/token
+    required_phase1_tests:
+      - afriride_system/tests/test_authentication.py
+      - afriride_system/tests/test_api_flow.py
+      - afriride_system/tests/test_persistence_durability.py
+  phase2_gate:
+    required_forward_links:
+      - AFRIRIDE_POSTGRES_RUNTIME_VALIDATION_CHECKLIST.md
+      - AFRIRIDE_POSTGRES_CUTOVER_RUNBOOK.md
+      - AFRIRIDE_PHASE2_MIGRATION_GOVERNANCE_SPEC.md
+
+rules:
+  - id: RULE-001-1
+    rule: The Phase 1 runbook document must exist and preserve the non-authority boundary.
+    enforcement:
+      - afritech.guards.guard_phase1_runbook.validate
+  - id: RULE-001-2
+    rule: The runbook must reference the real HTTP surfaces and the real default SQLite path implemented in code.
+    enforcement:
+      - afritech.guards.guard_phase1_runbook.validate
+  - id: RULE-001-3
+    rule: The runbook must define the minimum operator setup commands and the bounded Phase 1 validation tests.
+    enforcement:
+      - afritech.guards.guard_phase1_runbook.validate
+  - id: RULE-001-4
+    rule: The one-command setup runner must exist and align with the runbook contract.
+    enforcement:
+      - afritech.guards.guard_phase1_runbook.validate
+  - id: RULE-001-5
+    rule: Phase 1 governance must link forward into the bounded Phase 2 migration governance gate.
+    enforcement:
+      - afritech.guards.guard_phase1_runbook.validate
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

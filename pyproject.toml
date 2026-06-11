@@ -18,10 +18,23 @@ description = "AfriTech constitutional execution and replay verification system"
 requires-python = ">=3.10"
 
 dependencies = [
+    "django",
+    "djangorestframework",
     "fastapi",
     "httpx",
     "pydantic",
+    "psycopg[binary]",
+    "cryptography",
+    "PyNaCl",
+    "web3",
+    "hexbytes",
+    "eth-typing",
 ]
+
+[project.scripts]
+afritech = "afritech.cli.main:main"
+afritech-verify = "afritech.tools.external_verifier_cli:run"
+afritech-verify-session = "afritech.tools.partner_verification_session_cli:run"
 
 [project.optional-dependencies]
 dev = [

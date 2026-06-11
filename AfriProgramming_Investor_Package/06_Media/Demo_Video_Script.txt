@@ -1,0 +1,15 @@
+This is a controlled-pilot system view.
+
+The system has passed validation, but a contract drift has been detected.
+
+AfriProgramming compares observed behavior against expected contract behavior, then uses replay to show the correct baseline.
+
+It generates a proposal with replay evidence, contract validation, and rollback readiness.
+
+Nothing is executed automatically.
+
+Governance must approve the proposal before activation is allowed.
+
+Every step is provable, governed, and reversible.
+
+That is verified AI software.

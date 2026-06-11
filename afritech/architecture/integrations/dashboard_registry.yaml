@@ -1,0 +1,43 @@
+schema: afritech.dashboard_registry.v1
+dashboards:
+  - key: afritech
+    name: AfriTech Dashboard
+    route: /afritech/dashboard/
+    service: platform
+    summary: Unified entry point for governed cross-platform navigation and analytics.
+    authority_mode: gateway_read_only
+    role_scope:
+      - admin
+      - manager
+      - operator
+      - user
+  - key: afriride
+    name: AfriRide Dashboard
+    route: /afriride/dashboard/
+    service: mobility
+    summary: Replay-backed mobility operations, evidence, and live pilot observability.
+    authority_mode: replay_projection
+    role_scope:
+      - admin
+      - manager
+      - operator
+  - key: afroprog
+    name: AfroProg Dashboard
+    route: /afroprog/dashboard/
+    service: freelance
+    summary: Productivity workspace for proposal drafting, repository intelligence, and governed handoff.
+    authority_mode: proposal_only
+    role_scope:
+      - admin
+      - manager
+      - user
+  - key: afriprogramming
+    name: AfriProgramming Dashboard
+    route: /afriprogramming/dashboard/
+    service: education
+    summary: Governed engineering, validator discipline, replay, and execution readiness.
+    authority_mode: governed_execution
+    role_scope:
+      - admin
+      - manager
+      - operator

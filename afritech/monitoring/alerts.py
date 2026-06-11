@@ -1,17 +1,50 @@
 import logging
+import os
 import uuid
+from datetime import datetime, timezone
 from typing import Dict, Any
-
-from django.conf import settings
-from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
 
+def _maybe_django_settings():
+    try:
+        from django.conf import settings  # pragma: no cover - exercised in Django runtime
+    except ModuleNotFoundError:
+        return None
+    except Exception:
+        return None
+
+    try:
+        if not settings.configured:
+            return None
+    except Exception:
+        return None
+
+    return settings
+
+
+def _runtime_timestamp() -> str:
+    try:
+        from django.utils import timezone as django_timezone  # pragma: no cover - exercised in Django runtime
+    except ModuleNotFoundError:
+        return datetime.now(timezone.utc).isoformat()
+    except Exception:
+        return datetime.now(timezone.utc).isoformat()
+    return django_timezone.now().isoformat()
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def send_integrity_alert(
     event_type: str,
-    details: Dict[str, Any],
     severity: str = "HIGH",
+    details: Dict[str, Any] | None = None,
 ):
     """
     Central alert dispatcher for integrity/security events.
@@ -29,12 +62,19 @@ def send_integrity_alert(
     """
 
     try:
+        # Backward compatibility for older callsites that passed details second.
+        if isinstance(severity, dict):
+            details = severity
+            severity = "HIGH"
+
+        settings = _maybe_django_settings()
+
         # =====================================================
         # ✅ BUILD ALERT OBJECT
         # =====================================================
         alert = {
             "id": str(uuid.uuid4()),
-            "timestamp": timezone.now().isoformat(),
+            "timestamp": _runtime_timestamp(),
             "event_type": event_type,
             "severity": severity,
             "service": "afritech-audit",
@@ -58,7 +98,8 @@ def send_integrity_alert(
         # =====================================================
         # ✅ OPTIONAL: EMAIL ALERTS
         # =====================================================
-        if severity in ("HIGH", "CRITICAL") and getattr(settings, "ALERT_EMAIL_ENABLED", False):
+        email_enabled = getattr(settings, "ALERT_EMAIL_ENABLED", False) if settings else _env_flag("ALERT_EMAIL_ENABLED")
+        if severity in ("HIGH", "CRITICAL") and email_enabled and settings:
             try:
                 from django.core.mail import send_mail
 
@@ -75,7 +116,7 @@ def send_integrity_alert(
         # =====================================================
         # ✅ OPTIONAL: WEBHOOK (Slack / Monitoring)
         # =====================================================
-        webhook_url = getattr(settings, "ALERT_WEBHOOK_URL", None)
+        webhook_url = getattr(settings, "ALERT_WEBHOOK_URL", None) if settings else os.environ.get("ALERT_WEBHOOK_URL")
 
         if webhook_url:
             try:

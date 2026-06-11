@@ -129,6 +129,49 @@ Each device must be registered before field testing:
 }
 ```
 
+## Phase 4.5: First Mobile Pilot Execution (Device + Token Lifecycle)
+
+The first phone-backed pilot run must verify both device identity and token
+discipline before any live ride action is accepted.
+
+Required lifecycle:
+
+1. Register the phone as a known pilot device.
+2. Bind the phone to exactly one pilot role.
+3. Issue a short-lived access token plus a refresh token.
+4. Confirm the app submits events with `device_id`, `actor_id`, and `token_jti`.
+5. Force one token refresh during the rehearsal window.
+6. Confirm expired token rejection does not create trace mutations.
+7. Revoke credentials if the phone is replaced, reset, or reassigned.
+
+Minimum token rules:
+
+```text
+access token is short-lived
+refresh token rotation is single-use
+token_jti is audit-visible
+expired token cannot mutate state
+revoked device cannot resume with stale credentials
+```
+
+Required device and token evidence:
+
+```text
+device_registration_snapshot.json
+token_issuance_audit.json
+token_refresh_rotation_trace.json
+expired_token_rejection_receipt.json
+revoked_device_block_trace.json
+```
+
+Stop immediately if:
+
+- device role does not match token role
+- `token_jti` is missing from the authenticated session record
+- expired token request writes any trace event
+- refresh token can be reused
+- revoked or reinstalled device is accepted without re-enrollment
+
 ## Phase 5: Controlled Ride Test
 
 Do not use public riders.
