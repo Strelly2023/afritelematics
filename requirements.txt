@@ -10,3 +10,4 @@ uvicorn[standard]
 web3
 hexbytes
 eth-typing
+joblib
