@@ -13,4 +13,5 @@ eth-typing
 joblib
 numpy
 scikit-learn
+jsonschema
 
