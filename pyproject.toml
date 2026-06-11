@@ -29,6 +29,7 @@ dependencies = [
     "web3",
     "hexbytes",
     "eth-typing",
+    "joblib>=1.3.0",
 ]
 
 [project.scripts]
