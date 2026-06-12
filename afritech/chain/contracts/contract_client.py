@@ -45,7 +45,7 @@ def _web3(profile: dict[str, Any]) -> Any:
 
 
 def _address(web3: Any) -> Any:
-    address = os.getenv("AFRITECH_CHAIN_ADDRESS")
+    address = os.getenv("AFRITECH_CHAIN_ADDRESS") or os.getenv("AFRITECH_CHAIN_ADDRESS_CHECKSUM")
     if not address:
         raise RuntimeError("Missing AFRITECH_CHAIN_ADDRESS")
     Web3 = _load_web3()
@@ -67,9 +67,19 @@ def _contract(web3: Any, profile: dict[str, Any]) -> Any:
 
 def _private_key() -> str:
     private_key = os.getenv("AFRITECH_CHAIN_PRIVATE_KEY")
-    if not private_key:
-        raise RuntimeError("Missing AFRITECH_CHAIN_PRIVATE_KEY")
-    return private_key
+    if private_key and private_key.strip():
+        return private_key.strip()
+
+    private_key_path = os.getenv("AFRITECH_CHAIN_PRIVATE_KEY_PATH")
+    if private_key_path and private_key_path.strip():
+        try:
+            return open(private_key_path.strip(), encoding="utf-8").read().strip()
+        except OSError as exc:
+            raise RuntimeError(
+                f"Unable to read AFRITECH_CHAIN_PRIVATE_KEY_PATH: {exc}"
+            ) from exc
+
+    raise RuntimeError("Missing AFRITECH_CHAIN_PRIVATE_KEY")
 
 
 def anchor_proof_on_chain(

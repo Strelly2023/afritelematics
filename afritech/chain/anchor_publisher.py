@@ -22,10 +22,16 @@ SEPOLIA_EXPLORER_BASE = "https://sepolia.etherscan.io/tx/"
 # ✅ CORE PUBLISH FUNCTION
 # =========================
 
-def publish_anchor(proof_hash: str, *, profile_name: str | None = None) -> ChainReceipt:
+def publish_anchor(
+    proof_hash: str,
+    *,
+    profile_name: str | None = None,
+    require_live: bool = False,
+) -> ChainReceipt:
     """
     Publishes a proof hash using Smart Contract (primary)
-    with fallback to raw transaction and finally deterministic fallback.
+    with fallback to raw transaction and finally deterministic fallback unless
+    require_live is true.
 
     Priority:
     1. Smart contract (ELITE+)
@@ -74,6 +80,9 @@ def publish_anchor(proof_hash: str, *, profile_name: str | None = None) -> Chain
 
     except Exception as contract_error:
         contract_failure_reason = str(contract_error)
+
+    if require_live:
+        raise RuntimeError(f"Smart contract publication failed: {contract_failure_reason}")
 
     # =========================
     # ✅ 2. RAW TX FALLBACK

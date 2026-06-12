@@ -7,6 +7,9 @@ from afritech.architecture.blockchain_anchor import (
     publish_architecture_anchor_to_evm,
     publish_architecture_anchor_with_profile,
 )
+from afritech.chain.anchor_publisher import publish_anchor
+from afritech.chain.contracts.contract_client import _private_key
+from afritech.chain.contracts.deployment_config import validate_deployment_profile
 
 
 def test_publish_architecture_anchor_to_evm_uses_rpc_and_returns_confirmed(monkeypatch) -> None:
@@ -85,3 +88,45 @@ def test_contract_anchor_publication_falls_back_without_live_env(monkeypatch) ->
     assert payload["method"] == "anchorProof"
     assert payload["status"] == "runtime_safe_fallback"
     assert payload["proof_hash"] == "a" * 64
+
+
+def test_contract_anchor_rejects_placeholder_contract_address() -> None:
+    profile = {
+        "enabled": True,
+        "rpc_url": "https://rpc.sepolia.example",
+        "contract_address": "0x1234567890ABCDEF1234567890ABCDEF12345678",
+        "chain_id": 11155111,
+    }
+
+    try:
+        validate_deployment_profile(profile)
+    except RuntimeError as exc:
+        assert "deployed ArchitectureAnchor address" in str(exc)
+    else:
+        raise AssertionError("placeholder contract address was accepted")
+
+
+def test_private_key_can_load_from_secret_file(monkeypatch, tmp_path) -> None:
+    key_file = tmp_path / "eth_private_key"
+    key_file.write_text("  0xabc123  \n", encoding="utf-8")
+    monkeypatch.delenv("AFRITECH_CHAIN_PRIVATE_KEY", raising=False)
+    monkeypatch.setenv("AFRITECH_CHAIN_PRIVATE_KEY_PATH", str(key_file))
+
+    assert _private_key() == "0xabc123"
+
+
+def test_publish_anchor_require_live_does_not_return_fallback(monkeypatch) -> None:
+    def fail_contract(**_: object) -> dict[str, object]:
+        raise RuntimeError("contract not deployed")
+
+    monkeypatch.setattr(
+        "afritech.chain.anchor_publisher.anchor_proof_on_chain",
+        fail_contract,
+    )
+
+    try:
+        publish_anchor("a" * 64, profile_name="sepolia", require_live=True)
+    except RuntimeError as exc:
+        assert "Smart contract publication failed" in str(exc)
+    else:
+        raise AssertionError("require_live returned a fallback receipt")

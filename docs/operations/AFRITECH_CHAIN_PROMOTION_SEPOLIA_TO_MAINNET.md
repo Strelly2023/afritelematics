@@ -44,9 +44,52 @@ for normal production operation so public GET requests remain read-only.
 
 ## Promotion Sequence
 
-1. deploy `afritech/contracts/ArchitectureAnchor.sol` to Sepolia
-2. set `AFRITECH_CHAIN_CONTRACT_ADDRESS` to the deployed contract address
-3. publish to Sepolia through `/v1/architecture/anchor/blockchain`
+1. In Remix, switch `Environment` from `Remix VM` to `Injected Provider - MetaMask`.
+2. In MetaMask, select `Sepolia` and confirm the publishing wallet. For the
+   current EC2 configuration this is expected to be:
+
+```text
+0x544CbDC41ce28b5758ee64217c4D4836Ef9b2825
+```
+
+3. Fund the wallet with enough Sepolia ETH for deployment and one anchor
+   transaction.
+4. Deploy `afritech/contracts/ArchitectureAnchor.sol` to Sepolia.
+
+Deployment to Remix VM is local and temporary. Do not copy a Remix VM contract
+address into production; the backend can only use a contract deployed to the
+configured public network.
+
+5. Copy the deployed Sepolia `ArchitectureAnchor` contract address.
+6. On EC2, edit `deploy/production/.env.production`:
+
+```env
+AFRITECH_CHAIN_MODE=sepolia
+AFRITECH_CHAIN_NETWORK=sepolia
+AFRITECH_CHAIN_RPC_URL_SEPOLIA=<provider Sepolia RPC URL>
+AFRITECH_CHAIN_ADDRESS_CHECKSUM=0x544CbDC41ce28b5758ee64217c4D4836Ef9b2825
+AFRITECH_CHAIN_PRIVATE_KEY_PATH=/run/secrets/eth_private_key
+AFRITECH_CHAIN_CONTRACT_ADDRESS=<deployed Sepolia ArchitectureAnchor address>
+AFRITECH_CHAIN_ENABLE_PUBLISH=true
+```
+
+`AFRITECH_CHAIN_CONTRACT_ADDRESS` must not be
+`0x1234567890ABCDEF1234567890ABCDEF12345678` or the zero address. Contract mode
+rejects placeholders before submitting a transaction.
+
+7. Recreate the API container:
+
+```bash
+docker compose -f deploy/production/docker-compose.production.yml up -d --force-recreate afritech-api
+```
+
+8. Verify the live container configuration:
+
+```bash
+docker exec -it production-afritech-api-1 printenv | grep AFRITECH_CHAIN
+```
+
+9. Publish to Sepolia through `/v1/architecture/anchor/blockchain`
    with an authenticated operator or verifier token:
 
 ```json
@@ -62,14 +105,15 @@ The response must include:
 - `publication.method = anchorProof`
 - `publication.network = sepolia`
 - `publication.transaction_hash` beginning with `0x`
+- `publication.status = live`
 
-4. verify with `afritech-verify --base-url <url> --expect-network sepolia`
-5. run `afritech-verify-session --base-url <url> --partner <name>`
-6. archive the partner session report
-7. confirm no dashboard drift and no verification mismatch
-8. switch profile to Mainnet
-9. publish Mainnet anchor
-10. rerun verifier and session tools against Mainnet expectation
+10. verify with `afritech-verify --base-url <url> --expect-network sepolia`
+11. run `afritech-verify-session --base-url <url> --partner <name>`
+12. archive the partner session report
+13. confirm no dashboard drift and no verification mismatch
+14. switch profile to Mainnet
+15. publish Mainnet anchor
+16. rerun verifier and session tools against Mainnet expectation
 
 ## Exit Criteria
 

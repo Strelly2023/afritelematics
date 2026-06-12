@@ -162,6 +162,7 @@ def build_architecture_proof_router() -> APIRouter:
                     publication_id=publication_id,
                     proof_hash=str(proof.get("proof_hash")),
                     profile_name=profile_name,
+                    require_live=True,
                 )
             else:
                 publication = publish_architecture_anchor_with_profile(

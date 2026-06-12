@@ -1,7 +1,15 @@
 # afritech/chain/contracts/deployment_config.py
 
 import os
+import re
 from typing import Dict, Any, Optional
+
+
+ETH_ADDRESS_RE = re.compile(r"^0x[a-fA-F0-9]{40}$")
+PLACEHOLDER_CONTRACT_ADDRESSES = {
+    "0x0000000000000000000000000000000000000000",
+    "0x1234567890abcdef1234567890abcdef12345678",
+}
 
 
 # =========================
@@ -111,6 +119,16 @@ def validate_deployment_profile(profile: Dict[str, Any]) -> None:
     if not profile["contract_address"]:
         raise RuntimeError("Missing contract address")
 
+    contract_address = str(profile["contract_address"])
+    if not ETH_ADDRESS_RE.match(contract_address):
+        raise RuntimeError("Invalid contract address")
+
+    if contract_address.lower() in PLACEHOLDER_CONTRACT_ADDRESSES:
+        raise RuntimeError(
+            "AFRITECH_CHAIN_CONTRACT_ADDRESS must be a deployed ArchitectureAnchor "
+            "address on the selected network, not a placeholder"
+        )
+
     if not profile["chain_id"]:
         raise RuntimeError("Invalid chain ID")
 
@@ -136,6 +154,16 @@ def get_chain_config_snapshot() -> Dict[str, Any]:
         "enabled": profile["enabled"],
         "rpc_configured": bool(profile["rpc_url"]),
         "contract_configured": bool(profile["contract_address"]),
+        "contract_placeholder": str(profile.get("contract_address") or "").lower()
+        in PLACEHOLDER_CONTRACT_ADDRESSES,
+        "wallet_configured": bool(
+            os.getenv("AFRITECH_CHAIN_ADDRESS")
+            or os.getenv("AFRITECH_CHAIN_ADDRESS_CHECKSUM")
+        ),
+        "private_key_configured": bool(
+            os.getenv("AFRITECH_CHAIN_PRIVATE_KEY")
+            or os.getenv("AFRITECH_CHAIN_PRIVATE_KEY_PATH")
+        ),
         "rollout_stage": profile["rollout_stage"],
     }
 

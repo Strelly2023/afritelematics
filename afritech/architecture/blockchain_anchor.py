@@ -255,6 +255,7 @@ def publish_architecture_anchor_contract_with_profile(
     publication_id: str,
     proof_hash: str,
     profile_name: str = "sepolia",
+    require_live: bool = False,
 ) -> BlockchainAnchorPublication:
     """Publish an architecture proof via the ArchitectureAnchor smart contract.
 
@@ -266,7 +267,7 @@ def publish_architecture_anchor_contract_with_profile(
     from afritech.chain.anchor_publisher import publish_anchor
 
     profile = get_chain_profile(profile_name)
-    receipt = publish_anchor(proof_hash, profile_name=profile.key)
+    receipt = publish_anchor(proof_hash, profile_name=profile.key, require_live=require_live)
     payload = receipt.canonical_dict()
     tx_hash = str(payload.get("tx_hash") or f"fallback-{proof_hash[:16]}")
     explorer_url = payload.get("explorer_url") or ""
