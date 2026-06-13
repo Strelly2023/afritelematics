@@ -1,6 +1,22 @@
 """AfriPay GA Elite deterministic financial operating system core."""
 
 from afritech.afripay.api import AfriPayService
+from afritech.afripay.audit_sandbox import (
+    IndependentAuditSandbox,
+    IndependentAuditSandboxReport,
+    verify_audit_package,
+    verify_independent_audit_sandbox,
+)
+from afritech.afripay.external_packages import (
+    InvestorTechnicalDossier,
+    ProviderCertificationEvidence,
+    RegulatorAuditPackage,
+    build_investor_technical_dossier,
+    build_provider_certification_evidence,
+    build_regulator_audit_package,
+    export_package_artifacts,
+    export_provider_certification_artifacts,
+)
 from afritech.afripay.money import Money
 from afritech.afripay.orchestration import PaymentOrchestrator
 from afritech.afripay.protocol import (
@@ -20,25 +36,6 @@ from afritech.afripay.public_validation import (
     validate_public_proof_artifact,
     validate_public_proof_file,
     verify_signed_evidence,
-)
-from afritech.afripay.audit_sandbox import (
-    IndependentAuditSandbox,
-    IndependentAuditSandboxReport,
-    verify_independent_audit_sandbox,
-)
-from afritech.afripay.external_packages import (
-    InvestorTechnicalDossier,
-    RegulatorAuditPackage,
-    build_investor_technical_dossier,
-    build_regulator_audit_package,
-    export_package_artifacts,
-)
-from afritech.afripay.external_packages import (
-    InvestorTechnicalDossier,
-    RegulatorAuditPackage,
-    build_investor_technical_dossier,
-    build_regulator_audit_package,
-    export_package_artifacts,
 )
 from afritech.afripay.treasury import TreasuryEngine
 
@@ -62,10 +59,14 @@ __all__ = [
     "validate_public_proof_file",
     "IndependentAuditSandbox",
     "IndependentAuditSandboxReport",
+    "verify_audit_package",
     "verify_independent_audit_sandbox",
     "RegulatorAuditPackage",
     "InvestorTechnicalDossier",
+    "ProviderCertificationEvidence",
     "build_regulator_audit_package",
     "build_investor_technical_dossier",
+    "build_provider_certification_evidence",
     "export_package_artifacts",
+    "export_provider_certification_artifacts",
 ]

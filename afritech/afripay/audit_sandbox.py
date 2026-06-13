@@ -59,3 +59,7 @@ class IndependentAuditSandbox:
 
 def verify_independent_audit_sandbox(artifact_path: str | Path, *, public_key_pem: str | None = None) -> IndependentAuditSandboxReport:
     return IndependentAuditSandbox().verify(artifact_path, public_key_pem=public_key_pem)
+
+
+def verify_audit_package(artifact_path: str | Path, *, public_key_pem: str | None = None) -> IndependentAuditSandboxReport:
+    return verify_independent_audit_sandbox(artifact_path, public_key_pem=public_key_pem)

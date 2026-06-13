@@ -72,6 +72,42 @@ class InvestorTechnicalDossier:
         )
 
 
+@dataclass(frozen=True)
+class ProviderCertificationEvidence:
+    title: str
+    evidence: SignedProofEvidence
+    providers: tuple[dict[str, Any], ...]
+    package_hash: str
+    authority_boundary: str = "provider_certification_evidence_only"
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "authority_boundary": self.authority_boundary,
+            "evidence": self.evidence.canonical_dict(),
+            "package_hash": self.package_hash,
+            "providers": list(self.providers),
+            "schema": "afritech.afripay.provider_certification_evidence.v1",
+            "title": self.title,
+        }
+
+    def pdf_bytes(self) -> bytes:
+        lines = [
+            "Provider certification evidence for sandbox integration readiness.",
+            f"package_hash: {self.package_hash}",
+            f"artifact_hash: {self.evidence.artifact_hash}",
+            f"providers: {len(self.providers)}",
+            f"authority_boundary: {self.authority_boundary}",
+        ]
+        for provider in self.providers:
+            lines.append(f"provider: {provider.get('provider')}")
+            lines.append(f"sandbox_credentials: {provider.get('sandbox_credentials')}")
+            lines.append(f"callback_validation: {provider.get('callback_validation')}")
+            lines.append(f"reconciliation_validation: {provider.get('reconciliation_validation')}")
+            lines.append(f"failure_handling: {provider.get('failure_handling')}")
+            lines.append(f"duplicate_delivery_handling: {provider.get('duplicate_delivery_handling')}")
+        return _build_pdf_document(self.title, lines)
+
+
 def build_regulator_audit_package(evidence: SignedProofEvidence) -> RegulatorAuditPackage:
     legal_wording = (
         "This regulator audit package is evidence-only. It supports regulator "
@@ -94,7 +130,41 @@ def build_investor_technical_dossier(evidence: SignedProofEvidence) -> InvestorT
     return InvestorTechnicalDossier(title=title, summary=summary, evidence=evidence, dossier_hash=dossier_hash)
 
 
+def build_provider_certification_evidence(evidence: SignedProofEvidence) -> ProviderCertificationEvidence:
+    title = "AfriPay Provider Certification Evidence"
+    providers = (
+        {
+            "provider": "flutterwave_sandbox",
+            "sandbox_credentials": "configured_or_environment_bound",
+            "callback_validation": "webhook secret or callback signature enforcement",
+            "reconciliation_validation": "provider transaction mapped to ledger and route reports",
+            "failure_handling": "provider failure returns safe error and preserves state",
+            "duplicate_delivery_handling": "idempotent delivery and replay detection",
+        },
+        {
+            "provider": "mpesa_sandbox",
+            "sandbox_credentials": "configured_or_environment_bound",
+            "callback_validation": "callback URL and transaction correlation enforcement",
+            "reconciliation_validation": "mobile-money route matched to reconciliation report",
+            "failure_handling": "callback or token failure surfaces safely",
+            "duplicate_delivery_handling": "duplicate callback delivery rejected or deduplicated",
+        },
+    )
+    package_hash = _canonical_hash({"title": title, "evidence": evidence.canonical_dict(), "providers": list(providers)})
+    return ProviderCertificationEvidence(title=title, evidence=evidence, providers=providers, package_hash=package_hash)
+
+
 def export_package_artifacts(package: RegulatorAuditPackage | InvestorTechnicalDossier, output_dir: str | Path) -> dict[str, Path]:
+    target = Path(output_dir)
+    target.mkdir(parents=True, exist_ok=True)
+    json_path = target / f"{_slug(package.title)}.json"
+    pdf_path = target / f"{_slug(package.title)}.pdf"
+    json_path.write_text(json.dumps(package.canonical_dict(), indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    pdf_path.write_bytes(package.pdf_bytes())
+    return {"json": json_path, "pdf": pdf_path}
+
+
+def export_provider_certification_artifacts(package: ProviderCertificationEvidence, output_dir: str | Path) -> dict[str, Path]:
     target = Path(output_dir)
     target.mkdir(parents=True, exist_ok=True)
     json_path = target / f"{_slug(package.title)}.json"
