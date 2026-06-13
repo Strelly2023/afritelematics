@@ -1,4 +1,5 @@
 from django.urls import path
+from django.urls import include
 
 from afritech.api.afriride_driver_views import (
     active_rides,
@@ -102,4 +103,5 @@ urlpatterns = [
     path("orchestrations/<str:orchestration_id>/pause", orchestration_pause_view),
     path("orchestrations/<str:orchestration_id>/resume", orchestration_resume_view),
     path("orchestrations/<str:orchestration_id>/abort", orchestration_abort_view),
+    path("afripay/", include("afriride_system.django_app.apps.afripay.urls")),
 ]

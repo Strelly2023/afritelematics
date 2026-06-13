@@ -1,0 +1,27 @@
+groups:
+  - name: afripay.rules
+    rules:
+      - alert: AfriPayLowLiquidity
+        expr: afripay_alert{provider!="",currency!=""} == 1
+        for: 5m
+        labels:
+          severity: critical
+          subsystem: treasury
+        annotations:
+          summary: AfriPay liquidity pool is below watermark
+      - alert: AfriPayIdempotencyBacklog
+        expr: afripay_alert{bucket="idempotency"} > 0
+        for: 10m
+        labels:
+          severity: warning
+          subsystem: api
+        annotations:
+          summary: Expired idempotency keys are accumulating
+      - alert: AfriPayAuthFailures
+        expr: afripay_oauth_clients_total == 0
+        for: 30m
+        labels:
+          severity: warning
+          subsystem: auth
+        annotations:
+          summary: No OAuth clients are configured for AfriPay

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: afripay-postgres
+  namespace: afripay
+spec:
+  serviceName: afripay-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: afripay-postgres
+  template:
+    metadata:
+      labels:
+        app: afripay-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: afripay
+            - name: POSTGRES_USER
+              value: afripay
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: afripay-secrets
+                  key: POSTGRES_PASSWORD
+                  optional: true
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi

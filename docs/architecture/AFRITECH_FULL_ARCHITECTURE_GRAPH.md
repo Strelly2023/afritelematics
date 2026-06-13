@@ -13,7 +13,7 @@ Generated: `deterministic-repo-snapshot`
 
 - Startup module: `afritech.api.app`
 - Startup-safe closure size: `184`
-- Django-bound modules declared in repo: `228`
+- Django-bound modules declared in repo: `243`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `25`
 
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (228 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (243 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -80,7 +80,7 @@ flowchart TD
     Core --> Runtime["runtime (79 files)"]
 
     Ride --> Backend["backend (28 files)"]
-    Ride --> Django["django_app (84 files)"]
+    Ride --> Django["django_app (99 files)"]
     Ui --> Dashboard["src (2 files)"]
     Deploy --> Production["production (1 files)"]
 ```
@@ -98,7 +98,7 @@ flowchart TD
 - `semantic_engine`: `26` files
 - `runtime`: `79` files
 - `afriride_backend`: `28` files
-- `afriride_django`: `84` files
+- `afriride_django`: `99` files
 - `dashboard_ui`: `2` files
 - `deploy_production`: `1` files
 

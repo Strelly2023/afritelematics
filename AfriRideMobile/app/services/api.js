@@ -2,6 +2,7 @@ import { assertBackendConfirmed } from "../constants/authority";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "https://afriride-api.onrender.com";
+const API_TOKEN = process.env.EXPO_PUBLIC_AFRIRIDE_API_TOKEN || null;
 
 export async function apiRequest(endpoint, methodOrOptions = "GET", body = null, token = null) {
   const options =
@@ -13,7 +14,7 @@ export async function apiRequest(endpoint, methodOrOptions = "GET", body = null,
     method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+      ...((options.token || API_TOKEN) ? { Authorization: `Bearer ${options.token || API_TOKEN}` } : {}),
       ...(options.headers || {}),
     },
     body: options.body ? JSON.stringify(options.body) : undefined,

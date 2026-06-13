@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: afripay-config
+  namespace: afripay
+data:
+  AFRIPAY_LIVE_SETTLEMENT_ENABLED: "false"
+  AFRIPAY_PROVIDER_MODE: "sandbox"
+  AFRIRIDE_DJANGO_DEBUG: "0"
+  REDIS_URL: "redis://afripay-redis:6379/0"
+  CELERY_BROKER_URL: "redis://afripay-redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://afripay-redis:6379/1"

@@ -1,0 +1,1 @@
+"""AfriPay Django persistence app."""
