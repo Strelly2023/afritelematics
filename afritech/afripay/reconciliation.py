@@ -13,6 +13,12 @@ from afritech.chain.anchor_publisher import publish_anchor
 from afritech.chain.types import ChainReceipt
 from afritech.crypto.external_anchor import ExternalAnchorCommitment, build_external_anchor_commitment
 from afritech.crypto.merkle import compute_merkle_root
+from afritech.afripay.proofs import (
+    TransactionMerkleInclusionProof,
+    TransactionZKAttestation,
+    build_transaction_inclusion_proofs,
+    build_transaction_zk_attestations,
+)
 
 
 AUTHORITY_DISCLAIMER = "reconciliation is evidence-only and does not alter ledger truth"
@@ -197,6 +203,8 @@ class GlobalLedgerProof:
     verified_transaction_count: int
     transaction_reports: tuple[ReconciliationSnapshot, ...]
     transaction_report_hashes: tuple[str, ...]
+    transaction_inclusion_proofs: tuple[TransactionMerkleInclusionProof, ...]
+    transaction_zk_attestations: tuple[TransactionZKAttestation, ...]
     ledger_merkle_root: str
     provider_merkle_root: str
     event_merkle_root: str
@@ -214,13 +222,19 @@ class GlobalLedgerProof:
             return False
         if self.transaction_count <= 0 or self.verified_transaction_count != self.transaction_count:
             return False
+        if len(self.transaction_inclusion_proofs) != self.transaction_count:
+            return False
+        if len(self.transaction_zk_attestations) != self.transaction_count:
+            return False
         if len(self.audit_merkle_root) != 64 or len(self.global_proof_hash) != 64:
             return False
         if self.external_anchor_commitment is not None and len(self.external_anchor_commitment.commitment_hash) != 64:
             return False
         if self.chain_receipt is not None and len(self.chain_receipt.tx_hash) == 0:
             return False
-        return all(report.verified for report in self.transaction_reports)
+        return all(report.verified for report in self.transaction_reports) and all(
+            proof.verified for proof in self.transaction_inclusion_proofs
+        ) and all(attestation.verified for attestation in self.transaction_zk_attestations)
 
     def canonical_dict(self) -> dict[str, Any]:
         return {
@@ -236,9 +250,15 @@ class GlobalLedgerProof:
             "ledger_merkle_root": self.ledger_merkle_root,
             "mismatches": [mismatch.__dict__ for mismatch in self.mismatches],
             "provider_merkle_root": self.provider_merkle_root,
+            "transaction_inclusion_proofs": [
+                proof.canonical_dict() for proof in self.transaction_inclusion_proofs
+            ],
             "transaction_count": self.transaction_count,
             "transaction_report_hashes": list(self.transaction_report_hashes),
             "transaction_reports": [report.canonical_dict() for report in self.transaction_reports],
+            "transaction_zk_attestations": [
+                attestation.canonical_dict() for attestation in self.transaction_zk_attestations
+            ],
             "treasury_merkle_root": self.treasury_merkle_root,
             "verified": self.verified,
         }
@@ -285,6 +305,12 @@ class GlobalLedgerReconciliationEngine:
                 "transaction_report_hashes": list(transaction_report_hashes),
             }
         )
+        transaction_inclusion_proofs = build_transaction_inclusion_proofs(transaction_reports)
+        transaction_zk_attestations = build_transaction_zk_attestations(
+            transaction_inclusion_proofs,
+            audit_merkle_root=audit_merkle_root,
+            transaction_count=len(transactions),
+        )
 
         external_anchor_commitment = build_external_anchor_commitment(
             tenant_id="afripay",
@@ -315,6 +341,8 @@ class GlobalLedgerReconciliationEngine:
             global_proof_hash=global_proof_hash,
             external_anchor_commitment=external_anchor_commitment,
             chain_receipt=chain_receipt,
+            transaction_inclusion_proofs=transaction_inclusion_proofs,
+            transaction_zk_attestations=transaction_zk_attestations,
             mismatches=tuple(mismatches),
         )
 

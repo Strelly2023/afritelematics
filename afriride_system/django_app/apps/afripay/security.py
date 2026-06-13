@@ -194,5 +194,5 @@ def verify_oauth_client_credentials(client_id: str, client_secret: str, scope: s
     return client
 
 
-def send_auth_alert(event_type: str, details: Mapping[str, Any]) -> None:
-    send_integrity_alert(event_type, "HIGH", dict(details))
+def send_auth_alert(event_type: str, details: Mapping[str, Any]) -> dict[str, Any]:
+    return send_integrity_alert(event_type, "HIGH", dict(details))
