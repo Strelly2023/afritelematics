@@ -13,9 +13,8 @@ from afritech.afripay.reconciliation import (
     GlobalLedgerReconciliationEngine,
     validate_global_ledger_integrity,
 )
+from afritech.distributed.consensus.pbft import PBFTConsensusEngine
 from afritech.chain.types import ChainReceipt
-from afritech.distributed.consensus import ProofConsensusEngine
-from afritech.distributed.consensus.quorum import QuorumPolicy
 from afritech.distributed.proof import build_proof, hash_result
 from afritech.runtime.multiregion.proof import run_multiregion_proof
 from afritech.zk.groth16_prover import Groth16Prover
@@ -171,28 +170,53 @@ def test_multi_node_consensus_proves_same_exported_payload():
         global_proof_hash=export_response.data["global_proof_hash"],
     )
 
-    proofs = tuple(
+    proofs = (
         build_proof(
-            node_id=f"node-{index}",
+            node_id="node-0",
             result=payload,
-            signature=f"signature-{index}".encode("utf-8"),
+            signature=b"signature-0",
             metadata={
-                "region": f"region-{index % 3}",
-                "request_id": f"consensus-{index}",
+                "region": "region-0",
+                "request_id": "consensus-0",
+                "protocol_step": "pre_prepare",
             },
-        )
-        for index in range(5)
+        ),
+        *(
+            build_proof(
+                node_id=f"node-{index}",
+                result=payload,
+                signature=f"signature-{index}".encode("utf-8"),
+                metadata={
+                    "region": f"region-{index % 3}",
+                    "request_id": f"consensus-{index}",
+                    "protocol_step": "prepare",
+                },
+            )
+            for index in range(5)
+        ),
+        *(
+            build_proof(
+                node_id=f"node-{index}",
+                result=payload,
+                signature=f"signature-commit-{index}".encode("utf-8"),
+                metadata={
+                    "region": f"region-{index % 3}",
+                    "request_id": f"consensus-commit-{index}",
+                    "protocol_step": "commit",
+                },
+            )
+            for index in range(5)
+        ),
     )
 
-    consensus = ProofConsensusEngine(
-        quorum_policy=QuorumPolicy(mode="majority"),
-    ).decide(proofs, total_nodes=5)
+    consensus = PBFTConsensusEngine(validator_count=5, height=1, round=0).decide(proofs, total_nodes=5)
 
-    assert consensus.result == payload
-    assert consensus.result_hash == hash_result(payload)
-    assert consensus.votes == 5
+    assert consensus.proposal_hash == hash_result(payload)
+    assert consensus.verified is True
     assert consensus.quorum == 3
-    assert len(consensus.proofs) == 5
+    assert len(consensus.prepare_nodes) == 5
+    assert len(consensus.commit_nodes) == 5
+    assert len(consensus.report_hash()) == 64
 
 
 @pytest.mark.django_db

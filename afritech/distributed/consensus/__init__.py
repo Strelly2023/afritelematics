@@ -70,5 +70,6 @@ class ConsensusEngine:
 
 
 from afritech.distributed.consensus.consensus_engine import ProofConsensusEngine
+from afritech.distributed.consensus.pbft import PBFTConsensusCertificate, PBFTConsensusEngine
 
-__all__ = ["ConsensusEngine", "ProofConsensusEngine"]
+__all__ = ["ConsensusEngine", "ProofConsensusEngine", "PBFTConsensusEngine", "PBFTConsensusCertificate"]
