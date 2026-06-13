@@ -68,6 +68,7 @@ def create_payment_sync(data: dict[str, Any]) -> dict[str, Any]:
                 status=route["status"],
                 raw_response=route,
             )
+        _post_ledger_entry(models, tx)
         append_event("afripay.payment.completed", tx.reference, service_response)
     return service_response
 
@@ -121,6 +122,44 @@ def append_event(event_type: str, aggregate_id: str, payload: dict[str, Any]):
         aggregate_id=aggregate_id,
         payload=payload,
         hash_chain=hash_chain,
+    )
+
+
+def _post_ledger_entry(models, tx):
+    cash_account, _ = models.LedgerAccount.objects.get_or_create(
+        account_id=f"ledger.cash.{tx.currency.lower()}",
+        defaults={
+            "name": f"AfriPay settlement cash {tx.currency}",
+            "account_type": "asset",
+            "currency": tx.currency,
+        },
+    )
+    payable_account, _ = models.LedgerAccount.objects.get_or_create(
+        account_id=f"ledger.payable.{tx.currency.lower()}",
+        defaults={
+            "name": f"Merchant payable {tx.currency}",
+            "account_type": "liability",
+            "currency": tx.currency,
+        },
+    )
+    journal = models.JournalEntry.objects.create(
+        journal_id=f"journal.{tx.reference}",
+        reference=f"journal.{tx.reference}",
+        transaction=tx,
+    )
+    models.EntryLine.objects.create(
+        journal=journal,
+        account=cash_account,
+        debit=tx.amount,
+        credit=Decimal("0.00"),
+        currency=tx.currency,
+    )
+    models.EntryLine.objects.create(
+        journal=journal,
+        account=payable_account,
+        debit=Decimal("0.00"),
+        credit=tx.amount,
+        currency=tx.currency,
     )
 
 
