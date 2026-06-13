@@ -95,6 +95,7 @@ class SignedProofEvidence:
     artifact_hash: str
     signature: str
     signer_public_key_fingerprint: str
+    signer_public_key_pem: str
     signature_verified: bool
     authority_boundary: str = "signed_audit_evidence_only"
 
@@ -111,6 +112,7 @@ class SignedProofEvidence:
             "signature": self.signature,
             "signature_verified": self.signature_verified,
             "signer_public_key_fingerprint": self.signer_public_key_fingerprint,
+            "signer_public_key_pem": self.signer_public_key_pem,
             "verified": self.verified,
         }
 
@@ -177,13 +179,15 @@ def build_recursive_global_proof(
 def sign_recursive_proof_bundle(bundle: RecursiveProofBundle) -> SignedProofEvidence:
     artifact_hash = bundle.report_hash()
     signature = sign_data(artifact_hash)
-    signer_public_key_fingerprint = _canonical_hash({"public_key_pem": current_public_key_pem()})
+    signer_public_key_pem = current_public_key_pem()
+    signer_public_key_fingerprint = _canonical_hash({"public_key_pem": signer_public_key_pem})
     signature_verified = verify_signature(artifact_hash, signature)
     evidence = SignedProofEvidence(
         bundle=bundle,
         artifact_hash=artifact_hash,
         signature=signature,
         signer_public_key_fingerprint=signer_public_key_fingerprint,
+        signer_public_key_pem=signer_public_key_pem,
         signature_verified=signature_verified,
     )
     if not evidence.verified:
@@ -219,6 +223,7 @@ def render_audit_pdf(evidence: SignedProofEvidence) -> bytes:
         f"signature_verified: {evidence.signature_verified}",
         f"signature: {evidence.signature}",
         f"signer_fingerprint: {evidence.signer_public_key_fingerprint}",
+        f"signer_public_key_pem: {evidence.signer_public_key_pem[:32]}...",
         f"chain_receipt: {evidence.bundle.chain_receipt.canonical_dict() if evidence.bundle.chain_receipt else None}",
     ]
     return _build_pdf_document("AfriPay Audit Evidence", lines)

@@ -19,7 +19,6 @@ from afritech.afripay.money import Money
 from afritech.afripay.models import PaymentRoute as DomainPaymentRoute
 from afritech.afripay.proofs import build_transaction_inclusion_proofs, build_transaction_zk_attestations
 from afritech.afripay.protocol import (
-    anchor_and_verify_protocol_proof,
     build_recursive_global_proof,
     export_signed_proof_evidence,
     proof_artifact_download_payload,

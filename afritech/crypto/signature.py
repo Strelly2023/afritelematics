@@ -157,3 +157,22 @@ def verify_signature(data: str, signature: str) -> bool:
     except Exception:
         # ✅ fail-safe (never crash verifier)
         return False
+
+
+def verify_signature_with_public_key(data: str, signature: str, public_key_pem: str) -> bool:
+    """Verify a signature against an explicit PEM-encoded public key."""
+
+    if not data or not signature or not public_key_pem:
+        return False
+
+    try:
+        public_key = serialization.load_pem_public_key(public_key_pem.encode("utf-8"))
+        public_key.verify(
+            base64.b64decode(signature),
+            data.encode("utf-8"),
+            padding.PKCS1v15(),
+            hashes.SHA256(),
+        )
+        return True
+    except Exception:
+        return False
