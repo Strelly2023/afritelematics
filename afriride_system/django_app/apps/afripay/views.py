@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from base64 import b64decode
+from hashlib import sha256
+import json
 import os
 from typing import Any
 
@@ -14,8 +16,15 @@ from rest_framework.response import Response
 from afritech.afripay.exceptions import ProviderFailure
 from afritech.afripay.money import Money
 from afritech.afripay.models import PaymentRoute as DomainPaymentRoute
+from afritech.afripay.proofs import build_transaction_inclusion_proofs, build_transaction_zk_attestations
+from afritech.chain.anchor_publisher import publish_anchor
 from afritech.afripay.providers_sandbox import FlutterwaveSandboxProvider, MpesaSandboxProvider
 from afritech.afripay.tasks import enqueue_payment_processing, enqueue_webhook_processing
+from afritech.afripay.reconciliation import (
+    GlobalLedgerReconciliationEngine,
+    LedgerReconciliationEngine,
+    validate_global_ledger_integrity,
+)
 from afriride_system.django_app.apps.afripay.models import (
     APIKeyCredential,
     Escrow,
@@ -93,6 +102,12 @@ def _extract_client_credentials(request, data: dict[str, Any]) -> tuple[str | No
     client_id = data.get("client_id") or request.headers.get("X-Client-Id")
     client_secret = data.get("client_secret") or request.headers.get("X-Client-Secret")
     return (client_id or None, client_secret or None)
+
+
+def _canonical_hash(value: Any) -> str:
+    return sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    ).hexdigest()
 
 
 @api_view(["POST"])
@@ -436,3 +451,101 @@ def alerts_view(request) -> Response:
         return scope_error
     snapshot = build_snapshot()
     return Response({"alerts": list(snapshot.alerts)})
+
+
+@api_view(["GET"])
+def proof_export_view(request) -> Response:
+    scope_error = _require_scope_response(request, "proofs:read")
+    if scope_error is not None:
+        return scope_error
+
+    reference = request.query_params.get("reference")
+    anchor_network = (request.query_params.get("anchor_network") or "external_log").lower()
+
+    if reference:
+        report = LedgerReconciliationEngine().reconcile_transaction(reference)
+        inclusion_proofs = build_transaction_inclusion_proofs((report,))
+        zk_attestations = build_transaction_zk_attestations(
+            inclusion_proofs,
+            audit_merkle_root=report.report_hash(),
+            transaction_count=1,
+        )
+        payload = {
+            "scope": "transaction",
+            "reference": reference,
+            "report": report.canonical_dict(),
+            "transaction_report_hash": report.report_hash(),
+            "transaction_inclusion_proof": (
+                inclusion_proofs[0].canonical_dict() if inclusion_proofs else None
+            ),
+            "transaction_zk_attestation": (
+                zk_attestations[0].canonical_dict() if zk_attestations else None
+            ),
+        }
+        payload["proof_hash"] = _canonical_hash(payload)
+        return Response(payload)
+
+    if anchor_network == "mainnet":
+        report = GlobalLedgerReconciliationEngine(
+            anchor_mode="blockchain",
+            anchor_profile_name="mainnet",
+        ).reconcile_all()
+    elif anchor_network == "blockchain":
+        report = GlobalLedgerReconciliationEngine(anchor_mode="blockchain").reconcile_all()
+    else:
+        report = validate_global_ledger_integrity(anchor_mode="external_log")
+
+    payload = {
+        "scope": "global",
+        "anchor_network": anchor_network,
+        "report": report.canonical_dict(),
+        "global_proof_hash": report.global_proof_hash,
+        "audit_merkle_root": report.audit_merkle_root,
+        "ledger_merkle_root": report.ledger_merkle_root,
+        "provider_merkle_root": report.provider_merkle_root,
+        "event_merkle_root": report.event_merkle_root,
+        "treasury_merkle_root": report.treasury_merkle_root,
+        "chain_receipt": report.chain_receipt.canonical_dict() if report.chain_receipt is not None else None,
+        "external_anchor_commitment": (
+            report.external_anchor_commitment.canonical_dict()
+            if report.external_anchor_commitment is not None
+            else None
+        ),
+    }
+    payload["proof_hash"] = _canonical_hash(payload)
+    return Response(payload)
+
+
+@api_view(["POST"])
+def proof_anchor_view(request) -> Response:
+    scope_error = _require_scope_response(request, "proofs:write")
+    if scope_error is not None:
+        return scope_error
+
+    proof_hash = str(request.data.get("proof_hash") or "").strip()
+    if not proof_hash:
+        return Response({"detail": "proof_hash is required"}, status=400)
+
+    profile_name = str(request.data.get("profile_name") or "sepolia").strip().lower()
+    if profile_name not in {"sepolia", "mainnet"}:
+        return Response({"detail": "unsupported profile_name"}, status=400)
+
+    require_live = bool(request.data.get("require_live", profile_name == "mainnet"))
+    try:
+        receipt = publish_anchor(
+            proof_hash,
+            profile_name=profile_name,
+            require_live=require_live,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return Response({"detail": str(exc)}, status=503)
+
+    return Response(
+        {
+            "status": "anchored" if receipt.is_live() else "prepared",
+            "profile_name": profile_name,
+            "require_live": require_live,
+            "proof_hash": proof_hash,
+            "chain_receipt": receipt.canonical_dict(),
+        }
+    )

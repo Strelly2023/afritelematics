@@ -268,8 +268,9 @@ class GlobalLedgerProof:
 
 
 class GlobalLedgerReconciliationEngine:
-    def __init__(self, *, anchor_mode: str = "external_log") -> None:
+    def __init__(self, *, anchor_mode: str = "external_log", anchor_profile_name: str | None = None) -> None:
         self.anchor_mode = anchor_mode
+        self.anchor_profile_name = anchor_profile_name
         self._transaction_engine = LedgerReconciliationEngine()
 
     def reconcile_all(self) -> GlobalLedgerProof:
@@ -324,7 +325,12 @@ class GlobalLedgerReconciliationEngine:
 
         chain_receipt: ChainReceipt | None = None
         if self.anchor_mode == "blockchain":
-            chain_receipt = publish_anchor(global_proof_hash, profile_name="sepolia", require_live=False)
+            profile_name = self.anchor_profile_name or "sepolia"
+            chain_receipt = publish_anchor(
+                global_proof_hash,
+                profile_name=profile_name,
+                require_live=profile_name == "mainnet",
+            )
         elif self.anchor_mode not in {"external_log", "external"}:
             raise ValueError("unsupported global ledger anchor mode")
 

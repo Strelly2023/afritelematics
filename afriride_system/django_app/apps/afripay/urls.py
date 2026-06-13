@@ -25,4 +25,6 @@ urlpatterns = [
     path("metrics", views.metrics_json_view),
     path("metrics/prometheus", views.metrics_prometheus_view),
     path("alerts", views.alerts_view),
+    path("proofs/export", views.proof_export_view),
+    path("proofs/anchor", views.proof_anchor_view),
 ]
