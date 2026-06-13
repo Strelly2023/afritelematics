@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import HTMLResponse
 
 from afritech.architecture.integrity_proof import build_architecture_integrity_proof
 from afritech.partner_registry import PartnerRegistryStore
@@ -28,6 +29,64 @@ def build_public_verification_router(
             "authority_boundary": "public_lookup_is_registry_and_packet_read_only",
         }
 
+    @router.get("/public/verify/portal", response_class=HTMLResponse)
+    def public_verify_portal() -> str:
+        proof = build_architecture_integrity_proof().canonical_dict()
+        anchor_id = proof.get("verification_packet", {}).get("anchor_id", "unknown")
+        return f"""<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <title>AfriPay Public Verification Portal</title>
+    <style>
+      :root {{ color-scheme: light; }}
+      body {{ font-family: Inter, Arial, sans-serif; margin: 0; background: #f5f7fa; color: #122033; }}
+      main {{ max-width: 1080px; margin: 0 auto; padding: 32px 20px 56px; }}
+      header {{ padding: 24px 0 12px; }}
+      h1 {{ margin: 0 0 8px; font-size: 28px; }}
+      p {{ line-height: 1.5; }}
+      .grid {{ display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }}
+      .panel {{ background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }}
+      .label {{ font-size: 12px; letter-spacing: .02em; text-transform: uppercase; color: #5b7087; margin-bottom: 8px; }}
+      code {{ background: #eef3f7; padding: 2px 6px; border-radius: 4px; }}
+      a {{ color: #184e8b; text-decoration: none; }}
+      ul {{ margin: 8px 0 0 20px; }}
+      .status {{ display: inline-block; padding: 4px 10px; border-radius: 999px; background: #e9f6ec; color: #15653c; font-weight: 600; }}
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class='status'>Read-only public surface</div>
+        <h1>AfriPay Public Verification Portal</h1>
+        <p>Independent parties can verify exported evidence, chain anchors, and trust dashboards without operator credentials.</p>
+      </header>
+      <section class='grid'>
+        <div class='panel'>
+          <div class='label'>Proof exports</div>
+          <ul>
+            <li><a href='/public/architecture/proof'>Architecture proof</a></li>
+            <li><a href='/public/verify/{anchor_id}'>Public verification packet</a></li>
+            <li><a href='/public/trust/dashboard'>Public trust dashboard</a></li>
+          </ul>
+        </div>
+        <div class='panel'>
+          <div class='label'>Audit packages</div>
+          <ul>
+            <li><a href='/api/afripay/proofs/artifacts?download_format=json'>AfriPay proof bundle JSON</a></li>
+            <li><a href='/api/afripay/proofs/artifacts?download_format=pdf'>AfriPay proof bundle PDF</a></li>
+          </ul>
+        </div>
+        <div class='panel'>
+          <div class='label'>Evidence boundary</div>
+          <p>This portal is read-only. It does not mutate replay, governance, or settlement state.</p>
+          <p><code>{proof.get('authority_boundary')}</code></p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>"""
     @router.get("/public/registry")
     def public_registry() -> dict[str, Any]:
         proof = build_architecture_integrity_proof().canonical_dict()

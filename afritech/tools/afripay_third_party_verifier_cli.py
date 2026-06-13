@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from afritech.afripay.public_validation import validate_public_proof_file
+from afritech.afripay.public_validation import validate_public_proof_file, verify_signed_evidence
 from afritech.afripay.audit_sandbox import verify_independent_audit_sandbox
 
 
@@ -32,11 +32,13 @@ def main(argv: list[str] | None = None) -> int:
         public_key_pem = Path(args.public_key).read_text(encoding="utf-8")
 
     if args.sandbox:
-        report = verify_independent_audit_sandbox(args.artifact, public_key_pem=public_key_pem)
-        payload = report.canonical_dict()
+        sandbox_report = verify_independent_audit_sandbox(args.artifact, public_key_pem=public_key_pem)
+        payload = sandbox_report.canonical_dict()
     else:
-        report = validate_public_proof_file(args.artifact, public_key_pem=public_key_pem)
-        payload = report.canonical_dict()
+        payload = verify_signed_evidence(
+            Path(args.artifact).read_text(encoding="utf-8") if Path(args.artifact).exists() else args.artifact,
+            public_key_pem=public_key_pem,
+        )
 
     if args.write_report:
         Path(args.write_report).write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

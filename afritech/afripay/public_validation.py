@@ -106,3 +106,27 @@ def validate_public_proof_file(path: str | Path, *, public_key_pem: str | None =
 
 def _canonical_hash(value: Any) -> str:
     return sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
+
+
+def verify_signed_evidence(
+    artifact: str | bytes | Mapping[str, Any],
+    *,
+    public_key_pem: str | None = None,
+) -> dict[str, Any]:
+    if isinstance(artifact, bytes):
+        artifact = artifact.decode("utf-8")
+    if isinstance(artifact, str):
+        payload = json.loads(artifact)
+    elif isinstance(artifact, Mapping):
+        payload = dict(artifact)
+    else:
+        raise ValueError("artifact must be JSON text or mapping")
+
+    report = validate_public_proof_artifact(payload, public_key_pem=public_key_pem)
+    return {
+        "verified": report.verified,
+        "signature_valid": report.signature_verified,
+        "bundle_valid": report.structural_verified,
+        "report": report.canonical_dict(),
+        "report_hash": report.report_hash(),
+    }
