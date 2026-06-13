@@ -8,6 +8,7 @@ import json
 import os
 from typing import Any
 
+from django.http import HttpResponse
 from django.db import transaction as db_transaction
 from django.utils import timezone
 from rest_framework.decorators import api_view
@@ -17,6 +18,14 @@ from afritech.afripay.exceptions import ProviderFailure
 from afritech.afripay.money import Money
 from afritech.afripay.models import PaymentRoute as DomainPaymentRoute
 from afritech.afripay.proofs import build_transaction_inclusion_proofs, build_transaction_zk_attestations
+from afritech.afripay.protocol import (
+    anchor_and_verify_protocol_proof,
+    build_recursive_global_proof,
+    export_signed_proof_evidence,
+    proof_artifact_download_payload,
+    render_audit_pdf,
+    sign_recursive_proof_bundle,
+)
 from afritech.chain.anchor_publisher import publish_anchor
 from afritech.afripay.providers_sandbox import FlutterwaveSandboxProvider, MpesaSandboxProvider
 from afritech.afripay.tasks import enqueue_payment_processing, enqueue_webhook_processing
@@ -549,3 +558,74 @@ def proof_anchor_view(request) -> Response:
             "chain_receipt": receipt.canonical_dict(),
         }
     )
+
+
+@api_view(["GET"])
+def proof_artifacts_view(request):
+    scope_error = _require_scope_response(request, "proofs:read")
+    if scope_error is not None:
+        return scope_error
+
+    artifact_format = (
+        request.query_params.get("download_format")
+        or request.query_params.get("artifact_format")
+        or "json"
+    ).lower()
+    output_dir = request.query_params.get("output_dir")
+    reference = request.query_params.get("reference")
+
+    if reference:
+        report = LedgerReconciliationEngine().reconcile_transaction(reference)
+        transaction_proofs = build_transaction_inclusion_proofs((report,))
+        zk_attestations = build_transaction_zk_attestations(
+            transaction_proofs,
+            audit_merkle_root=report.report_hash(),
+            transaction_count=1,
+        )
+        payload = {
+            "scope": "transaction",
+            "reference": reference,
+            "report": report.canonical_dict(),
+            "transaction_report_hash": report.report_hash(),
+            "transaction_inclusion_proof": transaction_proofs[0].canonical_dict() if transaction_proofs else None,
+            "transaction_zk_attestation": zk_attestations[0].canonical_dict() if zk_attestations else None,
+        }
+        payload["proof_hash"] = _canonical_hash(payload)
+        response_payload = payload
+        if artifact_format == "pdf":
+            return _download_pdf_response(
+                render_audit_pdf(
+                    sign_recursive_proof_bundle(
+                        build_recursive_global_proof(
+                            validate_global_ledger_integrity(anchor_mode="external_log")
+                        )
+                    )
+                ),
+                filename="afripay_transaction_evidence.pdf",
+            )
+        return _download_json_response(response_payload, filename="afripay_transaction_evidence.json")
+
+    report = validate_global_ledger_integrity(anchor_mode="external_log")
+    bundle = build_recursive_global_proof(report)
+    signed = sign_recursive_proof_bundle(bundle)
+    payload = proof_artifact_download_payload(signed)
+    if output_dir:
+        export_signed_proof_evidence(signed, output_dir)
+    if artifact_format == "pdf":
+        return _download_pdf_response(render_audit_pdf(signed), filename="afripay_proof_bundle.pdf")
+    return _download_json_response(payload, filename="afripay_proof_bundle.json")
+
+
+def _download_json_response(payload: dict[str, Any], *, filename: str) -> HttpResponse:
+    response = HttpResponse(
+        json.dumps(payload, sort_keys=True, indent=2, default=str) + "\n",
+        content_type="application/json",
+    )
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
+
+
+def _download_pdf_response(pdf_bytes: bytes, *, filename: str) -> HttpResponse:
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response

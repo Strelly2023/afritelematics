@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Iterable
 
+from afritech.crypto.signature import current_public_key_pem, sign_data, verify_signature
 from afritech.afripay.reconciliation import GlobalLedgerProof
 from afritech.afripay.proofs import AfriPayTransactionZKProver
 from afritech.audit.merkle import MerkleTree
@@ -88,6 +89,35 @@ class ProtocolAnchorVerification:
         }
 
 
+@dataclass(frozen=True)
+class SignedProofEvidence:
+    bundle: RecursiveProofBundle
+    artifact_hash: str
+    signature: str
+    signer_public_key_fingerprint: str
+    signature_verified: bool
+    authority_boundary: str = "signed_audit_evidence_only"
+
+    @property
+    def verified(self) -> bool:
+        return self.bundle.verified and self.signature_verified and len(self.signature) > 0
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "artifact_hash": self.artifact_hash,
+            "authority_boundary": self.authority_boundary,
+            "bundle": self.bundle.canonical_dict(),
+            "schema": "afritech.afripay.signed_proof_evidence.v1",
+            "signature": self.signature,
+            "signature_verified": self.signature_verified,
+            "signer_public_key_fingerprint": self.signer_public_key_fingerprint,
+            "verified": self.verified,
+        }
+
+    def report_hash(self) -> str:
+        return _canonical_hash(self.canonical_dict())
+
+
 def build_recursive_global_proof(
     global_proof: GlobalLedgerProof,
     *,
@@ -142,6 +172,65 @@ def build_recursive_global_proof(
     if not bundle.verified:
         raise RuntimeError("recursive global proof failed")
     return bundle
+
+
+def sign_recursive_proof_bundle(bundle: RecursiveProofBundle) -> SignedProofEvidence:
+    artifact_hash = bundle.report_hash()
+    signature = sign_data(artifact_hash)
+    signer_public_key_fingerprint = _canonical_hash({"public_key_pem": current_public_key_pem()})
+    signature_verified = verify_signature(artifact_hash, signature)
+    evidence = SignedProofEvidence(
+        bundle=bundle,
+        artifact_hash=artifact_hash,
+        signature=signature,
+        signer_public_key_fingerprint=signer_public_key_fingerprint,
+        signature_verified=signature_verified,
+    )
+    if not evidence.verified:
+        raise RuntimeError("signed proof evidence failed")
+    return evidence
+
+
+def export_signed_proof_evidence(
+    evidence: SignedProofEvidence,
+    output_dir: str | Path,
+) -> dict[str, Path]:
+    target = Path(output_dir)
+    target.mkdir(parents=True, exist_ok=True)
+    json_path = target / "recursive_proof_bundle.json"
+    pdf_path = target / "recursive_proof_bundle.pdf"
+    json_path.write_text(
+        json.dumps(evidence.canonical_dict(), sort_keys=True, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+    pdf_path.write_bytes(render_audit_pdf(evidence))
+    return {"json": json_path, "pdf": pdf_path}
+
+
+def render_audit_pdf(evidence: SignedProofEvidence) -> bytes:
+    lines = [
+        "AfriPay Audit Evidence",
+        f"artifact_hash: {evidence.artifact_hash}",
+        f"bundle_hash: {evidence.bundle.report_hash()}",
+        f"global_proof_hash: {evidence.bundle.global_proof_hash}",
+        f"recursive_merkle_root: {evidence.bundle.recursive_merkle_root}",
+        f"backend: {evidence.bundle.backend}",
+        f"backend_verified: {evidence.bundle.backend_verified}",
+        f"signature_verified: {evidence.signature_verified}",
+        f"signature: {evidence.signature}",
+        f"signer_fingerprint: {evidence.signer_public_key_fingerprint}",
+        f"chain_receipt: {evidence.bundle.chain_receipt.canonical_dict() if evidence.bundle.chain_receipt else None}",
+    ]
+    return _build_pdf_document("AfriPay Audit Evidence", lines)
+
+
+def proof_artifact_download_payload(evidence: SignedProofEvidence) -> dict[str, Any]:
+    payload = evidence.canonical_dict()
+    payload["download"] = {
+        "json_filename": "recursive_proof_bundle.json",
+        "pdf_filename": "recursive_proof_bundle.pdf",
+    }
+    return payload
 
 
 def anchor_and_verify_protocol_proof(
@@ -237,3 +326,46 @@ def _canonical_hash(value: Any) -> str:
             default=str,
         ).encode("utf-8")
     ).hexdigest()
+
+
+def _build_pdf_document(title: str, lines: list[str]) -> bytes:
+    def _escape(text: str) -> str:
+        return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+    content_lines = [f"({ _escape(title) }) Tj", "T*"]
+    for line in lines:
+        content_lines.extend([f"({ _escape(line) }) Tj", "T*"])
+    content_stream = "BT /F1 12 Tf 72 760 Td " + " ".join(content_lines) + " ET"
+    content_bytes = content_stream.encode("utf-8")
+    objects: list[bytes] = []
+    objects.append(b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n")
+    objects.append(b"2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n")
+    objects.append(
+        b"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+        b"/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj\n"
+    )
+    objects.append(b"4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n")
+    objects.append(
+        b"5 0 obj << /Length "
+        + str(len(content_bytes)).encode("utf-8")
+        + b" >> stream\n"
+        + content_bytes
+        + b"\nendstream endobj\n"
+    )
+    pdf = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for obj in objects:
+        offsets.append(len(pdf))
+        pdf.extend(obj)
+    xref_pos = len(pdf)
+    pdf.extend(f"xref\n0 {len(objects)+1}\n".encode("utf-8"))
+    pdf.extend(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        pdf.extend(f"{offset:010d} 00000 n \n".encode("utf-8"))
+    pdf.extend(
+        (
+            "trailer << /Size "
+            f"{len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n"
+        ).encode("utf-8")
+    )
+    return bytes(pdf)

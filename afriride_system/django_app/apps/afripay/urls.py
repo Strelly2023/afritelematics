@@ -27,4 +27,5 @@ urlpatterns = [
     path("alerts", views.alerts_view),
     path("proofs/export", views.proof_export_view),
     path("proofs/anchor", views.proof_anchor_view),
+    path("proofs/artifacts", views.proof_artifacts_view),
 ]
