@@ -5,10 +5,11 @@ from __future__ import annotations
 from decimal import Decimal
 from hashlib import sha256
 import json
+import time
 from importlib import import_module
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, OperationalError, close_old_connections, transaction
 from django.db.models import F
 from django.utils import timezone
 from datetime import timedelta
@@ -22,24 +23,51 @@ class PersistentIdempotencyStore:
         ttl_seconds: int = 86400,
     ) -> tuple[Any, bool]:
         request_hash = _payload_hash(request_payload)
-        with transaction.atomic():
-            idempotency_model = _afripay_models().IdempotencyKey
-            existing = idempotency_model.objects.select_for_update().filter(key=key).first()
-            if existing is not None:
-                if existing.expires_at is not None and existing.expires_at < timezone.now():
-                    existing.delete()
-                else:
-                    if existing.request_hash != request_hash:
-                        raise ValueError("idempotency key reused with different request payload")
-                    return existing, False
-            expires_at = timezone.now() + timedelta(seconds=ttl_seconds)
-            item = idempotency_model.objects.create(
-                key=key,
-                request_hash=request_hash,
-                response={},
-                expires_at=expires_at,
-            )
-            return item, True
+        idempotency_model = _afripay_models().IdempotencyKey
+        for attempt in range(12):
+            try:
+                with transaction.atomic():
+                    existing = idempotency_model.objects.select_for_update().filter(key=key).first()
+                    if existing is not None:
+                        if existing.expires_at is not None and existing.expires_at < timezone.now():
+                            existing.delete()
+                        else:
+                            if existing.request_hash != request_hash:
+                                raise ValueError("idempotency key reused with different request payload")
+                            return existing, False
+                    expires_at = timezone.now() + timedelta(seconds=ttl_seconds)
+                    try:
+                        with transaction.atomic():
+                            item = idempotency_model.objects.create(
+                                key=key,
+                                request_hash=request_hash,
+                                response={},
+                                expires_at=expires_at,
+                            )
+                    except IntegrityError:
+                        existing = idempotency_model.objects.select_for_update().filter(key=key).first()
+                        if existing is None:
+                            raise
+                        if existing.expires_at is not None and existing.expires_at < timezone.now():
+                            existing.delete()
+                            with transaction.atomic():
+                                item = idempotency_model.objects.create(
+                                    key=key,
+                                    request_hash=request_hash,
+                                    response={},
+                                    expires_at=expires_at,
+                                )
+                            return item, True
+                        if existing.request_hash != request_hash:
+                            raise ValueError("idempotency key reused with different request payload")
+                        return existing, False
+                    return item, True
+            except OperationalError:
+                if attempt >= 11:
+                    raise
+                close_old_connections()
+                time.sleep(0.05 * (attempt + 1))
+        raise OperationalError("idempotency claim exhausted retries")
 
     def get_existing_response(self, key: str) -> dict[str, Any] | None:
         idempotency_model = _afripay_models().IdempotencyKey
@@ -66,6 +94,15 @@ class PersistentIdempotencyStore:
 
 class PersistentTreasuryStore:
     def reserve(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
+        return _with_retry(lambda: self._reserve(provider, currency, amount))
+
+    def settle(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
+        return _with_retry(lambda: self._settle(provider, currency, amount))
+
+    def release(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
+        return _with_retry(lambda: self._release(provider, currency, amount))
+
+    def _reserve(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
         with transaction.atomic():
             liquidity_model = _afripay_models().LiquidityPool
             pool = (
@@ -79,7 +116,7 @@ class PersistentTreasuryStore:
             pool.refresh_from_db()
             return pool
 
-    def settle(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
+    def _settle(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
         with transaction.atomic():
             liquidity_model = _afripay_models().LiquidityPool
             pool = (
@@ -94,7 +131,7 @@ class PersistentTreasuryStore:
             pool.refresh_from_db()
             return pool
 
-    def release(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
+    def _release(self, provider: str, currency: str, amount: Decimal) -> LiquidityPool:
         with transaction.atomic():
             liquidity_model = _afripay_models().LiquidityPool
             pool = (
@@ -113,6 +150,21 @@ def _payload_hash(payload: dict[str, Any]) -> str:
     return sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
     ).hexdigest()
+
+
+def _with_retry(operation, *, attempts: int = 12, base_delay: float = 0.05):
+    last_error: Exception | None = None
+    for attempt in range(attempts):
+        try:
+            return operation()
+        except (IntegrityError, OperationalError) as exc:
+            last_error = exc
+            if attempt + 1 >= attempts:
+                raise
+            close_old_connections()
+            time.sleep(base_delay * (attempt + 1))
+    if last_error is not None:
+        raise last_error
 
 
 def _afripay_models():

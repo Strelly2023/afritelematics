@@ -9,6 +9,11 @@ import json
 from importlib import import_module
 from typing import Any, Iterable
 
+from afritech.chain.anchor_publisher import publish_anchor
+from afritech.chain.types import ChainReceipt
+from afritech.crypto.external_anchor import ExternalAnchorCommitment, build_external_anchor_commitment
+from afritech.crypto.merkle import compute_merkle_root
+
 
 AUTHORITY_DISCLAIMER = "reconciliation is evidence-only and does not alter ledger truth"
 
@@ -184,6 +189,141 @@ class FinancialIntegrityError(RuntimeError):
         message = ", ".join(f"{m.code}:{m.detail}" for m in mismatches) or "financial integrity proof failed"
         super().__init__(message)
         self.mismatches = mismatches
+
+
+@dataclass(frozen=True)
+class GlobalLedgerProof:
+    transaction_count: int
+    verified_transaction_count: int
+    transaction_reports: tuple[ReconciliationSnapshot, ...]
+    transaction_report_hashes: tuple[str, ...]
+    ledger_merkle_root: str
+    provider_merkle_root: str
+    event_merkle_root: str
+    treasury_merkle_root: str
+    audit_merkle_root: str
+    global_proof_hash: str
+    external_anchor_commitment: ExternalAnchorCommitment | None
+    chain_receipt: ChainReceipt | None
+    mismatches: tuple[ReconciliationMismatch, ...]
+    authority_disclaimer: str = AUTHORITY_DISCLAIMER
+
+    @property
+    def verified(self) -> bool:
+        if self.mismatches:
+            return False
+        if self.transaction_count <= 0 or self.verified_transaction_count != self.transaction_count:
+            return False
+        if len(self.audit_merkle_root) != 64 or len(self.global_proof_hash) != 64:
+            return False
+        if self.external_anchor_commitment is not None and len(self.external_anchor_commitment.commitment_hash) != 64:
+            return False
+        if self.chain_receipt is not None and len(self.chain_receipt.tx_hash) == 0:
+            return False
+        return all(report.verified for report in self.transaction_reports)
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "authority_disclaimer": self.authority_disclaimer,
+            "audit_merkle_root": self.audit_merkle_root,
+            "chain_receipt": self.chain_receipt.canonical_dict() if self.chain_receipt is not None else None,
+            "external_anchor_commitment": (
+                self.external_anchor_commitment.canonical_dict()
+                if self.external_anchor_commitment is not None
+                else None
+            ),
+            "global_proof_hash": self.global_proof_hash,
+            "ledger_merkle_root": self.ledger_merkle_root,
+            "mismatches": [mismatch.__dict__ for mismatch in self.mismatches],
+            "provider_merkle_root": self.provider_merkle_root,
+            "transaction_count": self.transaction_count,
+            "transaction_report_hashes": list(self.transaction_report_hashes),
+            "transaction_reports": [report.canonical_dict() for report in self.transaction_reports],
+            "treasury_merkle_root": self.treasury_merkle_root,
+            "verified": self.verified,
+        }
+
+    def report_hash(self) -> str:
+        return _canonical_hash(self.canonical_dict())
+
+
+class GlobalLedgerReconciliationEngine:
+    def __init__(self, *, anchor_mode: str = "external_log") -> None:
+        self.anchor_mode = anchor_mode
+        self._transaction_engine = LedgerReconciliationEngine()
+
+    def reconcile_all(self) -> GlobalLedgerProof:
+        models = _afripay_models()
+        transactions = tuple(models.Transaction.objects.order_by("reference"))
+        transaction_reports = tuple(
+            self._transaction_engine.reconcile_transaction(transaction.reference) for transaction in transactions
+        )
+        mismatches: list[ReconciliationMismatch] = []
+        if not transactions:
+            mismatches.append(ReconciliationMismatch("missing_transactions", "no AfriPay transactions exist"))
+        if any(not report.verified for report in transaction_reports):
+            mismatches.append(
+                ReconciliationMismatch(
+                    "transaction_incomplete",
+                    "one or more transaction reconciliation reports are unverified",
+                )
+            )
+
+        transaction_report_hashes = tuple(report.report_hash() for report in transaction_reports)
+        ledger_merkle_root = compute_merkle_root([report.ledger_hash for report in transaction_reports])
+        provider_merkle_root = compute_merkle_root([report.provider_hash for report in transaction_reports])
+        event_merkle_root = compute_merkle_root([report.event_hash for report in transaction_reports])
+        treasury_merkle_root = compute_merkle_root([report.treasury_hash for report in transaction_reports])
+        audit_merkle_root = compute_merkle_root(list(transaction_report_hashes))
+        global_proof_hash = _canonical_hash(
+            {
+                "audit_merkle_root": audit_merkle_root,
+                "ledger_merkle_root": ledger_merkle_root,
+                "provider_merkle_root": provider_merkle_root,
+                "event_merkle_root": event_merkle_root,
+                "treasury_merkle_root": treasury_merkle_root,
+                "transaction_report_hashes": list(transaction_report_hashes),
+            }
+        )
+
+        external_anchor_commitment = build_external_anchor_commitment(
+            tenant_id="afripay",
+            region_id="global",
+            trace_hash=audit_merkle_root,
+            replay_hash=ledger_merkle_root,
+            receipt_hash=provider_merkle_root,
+            authority_hash=event_merkle_root,
+            execution_fingerprint=treasury_merkle_root,
+        )
+
+        chain_receipt: ChainReceipt | None = None
+        if self.anchor_mode == "blockchain":
+            chain_receipt = publish_anchor(global_proof_hash, profile_name="sepolia", require_live=False)
+        elif self.anchor_mode not in {"external_log", "external"}:
+            raise ValueError("unsupported global ledger anchor mode")
+
+        return GlobalLedgerProof(
+            transaction_count=len(transactions),
+            verified_transaction_count=sum(1 for report in transaction_reports if report.verified),
+            transaction_reports=transaction_reports,
+            transaction_report_hashes=transaction_report_hashes,
+            ledger_merkle_root=ledger_merkle_root,
+            provider_merkle_root=provider_merkle_root,
+            event_merkle_root=event_merkle_root,
+            treasury_merkle_root=treasury_merkle_root,
+            audit_merkle_root=audit_merkle_root,
+            global_proof_hash=global_proof_hash,
+            external_anchor_commitment=external_anchor_commitment,
+            chain_receipt=chain_receipt,
+            mismatches=tuple(mismatches),
+        )
+
+
+def validate_global_ledger_integrity(anchor_mode: str = "external_log") -> GlobalLedgerProof:
+    report = GlobalLedgerReconciliationEngine(anchor_mode=anchor_mode).reconcile_all()
+    if not report.verified:
+        raise FinancialIntegrityError(report.mismatches)
+    return report
 
 
 def _balanced(journal_entries) -> bool:

@@ -9,6 +9,7 @@ from importlib import import_module
 from typing import Any
 
 from django.db import transaction as db_transaction
+from django.db import IntegrityError
 
 from afritech.afripay.api import AfriPayService
 from afritech.afripay.events import canonical_hash
@@ -99,7 +100,7 @@ def ensure_pool(provider: str, currency: str):
 
 def append_event(event_type: str, aggregate_id: str, payload: dict[str, Any]):
     models = _afripay_models()
-    previous = models.EventRecord.objects.order_by("-id").first()
+    previous = models.EventRecord.objects.filter(aggregate_id=aggregate_id).order_by("-id").first()
     previous_hash = previous.hash_chain if previous is not None else "GENESIS"
     event_id = "evt." + canonical_hash({"event_type": event_type, "aggregate_id": aggregate_id, "payload": payload})[:24]
     hash_chain = sha256(
@@ -116,13 +117,20 @@ def append_event(event_type: str, aggregate_id: str, payload: dict[str, Any]):
             default=str,
         ).encode("utf-8")
     ).hexdigest()
-    return models.EventRecord.objects.create(
-        event_id=event_id,
-        event_type=event_type,
-        aggregate_id=aggregate_id,
-        payload=payload,
-        hash_chain=hash_chain,
-    )
+    try:
+        with db_transaction.atomic():
+            return models.EventRecord.objects.create(
+                event_id=event_id,
+                event_type=event_type,
+                aggregate_id=aggregate_id,
+                payload=payload,
+                hash_chain=hash_chain,
+            )
+    except IntegrityError:
+        existing = models.EventRecord.objects.filter(event_id=event_id).first()
+        if existing is None:
+            raise
+        return existing
 
 
 def _post_ledger_entry(models, tx):
