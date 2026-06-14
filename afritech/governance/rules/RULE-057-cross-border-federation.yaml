@@ -1,0 +1,28 @@
+id: RULE-057
+title: Cross-Border Federation Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Cross-border federation must be explicit, deterministic, and read-only.
+  - Federation must be replayable from the same inputs.
+  - Federation must not override proof, replay, dispatch, custody, settlement, trust, public evidence, regulator certification, or legal compliance authority.
+  - Federation outputs must be hashable and reference-only.
+  - Federation must not mutate external state.
+linked_invariants:
+  - IA-BORDER-001
+  - IA-BORDER-002
+  - IA-BORDER-003
+  - IA-BORDER-004
+  - IA-BORDER-005
+  - IA-BORDER-006
+forbidden:
+  - cross_border_federation_as_truth_authority
+  - cross_border_federation_overrides_replay
+  - cross_border_federation_overrides_proof
+  - cross_border_federation_overrides_settlement
+  - cross_border_federation_mutates_state
+ci:
+  - afritech/tests/mobility/test_cross_border_federation.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

@@ -1,0 +1,18 @@
+id: ADR-0040
+title: Real-Time Execution Engine
+status: accepted
+decision: >
+  Introduce a deterministic real-time execution surface that consumes verified
+  dispatch decisions and emits replayable execution records without introducing
+  authority leakage or mutating the governed mobility stack.
+context:
+  - Live operations require a deterministic executor bound to verified dispatch.
+  - Execution records must remain read-only projections of governed activity.
+  - Execution must not redefine truth, proof, or settlement authority.
+consequences:
+  - Execution records are deterministic and replayable.
+  - Execution does not alter dispatch, trust, proof, or settlement truth.
+rules:
+  - RULE-060-real-time-execution-engine.yaml
+bindings:
+  - BIND-038-real-time-execution-engine.yaml

@@ -26,3 +26,81 @@ adrs:
   - id: ADR-0022
     path: afritech/governance/adr/ADR-0022-runtime-boundary-governance-activation.yaml
     status: ACCEPTED
+  - id: ADR-0023
+    path: afritech/governance/adr/ADR-0023-afripay-ga-elite-core.yaml
+    status: ACCEPTED
+  - id: ADR-0024
+    path: afritech/governance/adr/ADR-0024-unified-mobility-participant-model.yaml
+    status: ACCEPTED
+  - id: ADR-0025
+    path: afritech/governance/adr/ADR-0025-trust-aware-dispatch-engine.yaml
+    status: ACCEPTED
+  - id: ADR-0026
+    path: afritech/governance/adr/ADR-0026-logistics-custody-chain.yaml
+    status: ACCEPTED
+  - id: ADR-0027
+    path: afritech/governance/adr/ADR-0027-settlement-boundary.yaml
+    status: ACCEPTED
+  - id: ADR-0028
+    path: afritech/governance/adr/ADR-0028-federated-mobility-trust-network.yaml
+    status: ACCEPTED
+  - id: ADR-0029
+    path: afritech/governance/adr/ADR-0029-federated-mobility-infrastructure.yaml
+    status: ACCEPTED
+  - id: ADR-0030
+    path: afritech/governance/adr/ADR-0030-mobility-market-governance.yaml
+    status: ACCEPTED
+  - id: ADR-0031
+    path: afritech/governance/adr/ADR-0031-autonomous-fleet-governance.yaml
+    status: ACCEPTED
+  - id: ADR-0032
+    path: afritech/governance/adr/ADR-0032-institutional-mobility-networks.yaml
+    status: ACCEPTED
+  - id: ADR-0033
+    path: afritech/governance/adr/ADR-0033-mobility-intelligence-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0034
+    path: afritech/governance/adr/ADR-0034-public-evidence-network.yaml
+    status: ACCEPTED
+  - id: ADR-0035
+    path: afritech/governance/adr/ADR-0035-regulator-certification-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0036
+    path: afritech/governance/adr/ADR-0036-legal-compliance-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0037
+    path: afritech/governance/adr/ADR-0037-cross-border-federation.yaml
+    status: ACCEPTED
+  - id: ADR-0038
+    path: afritech/governance/adr/ADR-0038-self-auditing-autonomous-network.yaml
+    status: ACCEPTED
+  - id: ADR-0039
+    path: afritech/governance/adr/ADR-0039-trust-aware-dispatch.yaml
+    status: ACCEPTED
+  - id: ADR-0040
+    path: afritech/governance/adr/ADR-0040-real-time-execution-engine.yaml
+    status: ACCEPTED
+  - id: ADR-0041
+    path: afritech/governance/adr/ADR-0041-pilot-deployment-architecture.yaml
+    status: ACCEPTED
+  - id: ADR-0042
+    path: afritech/governance/adr/ADR-0042-field-evidence-collection.yaml
+    status: ACCEPTED
+  - id: ADR-0043
+    path: afritech/governance/adr/ADR-0043-simulation-reality-reconciliation-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0044
+    path: afritech/governance/adr/ADR-0044-operator-decision-protocol.yaml
+    status: ACCEPTED
+  - id: ADR-0035
+    path: afritech/governance/adr/ADR-0035-regulator-certification-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0036
+    path: afritech/governance/adr/ADR-0036-legal-compliance-layer.yaml
+    status: ACCEPTED
+  - id: ADR-0037
+    path: afritech/governance/adr/ADR-0037-cross-border-federation.yaml
+    status: ACCEPTED
+  - id: ADR-0038
+    path: afritech/governance/adr/ADR-0038-self-auditing-autonomous-network.yaml
+    status: ACCEPTED

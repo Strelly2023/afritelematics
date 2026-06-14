@@ -1,0 +1,45 @@
+id: BIND-034
+description: >
+  Binds ADR-0036 and RULE-056 to the legal compliance implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-034-1
+    name: legal_compliance_module
+    target: afritech.mobility.legal_compliance_layer
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic compliance outputs
+      - emit replayable read-only compliance records
+      - export proof-ready compliance artifacts
+    linked_rules:
+      - RULE-056
+  - id: BIND-034-2
+    name: legal_compliance_invariants
+    target: afritech.mobility.legal_compliance_layer
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-COMPLIANCE-001 through IA-COMPLIANCE-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-056
+linked_rules:
+  - RULE-056
+linked_adr:
+  - ADR-0036
+linked_invariants:
+  - IA-COMPLIANCE-001
+  - IA-COMPLIANCE-002
+  - IA-COMPLIANCE-003
+  - IA-COMPLIANCE-004
+  - IA-COMPLIANCE-005
+  - IA-COMPLIANCE-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_legal_compliance_happy_path
+    - test_determinism
+    - test_replay_stability

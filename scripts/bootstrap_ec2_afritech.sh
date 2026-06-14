@@ -64,12 +64,15 @@ Next steps:
    sudo chmod 600 /run/secrets/afritech_private_key.pem
    sudo chmod 644 /run/secrets/afritech_public_key.pem
 
-6. Start the production stack:
+6. Start the pilot production stack:
    cd ${APP_DIR}
-   ./scripts/deploy_production_compose.sh --base-url https://<your-domain>
+   ./scripts/deploy_production_zero_downtime.sh --base-url http://<your-host>
 
 7. Verify the live service:
-   ./scripts/run_local_production_probe.sh https://<your-domain>
+   ./scripts/run_local_production_probe.sh http://<your-host>
+
+8. If you are ready for domain TLS cutover, follow:
+   docs/operations/AFRITECH_DOMAIN_TLS_CUTOVER.md
 
 EOF
 

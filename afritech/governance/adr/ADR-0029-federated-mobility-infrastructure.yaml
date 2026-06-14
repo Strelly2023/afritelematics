@@ -1,0 +1,19 @@
+id: ADR-0029
+title: Federated Mobility Infrastructure
+status: accepted
+decision: >
+  Introduce a governed federation layer that allows multiple independent
+  mobility networks, fleets, merchants, and institutions to cooperate under
+  shared evidence and trust constraints without centralizing authority.
+context:
+  - Local trust, dispatch, custody, and settlement already exist as governed layers.
+  - The system now needs bounded trust portability across network boundaries.
+  - Federation must remain evidence-backed and replayable.
+consequences:
+  - Participants can be admitted into federated trust domains.
+  - Trust transfer is bounded and explainable.
+  - Cross-network operations remain deterministic and auditable.
+rules:
+  - RULE-049-federated-mobility-infrastructure.yaml
+bindings:
+  - BIND-027-federated-mobility-infrastructure.yaml

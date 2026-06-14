@@ -1,0 +1,25 @@
+id: RULE-061
+title: Pilot Deployment Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Pilot deployment must be deterministic and replayable.
+  - Pilot deployment must reference the production spine.
+  - Pilot deployment must not mutate runtime truth or authority.
+  - Pilot deployment outputs must be hashable and reference-only.
+linked_invariants:
+  - IA-PILOT-001
+  - IA-PILOT-002
+  - IA-PILOT-003
+  - IA-PILOT-004
+  - IA-PILOT-005
+  - IA-PILOT-006
+forbidden:
+  - pilot_deployment_as_truth_authority
+  - pilot_deployment_overrides_runtime
+  - pilot_deployment_mutates_state
+ci:
+  - afritech/tests/mobility/test_pilot_deployment_architecture.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

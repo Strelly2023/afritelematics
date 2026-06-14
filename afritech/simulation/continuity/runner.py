@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import json
 import sys
-from typing import Iterable
+from typing import Iterable, Optional
 
 from afritech.simulation.continuity.models import ContinuityScenarioResult
 from afritech.simulation.continuity.scenarios import SCENARIOS
 
 
 def run_all(
-    selected: Iterable[str] | None = None,
+    selected: Optional[Iterable[str]] = None,
 ) -> tuple[ContinuityScenarioResult, ...]:
     scenario_ids = tuple(selected) if selected is not None else tuple(sorted(SCENARIOS))
     results = []

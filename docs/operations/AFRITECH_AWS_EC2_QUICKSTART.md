@@ -9,7 +9,7 @@ production deployment is already active.
 ## Preconditions
 
 - Ubuntu EC2 host reachable over SSH
-- DNS A record ready for the chosen domain
+- optional DNS A record for the later TLS cutover
 - repository available by `git clone` or file copy
 - production secrets prepared
 - AfriTech signing keypair available for host installation
@@ -43,7 +43,7 @@ The bootstrap script:
 - installs Docker and Compose v2
 - enables the Docker service
 - adds the current user to the `docker` group
-- opens `80/tcp` and `443/tcp`
+- opens `80/tcp`
 
 If the script adds the user to the Docker group, reconnect before continuing.
 
@@ -57,7 +57,6 @@ nano .env.production
 
 Replace every placeholder in `.env.production`, especially:
 
-- `AFRITECH_DOMAIN`
 - `AFRITECH_JWT_SECRET`
 - `AFRITECH_EVENT_INGESTION_SECRET`
 - `AFRIRIDE_JWT_SECRET`
@@ -91,26 +90,25 @@ This starts:
 
 - `afritech-api`
 - `afritech-dashboard`
-- `edge` (Caddy for HTTP/HTTPS routing)
+- `edge` (Caddy for HTTP routing)
 
-## Step 6. Validate DNS and HTTPS
+## Step 6. Validate HTTP reachability
 
-Ensure the chosen domain points to the EC2 public IP before expecting Caddy to
-obtain certificates.
+Ensure the host is reachable on port 80.
 
 Expected public routes:
 
-- `https://<domain>/`
-- `https://<domain>/health`
-- `https://<domain>/public/verify/health`
-- `https://<domain>/public/registry`
+- `http://<host>/`
+- `http://<host>/health`
+- `http://<host>/public/verify/health`
+- `http://<host>/public/registry`
 
 ## Step 7. Run the live production probe
 
 From the repo root:
 
 ```bash
-./scripts/run_local_production_probe.sh https://<domain>
+./scripts/run_local_production_probe.sh http://<host>
 ```
 
 This validates:
@@ -124,6 +122,8 @@ This validates:
 
 - control-plane routes remain authenticated even when the public verifier is live
 - the public verification surface is intentionally bounded to `/public/*`
+- TLS is intentionally disabled until the domain-based production cutover
+- the zero-downtime deploy script is the normal pilot deploy path
 - if Docker build context becomes too large, keep using the tightened
   `.dockerignore` already present in this repo
 - if build state on the host becomes unhealthy, inspect:

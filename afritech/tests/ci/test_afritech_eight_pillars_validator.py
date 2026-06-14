@@ -14,6 +14,32 @@ def test_eight_pillars_validator_reports_constitutional_and_ecosystem_summaries(
     assert data["pillar_count"] == 8
     assert data["constitutional_pillar_count"] == 4
     assert data["ecosystem_pillar_count"] == 4
+    assert data["authority_chain"] == (
+        "Constitution",
+        "Deterministic Truth",
+        "Replay",
+        "Proof",
+    )
+    assert data["doctrine"] == (
+        "Constitution defines authority.",
+        "Deterministic Truth defines truth.",
+        "Replay validates truth.",
+        "Proof demonstrates truth.",
+        "Execution performs actions.",
+        "Trust influences decisions.",
+        "Observability explains.",
+        "Intelligence advises.",
+        "Markets incentivize.",
+        "Federation connects.",
+        "Products consume governed capability.",
+    )
+    assert data["infrastructure_capabilities"] == (
+        "AfriTrust",
+        "AfriCloud",
+        "AfriAI",
+        "AfriPay",
+        "AfriSync",
+    )
     assert [pillar.pillar_id for pillar in report.constitutional_pillars] == [
         "DETERMINISTIC_TRUTH",
         "ORCHESTRATION",
@@ -35,6 +61,10 @@ def test_eight_pillars_format_summary_contains_all_pillars():
     summary = validator.format_summary(report)
 
     assert "AfriTech eight pillars validation PASSED" in summary
+    assert (
+        "authority_chain=Constitution -> Deterministic Truth -> Replay -> Proof"
+        in summary
+    )
     for expected in (
         "Deterministic Truth",
         "Orchestration",
@@ -58,5 +88,9 @@ def test_eight_pillars_validator_cli_passes_and_prints_summaries():
 
     assert result.returncode == 0, result.stdout + result.stderr
     assert "pillar_count=8 verified=True" in result.stdout
+    assert (
+        "authority_chain=Constitution -> Deterministic Truth -> Replay -> Proof"
+        in result.stdout
+    )
     assert "CONSTITUTIONAL: Deterministic Truth" in result.stdout
     assert "ECOSYSTEM: AFRIPower" in result.stdout

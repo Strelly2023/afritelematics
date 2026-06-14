@@ -1,0 +1,67 @@
+id: ADR-0042
+title: Field Evidence Collection Reality Interface
+status: accepted
+decision: >
+  Introduce Field Evidence Collection as the AfriTech reality interface. The
+  layer captures real-world operational events as deterministic, replayable,
+  hash-verifiable evidence bound to governed dispatch and operation context
+  without granting truth authority to the evidence surface.
+context:
+  - Live operations require a reality-bound evidence surface.
+  - Field evidence must bind to dispatch-selected participants and operation IDs.
+  - Evidence capture must remain read-only and reference-only.
+  - External observations may demonstrate reality but must not redefine constitutional truth.
+authority_model:
+  chain:
+    - Constitution
+    - Deterministic Truth
+    - Replay
+    - Proof
+  principle: >
+    Constitution defines authority. Deterministic Truth defines truth. Replay
+    validates truth. Proof demonstrates truth. Field evidence supplies
+    reality-bound inputs to this chain but does not become part of the authority
+    chain.
+reality_interface:
+  role: external_observation_ingress
+  authoritative: false
+  mutates_dispatch: false
+  mutates_replay: false
+  mutates_proof: false
+  mutates_settlement: false
+  required_bindings:
+    - dispatch_id
+    - operation_id
+    - selected_participant_id
+    - event_sequence_id
+    - evidence_hash
+    - captured_at
+trust_at_scale_controls:
+  - deterministic serialization
+  - stable hashing
+  - replay validation
+  - dispatch participant binding
+  - operation identity binding
+  - ordered event sequence validation
+  - read-only export
+  - invariant report generation
+  - pilot verification runbook execution
+forbidden:
+  - field_evidence_as_truth_authority
+  - field_evidence_overrides_replay
+  - field_evidence_overrides_dispatch
+  - field_evidence_overrides_settlement
+  - field_evidence_mutates_state
+consequences:
+  - Field evidence becomes replay-stable and hash-verifiable.
+  - External reality ingestion remains separated from truth authority.
+  - Pilot deployment can verify reality capture without weakening constitutional authority.
+verification:
+  runbook: docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md
+  architecture: docs/architecture/AFRIFIELD_EVIDENCE_COLLECTION.md
+  validator: afritech.ci.afritech_trusted_scale_infrastructure_validator
+  runtime_validator: afritech.ci.afritech_field_evidence_runtime_validator
+rules:
+  - RULE-062-field-evidence-collection.yaml
+bindings:
+  - BIND-040-field-evidence-collection.yaml

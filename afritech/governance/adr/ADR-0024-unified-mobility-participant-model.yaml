@@ -1,0 +1,23 @@
+id: ADR-0024
+title: Unified Mobility Participant Model
+status: accepted
+decision: >
+  Introduce a unified AfriID participant model that supports multiple mobility
+  roles per participant while keeping identity reference-only and external to
+  constitutional truth, replay authority, proof authority, and payment truth.
+context:
+  - Gen-3 mobility requires a single participant abstraction across ride,
+    delivery, merchant, fleet, and institutional workflows.
+  - Identity must support evidence links and trust scoring without becoming
+    an authority source.
+  - AfriRide and Gen-3 platform surfaces need deterministic identity continuity.
+consequences:
+  - Participants may hold multiple operational roles.
+  - Identity actions become replay-linked evidence.
+  - Downstream systems may use participant state, but they may not treat it as
+    proof, payment, or replay authority.
+  - AfriID remains isolated from constitutional truth.
+rules:
+  - RULE-044-unified-mobility-identity.yaml
+bindings:
+  - BIND-022-unified-mobility-identity.yaml

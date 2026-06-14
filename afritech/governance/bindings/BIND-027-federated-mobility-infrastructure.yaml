@@ -1,0 +1,46 @@
+id: BIND-027
+description: >
+  Binds ADR-0029 and RULE-049 to the federation implementation, its invariant
+  report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-027-1
+    name: federation_module
+    target: afritech.mobility.federation
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic federation state and trust projections
+      - emit replayable federation evidence
+      - export proof-ready federation artifacts
+    linked_rules:
+      - RULE-049
+  - id: BIND-027-2
+    name: federation_invariants
+    target: afritech.mobility.federation_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-FEDERATION-001 through IA-FEDERATION-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-049
+linked_rules:
+  - RULE-049
+linked_adr:
+  - ADR-0029
+linked_invariants:
+  - IA-FEDERATION-001
+  - IA-FEDERATION-002
+  - IA-FEDERATION-003
+  - IA-FEDERATION-004
+  - IA-FEDERATION-005
+  - IA-FEDERATION-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_federation_happy_path
+    - test_invalid_membership
+    - test_identity_uniqueness
+    - test_trust_transfer_bounded

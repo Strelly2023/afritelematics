@@ -1,0 +1,45 @@
+id: BIND-035
+description: >
+  Binds ADR-0037 and RULE-057 to the cross-border federation implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-035-1
+    name: cross_border_federation_module
+    target: afritech.mobility.cross_border_federation
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic cross-border outputs
+      - emit replayable read-only federation records
+      - export proof-ready federation artifacts
+    linked_rules:
+      - RULE-057
+  - id: BIND-035-2
+    name: cross_border_federation_invariants
+    target: afritech.mobility.cross_border_federation
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-BORDER-001 through IA-BORDER-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-057
+linked_rules:
+  - RULE-057
+linked_adr:
+  - ADR-0037
+linked_invariants:
+  - IA-BORDER-001
+  - IA-BORDER-002
+  - IA-BORDER-003
+  - IA-BORDER-004
+  - IA-BORDER-005
+  - IA-BORDER-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_federation_happy_path
+    - test_trust_transfer_bounded
+    - test_cross_border_trust_replay

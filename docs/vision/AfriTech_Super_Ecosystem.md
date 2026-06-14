@@ -32,6 +32,10 @@ Future domains may include:
 - AfriPay
 - AfriWork
 
+For the stacked Gen-3 platform view across AfriCloud, AfriID, AfriPay, and the mobility/delivery surfaces, see:
+
+- [AfriTech Gen-3 Platform Architecture](AfriTech_Gen3_Platform_Architecture.md)
+
 These names describe roadmap surfaces, not validated proof domains.
 
 ## AfriRide Interface Vision

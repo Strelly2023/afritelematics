@@ -168,8 +168,49 @@ PIPELINE: tuple[PipelineStep, ...] = (
         "afritech.guards.guard_runtime_boundary_governance",
         "STATIC",
     ),
+    module_step(
+        "guard_test_contract_enforcement",
+        "afritech.guards.guard_test_contract_enforcement",
+        "STATIC",
+    ),
+    module_step(
+        "continuous_assurance_proof_validator",
+        "afritech.ci.continuous_assurance_proof_validator",
+        "STATIC",
+    ),
     module_step("execution_integrity_validator", "afritech.ci.execution_integrity_validator", "STATIC"),
     module_step("proof_surface_validator", "afritech.ci.proof_surface_validator", "STATIC"),
+    module_step("afritech_eight_pillars_validator", "afritech.ci.afritech_eight_pillars_validator", "STATIC"),
+    module_step(
+        "afritech_trusted_scale_infrastructure_validator",
+        "afritech.ci.afritech_trusted_scale_infrastructure_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_field_evidence_runtime_validator",
+        "afritech.ci.afritech_field_evidence_runtime_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_pilot_dataset_simulation_validator",
+        "afritech.ci.afritech_pilot_dataset_simulation_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_reconciliation_validator",
+        "afritech.ci.afritech_reconciliation_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_operator_decision_protocol_validator",
+        "afritech.ci.afritech_operator_decision_protocol_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_live_pilot_execution_validator",
+        "afritech.ci.afritech_live_pilot_execution_validator",
+        "STATIC",
+    ),
     PipelineStep(
         name="four_gate_validator",
         phase="STATIC",

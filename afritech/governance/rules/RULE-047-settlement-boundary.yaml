@@ -1,0 +1,28 @@
+id: RULE-047
+title: Settlement Boundary Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Settlement must reference a dispatch hash and custody chain hash.
+  - Settlement must compute deterministic economic splits.
+  - Settlement must reject negative amounts and incomplete participant coverage.
+  - Settlement evidence must be explainable and replayable.
+  - Settlement must not become truth authority.
+linked_invariants:
+  - IA-SETTLEMENT-001
+  - IA-SETTLEMENT-002
+  - IA-SETTLEMENT-003
+  - IA-SETTLEMENT-004
+  - IA-SETTLEMENT-005
+  - IA-SETTLEMENT-006
+forbidden:
+  - settlement_as_truth_authority
+  - settlement_overrides_replay
+  - settlement_overrides_proof
+  - settlement_without_dispatch_hash
+  - settlement_without_chain_hash
+ci:
+  - afritech/tests/mobility/test_settlement_boundary.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

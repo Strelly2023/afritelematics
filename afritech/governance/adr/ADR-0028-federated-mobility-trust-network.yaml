@@ -1,0 +1,19 @@
+id: ADR-0028
+title: Federated Mobility Trust Network
+status: accepted
+decision: >
+  Introduce a deterministic, evidence-backed trust network that accumulates
+  mobility participant trust from verified operational outcomes and feeds that
+  trust into dispatch and federation without becoming truth authority.
+context:
+  - Identity, dispatch, custody, and settlement already form a governed operational lifecycle.
+  - The system now needs cross-operation memory and deterministic trust evolution.
+  - Trust must influence selection and federation without becoming an approval authority.
+consequences:
+  - Trust profiles are replayable and evidence-linked.
+  - Event order influences trust evolution in a deterministic way.
+  - Trust updates remain bounded and externally auditable.
+rules:
+  - RULE-048-federated-mobility-trust-network.yaml
+bindings:
+  - BIND-026-federated-mobility-trust-network.yaml

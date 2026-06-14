@@ -10,6 +10,7 @@ AUDIT_API_KEY = os.environ.get("AFRIRIDE_AUDIT_API_KEY", "local-audit-key-not-fo
 
 MIDDLEWARE = [
     "config.middleware.DevelopmentCorsMiddleware",
+    "afriride_system.django_app.apps.afripay.middleware.AfriPaySecurityMiddleware",
 ]
 
 TEMPLATES = [
@@ -31,6 +32,7 @@ INSTALLED_APPS = [
     # ✅ Your app
     "afritech",
     "blockchain",
+    "afriride_system.django_app.apps.afripay",
 ]
 
 STATIC_URL = "/static/"

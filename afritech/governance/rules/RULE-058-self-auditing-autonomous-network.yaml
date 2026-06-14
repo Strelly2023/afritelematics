@@ -1,0 +1,28 @@
+id: RULE-058
+title: Self-Auditing Autonomous Network Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Self-auditing must be explicit, deterministic, and read-only.
+  - Auditing must be replayable from the same inputs.
+  - Auditing must not override proof, replay, dispatch, custody, settlement, trust, public evidence, regulator certification, legal compliance, or cross-border federation authority.
+  - Audit outputs must be hashable and reference-only.
+  - Audit must not mutate external state.
+linked_invariants:
+  - IA-AUDIT-001
+  - IA-AUDIT-002
+  - IA-AUDIT-003
+  - IA-AUDIT-004
+  - IA-AUDIT-005
+  - IA-AUDIT-006
+forbidden:
+  - self_auditing_as_truth_authority
+  - self_auditing_overrides_replay
+  - self_auditing_overrides_proof
+  - self_auditing_overrides_settlement
+  - self_auditing_mutates_state
+ci:
+  - afritech/tests/mobility/test_self_auditing_network.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

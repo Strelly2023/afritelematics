@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable
 
 from afritech.ci import (
@@ -13,7 +14,56 @@ from afritech.ci import (
     afritech_constitutional_pillars_validator,
     afritpps_execution_validator,
 )
+#afritech/ci/afritech_eight_pillars_validator.py
 
+ROOT = Path(__file__).resolve().parents[2]
+OPERATING_MODEL_DOC = ROOT / "docs/architecture/AFRITECH_OPERATING_MODEL.md"
+
+AUTHORITY_CHAIN = (
+    "Constitution",
+    "Deterministic Truth",
+    "Replay",
+    "Proof",
+)
+
+CORE_DOCTRINE = (
+    "Constitution defines authority.",
+    "Deterministic Truth defines truth.",
+    "Replay validates truth.",
+    "Proof demonstrates truth.",
+    "Execution performs actions.",
+    "Trust influences decisions.",
+    "Observability explains.",
+    "Intelligence advises.",
+    "Markets incentivize.",
+    "Federation connects.",
+    "Products consume governed capability.",
+)
+
+INFRASTRUCTURE_CAPABILITIES = (
+    "AfriTrust",
+    "AfriCloud",
+    "AfriAI",
+    "AfriPay",
+    "AfriSync",
+)
+
+REQUIRED_OPERATING_MODEL_TEXT = (
+    "Status: CANONICAL ARCHITECTURE SUMMARY",
+    "Classification: CONSTITUTIONAL OPERATING MODEL",
+    "The Constitution defines authority for the system.",
+    "Truth is derived beneath the Constitution through Deterministic Truth, Replay,",
+    "The system uses a derived authority chain.",
+    "The authoritative mechanisms are not",
+    "equivalent roots.",
+    "Constitution defines authority.",
+    "Deterministic Truth defines truth.",
+    "Replay validates truth.",
+    "Proof demonstrates truth.",
+    "Infrastructure layers are not pillars.",
+    "Products are not pillars.",
+    "AFRIPower is non-authoritative.",
+)
 
 class AfriTechEightPillarsValidationError(RuntimeError):
     """Raised when any of the eight pillars fails validation."""
@@ -48,10 +98,19 @@ class EightPillarSummary:
 @dataclass(frozen=True)
 class AfriTechEightPillarsReport:
     pillars: tuple[EightPillarSummary, ...]
+    authority_chain: tuple[str, ...] = AUTHORITY_CHAIN
+    doctrine: tuple[str, ...] = CORE_DOCTRINE
+    infrastructure_capabilities: tuple[str, ...] = INFRASTRUCTURE_CAPABILITIES
 
     @property
     def verified(self) -> bool:
-        return len(self.pillars) == 8 and all(pillar.verified for pillar in self.pillars)
+        return (
+            len(self.pillars) == 8
+            and self.authority_chain == AUTHORITY_CHAIN
+            and self.doctrine == CORE_DOCTRINE
+            and self.infrastructure_capabilities == INFRASTRUCTURE_CAPABILITIES
+            and all(pillar.verified for pillar in self.pillars)
+        )
 
     @property
     def constitutional_pillars(self) -> tuple[EightPillarSummary, ...]:
@@ -69,6 +128,9 @@ class AfriTechEightPillarsReport:
             "pillar_count": len(self.pillars),
             "constitutional_pillar_count": len(self.constitutional_pillars),
             "ecosystem_pillar_count": len(self.ecosystem_pillars),
+            "authority_chain": self.authority_chain,
+            "doctrine": self.doctrine,
+            "infrastructure_capabilities": self.infrastructure_capabilities,
             "verified": self.verified,
             "pillars": [pillar.canonical_dict() for pillar in self.pillars],
         }
@@ -76,14 +138,14 @@ class AfriTechEightPillarsReport:
 
 CONSTITUTIONAL_SUMMARIES = {
     "DETERMINISTIC_TRUTH": {
-        "summary": "Deterministic Truth makes replay governance the source of canonical truth.",
-        "purpose": "Defines canonical truth through deterministic replay.",
+        "summary": "Deterministic Truth defines canonical truth under constitutional authority.",
+        "purpose": "Defines canonical truth as the first derived authority mechanism beneath the Constitution.",
         "question_answered": "What is true?",
         "outputs": (
-            "Replay Authority",
-            "Replay Integrity",
-            "Authoritative Decisions",
+            "Canonical Truth",
+            "Replay Decisions",
             "Replay Proof Reports",
+            "Authority Attestations",
         ),
     },
     "ORCHESTRATION": {
@@ -144,6 +206,7 @@ ECOSYSTEM_SUMMARIES = {
 
 
 def validate() -> AfriTechEightPillarsReport:
+    _validate_operating_model_doc()
     payload = afritech_constitution_v1_validator.load_constitution()
     afritech_constitution_v1_validator.validate()
     constitutional_report = afritech_constitutional_pillars_validator.validate()
@@ -157,6 +220,27 @@ def validate() -> AfriTechEightPillarsReport:
             "AfriTech eight-pillar report failed"
         )
     return report
+
+
+def _validate_operating_model_doc() -> None:
+    if not OPERATING_MODEL_DOC.exists():
+        raise AfriTechEightPillarsValidationError(
+            "missing AfriTech operating model doc: "
+            f"{OPERATING_MODEL_DOC.relative_to(ROOT)}"
+        )
+
+    text = OPERATING_MODEL_DOC.read_text(encoding="utf-8")
+    for needle in REQUIRED_OPERATING_MODEL_TEXT:
+        if needle not in text:
+            raise AfriTechEightPillarsValidationError(
+                f"operating model missing required doctrine: {needle}"
+            )
+
+    for capability in INFRASTRUCTURE_CAPABILITIES:
+        if capability not in text:
+            raise AfriTechEightPillarsValidationError(
+                f"operating model missing infrastructure capability: {capability}"
+            )
 
 
 def _constitutional_summaries(
@@ -234,6 +318,7 @@ def format_summary(report: AfriTechEightPillarsReport) -> str:
     lines = [
         "AfriTech eight pillars validation PASSED",
         f"pillar_count={len(report.pillars)} verified={report.verified}",
+        "authority_chain=" + " -> ".join(report.authority_chain),
     ]
     for pillar in report.pillars:
         lines.append(

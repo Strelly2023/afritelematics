@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import json
 import sys
-from typing import Iterable
+from typing import Iterable, Optional
 
 from afritech.simulation.adversarial.models import ScenarioResult
 from afritech.simulation.adversarial.scenarios import SCENARIOS
 
 
-def run_all(selected: Iterable[str] | None = None) -> tuple[ScenarioResult, ...]:
+def run_all(selected: Optional[Iterable[str]] = None) -> tuple[ScenarioResult, ...]:
     scenario_ids = tuple(selected) if selected is not None else tuple(sorted(SCENARIOS))
     results = []
 

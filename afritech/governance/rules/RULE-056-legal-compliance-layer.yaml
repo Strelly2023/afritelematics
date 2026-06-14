@@ -1,0 +1,28 @@
+id: RULE-056
+title: Legal Compliance Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Legal compliance must be explicit, deterministic, and read-only.
+  - Compliance must be replayable from the same inputs.
+  - Compliance must not override proof, replay, dispatch, custody, settlement, trust, public evidence, or regulator certification authority.
+  - Compliance outputs must be hashable and reference-only.
+  - Compliance must not mutate external state.
+linked_invariants:
+  - IA-COMPLIANCE-001
+  - IA-COMPLIANCE-002
+  - IA-COMPLIANCE-003
+  - IA-COMPLIANCE-004
+  - IA-COMPLIANCE-005
+  - IA-COMPLIANCE-006
+forbidden:
+  - legal_compliance_as_truth_authority
+  - legal_compliance_overrides_replay
+  - legal_compliance_overrides_proof
+  - legal_compliance_overrides_settlement
+  - legal_compliance_mutates_state
+ci:
+  - afritech/tests/mobility/test_legal_compliance_layer.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

@@ -1,0 +1,78 @@
+id: ADR-0044
+title: Operator Decision Protocol
+status: accepted
+decision: >
+  Introduce a deterministic operator decision protocol for pilot execution,
+  zero-downtime deployment, and domain TLS cutover. The protocol standardizes
+  go/no-go, continue, refine, stop, rollback, and escalate decisions using
+  governed evidence, while remaining non-authoritative and unable to alter
+  truth, replay, proof, dispatch, settlement, or reconciliation authority.
+context:
+  - Pilot execution now spans live reality ingestion, simulation reconciliation, and deployment cutover.
+  - Operators need a clear decision surface for controlled activation without creating a new source of authority.
+  - Deployment must support zero-downtime service updates and a clean domain-based TLS cutover.
+  - Decisions must be recorded, explainable, bounded, and replay-safe.
+authority_model:
+  chain:
+    - Constitution
+    - Deterministic Truth
+    - Replay
+    - Proof
+  principle: >
+    Constitution defines authority. Deterministic Truth defines truth. Replay
+    validates truth. Proof demonstrates truth. Operator decisions consume
+    governed evidence and do not change this chain.
+operator_decision_protocol:
+  role: decision_surface
+  authoritative: false
+  decision_modes:
+    - go
+    - continue
+    - refine
+    - stop
+    - rollback
+    - escalate
+  required_inputs:
+    - reconciliation_report
+    - pilot_dataset_validation_report
+    - field_evidence_validation_report
+    - deployment_health
+    - tls_cutover_state
+    - zero_downtime_deploy_result
+    - runbook_step_status
+    - stop_conditions
+  required_outputs:
+    - operator_decision_record
+    - decision_rationale
+    - execution_trace
+    - escalation_trace
+    - rollback_trace
+    - next_action
+  forbidden:
+    - operator_decision_as_truth_authority
+    - operator_decision_overrides_replay
+    - operator_decision_overrides_proof
+    - operator_decision_overrides_reconciliation
+    - operator_decision_overrides_dispatch
+    - operator_decision_overrides_settlement
+trust_at_scale_controls:
+  - deterministic decision record
+  - replay-safe evidence references
+  - bounded decision vocabulary
+  - explicit stop conditions
+  - operator-readable rationale
+  - zero-downtime deploy sequencing
+  - domain TLS cutover guardrails
+  - read-only decision export
+consequences:
+  - Operators can make controlled pilot decisions without inheriting authority.
+  - Deployment, cutover, and pilot execution share one governed decision vocabulary.
+  - Stop and rollback paths become explicit and auditable.
+verification:
+  runbook: docs/operations/AFRITECH_OPERATOR_DECISION_PROTOCOL.md
+  deployment: docs/operations/AFRITECH_DOMAIN_TLS_CUTOVER.md
+  validator: afritech.ci.afritech_operator_decision_protocol_validator
+rules:
+  - RULE-064-operator-decision-protocol.yaml
+bindings:
+  - BIND-042-operator-decision-protocol.yaml

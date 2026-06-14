@@ -1,0 +1,60 @@
+id: BIND-040
+description: >
+  Binds ADR-0042 and RULE-062 to the field evidence collection implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-040-1
+    name: field_evidence_module
+    target: afritech.mobility.field_evidence
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - capture deterministic field evidence events
+      - bind evidence to dispatch-selected operation context
+      - export proof-ready evidence artifacts
+    linked_rules:
+      - RULE-062
+  - id: BIND-040-2
+    name: field_evidence_invariants
+    target: afritech.mobility.field_evidence
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-FIELD-001 through IA-FIELD-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-062
+  - id: BIND-040-3
+    name: field_evidence_ingestion
+    target: afritech.mobility.field_evidence.ingest_field_evidence_signals
+    binding_type: FUNCTION
+    runtime_authoritative: false
+    responsibilities:
+      - ingest raw field evidence signals
+      - reject authority injection from external observations
+      - build collection, proof, and invariant report artifacts
+    linked_rules:
+      - RULE-062
+linked_rules:
+  - RULE-062
+linked_adr:
+  - ADR-0042
+linked_invariants:
+  - IA-FIELD-001
+  - IA-FIELD-002
+  - IA-FIELD-003
+  - IA-FIELD-004
+  - IA-FIELD-005
+  - IA-FIELD-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  validators:
+    - afritech.ci.afritech_field_evidence_runtime_validator
+  tests:
+    - test_first_real_world_signal_becomes_field_event_without_authority
+    - test_ingest_field_evidence_signals_builds_collection_proof_and_report
+    - test_field_evidence_happy_path
+    - test_field_event_must_match_dispatch_participant
+    - test_missing_event_sequence_detected

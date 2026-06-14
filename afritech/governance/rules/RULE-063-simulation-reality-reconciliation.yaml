@@ -1,0 +1,29 @@
+id: RULE-063
+title: Simulation Reality Reconciliation Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Simulation and reality must be compared through a deterministic reconciliation report.
+  - Reconciliation must remain read-only and reference-only.
+  - Reconciliation must not mutate truth, replay, proof, dispatch, settlement, or simulation.
+  - Divergence must be measurable, explainable, and bounded.
+linked_invariants:
+  - IA-RECON-001
+  - IA-RECON-002
+  - IA-RECON-003
+  - IA-RECON-004
+  - IA-RECON-005
+  - IA-RECON-006
+forbidden:
+  - simulation_as_truth_authority
+  - reality_as_truth_authority
+  - reconciliation_as_truth_authority
+  - reconciliation_overrides_dispatch
+  - reconciliation_overrides_proof
+  - reconciliation_mutates_state
+ci:
+  - afritech/ci/afritech_reconciliation_validator.py
+  - afritech/tests/mobility/test_reconciliation.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

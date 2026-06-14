@@ -1,0 +1,15 @@
+id: RULE-043
+title: AfriPay financial core boundary
+status: active
+scope: afritech/afripay
+rules:
+  - Ledger journals must balance per currency.
+  - Payment references must be idempotent.
+  - Provider callbacks must not define replay, ledger, or settlement truth.
+  - Deterministic adapters must not move live money.
+  - FX conversion must use a locked rate reference.
+  - Escrow release must be evidence-gated.
+  - Payout references must be unique.
+ci:
+  - afritech/tests/afripay/test_afripay_ga_elite_core.py
+  - afritech/tests/distributed/test_afripay_planned_surface.py

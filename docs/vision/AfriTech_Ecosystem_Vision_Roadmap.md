@@ -300,6 +300,12 @@ AfriRide remains:
 the primary bounded operational proof ecosystem
 ```
 
+### Gen-3 Platform Blueprint
+
+For a stacked platform view across AfriCloud, AfriID, AfriPay, and the mobility/delivery surfaces, see:
+
+- [AfriTech Gen-3 Platform Architecture](AfriTech_Gen3_Platform_Architecture.md)
+
 ## 7.4 Logistics Infrastructure - AfriConnect
 
 Purpose:

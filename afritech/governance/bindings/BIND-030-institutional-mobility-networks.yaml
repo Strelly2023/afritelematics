@@ -1,0 +1,47 @@
+id: BIND-030
+description: >
+  Binds ADR-0032 and RULE-052 to the institutional mobility implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-030-1
+    name: institutional_network_module
+    target: afritech.mobility.institutional_networks
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic institution governance summaries
+      - emit replayable institutional evidence
+      - export proof-ready institutional artifacts
+    linked_rules:
+      - RULE-052
+  - id: BIND-030-2
+    name: institutional_invariants
+    target: afritech.mobility.institutional_networks_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-INSTITUTION-001 through IA-INSTITUTION-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-052
+linked_rules:
+  - RULE-052
+linked_adr:
+  - ADR-0032
+linked_invariants:
+  - IA-INSTITUTION-001
+  - IA-INSTITUTION-002
+  - IA-INSTITUTION-003
+  - IA-INSTITUTION-004
+  - IA-INSTITUTION-005
+  - IA-INSTITUTION-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_institution_network_happy_path
+    - test_institution_policy_registration
+    - test_institution_governance_determinism
+    - test_institution_governance_replay_stability
+

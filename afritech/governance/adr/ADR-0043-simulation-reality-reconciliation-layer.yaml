@@ -1,0 +1,74 @@
+id: ADR-0043
+title: Simulation Reality Reconciliation Layer
+status: accepted
+decision: >
+  Introduce a deterministic reconciliation layer that compares pilot dataset
+  simulation outputs with live field evidence outputs and produces governed
+  divergence reports, calibration signals, and operational feedback without
+  granting truth authority to simulation, reality, or the reconciliation
+  surface itself.
+context:
+  - Pilot execution now produces both deterministic simulation artifacts and live field evidence artifacts.
+  - Operators need a governed way to compare expected simulation outcomes with observed reality outcomes.
+  - Reconciliation must stay read-only and reference-only to avoid mutating authority, replay, proof, or settlement.
+  - Divergence must be measurable, explainable, and bounded so the system can improve without drifting.
+authority_model:
+  chain:
+    - Constitution
+    - Deterministic Truth
+    - Replay
+    - Proof
+  principle: >
+    Constitution defines authority. Deterministic Truth defines truth. Replay
+    validates truth. Proof demonstrates truth. Simulation and reality are
+    compared under this chain, but neither can redefine it.
+reconciliation_layer:
+  role: simulation_vs_reality_comparison
+  authoritative: false
+  mutates_truth: false
+  mutates_replay: false
+  mutates_proof: false
+  mutates_dispatch: false
+  mutates_settlement: false
+  required_inputs:
+    - simulation_dataset_hash
+    - simulation_operation_hashes
+    - live_ingestion_hashes
+    - live_collection_hashes
+    - live_proof_hashes
+    - scenario_id
+    - operation_ids
+  required_outputs:
+    - reconciliation_report
+    - divergence_score
+    - calibrated_adjustment_notes
+    - stop_or_continue_recommendation
+    - operator_review_trace
+trust_at_scale_controls:
+  - deterministic comparison
+  - replay-safe alignment
+  - hash-stable divergence scoring
+  - bounded difference classification
+  - scenario-level feedback only
+  - operator-readable explanation
+  - read-only export
+  - no authority inheritance
+forbidden:
+  - simulation_as_truth_authority
+  - reality_as_truth_authority
+  - reconciliation_as_truth_authority
+  - reconciliation_overrides_dispatch
+  - reconciliation_overrides_proof
+  - reconciliation_mutates_state
+consequences:
+  - Simulation can be measured against live operation.
+  - Divergence can be reviewed, trended, and bounded.
+  - Operational calibration becomes possible without creating a new authority source.
+verification:
+  runbook: docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md
+  scenario: docs/operations/AFRITECH_FIRST_LIVE_DEPLOYMENT_SCENARIO.md
+  validator: afritech.ci.afritech_reconciliation_validator
+rules:
+  - RULE-063-simulation-reality-reconciliation.yaml
+bindings:
+  - BIND-041-simulation-reality-reconciliation.yaml

@@ -1,0 +1,46 @@
+id: BIND-031
+description: >
+  Binds ADR-0033 and RULE-053 to the mobility intelligence implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-031-1
+    name: intelligence_layer_module
+    target: afritech.mobility.intelligence_layer
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic mobility intelligence outputs
+      - emit replayable advisory evidence
+      - export proof-ready intelligence artifacts
+    linked_rules:
+      - RULE-053
+  - id: BIND-031-2
+    name: intelligence_layer_invariants
+    target: afritech.mobility.intelligence_layer_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-INTELLIGENCE-001 through IA-INTELLIGENCE-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-053
+linked_rules:
+  - RULE-053
+linked_adr:
+  - ADR-0033
+linked_invariants:
+  - IA-INTELLIGENCE-001
+  - IA-INTELLIGENCE-002
+  - IA-INTELLIGENCE-003
+  - IA-INTELLIGENCE-004
+  - IA-INTELLIGENCE-005
+  - IA-INTELLIGENCE-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_intelligence_happy_path
+    - test_intelligence_determinism
+    - test_intelligence_replay_stability
+

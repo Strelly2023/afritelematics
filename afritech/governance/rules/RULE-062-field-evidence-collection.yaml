@@ -1,0 +1,28 @@
+id: RULE-062
+title: Field Evidence Collection Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Field evidence must be deterministic and replayable.
+  - Field evidence must bind to the dispatch-selected participant and operation.
+  - Field evidence must not mutate truth, proof, settlement, or replay authority.
+  - Field evidence outputs must be hashable and reference-only.
+linked_invariants:
+  - IA-FIELD-001
+  - IA-FIELD-002
+  - IA-FIELD-003
+  - IA-FIELD-004
+  - IA-FIELD-005
+  - IA-FIELD-006
+forbidden:
+  - field_evidence_as_truth_authority
+  - field_evidence_overrides_replay
+  - field_evidence_overrides_dispatch
+  - field_evidence_overrides_settlement
+  - field_evidence_mutates_state
+ci:
+  - afritech/ci/afritech_field_evidence_runtime_validator.py
+  - afritech/tests/mobility/test_field_evidence.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

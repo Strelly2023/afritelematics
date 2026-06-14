@@ -1,0 +1,19 @@
+id: ADR-0023
+title: AfriPay GA Elite deterministic financial operating system core
+status: accepted
+decision: >
+  Implement AfriPay as a deterministic core covering wallet, ledger, routing,
+  FX, escrow, payouts, billing, compliance, intelligence hooks, and event outbox
+  while keeping live settlement forbidden by default.
+context:
+  - AfriPay previously existed as a planned financial surface.
+  - The ecosystem now requires a governed implementation core for payment flows.
+  - Provider callbacks and client payloads must not define ledger truth.
+consequences:
+  - AfriPay code may model and orchestrate financial workflows.
+  - Deterministic adapters remain non-live until compliance activation.
+  - CI must verify balancing, idempotency, authority rejection, and bounded scope.
+rules:
+  - RULE-043-afripay-financial-core.yaml
+guards:
+  - afritech/afripay/guards.py

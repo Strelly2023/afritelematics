@@ -1,0 +1,29 @@
+id: RULE-064
+title: Operator Decision Protocol Governance
+status: active
+scope: afritech/operations
+rules:
+  - Operator decisions must be based on governed evidence and a bounded decision vocabulary.
+  - Operator decisions must remain read-only with respect to truth, replay, proof, dispatch, settlement, and reconciliation.
+  - Zero-downtime deployment must update services sequentially and preserve health gates.
+  - Domain TLS cutover must use a domain-only Caddy configuration and not an IP-bound edge.
+linked_invariants:
+  - IA-ODP-001
+  - IA-ODP-002
+  - IA-ODP-003
+  - IA-ODP-004
+  - IA-ODP-005
+  - IA-ODP-006
+forbidden:
+  - operator_decision_as_truth_authority
+  - operator_decision_overrides_replay
+  - operator_decision_overrides_proof
+  - operator_decision_overrides_reconciliation
+  - operator_decision_overrides_dispatch
+  - operator_decision_overrides_settlement
+ci:
+  - afritech/ci/afritech_operator_decision_protocol_validator.py
+  - afritech/tests/ci/test_afritech_operator_decision_protocol_validator.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

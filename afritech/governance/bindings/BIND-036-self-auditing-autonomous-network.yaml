@@ -1,0 +1,45 @@
+id: BIND-036
+description: >
+  Binds ADR-0038 and RULE-058 to the self-auditing network implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-036-1
+    name: self_auditing_network_module
+    target: afritech.mobility.self_auditing_network
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic self-auditing outputs
+      - emit replayable read-only audit snapshots
+      - export proof-ready audit artifacts
+    linked_rules:
+      - RULE-058
+  - id: BIND-036-2
+    name: self_auditing_network_invariants
+    target: afritech.mobility.self_auditing_network
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-AUDIT-001 through IA-AUDIT-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-058
+linked_rules:
+  - RULE-058
+linked_adr:
+  - ADR-0038
+linked_invariants:
+  - IA-AUDIT-001
+  - IA-AUDIT-002
+  - IA-AUDIT-003
+  - IA-AUDIT-004
+  - IA-AUDIT-005
+  - IA-AUDIT-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_audit_happy_path
+    - test_determinism
+    - test_replay_stability

@@ -270,6 +270,100 @@ Output:
 isolated ecosystem expansion candidates
 ```
 
+## Generation 2 and Generation 3 Roadmap
+
+Status: [Exploratory]
+
+This roadmap extends the AfriRide product vision without changing AfriTech constitutional truth, replay authority, proof scope, or enforcement integrity.
+
+Generation 2 and Generation 3 are product architecture surfaces only. They are not claims of deployment, not claims of production readiness, and not claims of public authorization.
+
+Reference:
+
+- [AfriRide Generation 3 Mobility Operating System](../vision/AfriRide_Generation_3_Mobility_Operating_System.md)
+
+### Generation 2 - Mobility Operating System
+
+Objective:
+
+```text
+turn ride-hailing into a unified mobility operating system
+```
+
+Core product surfaces:
+
+- unified mobility identity
+- trust-aware dispatch
+- ride, taxi, courier, and freight workflows
+- food and medical transport workflows
+- fleet and partner onboarding
+- financial settlement integration through AfriPay
+- replayable operational evidence
+- governed support and dispute flows
+
+Design rules:
+
+- every operational action must remain replay-verifiable
+- mobility participants are broader than riders and drivers
+- dispatch may use evidence, reliability, and service constraints, but not hidden authority
+- AfriPay is a bounded financial partner surface, not a truth source
+- dashboards and AI helpers remain advisory unless separately governed
+
+Output:
+
+```text
+evidence-aware mobility operating system
+```
+
+### Generation 3 - Federated Mobility Infrastructure
+
+Objective:
+
+```text
+turn AfriRide into a federated mobility infrastructure layer
+```
+
+Core product surfaces:
+
+- multi-vertical mobility network
+- partner and fleet federation
+- cross-city and cross-region operational continuity
+- logistics convergence across people, parcels, food, medicine, and documents
+- regulated partner verification surfaces
+- operational trust network and certification views
+- public evidence and replay surfaces for pilots and partners
+- controlled autonomy for dispatch, compliance, and support workflows
+
+Design rules:
+
+- infrastructure must remain governed, not self-authorizing
+- partner participation is evidence-backed, not reputation-only
+- autonomy is advisory unless separately bounded
+- cross-region continuity must remain replay-safe
+- blockchain anchoring, when used, is evidence anchoring only
+
+Output:
+
+```text
+federated mobility infrastructure surface
+```
+
+### Generation Boundary Rule
+
+```text
+Generation 1 = verified mobility application
+Generation 2 = mobility operating system
+Generation 3 = federated mobility infrastructure
+```
+
+Each generation is additive only. None may redefine:
+
+- constitutional truth
+- replay authority
+- invariant contracts
+- proof validity
+- AfriTech enforcement boundaries
+
 ## Implementation Architecture View
 
 Potential product modules:

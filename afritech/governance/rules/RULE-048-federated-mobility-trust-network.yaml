@@ -1,0 +1,27 @@
+id: RULE-048
+title: Federated Mobility Trust Network Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Trust must derive only from verified operational evidence.
+  - Trust evolution must be deterministic and replayable.
+  - Trust must remain bounded and explainable.
+  - Trust may influence dispatch and federation, but it must not become authority.
+  - Event tampering or history mutation must alter trust state.
+linked_invariants:
+  - IA-TRUST-001
+  - IA-TRUST-002
+  - IA-TRUST-003
+  - IA-TRUST-004
+  - IA-TRUST-005
+  - IA-TRUST-006
+forbidden:
+  - trust_as_truth_authority
+  - trust_overrides_replay
+  - trust_overrides_proof
+  - trust_without_verified_history
+ci:
+  - afritech/tests/mobility/test_trust_network.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

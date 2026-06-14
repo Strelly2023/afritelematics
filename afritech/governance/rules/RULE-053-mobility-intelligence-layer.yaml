@@ -1,0 +1,29 @@
+id: RULE-053
+title: Mobility Intelligence Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Intelligence must be explicit, deterministic, and advisory only.
+  - Intelligence must be replayable from the same inputs.
+  - Intelligence must not override proof, replay, dispatch, or settlement authority.
+  - Intelligence outputs must be hashable and reference-only.
+  - Intelligence must not mutate external state.
+linked_invariants:
+  - IA-INTELLIGENCE-001
+  - IA-INTELLIGENCE-002
+  - IA-INTELLIGENCE-003
+  - IA-INTELLIGENCE-004
+  - IA-INTELLIGENCE-005
+  - IA-INTELLIGENCE-006
+forbidden:
+  - intelligence_as_truth_authority
+  - intelligence_overrides_replay
+  - intelligence_overrides_proof
+  - intelligence_overrides_settlement
+  - intelligence_mutates_state
+ci:
+  - afritech/tests/mobility/test_intelligence_layer.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+

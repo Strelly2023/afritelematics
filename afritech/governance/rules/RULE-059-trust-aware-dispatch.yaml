@@ -1,0 +1,26 @@
+id: RULE-059
+title: Trust-Aware Dispatch Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Dispatch must be deterministic and replayable.
+  - Trust influences ranking only.
+  - Dispatch must not mutate truth, proof, settlement, or execution state.
+  - Dispatch outputs must be hashable and reference-only.
+linked_invariants:
+  - IA-DISPATCH-001
+  - IA-DISPATCH-002
+  - IA-DISPATCH-003
+  - IA-DISPATCH-004
+  - IA-DISPATCH-005
+  - IA-DISPATCH-006
+forbidden:
+  - dispatch_as_truth_authority
+  - dispatch_overrides_replay
+  - dispatch_overrides_proof
+  - dispatch_mutates_state
+ci:
+  - afritech/tests/mobility/test_trust_dispatch.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

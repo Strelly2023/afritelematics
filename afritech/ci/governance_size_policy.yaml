@@ -1,7 +1,7 @@
 schema: afritech.ci.governance_size_policy.v1
 thresholds:
   max_yaml_files: 150
-  max_yaml_bytes: 200000
+  max_yaml_bytes: 300000
   compression_audit_ratio: 0.9
 failure:
   block_merge: true

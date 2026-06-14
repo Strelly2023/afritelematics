@@ -1,0 +1,47 @@
+id: BIND-029
+description: >
+  Binds ADR-0031 and RULE-051 to the autonomous fleet governance
+  implementation, invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-029-1
+    name: fleet_governance_module
+    target: afritech.mobility.fleet_governance
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic fleet governance summaries
+      - emit replayable fleet evidence
+      - export proof-ready fleet artifacts
+    linked_rules:
+      - RULE-051
+  - id: BIND-029-2
+    name: fleet_invariants
+    target: afritech.mobility.fleet_governance_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-FLEET-001 through IA-FLEET-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-051
+linked_rules:
+  - RULE-051
+linked_adr:
+  - ADR-0031
+linked_invariants:
+  - IA-FLEET-001
+  - IA-FLEET-002
+  - IA-FLEET-003
+  - IA-FLEET-004
+  - IA-FLEET-005
+  - IA-FLEET-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_fleet_governance_happy_path
+    - test_invalid_fleet_configuration_rejected
+    - test_fleet_governance_determinism
+    - test_fleet_governance_replay_stability
+

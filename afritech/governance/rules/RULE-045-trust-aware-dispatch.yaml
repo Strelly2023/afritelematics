@@ -1,0 +1,28 @@
+id: RULE-045
+title: Trust-Aware Dispatch Boundary
+status: active
+scope: afritech/mobility
+rules:
+  - Dispatch scoring must be deterministic.
+  - Dispatch selection must be explainable from evidence.
+  - Higher trust must not be hidden behind lower trust under equal conditions.
+  - Candidate omission must be detectable.
+  - Dispatch evidence must include stable hashes.
+  - Dispatch must not depend on external mutable state.
+linked_invariants:
+  - IA-DISPATCH-001
+  - IA-DISPATCH-002
+  - IA-DISPATCH-003
+  - IA-DISPATCH-004
+  - IA-DISPATCH-005
+  - IA-DISPATCH-006
+forbidden:
+  - randomness_in_core_dispatch
+  - dispatch_as_truth_authority
+  - dispatch_overrides_replay
+  - dispatch_overrides_proof
+ci:
+  - afritech/tests/mobility/test_trust_dispatch.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

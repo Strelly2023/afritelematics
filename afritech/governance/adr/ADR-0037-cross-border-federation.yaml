@@ -1,0 +1,19 @@
+id: ADR-0037
+title: Cross-Border Federation
+status: accepted
+decision: >
+  Introduce a read-only cross-border federation surface that consumes legal compliance
+  outputs and emits deterministic transition records without introducing authority
+  leakage or mutating the governed mobility stack.
+context:
+  - Mobility already has regulator certification, legal compliance, public evidence, intelligence, federation, market, fleet, institutional, dispatch, custody, and settlement governance.
+  - Cross-border operations require proof-backed read-only federation records.
+  - Cross-border federation must remain deterministic, replayable, and reference-only.
+consequences:
+  - Cross-border federation surfaces can observe proof-backed evidence.
+  - Cross-border federation does not alter system truth.
+  - Federation artifacts remain hash-stable and replayable.
+rules:
+  - RULE-057-cross-border-federation.yaml
+bindings:
+  - BIND-035-cross-border-federation.yaml

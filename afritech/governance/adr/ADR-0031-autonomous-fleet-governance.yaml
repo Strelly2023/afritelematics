@@ -1,0 +1,20 @@
+id: ADR-0031
+title: Autonomous Fleet Governance
+status: accepted
+decision: >
+  Introduce a governed fleet surface that treats fleets and vehicles as
+  first-class, evidence-backed participants with replayable maintenance
+  histories, bounded trust derivation, and proof-ready eligibility summaries.
+context:
+  - The mobility stack already governs identity, trust, dispatch, custody, settlement, federation, and market behavior.
+  - Fleet-level governance is needed for EV networks, robot delivery, autonomous mobility, and industrial logistics.
+  - Fleet authority must remain reference-only and may not override proof or custody semantics.
+consequences:
+  - Fleet trust becomes a deterministic derivative of operator and vehicle evidence.
+  - Vehicle eligibility can feed dispatch weighting without becoming selection authority.
+  - Maintenance, battery, safety, and route evidence become first-class audit inputs.
+rules:
+  - RULE-051-autonomous-fleet-governance.yaml
+bindings:
+  - BIND-029-autonomous-fleet-governance.yaml
+

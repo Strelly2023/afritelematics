@@ -1,0 +1,26 @@
+id: RULE-060
+title: Real-Time Execution Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Execution must be deterministic and replayable.
+  - Execution must consume verified dispatch decisions.
+  - Execution must not mutate truth, proof, settlement, or dispatch state.
+  - Execution outputs must be hashable and reference-only.
+linked_invariants:
+  - IA-EXECUTION-001
+  - IA-EXECUTION-002
+  - IA-EXECUTION-003
+  - IA-EXECUTION-004
+  - IA-EXECUTION-005
+  - IA-EXECUTION-006
+forbidden:
+  - execution_as_truth_authority
+  - execution_overrides_replay
+  - execution_overrides_proof
+  - execution_mutates_state
+ci:
+  - afritech/tests/mobility/test_real_time_execution_engine.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

@@ -1,0 +1,19 @@
+id: ADR-0038
+title: Self-Auditing Autonomous Network
+status: accepted
+decision: >
+  Introduce a read-only self-auditing surface that consumes prior proof hashes and emits
+  deterministic audit snapshots without introducing authority leakage or mutating the
+  governed mobility stack.
+context:
+  - Mobility already has regulator certification, legal compliance, cross-border federation, public evidence, intelligence, federation, market, fleet, institutional, dispatch, custody, and settlement governance.
+  - Autonomous auditing consumers require proof-backed read-only audit snapshots.
+  - Self-auditing must remain deterministic, replayable, and reference-only.
+consequences:
+  - Self-auditing surfaces can observe proof-backed evidence.
+  - Self-auditing does not alter system truth.
+  - Audit artifacts remain hash-stable and replayable.
+rules:
+  - RULE-058-self-auditing-autonomous-network.yaml
+bindings:
+  - BIND-036-self-auditing-autonomous-network.yaml

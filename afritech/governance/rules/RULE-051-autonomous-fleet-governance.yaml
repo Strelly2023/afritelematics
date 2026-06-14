@@ -1,0 +1,28 @@
+id: RULE-051
+title: Autonomous Fleet Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Fleet membership and operator binding must be explicit.
+  - Vehicle maintenance history must be traceable.
+  - Fleet trust must be derived from operator and vehicle evidence.
+  - Vehicle state must be replayable and hash-stable.
+  - Fleet governance must not become authority over proof.
+linked_invariants:
+  - IA-FLEET-001
+  - IA-FLEET-002
+  - IA-FLEET-003
+  - IA-FLEET-004
+  - IA-FLEET-005
+  - IA-FLEET-006
+forbidden:
+  - fleet_as_truth_authority
+  - fleet_overrides_replay
+  - fleet_overrides_proof
+  - fleet_without_maintenance_history
+ci:
+  - afritech/tests/mobility/test_fleet_governance.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+

@@ -1,0 +1,46 @@
+id: BIND-024
+description: >
+  Binds ADR-0026 and RULE-046 to the deterministic logistics custody chain
+  implementation, its invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-024-1
+    name: logistics_custody_chain_module
+    target: afritech.mobility.logistics_custody_chain
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - record explicit custody steps
+      - compute deterministic chain hashes
+      - export proof-ready custody artifacts
+    linked_rules:
+      - RULE-046
+  - id: BIND-024-2
+    name: logistics_custody_invariants
+    target: afritech.mobility.logistics_custody_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-CUSTODY-001 through IA-CUSTODY-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-046
+linked_rules:
+  - RULE-046
+linked_adr:
+  - ADR-0026
+linked_invariants:
+  - IA-CUSTODY-001
+  - IA-CUSTODY-002
+  - IA-CUSTODY-003
+  - IA-CUSTODY-004
+  - IA-CUSTODY-005
+  - IA-CUSTODY-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_custody_chain_happy_path
+    - test_custody_chain_invalid_input
+    - test_custody_chain_determinism
+    - test_custody_chain_replay_stability

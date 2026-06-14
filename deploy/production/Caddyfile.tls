@@ -1,0 +1,17 @@
+{$AFRITECH_DOMAIN} {
+  encode gzip zstd
+
+  @public_verify path /public/*
+  handle @public_verify {
+    reverse_proxy afritech-api:8000
+  }
+
+  @api path /health /auth/* /v1/* /ws/*
+  handle @api {
+    reverse_proxy afritech-api:8000
+  }
+
+  handle {
+    reverse_proxy afritech-dashboard:4173
+  }
+}

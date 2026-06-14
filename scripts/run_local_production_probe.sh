@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_URL="${1:-https://localhost}"
+BASE_URL="${1:-http://127.0.0.1}"
 
 echo "Production probe target: $BASE_URL"
 echo

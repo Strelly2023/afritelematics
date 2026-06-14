@@ -1,0 +1,46 @@
+id: BIND-025
+description: >
+  Binds ADR-0027 and RULE-047 to the deterministic settlement boundary
+  implementation, its invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-025-1
+    name: settlement_boundary_module
+    target: afritech.mobility.settlement_boundary
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic settlement records
+      - emit replayable settlement evidence
+      - export proof-ready settlement artifacts
+    linked_rules:
+      - RULE-047
+  - id: BIND-025-2
+    name: settlement_invariants
+    target: afritech.mobility.settlement_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-SETTLEMENT-001 through IA-SETTLEMENT-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-047
+linked_rules:
+  - RULE-047
+linked_adr:
+  - ADR-0027
+linked_invariants:
+  - IA-SETTLEMENT-001
+  - IA-SETTLEMENT-002
+  - IA-SETTLEMENT-003
+  - IA-SETTLEMENT-004
+  - IA-SETTLEMENT-005
+  - IA-SETTLEMENT-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_settlement_happy_path
+    - test_invalid_input
+    - test_determinism
+    - test_replay_stability

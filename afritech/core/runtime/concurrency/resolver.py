@@ -3,11 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from typing import Mapping, Sequence, Union
 
 
-JSONScalar = str | int | float | bool | None
-JSONValue = JSONScalar | Sequence["JSONValue"] | Mapping[str, "JSONValue"]
+JSONScalar = Union[str, int, float, bool, None]
+JSONValue = Union[JSONScalar, Sequence["JSONValue"], Mapping[str, "JSONValue"]]
 
 
 @dataclass(frozen=True)

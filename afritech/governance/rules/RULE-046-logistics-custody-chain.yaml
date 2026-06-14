@@ -1,0 +1,27 @@
+id: RULE-046
+title: Logistics Custody Boundary
+status: active
+scope: afritech/mobility
+rules:
+  - Every custody step must declare exactly one receiving owner.
+  - Every handoff must be explicit and hash-linked.
+  - Custody steps must be ordered deterministically.
+  - Missing handoffs must fail validation.
+  - Duplicate step identifiers must fail validation.
+  - Custody evidence must not infer truth authority.
+linked_invariants:
+  - IA-CUSTODY-001
+  - IA-CUSTODY-002
+  - IA-CUSTODY-003
+  - IA-CUSTODY-004
+  - IA-CUSTODY-005
+  - IA-CUSTODY-006
+forbidden:
+  - implicit_custody_transitions
+  - skipped_handoffs
+  - custody_as_truth_authority
+ci:
+  - afritech/tests/mobility/test_logistics_custody_chain.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

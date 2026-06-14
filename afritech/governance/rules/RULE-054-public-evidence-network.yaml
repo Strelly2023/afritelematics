@@ -1,0 +1,29 @@
+id: RULE-054
+title: Public Evidence Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Public evidence must be explicit, deterministic, and read-only.
+  - Public evidence must be replayable from the same inputs.
+  - Public evidence must not override proof, replay, dispatch, custody, settlement, or trust authority.
+  - Public evidence outputs must be hashable and reference-only.
+  - Public evidence must not mutate external state.
+linked_invariants:
+  - IA-PUBLIC-001
+  - IA-PUBLIC-002
+  - IA-PUBLIC-003
+  - IA-PUBLIC-004
+  - IA-PUBLIC-005
+  - IA-PUBLIC-006
+forbidden:
+  - public_evidence_as_truth_authority
+  - public_evidence_overrides_replay
+  - public_evidence_overrides_proof
+  - public_evidence_overrides_settlement
+  - public_evidence_mutates_state
+ci:
+  - afritech/tests/mobility/test_public_evidence_api.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+

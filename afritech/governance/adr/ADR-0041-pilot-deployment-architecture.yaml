@@ -1,0 +1,18 @@
+id: ADR-0041
+title: Pilot Deployment Architecture
+status: accepted
+decision: >
+  Introduce a deterministic pilot deployment manifest that references the
+  production spine and the governed execution surface without introducing
+  authority leakage or mutating deployment truth.
+context:
+  - A controlled pilot requires a governed deployment manifest.
+  - The deployment manifest must reference the production spine and live execution.
+  - Deployment must not redefine backend, mobile, dashboard, or runtime authority.
+consequences:
+  - Pilot deployment is deterministic and replayable.
+  - Pilot deployment remains a reference-only surface.
+rules:
+  - RULE-061-pilot-deployment-architecture.yaml
+bindings:
+  - BIND-039-pilot-deployment-architecture.yaml

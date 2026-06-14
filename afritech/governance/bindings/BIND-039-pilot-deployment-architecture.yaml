@@ -1,0 +1,45 @@
+id: BIND-039
+description: >
+  Binds ADR-0041 and RULE-061 to the pilot deployment implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-039-1
+    name: pilot_deployment_module
+    target: afritech.mobility.pilot_deployment_architecture
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic pilot deployment outputs
+      - emit replayable read-only deployment plans
+      - export proof-ready deployment artifacts
+    linked_rules:
+      - RULE-061
+  - id: BIND-039-2
+    name: pilot_deployment_invariants
+    target: afritech.mobility.pilot_deployment_architecture
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-PILOT-001 through IA-PILOT-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-061
+linked_rules:
+  - RULE-061
+linked_adr:
+  - ADR-0041
+linked_invariants:
+  - IA-PILOT-001
+  - IA-PILOT-002
+  - IA-PILOT-003
+  - IA-PILOT-004
+  - IA-PILOT-005
+  - IA-PILOT-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_pilot_happy_path
+    - test_determinism
+    - test_replay_stability

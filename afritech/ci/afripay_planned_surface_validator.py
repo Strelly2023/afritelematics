@@ -4,69 +4,53 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DOC = "docs/operations/AFRIPAY_PLANNED_FINANCIAL_SURFACE.md"
+DOC = "docs/operations/AFRIPAY_GA_ELITE_IMPLEMENTATION.md"
 
 REQUIRED_TEXT = (
-    "AfriPay is the planned financial services and digital payments ecosystem domain",
-    "replay-governed financial continuity layer",
-    "It begins only when real transaction evidence exists.",
-    "mobile money",
-    "wallets",
-    "merchant payments",
-    "cross-border payments",
-    "lending",
-    "savings",
-    "insurance",
-    "Execution precedes payment.",
-    "AfriRide ride payments",
-    "AfriConnect delivery payments",
-    "AfriEats food order payments",
-    "AfriPay = Conceptual Financial Surface",
-    "Execution: NONE",
-    "Evidence: NONE",
-    "Activation: FORBIDDEN",
-    "real paid transactions exist",
-    "payments are exchanged between parties",
-    "financial records are captured",
-    "receipts are recorded",
-    "This format is not active yet.",
-    "Transaction ID:",
-    "Date + Time:",
-    "Payer:",
-    "Payee:",
-    "Service:",
-    "Amount:",
-    "Currency:",
-    "Method (cash/mobile/etc):",
-    "Outcome:",
-    "Notes:",
-    "no implementation",
-    "no API",
-    "no wallet",
-    "no payment platform claims",
+    "AfriPay GA Elite Implementation Surface",
+    "Implementation: ACTIVE CORE",
+    "Live Settlement: FORBIDDEN BY DEFAULT",
+    "Provider Mode: deterministic adapter unless compliance activation is explicit",
+    "wallet",
+    "double-entry ledger",
+    "adaptive multi-rail routing",
+    "FX rate locking",
+    "escrow",
+    "bulk payouts",
+    "billing",
+    "KYC/AML compliance",
+    "intelligence hooks",
+    "event outbox",
+    "No live-money movement may occur from deterministic adapters.",
+    "Provider callbacks never define ledger truth.",
+    "Ledger journals must balance per currency.",
+    "Payment references must be idempotent.",
+    "Authority fields are rejected.",
+    "ADR -> INVARIANT -> BINDING -> RULE -> GUARD -> CI",
+    "AfriPay remains bounded by observed economic evidence.",
     "No transaction means no AfriPay.",
     "AfriTech does not create money flows. It observes, records, and proves them.",
-    "AfriPay       -> finance",
-    "AfriPay -> conceptual frozen",
+    "afritech/afripay",
+    "afritech/tests/afripay",
 )
 
 
 def validate() -> bool:
     path = ROOT / DOC
     if not path.exists():
-        raise SystemExit(f"missing AfriPay planned financial surface doc: {DOC}")
+        raise SystemExit(f"missing AfriPay implementation surface doc: {DOC}")
 
     text = path.read_text(encoding="utf-8")
     for needle in REQUIRED_TEXT:
         if needle not in text:
-            raise SystemExit(f"missing AfriPay planned surface text: {needle}")
+            raise SystemExit(f"missing AfriPay implementation surface text: {needle}")
 
     return True
 
 
 def main() -> int:
     validate()
-    print("AFRIPAY_PLANNED_SURFACE_VALIDATOR: PASS")
+    print("AFRIPAY_GA_ELITE_IMPLEMENTATION_VALIDATOR: PASS")
     return 0
 
 

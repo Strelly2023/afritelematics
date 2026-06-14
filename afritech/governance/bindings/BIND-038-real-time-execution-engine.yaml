@@ -1,0 +1,45 @@
+id: BIND-038
+description: >
+  Binds ADR-0040 and RULE-060 to the real-time execution implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-038-1
+    name: real_time_execution_module
+    target: afritech.mobility.real_time_execution_engine
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic execution outputs
+      - emit replayable read-only execution records
+      - export proof-ready execution artifacts
+    linked_rules:
+      - RULE-060
+  - id: BIND-038-2
+    name: real_time_execution_invariants
+    target: afritech.mobility.real_time_execution_engine
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-EXECUTION-001 through IA-EXECUTION-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-060
+linked_rules:
+  - RULE-060
+linked_adr:
+  - ADR-0040
+linked_invariants:
+  - IA-EXECUTION-001
+  - IA-EXECUTION-002
+  - IA-EXECUTION-003
+  - IA-EXECUTION-004
+  - IA-EXECUTION-005
+  - IA-EXECUTION-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_execution_happy_path
+    - test_determinism
+    - test_replay_stability

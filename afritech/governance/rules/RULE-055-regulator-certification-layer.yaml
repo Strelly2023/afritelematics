@@ -1,0 +1,28 @@
+id: RULE-055
+title: Regulator Certification Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Regulator certification must be explicit, deterministic, and read-only.
+  - Certification must be replayable from the same inputs.
+  - Certification must not override proof, replay, dispatch, custody, settlement, trust, or public evidence authority.
+  - Certification outputs must be hashable and reference-only.
+  - Certification must not mutate external state.
+linked_invariants:
+  - IA-REGULATOR-001
+  - IA-REGULATOR-002
+  - IA-REGULATOR-003
+  - IA-REGULATOR-004
+  - IA-REGULATOR-005
+  - IA-REGULATOR-006
+forbidden:
+  - regulator_certification_as_truth_authority
+  - regulator_certification_overrides_replay
+  - regulator_certification_overrides_proof
+  - regulator_certification_overrides_settlement
+  - regulator_certification_mutates_state
+ci:
+  - afritech/tests/mobility/test_regulator_certification_layer.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

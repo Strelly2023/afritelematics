@@ -1,0 +1,20 @@
+id: ADR-0030
+title: Mobility Market Governance
+status: accepted
+decision: >
+  Introduce a deterministic, evidence-aware market governance layer that
+  balances supply and demand, computes bounded prices, emits replayable
+  incentives, and regulates allocation fairness without becoming authority.
+context:
+  - Identity, trust, federation, dispatch, custody, and settlement already exist as governed layers.
+  - The system now needs a market layer to coordinate incentives and fairness under load.
+  - Market decisions must remain bounded, explainable, and replayable.
+consequences:
+  - Market prices are deterministic and auditable.
+  - Incentives are evidence-backed and traceable.
+  - Allocation bias can be rebalanced over time.
+  - Market outputs influence execution but do not define truth.
+rules:
+  - RULE-050-mobility-market-governance.yaml
+bindings:
+  - BIND-028-mobility-market-governance.yaml

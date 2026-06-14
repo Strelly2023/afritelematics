@@ -1,0 +1,48 @@
+id: BIND-042
+description: >
+  Binds ADR-0044 and RULE-064 to the operator decision protocol docs, the
+  zero-downtime deploy script, and the TLS cutover surface.
+bindings:
+  - id: BIND-042-1
+    name: operator_decision_protocol_docs
+    target: docs/operations/AFRITECH_OPERATOR_DECISION_PROTOCOL.md
+    binding_type: DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - define bounded operator decisions
+      - define stop and rollback semantics
+      - define decision records
+    linked_rules:
+      - RULE-064
+  - id: BIND-042-2
+    name: zero_downtime_deploy_script
+    target: scripts/deploy_production_zero_downtime.sh
+    binding_type: SCRIPT
+    runtime_authoritative: false
+    responsibilities:
+      - update services sequentially
+      - preserve health gates
+      - validate edge configuration
+    linked_rules:
+      - RULE-064
+  - id: BIND-042-3
+    name: domain_tls_cutover_bundle
+    target: docs/operations/AFRITECH_DOMAIN_TLS_CUTOVER.md
+    binding_type: DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - define clean TLS cutover
+      - keep Caddy domain-only
+      - preserve pilot boundaries
+    linked_rules:
+      - RULE-064
+linked_rules:
+  - RULE-064
+linked_adr:
+  - ADR-0044
+ci:
+  validators:
+    - afritech.ci.afritech_operator_decision_protocol_validator
+  tests:
+    - test_operator_decision_protocol_validator_reports_ready
+    - test_operator_decision_protocol_validator_cli_passes

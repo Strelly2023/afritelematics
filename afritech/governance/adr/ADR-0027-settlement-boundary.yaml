@@ -1,0 +1,19 @@
+id: ADR-0027
+title: Settlement Boundary
+status: accepted
+decision: >
+  Introduce a governed settlement boundary that deterministically computes
+  economic outcomes from verified dispatch and custody evidence while keeping
+  settlement external to truth authority and replay authority.
+context:
+  - Dispatch and custody already govern who acted and who held responsibility.
+  - The system now needs a bounded economic consequence layer.
+  - AfriPay execution must remain separate from the decision to settle.
+consequences:
+  - Settlement records are replayable and evidence-linked.
+  - Gross amounts and splits must be deterministic.
+  - Settlement does not redefine proof, custody, or payment truth.
+rules:
+  - RULE-047-settlement-boundary.yaml
+bindings:
+  - BIND-025-settlement-boundary.yaml

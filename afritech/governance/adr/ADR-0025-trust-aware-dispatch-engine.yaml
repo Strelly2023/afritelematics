@@ -1,0 +1,19 @@
+id: ADR-0025
+title: Trust-Aware Dispatch Engine
+status: accepted
+decision: >
+  Introduce a deterministic trust-aware dispatch engine that ranks eligible
+  mobility participants using trust, reliability, route efficiency, and
+  declared constraints while keeping dispatch external to constitutional truth.
+context:
+  - Gen-3 mobility requires dispatch that is more precise than raw proximity.
+  - AfriID now provides a unified participant model with trust-linked identity.
+  - Dispatch must remain deterministic, replayable, and evidence-backed.
+consequences:
+  - Eligible participants may be ranked by trust-aware scores.
+  - Dispatch decisions become replayable evidence artifacts.
+  - Dispatch may influence operational selection but cannot define proof truth.
+rules:
+  - RULE-045-trust-aware-dispatch.yaml
+bindings:
+  - BIND-023-trust-aware-dispatch.yaml

@@ -1,0 +1,27 @@
+id: RULE-050
+title: Mobility Market Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Pricing must be deterministic and bounded.
+  - Supply-demand balance must be enforced.
+  - Incentives must be evidence-backed and replayable.
+  - Allocation fairness must be balanced over time.
+  - Market decisions must not become proof authority.
+linked_invariants:
+  - IA-MARKET-001
+  - IA-MARKET-002
+  - IA-MARKET-003
+  - IA-MARKET-004
+  - IA-MARKET-005
+  - IA-MARKET-006
+forbidden:
+  - market_as_truth_authority
+  - market_overrides_replay
+  - market_overrides_proof
+  - market_without_evidence
+ci:
+  - afritech/tests/mobility/test_market.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

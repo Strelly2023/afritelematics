@@ -1,0 +1,19 @@
+id: ADR-0026
+title: Logistics Custody Chain
+status: accepted
+decision: >
+  Introduce a deterministic chain-of-custody model for logistics and
+  multi-hop mobility operations so every handoff is explicit, replayable,
+  and evidence-backed without becoming truth authority.
+context:
+  - Gen-3 logistics requires multi-actor continuity beyond simple dispatch.
+  - Handoffs must be auditable and deterministic.
+  - Custody must remain external to constitutional truth and proof authority.
+consequences:
+  - Every custody transition must be recorded explicitly.
+  - Missing or tampered steps must be detectable.
+  - Custody evidence can feed trust scoring and dispute resolution.
+rules:
+  - RULE-046-logistics-custody-chain.yaml
+bindings:
+  - BIND-024-logistics-custody-chain.yaml

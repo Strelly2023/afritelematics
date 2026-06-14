@@ -1,0 +1,27 @@
+id: RULE-044
+title: Unified Mobility Identity Boundary
+status: active
+scope: afritech/identity
+rules:
+  - A participant may hold multiple declared roles.
+  - Roles must be normalized into a deterministic canonical form.
+  - Identity evidence links must be replay-stable and deduplicated.
+  - Identity must remain reference-only and must not define proof, replay,
+    payment, or runtime truth.
+  - Trust score may influence selection, but may not override governed truth.
+linked_invariants:
+  - INV-ID-001
+  - INV-ID-002
+  - INV-ID-003
+  - INV-ID-004
+forbidden:
+  - identity_as_truth_authority
+  - identity_overrides_replay
+  - identity_overrides_proof
+  - identity_overrides_payment
+  - identity_overrides_runtime_admissibility
+ci:
+  - afritech/tests/identity/test_mobility_participant.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

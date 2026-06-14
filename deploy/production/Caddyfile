@@ -1,4 +1,4 @@
-{$AFRITECH_DOMAIN} {
+:80 {
   encode gzip zstd
 
   @public_verify path /public/*

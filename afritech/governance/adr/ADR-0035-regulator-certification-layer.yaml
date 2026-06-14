@@ -1,0 +1,19 @@
+id: ADR-0035
+title: Regulator Certification Layer
+status: accepted
+decision: >
+  Introduce a read-only regulator certification surface that consumes proof-backed
+  evidence and emits deterministic certification records without introducing authority
+  leakage or mutating the governed mobility stack.
+context:
+  - Mobility already has public evidence, intelligence, federation, market, fleet, institutional, dispatch, custody, and settlement governance.
+  - External certification consumers require proof-backed read-only certification.
+  - Certification must remain deterministic, replayable, and reference-only.
+consequences:
+  - External certification surfaces can observe proof-backed evidence.
+  - External certification does not alter system truth.
+  - Certification artifacts remain hash-stable and replayable.
+rules:
+  - RULE-055-regulator-certification-layer.yaml
+bindings:
+  - BIND-033-regulator-certification-layer.yaml

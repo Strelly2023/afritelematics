@@ -1,0 +1,45 @@
+id: BIND-033
+description: >
+  Binds ADR-0035 and RULE-055 to the regulator certification implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-033-1
+    name: regulator_certification_module
+    target: afritech.mobility.regulator_certification_layer
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic certification outputs
+      - emit replayable read-only certification
+      - export proof-ready certification artifacts
+    linked_rules:
+      - RULE-055
+  - id: BIND-033-2
+    name: regulator_certification_invariants
+    target: afritech.mobility.regulator_certification_layer
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-REGULATOR-001 through IA-REGULATOR-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-055
+linked_rules:
+  - RULE-055
+linked_adr:
+  - ADR-0035
+linked_invariants:
+  - IA-REGULATOR-001
+  - IA-REGULATOR-002
+  - IA-REGULATOR-003
+  - IA-REGULATOR-004
+  - IA-REGULATOR-005
+  - IA-REGULATOR-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_certification_happy_path
+    - test_certification_determinism
+    - test_certification_replay_stability

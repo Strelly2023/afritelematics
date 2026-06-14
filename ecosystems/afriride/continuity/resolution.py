@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any, Iterable
+from typing import Any, Iterable, Union
 
 from ecosystems.afriride.runtime.commands import (
     AssignDriver,
@@ -17,7 +17,13 @@ from ecosystems.afriride.runtime.execution.deterministic_executor import (
 from ecosystems.afriride.runtime.state import RideState
 
 
-Command = AssignDriver | AssignDriverToRideA | AssignDriverToRideB | EmitAuditEvent | ReadRideState
+Command = Union[
+    AssignDriver,
+    AssignDriverToRideA,
+    AssignDriverToRideB,
+    EmitAuditEvent,
+    ReadRideState,
+]
 
 
 def canonical_json(value: object) -> str:

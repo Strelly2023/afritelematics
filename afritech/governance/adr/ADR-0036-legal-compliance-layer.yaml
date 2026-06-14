@@ -1,0 +1,19 @@
+id: ADR-0036
+title: Legal Compliance Layer
+status: accepted
+decision: >
+  Introduce a read-only legal compliance surface that consumes regulator certification
+  outputs and emits deterministic compliance records without introducing authority
+  leakage or mutating the governed mobility stack.
+context:
+  - Mobility already has regulator certification, public evidence, intelligence, federation, market, fleet, institutional, dispatch, custody, and settlement governance.
+  - Legal review consumers require proof-backed read-only compliance records.
+  - Compliance must remain deterministic, replayable, and reference-only.
+consequences:
+  - Legal compliance surfaces can observe proof-backed evidence.
+  - Legal compliance does not alter system truth.
+  - Compliance artifacts remain hash-stable and replayable.
+rules:
+  - RULE-056-legal-compliance-layer.yaml
+bindings:
+  - BIND-034-legal-compliance-layer.yaml

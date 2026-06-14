@@ -1,0 +1,45 @@
+id: BIND-037
+description: >
+  Binds ADR-0039 and RULE-059 to the trust dispatch implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-037-1
+    name: trust_dispatch_module
+    target: afritech.mobility.trust_dispatch
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic dispatch outputs
+      - emit replayable read-only dispatch decisions
+      - export proof-ready dispatch artifacts
+    linked_rules:
+      - RULE-059
+  - id: BIND-037-2
+    name: trust_dispatch_invariants
+    target: afritech.mobility.trust_dispatch_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-DISPATCH-001 through IA-DISPATCH-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-059
+linked_rules:
+  - RULE-059
+linked_adr:
+  - ADR-0039
+linked_invariants:
+  - IA-DISPATCH-001
+  - IA-DISPATCH-002
+  - IA-DISPATCH-003
+  - IA-DISPATCH-004
+  - IA-DISPATCH-005
+  - IA-DISPATCH-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_dispatch_happy_path
+    - test_determinism
+    - test_replay_stability

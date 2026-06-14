@@ -1,0 +1,46 @@
+id: BIND-028
+description: >
+  Binds ADR-0030 and RULE-050 to the market governance implementation, its
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-028-1
+    name: market_module
+    target: afritech.mobility.market
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic market decisions
+      - emit replayable market evidence
+      - export proof-ready market artifacts
+    linked_rules:
+      - RULE-050
+  - id: BIND-028-2
+    name: market_invariants
+    target: afritech.mobility.market_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-MARKET-001 through IA-MARKET-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-050
+linked_rules:
+  - RULE-050
+linked_adr:
+  - ADR-0030
+linked_invariants:
+  - IA-MARKET-001
+  - IA-MARKET-002
+  - IA-MARKET-003
+  - IA-MARKET-004
+  - IA-MARKET-005
+  - IA-MARKET-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_pricing_determinism
+    - test_supply_demand_balance
+    - test_incentive_application
+    - test_market_not_authority

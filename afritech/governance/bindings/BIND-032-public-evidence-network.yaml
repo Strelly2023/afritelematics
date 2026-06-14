@@ -1,0 +1,46 @@
+id: BIND-032
+description: >
+  Binds ADR-0034 and RULE-054 to the public evidence implementation,
+  invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-032-1
+    name: public_evidence_module
+    target: afritech.mobility.public_evidence_api
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic public evidence outputs
+      - emit replayable read-only evidence
+      - export proof-ready public artifacts
+    linked_rules:
+      - RULE-054
+  - id: BIND-032-2
+    name: public_evidence_invariants
+    target: afritech.mobility.public_evidence_api_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-PUBLIC-001 through IA-PUBLIC-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-054
+linked_rules:
+  - RULE-054
+linked_adr:
+  - ADR-0034
+linked_invariants:
+  - IA-PUBLIC-001
+  - IA-PUBLIC-002
+  - IA-PUBLIC-003
+  - IA-PUBLIC-004
+  - IA-PUBLIC-005
+  - IA-PUBLIC-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_public_evidence_happy_path
+    - test_evidence_determinism
+    - test_replay_stability
+

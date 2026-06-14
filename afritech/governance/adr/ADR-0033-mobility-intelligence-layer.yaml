@@ -1,0 +1,20 @@
+id: ADR-0033
+title: Mobility Intelligence Layer
+status: accepted
+decision: >
+  Introduce an advisory-only mobility intelligence layer that produces
+  deterministic forecasts, anomaly signals, and optimization suggestions
+  without becoming a truth, proof, replay, dispatch, or settlement authority.
+context:
+  - Gen-3 mobility already includes identity, trust, federation, market, fleet, institutional, dispatch, custody, and settlement governance.
+  - Operators need deterministic intelligence signals for demand forecasting, anomaly detection, and optimization.
+  - Intelligence must remain advisory only and reference-only.
+consequences:
+  - Intelligence outputs are replayable and hash-stable.
+  - Advisory recommendations can inform operations without mutating system truth.
+  - Proof artifacts remain separate from truth authority.
+rules:
+  - RULE-053-mobility-intelligence-layer.yaml
+bindings:
+  - BIND-031-mobility-intelligence-layer.yaml
+

@@ -1,0 +1,20 @@
+id: ADR-0032
+title: Institutional Mobility Networks
+status: accepted
+decision: >
+  Introduce a governed institutional layer that allows hospitals, airports,
+  universities, campuses, and similar domains to bind participants, fleets, and
+  policies into bounded mobility contexts without overriding proof authority.
+context:
+  - Mobility already supports identity, trust, federation, market governance, fleet governance, dispatch, custody, and settlement.
+  - Institutions need explicit policy layers for dispatch priority, access control, custody constraints, and market constraints.
+  - Institutional context must remain deterministic, replayable, and reference-only.
+consequences:
+  - Institutions can express explicit mobility policies.
+  - Institutional dispatch and custody constraints become replayable projections.
+  - Participant and fleet bindings remain verifiable and bounded.
+rules:
+  - RULE-052-institutional-mobility-networks.yaml
+bindings:
+  - BIND-030-institutional-mobility-networks.yaml
+

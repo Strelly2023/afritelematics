@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "afriride_system.django_app.apps.driver",
     "afriride_system.django_app.apps.safety",
     "afriride_system.django_app.apps.payments",
+    "afriride_system.django_app.apps.afripay",
     "afriride_system.django_app.apps.notifications",
 ]
 

@@ -1,0 +1,36 @@
+id: BIND-041
+description: >
+  Binds ADR-0043 and RULE-063 to the simulation reality reconciliation
+  implementation, validator, tests, and operator feedback surfaces.
+bindings:
+  - id: BIND-041-1
+    name: simulation_reality_reconciliation_module
+    target: afritech.mobility.reconciliation
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compare simulation and live field-evidence outputs
+      - score divergence deterministically
+      - export read-only reconciliation reports
+    linked_rules:
+      - RULE-063
+  - id: BIND-041-2
+    name: pilot_dataset_simulation_alignment
+    target: afritech.simulation.pilot_dataset.generate_airport_pilot_dataset
+    binding_type: FUNCTION
+    runtime_authoritative: false
+    responsibilities:
+      - produce deterministic pilot expectations
+      - bind airport-zone-001 scenario outputs to reconciliation
+    linked_rules:
+      - RULE-063
+linked_rules:
+  - RULE-063
+linked_adr:
+  - ADR-0043
+ci:
+  validators:
+    - afritech.ci.afritech_reconciliation_validator
+  tests:
+    - test_reconciliation_report_is_aligned_for_airport_pilot
+    - test_reconciliation_rejects_divergent_live_hashes

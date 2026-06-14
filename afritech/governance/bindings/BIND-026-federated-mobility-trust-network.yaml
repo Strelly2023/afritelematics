@@ -1,0 +1,46 @@
+id: BIND-026
+description: >
+  Binds ADR-0028 and RULE-048 to the federated mobility trust network
+  implementation, its invariant report, validator, tests, and proof artifacts.
+bindings:
+  - id: BIND-026-1
+    name: trust_network_module
+    target: afritech.mobility.trust_network
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - compute deterministic trust profiles
+      - emit replayable trust evidence
+      - export proof-ready trust artifacts
+    linked_rules:
+      - RULE-048
+  - id: BIND-026-2
+    name: trust_network_invariants
+    target: afritech.mobility.trust_network_invariants
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - validate IA-TRUST-001 through IA-TRUST-006
+      - produce canonical invariant reports
+    linked_rules:
+      - RULE-048
+linked_rules:
+  - RULE-048
+linked_adr:
+  - ADR-0028
+linked_invariants:
+  - IA-TRUST-001
+  - IA-TRUST-002
+  - IA-TRUST-003
+  - IA-TRUST-004
+  - IA-TRUST-005
+  - IA-TRUST-006
+guards:
+  - afritech.guards.guard_test_contract_enforcement
+  - afritech.guards.guard_runtime_boundary_governance
+ci:
+  tests:
+    - test_trust_profile_happy_path
+    - test_trust_invalid_input
+    - test_trust_determinism
+    - test_trust_replay_produces_same_score

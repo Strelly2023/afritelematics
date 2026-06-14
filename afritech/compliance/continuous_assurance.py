@@ -109,6 +109,7 @@ def collect_external_evidence_artifacts(
                 notes=notes,
             )
         )
+    artifacts.sort(key=lambda artifact: (artifact.source_name, artifact.artifact_type, artifact.path, artifact.sha256_hash))
     return tuple(artifacts)
 
 

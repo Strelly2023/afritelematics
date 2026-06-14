@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from typing import Mapping, Optional, Sequence, Union
 
 
-JSONScalar = str | int | float | bool | None
-JSONValue = JSONScalar | Sequence["JSONValue"] | Mapping[str, "JSONValue"]
+JSONScalar = Union[str, int, float, bool, None]
+JSONValue = Union[JSONScalar, Sequence["JSONValue"], Mapping[str, "JSONValue"]]
 
 
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class ContinuityScenarioResult:
     scenario_id: str
     accepted: bool
     reason: str
-    continuity_hash: str | None
+    continuity_hash: Optional[str]
     targets: tuple[str, ...]
     metrics: Mapping[str, bool]
 

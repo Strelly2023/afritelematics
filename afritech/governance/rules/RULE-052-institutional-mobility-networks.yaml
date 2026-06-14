@@ -1,0 +1,30 @@
+id: RULE-052
+title: Institutional Mobility Networks Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Institutional policies must be explicit and hashable.
+  - Institutional policy projections must be replayable.
+  - Institutions must not override proof or replay authority.
+  - Institutional dispatch constraints must be deterministic.
+  - Institutional boundaries must be enforceable.
+  - Institutional networks must not duplicate identities.
+linked_invariants:
+  - IA-INSTITUTION-001
+  - IA-INSTITUTION-002
+  - IA-INSTITUTION-003
+  - IA-INSTITUTION-004
+  - IA-INSTITUTION-005
+  - IA-INSTITUTION-006
+forbidden:
+  - institution_as_truth_authority
+  - institution_overrides_replay
+  - institution_overrides_proof
+  - institution_overrides_settlement
+  - institution_without_explicit_policies
+ci:
+  - afritech/tests/mobility/test_institutional_mobility_networks.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+

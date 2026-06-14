@@ -1,0 +1,33 @@
+id: BIND-022
+description: >
+  Binds ADR-0024 and RULE-044 to the AfriID mobility participant model,
+  including validator-safe tests and the governed identity module.
+bindings:
+  - id: BIND-022-1
+    name: mobility_participant_model
+    target: afritech.identity.mobility_participant
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - model multi-role mobility participants
+      - normalize verification and evidence fields
+      - preserve deterministic canonical serialization
+    linked_rules:
+      - RULE-044
+linked_rules:
+  - RULE-044
+linked_adr:
+  - ADR-0024
+linked_invariants:
+  - INV-ID-001
+  - INV-ID-002
+  - INV-ID-003
+  - INV-ID-004
+guards:
+  - afritech.identity.mobility_participant
+ci:
+  tests:
+    - test_mobility_participant_happy_path
+    - test_mobility_participant_rejects_invalid_role
+    - test_mobility_participant_is_deterministic
+    - test_mobility_participant_authority_boundary

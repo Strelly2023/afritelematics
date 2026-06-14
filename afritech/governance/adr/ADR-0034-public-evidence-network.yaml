@@ -1,0 +1,20 @@
+id: ADR-0034
+title: Public Evidence Network
+status: accepted
+decision: >
+  Introduce a read-only public evidence network that exposes deterministic,
+  replayable, proof-backed mobility evidence without introducing authority
+  leakage or mutating the governed mobility stack.
+context:
+  - Mobility already has identity, trust, federation, market, fleet, institutional, intelligence, dispatch, custody, and settlement governance.
+  - External actors require proof-backed read-only access to selected evidence surfaces.
+  - Public evidence must remain deterministic, replayable, and reference-only.
+consequences:
+  - Public verification surfaces can observe proof-backed evidence.
+  - External access does not alter system truth.
+  - Public artifacts remain hash-stable and replayable.
+rules:
+  - RULE-054-public-evidence-network.yaml
+bindings:
+  - BIND-032-public-evidence-network.yaml
+

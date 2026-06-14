@@ -1,0 +1,18 @@
+id: ADR-0039
+title: Trust-Aware Dispatch
+status: accepted
+decision: >
+  Use the governed trust dispatch surface as the deterministic ranking layer for
+  live mobility decisions without introducing authority leakage or mutating the
+  governed mobility stack.
+context:
+  - Trust-aware dispatch already exists as the governed selection layer.
+  - Live operations require read-only, replayable dispatch decisions.
+  - Dispatch must remain a selector, not a truth authority.
+consequences:
+  - Dispatch decisions are deterministic and replayable.
+  - Dispatch does not alter trust, proof, settlement, or execution truth.
+rules:
+  - RULE-059-trust-aware-dispatch.yaml
+bindings:
+  - BIND-037-trust-aware-dispatch.yaml

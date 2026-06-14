@@ -1,8 +1,8 @@
 # AfriTech Production Compose Deployment
 
 Purpose: define the shortest production-style deployment path after staging
-closure using Docker Compose, HTTPS termination, and the bounded public
-verification surface.
+closure using Docker Compose, HTTP-only pilot edge routing, and the bounded
+public verification surface.
 
 This document is an operational runbook. It is not proof that a production
 deployment is already active.
@@ -11,7 +11,7 @@ deployment is already active.
 
 - `afritech-api`
 - `afritech-dashboard`
-- `edge` (Caddy reverse proxy with HTTPS)
+- `edge` (Caddy reverse proxy in pilot HTTP mode)
 
 ## Files
 
@@ -40,22 +40,20 @@ cp .env.production.example .env.production
 ```
 
 2. Replace every placeholder secret.
-3. Set `AFRITECH_DOMAIN`.
-4. Ensure DNS for the domain points to the host.
+3. Leave `AFRITECH_DOMAIN` unset for pilot HTTP mode.
+4. If you later switch to production TLS, set `AFRITECH_DOMAIN` and restore the
+   HTTPS edge configuration.
 
 ## Launch
 
 Preferred deployment path:
 
 ```bash
-./scripts/deploy_production_compose.sh --base-url https://<domain>
+./scripts/deploy_production_zero_downtime.sh --base-url http://<host>
 ```
 
-Use `--no-cache` only when you intentionally need a clean image rebuild:
-
-```bash
-./scripts/deploy_production_compose.sh --base-url https://<domain> --no-cache
-```
+If you need a clean rebuild, rerun the same deploy command after a local
+`docker compose build --no-cache` in the production directory.
 
 Manual equivalent:
 
@@ -66,7 +64,7 @@ docker compose --env-file deploy/production/.env.production \
 docker compose --env-file deploy/production/.env.production \
   -f deploy/production/docker-compose.production.yml \
   up -d --remove-orphans
-./scripts/run_local_production_probe.sh https://<domain>
+./scripts/run_local_production_probe.sh http://<host>
 ```
 
 Do not use `docker compose down` as the normal deployment path. It stops the
@@ -74,20 +72,22 @@ live stack before proving that the replacement image can build and boot.
 
 ## Expected routes
 
-- `https://<domain>/health`
-- `https://<domain>/public/verify/health`
-- `https://<domain>/public/registry`
-- `https://<domain>/`
+- `http://<host>/health`
+- `http://<host>/public/verify/health`
+- `http://<host>/public/registry`
+- `http://<host>/`
 
 ## Verification
 
 ```bash
-./scripts/run_local_production_probe.sh https://<domain>
+./scripts/run_local_production_probe.sh http://<host>
 ```
 
 ## Boundary notes
 
 - public access is limited to `/public/*`
 - control-plane routes remain authenticated
-- dashboard is served over the same domain
+- dashboard is served over the same host
 - replay and trace remain authority; reverse proxy only routes traffic
+- TLS is intentionally disabled in pilot mode
+- for TLS cutover, use `docs/operations/AFRITECH_DOMAIN_TLS_CUTOVER.md`

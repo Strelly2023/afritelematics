@@ -1,0 +1,27 @@
+id: RULE-049
+title: Federated Mobility Infrastructure Governance
+status: active
+scope: afritech/mobility
+rules:
+  - Federation membership must be verifiable.
+  - Trust transfer must be bounded and replayable.
+  - Participant identity must remain unique across networks.
+  - Federation data must be hash-stable.
+  - Federation must not become authority over proof.
+linked_invariants:
+  - IA-FEDERATION-001
+  - IA-FEDERATION-002
+  - IA-FEDERATION-003
+  - IA-FEDERATION-004
+  - IA-FEDERATION-005
+  - IA-FEDERATION-006
+forbidden:
+  - federation_as_truth_authority
+  - federation_overrides_replay
+  - federation_overrides_proof
+  - federation_without_verified_membership
+ci:
+  - afritech/tests/mobility/test_federation.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
