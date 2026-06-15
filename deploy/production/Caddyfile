@@ -6,7 +6,7 @@
     reverse_proxy afritech-api:8000
   }
 
-  @api path /health /auth/* /v1/* /ws/*
+  @api path /health /auth/* /v1/* /ws/* /rides/* /system/* /passenger/* /driver/* /ride/*
   handle @api {
     reverse_proxy afritech-api:8000
   }
