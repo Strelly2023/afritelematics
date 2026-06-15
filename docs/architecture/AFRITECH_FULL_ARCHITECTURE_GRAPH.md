@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `252`
+- Startup-safe closure size: `257`
 - Django-bound modules declared in repo: `243`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `25`
+- Direct startup imports from `afritech.api.app`: `27`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (252 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (257 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (25)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (27)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,14 +68,14 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (49 files)"]
+    Core --> Api["api (50 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (14 files)"]
     Core --> Monitoring["monitoring (2 files)"]
     Core --> Proof["proof (25 files)"]
     Core --> Replay["replay (11 files)"]
-    Core --> Governance["governance (17 files)"]
+    Core --> Governance["governance (18 files)"]
     Core --> Semantic["semantic_engine (26 files)"]
     Core --> Runtime["runtime (79 files)"]
 
@@ -87,14 +87,14 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `49` files
+- `api`: `50` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `14` files
 - `monitoring`: `2` files
 - `proof`: `25` files
 - `replay`: `11` files
-- `governance`: `17` files
+- `governance`: `18` files
 - `semantic_engine`: `26` files
 - `runtime`: `79` files
 - `afriride_backend`: `28` files
@@ -104,8 +104,9 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (21)
+### Api (22)
 
+- `afritech.api.afriride_mobile_release_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.app`
 - `afritech.api.architecture_proof_api`
@@ -157,7 +158,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (195)
+### Other (199)
 
 - `afritech`
 - `afritech.afripay`
@@ -189,6 +190,7 @@ flowchart TD
 - `afritech.afriprogramming.services`
 - `afritech.afriprogramming.tooling_manifest`
 - `afritech.afriprogramming.tooling_surfaces`
+- `afritech.afriride_mobile_release`
 - `afritech.afroprog_workspace`
 - `afritech.afroprog_workspace.models`
 - `afritech.afroprog_workspace.service`
@@ -196,6 +198,7 @@ flowchart TD
 - `afritech.architecture.afritech_dashboard`
 - `afritech.architecture.afritech_dashboard.services`
 - `afritech.architecture.afritech_dashboard.views`
+- `afritech.architecture.anchor_indexer`
 - `afritech.architecture.blockchain_anchor`
 - `afritech.architecture.config_loader`
 - `afritech.architecture.full_architecture_graph`
@@ -304,6 +307,8 @@ flowchart TD
 - `afritech.extensions.afriprog.task_planner.task_types`
 - `afritech.extensions.afriprog.validator_runner`
 - `afritech.extensions.afriprog.validator_runner.command_result`
+- `afritech.governance`
+- `afritech.governance.adr_anchor`
 - `afritech.guards`
 - `afritech.guards.edge_input_guard`
 - `afritech.identity`
@@ -379,6 +384,7 @@ flowchart TD
 
 ## Direct Startup Imports
 
+- `afritech.api.afriride_mobile_release_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.architecture_proof_api`
 - `afritech.api.auth.jwt_device_auth`
@@ -392,6 +398,7 @@ flowchart TD
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
 - `afritech.api.trust_network_api`
+- `afritech.architecture.anchor_indexer`
 - `afritech.edge.adapter.runtime_adapter`
 - `afritech.edge.adapter.validation`
 - `afritech.edge.ingestion.queue_ingestor`
