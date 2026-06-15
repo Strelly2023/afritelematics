@@ -7,10 +7,28 @@
     "splash": {
       "backgroundColor": "#FFFFFF"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.ostrinov23.afririderapp"
+    },
+    "ios": {
+      "bundleIdentifier": "com.ostrinov23.afririderapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during pilot rides to set pickup points, show trip progress, and support replay-governed safety evidence."
+      }
+    },
     "extra": {
       "test_mode": true,
-      "api_url": "https://your-backend-url"
-    }
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "e36e1093-11c0-4606-b2fb-846e982c9b24"
+      }
+    },
+    "owner": "ostrinov23"
   }
 }

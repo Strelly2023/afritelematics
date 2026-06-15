@@ -1,0 +1,83 @@
+id: ADR-0045
+title: Blockchain Architecture Anchor System
+status: accepted
+decision: >
+  Introduce a governed blockchain architecture anchor system that publishes
+  architecture proofs to public chains, persists anchor index state, subscribes
+  to on-chain ProofAnchored events, and exposes read-only verification and
+  dashboard surfaces for operators and external verifiers. The blockchain layer
+  proves publication only and must remain non-authoritative with respect to
+  truth, replay, proof, dispatch, settlement, or reconciliation.
+context:
+  - AfriTech now publishes architecture proofs and anchor receipts through a public chain surface.
+  - Operators need durable anchor indexing that survives restarts and can be backed by file, Redis, or Postgres storage.
+  - Public verification should expose contract source and ABI for external trust review.
+  - Live systems must be able to subscribe to contract events instead of relying only on push-time publication.
+  - The system must support Sepolia, Mainnet, and an L2 pilot network without changing the authority chain.
+authority_model:
+  chain:
+    - Constitution
+    - Deterministic Truth
+    - Replay
+    - Proof
+  principle: >
+    Constitution defines authority. Deterministic Truth defines truth. Replay
+    validates truth. Proof demonstrates truth. Blockchain anchors prove
+    publication and external visibility only; they do not inherit truth authority.
+blockchain_anchor_layer:
+  role: publication_and_read_model_surface
+  authoritative: false
+  mutates_truth: false
+  mutates_replay: false
+  mutates_proof: false
+  mutates_dispatch: false
+  mutates_settlement: false
+  persistence_modes:
+    - memory
+    - file
+    - redis
+    - postgres
+  supported_networks:
+    - sepolia
+    - mainnet
+    - base-sepolia
+  required_outputs:
+    - anchor_index_snapshot
+    - anchor_detail_view
+    - etherscan_verification_packet
+    - contract_source_view
+    - abi_view
+    - event_stream_status
+    - operator_dashboard
+  required_behaviors:
+    - index publications persistently when configured
+    - subscribe to ProofAnchored contract events
+    - render read-only dashboard surfaces
+    - expose public verification packets
+    - support multi-network routing
+trust_at_scale_controls:
+  - read-only public verification surfaces
+  - deterministic anchor index ordering
+  - restart-safe persistence backend selection
+  - contract source and ABI exposure
+  - explicit event subscription status
+  - network-specific promotion metadata
+  - no authority inheritance from blockchain publication
+forbidden:
+  - blockchain_as_truth_authority
+  - blockchain_as_replay_authority
+  - blockchain_as_proof_authority
+  - blockchain_as_dispatch_authority
+  - blockchain_as_settlement_authority
+  - anchor_index_mutation_by_public_surface
+consequences:
+  - Architecture anchoring becomes a governed public trust subsystem.
+  - Operators can inspect, verify, and index anchors across multiple networks.
+  - The anchor layer can survive restarts when backed by persistent storage.
+verification:
+  runbook: docs/architecture/AFRITECH_BLOCKCHAIN_ARCHITECTURE_MAP.md
+  validator: afritech.ci.afritech_blockchain_anchor_validator
+rules:
+  - RULE-065-blockchain-architecture-anchor-system.yaml
+bindings:
+  - BIND-043-blockchain-architecture-anchor-system.yaml

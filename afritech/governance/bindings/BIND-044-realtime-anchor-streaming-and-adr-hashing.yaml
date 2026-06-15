@@ -1,0 +1,35 @@
+id: BIND-044
+title: Bind realtime anchor streaming and ADR hashing to the governed API surface
+description: >
+  Bind ADR-0046 and RULE-066 to the anchor indexer, websocket stream,
+  ADR hashing helper, and external explorer app so the realtime surface remains
+  governed and read-only.
+targets:
+  - id: BIND-044-1
+    target: afritech/architecture/anchor_indexer.py
+    rationale: Anchor stream hub, websocket subscriber, reconciliation, and index snapshot must remain deterministic and read-only.
+    rules:
+      - RULE-066
+      - ADR-0046
+  - id: BIND-044-2
+    target: afritech/api/architecture_proof_api.py
+    rationale: Public API exposes websocket stream, ADR hash previews, reconciliation, and explorer handoff.
+    rules:
+      - RULE-066
+      - ADR-0046
+  - id: BIND-044-3
+    target: afritech/governance/adr_anchor.py
+    rationale: ADR hashes are canonical governance artifacts and may be anchored only through governed operator routes.
+    rules:
+      - RULE-066
+      - ADR-0046
+  - id: BIND-044-4
+    target: anchor_explorer/src/App.jsx
+    rationale: External explorer reads public anchor surfaces and subscribes to websocket events without mutation authority.
+    rules:
+      - RULE-066
+      - ADR-0046
+related:
+  - RULE-066
+  - ADR-0046
+  - afritech.ci.afritech_blockchain_anchor_realtime_validator

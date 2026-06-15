@@ -19,7 +19,11 @@ def test_driver_app_is_locked_to_test_build_profile() -> None:
     assert "afriride-driver-test" in app_config
     assert '"test_mode": true' in app_config
     assert '"distribution": "internal"' in eas
+    assert '"distribution": "store"' in eas
     assert '"buildType": "apk"' in eas
+    assert '"pilot-ios"' in eas
+    assert '"owner": "ostrinov23"' in app_config
+    assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
     assert "if (!TEST_MODE)" in app
     assert 'throw new Error("Test mode required")' in app

@@ -1,0 +1,41 @@
+id: BIND-045
+title: Bind governed evidence protocol to platform, API, explorer, docs, and CI
+description: >
+  Bind ADR-0047 and RULE-067 to the evidence protocol builder, public API,
+  explorer workbench, protocol documentation, and CI validator so platform,
+  protocol, and governance remain one enforced system.
+targets:
+  - id: BIND-045-1
+    target: afritech/architecture/anchor_indexer.py
+    rationale: Builds the governed evidence protocol packet, hashes, lifecycle, capabilities, and authority model.
+    rules:
+      - RULE-067
+      - ADR-0047
+  - id: BIND-045-2
+    target: afritech/api/architecture_proof_api.py
+    rationale: Exposes the public protocol endpoint and includes the protocol packet in the trust dashboard.
+    rules:
+      - RULE-067
+      - ADR-0047
+  - id: BIND-045-3
+    target: anchor_explorer/src/App.jsx
+    rationale: Shows the governed protocol status, version, artifact count, and protocol hash.
+    rules:
+      - RULE-067
+      - ADR-0047
+  - id: BIND-045-4
+    target: docs/protocol/AFRITECH_GOVERNED_EVIDENCE_PROTOCOL.md
+    rationale: Documents the protocol contract for external verifiers and operators.
+    rules:
+      - RULE-067
+      - ADR-0047
+  - id: BIND-045-5
+    target: afritech/ci/afritech_governed_evidence_protocol_validator.py
+    rationale: Fails CI if the combined protocol/governance/platform surface is incomplete.
+    rules:
+      - RULE-067
+      - ADR-0047
+related:
+  - RULE-067
+  - ADR-0047
+  - afritech.ci.afritech_governed_evidence_protocol_validator

@@ -90,6 +90,19 @@ def _live_chain_receipt(
         }
 
     tx_hash = receipt.get("tx_hash") or receipt.get("transaction_hash")
+    try:
+        from afritech.architecture.anchor_indexer import remember_chain_receipt
+
+        remember_chain_receipt(
+            anchor_id=anchor_id,
+            publication_id=publication_id,
+            proof_hash=proof_hash,
+            chain_receipt=receipt,
+            source="architecture_integrity_proof.auto_publish",
+        )
+    except Exception:
+        # The proof surface must remain live even if the indexer is unavailable.
+        pass
     return {
         "schema": "afritech.public_chain_anchor_receipt.v1",
         "chain_receipt_id": f"chain-live-{proof_hash[:12]}",

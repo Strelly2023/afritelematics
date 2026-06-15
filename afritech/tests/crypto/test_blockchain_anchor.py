@@ -69,8 +69,10 @@ def test_chain_promotion_plan_lists_sepolia_and_mainnet() -> None:
     plan = build_chain_promotion_plan()
 
     assert plan["promotion_path"][0]["profile"] == "sepolia"
-    assert plan["promotion_path"][1]["profile"] == "mainnet"
+    assert plan["promotion_path"][1]["profile"] == "base-sepolia"
+    assert plan["promotion_path"][2]["profile"] == "mainnet"
     assert get_chain_profile("mainnet").chain_id == 1
+    assert get_chain_profile("base-sepolia").chain_id == 84532
 
 
 def test_contract_anchor_publication_falls_back_without_live_env(monkeypatch) -> None:

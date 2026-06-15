@@ -35,6 +35,28 @@ DASHBOARD_RESPONSE=$(curl -s "$BASE_URL/public/trust/dashboard")
 
 echo "$DASHBOARD_RESPONSE" | jq '.status // "missing"'
 echo "$DASHBOARD_RESPONSE" | jq '.integrity.runtime_boundary_status // "missing"'
+echo "$DASHBOARD_RESPONSE" | jq '.anchors.index.status // "missing"'
+
+# =========================
+# ✅ ANCHOR DASHBOARD
+# =========================
+echo ""
+echo "==> Checking Anchor Dashboard"
+
+ANCHOR_STATUS_RESPONSE=$(curl -s "$BASE_URL/public/architecture/anchors/status")
+ANCHOR_DASHBOARD_RESPONSE=$(curl -s "$BASE_URL/public/architecture/anchors/dashboard")
+ANCHOR_EXPLORER_RESPONSE=$(curl -s "$BASE_URL/public/architecture/anchors/explorer")
+ANCHOR_STREAM_RESPONSE=$(curl -s "$BASE_URL/public/architecture/anchors/stream/status")
+ANCHOR_RECONCILIATION_RESPONSE=$(curl -s "$BASE_URL/public/architecture/anchors/reconciliation")
+ADR_HASH_RESPONSE=$(curl -s "$BASE_URL/public/architecture/adr/ADR-0045/hash")
+
+echo "$ANCHOR_STATUS_RESPONSE" | jq '.classification // "missing"'
+echo "$ANCHOR_STATUS_RESPONSE" | jq '.status // "missing"'
+echo "$ANCHOR_DASHBOARD_RESPONSE" | grep -q "Architecture Anchor Dashboard"
+echo "$ANCHOR_EXPLORER_RESPONSE" | grep -q "AfriTech Anchor Explorer"
+echo "$ANCHOR_STREAM_RESPONSE" | jq '.classification // "missing"'
+echo "$ANCHOR_RECONCILIATION_RESPONSE" | jq '.classification // "missing"'
+echo "$ADR_HASH_RESPONSE" | jq '.classification // "missing"'
 
 # =========================
 # ✅ DEMO READINESS
@@ -67,17 +89,25 @@ RUNTIME_STATUS=$(echo "$PROOF_RESPONSE" | jq -r '.proof.runtime_boundary_status 
 DASHBOARD_STATUS=$(echo "$DASHBOARD_RESPONSE" | jq -r '.status // empty')
 DEMO_STATUS=$(echo "$DEMO_RESPONSE" | jq -r '.demo_readiness // empty')
 CHAIN_NETWORK=$(echo "$DASHBOARD_RESPONSE" | jq -r '.chain.deterministic_receipt.network // empty')
+ANCHOR_CLASSIFICATION=$(echo "$ANCHOR_STATUS_RESPONSE" | jq -r '.classification // empty')
+STREAM_CLASSIFICATION=$(echo "$ANCHOR_STREAM_RESPONSE" | jq -r '.classification // empty')
+RECONCILIATION_CLASSIFICATION=$(echo "$ANCHOR_RECONCILIATION_RESPONSE" | jq -r '.classification // empty')
+ADR_HASH_CLASSIFICATION=$(echo "$ADR_HASH_RESPONSE" | jq -r '.classification // empty')
 
 echo "Runtime:   ${RUNTIME_STATUS:-UNKNOWN}"
 echo "Dashboard: ${DASHBOARD_STATUS:-UNKNOWN}"
 echo "Demo:      ${DEMO_STATUS:-UNKNOWN}"
 echo "Chain:     ${CHAIN_NETWORK:-UNKNOWN}"
+echo "Anchor:    ${ANCHOR_CLASSIFICATION:-UNKNOWN}"
+echo "Stream:    ${STREAM_CLASSIFICATION:-UNKNOWN}"
+echo "Recon:     ${RECONCILIATION_CLASSIFICATION:-UNKNOWN}"
+echo "ADR hash:  ${ADR_HASH_CLASSIFICATION:-UNKNOWN}"
 
 # =========================
 # ✅ FINAL STATUS CHECK
 # =========================
 
-if [[ "$RUNTIME_STATUS" == "VERIFIED" && "$DASHBOARD_STATUS" == "READY" && "$DEMO_STATUS" == "PARTNER_READY" ]]; then
+if [[ "$RUNTIME_STATUS" == "VERIFIED" && "$DASHBOARD_STATUS" == "READY" && "$DEMO_STATUS" == "PARTNER_READY" && "$ANCHOR_CLASSIFICATION" == "BLOCKCHAIN_ANCHOR_STATUS" && "$STREAM_CLASSIFICATION" == "BLOCKCHAIN_ANCHOR_EVENT_SUBSCRIPTION_STATUS" && "$RECONCILIATION_CLASSIFICATION" == "BLOCKCHAIN_ANCHOR_CROSS_NETWORK_RECONCILIATION" && "$ADR_HASH_CLASSIFICATION" == "ADR_HASH_RECORD" ]]; then
   echo ""
   echo "✅ SYSTEM STATUS: HEALTHY"
 else

@@ -1,0 +1,51 @@
+{
+  "app_id": "afriride-rider",
+  "display_name": "AfriRide Rider",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "rider_app",
+  "store_surfaces": {
+    "android_package": "com.ostrinov23.afririderapp",
+    "ios_bundle_identifier": "com.ostrinov23.afririderapp",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "required_capabilities": [
+    "rider_auth",
+    "pickup_destination_entry",
+    "fare_estimate",
+    "ride_request",
+    "driver_assignment",
+    "live_tracking",
+    "receipt_display",
+    "replay_status",
+    "support_ticket"
+  ],
+  "required_backend_contracts": [
+    "POST /auth/login",
+    "POST /rides/request",
+    "GET /rides/:id",
+    "GET /proof/:ride_id",
+    "GET /replay/:ride_id/status",
+    "GET /ledger/:ride_id",
+    "POST /support/ticket"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "privacy_policy_reviewed",
+    "terms_reviewed",
+    "api_contract_verified",
+    "evidence_boundary_verified",
+    "crash_free_pilot_build",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "rider_app_is_interface_only_server_replay_and_proof_remain_authority"
+}

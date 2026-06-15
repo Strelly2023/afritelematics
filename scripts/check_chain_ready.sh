@@ -33,8 +33,7 @@ REQUIRED_VARS=(
   AFRITECH_CHAIN_ENABLE_PUBLISH
   AFRITECH_CHAIN_MODE
   AFRITECH_CHAIN_RPC_URL_SEPOLIA
-  AFRITECH_CHAIN_ADDRESS
-  AFRITECH_CHAIN_PRIVATE_KEY
+  AFRITECH_CHAIN_CONTRACT_ADDRESS
 )
 
 MISSING=0
@@ -47,6 +46,26 @@ for VAR in "${REQUIRED_VARS[@]}"; do
     echo "✅ $VAR"
   fi
 done
+
+if ! echo "$ENV_OUTPUT" | grep -qE "^(AFRITECH_CHAIN_ADDRESS|AFRITECH_CHAIN_ADDRESS_CHECKSUM)="; then
+  echo "❌ Missing wallet address env var: AFRITECH_CHAIN_ADDRESS or AFRITECH_CHAIN_ADDRESS_CHECKSUM"
+  MISSING=1
+else
+  echo "✅ wallet address configured"
+fi
+
+if ! echo "$ENV_OUTPUT" | grep -qE "^(AFRITECH_CHAIN_PRIVATE_KEY|AFRITECH_CHAIN_PRIVATE_KEY_PATH)="; then
+  echo "❌ Missing private key env var: AFRITECH_CHAIN_PRIVATE_KEY or AFRITECH_CHAIN_PRIVATE_KEY_PATH"
+  MISSING=1
+else
+  echo "✅ private key configured"
+fi
+
+if ! echo "$ENV_OUTPUT" | grep -q "^AFRITECH_CHAIN_INDEX_BACKEND="; then
+  echo "⚠️ Anchor index backend not set; defaulting to in-memory store"
+else
+  echo "✅ anchor index backend configured"
+fi
 
 if [[ "$MISSING" -eq 1 ]]; then
   echo "❌ Missing required environment variables"

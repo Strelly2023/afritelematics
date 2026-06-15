@@ -18,6 +18,7 @@ class ChainProfile:
     chain_id: int
     explorer_base_url: str
     rpc_env_var: str
+    ws_env_var: str
     rollout_stage: str
     recommended_use: str
 
@@ -29,6 +30,7 @@ class ChainProfile:
             "chain_id": self.chain_id,
             "explorer_base_url": self.explorer_base_url,
             "rpc_env_var": self.rpc_env_var,
+            "ws_env_var": self.ws_env_var,
             "rollout_stage": self.rollout_stage,
             "recommended_use": self.recommended_use,
         }
@@ -81,6 +83,7 @@ CHAIN_PROFILES = {
         chain_id=11155111,
         explorer_base_url="https://sepolia.etherscan.io/tx/",
         rpc_env_var="AFRITECH_CHAIN_RPC_URL_SEPOLIA",
+        ws_env_var="AFRITECH_CHAIN_WS_URL_SEPOLIA",
         rollout_stage="pilot",
         recommended_use="First live partner verification sessions and dry-run publications.",
     ),
@@ -91,8 +94,20 @@ CHAIN_PROFILES = {
         chain_id=1,
         explorer_base_url="https://etherscan.io/tx/",
         rpc_env_var="AFRITECH_CHAIN_RPC_URL_MAINNET",
+        ws_env_var="AFRITECH_CHAIN_WS_URL_MAINNET",
         rollout_stage="production",
         recommended_use="Post-pilot immutable publication once Sepolia evidence and runbooks are stable.",
+    ),
+    "base-sepolia": ChainProfile(
+        key="base-sepolia",
+        chain_name="Base Sepolia (L2)",
+        network="base-sepolia",
+        chain_id=84532,
+        explorer_base_url="https://sepolia.basescan.org/tx/",
+        rpc_env_var="AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA",
+        ws_env_var="AFRITECH_CHAIN_WS_URL_BASE_SEPOLIA",
+        rollout_stage="l2-pilot",
+        recommended_use="L2 anchor publication for higher-throughput public verification and replayable scale testing.",
     ),
 }
 
@@ -140,6 +155,11 @@ def build_chain_promotion_plan() -> dict[str, Any]:
             },
             {
                 "stage": 2,
+                "profile": "base-sepolia",
+                "goal": "validate the anchor subsystem on an L2 network with the same authority boundary",
+            },
+            {
+                "stage": 3,
                 "profile": "mainnet",
                 "goal": "promote immutable publication once Sepolia verification sessions and operational controls pass",
             },
@@ -157,6 +177,26 @@ def resolve_chain_rpc_url(profile: ChainProfile, rpc_url: str | None = None) -> 
         return env_value.strip()
     raise ValueError(
         f"rpc_url required for profile '{profile.key}'; provide rpc_url or set {profile.rpc_env_var}"
+    )
+
+
+def resolve_chain_ws_url(profile: ChainProfile, ws_url: str | None = None) -> str:
+    if ws_url and ws_url.strip():
+        return ws_url.strip()
+
+    env_value = os.getenv(profile.ws_env_var) or os.getenv("AFRITECH_CHAIN_WS_URL")
+    if env_value and env_value.strip():
+        return env_value.strip()
+
+    rpc_url = resolve_chain_rpc_url(profile)
+    if rpc_url.startswith("https://"):
+        return "wss://" + rpc_url.removeprefix("https://")
+    if rpc_url.startswith("http://"):
+        return "ws://" + rpc_url.removeprefix("http://")
+    if rpc_url.startswith("wss://") or rpc_url.startswith("ws://"):
+        return rpc_url
+    raise ValueError(
+        f"ws_url required for profile '{profile.key}'; provide ws_url or set {profile.ws_env_var}"
     )
 
 
@@ -302,4 +342,5 @@ __all__ = [
     "publish_architecture_anchor_contract_with_profile",
     "publish_architecture_anchor_with_profile",
     "resolve_chain_rpc_url",
+    "resolve_chain_ws_url",
 ]

@@ -29,8 +29,10 @@
     "ios": {
       "bundleIdentifier": "com.ostrinov23.afriridedrivertest",
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "AfriRide uses location during pilot shifts to capture GPS evidence for controlled validation."
       }
-    }
+    },
+    "owner": "ostrinov23"
   }
 }

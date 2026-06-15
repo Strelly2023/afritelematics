@@ -29,9 +29,14 @@ Replay and governed execution remain truth authority.
 - `AFRITECH_CHAIN_ENABLE_PUBLISH=true`
 - `AFRITECH_CHAIN_RPC_URL_SEPOLIA`
 - `AFRITECH_CHAIN_RPC_URL_MAINNET`
+- `AFRITECH_CHAIN_RPC_URL_BASE_SEPOLIA`
 - `AFRITECH_CHAIN_CONTRACT_ADDRESS`
-- `AFRITECH_CHAIN_ADDRESS`
-- `AFRITECH_CHAIN_PRIVATE_KEY`
+- `AFRITECH_CHAIN_ADDRESS_CHECKSUM`
+- `AFRITECH_CHAIN_PRIVATE_KEY_PATH`
+- `AFRITECH_CHAIN_INDEX_BACKEND`
+- `AFRITECH_CHAIN_INDEX_FILE`
+- `AFRITECH_CHAIN_INDEX_REDIS_URL`
+- `AFRITECH_CHAIN_INDEX_DATABASE_URL`
 - `AFRITECH_CHAIN_GAS_PRICE_GWEI`
 - `AFRITECH_CHAIN_TX_TIMEOUT`
 
@@ -41,6 +46,19 @@ secret manager or host-level environment.
 `AFRITECH_CHAIN_AUTO_PUBLISH_ON_PROOF=true` is available for controlled demos
 that need `/public/architecture/proof` to attach a live receipt. Leave it unset
 for normal production operation so public GET requests remain read-only.
+
+Contract verification surfaces:
+
+- `/public/architecture/anchors/verification`
+- `/public/architecture/anchors/verification/abi`
+- `/public/architecture/anchors/verification/source`
+
+The public anchor surfaces are:
+
+- `/public/architecture/anchors`
+- `/public/architecture/anchors/dashboard`
+- `/public/architecture/anchors/verification`
+- `/public/architecture/blockchain/map`
 
 ## Promotion Sequence
 
@@ -112,8 +130,9 @@ The response must include:
 12. archive the partner session report
 13. confirm no dashboard drift and no verification mismatch
 14. switch profile to Mainnet
-15. publish Mainnet anchor
-16. rerun verifier and session tools against Mainnet expectation
+15. repeat the event-stream health check
+16. publish Mainnet anchor
+17. rerun verifier and session tools against Mainnet expectation
 
 ## Exit Criteria
 

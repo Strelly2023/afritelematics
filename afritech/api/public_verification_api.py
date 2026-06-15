@@ -69,6 +69,10 @@ def build_public_verification_router(
             <li><a href='/public/architecture/proof'>Architecture proof</a></li>
             <li><a href='/public/verify/{anchor_id}'>Public verification packet</a></li>
             <li><a href='/public/trust/dashboard'>Public trust dashboard</a></li>
+            <li><a href='/public/architecture/anchors/dashboard'>Anchor dashboard</a></li>
+            <li><a href='/public/architecture/anchors/explorer'>Anchor explorer</a></li>
+            <li><a href='/public/architecture/anchors/verification'>Etherscan verification</a></li>
+            <li><a href='/public/architecture/anchors/reconciliation'>Cross-network reconciliation</a></li>
           </ul>
         </div>
         <div class='panel'>

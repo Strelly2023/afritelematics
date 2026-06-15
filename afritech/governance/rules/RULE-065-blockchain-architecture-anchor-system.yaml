@@ -1,0 +1,27 @@
+id: RULE-065
+title: Blockchain Architecture Anchor System Governance
+status: active
+scope: afritech/architecture
+rules:
+  - Blockchain anchors must be read-only publication evidence, never truth authority.
+  - Anchor index state must be deterministic, restart-safe when configured, and append-only.
+  - Etherscan verification surfaces must expose ABI and source references publicly.
+  - Event subscription must read contract events and may not invent anchor state.
+  - Multi-network support must include Sepolia, Mainnet, and Base Sepolia (L2).
+linked_invariants:
+  - IA-BAS-001
+  - IA-BAS-002
+  - IA-BAS-003
+  - IA-BAS-004
+  - IA-BAS-005
+forbidden:
+  - blockchain_as_truth_authority
+  - blockchain_as_replay_authority
+  - anchor_index_mutation_by_public_surface
+  - event_subscription_invents_state
+ci:
+  - afritech/ci/afritech_blockchain_anchor_validator.py
+  - afritech/tests/ci/test_afritech_blockchain_anchor_validator.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

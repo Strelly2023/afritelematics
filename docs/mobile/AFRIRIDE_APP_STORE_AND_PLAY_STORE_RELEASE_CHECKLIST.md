@@ -12,9 +12,16 @@ It is not proof that store publication is already complete.
 
 ## Covered Apps
 
-- `afriride_system/mobile/passenger_app`
-- `afriride_system/mobile/driver_app`
-- `afriride_system/mobile/operator_app`
+- `rider_app`
+- `driver_app`
+- `dashboard`
+
+The machine-readable release manifests live under `docs/mobile/release/` and
+are exposed through:
+
+```http
+GET /public/afriride/mobile/release-readiness
+```
 
 ## Release Goal
 
@@ -27,6 +34,15 @@ preserving:
 - correct API base URL handling
 
 ## Release Readiness Checklist
+
+### 0. Release Contract
+
+- run `python -m afritech.ci.afriride_mobile_release_validator`
+- verify `/public/afriride/mobile/release-readiness`
+- confirm `production_claim_allowed = false` until pilot evidence, legal review,
+  store review, and operator approval are complete
+- confirm Rider, Driver, and Operator Dashboard manifests are present
+- confirm `production_blockers` are closed before any production store track
 
 ### 1. Build Targets
 
@@ -82,4 +98,3 @@ It does not permit this claim:
 ```text
 all apps are already published in production stores
 ```
-

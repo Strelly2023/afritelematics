@@ -1,0 +1,49 @@
+id: BIND-043
+description: >
+  Binds ADR-0045 and RULE-065 to the blockchain anchor API, the persistent
+  anchor index, the event subscription surface, the Etherscan verification
+  packet, and the blockchain architecture map document.
+bindings:
+  - id: BIND-043-1
+    name: anchor_api_surface
+    target: afritech/api/architecture_proof_api.py
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - expose anchor publication and read-only anchor views
+      - surface anchor dashboard and verification endpoints
+      - expose event subscription status and polling
+    linked_rules:
+      - RULE-065
+  - id: BIND-043-2
+    name: anchor_index_persistence
+    target: afritech/architecture/anchor_indexer.py
+    binding_type: MODULE
+    runtime_authoritative: false
+    responsibilities:
+      - persist anchor index entries
+      - support file, Redis, and Postgres backends
+      - maintain deterministic anchor ordering
+    linked_rules:
+      - RULE-065
+  - id: BIND-043-3
+    name: blockchain_map_document
+    target: docs/architecture/AFRITECH_BLOCKCHAIN_ARCHITECTURE_MAP.md
+    binding_type: DOCUMENT
+    runtime_authoritative: false
+    responsibilities:
+      - describe the blockchain architecture map
+      - define authority boundaries
+      - document the public trust layer
+    linked_rules:
+      - RULE-065
+linked_rules:
+  - RULE-065
+linked_adr:
+  - ADR-0045
+ci:
+  validators:
+    - afritech.ci.afritech_blockchain_anchor_validator
+  tests:
+    - test_blockchain_anchor_validator_reports_ready
+    - test_blockchain_anchor_validator_cli_passes

@@ -1,0 +1,36 @@
+{
+  "app_id": "afriride-operator-dashboard",
+  "display_name": "AfriRide Operator Dashboard",
+  "classification": "WEB_OPERATOR_RELEASE_MANIFEST",
+  "release_channel": "internal_operator_web",
+  "targets": ["web"],
+  "source_path": "dashboard",
+  "store_surfaces": {
+    "distribution": "private_operator_url",
+    "public_store_listing": false
+  },
+  "required_capabilities": [
+    "trip_monitoring",
+    "manual_dispatch",
+    "driver_monitoring",
+    "support_tools",
+    "revenue_tracking",
+    "dispute_resolution",
+    "evidence_viewer"
+  ],
+  "required_backend_contracts": [
+    "GET /v1/traces",
+    "GET /public/trust/dashboard",
+    "GET /public/architecture/evidence/protocol",
+    "GET /public/architecture/anchors/reconciliation",
+    "GET /public/architecture/anchors/mainnet-promotion-gate"
+  ],
+  "required_store_assets": [],
+  "release_gates": [
+    "operator_auth_verified",
+    "support_runbook_reviewed",
+    "evidence_protocol_verified",
+    "incident_response_ready"
+  ],
+  "authority_boundary": "operator_dashboard_controls_operations_but_does_not_define_truth"
+}

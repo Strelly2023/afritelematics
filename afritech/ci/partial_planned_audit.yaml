@@ -74,6 +74,10 @@ allowed_occurrences:
     class: validator_policy
     reason: loader recognizes state vocabulary
 
+  - path: afritech/architecture/anchor_indexer.py
+    class: transition_policy
+    reason: defines reconciliation and conflict-resolution semantics for partial and planned evidence states
+
   - path: afritech/architecture/sub_enforcement_registry.yaml
     class: state_vocabulary
     reason: split enforcement registry defines planned and partial state policy

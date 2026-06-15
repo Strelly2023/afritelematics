@@ -1,0 +1,27 @@
+id: RULE-067
+title: Governed Evidence Operating Protocol Governance
+status: accepted
+description: >
+  Enforce the governed evidence operating protocol as the combined
+  platform/protocol/governance contract for architecture anchor evidence.
+scope:
+  - afritech/architecture/anchor_indexer.py
+  - afritech/api/architecture_proof_api.py
+  - anchor_explorer/src/App.jsx
+  - docs/protocol/AFRITECH_GOVERNED_EVIDENCE_PROTOCOL.md
+constraints:
+  - The protocol packet must expose a stable protocol hash.
+  - The protocol packet must include the operational semantics hash.
+  - The protocol packet must include the evidence policy hash.
+  - Governance artifacts must be listed and hashable.
+  - Required validators must be declared.
+  - The protocol must preserve replay/proof as truth authority.
+  - The public API must expose `/public/architecture/evidence/protocol`.
+enforcement:
+  validator: afritech.ci.afritech_governed_evidence_protocol_validator
+  runtime_checks:
+    - governed protocol builder exists
+    - governed protocol API route exists
+    - protocol document exists
+    - ADR/RULE/BIND artifacts exist
+    - explorer exposes protocol status and hash

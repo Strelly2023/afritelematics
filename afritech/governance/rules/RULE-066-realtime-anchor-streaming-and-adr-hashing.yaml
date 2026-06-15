@@ -1,0 +1,26 @@
+id: RULE-066
+title: Realtime Anchor Streaming and ADR Hashing Governance
+status: accepted
+description: >
+  Enforce the websocket anchor stream, ADR hashing, public explorer surface,
+  and cross-network reconciliation as read-only publication evidence.
+scope:
+  - afritech/architecture/anchor_indexer.py
+  - afritech/api/architecture_proof_api.py
+  - afritech/governance/adr_anchor.py
+  - anchor_explorer/src/App.jsx
+  - anchor_explorer/src/styles.css
+constraints:
+  - The websocket stream must not mutate the anchor index directly.
+  - ADR hashes may be published on chain only through governed operator paths.
+  - The explorer UI must remain read-only.
+  - Cross-network reconciliation must never define truth authority.
+  - Anchor publication evidence must remain restart-safe and deterministic.
+enforcement:
+  validator: afritech.ci.afritech_blockchain_anchor_realtime_validator
+  runtime_checks:
+    - websocket stream route is exposed
+    - ADR hash preview route is exposed
+    - ADR publish route is governed
+    - explorer app exists
+    - cross-network reconciliation route is exposed

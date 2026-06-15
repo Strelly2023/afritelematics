@@ -126,3 +126,13 @@ def test_public_partner_registry_filters_to_public_entries() -> None:
 
     assert response.status_code == 200
     assert response.json()["count"] >= 1
+
+
+def test_public_verification_portal_links_anchor_dashboard() -> None:
+    client = build_client()
+
+    response = client.get("/public/verify/portal")
+
+    assert response.status_code == 200
+    assert "/public/architecture/anchors/dashboard" in response.text
+    assert "/public/architecture/anchors/verification" in response.text

@@ -1,0 +1,52 @@
+{
+  "app_id": "afriride-driver",
+  "display_name": "AfriRide Driver",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "driver_app",
+  "store_surfaces": {
+    "android_package": "com.ostrinov23.afriridedrivertest",
+    "ios_bundle_identifier": "com.ostrinov23.afriridedrivertest",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "required_capabilities": [
+    "driver_auth",
+    "availability_toggle",
+    "ride_queue",
+    "accept_reject_trip",
+    "arrive_start_complete_trip",
+    "earnings_dashboard",
+    "replay_history",
+    "pilot_diagnostics",
+    "support_ticket"
+  ],
+  "required_backend_contracts": [
+    "POST /auth/login",
+    "POST /driver/availability",
+    "GET /driver/:driver_id/queue",
+    "POST /rides/accept",
+    "POST /rides/start",
+    "POST /rides/complete",
+    "GET /driver/:driver_id/earnings"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "privacy_policy_reviewed",
+    "terms_reviewed",
+    "api_contract_verified",
+    "location_permission_reviewed",
+    "driver_evidence_boundary_verified",
+    "crash_free_pilot_build",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "driver_app_is_interface_only_server_replay_and_proof_remain_authority"
+}

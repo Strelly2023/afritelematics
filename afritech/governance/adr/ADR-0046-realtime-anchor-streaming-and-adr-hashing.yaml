@@ -1,0 +1,65 @@
+id: ADR-0046
+title: Realtime Anchor Streaming and ADR Hashing
+status: accepted
+decision: >
+  Introduce a websocket-based anchor streaming surface, a public anchor
+  explorer app, a cross-network reconciliation report, and a governed ADR
+  hashing path that can publish ADR content hashes on chain. The anchor layer
+  remains publication evidence only and must not inherit authority over truth,
+  replay, proof, dispatch, settlement, or reconciliation.
+context:
+  - AfriTech already publishes architecture anchors and exposes read-only verification surfaces.
+  - Operators need a realtime WebSocket channel for anchor publication events instead of a push-only or polling-only model.
+  - External verifiers need an explorer UI that can consume the same public anchor surfaces.
+  - Governance artifacts should be hashable and anchorable without turning ADRs into truth authority.
+  - Cross-network anchor reconciliation should compare the same publication across Sepolia, Base Sepolia, and Mainnet.
+authority_model:
+  chain:
+    - Constitution
+    - Deterministic Truth
+    - Replay
+    - Proof
+  principle: >
+    Constitution defines authority. Deterministic Truth defines truth. Replay
+    validates truth. Proof demonstrates truth. Blockchain anchors, realtime
+    streams, explorer UIs, and ADR hashes are publication evidence only.
+anchor_stream_layer:
+  role: realtime_read_model_surface
+  authoritative: false
+  mutates_truth: false
+  mutates_replay: false
+  mutates_proof: false
+  mutates_dispatch: false
+  mutates_settlement: false
+  required_outputs:
+    - websocket_stream_status
+    - websocket_anchor_stream
+    - anchor_explorer_ui
+    - adr_hash_preview
+    - adr_on_chain_anchor_packet
+    - cross_network_reconciliation
+  required_behaviors:
+    - stream anchor index events over WebSocket
+    - broadcast new anchor publications to connected clients
+    - expose ADR hash previews as read-only public artifacts
+    - publish ADR hashes only through governed operator action
+    - compare anchor publications across supported networks
+forbidden:
+  - stream_as_truth_authority
+  - adr_hash_as_truth_authority
+  - explorer_as_authority
+  - websocket_stream_mutation_of_index
+  - cross_network_reconciliation_as_truth
+trust_at_scale_controls:
+  - websocket stream is read-only and indexing-only
+  - anchor events are still deterministic and restart-safe
+  - ADR hashes are stable, public, and governed
+  - cross-network reconciliation is observational only
+  - explorer app reads public surfaces only
+verification:
+  runbook: docs/architecture/AFRITECH_ANCHOR_REALTIME_STREAM_AND_ADR_HASHING.md
+  validator: afritech.ci.afritech_blockchain_anchor_realtime_validator
+rules:
+  - RULE-066-realtime-anchor-streaming-and-adr-hashing.yaml
+bindings:
+  - BIND-044-realtime-anchor-streaming-and-adr-hashing.yaml

@@ -30,9 +30,11 @@ from afritech.api.partner_registry_api import build_partner_registry_router
 from afritech.api.public_verification_api import build_public_verification_router
 from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
+from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
+from afritech.architecture.anchor_indexer import ANCHOR_EVENT_SUBSCRIBER, ANCHOR_STREAM_HUB
 
 # ============================================================
 # EDGE PIPELINE
@@ -141,6 +143,9 @@ app.include_router(
 # ✅ Public architecture proof and partner demo API
 app.include_router(build_architecture_proof_router())
 
+# ✅ AfriRide mobile release readiness API
+app.include_router(build_afriride_mobile_release_router())
+
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())
 
@@ -149,6 +154,19 @@ app.include_router(build_afroprog_workspace_router())
 
 # ✅ Operator observability and audit APIs
 app.include_router(build_ops_governance_router())
+
+
+@app.on_event("startup")
+async def _start_anchor_event_subscription() -> None:
+    await ANCHOR_STREAM_HUB.start()
+    if ANCHOR_EVENT_SUBSCRIBER.enabled:
+        await ANCHOR_EVENT_SUBSCRIBER.start()
+
+
+@app.on_event("shutdown")
+async def _stop_anchor_event_subscription() -> None:
+    await ANCHOR_EVENT_SUBSCRIBER.stop()
+    await ANCHOR_STREAM_HUB.stop()
 
 
 # ============================================================

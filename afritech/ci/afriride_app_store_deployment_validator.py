@@ -11,6 +11,10 @@ REQUIRED_FILES = (
     "docs/mobile/legal/privacy_policy_template.md",
     "docs/mobile/legal/terms_of_service_template.md",
     "docs/mobile/legal/support_page_template.md",
+    "docs/mobile/release/afriride_mobile_release_readiness.json",
+    "docs/mobile/release/rider_app_release_manifest.json",
+    "docs/mobile/release/driver_app_release_manifest.json",
+    "docs/mobile/release/operator_dashboard_release_manifest.json",
     "docs/api/afriride_mobile_api_contract.md",
     "docs/pilot/AFRIRIDE_PILOT_ACTIVATION_CHECKLIST.md",
     "afriride_system/flutter/driver_app/pubspec.yaml",
@@ -33,6 +37,22 @@ REQUIRED_TEXT = (
     (
         "docs/api/afriride_mobile_api_contract.md",
         "Mobile apps are interface-only",
+    ),
+    (
+        "docs/mobile/release/afriride_mobile_release_readiness.json",
+        "PILOT_RELEASE_READY_STORE_PRODUCTION_BLOCKED",
+    ),
+    (
+        "docs/mobile/release/rider_app_release_manifest.json",
+        "afriride-rider",
+    ),
+    (
+        "docs/mobile/release/driver_app_release_manifest.json",
+        "afriride-driver",
+    ),
+    (
+        "docs/mobile/release/operator_dashboard_release_manifest.json",
+        "afriride-operator-dashboard",
     ),
     (
         "docs/pilot/AFRIRIDE_PILOT_ACTIVATION_CHECKLIST.md",

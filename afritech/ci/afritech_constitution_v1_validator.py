@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -12,7 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 CONSTITUTION = ROOT / "afritech/constitution/AFRITECH_CONSTITUTION_V1.yaml"
 
-REQUIRED_ROOT_KEYS = {
+REQUIRED_ROOT_KEYS: set[str] = {
     "schema",
     "version",
     "status",
@@ -33,21 +33,21 @@ REQUIRED_ROOT_KEYS = {
     "canonical_language",
 }
 
-REQUIRED_BRANCHES = {
+REQUIRED_BRANCHES: dict[str, str] = {
     "AfriCPPT": "GOVERNANCE",
     "AfriTPPS": "EXECUTION",
     "AfriProgramming": "ENGINEERING",
     "AFRIPower": "INTELLIGENCE",
 }
 
-REQUIRED_BRANCH_DOMAINS = {
+REQUIRED_BRANCH_DOMAINS: dict[str, str] = {
     "AfriCPPT": "GOVERNANCE",
     "AfriTPPS": "EXECUTION",
     "AFRIPower": "INTELLIGENCE",
     "AfriProgramming": "ENGINEERING",
 }
 
-REQUIRED_CANONICAL_PHRASES = (
+REQUIRED_CANONICAL_PHRASES: tuple[str, ...] = (
     "four constitutional pillars",
     "Deterministic Truth",
     "Orchestration",
@@ -61,7 +61,7 @@ REQUIRED_CANONICAL_PHRASES = (
     "eighteen core pillars",
 )
 
-REQUIRED_CORE_PILLAR_LAYERS = {
+REQUIRED_CORE_PILLAR_LAYERS: dict[str, tuple[str, str, tuple[str, ...]]] = {
     "CONSTITUTIONAL_KERNEL": (
         "Constitutional Kernel",
         "Defines truth.",
@@ -112,7 +112,7 @@ REQUIRED_CORE_PILLAR_LAYERS = {
     ),
 }
 
-REQUIRED_CONSTITUTIONAL_PILLARS = {
+REQUIRED_CONSTITUTIONAL_PILLARS: dict[str, dict[str, str]] = {
     "DETERMINISTIC_TRUTH": {
         "name": "Deterministic Truth",
         "constitutional_function": "Replay Governance",
@@ -131,28 +131,28 @@ REQUIRED_CONSTITUTIONAL_PILLARS = {
     },
 }
 
-REQUIRED_ECOSYSTEM_PILLARS = {
+REQUIRED_ECOSYSTEM_PILLARS: dict[str, dict[str, str]] = {
     "AfriCPPT": {"role": "GOVERNANCE", "canonical_action": "governs"},
     "AfriTPPS": {"role": "EXECUTION", "canonical_action": "executes"},
     "AfriProgramming": {"role": "ENGINEERING", "canonical_action": "builds"},
     "AFRIPower": {"role": "INTELLIGENCE", "canonical_action": "explains"},
 }
 
-REQUIRED_BRANCH_PURPOSES = {
+REQUIRED_BRANCH_PURPOSES: dict[str, str] = {
     "AfriCPPT": "Defines what is allowed.",
     "AfriTPPS": "Defines how work gets executed.",
     "AfriProgramming": "Builds and verifies software systems.",
     "AFRIPower": "Transforms evidence into intelligence.",
 }
 
-REQUIRED_BRANCH_QUESTIONS = {
+REQUIRED_BRANCH_QUESTIONS: dict[str, str] = {
     "AfriCPPT": "What should be done?",
     "AfriTPPS": "How should it be executed?",
     "AfriProgramming": "How do we build it?",
     "AFRIPower": "What can we learn from it?",
 }
 
-REQUIRED_BRANCH_OUTPUTS = {
+REQUIRED_BRANCH_OUTPUTS: dict[str, set[str]] = {
     "AfriCPPT": {
         "ADR",
         "Invariant",
@@ -193,6 +193,34 @@ def fail(message: str) -> None:
     raise RuntimeError(message)
 
 
+def require_mapping(value: Any, message: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        fail(message)
+    return cast(dict[str, Any], value)
+
+
+def require_non_empty_list(value: Any, message: str) -> list[Any]:
+    if not isinstance(value, list) or not value:
+        fail(message)
+    return cast(list[Any], value)
+
+
+def require_list(value: Any, message: str) -> list[Any]:
+    if not isinstance(value, list):
+        fail(message)
+    return cast(list[Any], value)
+
+
+def require_string(value: Any, message: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        fail(message)
+    return cast(str, value)
+
+
+def optional_string(value: Any) -> str | None:
+    return value if isinstance(value, str) else None
+
+
 def load_constitution(path: Path = CONSTITUTION) -> dict[str, Any]:
     if not path.exists():
         fail(f"constitution file missing: {path.relative_to(ROOT)}")
@@ -202,10 +230,7 @@ def load_constitution(path: Path = CONSTITUTION) -> dict[str, Any]:
     except yaml.YAMLError as exc:
         fail(f"constitution YAML does not parse: {exc}")
 
-    if not isinstance(payload, dict):
-        fail("constitution YAML root must be a mapping")
-
-    return payload
+    return require_mapping(payload, "constitution YAML root must be a mapping")
 
 
 def validate_required_root_keys(payload: dict[str, Any]) -> None:
@@ -215,9 +240,10 @@ def validate_required_root_keys(payload: dict[str, Any]) -> None:
 
 
 def validate_canonical_relationship(payload: dict[str, Any]) -> None:
-    statement = payload.get("canonical_statement")
-    if not isinstance(statement, str) or not statement.strip():
-        fail("canonical_statement must be a non-empty string")
+    statement = require_string(
+        payload.get("canonical_statement"),
+        "canonical_statement must be a non-empty string",
+    )
 
     missing = [
         phrase for phrase in REQUIRED_CANONICAL_PHRASES if phrase not in statement
@@ -227,29 +253,23 @@ def validate_canonical_relationship(payload: dict[str, Any]) -> None:
 
 
 def validate_hierarchy(payload: dict[str, Any]) -> None:
-    hierarchy = payload.get("hierarchy")
-    if not isinstance(hierarchy, dict):
-        fail("hierarchy must be a mapping")
+    hierarchy = require_mapping(payload.get("hierarchy"), "hierarchy must be a mapping")
 
     if hierarchy.get("root") != "AfriTech":
         fail("hierarchy root must be AfriTech")
 
-    layers = hierarchy.get("layers")
-    if not isinstance(layers, list) or not layers:
-        fail("hierarchy.layers must be a non-empty list")
+    layers = require_non_empty_list(
+        hierarchy.get("layers"),
+        "hierarchy.layers must be a non-empty list",
+    )
 
     branch_ids: list[str] = []
     discovered_roles: dict[str, str] = {}
     for index, layer in enumerate(layers):
-        if not isinstance(layer, dict):
-            fail(f"hierarchy.layers[{index}] must be a mapping")
+        layer = require_mapping(layer, f"hierarchy.layers[{index}] must be a mapping")
 
-        branch_id = layer.get("id")
-        role = layer.get("role")
-        if not isinstance(branch_id, str) or not branch_id:
-            fail(f"hierarchy.layers[{index}] missing branch id")
-        if not isinstance(role, str) or not role:
-            fail(f"hierarchy.layers[{index}] missing role")
+        branch_id = require_string(layer.get("id"), f"hierarchy.layers[{index}] missing branch id")
+        role = require_string(layer.get("role"), f"hierarchy.layers[{index}] missing role")
 
         branch_ids.append(branch_id)
         discovered_roles[branch_id] = role
@@ -281,19 +301,23 @@ def validate_hierarchy(payload: dict[str, Any]) -> None:
 
 
 def validate_constitutional_pillars(payload: dict[str, Any]) -> None:
-    pillars = payload.get("constitutional_pillars")
-    if not isinstance(pillars, list) or not pillars:
-        fail("constitutional_pillars must be a non-empty list")
+    pillars = require_non_empty_list(
+        payload.get("constitutional_pillars"),
+        "constitutional_pillars must be a non-empty list",
+    )
 
     pillar_ids: list[str] = []
     discovered: dict[str, dict[str, Any]] = {}
     for index, pillar in enumerate(pillars):
-        if not isinstance(pillar, dict):
-            fail(f"constitutional_pillars[{index}] must be a mapping")
+        pillar = require_mapping(
+            pillar,
+            f"constitutional_pillars[{index}] must be a mapping",
+        )
 
-        pillar_id = pillar.get("id")
-        if not isinstance(pillar_id, str) or not pillar_id:
-            fail(f"constitutional_pillars[{index}] missing id")
+        pillar_id = require_string(
+            pillar.get("id"),
+            f"constitutional_pillars[{index}] missing id",
+        )
 
         pillar_ids.append(pillar_id)
         discovered[pillar_id] = pillar
@@ -305,9 +329,7 @@ def validate_constitutional_pillars(payload: dict[str, Any]) -> None:
             "question_answered",
             "authority_boundary",
         ):
-            value = pillar.get(key)
-            if not isinstance(value, str) or not value.strip():
-                fail(f"constitutional pillar {pillar_id} missing {key}")
+            require_string(pillar.get(key), f"constitutional pillar {pillar_id} missing {key}")
 
     if pillar_ids != list(REQUIRED_CONSTITUTIONAL_PILLARS):
         fail(f"constitutional pillar order mismatch: {pillar_ids!r}")
@@ -331,19 +353,17 @@ def validate_constitutional_pillars(payload: dict[str, Any]) -> None:
 
 
 def validate_ecosystem_pillars(payload: dict[str, Any]) -> None:
-    pillars = payload.get("ecosystem_pillars")
-    if not isinstance(pillars, list) or not pillars:
-        fail("ecosystem_pillars must be a non-empty list")
+    pillars = require_non_empty_list(
+        payload.get("ecosystem_pillars"),
+        "ecosystem_pillars must be a non-empty list",
+    )
 
     pillar_ids: list[str] = []
     discovered: dict[str, dict[str, Any]] = {}
     for index, pillar in enumerate(pillars):
-        if not isinstance(pillar, dict):
-            fail(f"ecosystem_pillars[{index}] must be a mapping")
+        pillar = require_mapping(pillar, f"ecosystem_pillars[{index}] must be a mapping")
 
-        pillar_id = pillar.get("id")
-        if not isinstance(pillar_id, str) or not pillar_id:
-            fail(f"ecosystem_pillars[{index}] missing id")
+        pillar_id = require_string(pillar.get("id"), f"ecosystem_pillars[{index}] missing id")
 
         pillar_ids.append(pillar_id)
         discovered[pillar_id] = pillar
@@ -370,19 +390,17 @@ def validate_ecosystem_pillars(payload: dict[str, Any]) -> None:
 
 
 def validate_core_pillar_layers(payload: dict[str, Any]) -> None:
-    layers = payload.get("core_pillar_layers")
-    if not isinstance(layers, list) or not layers:
-        fail("core_pillar_layers must be a non-empty list")
+    layers = require_non_empty_list(
+        payload.get("core_pillar_layers"),
+        "core_pillar_layers must be a non-empty list",
+    )
 
     layer_ids: list[str] = []
     total_pillars = 0
     for index, layer in enumerate(layers):
-        if not isinstance(layer, dict):
-            fail(f"core_pillar_layers[{index}] must be a mapping")
+        layer = require_mapping(layer, f"core_pillar_layers[{index}] must be a mapping")
 
-        layer_id = layer.get("id")
-        if not isinstance(layer_id, str) or not layer_id:
-            fail(f"core_pillar_layers[{index}] missing id")
+        layer_id = require_string(layer.get("id"), f"core_pillar_layers[{index}] missing id")
         layer_ids.append(layer_id)
 
         if layer_id not in REQUIRED_CORE_PILLAR_LAYERS:
@@ -395,24 +413,25 @@ def validate_core_pillar_layers(payload: dict[str, Any]) -> None:
             fail(f"{layer_id} name mismatch: {layer.get('name')!r}")
         if layer.get("purpose") != expected_purpose:
             fail(f"{layer_id} purpose mismatch: {layer.get('purpose')!r}")
-        if not isinstance(layer.get("legitimacy_boundary"), str):
-            fail(f"{layer_id} missing legitimacy_boundary")
+        require_string(layer.get("legitimacy_boundary"), f"{layer_id} missing legitimacy_boundary")
 
-        pillars = layer.get("pillars")
-        if not isinstance(pillars, list) or not pillars:
-            fail(f"{layer_id} pillars must be a non-empty list")
+        pillars = require_non_empty_list(
+            layer.get("pillars"),
+            f"{layer_id} pillars must be a non-empty list",
+        )
 
         pillar_ids: list[str] = []
         for pillar_index, pillar in enumerate(pillars):
-            if not isinstance(pillar, dict):
-                fail(f"{layer_id}.pillars[{pillar_index}] must be a mapping")
-            pillar_id = pillar.get("id")
-            if not isinstance(pillar_id, str) or not pillar_id:
-                fail(f"{layer_id}.pillars[{pillar_index}] missing id")
-            if not isinstance(pillar.get("name"), str) or not pillar["name"].strip():
-                fail(f"{pillar_id} missing name")
-            if not isinstance(pillar.get("summary"), str) or not pillar["summary"].strip():
-                fail(f"{pillar_id} missing summary")
+            pillar = require_mapping(
+                pillar,
+                f"{layer_id}.pillars[{pillar_index}] must be a mapping",
+            )
+            pillar_id = require_string(
+                pillar.get("id"),
+                f"{layer_id}.pillars[{pillar_index}] missing id",
+            )
+            require_string(pillar.get("name"), f"{pillar_id} missing name")
+            require_string(pillar.get("summary"), f"{pillar_id} missing summary")
             pillar_ids.append(pillar_id)
 
         if tuple(pillar_ids) != expected_pillars:
@@ -426,22 +445,25 @@ def validate_core_pillar_layers(payload: dict[str, Any]) -> None:
 
 
 def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
-    responsibilities = payload.get("layer_responsibilities")
-    if not isinstance(responsibilities, dict):
-        fail("layer_responsibilities must be a mapping")
+    responsibilities = require_mapping(
+        payload.get("layer_responsibilities"),
+        "layer_responsibilities must be a mapping",
+    )
 
     for branch_id, expected_domain in REQUIRED_BRANCH_DOMAINS.items():
-        branch = responsibilities.get(branch_id)
-        if not isinstance(branch, dict):
-            fail(f"{branch_id} responsibilities missing")
+        branch = require_mapping(
+            responsibilities.get(branch_id),
+            f"{branch_id} responsibilities missing",
+        )
 
         domain = branch.get("domain")
         if domain != expected_domain:
             fail(f"{branch_id} domain must be {expected_domain}, got {domain!r}")
 
-        items = branch.get("responsibilities")
-        if not isinstance(items, list) or not items:
-            fail(f"{branch_id} must define at least one responsibility")
+        items = require_non_empty_list(
+            branch.get("responsibilities"),
+            f"{branch_id} must define at least one responsibility",
+        )
         if not all(isinstance(item, str) and item.strip() for item in items):
             fail(f"{branch_id} responsibilities must be non-empty strings")
 
@@ -454,9 +476,7 @@ def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
                 f"{branch.get('question_answered')!r}"
             )
 
-        outputs = branch.get("outputs")
-        if not isinstance(outputs, list):
-            fail(f"{branch_id} outputs must be a list")
+        outputs = require_list(branch.get("outputs"), f"{branch_id} outputs must be a list")
         missing_outputs = REQUIRED_BRANCH_OUTPUTS[branch_id] - set(outputs)
         if missing_outputs:
             fail(f"{branch_id} outputs missing: {sorted(missing_outputs)}")
@@ -468,9 +488,10 @@ def validate_branch_responsibilities(payload: dict[str, Any]) -> None:
 
 
 def validate_core_definitions(payload: dict[str, Any]) -> None:
-    definitions = payload.get("core_definitions")
-    if not isinstance(definitions, dict):
-        fail("core_definitions must be a mapping")
+    definitions = require_mapping(
+        payload.get("core_definitions"),
+        "core_definitions must be a mapping",
+    )
 
     required_definition_keys = {
         "afritech",
@@ -484,12 +505,13 @@ def validate_core_definitions(payload: dict[str, Any]) -> None:
         fail(f"core_definitions missing entries: {sorted(missing)}")
 
     for key in required_definition_keys:
-        definition = definitions.get(key)
-        if not isinstance(definition, dict):
-            fail(f"core_definitions.{key} must be a mapping")
-        if not definition.get("role"):
+        definition = require_mapping(
+            definitions.get(key),
+            f"core_definitions.{key} must be a mapping",
+        )
+        if not optional_string(definition.get("role")):
             fail(f"core_definitions.{key} missing role")
-        if not definition.get("definition"):
+        if not optional_string(definition.get("definition")):
             fail(f"core_definitions.{key} missing definition")
 
 

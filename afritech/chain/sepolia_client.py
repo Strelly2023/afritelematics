@@ -1,6 +1,7 @@
 # afritech/chain/sepolia_client.py
 
 import os
+from pathlib import Path
 from typing import Dict, Any, cast
 
 
@@ -10,7 +11,8 @@ from typing import Dict, Any, cast
 
 RPC_URL = os.getenv("AFRITECH_CHAIN_RPC_URL_SEPOLIA")
 PRIVATE_KEY = os.getenv("AFRITECH_CHAIN_PRIVATE_KEY")
-ADDRESS = os.getenv("AFRITECH_CHAIN_ADDRESS")
+PRIVATE_KEY_PATH = os.getenv("AFRITECH_CHAIN_PRIVATE_KEY_PATH")
+ADDRESS = os.getenv("AFRITECH_CHAIN_ADDRESS") or os.getenv("AFRITECH_CHAIN_ADDRESS_CHECKSUM")
 
 CHAIN_ID = int(os.getenv("AFRITECH_CHAIN_ID", "11155111"))
 GAS_PRICE_GWEI = float(os.getenv("AFRITECH_CHAIN_GAS_PRICE_GWEI", "2"))
@@ -51,8 +53,15 @@ def _validate_config(web3: Any) -> Any:
     if not web3.is_connected():
         raise RuntimeError("Web3 not connected")
 
-    if not PRIVATE_KEY:
-        raise RuntimeError("Missing AFRITECH_CHAIN_PRIVATE_KEY")
+    private_key = PRIVATE_KEY
+    if not private_key and PRIVATE_KEY_PATH:
+        try:
+            private_key = Path(PRIVATE_KEY_PATH).read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise RuntimeError(f"Unable to read AFRITECH_CHAIN_PRIVATE_KEY_PATH: {exc}") from exc
+
+    if not private_key:
+        raise RuntimeError("Missing AFRITECH_CHAIN_PRIVATE_KEY or AFRITECH_CHAIN_PRIVATE_KEY_PATH")
 
     if not ADDRESS:
         raise RuntimeError("Missing AFRITECH_CHAIN_ADDRESS")
@@ -98,7 +107,13 @@ def send_proof_hash(proof_hash: str) -> Dict[str, Any]:
             "chainId": CHAIN_ID,
         }
 
-        signed_tx = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+        private_key = PRIVATE_KEY
+        if not private_key and PRIVATE_KEY_PATH:
+            private_key = Path(PRIVATE_KEY_PATH).read_text(encoding="utf-8").strip()
+        if not private_key:
+            raise RuntimeError("Missing AFRITECH_CHAIN_PRIVATE_KEY or AFRITECH_CHAIN_PRIVATE_KEY_PATH")
+
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
         raw_tx = _raw_transaction(signed_tx)
         if raw_tx is None:
             raise RuntimeError("signed transaction did not expose raw transaction bytes")

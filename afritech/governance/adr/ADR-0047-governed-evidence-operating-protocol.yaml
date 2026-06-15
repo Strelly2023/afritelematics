@@ -1,0 +1,50 @@
+id: ADR-0047
+title: Governed Evidence Operating Protocol
+status: accepted
+decision: >
+  Promote the blockchain anchor, reconciliation, policy, semantics, and explorer
+  surfaces into one governed evidence operating protocol. The protocol combines
+  platform behavior, machine-readable operational semantics, governance
+  artifacts, and CI enforcement into a single public contract while preserving
+  replay and proof as the only truth authority.
+context:
+  - AfriTech now exposes deterministic proof generation, blockchain publication evidence, WebSocket observation, reconciliation, policy, promotion gating, and public verification.
+  - External verifiers need one stable protocol packet that identifies the lifecycle, governance artifacts, validators, hashes, and public surfaces.
+  - Governance must prevent the protocol packet from turning blockchain, explorer, reconciliation, or promotion gates into truth authority.
+authority_model:
+  truth_authority:
+    - Replay
+    - Proof
+  evidence_surfaces:
+    - Blockchain
+    - WebSocket stream
+    - Anchor index
+    - Reconciliation
+    - Explorer
+  control_surfaces:
+    - Evidence policy
+    - Mainnet promotion gate
+  principle: >
+    The governed evidence protocol defines how evidence behaves. It does not
+    define truth. Replay and proof remain authority.
+protocol_outputs:
+  - governed evidence protocol packet
+  - protocol hash
+  - semantics hash
+  - policy hash
+  - governance artifact hashes
+  - required validator list
+  - public protocol surfaces
+forbidden:
+  - protocol_packet_as_truth_authority
+  - blockchain_as_truth_authority
+  - explorer_as_truth_authority
+  - reconciliation_as_truth_authority
+  - promotion_gate_as_truth_authority
+verification:
+  runbook: docs/protocol/AFRITECH_GOVERNED_EVIDENCE_PROTOCOL.md
+  validator: afritech.ci.afritech_governed_evidence_protocol_validator
+rules:
+  - RULE-067-governed-evidence-operating-protocol.yaml
+bindings:
+  - BIND-045-governed-evidence-operating-protocol.yaml

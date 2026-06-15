@@ -207,6 +207,26 @@ PIPELINE: tuple[PipelineStep, ...] = (
         "STATIC",
     ),
     module_step(
+        "afritech_blockchain_anchor_validator",
+        "afritech.ci.afritech_blockchain_anchor_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_blockchain_anchor_realtime_validator",
+        "afritech.ci.afritech_blockchain_anchor_realtime_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afritech_governed_evidence_protocol_validator",
+        "afritech.ci.afritech_governed_evidence_protocol_validator",
+        "STATIC",
+    ),
+    module_step(
+        "afriride_mobile_release_validator",
+        "afritech.ci.afriride_mobile_release_validator",
+        "STATIC",
+    ),
+    module_step(
         "afritech_live_pilot_execution_validator",
         "afritech.ci.afritech_live_pilot_execution_validator",
         "STATIC",
