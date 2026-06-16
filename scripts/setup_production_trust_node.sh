@@ -75,6 +75,7 @@ if [[ -z "$DOMAIN" || -z "$EMAIL" ]]; then
   echo "AFRITECH_DOMAIN and AFRITECH_TLS_EMAIL are required" >&2
   exit 1
 fi
+CERT_DOMAINS=("$DOMAIN" "app.$DOMAIN" "api.$DOMAIN" "verify.$DOMAIN")
 
 if [[ "$APPLY_FIREWALL" -eq 1 ]]; then
   if ! command -v ufw >/dev/null 2>&1; then
@@ -88,10 +89,21 @@ if [[ "$APPLY_FIREWALL" -eq 1 ]]; then
 fi
 
 COMPOSE=(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
+PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$(dirname "$COMPOSE_FILE")")}"
 BUILD_ARGS=()
 if [[ "$NO_CACHE" -eq 1 ]]; then
   BUILD_ARGS+=(--no-cache)
 fi
+
+ensure_compose_volume() {
+  local volume_name="$1"
+
+  if docker volume inspect "$volume_name" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  docker volume create "$volume_name" >/dev/null
+}
 
 echo "==> Validating trust-node compose configuration"
 "${COMPOSE[@]}" config --quiet
@@ -108,29 +120,27 @@ if [[ "$ISSUE_CERT" -eq 1 ]]; then
     -out "$TMP_DIR/live/$DOMAIN/fullchain.pem" \
     -subj "/CN=$DOMAIN" >/dev/null 2>&1
 
-  CERT_VOLUME="$("${COMPOSE[@]}" volume ls -q | grep '_certbot_certs$' | head -n 1 || true)"
-  if [[ -z "$CERT_VOLUME" ]]; then
-    "${COMPOSE[@]}" up -d --no-start nginx >/dev/null
-    CERT_VOLUME="$("${COMPOSE[@]}" volume ls -q | grep '_certbot_certs$' | head -n 1 || true)"
-  fi
-  if [[ -z "$CERT_VOLUME" ]]; then
-    echo "could not resolve certbot_certs volume" >&2
-    exit 1
-  fi
+  CERT_VOLUME="${PROJECT_NAME}_certbot_certs"
+  ensure_compose_volume "$CERT_VOLUME"
   docker run --rm -v "$CERT_VOLUME:/etc/letsencrypt" -v "$TMP_DIR:/tmp/certs:ro" alpine \
     sh -c "mkdir -p /etc/letsencrypt/live/$DOMAIN && cp /tmp/certs/live/$DOMAIN/* /etc/letsencrypt/live/$DOMAIN/"
 
   echo "==> Starting Nginx for ACME challenge"
   "${COMPOSE[@]}" up -d nginx
 
-  echo "==> Requesting Let's Encrypt certificate for $DOMAIN"
+  CERTBOT_DOMAIN_ARGS=()
+  for cert_domain in "${CERT_DOMAINS[@]}"; do
+    CERTBOT_DOMAIN_ARGS+=(-d "$cert_domain")
+  done
+
+  echo "==> Requesting Let's Encrypt certificate for ${CERT_DOMAINS[*]}"
   "${COMPOSE[@]}" --profile certbot run --rm certbot certonly \
     --webroot \
     --webroot-path /var/www/certbot \
     --email "$EMAIL" \
     --agree-tos \
     --no-eff-email \
-    -d "$DOMAIN"
+    "${CERTBOT_DOMAIN_ARGS[@]}"
 
   echo "==> Reloading Nginx with issued certificate"
   "${COMPOSE[@]}" exec -T nginx nginx -s reload

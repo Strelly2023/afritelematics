@@ -1,17 +1,37 @@
-:80 {
-  encode gzip zstd
+{
+	auto_https off
+}
 
-  @public_verify path /public/*
-  handle @public_verify {
-    reverse_proxy afritech-api:8000
-  }
+http://afritechnology.com, http://app.afritechnology.com {
+	encode gzip zstd
 
-  @api path /health /auth/* /v1/* /ws/* /rides/* /system/* /passenger/* /driver/* /ride/*
-  handle @api {
-    reverse_proxy afritech-api:8000
-  }
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
 
-  handle {
-    reverse_proxy afritech-dashboard:4173
-  }
+	@public_verify path /public/*
+	handle @public_verify {
+		reverse_proxy afritech-api:8000
+	}
+
+	@api path /health /auth/* /v1/* /ws/* /rides/* /system/* /passenger/* /driver/* /ride/*
+	handle @api {
+		reverse_proxy afritech-api:8000
+	}
+
+	handle {
+		reverse_proxy afritech-dashboard:4173
+	}
+}
+
+http://api.afritechnology.com {
+	encode gzip zstd
+	reverse_proxy afritech-api:8000
+}
+
+http://verify.afritechnology.com {
+	encode gzip zstd
+	reverse_proxy afritech-api:8000
 }
