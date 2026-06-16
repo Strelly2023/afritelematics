@@ -92,3 +92,4 @@ deploy/production/.env.production
 deploy/production/.env.production.save
 deploy/production/secrets/
 *.pem
+deploy/production/.env.production.trust-node
