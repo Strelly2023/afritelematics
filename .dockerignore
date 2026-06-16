@@ -42,6 +42,10 @@ afriprogramming_demo
 AfriProgramming_Investor_Package
 
 # Trust runtime needs the evidence corpus at build time.
+!mutants/
+!mutants/**
+!replay_dashboard/
+!replay_dashboard/**
 !reports/
 !reports/**
 !traces/

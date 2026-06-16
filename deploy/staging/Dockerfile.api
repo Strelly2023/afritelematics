@@ -8,6 +8,10 @@ WORKDIR /app
 COPY pyproject.toml README.md /app/
 COPY afritech /app/afritech
 COPY afriride_system /app/afriride_system
+COPY afriride /app/afriride
+COPY dashboard /app/dashboard
+COPY replay_dashboard /app/replay_dashboard
+COPY mutants /app/mutants
 COPY ecosystems /app/ecosystems
 COPY docs /app/docs
 COPY reports /app/reports
