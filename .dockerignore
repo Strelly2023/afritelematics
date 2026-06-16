@@ -41,6 +41,12 @@ afri_back_files
 afriprogramming_demo
 AfriProgramming_Investor_Package
 
+# Trust runtime needs the evidence corpus at build time.
+!reports/
+!reports/**
+!traces/
+!traces/**
+
 # Large generated/mobile binaries
 *.apk
 *.aab
