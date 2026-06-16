@@ -43,6 +43,14 @@ Launch the production node:
 ./scripts/setup_production_trust_node.sh --issue-cert --apply-firewall
 ```
 
+If Certbot reports `Certificate not yet due for renewal` but curl still shows
+the temporary self-signed bootstrap certificate, repoint Nginx to the existing
+valid Let's Encrypt lineage:
+
+```bash
+./scripts/setup_production_trust_node.sh --repair-cert
+```
+
 One-command go-live and anchor flow:
 
 ```bash
@@ -144,6 +152,10 @@ Run after deployment:
 
 ```bash
 ./scripts/run_local_production_probe.sh https://trust.afritech.example
+curl -I https://trust.afritech.example
+curl -I https://app.trust.afritech.example
+curl -I https://api.trust.afritech.example/health
+curl -I https://verify.trust.afritech.example/public/architecture/proof
 python3 -m afritech.cli.main verify --registry --json
 python3 -m afritech.cli.main verify --global --json
 python3 -m afritech.cli.main verify --ecosystem --json

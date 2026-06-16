@@ -82,9 +82,13 @@ def test_trust_node_scripts_cover_setup_anchoring_access_and_dashboard() -> None
     go_live = GO_LIVE.read_text(encoding="utf-8")
 
     assert "--issue-cert" in setup
+    assert "--repair-cert" in setup
     assert "--apply-firewall" in setup
     assert "ufw allow 443/tcp" in setup
     assert "certbot certonly" in setup
+    assert "--cert-name \"$DOMAIN\"" in setup
+    assert "repoint_canonical_cert" in setup
+    assert "valid_canonical_cert_exists" in setup
     assert "publish_live_ecosystem_anchor" in anchor
     assert "require_live=True" in anchor
     assert "record_live_ecosystem_anchor" in anchor
@@ -118,6 +122,7 @@ def test_trust_node_runbook_preserves_authority_boundary() -> None:
         "Nginx",
         "Let's Encrypt",
         "./scripts/setup_production_trust_node.sh --issue-cert --apply-firewall",
+        "./scripts/setup_production_trust_node.sh --repair-cert",
         "./scripts/go_live_anchor_now.sh --profile sepolia",
         "./scripts/enable_live_anchoring.sh sepolia",
         "./scripts/open_ecosystem_access.sh",
