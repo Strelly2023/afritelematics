@@ -87,6 +87,7 @@ def test_trust_node_scripts_cover_setup_anchoring_access_and_dashboard() -> None
     assert "ufw allow 443/tcp" in setup
     assert "certbot certonly" in setup
     assert "--cert-name \"$DOMAIN\"" in setup
+    assert "--force-renewal" in setup
     assert "repoint_canonical_cert" in setup
     assert "valid_canonical_cert_exists" in setup
     assert "publish_live_ecosystem_anchor" in anchor

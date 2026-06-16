@@ -241,6 +241,10 @@ if [[ "$ISSUE_CERT" -eq 1 ]]; then
     for cert_domain in "${CERT_DOMAINS[@]}"; do
       CERTBOT_DOMAIN_ARGS+=(-d "$cert_domain")
     done
+    CERTBOT_RENEWAL_ARGS=()
+    if canonical_cert_exists "$CERT_VOLUME" && ! valid_canonical_cert_exists "$CERT_VOLUME"; then
+      CERTBOT_RENEWAL_ARGS+=(--force-renewal)
+    fi
 
     echo "==> Requesting Let's Encrypt certificate for ${CERT_DOMAINS[*]}"
     "${COMPOSE[@]}" --profile certbot run --rm certbot certonly \
@@ -252,9 +256,14 @@ if [[ "$ISSUE_CERT" -eq 1 ]]; then
       --no-eff-email \
       --non-interactive \
       --expand \
+      "${CERTBOT_RENEWAL_ARGS[@]}" \
       "${CERTBOT_DOMAIN_ARGS[@]}"
 
     repoint_canonical_cert "$CERT_VOLUME"
+    if ! valid_canonical_cert_exists "$CERT_VOLUME"; then
+      echo "Certbot completed but no valid certificate covers ${CERT_DOMAINS[*]}" >&2
+      exit 1
+    fi
   else
     echo "==> Existing Let's Encrypt certificate already covers ${CERT_DOMAINS[*]}"
   fi
