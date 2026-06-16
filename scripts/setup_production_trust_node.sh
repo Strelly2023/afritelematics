@@ -140,6 +140,8 @@ if [[ "$ISSUE_CERT" -eq 1 ]]; then
     --email "$EMAIL" \
     --agree-tos \
     --no-eff-email \
+    --non-interactive \
+    --expand \
     "${CERTBOT_DOMAIN_ARGS[@]}"
 
   echo "==> Reloading Nginx with issued certificate"
