@@ -82,7 +82,7 @@ flowchart TD
     Ride --> Backend["backend (28 files)"]
     Ride --> Django["django_app (99 files)"]
     Ui --> Dashboard["src (2 files)"]
-    Deploy --> Production["production (2 files)"]
+    Deploy --> Production["production (3 files)"]
 ```
 
 ## Repo Area Counts
@@ -100,7 +100,7 @@ flowchart TD
 - `afriride_backend`: `28` files
 - `afriride_django`: `99` files
 - `dashboard_ui`: `2` files
-- `deploy_production`: `2` files
+- `deploy_production`: `3` files
 
 ## Startup Inventory
 

@@ -1,0 +1,79 @@
+services:
+  afritech-api:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    restart: unless-stopped
+    env_file:
+      - .env.production.trust-node
+    volumes:
+      - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
+      - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
+      - ./secrets/afritech_public_key.pem:/run/secrets/afritech_public_key.pem:ro
+      - afritech_anchor_index:/var/lib/afritech
+    expose:
+      - "8000"
+    command:
+      - uvicorn
+      - afritech.api.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "2"
+      - --proxy-headers
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health').read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  afritech-dashboard:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.dashboard
+      args:
+        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-https://trust.afritech.example}
+        VITE_AFRIRIDE_APP_VERSION: ${VITE_AFRIRIDE_APP_VERSION:-trust-node-1}
+    restart: unless-stopped
+    env_file:
+      - .env.production.trust-node
+    expose:
+      - "4173"
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    env_file:
+      - .env.production.trust-node
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/trust-node.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - certbot_www:/var/www/certbot
+      - certbot_certs:/etc/letsencrypt
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+      afritech-dashboard:
+        condition: service_started
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    profiles: ["certbot"]
+    env_file:
+      - .env.production.trust-node
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_certs:/etc/letsencrypt
+    entrypoint: ["certbot"]
+
+volumes:
+  afritech_anchor_index:
+  certbot_www:
+  certbot_certs:

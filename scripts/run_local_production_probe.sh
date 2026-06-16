@@ -18,4 +18,20 @@ echo "==> public registry"
 curl -kfsS "$BASE_URL/public/registry" | python3 -m json.tool
 echo
 
+echo "==> feature registry verification"
+curl -kfsS "$BASE_URL/public/feature-registry/verify" | python3 -m json.tool
+echo
+
+echo "==> global verification"
+curl -kfsS "$BASE_URL/public/global-verification/verify" | python3 -m json.tool
+echo
+
+echo "==> ecosystem verification"
+curl -kfsS "$BASE_URL/public/ecosystem-evolution/verify" | python3 -m json.tool
+echo
+
+echo "==> interoperable verification standard"
+curl -kfsS "$BASE_URL/public/ecosystem-evolution/standard" | python3 -m json.tool
+echo
+
 echo "Production probe completed."

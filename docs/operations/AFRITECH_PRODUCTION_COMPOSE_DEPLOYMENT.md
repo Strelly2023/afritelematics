@@ -13,6 +13,13 @@ deployment is already active.
 - `afritech-dashboard`
 - `edge` (Caddy reverse proxy in pilot HTTP mode)
 
+For the production trust-node path with Nginx, HTTPS, live-anchor capability,
+and ecosystem verification access, use:
+
+- `deploy/production/docker-compose.trust-node.yml`
+- `deploy/production/nginx/trust-node.conf.template`
+- `docs/operations/AFRITECH_PRODUCTION_TRUST_NODE_RUNBOOK.md`
+
 ## Files
 
 - `deploy/production/docker-compose.production.yml`
@@ -81,6 +88,15 @@ live stack before proving that the replacement image can build and boot.
 
 ```bash
 ./scripts/run_local_production_probe.sh http://<host>
+```
+
+Trust-node verification:
+
+```bash
+./scripts/setup_production_trust_node.sh --issue-cert --apply-firewall
+./scripts/open_ecosystem_access.sh https://<domain>
+./scripts/launch_trust_dashboard.sh
+./scripts/enable_live_anchoring.sh sepolia
 ```
 
 ## Boundary notes

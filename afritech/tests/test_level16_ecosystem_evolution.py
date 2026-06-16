@@ -3,7 +3,9 @@ from __future__ import annotations
 from afritech.chain.types import ChainReceipt
 from afritech.ecosystem_evolution import (
     build_ecosystem_evolution_certificate,
+    load_live_ecosystem_anchor,
     publish_live_ecosystem_anchor,
+    record_live_ecosystem_anchor,
     verify_ecosystem_evolution_certificate,
 )
 
@@ -44,6 +46,32 @@ def test_level16_accepts_live_public_ledger_receipt_when_supplied():
     certificate = build_ecosystem_evolution_certificate(live_receipt=receipt)
     verification = verify_ecosystem_evolution_certificate(certificate)
 
+    assert verification["verified"] is True
+    assert verification["live_public_ledger_anchoring"]["status"] == "LIVE_PUBLIC_LEDGER_ANCHORED"
+    assert verification["live_public_ledger_anchoring"]["live_receipt_verified"] is True
+
+
+def test_level16_persists_live_receipt_for_public_verification(tmp_path, monkeypatch):
+    monkeypatch.setenv("AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE", str(tmp_path / "live.json"))
+    receipt = ChainReceipt(
+        tx_hash="0x" + "d" * 64,
+        network="sepolia",
+        status="live",
+        chain_id=11155111,
+        chain_name="Ethereum Sepolia",
+        proof_hash="e" * 64,
+        authority="smart_contract",
+        source="test",
+    )
+
+    path = record_live_ecosystem_anchor(receipt)
+    loaded = load_live_ecosystem_anchor()
+    certificate = build_ecosystem_evolution_certificate()
+    verification = verify_ecosystem_evolution_certificate(certificate)
+
+    assert path.exists()
+    assert loaded is not None
+    assert loaded["tx_hash"] == receipt.tx_hash
     assert verification["verified"] is True
     assert verification["live_public_ledger_anchoring"]["status"] == "LIVE_PUBLIC_LEDGER_ANCHORED"
     assert verification["live_public_ledger_anchoring"]["live_receipt_verified"] is True

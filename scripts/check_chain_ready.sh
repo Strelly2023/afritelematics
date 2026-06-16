@@ -2,7 +2,13 @@
 
 set -e
 
-COMPOSE_FILE="deploy/production/docker-compose.production.yml"
+COMPOSE_FILE="${COMPOSE_FILE:-deploy/production/docker-compose.production.yml}"
+ENV_FILE="${ENV_FILE:-}"
+COMPOSE=(docker compose -f "$COMPOSE_FILE")
+
+if [[ -n "$ENV_FILE" ]]; then
+  COMPOSE=(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
+fi
 
 echo "========================================="
 echo " AfriTech Blockchain Readiness Check"
@@ -14,7 +20,7 @@ echo "========================================="
 echo ""
 echo "==> Checking afritech-api container"
 
-if ! docker compose -f "$COMPOSE_FILE" ps | grep -q "afritech-api.*Up"; then
+if ! "${COMPOSE[@]}" ps | grep -q "afritech-api.*Up"; then
   echo "❌ afritech-api container is not running"
   exit 1
 fi
@@ -27,7 +33,7 @@ echo "✅ afritech-api is running"
 echo ""
 echo "==> Checking required environment variables"
 
-ENV_OUTPUT=$(docker compose -f "$COMPOSE_FILE" exec -T afritech-api env)
+ENV_OUTPUT=$("${COMPOSE[@]}" exec -T afritech-api env)
 
 REQUIRED_VARS=(
   AFRITECH_CHAIN_ENABLE_PUBLISH
@@ -78,7 +84,7 @@ fi
 echo ""
 echo "==> Checking RPC connectivity"
 
-docker compose -f "$COMPOSE_FILE" exec -T afritech-api python - <<'EOF'
+"${COMPOSE[@]}" exec -T afritech-api python - <<'EOF'
 from web3 import Web3
 import os
 import sys
@@ -123,7 +129,7 @@ fi
 echo ""
 echo "==> Checking chain client health"
 
-docker compose -f "$COMPOSE_FILE" exec -T afritech-api python - <<'EOF'
+"${COMPOSE[@]}" exec -T afritech-api python - <<'EOF'
 from afritech.chain.contracts.contract_client import chain_health
 
 status = chain_health()

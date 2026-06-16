@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,7 @@ from afritech.global_verification import (
 )
 
 REPORT_ROOT = Path(__file__).resolve().parents[1] / "reports" / "ecosystem_evolution"
+DEFAULT_LIVE_RECEIPT_FILE = REPORT_ROOT / "live_anchor_receipt.json"
 
 LEVEL16_CLASSIFICATION = "LEVEL_16_ECOSYSTEM_TRUST_INFRASTRUCTURE"
 LEVEL16_STATUS = "ECOSYSTEM_EVOLUTION_READY"
@@ -295,10 +297,11 @@ def build_ecosystem_evolution_certificate(
     *,
     live_receipt: ChainReceipt | dict[str, Any] | None = None,
 ) -> EcosystemEvolutionCertificate:
+    resolved_live_receipt = live_receipt or load_live_ecosystem_anchor()
     global_bundle = build_global_verification_bundle().canonical_dict()
     organizations = default_ecosystem_organizations()
     governments = default_government_adoption_profiles()
-    anchor_policy = build_live_public_ledger_anchor_policy(live_receipt)
+    anchor_policy = build_live_public_ledger_anchor_policy(resolved_live_receipt)
     standard = build_interoperable_verification_standard()
     hash_payload = {
         "classification": LEVEL16_CLASSIFICATION,
@@ -390,6 +393,38 @@ def verify_ecosystem_evolution_certificate(
             "no_production_state_can_be_falsely_implied": True,
         },
     }
+
+
+def live_receipt_path() -> Path:
+    configured = os.getenv("AFRITECH_ECOSYSTEM_LIVE_RECEIPT_FILE", "").strip()
+    if configured:
+        return Path(configured)
+    return DEFAULT_LIVE_RECEIPT_FILE
+
+
+def record_live_ecosystem_anchor(receipt: ChainReceipt | dict[str, Any]) -> Path:
+    payload = receipt.canonical_dict() if isinstance(receipt, ChainReceipt) else receipt
+    if not isinstance(payload, dict):
+        raise ValueError("live receipt must be a JSON object")
+    if payload.get("status") != "live":
+        raise ValueError("only live chain receipts can be persisted")
+    path = live_receipt_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    return path
+
+
+def load_live_ecosystem_anchor() -> dict[str, Any] | None:
+    path = live_receipt_path()
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or payload.get("status") != "live":
+        return None
+    return payload
 
 
 def write_ecosystem_evolution_snapshot(
@@ -529,6 +564,9 @@ __all__ = [
     "default_ecosystem_organizations",
     "default_government_adoption_profiles",
     "publish_live_ecosystem_anchor",
+    "record_live_ecosystem_anchor",
+    "load_live_ecosystem_anchor",
+    "live_receipt_path",
     "verify_ecosystem_evolution_certificate",
     "write_ecosystem_evolution_snapshot",
 ]
