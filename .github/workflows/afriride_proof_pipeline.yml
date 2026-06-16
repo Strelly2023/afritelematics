@@ -30,6 +30,18 @@ jobs:
       - name: Validate certification contract
         run: python3 -m afritech.ci.afriride_controlled_pilot_certification_validator
 
+      - name: Validate governed feature evidence registry
+        run: pytest afritech/tests/test_features.py -q
+
+      - name: Verify signed feature registry
+        run: python3 -m afritech.cli.main verify --registry --json
+
+      - name: Verify global public verification layer
+        run: python3 -m afritech.cli.main verify --global --json
+
+      - name: Verify ecosystem trust infrastructure
+        run: python3 -m afritech.cli.main verify --ecosystem --json
+
       - name: Validate Wave 7 gate contract
         run: python3 -m afritech.ci.afriride_wave7_go_no_go_gate_validator
 

@@ -42,6 +42,14 @@ allowed_occurrences:
     class: validator_policy
     reason: validates explicit PARTIAL/PLANNED occurrence audit
 
+  - path: afritech/features.py
+    class: state_vocabulary
+    reason: governed feature registry declares technical-status vocabulary while exported activation remains gated
+
+  - path: afritech/tests/test_features.py
+    class: validator_policy
+    reason: tests assert the governed feature registry status vocabulary without authorizing production activation
+
   - path: afritech/epoch/epoch_semantics.yaml
     class: state_vocabulary
     reason: canonical epoch semantic vocabulary

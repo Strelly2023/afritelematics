@@ -1,0 +1,1962 @@
+{
+  "anchor_hash": "f1f287798b2d95cb2dfe425eba21d343507f4df7e9af7c78a3ae22d69dbcade4",
+  "authority_boundary": "global_verification_exports_truth_without_creating_runtime_or_production_authority",
+  "classification": "LEVEL_15_GLOBAL_PUBLIC_VERIFICATION_LAYER",
+  "creates_authority": false,
+  "cross_network_anchors": [
+    {
+      "network": {
+        "anchoring_mode": "native_quorum",
+        "chain_id": null,
+        "jurisdiction": "multi-jurisdiction",
+        "name": "AfriTech Federated Trust Network",
+        "network_id": "afritech-federated-trust",
+        "protocol": "federated-ed25519-quorum"
+      },
+      "optional_onchain": true,
+      "receipt": {
+        "authority": "global_public_verification_anchor",
+        "block_number": 0,
+        "chain_id": null,
+        "chain_name": "AfriTech Federated Trust Network",
+        "contract_address": null,
+        "explorer_url": null,
+        "meta": {
+          "anchoring_mode": "native_quorum",
+          "optional_onchain": false,
+          "protocol": "federated-ed25519-quorum",
+          "truth_independent_of_origin_system": true
+        },
+        "method": null,
+        "network": "afritech-federated-trust",
+        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "source": "global_verification.deterministic_anchor",
+        "status": "runtime_safe_fallback",
+        "transaction_hash": "global-afritech-federated-trust-ad098800ebd47f72",
+        "tx_hash": "global-afritech-federated-trust-ad098800ebd47f72"
+      },
+      "receipt_hash": "c8231b7b9cf4a6c3f2a465e2fdd1cd7ac96fdcae95dd9af246378f7591842d3b"
+    },
+    {
+      "network": {
+        "anchoring_mode": "optional_onchain",
+        "chain_id": 11155111,
+        "jurisdiction": "public-testnet",
+        "name": "Ethereum Sepolia",
+        "network_id": "ethereum-sepolia",
+        "protocol": "evm-anchor"
+      },
+      "optional_onchain": true,
+      "receipt": {
+        "authority": "global_public_verification_anchor",
+        "block_number": 0,
+        "chain_id": 11155111,
+        "chain_name": "Ethereum Sepolia",
+        "contract_address": null,
+        "explorer_url": null,
+        "meta": {
+          "anchoring_mode": "optional_onchain",
+          "optional_onchain": true,
+          "protocol": "evm-anchor",
+          "truth_independent_of_origin_system": true
+        },
+        "method": null,
+        "network": "ethereum-sepolia",
+        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "source": "global_verification.deterministic_anchor",
+        "status": "runtime_safe_fallback",
+        "transaction_hash": "global-ethereum-sepolia-ad098800ebd47f72",
+        "tx_hash": "global-ethereum-sepolia-ad098800ebd47f72"
+      },
+      "receipt_hash": "3d217d3e0c3f898241a406e1be036adf88cf03f3b924fdcadd70be74da5dba99"
+    },
+    {
+      "network": {
+        "anchoring_mode": "deterministic_public_receipt",
+        "chain_id": null,
+        "jurisdiction": "pan-african-public-ledger",
+        "name": "PAPC Public Ledger",
+        "network_id": "papc-public-ledger",
+        "protocol": "public-ledger-anchor"
+      },
+      "optional_onchain": true,
+      "receipt": {
+        "authority": "global_public_verification_anchor",
+        "block_number": 0,
+        "chain_id": null,
+        "chain_name": "PAPC Public Ledger",
+        "contract_address": null,
+        "explorer_url": null,
+        "meta": {
+          "anchoring_mode": "deterministic_public_receipt",
+          "optional_onchain": false,
+          "protocol": "public-ledger-anchor",
+          "truth_independent_of_origin_system": true
+        },
+        "method": null,
+        "network": "papc-public-ledger",
+        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "source": "global_verification.deterministic_anchor",
+        "status": "runtime_safe_fallback",
+        "transaction_hash": "global-papc-public-ledger-ad098800ebd47f72",
+        "tx_hash": "global-papc-public-ledger-ad098800ebd47f72"
+      },
+      "receipt_hash": "8d0363e2e3ae7203534e72c76892f35134bf50c745f28d96efdcec7ab362e606"
+    }
+  ],
+  "federated_certificate": {
+    "aggregate_status": "FEDERATED_QUORUM_VERIFIED",
+    "authority_boundary": "federated_network_verifies_registry_without_creating_runtime_authority",
+    "certificate_id": "ftc-ab9f64ebf9f7",
+    "classification": "LEVEL_14_FEDERATED_TRUST_NETWORK",
+    "level": "LEVEL_14",
+    "network_hash": "ab9f64ebf9f72a07b982d08f880405c085d3e2b7d084b96d2d9753c57fe0e935",
+    "node_count": 3,
+    "nodes": [
+      {
+        "jurisdiction": "protocol",
+        "node_id": "afritech-core-node",
+        "organization": "AfriTech Core",
+        "public_key": "9b55c08c44f4701115c97f13f61e9d45b162bd099c7917e209941c2563ac331b",
+        "roles": [
+          "CORE",
+          "REGISTRY_SIGNER"
+        ],
+        "status": "TRUSTED"
+      },
+      {
+        "jurisdiction": "commercial",
+        "node_id": "partner-verifier-node",
+        "organization": "External Partner Verifier",
+        "public_key": "6dd718552a68253d33fcc703f487a399c9a85204f3bd5453e6c808ba9f620a14",
+        "roles": [
+          "PARTNER",
+          "VERIFIER"
+        ],
+        "status": "TRUSTED"
+      },
+      {
+        "jurisdiction": "public-sector",
+        "node_id": "government-observer-node",
+        "organization": "Government Observer",
+        "public_key": "6b9045469388d73d5692740389e8f6cc0393fd07746279261de04ceecc319d55",
+        "roles": [
+          "GOVERNMENT",
+          "OBSERVER"
+        ],
+        "status": "TRUSTED"
+      }
+    ],
+    "quorum": 2,
+    "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+    "schema": "afritech.federated_trust_certificate.v1",
+    "verified_count": 3,
+    "witnesses": [
+      {
+        "decision": "VERIFIED",
+        "node_id": "afritech-core-node",
+        "public_key": "9b55c08c44f4701115c97f13f61e9d45b162bd099c7917e209941c2563ac331b",
+        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "signature": "19c578d5460dc902586d6f6da856fd99138855520a539fb57f34ccb1ce4fe3276301dbcf2c98427dc9d45e1b40a7cbe5c6e86730db17d120ad4ba251e845940c"
+      },
+      {
+        "decision": "VERIFIED",
+        "node_id": "partner-verifier-node",
+        "public_key": "6dd718552a68253d33fcc703f487a399c9a85204f3bd5453e6c808ba9f620a14",
+        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "signature": "4229c0d8a30418e363e00fc0a9284ed89e3e0bcb03517a98916ba43054f0957308e1f99de3c57aadf67625528ccc3b8943b6629da1effa8a220b513c2bc09704"
+      },
+      {
+        "decision": "VERIFIED",
+        "node_id": "government-observer-node",
+        "public_key": "6b9045469388d73d5692740389e8f6cc0393fd07746279261de04ceecc319d55",
+        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "signature": "04732b2558b3369a7f2da26af62168dd629f10d7d240881a9e52d5ec6d1557587d9e32d5539dbcf25609ea86c3eb640e278a0dfca8e52a56c8ce15fcc8832d01"
+      }
+    ]
+  },
+  "federation_hash": "d0758e57edfd6c79d0ebd308411a47a30aac233f5c7a439c45594be23f4dc59b",
+  "global_bundle_hash": "88f0d30a7af3358e32efcf7aba09169a6cec09989012a110e6ffa18e36004bf7",
+  "guarantees": {
+    "cross_network_interoperable": true,
+    "global_public_verification_available": true,
+    "no_fake_feature_can_exist": true,
+    "no_incomplete_feature_can_appear": true,
+    "no_production_state_can_be_falsely_implied": true,
+    "no_unverifiable_claim_can_be_exported": true,
+    "optional_onchain_anchoring_supported": true,
+    "truth_independent_of_origin_system": true
+  },
+  "level": "LEVEL_15",
+  "optional_onchain_anchor_supported": true,
+  "read_only": true,
+  "registry": {
+    "candidate_feature_count": 12,
+    "claim_history": "docs/governance/AFRITECH_FEATURE_CLAIM_HISTORY.md",
+    "classification": "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
+    "complete_feature_count": 12,
+    "creates_authority": false,
+    "economic_activation_allowed": false,
+    "evidence_hash": "d6b89a830842d87f4591bb05d9c50d67dfc8a4dc0ed1350ba3f0a65192826268",
+    "evidence_index": [
+      {
+        "hash": "e350a52926fd125c169f11d33057273a10830dbbe2077de8c77dabeade3ccf75",
+        "id": "b335630551682c19",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "README.md",
+        "required": true,
+        "size_bytes": 4841,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "f1519dfd0265132a6a9f184216ee9288991876244cb1bffff8d520e76ae9fd20",
+        "id": "15905971d2148bf9",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "afriride/field_validation/day_one_runbook.py",
+        "required": true,
+        "size_bytes": 9274,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "fdff2d1f176b6a2129b1449e8a030094ba6b97cbb9399a513dc60ee1cacb4d89",
+        "id": "990eea77daaff6b1",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "afriride/field_validation/live_pilot_protocol.py",
+        "required": true,
+        "size_bytes": 10915,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "9868a256b029053ae13ffd09939c15b61405473becf8b265dd15a41ff7a55d79",
+        "id": "088bc4451f09b246",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afriride/field_validation/stakeholder_evidence_report.py",
+        "required": true,
+        "size_bytes": 10083,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "614f378c316a9271ea352631943b5a1278ad2459bd9b3863392790191af61e37",
+        "id": "eb780434f659b7dc",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afriride/field_validation/sync_replayer.py",
+        "required": true,
+        "size_bytes": 4306,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "af3b853466bf190e588f01b9e5988cdc9c6fa39301d9387287bfb1bdcadded84",
+        "id": "88a3c5ddb7192c92",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/afripay/protocol.py",
+        "required": true,
+        "size_bytes": 13797,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "ba73957e2e76fb48c0b31fb5543a6161345cc7c128b29d2420e5f28f23d963f9",
+        "id": "34dd82648ecf54f7",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/afripower/constants.py",
+        "required": true,
+        "size_bytes": 12065,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "976f1f5d16a526147982a20eed67c2d67b083d0f3de23fa1270ab3cc1ad50ba8",
+        "id": "52717b6acf76eefa",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/afripower/predictive_orchestration.py",
+        "required": true,
+        "size_bytes": 7498,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "4cba7175434ef582bb8100000b6763da05747d165fbe5c0b9ab85a583739bcf4",
+        "id": "ef9a7514b564fcb4",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/afripower/resilience_intelligence.py",
+        "required": true,
+        "size_bytes": 1837,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "736e3bf0b157bb40b3d8b3fc089517577c84b503a243bd6f8fac6f25d540f0ab",
+        "id": "f6928c3c46e9b669",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "afritech/afritpps/domain_contracts.py",
+        "required": true,
+        "size_bytes": 12987,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "1015f5d3c6699935aa5fa17a17750dd47886019bd4146560f252122456493033",
+        "id": "b7b91b68991d1463",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "afritech/afritpps/execution_engine.py",
+        "required": true,
+        "size_bytes": 4846,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "ca5feb880799c40e30d3ee20319d3d9c77b6c5d3638d10a0523673dcc018faaf",
+        "id": "b6bb2eabd8b2f576",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "afritech/afritpps/orchestration.py",
+        "required": true,
+        "size_bytes": 5213,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "f00f889608807473c5a19258312c6b5852f5a693201b0d5dd88244a5e1c8b68d",
+        "id": "4d7caa989f177deb",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "afritech/afritpps/services.py",
+        "required": true,
+        "size_bytes": 2998,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "ee1265e87717c1132c7c7d87c441317ec222018bc986b6521ff3b0366531961a",
+        "id": "1e170d5828b2e0dc",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "afritech/api/cross_proof_views.py",
+        "required": true,
+        "size_bytes": 4706,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "a8f662a838ee96e66edbbb27793bd87a6a570d48e5dd2951053328e9a8e531d5",
+        "id": "e8555e099f3eac42",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "afritech/api/orchestration_views.py",
+        "required": true,
+        "size_bytes": 2080,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "40cff8ed655d4531e6a2c20aff5ed9d41c3748e620882ee2dd2c0dc583656427",
+        "id": "b680df6229cfe3b7",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "afritech/api/trust_kernel_views.py",
+        "required": true,
+        "size_bytes": 2294,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "a2d2a19957871b004a7b8f6d1544ec1be2e939dfbb8e4c62ec9458eca1e9fab1",
+        "id": "9a3399f4e0f6cc79",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/architecture/planned_surface_policy.yaml",
+        "required": true,
+        "size_bytes": 12409,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "5def45e1ecdd90a784a03eb2e3767f1f90f6aff83e4a9d244fe899e74a5a7d66",
+        "id": "2f792ab9d9a0bab6",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/architecture/surface_authority_registry.yaml",
+        "required": true,
+        "size_bytes": 17841,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "e9d4c7ff94c1a0eb0e958a17035fd795c9346ac97492d3bc0ff8e0527d7fbf3d",
+        "id": "017dda2b540fe96f",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "afritech/certification/afriride_phase5_readiness_certificate.py",
+        "required": true,
+        "size_bytes": 8671,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "1b3c9ae29a42b61f18b7a70acea924b48e6943930a3c980e868727464a3b563b",
+        "id": "0417c4deb506aa45",
+        "origin_event": "feature-evidence:classification-ci:v1",
+        "path": "afritech/certification/production_readiness_certificate.py",
+        "required": true,
+        "size_bytes": 8321,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "c84a24918e3f1d0009c86024b5987bcf519da6487f09c42c72a8de60fa6bd06f",
+        "id": "b64f995b0f6ed4d6",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/ci/CI_AUTHORITY.yaml",
+        "required": true,
+        "size_bytes": 1853,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "31a05d4ea2c1ce69711255af45cc93462692db1745801d00771a8feeec8486d9",
+        "id": "82421a38663303e3",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/ci/afripower_intelligence_validator.py",
+        "required": true,
+        "size_bytes": 13286,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "752d0e53fa19ed9c30f5203f8be23168e80eb32957981157aa846491b55f2c7c",
+        "id": "d4c3f0dd4947d917",
+        "origin_event": "feature-evidence:classification-ci:v1",
+        "path": "afritech/ci/afriprogramming_engineering_validator.py",
+        "required": true,
+        "size_bytes": 10285,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "de0ea58a64da82516e40f9ff6e64aa48ab1187302e5364934c193333214a3b9c",
+        "id": "c2c07ae99906f294",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "afritech/ci/afriride_pilot_execution_checklist_validator.py",
+        "required": true,
+        "size_bytes": 7144,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "25a1bf64530bd6ec67c70ec820513e7caf22e0f28ba12d9e9b2da1d586df9bbf",
+        "id": "23939c8481f02d47",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afritech/ci/afriride_stakeholder_evidence_report_validator.py",
+        "required": true,
+        "size_bytes": 8203,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "707327229ba8accddad86664556d7d8edc8589b40000d89abf69ff56de7f646b",
+        "id": "a05414b6914b5962",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "afritech/ci/afritpps_execution_validator.py",
+        "required": true,
+        "size_bytes": 11628,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "d6fb2086df6977a85a05bce41cc2668d279f2987fbcc9e494b44747de172e62d",
+        "id": "211a4f7ebe5b1f9b",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/ci/binding_completeness_validator.py",
+        "required": true,
+        "size_bytes": 1712,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "92b48d9d387349e2c012d6f1f23b17530c96266614882705061336333411453e",
+        "id": "2fbdadbbef4aeeef",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "afritech/ci/execution_integrity_validator.py",
+        "required": true,
+        "size_bytes": 522,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "51cd1cdd09239520a8af1d7e34febce166334e39666777aae8dc259c9cf06575",
+        "id": "4b8f0ce1779b14bc",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "afritech/ci/network_determinism_validator.py",
+        "required": true,
+        "size_bytes": 2841,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "df89951d275358bd8bddc799d0375d37b04e10d1e1d2329cb55683f8e2624022",
+        "id": "0f54f51fe0e934ad",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "afritech/ci/observability_authority_validator.py",
+        "required": true,
+        "size_bytes": 6154,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "6b157574c11424d544fa754b55a079c52308d3f08b9880a620927cbe2c94669c",
+        "id": "08a8804f536fea4e",
+        "origin_event": "feature-evidence:classification-ci:v1",
+        "path": "afritech/ci/production_readiness_certificate_validator.py",
+        "required": true,
+        "size_bytes": 3613,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "d87aa217142d0852f0f2e45af4dc1f7bbad96a5b7c91d1363d1e9187e861be8e",
+        "id": "1c13f0400e6ac6ba",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afritech/ci/resilience_hardening_validator.py",
+        "required": true,
+        "size_bytes": 1678,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "b58f4e63108e6aa165b1611734b6ef2566c159f718372391e1475cfa5d49cc8e",
+        "id": "c8dab75eb7c2b95c",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/ci/surface_state_resolution_validator.py",
+        "required": true,
+        "size_bytes": 516,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "7800e087bef8f82bbdca5771471d60e10659db8c79399fcaeaf287d679982d91",
+        "id": "032552d9b4977671",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "afritech/ci/trust_lock_validator.py",
+        "required": true,
+        "size_bytes": 4884,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "3c6f794bb8c85ced24b22d12370b561074a5d633ea6bc71f3651663d37d9f51e",
+        "id": "a60359bc71dfab09",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "afritech/cli/main.py",
+        "required": true,
+        "size_bytes": 11811,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "813aed10dbcb33aa6dcfd096cb39a636f72cea5abddff1b3af5e0a26a92f6786",
+        "id": "1bb0c3775cee0f7a",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "afritech/core/runtime/admission/admission_engine.py",
+        "required": true,
+        "size_bytes": 10396,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "a887ee4ad2a23418137ec11a0ba429d99a41fffbdca4d7b2184765f58bf042ed",
+        "id": "f179f80605241c07",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/governance/binding_validator.py",
+        "required": true,
+        "size_bytes": 8025,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "d92a671c78b5e4b76ce343db01cd4aafb001e6df868122e12cb5630d214de0e5",
+        "id": "29e1cdf87edf533c",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/governance/document_registry.yaml",
+        "required": true,
+        "size_bytes": 5093,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "625e5e61b30addfb54185fc57daccddc24ef3833a929f33934f917b073d59c23",
+        "id": "70b4aa1562bf8f22",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "afritech/network/node_api.py",
+        "required": true,
+        "size_bytes": 6599,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "dfef914d6657eee48142bd13f3a2b48e8cf129a6247f1efc254b3209e556a3e0",
+        "id": "be9d51e57ef01027",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afritech/runtime/replay/replay_engine.py",
+        "required": true,
+        "size_bytes": 6997,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "1500b26f1097415fecfda1a0f9a463bc224eb87c05c356f8974c7fa6971eed2c",
+        "id": "bc0c2dec943e6a04",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afritech/simulation/scale/load_generator.py",
+        "required": true,
+        "size_bytes": 5850,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "0265a4d59d8dc507bf16010e1f1e8d68010d0be0f69bdd1b5c4836d05bfa727a",
+        "id": "2be50d2156369fb7",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afritech/tests/adversarial/test_adversarial_integrity_gate7.py",
+        "required": true,
+        "size_bytes": 2754,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "5265f020c041941d87dc1df94b6db746615ab0771c4176c91f647081f010da5d",
+        "id": "90ef42f1d4069bd8",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/tests/afripay/test_afripay_protocol_level_design.py",
+        "required": true,
+        "size_bytes": 5314,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "6291a68c14b4bfcff35ee156493bad8a0d65ac8876c15c19541f0ebca2e5830a",
+        "id": "b7c880fef04dcea5",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afritech/tests/afripay/test_afripay_regulatory_assurance.py",
+        "required": true,
+        "size_bytes": 8675,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "88acb9ecd09300efbc6665143a165ad80c28577360655858c7c745237689cf21",
+        "id": "fa87322ecf25d3b5",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/tests/afripower/test_predictive_orchestration.py",
+        "required": true,
+        "size_bytes": 2478,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "6780f747ce3122068aab1b4b0fb32b36ad5d45c6f47d1ab672a08ab5d9e956a2",
+        "id": "5281d00b7cc62f6c",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/tests/afripower/test_resilience_intelligence.py",
+        "required": true,
+        "size_bytes": 1139,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "74a6e9a0de3add375e198622e704b621631d534388c04f3cb0cfd8f7f26c77b7",
+        "id": "1837cb980b85dae0",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "afritech/tests/afripower/test_validator.py",
+        "required": true,
+        "size_bytes": 1506,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "58cff95529dc0c205318f4d0593ca468274d9a782d85b0b98a852fa91bd85c20",
+        "id": "97010d7525cf99ce",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "afritech/tests/crypto/test_blockchain_anchor.py",
+        "required": true,
+        "size_bytes": 4768,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "746bc09ef017f067943434c78bba2fedf83427c64d1d94c43687b325c7dfc8aa",
+        "id": "3b13f2b8ea6dfdb4",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "afritech/tests/distributed/test_activation_scale_and_services.py",
+        "required": true,
+        "size_bytes": 2127,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "89c47797f406255f0afb6e2b2c214c3cae81a5b867014739bd432748d446989d",
+        "id": "abd5a00d0e9fbf2f",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afritech/tests/distributed/test_docs_and_tools_suite.py",
+        "required": true,
+        "size_bytes": 2331,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "8dd07aa584c526c9f98c5d30f17ef653aa7722f9b4df2bedd1e6c120ebadd158",
+        "id": "8f13f1b7d53dd78f",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "afritech/tests/distributed/test_protocol_hardening_and_adversarial.py",
+        "required": true,
+        "size_bytes": 1869,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "7fa6065b56cec05984bd3207fe0654b9d29e72b254c2b339c9ce6983873adbf5",
+        "id": "75a068f006a4e37f",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "afritech/tests/distributed/test_sovereign_ledger_protocol.py",
+        "required": true,
+        "size_bytes": 2074,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "899b45e43166b8d0802e6891205281302eef543134e52625ce50d76d36cc6efc",
+        "id": "c23db7720555cf54",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "afritech/tests/governance/test_afriride_rider_features_doc.py",
+        "required": true,
+        "size_bytes": 4918,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "adfe7e9e8017fc7e1e980cb2662ab0166de78070de0d53a479cd40c910d0a1d3",
+        "id": "2a49fd7b4ca15a9a",
+        "origin_event": "feature-evidence:classification-ci:v1",
+        "path": "afritech/tests/governance/test_afriride_test_status_assessment_doc.py",
+        "required": true,
+        "size_bytes": 6384,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "78592b6e65cdef2677a4af3214576d682d24dfdc36a1feb7f986156eadf58fdd",
+        "id": "111c5fee4d9f2afb",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/tests/governance/test_authority_compression.py",
+        "required": true,
+        "size_bytes": 5012,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "e7dedbebbf891336b576937a4604b10c92e95f321f2636c8bac34408aacc9b2b",
+        "id": "1e7aaf370092571d",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "afritech/tests/governance/test_document_registry_guard.py",
+        "required": true,
+        "size_bytes": 4457,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "e540350c4b3c578a88485ca77db68ac0aa7d84550a32d265a3c6bbb15200a2ac",
+        "id": "c0dc430689f0dba0",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "afritech/tests/governance/test_pilot_operational_readiness.py",
+        "required": true,
+        "size_bytes": 3766,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "14d5be9b0a6bd02382af1f05d03ff8f2d09094d3c13cfc68d145560d045b0a78",
+        "id": "e4aac3d4cac7ebdf",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afritech/tools/external_verifier_cli.py",
+        "required": true,
+        "size_bytes": 5751,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "7ad1349824f1507480c32aa38ed622567ca2e272c0c2284eaa6d4645ce0e8c83",
+        "id": "77fda60d06041aed",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "afritech/tools/partner_verification_session_cli.py",
+        "required": true,
+        "size_bytes": 6012,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "796f95ec1b78318cddf2e9f79d8e21ee4d8e826e81037b6827a5e319e3af5cbd",
+        "id": "221d5039d1ccea70",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "afritech/trust_network.py",
+        "required": true,
+        "size_bytes": 6391,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "a308fdc9ca4ac23e91ed89f9db0a26c7706c492f805555929870568eaeff80b1",
+        "id": "884e9d55376984ac",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "afritech/verify/public_verifier_bundle.schema.json",
+        "required": true,
+        "size_bytes": 1100,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "12a72ca0fa44fa2ecd6fda8f0db42797f5f23f43a0980a6e480055680b83c216",
+        "id": "e58ba19e1cbb6e9d",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "dashboard/src/App.jsx",
+        "required": true,
+        "size_bytes": 99532,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "6a22fca735e215cf009ecf346ff31999ec8014c9509384679b7934a4116f89d4",
+        "id": "4d1788200dcaa94e",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "dashboard/tests/test_operator_dashboard_surface.py",
+        "required": true,
+        "size_bytes": 6242,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "3777292ce4d92a522e0470c3b65ba2e0daa21985a7bd422f128caae4109024da",
+        "id": "928c362094bdec95",
+        "origin_event": "feature-evidence:classification-ci:v1",
+        "path": "docs/STATUS_CONVENTIONS.md",
+        "required": true,
+        "size_bytes": 830,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "5702bc3ed75fef4a7048aa07cfe4d4aa734ddb2d72f42d550252c23d5c5d1379",
+        "id": "c29bfe7afe053473",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "docs/api/afriride_mobile_api_contract.md",
+        "required": true,
+        "size_bytes": 609,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "e4276935a10dd1bfc50b4617a37f7fd3e1a18ffd18d51f2a768acaf83035c49c",
+        "id": "96d27803272e1ee9",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "docs/api/state_service_api.md",
+        "required": true,
+        "size_bytes": 406,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "add95bc6adbf77636826a35a46f9c5d170f506936de8f779b4481ea2697189a5",
+        "id": "3fd88ef41da3bdc9",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "docs/partners/AFRITECH_FIRST_EXTERNAL_PARTNER_VERIFICATION_SESSION.md",
+        "required": true,
+        "size_bytes": 1025,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "e223ffdd19a79e64f1fdd867e3fb31a7992f015be255e15e7e7d6576780dad83",
+        "id": "314be3750d528d37",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "docs/pilot/AFRIRIDE_PILOT_ACTIVATION_CHECKLIST.md",
+        "required": true,
+        "size_bytes": 1629,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "9a726f9ecaccce0f1fbe30fc979088c1aed8719686c379491d10d6680b348631",
+        "id": "4d2b998dc3777b9a",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "docs/requirements/AfriRide_Rider_Features_and_Experience.md",
+        "required": true,
+        "size_bytes": 6826,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "42c45aed0189ec0544299267cd970aed321ba2686492608a88baf4bc4ea592a6",
+        "id": "70ced2afaa29cfe6",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "docs/reviews/AFRITECH_DOCUMENTATION_AUTHORITY_AUDIT.md",
+        "required": true,
+        "size_bytes": 4622,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "4b013ddd4617f41c6613d85a2ba4db21e3507311908da4cb8306e5acb9e33d95",
+        "id": "f0a4ace201cd6dc3",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "docs/standards/AFRICPPT_PROTOCOL_SPEC.md",
+        "required": true,
+        "size_bytes": 3674,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "ce947cbff1e24f594c71c670b5e162f1508dda517be14ca99dcc9c6569ad5120",
+        "id": "5575b51f7921e3c1",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "docs/trust/trust_model.md",
+        "required": true,
+        "size_bytes": 408,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "6dc5ff5d33bfab5e54600bcac2079e386b4c02eea0835cb1eb54c75e9c599966",
+        "id": "b554063d54dd5585",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "mutants/tests/integration/test_cross_system_proof.py",
+        "required": true,
+        "size_bytes": 923,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "944387d80e538c653a09451e34e4a6e4b776ce655fb15440047e8663948813f7",
+        "id": "0078476de52153a6",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "replay_dashboard/src/App.jsx",
+        "required": true,
+        "size_bytes": 4938,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "f130504cfda2d5ce063523a44160c3fe0ac6456730b8903dbe417e46b2bfad32",
+        "id": "f79822c98bfeab7d",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "reports/adversarial_integrity_proof_v1/adversarial_integrity_equivalence.json",
+        "required": true,
+        "size_bytes": 686,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "2d96fa1def348c401134a58f8a3f3033cef0b4c8af4fc6b5773b1f14d276e42b",
+        "id": "94ab05793643f878",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "reports/afriride_live_pilot_protocol_v1/live_pilot_protocol.json",
+        "required": true,
+        "size_bytes": 5520,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "1eeca6b26a597dae2e35603d2c57679e9d861f35b1841b4f4af7a550e19f49b3",
+        "id": "ae2365120278cf30",
+        "origin_event": "feature-evidence:domain-surfaces:v1",
+        "path": "reports/afriride_live_pilot_protocol_v1/stakeholder_evidence_report_initial.json",
+        "required": true,
+        "size_bytes": 856,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "106ee492e7812e84c4f9c2a046ac98eebfa3dec365017bbc57840061586595bb",
+        "id": "6c36a9bdd1a52bd8",
+        "origin_event": "feature-evidence:resilience-hardening:v1",
+        "path": "reports/chaos_proof_v1/drift_analysis.json",
+        "required": true,
+        "size_bytes": 228,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "f88aeffb310d1f8682fb650403f20c43c9c6163e9eeb43795b05525be5481346",
+        "id": "aa5798d7366af980",
+        "origin_event": "feature-evidence:federation:v1",
+        "path": "reports/chaos_proof_v1/stability_equivalence.json",
+        "required": true,
+        "size_bytes": 436,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "b02abcc714e8ab7f66e10315d44fd48087bcc960298f01132d714e44eacad129",
+        "id": "fe54cf1a5efb7cfa",
+        "origin_event": "feature-evidence:afritpps-execution:v1",
+        "path": "reports/continuity_proof_v1/continuity_equivalence.json",
+        "required": true,
+        "size_bytes": 1288,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "778e3704c9396f889b6d3a4491725f6354fed083a07c5d48baf91317232cf979",
+        "id": "b750afe7138e9f59",
+        "origin_event": "feature-evidence:governance-chain:v1",
+        "path": "reports/continuity_proof_v1/gap_detection.json",
+        "required": true,
+        "size_bytes": 16156,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "7e89372b5d2ec1071b58fcfc7eabad349c3ed540ff64939097b60308951f89f2",
+        "id": "32b134076150a68f",
+        "origin_event": "feature-evidence:cross-domain-orchestration:v1",
+        "path": "reports/continuity_proof_v1/offline_merge.json",
+        "required": true,
+        "size_bytes": 31608,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "a8342b807aec7db152ce90947b365d99713569e558650f2461711fc902b2d013",
+        "id": "d5f34fd548e7c091",
+        "origin_event": "feature-evidence:trust-kernel:v1",
+        "path": "reports/continuity_proof_v1/recovery_equivalence.json",
+        "required": true,
+        "size_bytes": 28942,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "7b53472ec30cc87158f7538c4d209f6195a6baffd6cc9a6ff57a25d96ad4a788",
+        "id": "e4dd337bf9802c60",
+        "origin_event": "feature-evidence:afripower-intelligence:v1",
+        "path": "reports/entropy_proof_v1/replay_equivalence_report.json",
+        "required": true,
+        "size_bytes": 1414,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "f49b2a2e9b310b89321bbe05a3bb8dfcd07b0a5d66713f5d65bb6ab8054414ae",
+        "id": "7d9aa70a0f414c8f",
+        "origin_event": "feature-evidence:pilot-gates:v1",
+        "path": "traces/pilot_runs/day_one_003/replay_verification_result.json",
+        "required": true,
+        "size_bytes": 3247,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "01ceb5b2989260bda6f1f2b2508b22e9b06ccae875646996648e45bbe1e17de1",
+        "id": "1811f3d7902be356",
+        "origin_event": "feature-evidence:legal-evidence-export:v1",
+        "path": "traces/pilot_runs/day_one_003/stakeholder_evidence_report.md",
+        "required": true,
+        "size_bytes": 4582,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "b5111b9bd8f73c17aa2891dca3d7a6e3af243e383cbec1924d6d9fd68437f6dc",
+        "id": "265f9fd60c4d6612",
+        "origin_event": "feature-evidence:operational-tooling:v1",
+        "path": "traces/sample_trace.json",
+        "required": true,
+        "size_bytes": 1040,
+        "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      }
+    ],
+    "feature_count": 12,
+    "feature_hash": "b819c1d51483720432bb954fb11be3f3aaccdd51abbd9ba4b0ff1fa8529bc153",
+    "features": [
+      {
+        "activation_status": "GATED",
+        "boundary": "Truth authority remains replay and proof evidence, not dashboard presentation.",
+        "boundary_guard": "afritech/ci/trust_lock_validator.py",
+        "dependencies": [],
+        "description": "Anchors events, evidence bundles, replay verification, and state truth.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/core/runtime/admission/admission_engine.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/api/trust_kernel_views.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/trust_network.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_sovereign_ledger_protocol.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/crypto/test_blockchain_anchor.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/continuity_proof_v1/recovery_equivalence.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/trust/trust_model.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/trust_lock_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "trust-kernel",
+        "id": "trust-kernel",
+        "last_updated": "2026-06-16",
+        "name": "Trust Kernel",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Anchors events, evidence bundles, replay verification, and state truth.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "a69a66aa0555457af653678eb7404621b7d9af0f05b185562f1333a526b1eddc",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Execution is admissibility-gated and must not bypass declared contracts.",
+        "boundary_guard": "afritech/ci/afritpps_execution_validator.py",
+        "dependencies": [],
+        "description": "Executes domain operations through governed contracts.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/afritpps/execution_engine.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afritpps/domain_contracts.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afritpps/services.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_docs_and_tools_suite.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/continuity_proof_v1/continuity_equivalence.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/standards/AFRICPPT_PROTOCOL_SPEC.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afritpps_execution_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "afritpps-execution",
+        "id": "afritpps-execution",
+        "last_updated": "2026-06-16",
+        "name": "AfriTPPS Execution",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Executes domain operations through governed contracts.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "beb31a2925cc613c838e02064f17e54937c82ee2a8acff40bbacecf95bce7ed4",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 7
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Cross-system views expose evidence; they do not merge authority between domains.",
+        "boundary_guard": "afritech/ci/execution_integrity_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "afritpps-execution"
+        ],
+        "description": "Coordinates verified operations across multiple AfriTech domains.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/api/orchestration_views.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afritpps/orchestration.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/api/cross_proof_views.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "mutants/tests/integration/test_cross_system_proof.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/continuity_proof_v1/offline_merge.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/api/state_service_api.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/execution_integrity_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "cross-domain-orchestration",
+        "id": "cross-domain-orchestration",
+        "last_updated": "2026-06-16",
+        "name": "Cross-Domain Orchestration",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Coordinates verified operations across multiple AfriTech domains.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "e3d574bc9e237c3d34b0c96cb17c14f1e5c19b33fb35c4e7d9ca6140b94fcf45",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 7
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Federated peers may verify independently but cannot declare production activation.",
+        "boundary_guard": "afritech/ci/network_determinism_validator.py",
+        "dependencies": [
+          "trust-kernel"
+        ],
+        "description": "Supports signed node communication and independent verification.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/network/node_api.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/trust_network.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/tools/partner_verification_session_cli.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_activation_scale_and_services.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_protocol_hardening_and_adversarial.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/chaos_proof_v1/stability_equivalence.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/partners/AFRITECH_FIRST_EXTERNAL_PARTNER_VERIFICATION_SESSION.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/network_determinism_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "federation",
+        "id": "federation",
+        "last_updated": "2026-06-16",
+        "name": "Federation",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Supports signed node communication and independent verification.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "3c8cc1ca2ca5bb190863c52b90a1c4a76e62f835448fd61159b01d61f60975a2",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Recovery and hardening artifacts are evidence-backed; they are not live pilot authorization.",
+        "boundary_guard": "afritech/ci/resilience_hardening_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "federation"
+        ],
+        "description": "Handles consensus failure, malicious nodes, replay divergence, and isolation.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/simulation/scale/load_generator.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/runtime/replay/replay_engine.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afriride/field_validation/sync_replayer.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_protocol_hardening_and_adversarial.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/adversarial/test_adversarial_integrity_gate7.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/chaos_proof_v1/drift_analysis.json",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/adversarial_integrity_proof_v1/adversarial_integrity_equivalence.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/trust/trust_model.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/resilience_hardening_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "resilience-hardening",
+        "id": "resilience-hardening",
+        "last_updated": "2026-06-16",
+        "name": "Resilience Hardening",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Handles consensus failure, malicious nodes, replay divergence, and isolation.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "65aa2bb1dbe2e71deb20b9361c4664f244b7ce7d061282ee1bdf03a7527aa4c5",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 9
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Intelligence may recommend or explain only; it cannot mutate truth or governance.",
+        "boundary_guard": "afritech/ci/afripower_intelligence_validator.py",
+        "dependencies": [
+          "trust-kernel"
+        ],
+        "description": "Provides advisory-only prediction, risk scoring, and anomaly suggestions.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/afripower/predictive_orchestration.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afripower/resilience_intelligence.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/ci/afripower_intelligence_validator.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripower/test_predictive_orchestration.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripower/test_resilience_intelligence.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripower/test_validator.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/entropy_proof_v1/replay_equivalence_report.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "afritech/afripower/constants.py",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afripower_intelligence_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "afripower-intelligence",
+        "id": "afripower-intelligence",
+        "last_updated": "2026-06-16",
+        "name": "AfriPower Intelligence",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Provides advisory-only prediction, risk scoring, and anomaly suggestions.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "4fa2010e7a79aeb88ecc35026f7f54af0cea212ef3530fcad08be1d685e6cd9f",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 9
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Governance validates declared authority; it does not create runtime authority by wording.",
+        "boundary_guard": "afritech/ci/binding_completeness_validator.py",
+        "dependencies": [
+          "trust-kernel"
+        ],
+        "description": "Enforces ADR -> INVARIANT -> BINDING -> RULE -> GUARD -> CI integrity.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/governance/binding_validator.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/governance/document_registry.yaml",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/ci/CI_AUTHORITY.yaml",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_document_registry_guard.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_authority_compression.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/continuity_proof_v1/gap_detection.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/reviews/AFRITECH_DOCUMENTATION_AUTHORITY_AUDIT.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/binding_completeness_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "governance-chain",
+        "id": "governance-chain",
+        "last_updated": "2026-06-16",
+        "name": "Governance Chain",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Enforces ADR -> INVARIANT -> BINDING -> RULE -> GUARD -> CI integrity.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "0c2778794b743cba58f3dcbdd407801003cf2b9cc800785dcfe32599af25813b",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Classification blocks overclaiming; controlled readiness is not production proof.",
+        "boundary_guard": "afritech/ci/production_readiness_certificate_validator.py",
+        "dependencies": [
+          "governance-chain"
+        ],
+        "description": "Blocks false production, live deployment, and economic maturity claims.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/ci/afriprogramming_engineering_validator.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/ci/afriride_pilot_execution_checklist_validator.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/certification/production_readiness_certificate.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_afriride_test_status_assessment_doc.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_pilot_operational_readiness.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/afriride_live_pilot_protocol_v1/live_pilot_protocol.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/STATUS_CONVENTIONS.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/production_readiness_certificate_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "classification-ci",
+        "id": "classification-ci",
+        "last_updated": "2026-06-16",
+        "name": "Classification CI",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Blocks false production, live deployment, and economic maturity claims.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "6f7fdd9a75f27320187085d9b0050fad24ae16c763ec756d7fdcba0be64cd4f6",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "CONTROLLED_PILOT_READY",
+        "boundary": "Live riders, production field execution, and economic activation remain unauthorized.",
+        "boundary_guard": "afritech/ci/afriride_pilot_execution_checklist_validator.py",
+        "dependencies": [
+          "classification-ci",
+          "resilience-hardening"
+        ],
+        "description": "Keeps AfriRide pilot execution evidence-gated and controlled.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afriride/field_validation/live_pilot_protocol.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afriride/field_validation/day_one_runbook.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/certification/afriride_phase5_readiness_certificate.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_pilot_operational_readiness.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "traces/pilot_runs/day_one_003/replay_verification_result.json",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/afriride_live_pilot_protocol_v1/live_pilot_protocol.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/pilot/AFRIRIDE_PILOT_ACTIVATION_CHECKLIST.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afriride_pilot_execution_checklist_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "pilot-gates",
+        "id": "pilot-gates",
+        "last_updated": "2026-06-16",
+        "name": "Pilot Gates",
+        "status": "CONTROLLED_PILOT_READY",
+        "technical_status": "IMPLEMENTED",
+        "use": "Keeps AfriRide pilot execution evidence-gated and controlled.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "753529ab8b81b6336787fce88cfce02a4efe2bf616a6c83778c029d58044bae4",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Planned product surfaces must remain planned until implementation and replay evidence exist.",
+        "boundary_guard": "afritech/ci/surface_state_resolution_validator.py",
+        "dependencies": [
+          "governance-chain"
+        ],
+        "description": "Defines bounded surfaces for AfriRide, AfriConnectTL, AfriEats, and AfriPay.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/architecture/surface_authority_registry.yaml",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/architecture/planned_surface_policy.yaml",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afripay/protocol.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripay/test_afripay_protocol_level_design.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/governance/test_afriride_rider_features_doc.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/afriride_live_pilot_protocol_v1/stakeholder_evidence_report_initial.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/requirements/AfriRide_Rider_Features_and_Experience.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/surface_state_resolution_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "domain-surfaces",
+        "id": "domain-surfaces",
+        "last_updated": "2026-06-16",
+        "name": "Domain Surfaces",
+        "status": "PARTIAL",
+        "technical_status": "PARTIAL",
+        "use": "Defines bounded surfaces for AfriRide, AfriConnectTL, AfriEats, and AfriPay.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "d39be422bec58d2399a1aa84df6943a962efdc4282e7a70bbd0a590fba186c7a",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Evidence export is review material and must be independently replay-verifiable.",
+        "boundary_guard": "afritech/ci/afriride_stakeholder_evidence_report_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "pilot-gates"
+        ],
+        "description": "Packages replayable evidence for jurisdiction-aware review.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afriride/field_validation/stakeholder_evidence_report.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/tools/external_verifier_cli.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/verify/public_verifier_bundle.schema.json",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_docs_and_tools_suite.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripay/test_afripay_regulatory_assurance.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "traces/pilot_runs/day_one_003/stakeholder_evidence_report.md",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/api/afriride_mobile_api_contract.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afriride_stakeholder_evidence_report_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "legal-evidence-export",
+        "id": "legal-evidence-export",
+        "last_updated": "2026-06-16",
+        "name": "Legal Evidence Export",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Packages replayable evidence for jurisdiction-aware review.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "50cef2be54d5b7cb5a3c112fa158d19eca214628e4a723124c39745458043c19",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "GATED",
+        "boundary": "Tooling visualizes and validates evidence; it does not override replay or governance.",
+        "boundary_guard": "afritech/ci/observability_authority_validator.py",
+        "dependencies": [
+          "legal-evidence-export",
+          "classification-ci"
+        ],
+        "description": "Provides CLI, inspectors, validators, and pilot readiness checks.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/cli/main.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "dashboard/src/App.jsx",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "replay_dashboard/src/App.jsx",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "dashboard/tests/test_operator_dashboard_surface.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/distributed/test_activation_scale_and_services.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "traces/sample_trace.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "README.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/observability_authority_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "operational-tooling",
+        "id": "operational-tooling",
+        "last_updated": "2026-06-16",
+        "name": "Operational Tooling",
+        "status": "IMPLEMENTED",
+        "technical_status": "IMPLEMENTED",
+        "use": "Provides CLI, inspectors, validators, and pilot readiness checks.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "e1f80d52f0dd5926d8477932525e8f359bf0e25c913da6a0a6d1882cd093c03c",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      }
+    ],
+    "generation_mode": "REPLAY_DERIVED_EVIDENCE_PROJECTION",
+    "incomplete_feature_ids": [],
+    "live_pilot_authorized": false,
+    "production_proven": false,
+    "production_ready_feature_count": 0,
+    "read_only": true,
+    "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "468cd019b1b41b1cae45e7e893bb261a2cca4456de49c881b2a2cbabdf1468d3",
+      "scope": "registry_payload",
+      "signer_id": "AFRITECH_CORE",
+      "trust_chain": [
+        "AFRITECH_CORE",
+        "REGISTRY_SIGNER",
+        "VALIDATOR"
+      ],
+      "value": "6053426b206f83b6cf3c7094f4d06004cc08856e973faa069fbc96b1b23f4c6986aaba46802ae90970448b27035da7a40a3a91c5ce59e1b5aa52a37051ad6300"
+    },
+    "status": "FEATURE_REGISTRY_LEVEL_12",
+    "system_status": {
+      "classification": "CONTROLLED_PILOT_READY_SYSTEM",
+      "economic_activation_allowed": false,
+      "feature_registry_classification": "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
+      "feature_registry_status": "FEATURE_REGISTRY_LEVEL_12",
+      "live_pilot_authorized": false,
+      "production_proven": false
+    }
+  },
+  "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+  "schema": "afritech.global_public_verification_bundle.v1",
+  "status": "GLOBAL_PUBLIC_VERIFICATION_READY"
+}

@@ -1,0 +1,33 @@
+{
+  "candidate_feature_count": 12,
+  "classification": "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
+  "economic_activation_allowed": false,
+  "evidence_hash": "f7161257ab0ff263172f37979c274db07e1a16022c530fe780606aab9d0b0a20",
+  "feature_count": 12,
+  "feature_hash": "9689532b7ed0624451de4127cfa8679dddec73f3a13937c90757c28c720e114c",
+  "generation_mode": "REPLAY_DERIVED_EVIDENCE_PROJECTION",
+  "git_commit": "f162c7204d18a709cc96df9feaacb9f121958b1c",
+  "incomplete_feature_ids": [],
+  "live_pilot_authorized": false,
+  "production_proven": false,
+  "production_ready_feature_count": 0,
+  "registry_hash": "017ad3b8b7309a592fc8960874069656a3efc3cf7e7f0da9e1fc9a5afdd65f84",
+  "schema": "afritech.feature_registry_snapshot.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "468cd019b1b41b1cae45e7e893bb261a2cca4456de49c881b2a2cbabdf1468d3",
+    "scope": "registry_hash",
+    "signer_id": "AFRITECH_CORE",
+    "trust_chain": [
+      "AFRITECH_CORE",
+      "REGISTRY_SIGNER",
+      "VALIDATOR"
+    ],
+    "value": "de01fc96b2816672d6600970f6553e1b23e878fb6874b0df74e8016eac13aac9cf14d45a038a2160ea59d2e6211f8ddd037166ff3ae7a8aed70551570fe13a06"
+  },
+  "signed": true,
+  "snapshot_hash": "af6958c589ff35b0c398836081005aea329f4e1f117f0beaaecaac6b505c5fd4",
+  "status": "FEATURE_REGISTRY_LEVEL_12",
+  "timestamp": "2026-06-16T02:27:43.685923+00:00",
+  "version": "v1"
+}

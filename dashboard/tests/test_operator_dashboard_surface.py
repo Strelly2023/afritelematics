@@ -24,6 +24,7 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'readJson("/v1/ops/observability/dashboard")' in source
     assert 'readJson("/v1/ops/audit/dashboard")' in source
     assert 'readPublicJson("/public/trust/dashboard")' in source
+    assert 'readJson("/api/feature-registry")' in source
     assert 'writeJson("/trust/conversation"' in source
 
 
@@ -79,6 +80,16 @@ def test_operator_dashboard_exposes_required_operator_panels() -> None:
         "Audit Dashboard",
         "Operator Alert Rules",
         "Enterprise Readiness Review",
+        "Governed Feature Registry Dashboard",
+        "Feature Registry Status",
+        "Feature Claims",
+        "Registry Enforcement",
+        "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
+        "FEATURE_REGISTRY_LEVEL_12",
+        "REPLAY_DERIVED_EVIDENCE_PROJECTION",
+        "EVIDENCE_VALIDATED",
+        "BOUNDARY_GUARDED",
+        "/api/feature-registry",
     ):
         assert required in source
 

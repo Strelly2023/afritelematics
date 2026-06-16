@@ -30,6 +30,7 @@ const EMPTY_OPERATOR_STATE = {
   observabilityDashboard: null,
   auditDashboard: null,
   publicTrustDashboard: null,
+  featureRegistry: null,
 };
 
 const PROPOSALS = [
@@ -842,7 +843,7 @@ async function operatorToken() {
   if (OPERATOR_TOKEN) {
     return OPERATOR_TOKEN;
   }
-  const response = await fetch(`${API_BASE_URL}/auth/token`, {
+  const response = await fetch(`${API_BASE_URL}/v1/auth/token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -982,7 +983,11 @@ export default function OperatorDashboard() {
 
   useEffect(() => {
     fetchOperatorState();
-    const interval = setInterval(fetchOperatorState, 3000);
+    fetchFeatureRegistry();
+    const interval = setInterval(() => {
+      fetchOperatorState();
+      fetchFeatureRegistry();
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -1019,6 +1024,21 @@ export default function OperatorDashboard() {
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "operator_fetch_failed");
+    }
+  }
+
+  async function fetchFeatureRegistry() {
+    try {
+      const featureRegistry = await readJson("/api/feature-registry");
+      setState((current) => ({
+        ...current,
+        featureRegistry,
+      }));
+    } catch {
+      setState((current) => ({
+        ...current,
+        featureRegistry: current.featureRegistry,
+      }));
     }
   }
 
@@ -1347,6 +1367,15 @@ export default function OperatorDashboard() {
             </div>
           </OperatorPanel>
         </div>
+      </section>
+
+      <section className="section-band feature-registry-band">
+        <SectionIntro
+          eyebrow="Feature Registry"
+          title="Governed Feature Registry Dashboard"
+          question="Which AfriTech feature claims are evidence validated, boundary guarded, and still production gated?"
+        />
+        <FeatureRegistryDashboard registry={state.featureRegistry} />
       </section>
 
       <section id="proposal-view" className="section-band">
@@ -2359,6 +2388,126 @@ export default function OperatorDashboard() {
         </div>
       </section>
     </main>
+  );
+}
+
+function featureStatusTone(status) {
+  if (status === "IMPLEMENTED" || status === "CONTROLLED_PILOT_READY") {
+    return "success";
+  }
+  if (status === "PARTIAL" || status === "GATED") {
+    return "warning";
+  }
+  return "neutral";
+}
+
+function FeatureRegistryDashboard({ registry }) {
+  if (!registry) {
+    return (
+      <OperatorPanel title="Feature Registry Status">
+        <EmptyState label="Feature registry data is pending from /api/feature-registry." />
+      </OperatorPanel>
+    );
+  }
+
+  const features = registry.features || [];
+  const productionGated =
+    Number(registry.production_ready_feature_count || 0) === 0 &&
+    registry.production_proven === false;
+
+  return (
+    <div className="feature-registry-layout">
+      <div className="metric-grid">
+        <TrustMetric
+          label="Registry classification"
+          value={registry.status || "FEATURE_REGISTRY_LEVEL_12"}
+          helper={`${registry.classification || "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY"} | ${registry.generation_mode || "REPLAY_DERIVED_EVIDENCE_PROJECTION"}`}
+          tone="success"
+        />
+        <TrustMetric
+          label="Evidence complete"
+          value={`${registry.complete_feature_count || 0}/${registry.feature_count || 0}`}
+          helper="Required implementation, test, replay, proof, and boundary guard evidence validates."
+          tone={
+            registry.complete_feature_count === registry.feature_count
+              ? "success"
+              : "warning"
+          }
+        />
+        <TrustMetric
+          label="Production-ready claims"
+          value={registry.production_ready_feature_count || 0}
+          helper="Production activation remains blocked until explicit authorization exists."
+          tone={productionGated ? "success" : "warning"}
+        />
+        <TrustMetric
+          label="Claim history"
+          value="v1"
+          helper={registry.claim_history || "docs/governance/AFRITECH_FEATURE_CLAIM_HISTORY.md"}
+          tone="neutral"
+        />
+      </div>
+
+      <OperatorPanel title="Feature Claims">
+        <div className="feature-registry-table" role="table" aria-label="Governed feature registry">
+          <div className="feature-registry-row feature-registry-head" role="row">
+            <span role="columnheader">Feature</span>
+            <span role="columnheader">Technical</span>
+            <span role="columnheader">Activation</span>
+            <span role="columnheader">Evidence</span>
+            <span role="columnheader">Boundary Guard</span>
+          </div>
+          {features.map((feature) => (
+            <article key={feature.id} className="feature-registry-row" role="row">
+              <div role="cell">
+                <strong>{feature.name}</strong>
+                <p>{feature.description}</p>
+                <span className="surface-chip">{feature.version} | {feature.last_updated}</span>
+              </div>
+              <div role="cell">
+                <span className={`registry-status status-${featureStatusTone(feature.technical_status)}`}>
+                  {feature.technical_status}
+                </span>
+              </div>
+              <div role="cell">
+                <span className={`registry-status status-${featureStatusTone(feature.activation_status)}`}>
+                  {feature.activation_status}
+                </span>
+              </div>
+              <div role="cell">
+                <strong>{feature.validation?.required_evidence_count || 0} refs</strong>
+                <p>{feature.evidence_complete ? "EVIDENCE_VALIDATED" : "REVIEW_REQUIRED"}</p>
+              </div>
+              <div role="cell">
+                <strong>{feature.validation?.boundary_guard_valid ? "BOUNDARY_GUARDED" : "GUARD_REVIEW"}</strong>
+                <p>{feature.boundary_guard}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </OperatorPanel>
+
+      <OperatorPanel title="Registry Enforcement">
+        <div className="operator-grid compact-operator-grid">
+          <article className="record-card">
+            <strong>JSON / Proof Validation</strong>
+            <p>JSON evidence must parse as a non-empty object; JSON proof payloads must expose required authority keys.</p>
+          </article>
+          <article className="record-card">
+            <strong>Boundary Guard</strong>
+            <p>Every feature claim links to an existing validator module before it can count as evidence complete.</p>
+          </article>
+          <article className="record-card">
+            <strong>CI Enforcement</strong>
+            <p>pytest afritech/tests/test_features.py -q is wired into the AfriRide proof pipeline.</p>
+          </article>
+          <article className="record-card">
+            <strong>Production Gated</strong>
+            <p>No feature is marked PRODUCTION_READY while live pilot and economic activation remain false.</p>
+          </article>
+        </div>
+      </OperatorPanel>
+    </div>
   );
 }
 

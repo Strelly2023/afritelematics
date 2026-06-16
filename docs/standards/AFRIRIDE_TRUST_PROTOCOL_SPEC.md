@@ -26,6 +26,10 @@ packets without handing truth authority to dashboards, partners, or ledgers.
 - witness quorum record
 - conformance profile
 - dependent system declaration
+- global verification bundle
+- ecosystem evolution certificate
+- public ledger anchor receipt
+- interoperable verification standard export
 
 ## Protocol Flows
 
@@ -53,6 +57,12 @@ packet -> witnesses -> quorum review -> network verification record
 dependent system -> conformance profile -> dependency declaration -> registry/network dependency visibility
 ```
 
+### 5. Ecosystem Verification Flow
+
+```text
+global bundle -> ecosystem certificate -> public standard -> government/partner verification
+```
+
 ## Required API Surfaces
 
 - `POST /v1/partner/verify`
@@ -63,6 +73,12 @@ dependent system -> conformance profile -> dependency declaration -> registry/ne
 - `GET /v1/trust/standards/profile`
 - `POST /v1/trust/dependents/register`
 - `GET /v1/trust/dependents`
+- `GET /public/global-verification`
+- `GET /public/global-verification/verify`
+- `GET /public/ecosystem-evolution`
+- `GET /public/ecosystem-evolution/verify`
+- `GET /public/ecosystem-evolution/standard`
+- `POST /api/ecosystem-evolution/anchor/live`
 
 ## Required Invariants
 
@@ -71,6 +87,10 @@ dependent system -> conformance profile -> dependency declaration -> registry/ne
 - witness quorum records verifier alignment only
 - external anchors prove export integrity only
 - dependent systems consume verification, not truth authority
+- ecosystem certificates describe adoption readiness only
+- public ledger anchors prove publication only
+- production authority is never implied by verification or anchoring
+- interoperable standards exports are reference profiles until formally ratified
 
 ## Standard Positioning
 
@@ -79,6 +99,8 @@ AfriRide should position this protocol as:
 - a mobility trust packet standard
 - a replay-linked audit exchange standard
 - a verification network interoperability layer
+- a global public verification exchange standard
+- a public-ledger anchoring profile for exported truth artifacts
 
 ## Non-Claims
 
@@ -87,3 +109,6 @@ This protocol spec does not claim:
 - universal adoption
 - formal standards body approval
 - replacement of replay truth
+- production authorization
+- government certification
+- live-chain publication without an explicit protected anchor operation

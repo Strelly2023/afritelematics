@@ -29,6 +29,9 @@ from afritech.runtime_verification import (
     evaluate_contracts,
     observe_runtime,
 )
+from afritech.global_verification import verify_global_verification_bundle
+from afritech.ecosystem_evolution import verify_ecosystem_evolution_certificate
+from afritech.tools.feature_registry_verifier import verify_registry
 
 
 COMMANDS = {
@@ -62,6 +65,7 @@ def main(argv: list[str] | None = None) -> int:
                 "uml-validate",
                 "uml-propose",
                 "verify-start",
+                "verify",
                 "drift-list",
                 "drift-inspect",
                 "drift-propose",
@@ -73,10 +77,29 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--from-failure", default="")
     parser.add_argument("--diagram-type", default="class")
     parser.add_argument("--json", action="store_true", help="Emit JSON output")
+    parser.add_argument("--registry", action="store_true", help="Verify the derived feature registry")
+    parser.add_argument("--registry-source", default="", help="Optional registry JSON path or URL")
+    parser.add_argument(
+        "--global",
+        dest="global_verification",
+        action="store_true",
+        help="Verify the Level 15 global public verification layer",
+    )
+    parser.add_argument(
+        "--ecosystem",
+        action="store_true",
+        help="Verify the Level 16 ecosystem trust infrastructure",
+    )
     args = parser.parse_args(argv)
 
     if args.command in COMMANDS:
         result = COMMANDS[args.command]()
+    elif args.command == "verify" and args.registry:
+        result = _run_registry_verify_command(args)
+    elif args.command == "verify" and args.global_verification:
+        result = _run_global_verify_command()
+    elif args.command == "verify" and args.ecosystem:
+        result = _run_ecosystem_verify_command()
     else:
         result = _run_copilot_assist_command(args)
     _emit(result, as_json=args.json)
@@ -269,6 +292,45 @@ def _run_runtime_verification_command(command: str) -> Dict[str, Any]:
         "governance_review_required": True,
         "activation_allowed": False,
         "runtime_mutation_allowed": False,
+    }
+
+
+def _run_registry_verify_command(args: argparse.Namespace) -> Dict[str, Any]:
+    result = verify_registry(args.registry_source or None)
+    return {
+        "summary": (
+            "Feature registry verification passed: only provable, evidence-complete, "
+            "production-gated features are exported."
+            if result["verified"]
+            else "Feature registry verification failed."
+        ),
+        **result,
+    }
+
+
+def _run_global_verify_command() -> Dict[str, Any]:
+    result = verify_global_verification_bundle()
+    return {
+        "summary": (
+            "Global public verification passed: registry truth is independently portable "
+            "across federated witnesses and cross-network anchors."
+            if result["verified"]
+            else "Global public verification failed."
+        ),
+        **result,
+    }
+
+
+def _run_ecosystem_verify_command() -> Dict[str, Any]:
+    result = verify_ecosystem_evolution_certificate()
+    return {
+        "summary": (
+            "Ecosystem trust verification passed: Level 16 multi-organization, "
+            "cross-government, live-ledger-capable, standards-backed infrastructure is verified."
+            if result["verified"]
+            else "Ecosystem trust verification failed."
+        ),
+        **result,
     }
 
 

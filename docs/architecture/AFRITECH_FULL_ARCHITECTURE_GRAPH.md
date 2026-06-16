@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `257`
+- Startup-safe closure size: `267`
 - Django-bound modules declared in repo: `243`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `27`
+- Direct startup imports from `afritech.api.app`: `28`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (257 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (267 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (27)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (28)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,10 +68,10 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (50 files)"]
+    Core --> Api["api (51 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
-    Core --> Security["security (14 files)"]
+    Core --> Security["security (17 files)"]
     Core --> Monitoring["monitoring (2 files)"]
     Core --> Proof["proof (25 files)"]
     Core --> Replay["replay (11 files)"]
@@ -87,10 +87,10 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `50` files
+- `api`: `51` files
 - `edge`: `11` files
 - `execution`: `16` files
-- `security`: `14` files
+- `security`: `17` files
 - `monitoring`: `2` files
 - `proof`: `25` files
 - `replay`: `11` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (22)
+### Api (23)
 
 - `afritech.api.afriride_mobile_release_api`
 - `afritech.api.afroprog_workspace_api`
@@ -117,6 +117,7 @@ flowchart TD
 - `afritech.api.contracts.rules`
 - `afritech.api.contracts.validator`
 - `afritech.api.dashboard_gateway_api`
+- `afritech.api.feature_registry_api`
 - `afritech.api.ingestion`
 - `afritech.api.ingestion.event_ingestion`
 - `afritech.api.ops_governance_api`
@@ -158,7 +159,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (199)
+### Other (205)
 
 - `afritech`
 - `afritech.afripay`
@@ -227,6 +228,7 @@ flowchart TD
 - `afritech.crypto.multi_party_verification`
 - `afritech.crypto.public_chain_anchor`
 - `afritech.crypto.signature`
+- `afritech.ecosystem_evolution`
 - `afritech.extensions.afriprog`
 - `afritech.extensions.afriprog.ai_engine`
 - `afritech.extensions.afriprog.ai_engine.coder`
@@ -307,6 +309,8 @@ flowchart TD
 - `afritech.extensions.afriprog.task_planner.task_types`
 - `afritech.extensions.afriprog.validator_runner`
 - `afritech.extensions.afriprog.validator_runner.command_result`
+- `afritech.features`
+- `afritech.global_verification`
 - `afritech.governance`
 - `afritech.governance.adr_anchor`
 - `afritech.guards`
@@ -340,6 +344,7 @@ flowchart TD
 - `afritech.mobility.trust_network`
 - `afritech.mobility.trust_network_invariants`
 - `afritech.ops_dashboard`
+- `afritech.registry.snapshot`
 - `afritech.runtime_monitoring`
 - `afritech.runtime_monitoring.anomaly_classifier`
 - `afritech.runtime_monitoring.anomaly_context_builder`
@@ -353,6 +358,8 @@ flowchart TD
 - `afritech.storage`
 - `afritech.storage.event_log`
 - `afritech.storage.event_schema`
+- `afritech.tools.feature_registry_verifier`
+- `afritech.trust_federation`
 - `afritech.zk`
 - `afritech.zk.groth16_prover`
 - `afritech.zk.groth16_verifier`
@@ -360,7 +367,7 @@ flowchart TD
 - `afritech.zk.mock_snark`
 - `afritech.zk.registry`
 
-### Security (12)
+### Security (15)
 
 - `afritech.security`
 - `afritech.security.adversarial_engine`
@@ -372,8 +379,11 @@ flowchart TD
 - `afritech.security.event_authenticator`
 - `afritech.security.integrity_trace`
 - `afritech.security.ip_control`
+- `afritech.security.key_manager`
 - `afritech.security.mutation_guard`
 - `afritech.security.rate_limit`
+- `afritech.security.signing`
+- `afritech.security.trust_registry`
 
 ### Trust And Registry (4)
 
@@ -389,6 +399,7 @@ flowchart TD
 - `afritech.api.architecture_proof_api`
 - `afritech.api.auth.jwt_device_auth`
 - `afritech.api.dashboard_gateway_api`
+- `afritech.api.feature_registry_api`
 - `afritech.api.ingestion.event_ingestion`
 - `afritech.api.ops_governance_api`
 - `afritech.api.partner_registry_api`
