@@ -88,9 +88,13 @@ def test_trust_node_scripts_cover_setup_anchoring_access_and_dashboard() -> None
     assert "certbot certonly" in setup
     assert "--cert-name \"$DOMAIN\"" in setup
     assert "--force-renewal" in setup
+    assert "CERT_INSPECT_IMAGE=\"certbot/certbot:v2.11.0\"" in setup
+    assert "--entrypoint sh" in setup
     assert "repoint_canonical_cert" in setup
     assert "valid_canonical_cert_exists" in setup
     assert "publish_live_ecosystem_anchor" in anchor
+    assert "AFRITECH_CHAIN_PENDING_TX_TIMEOUT" in anchor
+    assert "_recover_pending_receipt" in anchor
     assert "require_live=True" in anchor
     assert "record_live_ecosystem_anchor" in anchor
     assert "/public/ecosystem-evolution/verify" in access

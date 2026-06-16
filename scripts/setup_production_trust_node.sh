@@ -98,6 +98,7 @@ fi
 
 COMPOSE=(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$(dirname "$COMPOSE_FILE")")}"
+CERT_INSPECT_IMAGE="certbot/certbot:v2.11.0"
 BUILD_ARGS=()
 if [[ "$NO_CACHE" -eq 1 ]]; then
   BUILD_ARGS+=(--no-cache)
@@ -116,16 +117,16 @@ ensure_compose_volume() {
 canonical_cert_exists() {
   local cert_volume="$1"
 
-  docker run --rm -v "$cert_volume:/etc/letsencrypt" nginx:1.27-alpine \
-    sh -c 'test -s "/etc/letsencrypt/live/$1/fullchain.pem" && test -s "/etc/letsencrypt/live/$1/privkey.pem"' \
+  docker run --rm --entrypoint sh -v "$cert_volume:/etc/letsencrypt" "$CERT_INSPECT_IMAGE" \
+    -c 'test -s "/etc/letsencrypt/live/$1/fullchain.pem" && test -s "/etc/letsencrypt/live/$1/privkey.pem"' \
     _ "$DOMAIN" >/dev/null 2>&1
 }
 
 valid_canonical_cert_exists() {
   local cert_volume="$1"
 
-  docker run --rm -v "$cert_volume:/etc/letsencrypt" nginx:1.27-alpine \
-    sh -c '
+  docker run --rm --entrypoint sh -v "$cert_volume:/etc/letsencrypt" "$CERT_INSPECT_IMAGE" \
+    -c '
       domain="$1"
       shift
       fullchain="/etc/letsencrypt/live/$domain/fullchain.pem"
@@ -143,8 +144,8 @@ valid_canonical_cert_exists() {
 repoint_canonical_cert() {
   local cert_volume="$1"
 
-  docker run --rm -v "$cert_volume:/etc/letsencrypt" nginx:1.27-alpine \
-    sh -c '
+  docker run --rm --entrypoint sh -v "$cert_volume:/etc/letsencrypt" "$CERT_INSPECT_IMAGE" \
+    -c '
       domain="$1"
       shift
       best=""
