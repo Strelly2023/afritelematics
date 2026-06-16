@@ -10,6 +10,8 @@ COPY afritech /app/afritech
 COPY afriride_system /app/afriride_system
 COPY ecosystems /app/ecosystems
 COPY docs /app/docs
+COPY reports /app/reports
+COPY traces /app/traces
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir . uvicorn
