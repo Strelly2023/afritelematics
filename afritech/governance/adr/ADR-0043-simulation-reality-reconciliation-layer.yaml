@@ -1,6 +1,6 @@
 id: ADR-0043
 title: Simulation Reality Reconciliation Layer
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic reconciliation layer that compares pilot dataset
   simulation outputs with live field evidence outputs and produces governed

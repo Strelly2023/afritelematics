@@ -1,6 +1,6 @@
 id: ADR-0029
 title: Federated Mobility Infrastructure
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a governed federation layer that allows multiple independent
   mobility networks, fleets, merchants, and institutions to cooperate under

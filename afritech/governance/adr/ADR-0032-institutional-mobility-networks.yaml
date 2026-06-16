@@ -1,6 +1,6 @@
 id: ADR-0032
 title: Institutional Mobility Networks
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a governed institutional layer that allows hospitals, airports,
   universities, campuses, and similar domains to bind participants, fleets, and
@@ -17,4 +17,3 @@ rules:
   - RULE-052-institutional-mobility-networks.yaml
 bindings:
   - BIND-030-institutional-mobility-networks.yaml
-

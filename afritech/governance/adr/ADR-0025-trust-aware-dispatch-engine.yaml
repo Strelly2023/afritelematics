@@ -1,6 +1,6 @@
 id: ADR-0025
 title: Trust-Aware Dispatch Engine
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic trust-aware dispatch engine that ranks eligible
   mobility participants using trust, reliability, route efficiency, and

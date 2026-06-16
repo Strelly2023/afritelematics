@@ -33,3 +33,8 @@ related:
   - RULE-066
   - ADR-0046
   - afritech.ci.afritech_blockchain_anchor_realtime_validator
+ci:
+  tests:
+    - afritech/tests/api/test_architecture_proof_api.py
+  validators:
+    - afritech.ci.afritech_blockchain_anchor_realtime_validator

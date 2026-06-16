@@ -40,6 +40,13 @@ linked_rules:
   - RULE-064
 linked_adr:
   - ADR-0044
+linked_invariants:
+  - IA-ODP-001
+  - IA-ODP-002
+  - IA-ODP-003
+  - IA-ODP-004
+  - IA-ODP-005
+  - IA-ODP-006
 ci:
   validators:
     - afritech.ci.afritech_operator_decision_protocol_validator

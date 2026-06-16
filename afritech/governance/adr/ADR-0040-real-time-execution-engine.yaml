@@ -1,6 +1,6 @@
 id: ADR-0040
 title: Real-Time Execution Engine
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic real-time execution surface that consumes verified
   dispatch decisions and emits replayable execution records without introducing

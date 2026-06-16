@@ -39,3 +39,8 @@ related:
   - RULE-067
   - ADR-0047
   - afritech.ci.afritech_governed_evidence_protocol_validator
+ci:
+  tests:
+    - afritech/tests/api/test_architecture_proof_api.py
+  validators:
+    - afritech.ci.afritech_governed_evidence_protocol_validator

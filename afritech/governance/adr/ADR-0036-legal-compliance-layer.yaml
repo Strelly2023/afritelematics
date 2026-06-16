@@ -1,6 +1,6 @@
 id: ADR-0036
 title: Legal Compliance Layer
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a read-only legal compliance surface that consumes regulator certification
   outputs and emits deterministic compliance records without introducing authority

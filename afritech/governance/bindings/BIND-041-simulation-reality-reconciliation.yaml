@@ -28,6 +28,13 @@ linked_rules:
   - RULE-063
 linked_adr:
   - ADR-0043
+linked_invariants:
+  - IA-RECON-001
+  - IA-RECON-002
+  - IA-RECON-003
+  - IA-RECON-004
+  - IA-RECON-005
+  - IA-RECON-006
 ci:
   validators:
     - afritech.ci.afritech_reconciliation_validator

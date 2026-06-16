@@ -1,6 +1,6 @@
 id: ADR-0028
 title: Federated Mobility Trust Network
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic, evidence-backed trust network that accumulates
   mobility participant trust from verified operational outcomes and feeds that

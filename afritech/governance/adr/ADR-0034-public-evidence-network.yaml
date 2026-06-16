@@ -1,6 +1,6 @@
 id: ADR-0034
 title: Public Evidence Network
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a read-only public evidence network that exposes deterministic,
   replayable, proof-backed mobility evidence without introducing authority
@@ -17,4 +17,3 @@ rules:
   - RULE-054-public-evidence-network.yaml
 bindings:
   - BIND-032-public-evidence-network.yaml
-

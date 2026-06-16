@@ -1,6 +1,6 @@
 id: ADR-0033
 title: Mobility Intelligence Layer
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce an advisory-only mobility intelligence layer that produces
   deterministic forecasts, anomaly signals, and optimization suggestions
@@ -17,4 +17,3 @@ rules:
   - RULE-053-mobility-intelligence-layer.yaml
 bindings:
   - BIND-031-mobility-intelligence-layer.yaml
-

@@ -1,6 +1,6 @@
 id: ADR-0042
 title: Field Evidence Collection Reality Interface
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce Field Evidence Collection as the AfriTech reality interface. The
   layer captures real-world operational events as deterministic, replayable,

@@ -1,6 +1,6 @@
 id: ADR-0045
 title: Blockchain Architecture Anchor System
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a governed blockchain architecture anchor system that publishes
   architecture proofs to public chains, persists anchor index state, subscribes

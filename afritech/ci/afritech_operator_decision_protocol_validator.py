@@ -156,7 +156,7 @@ def _validate_edge_bundle() -> None:
 def _is_verified(adr: dict[str, object], rule: dict[str, object], binding: dict[str, object]) -> bool:
     if adr.get("id") != "ADR-0044":
         return False
-    if adr.get("status") != "accepted":
+    if adr.get("status") != "ACCEPTED":
         return False
     if rule.get("id") != "RULE-064":
         return False

@@ -237,8 +237,8 @@ def _validate_adr(adr: dict[str, Any]) -> None:
         )
     if adr["id"] != "ADR-0042":
         raise AfriTechTrustedScaleInfrastructureError("ADR id mismatch")
-    if adr["status"] != "accepted":
-        raise AfriTechTrustedScaleInfrastructureError("ADR-0042 must be accepted")
+    if adr["status"] != "ACCEPTED":
+        raise AfriTechTrustedScaleInfrastructureError("ADR-0042 must be ACCEPTED")
     if adr["title"] != "Field Evidence Collection Reality Interface":
         raise AfriTechTrustedScaleInfrastructureError("ADR-0042 title mismatch")
 
@@ -307,8 +307,8 @@ def _validate_rule(rule: dict[str, Any]) -> None:
 def _validate_reconciliation_adr(adr: dict[str, Any]) -> None:
     if adr.get("id") != "ADR-0043":
         raise AfriTechTrustedScaleInfrastructureError("ADR-0043 id mismatch")
-    if adr.get("status") != "accepted":
-        raise AfriTechTrustedScaleInfrastructureError("ADR-0043 must be accepted")
+    if adr.get("status") != "ACCEPTED":
+        raise AfriTechTrustedScaleInfrastructureError("ADR-0043 must be ACCEPTED")
     if adr.get("title") != "Simulation Reality Reconciliation Layer":
         raise AfriTechTrustedScaleInfrastructureError("ADR-0043 title mismatch")
     authority_model = adr.get("authority_model")

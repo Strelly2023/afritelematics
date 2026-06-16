@@ -167,15 +167,25 @@ class ArchitectureChainValidator:
             self.state.rule_to_invariants[rule_id] = linked
             rules = payload.get("rules", ())
             if isinstance(rules, list):
-                for rule in rules:
+                for index, rule in enumerate(rules, start=1):
+                    if isinstance(rule, str):
+                        if not rule.strip():
+                            raise ArchitectureViolation(f"{rule_id} subrule {index} must not be empty")
+                        if "enforcement" not in payload and "requirements" not in payload:
+                            raise ArchitectureViolation(f"{rule_id} subrule {index} missing enforcement logic")
+                        continue
                     if not isinstance(rule, dict):
-                        raise ArchitectureViolation(f"{rule_id} subrules must be mappings")
+                        raise ArchitectureViolation(f"{rule_id} subrules must be mappings or strings")
                     sub_id = _require_text(rule.get("id"), f"{rule_id} subrule id")
                     if sub_id in self.state.rule_ids:
                         raise ArchitectureViolation(f"duplicate rule id: {sub_id}")
                     if not rule.get("description") and not rule.get("rule"):
                         raise ArchitectureViolation(f"{sub_id} missing enforceable description")
-                    if "enforcement" not in rule and "requirements" not in payload:
+                    if (
+                        "enforcement" not in rule
+                        and "enforcement" not in payload
+                        and "requirements" not in payload
+                    ):
                         raise ArchitectureViolation(f"{sub_id} missing enforcement logic")
                     self.state.rule_ids.add(sub_id)
                     self.state.rule_to_invariants[sub_id] = linked

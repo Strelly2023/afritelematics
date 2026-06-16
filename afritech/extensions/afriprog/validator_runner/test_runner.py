@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Iterable
@@ -41,7 +42,7 @@ class TestRunner:
 
     DEFAULT_TIMEOUT_SECONDS = 120
     PYTEST_COMMAND_PREFIX = (
-        "python3",
+        sys.executable,
         "-m",
         "pytest",
         "-c",
@@ -72,7 +73,7 @@ class TestRunner:
         quiet: bool = True,
     ) -> CommandResult:
         command: list[str] = [
-            "python3",
+            sys.executable,
             "-m",
             "pytest",
             "-c",

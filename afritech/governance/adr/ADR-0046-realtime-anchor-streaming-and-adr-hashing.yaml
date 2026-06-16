@@ -1,6 +1,6 @@
 id: ADR-0046
 title: Realtime Anchor Streaming and ADR Hashing
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a websocket-based anchor streaming surface, a public anchor
   explorer app, a cross-network reconciliation report, and a governed ADR
@@ -56,6 +56,10 @@ trust_at_scale_controls:
   - ADR hashes are stable, public, and governed
   - cross-network reconciliation is observational only
   - explorer app reads public surfaces only
+consequences:
+  - External verifiers can observe anchor publication events in realtime without gaining authority.
+  - ADR artifacts become hashable and anchorable as governed publication evidence.
+  - Cross-network reconciliation becomes a first-class observational trust surface across Sepolia, Base Sepolia, and Mainnet.
 verification:
   runbook: docs/architecture/AFRITECH_ANCHOR_REALTIME_STREAM_AND_ADR_HASHING.md
   validator: afritech.ci.afritech_blockchain_anchor_realtime_validator

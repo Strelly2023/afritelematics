@@ -1,6 +1,6 @@
 id: ADR-0030
 title: Mobility Market Governance
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic, evidence-aware market governance layer that
   balances supply and demand, computes bounded prices, emits replayable

@@ -1,6 +1,6 @@
 id: ADR-0026
 title: Logistics Custody Chain
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic chain-of-custody model for logistics and
   multi-hop mobility operations so every handoff is explicit, replayable,

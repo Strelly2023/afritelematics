@@ -236,6 +236,8 @@ def _check_no_external_state(
     request: DispatchRequest,
     candidates: tuple[DispatchCandidate, ...],
 ) -> DispatchInvariantCheck:
+    from afritech.mobility.trust_dispatch import run_trust_aware_dispatch
+
     satisfied = run_trust_aware_dispatch(request, candidates).canonical_dict() == run_trust_aware_dispatch(request, candidates).canonical_dict()
     return DispatchInvariantCheck(
         identifier="IA-DISPATCH-006",

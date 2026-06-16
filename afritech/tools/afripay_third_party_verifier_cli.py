@@ -4,11 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
-
-from afritech.afripay.public_validation import validate_public_proof_file, verify_signed_evidence
-from afritech.afripay.audit_sandbox import verify_independent_audit_sandbox
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -25,11 +23,31 @@ def run(argv: list[str] | None = None) -> int:
     return main(argv)
 
 
+def _repo_venv_python() -> Path:
+    return Path(__file__).resolve().parents[2] / "venv/bin/python"
+
+
+def _ensure_runtime_dependencies(exc: ModuleNotFoundError) -> None:
+    if exc.name != "cryptography":
+        raise exc
+    fallback_python = _repo_venv_python()
+    if fallback_python.exists() and Path(sys.executable).resolve() != fallback_python.resolve():
+        os.execv(str(fallback_python), [str(fallback_python), "-m", "afritech.tools.afripay_third_party_verifier_cli", *sys.argv[1:]])
+    raise exc
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     public_key_pem = None
     if args.public_key:
         public_key_pem = Path(args.public_key).read_text(encoding="utf-8")
+
+    try:
+        from afritech.afripay.audit_sandbox import verify_independent_audit_sandbox
+        from afritech.afripay.public_validation import verify_signed_evidence
+    except ModuleNotFoundError as exc:
+        _ensure_runtime_dependencies(exc)
+        raise
 
     if args.sandbox:
         sandbox_report = verify_independent_audit_sandbox(args.artifact, public_key_pem=public_key_pem)

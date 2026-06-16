@@ -1,6 +1,6 @@
 id: ADR-0041
 title: Pilot Deployment Architecture
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic pilot deployment manifest that references the
   production spine and the governed execution surface without introducing

@@ -13,3 +13,6 @@ rules:
 ci:
   - afritech/tests/afripay/test_afripay_ga_elite_core.py
   - afritech/tests/distributed/test_afripay_planned_surface.py
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

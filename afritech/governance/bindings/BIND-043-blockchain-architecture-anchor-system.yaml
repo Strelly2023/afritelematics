@@ -41,6 +41,12 @@ linked_rules:
   - RULE-065
 linked_adr:
   - ADR-0045
+linked_invariants:
+  - IA-BAS-001
+  - IA-BAS-002
+  - IA-BAS-003
+  - IA-BAS-004
+  - IA-BAS-005
 ci:
   validators:
     - afritech.ci.afritech_blockchain_anchor_validator

@@ -1,6 +1,6 @@
 id: ADR-0023
 title: AfriPay GA Elite deterministic financial operating system core
-status: accepted
+status: ACCEPTED
 decision: >
   Implement AfriPay as a deterministic core covering wallet, ledger, routing,
   FX, escrow, payouts, billing, compliance, intelligence hooks, and event outbox

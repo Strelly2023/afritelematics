@@ -1,6 +1,6 @@
 id: ADR-0044
 title: Operator Decision Protocol
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a deterministic operator decision protocol for pilot execution,
   zero-downtime deployment, and domain TLS cutover. The protocol standardizes

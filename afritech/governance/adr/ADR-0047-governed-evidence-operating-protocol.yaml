@@ -1,6 +1,6 @@
 id: ADR-0047
 title: Governed Evidence Operating Protocol
-status: accepted
+status: ACCEPTED
 decision: >
   Promote the blockchain anchor, reconciliation, policy, semantics, and explorer
   surfaces into one governed evidence operating protocol. The protocol combines
@@ -41,6 +41,10 @@ forbidden:
   - explorer_as_truth_authority
   - reconciliation_as_truth_authority
   - promotion_gate_as_truth_authority
+consequences:
+  - External trust consumers receive one stable governed evidence contract instead of many disconnected proof surfaces.
+  - Promotion, reconciliation, policy, and explorer layers become explicitly bounded by replay and proof authority.
+  - CI and governance artifacts become part of the public evidence operating protocol without inheriting truth authority.
 verification:
   runbook: docs/protocol/AFRITECH_GOVERNED_EVIDENCE_PROTOCOL.md
   validator: afritech.ci.afritech_governed_evidence_protocol_validator

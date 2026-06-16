@@ -1,6 +1,6 @@
 id: ADR-0037
 title: Cross-Border Federation
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a read-only cross-border federation surface that consumes legal compliance
   outputs and emits deterministic transition records without introducing authority

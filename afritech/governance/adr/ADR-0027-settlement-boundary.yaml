@@ -1,6 +1,6 @@
 id: ADR-0027
 title: Settlement Boundary
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a governed settlement boundary that deterministically computes
   economic outcomes from verified dispatch and custody evidence while keeping

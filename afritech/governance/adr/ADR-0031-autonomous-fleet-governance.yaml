@@ -1,6 +1,6 @@
 id: ADR-0031
 title: Autonomous Fleet Governance
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a governed fleet surface that treats fleets and vehicles as
   first-class, evidence-backed participants with replayable maintenance
@@ -17,4 +17,3 @@ rules:
   - RULE-051-autonomous-fleet-governance.yaml
 bindings:
   - BIND-029-autonomous-fleet-governance.yaml
-

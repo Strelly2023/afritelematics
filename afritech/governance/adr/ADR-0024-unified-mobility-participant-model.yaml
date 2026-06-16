@@ -1,6 +1,6 @@
 id: ADR-0024
 title: Unified Mobility Participant Model
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a unified AfriID participant model that supports multiple mobility
   roles per participant while keeping identity reference-only and external to

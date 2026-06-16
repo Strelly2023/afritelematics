@@ -1,6 +1,6 @@
 id: ADR-0035
 title: Regulator Certification Layer
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a read-only regulator certification surface that consumes proof-backed
   evidence and emits deterministic certification records without introducing authority

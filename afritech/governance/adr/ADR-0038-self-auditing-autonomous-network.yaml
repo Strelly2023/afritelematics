@@ -1,6 +1,6 @@
 id: ADR-0038
 title: Self-Auditing Autonomous Network
-status: accepted
+status: ACCEPTED
 decision: >
   Introduce a read-only self-auditing surface that consumes prior proof hashes and emits
   deterministic audit snapshots without introducing authority leakage or mutating the
