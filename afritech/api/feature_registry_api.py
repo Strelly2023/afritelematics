@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import Literal
@@ -103,6 +103,8 @@ def build_feature_registry_router() -> APIRouter:
     @router.get("/public/trust-badge/{feature_id}")
     def public_feature_trust_badge(feature_id: str) -> dict[str, object]:
         badge = build_trust_badge(feature_id)
+        if badge["feature"] is None:
+            raise HTTPException(status_code=404, detail="feature not found")
         return {
             **badge,
             "verification": verify_trust_badge(badge),
@@ -111,6 +113,8 @@ def build_feature_registry_router() -> APIRouter:
     @router.get("/public/trust-badge/{feature_id}/html", response_class=HTMLResponse)
     def public_feature_trust_badge_html(feature_id: str) -> str:
         badge = build_trust_badge(feature_id)
+        if badge["feature"] is None:
+            raise HTTPException(status_code=404, detail="feature not found")
         feature = badge.get("feature") if isinstance(badge.get("feature"), dict) else {}
         return f"""<!doctype html>
 <html lang="en">

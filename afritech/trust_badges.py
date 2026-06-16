@@ -24,7 +24,7 @@ def build_trust_badge(
     verification = verify_registry_payload(registry)
     selected_feature = None
     if feature_id is not None:
-        selected_feature = feature_by_id(feature_id).canonical_dict()
+        selected_feature = _feature_payload(feature_id)
 
     proof_path = (
         f"/public/trust-badge/{feature_id}"
@@ -60,6 +60,13 @@ def build_trust_badge(
         },
         "authority_boundary": BADGE_AUTHORITY_BOUNDARY,
     }
+
+
+def _feature_payload(feature_id: str) -> dict[str, Any] | None:
+    try:
+        return feature_by_id(feature_id).canonical_dict()
+    except KeyError:
+        return None
 
 
 def verify_trust_badge(badge: dict[str, Any] | None = None) -> dict[str, Any]:

@@ -117,6 +117,18 @@ def test_public_trust_badge_system_exports_shareable_proof():
     assert "Verify system integrity" in badge_html.text
 
 
+def test_public_trust_badge_unknown_feature_fails_closed():
+    client = build_client()
+
+    badge = client.get("/public/trust-badge/unknown-feature")
+    badge_html = client.get("/public/trust-badge/unknown-feature/html")
+
+    assert badge.status_code == 404
+    assert badge.json()["detail"] == "feature not found"
+    assert badge_html.status_code == 404
+    assert badge_html.json()["detail"] == "feature not found"
+
+
 def test_public_trust_infrastructure_surfaces_for_partners_and_governments():
     client = build_client()
 
