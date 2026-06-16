@@ -83,7 +83,7 @@ These paths match the defaults in
 From the repo root:
 
 ```bash
-docker compose -f deploy/production/docker-compose.production.yml up --build -d
+./scripts/deploy_production_compose.sh --base-url http://<host>
 ```
 
 This starts:
@@ -91,6 +91,15 @@ This starts:
 - `afritech-api`
 - `afritech-dashboard`
 - `edge` (Caddy for HTTP routing)
+
+Do not run `docker-compose.production.yml` on a host that is already running
+the HTTPS trust node. If `production-nginx-1` exists, ports `80` and `443` are
+owned by `docker-compose.trust-node.yml`; use the trust-node operations path:
+
+```bash
+./scripts/setup_production_trust_node.sh --repair-cert
+./scripts/go_live_anchor_now.sh --profile sepolia --skip-anchor
+```
 
 ## Step 6. Validate HTTP reachability
 

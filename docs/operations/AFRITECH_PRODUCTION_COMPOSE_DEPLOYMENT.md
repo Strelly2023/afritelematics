@@ -53,6 +53,18 @@ cp .env.production.example .env.production
 
 ## Launch
 
+Use this HTTP pilot stack only when the HTTPS trust-node stack is not already
+serving the host. If `production-nginx-1` is running, ports `80` and `443` are
+owned by `deploy/production/docker-compose.trust-node.yml`; do not start the
+HTTP-only Caddy `edge` service on the same host.
+
+For the live `afritechnology.com` trust node, use:
+
+```bash
+./scripts/setup_production_trust_node.sh --repair-cert
+./scripts/go_live_anchor_now.sh --profile sepolia --skip-anchor
+```
+
 Preferred deployment path:
 
 ```bash

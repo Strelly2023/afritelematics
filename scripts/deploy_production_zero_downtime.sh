@@ -84,6 +84,23 @@ if [[ -z "$BASE_URL" ]]; then
   BASE_URL="http://127.0.0.1"
 fi
 
+guard_against_trust_node_edge_conflict() {
+  if [[ "$COMPOSE_FILE" == "deploy/production/docker-compose.production.yml" ]] && docker ps --format '{{.Names}}' | grep -Fxq "production-nginx-1"; then
+    cat >&2 <<'EOF'
+production-nginx-1 is already running and owns host ports 80/443.
+That is the HTTPS trust-node edge from docker-compose.trust-node.yml.
+
+Do not start docker-compose.production.yml on this host unless you intend to
+replace the trust-node edge with the HTTP-only pilot Caddy edge.
+
+For the live afritechnology.com trust node, use:
+  ./scripts/setup_production_trust_node.sh --repair-cert
+  ./scripts/go_live_anchor_now.sh --profile sepolia --skip-anchor
+EOF
+    exit 1
+  fi
+}
+
 wait_for_api() {
   echo "==> Waiting for afritech-api health"
   for attempt in {1..60}; do
@@ -99,6 +116,8 @@ wait_for_api() {
     sleep 2
   done
 }
+
+guard_against_trust_node_edge_conflict
 
 echo "==> Validating compose configuration"
 "${COMPOSE[@]}" config --quiet

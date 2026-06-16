@@ -68,6 +68,18 @@ def test_production_api_image_includes_public_proof_documents() -> None:
     assert "COPY docs /app/docs" in dockerfile
 
 
+def test_http_production_path_guards_against_trust_node_edge_conflict() -> None:
+    compose_doc = _read("docs/operations/AFRITECH_PRODUCTION_COMPOSE_DEPLOYMENT.md")
+    quickstart = _read("docs/operations/AFRITECH_AWS_EC2_QUICKSTART.md")
+    deploy = _read("scripts/deploy_production_compose.sh")
+    zero_downtime = _read("scripts/deploy_production_zero_downtime.sh")
+
+    for text in (compose_doc, quickstart, deploy, zero_downtime):
+        assert "production-nginx-1" in text
+        assert "docker-compose.trust-node.yml" in text
+        assert "setup_production_trust_node.sh --repair-cert" in text
+
+
 def test_partner_live_demo_script_preserves_runtime_truth_positioning() -> None:
     text = _read("docs/pitch/AFRITECH_PARTNER_LIVE_DEMO_SCRIPT_RUNTIME_BOUNDARY.md")
 
