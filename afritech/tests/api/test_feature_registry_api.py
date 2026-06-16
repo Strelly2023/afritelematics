@@ -43,10 +43,16 @@ def test_feature_registry_endpoint_returns_governed_payload():
     assert payload["generation_mode"] == "REPLAY_DERIVED_EVIDENCE_PROJECTION"
     assert payload["read_only"] is True
     assert payload["creates_authority"] is False
-    assert payload["feature_count"] == 12
-    assert payload["complete_feature_count"] == 12
-    assert payload["candidate_feature_count"] == 12
-    assert payload["production_ready_feature_count"] == 0
+    assert payload["feature_count"] == 15
+    assert payload["complete_feature_count"] == 15
+    assert payload["candidate_feature_count"] == 15
+    assert payload["production_ready_feature_count"] == 3
+    assert payload["production_ready_feature_ids"] == [
+        "driver-identity-proof",
+        "trip-integrity-proof",
+        "payment-proof-anchor",
+    ]
+    assert payload["verified_true"] is True
     assert payload["live_pilot_authorized"] is False
     assert payload["registry_hash"]
     assert payload["signature"]["algorithm"] == "Ed25519"
@@ -80,6 +86,7 @@ def test_public_feature_registry_partner_validation_surfaces():
     assert verify_response.status_code == 200
     assert verify_response.json()["verified"] is True
     assert verify_response.json()["federated_trust"]["verified"] is True
+    assert verify_response.json()["verified_true"] is True
     assert verify_response.json()["no_fake_feature_can_exist"] is True
     assert portal_response.status_code == 200
     assert "AfriTech Feature Registry Trust Portal" in portal_response.text
@@ -87,6 +94,27 @@ def test_public_feature_registry_partner_validation_surfaces():
     assert "/public/feature-registry/verify" in portal_response.text
     assert "/public/trust-infrastructure/verify" in portal_response.text
     assert "/public/global-verification/verify" in portal_response.text
+
+
+def test_public_trust_badge_system_exports_shareable_proof():
+    client = build_client()
+
+    badge = client.get("/public/trust-badge")
+    feature_badge = client.get("/public/trust-badge/trip-integrity-proof")
+    badge_html = client.get("/public/trust-badge/trip-integrity-proof/html")
+
+    assert badge.status_code == 200
+    assert badge.json()["classification"] == "AFRITECH_PUBLIC_TRUST_BADGE"
+    assert badge.json()["label"] == "Verified by AfriTech Trust Layer"
+    assert badge.json()["verified"] is True
+    assert badge.json()["verified_true"] is True
+    assert badge.json()["verification"]["verified"] is True
+    assert feature_badge.status_code == 200
+    assert feature_badge.json()["feature"]["id"] == "trip-integrity-proof"
+    assert feature_badge.json()["links"]["system_integrity"] == "/public/ecosystem-evolution/verify"
+    assert badge_html.status_code == 200
+    assert "Verified by AfriTech Trust Layer" in badge_html.text
+    assert "Verify system integrity" in badge_html.text
 
 
 def test_public_trust_infrastructure_surfaces_for_partners_and_governments():

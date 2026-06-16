@@ -45,7 +45,7 @@ def test_signed_snapshot_verifies_external_identity():
     assert snapshot["signed"] is True
     assert snapshot["signature"]["algorithm"] == "Ed25519"
     assert result["verified"] is True
-    assert result["production_ready_feature_count"] == 0
+    assert result["production_ready_feature_count"] == 3
 
 
 def test_registry_payload_exposes_level12_guarantees():
@@ -53,5 +53,6 @@ def test_registry_payload_exposes_level12_guarantees():
 
     assert payload["generation_mode"] == "REPLAY_DERIVED_EVIDENCE_PROJECTION"
     assert payload["signature"]["algorithm"] == "Ed25519"
-    assert payload["production_ready_feature_count"] == 0
+    assert payload["production_ready_feature_count"] == 3
+    assert payload["verified_true"] is True
     assert payload["production_proven"] is False

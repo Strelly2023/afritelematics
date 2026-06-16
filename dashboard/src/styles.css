@@ -97,6 +97,13 @@ a {
   color: #172033;
 }
 
+.feature-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
 .trust-status {
   display: grid;
   gap: 16px;
@@ -233,6 +240,51 @@ a {
   border: 1px solid #d1dce5;
   border-radius: 8px;
   background: #ffffff;
+}
+
+.trust-badge-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.trust-badge-preview {
+  display: inline-flex;
+  min-height: 54px;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #8bb9a5;
+  border-radius: 999px;
+  background: #edf8f3;
+  color: #155d42;
+  padding: 10px 14px;
+}
+
+.trust-badge-preview strong {
+  overflow-wrap: anywhere;
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.trust-badge-mark {
+  display: grid;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: #1f7a55;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.trust-badge-copy p {
+  margin: 8px 0 0;
+  color: #59687b;
+  line-height: 1.55;
 }
 
 .metric-card {
@@ -720,6 +772,13 @@ a {
   margin-top: 12px;
 }
 
+.surface-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .surface-chip {
   display: inline-flex;
   border: 1px solid #c7d4df;
@@ -813,6 +872,10 @@ a {
 
   .feature-registry-row {
     grid-template-columns: minmax(0, 1fr) minmax(120px, 0.45fr);
+  }
+
+  .trust-badge-panel {
+    grid-template-columns: 1fr;
   }
 
   .feature-registry-head {

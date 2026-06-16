@@ -1,17 +1,17 @@
 {
-  "candidate_feature_count": 12,
+  "candidate_feature_count": 15,
   "classification": "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
   "economic_activation_allowed": false,
-  "evidence_hash": "f7161257ab0ff263172f37979c274db07e1a16022c530fe780606aab9d0b0a20",
-  "feature_count": 12,
-  "feature_hash": "9689532b7ed0624451de4127cfa8679dddec73f3a13937c90757c28c720e114c",
+  "evidence_hash": "6a4ef6be21bf4ecec96e8689dae9890b0eff3345076f1c90771ef131174ed4d2",
+  "feature_count": 15,
+  "feature_hash": "9e6c02dcf8555b576dd4d60840cacc99f02ce0856b9a9cb0d8756b92e354c604",
   "generation_mode": "REPLAY_DERIVED_EVIDENCE_PROJECTION",
-  "git_commit": "f162c7204d18a709cc96df9feaacb9f121958b1c",
+  "git_commit": "bf5a577c03e62e6e489c85fe35624eb74e2ae2a1",
   "incomplete_feature_ids": [],
   "live_pilot_authorized": false,
   "production_proven": false,
-  "production_ready_feature_count": 0,
-  "registry_hash": "017ad3b8b7309a592fc8960874069656a3efc3cf7e7f0da9e1fc9a5afdd65f84",
+  "production_ready_feature_count": 3,
+  "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
   "schema": "afritech.feature_registry_snapshot.v1",
   "signature": {
     "algorithm": "Ed25519",
@@ -23,11 +23,11 @@
       "REGISTRY_SIGNER",
       "VALIDATOR"
     ],
-    "value": "de01fc96b2816672d6600970f6553e1b23e878fb6874b0df74e8016eac13aac9cf14d45a038a2160ea59d2e6211f8ddd037166ff3ae7a8aed70551570fe13a06"
+    "value": "eec4f1eb745c27c77b81d1f4035452fdb9724ea324b833083455e1f8b7151d3afa833e912ecc9d0fdc94bbb14470e8696e7ea46c21de7bcb88b0d6b9f011fb0b"
   },
   "signed": true,
-  "snapshot_hash": "af6958c589ff35b0c398836081005aea329f4e1f117f0beaaecaac6b505c5fd4",
+  "snapshot_hash": "9ab8229369be8dcd4f8fddb97cb21e5ace52cb6cffee72036e260d0b75637325",
   "status": "FEATURE_REGISTRY_LEVEL_12",
-  "timestamp": "2026-06-16T02:27:43.685923+00:00",
+  "timestamp": "2026-06-16T19:47:33.385154+00:00",
   "version": "v1"
 }

@@ -46,11 +46,32 @@ def verify_registry_payload(payload: dict[str, Any]) -> dict[str, Any]:
     no_incomplete = payload.get("incomplete_feature_ids") == []
     no_fake = payload.get("feature_count") == len(features)
     no_unverifiable = all(feature.get("evidence_complete") is True for feature in features)
+    production_ready_count = payload.get("production_ready_feature_count")
+    production_ready_ids = payload.get("production_ready_feature_ids")
+    production_ready_features = [
+        feature
+        for feature in features
+        if feature.get("activation_status") == "PRODUCTION_READY"
+    ]
+    production_ready_count_valid = (
+        isinstance(production_ready_count, int)
+        and production_ready_count == len(production_ready_features)
+        and isinstance(production_ready_ids, list)
+        and sorted(str(item) for item in production_ready_ids)
+        == sorted(str(feature.get("id")) for feature in production_ready_features)
+    )
     no_false_production = (
-        payload.get("production_ready_feature_count") == 0
+        production_ready_count_valid
+        and all(feature.get("evidence_complete") is True for feature in production_ready_features)
         and payload.get("production_proven") is False
         and payload.get("live_pilot_authorized") is False
         and payload.get("economic_activation_allowed") is False
+    )
+    verified_true = (
+        payload.get("verified_true") is True
+        and isinstance(payload.get("verified_true_threshold"), int)
+        and isinstance(production_ready_count, int)
+        and production_ready_count >= int(payload["verified_true_threshold"])
     )
 
     verified = all(
@@ -75,6 +96,9 @@ def verify_registry_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "no_incomplete_feature_can_appear": no_incomplete,
         "no_unverifiable_claim_can_be_exported": no_unverifiable,
         "no_production_state_can_be_falsely_implied": no_false_production,
+        "production_ready_feature_ids": production_ready_ids if isinstance(production_ready_ids, list) else [],
+        "production_ready_features_evidence_complete": production_ready_count_valid,
+        "verified_true": verified_true,
         "feature_count": payload.get("feature_count"),
         "candidate_feature_count": payload.get("candidate_feature_count"),
         "production_ready_feature_count": payload.get("production_ready_feature_count"),

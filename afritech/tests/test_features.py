@@ -50,6 +50,9 @@ def test_feature_catalog_keeps_existing_canonical_names():
         "Governance Chain",
         "Classification CI",
         "Pilot Gates",
+        "Driver Identity Proof",
+        "Trip Integrity Proof",
+        "Payment Proof Anchor",
         "Domain Surfaces",
         "Legal Evidence Export",
         "Operational Tooling",
@@ -152,9 +155,16 @@ def test_all_features_have_boundary_guards():
         assert boundary_guard_valid(feature)
 
 
-def test_no_feature_is_production_ready_without_authorization():
-    for feature in FEATURES:
-        assert feature.activation_status != "PRODUCTION_READY"
+def test_only_verification_products_are_production_ready_without_authorization():
+    production_ready = [
+        feature.id for feature in FEATURES if feature.activation_status == "PRODUCTION_READY"
+    ]
+
+    assert production_ready == [
+        "driver-identity-proof",
+        "trip-integrity-proof",
+        "payment-proof-anchor",
+    ]
 
     assert SYSTEM_STATUS["live_pilot_authorized"] is False
     assert SYSTEM_STATUS["production_proven"] is False
@@ -228,7 +238,14 @@ def test_registry_payload_exposes_level_11_classification_without_activation():
     assert payload["signature"]["scope"] == "registry_payload"
     assert payload["signature"]["public_key"]
     assert payload["signature"]["value"]
-    assert payload["production_ready_feature_count"] == 0
+    assert payload["production_ready_feature_count"] == 3
+    assert payload["production_ready_feature_ids"] == [
+        "driver-identity-proof",
+        "trip-integrity-proof",
+        "payment-proof-anchor",
+    ]
+    assert payload["verified_true_threshold"] == 3
+    assert payload["verified_true"] is True
     assert payload["live_pilot_authorized"] is False
     assert payload["production_proven"] is False
     assert payload["economic_activation_allowed"] is False
@@ -246,7 +263,7 @@ def test_claim_snapshot_is_machine_verifiable():
     assert snapshot["evidence_hash"] == evidence_hash()
     assert snapshot["registry_hash"] == registry_payload()["registry_hash"]
     assert snapshot["snapshot_hash"]
-    assert snapshot["production_ready_feature_count"] == 0
+    assert snapshot["production_ready_feature_count"] == 3
 
 
 def test_persisted_claim_snapshot_exists_and_matches_current_registry_identity():
@@ -260,7 +277,7 @@ def test_persisted_claim_snapshot_exists_and_matches_current_registry_identity()
     assert snapshot["status"] == REGISTRY_STATUS
     assert snapshot["feature_count"] == len(FEATURES)
     assert snapshot["candidate_feature_count"] == len(FEATURE_CANDIDATES)
-    assert snapshot["production_ready_feature_count"] == 0
+    assert snapshot["production_ready_feature_count"] == 3
     assert snapshot["signature"]["algorithm"] == "Ed25519"
     assert snapshot["signature"]["public_key"]
 

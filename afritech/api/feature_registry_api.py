@@ -20,6 +20,7 @@ from afritech.global_verification import (
     verify_global_verification_bundle,
 )
 from afritech.tools.feature_registry_verifier import verify_registry_payload
+from afritech.trust_badges import build_trust_badge, verify_trust_badge
 from afritech.trust_federation import (
     build_federated_trust_certificate,
     verify_federated_trust_certificate,
@@ -90,6 +91,54 @@ def build_feature_registry_router() -> APIRouter:
             **verification,
             "federated_trust": federation,
         }
+
+    @router.get("/public/trust-badge")
+    def public_trust_badge() -> dict[str, object]:
+        badge = build_trust_badge()
+        return {
+            **badge,
+            "verification": verify_trust_badge(badge),
+        }
+
+    @router.get("/public/trust-badge/{feature_id}")
+    def public_feature_trust_badge(feature_id: str) -> dict[str, object]:
+        badge = build_trust_badge(feature_id)
+        return {
+            **badge,
+            "verification": verify_trust_badge(badge),
+        }
+
+    @router.get("/public/trust-badge/{feature_id}/html", response_class=HTMLResponse)
+    def public_feature_trust_badge_html(feature_id: str) -> str:
+        badge = build_trust_badge(feature_id)
+        feature = badge.get("feature") if isinstance(badge.get("feature"), dict) else {}
+        return f"""<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{badge["label"]}</title>
+    <style>
+      body {{ margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f5f7fb; color: #172033; font-family: Inter, Arial, sans-serif; }}
+      main {{ width: min(520px, calc(100vw - 32px)); border: 1px solid #c9d7df; border-radius: 8px; background: #fff; padding: 22px; box-shadow: 0 18px 48px rgba(24, 36, 50, 0.12); }}
+      .badge {{ display: inline-flex; align-items: center; gap: 10px; border: 1px solid #8bb9a5; border-radius: 999px; background: #edf8f3; color: #155d42; padding: 8px 12px; font-weight: 900; }}
+      .mark {{ width: 18px; height: 18px; border-radius: 999px; display: grid; place-items: center; background: #1f7a55; color: #fff; font-size: 13px; }}
+      h1 {{ margin: 18px 0 8px; font-size: 28px; line-height: 1.1; }}
+      p {{ color: #526173; line-height: 1.55; }}
+      code {{ display: block; margin-top: 12px; background: #edf2f7; border-radius: 6px; padding: 10px; word-break: break-all; }}
+      a {{ color: #185b8c; font-weight: 800; text-decoration: none; }}
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="badge"><span class="mark">✓</span>{badge["label"]}</div>
+      <h1>{feature.get("name", "AfriTech trust proof")}</h1>
+      <p>{feature.get("description", "Registry-derived public trust proof.")}</p>
+      <p><a href="/public/feature-registry/verify">Verify signed registry</a> · <a href="/public/ecosystem-evolution/verify">Verify system integrity</a></p>
+      <code>{badge["registry_hash"]}</code>
+    </main>
+  </body>
+</html>"""
 
     @router.get("/public/trust-infrastructure")
     def public_trust_infrastructure() -> dict[str, object]:

@@ -25,6 +25,7 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'readJson("/v1/ops/audit/dashboard")' in source
     assert 'readPublicJson("/public/trust/dashboard")' in source
     assert 'readJson("/api/feature-registry")' in source
+    assert 'readPublicJson("/public/trust-badge")' in source
     assert 'writeJson("/trust/conversation"' in source
 
 
@@ -84,12 +85,22 @@ def test_operator_dashboard_exposes_required_operator_panels() -> None:
         "Feature Registry Status",
         "Feature Claims",
         "Registry Enforcement",
+        "Trust Badge System",
+        "Verified by AfriTech Trust Layer",
+        "Public Badge",
+        "Verify System Integrity",
         "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
         "FEATURE_REGISTRY_LEVEL_12",
         "REPLAY_DERIVED_EVIDENCE_PROJECTION",
+        "driver-identity-proof",
+        "trip-integrity-proof",
+        "payment-proof-anchor",
         "EVIDENCE_VALIDATED",
         "BOUNDARY_GUARDED",
         "/api/feature-registry",
+        "/public/trust-badge",
+        "/public/ecosystem-evolution/verify",
+        "Production-ready verification features remain read-only",
     ):
         assert required in source
 

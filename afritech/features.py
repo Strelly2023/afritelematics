@@ -343,6 +343,72 @@ FEATURE_CANDIDATES: tuple[FeatureEvidence, ...] = (
         dependencies=("classification-ci", "resilience-hardening"),
     ),
     FeatureEvidence(
+        id="driver-identity-proof",
+        name="Driver Identity Proof",
+        description="Exports signed driver identity and event-origin verification as a public trust feature.",
+        technical_status="IMPLEMENTED",
+        activation_status="PRODUCTION_READY",
+        evidence=(
+            ref("implementation", "afriride_system/backend/event_signatures.py"),
+            ref("implementation", "afritech/identity/mobility_participant.py"),
+            ref("implementation", "afritech/security/device_identity.py"),
+            ref("test", "afriride_system/tests/test_event_ledger_validation.py"),
+            ref("test", "afritech/tests/identity/test_mobility_participant.py"),
+            ref("replay", "reports/adversarial_integrity_proof_v1/identity_spoofing.json"),
+            ref("proof", "docs/architecture/AFRIID_UNIFIED_MOBILITY_PARTICIPANT_MODEL.md"),
+            ref("boundary_guard", "afritech/ci/identity_validator.py"),
+        ),
+        boundary="Identity proof verifies signer and participant evidence only; it cannot override replay, proof, dispatch, or payment truth.",
+        boundary_guard="afritech/ci/identity_validator.py",
+        version="v1",
+        last_updated="2026-06-17",
+        dependencies=("trust-kernel", "governance-chain"),
+    ),
+    FeatureEvidence(
+        id="trip-integrity-proof",
+        name="Trip Integrity Proof",
+        description="Verifies that trip lifecycle events, trace hashes, replay receipts, and evidence exports match.",
+        technical_status="IMPLEMENTED",
+        activation_status="PRODUCTION_READY",
+        evidence=(
+            ref("implementation", "afriride_system/backend/trace_enforcement.py"),
+            ref("implementation", "afriride_system/backend/evidence_engine.py"),
+            ref("implementation", "afriride_system/backend/replay_engine.py"),
+            ref("test", "afriride_system/tests/test_trace_enforcement.py"),
+            ref("test", "afriride_system/tests/test_evidence_engine.py"),
+            ref("replay", "traces/pilot_runs/day_one_003/replay_verification_result.json"),
+            ref("proof", "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EXECUTION_RECEIPT.md"),
+            ref("boundary_guard", "afritech/ci/afriride_controlled_pilot_execution_receipt_validator.py"),
+        ),
+        boundary="Trip integrity proof exports replay-verifiable evidence and does not authorize live field execution.",
+        boundary_guard="afritech/ci/afriride_controlled_pilot_execution_receipt_validator.py",
+        version="v1",
+        last_updated="2026-06-17",
+        dependencies=("trust-kernel", "pilot-gates"),
+    ),
+    FeatureEvidence(
+        id="payment-proof-anchor",
+        name="Payment Proof Anchor",
+        description="Packages payment and ledger receipt evidence into a signed, externally verifiable proof anchor.",
+        technical_status="IMPLEMENTED",
+        activation_status="PRODUCTION_READY",
+        evidence=(
+            ref("implementation", "afritech/afripay/protocol.py"),
+            ref("implementation", "afritech/afripay/public_validation.py"),
+            ref("implementation", "afritech/architecture/blockchain_anchor.py"),
+            ref("test", "afritech/tests/afripay/test_afripay_verifiable_payment_api.py"),
+            ref("test", "afritech/tests/crypto/test_blockchain_anchor.py"),
+            ref("replay", "traces/pilot_runs/day_one_003/api_response_receipts.json"),
+            ref("proof", "docs/proof/ECONOMIC_TRUST_PROOF.md"),
+            ref("boundary_guard", "afritech/ci/afritech_blockchain_anchor_validator.py"),
+        ),
+        boundary="Payment proof anchors prove exported payment evidence only; they do not activate settlement, pricing, escrow, or economic authority.",
+        boundary_guard="afritech/ci/afritech_blockchain_anchor_validator.py",
+        version="v1",
+        last_updated="2026-06-17",
+        dependencies=("trust-kernel", "governance-chain"),
+    ),
+    FeatureEvidence(
         id="domain-surfaces",
         name="Domain Surfaces",
         description="Defines bounded surfaces for AfriRide, AfriConnectTL, AfriEats, and AfriPay.",
@@ -718,6 +784,11 @@ def evidence_hash() -> str:
 
 
 def registry_payload() -> dict[str, object]:
+    production_ready_features = [
+        feature.id
+        for feature in FEATURES
+        if feature.activation_status == "PRODUCTION_READY"
+    ]
     payload = {
         "classification": REGISTRY_CLASSIFICATION,
         "status": REGISTRY_STATUS,
@@ -727,13 +798,10 @@ def registry_payload() -> dict[str, object]:
         "feature_count": len(FEATURES),
         "complete_feature_count": len(FEATURES),
         "incomplete_feature_ids": incomplete_features(),
-        "production_ready_feature_count": len(
-            [
-                feature
-                for feature in FEATURES
-                if feature.activation_status == "PRODUCTION_READY"
-            ]
-        ),
+        "production_ready_feature_count": len(production_ready_features),
+        "production_ready_feature_ids": production_ready_features,
+        "verified_true_threshold": 3,
+        "verified_true": len(production_ready_features) >= 3,
         "live_pilot_authorized": SYSTEM_STATUS["live_pilot_authorized"],
         "production_proven": SYSTEM_STATUS["production_proven"],
         "economic_activation_allowed": SYSTEM_STATUS["economic_activation_allowed"],

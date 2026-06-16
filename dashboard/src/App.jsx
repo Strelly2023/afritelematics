@@ -31,6 +31,7 @@ const EMPTY_OPERATOR_STATE = {
   auditDashboard: null,
   publicTrustDashboard: null,
   featureRegistry: null,
+  trustBadge: null,
 };
 
 const PROPOSALS = [
@@ -415,6 +416,12 @@ const MONETIZATION_TIERS = [
     price: "Quorum / registry network agreement",
     surface: "Verification network participation, node visibility, and custom compliance workflows",
   },
+];
+
+const PRODUCTIZED_TRUST_FEATURE_IDS = [
+  "driver-identity-proof",
+  "trip-integrity-proof",
+  "payment-proof-anchor",
 ];
 
 const PROTOCOL_COMPONENTS = [
@@ -984,9 +991,11 @@ export default function OperatorDashboard() {
   useEffect(() => {
     fetchOperatorState();
     fetchFeatureRegistry();
+    fetchTrustBadge();
     const interval = setInterval(() => {
       fetchOperatorState();
       fetchFeatureRegistry();
+      fetchTrustBadge();
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -1007,7 +1016,8 @@ export default function OperatorDashboard() {
         readPublicJson("/public/trust/dashboard"),
       ]);
 
-      setState({
+      setState((current) => ({
+        ...current,
         systemHealth,
         activeRides: normalizeActiveRides(activeRides),
         drivers: normalizeDrivers(drivers),
@@ -1019,7 +1029,7 @@ export default function OperatorDashboard() {
         observabilityDashboard,
         auditDashboard,
         publicTrustDashboard,
-      });
+      }));
       setLastUpdated(new Date().toLocaleTimeString());
       setError(null);
     } catch (err) {
@@ -1038,6 +1048,21 @@ export default function OperatorDashboard() {
       setState((current) => ({
         ...current,
         featureRegistry: current.featureRegistry,
+      }));
+    }
+  }
+
+  async function fetchTrustBadge() {
+    try {
+      const trustBadge = await readPublicJson("/public/trust-badge");
+      setState((current) => ({
+        ...current,
+        trustBadge,
+      }));
+    } catch {
+      setState((current) => ({
+        ...current,
+        trustBadge: current.trustBadge,
       }));
     }
   }
@@ -1152,6 +1177,9 @@ export default function OperatorDashboard() {
           <div className="hero-actions" aria-label="Primary actions">
             <a className="button primary" href="mailto:pilot@afriprogramming.ai">
               Request pilot
+            </a>
+            <a className="button secondary" href="/public/ecosystem-evolution/verify">
+              Verify System Integrity
             </a>
             <a className="button secondary" href="#proposal-view">
               View demo
@@ -1375,7 +1403,7 @@ export default function OperatorDashboard() {
           title="Governed Feature Registry Dashboard"
           question="Which AfriTech feature claims are evidence validated, boundary guarded, and still production gated?"
         />
-        <FeatureRegistryDashboard registry={state.featureRegistry} />
+        <FeatureRegistryDashboard registry={state.featureRegistry} badge={state.trustBadge} />
       </section>
 
       <section id="proposal-view" className="section-band">
@@ -2401,7 +2429,7 @@ function featureStatusTone(status) {
   return "neutral";
 }
 
-function FeatureRegistryDashboard({ registry }) {
+function FeatureRegistryDashboard({ registry, badge }) {
   if (!registry) {
     return (
       <OperatorPanel title="Feature Registry Status">
@@ -2411,9 +2439,11 @@ function FeatureRegistryDashboard({ registry }) {
   }
 
   const features = registry.features || [];
-  const productionGated =
-    Number(registry.production_ready_feature_count || 0) === 0 &&
-    registry.production_proven === false;
+  const productionReadyCount = Number(registry.production_ready_feature_count || 0);
+  const verificationProductReady =
+    productionReadyCount >= Number(registry.verified_true_threshold || 3) &&
+    registry.production_proven === false &&
+    registry.live_pilot_authorized === false;
 
   return (
     <div className="feature-registry-layout">
@@ -2436,9 +2466,9 @@ function FeatureRegistryDashboard({ registry }) {
         />
         <TrustMetric
           label="Production-ready claims"
-          value={registry.production_ready_feature_count || 0}
-          helper="Production activation remains blocked until explicit authorization exists."
-          tone={productionGated ? "success" : "warning"}
+          value={productionReadyCount}
+          helper="Verification products can be production-ready while production deployment remains blocked."
+          tone={verificationProductReady ? "success" : "warning"}
         />
         <TrustMetric
           label="Claim history"
@@ -2447,6 +2477,34 @@ function FeatureRegistryDashboard({ registry }) {
           tone="neutral"
         />
       </div>
+
+      <OperatorPanel title="Trust Badge System">
+        <div className="trust-badge-panel">
+          <div className="trust-badge-preview" aria-label="AfriTech public trust badge">
+            <span className="trust-badge-mark">✓</span>
+            <strong>{badge?.label || "Verified by AfriTech Trust Layer"}</strong>
+          </div>
+          <div className="trust-badge-copy">
+            <strong>{badge?.status || "PENDING"}</strong>
+            <p>{badge?.embed?.text || "Public proof resolves through /public/trust-badge and /public/ecosystem-evolution/verify."}</p>
+            <div className="surface-chip-row" aria-label="Production-ready verification features">
+              {PRODUCTIZED_TRUST_FEATURE_IDS.map((featureId) => (
+                <span key={featureId} className="surface-chip">
+                  {featureId}
+                </span>
+              ))}
+            </div>
+            <div className="feature-action-row">
+              <a className="button secondary" href="/public/trust-badge">
+                Public Badge
+              </a>
+              <a className="button secondary" href="/public/ecosystem-evolution/verify">
+                Verify System Integrity
+              </a>
+            </div>
+          </div>
+        </div>
+      </OperatorPanel>
 
       <OperatorPanel title="Feature Claims">
         <div className="feature-registry-table" role="table" aria-label="Governed feature registry">
@@ -2503,7 +2561,7 @@ function FeatureRegistryDashboard({ registry }) {
           </article>
           <article className="record-card">
             <strong>Production Gated</strong>
-            <p>No feature is marked PRODUCTION_READY while live pilot and economic activation remain false.</p>
+            <p>Production-ready verification features remain read-only and cannot imply live pilot, economic activation, or production-proven deployment.</p>
           </article>
         </div>
       </OperatorPanel>

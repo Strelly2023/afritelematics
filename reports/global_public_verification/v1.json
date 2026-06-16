@@ -1,5 +1,5 @@
 {
-  "anchor_hash": "f1f287798b2d95cb2dfe425eba21d343507f4df7e9af7c78a3ae22d69dbcade4",
+  "anchor_hash": "13d73bf95e5788501fc5504e1e82a811e155b4dd9d0c8d5dfcd2cc6eb2afbcca",
   "authority_boundary": "global_verification_exports_truth_without_creating_runtime_or_production_authority",
   "classification": "LEVEL_15_GLOBAL_PUBLIC_VERIFICATION_LAYER",
   "creates_authority": false,
@@ -29,13 +29,13 @@
         },
         "method": null,
         "network": "afritech-federated-trust",
-        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "proof_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
         "source": "global_verification.deterministic_anchor",
         "status": "runtime_safe_fallback",
-        "transaction_hash": "global-afritech-federated-trust-ad098800ebd47f72",
-        "tx_hash": "global-afritech-federated-trust-ad098800ebd47f72"
+        "transaction_hash": "global-afritech-federated-trust-ba37b071fda3e480",
+        "tx_hash": "global-afritech-federated-trust-ba37b071fda3e480"
       },
-      "receipt_hash": "c8231b7b9cf4a6c3f2a465e2fdd1cd7ac96fdcae95dd9af246378f7591842d3b"
+      "receipt_hash": "0f15dc148e675639ac08c86435e8395dee0669ed67de0a450f9a3e762876dbfd"
     },
     {
       "network": {
@@ -62,13 +62,13 @@
         },
         "method": null,
         "network": "ethereum-sepolia",
-        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "proof_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
         "source": "global_verification.deterministic_anchor",
         "status": "runtime_safe_fallback",
-        "transaction_hash": "global-ethereum-sepolia-ad098800ebd47f72",
-        "tx_hash": "global-ethereum-sepolia-ad098800ebd47f72"
+        "transaction_hash": "global-ethereum-sepolia-ba37b071fda3e480",
+        "tx_hash": "global-ethereum-sepolia-ba37b071fda3e480"
       },
-      "receipt_hash": "3d217d3e0c3f898241a406e1be036adf88cf03f3b924fdcadd70be74da5dba99"
+      "receipt_hash": "2cf4f8c028f3bb0afe4fe617fbe8830134ed5d9d57a76a984851c067707d9dec"
     },
     {
       "network": {
@@ -95,22 +95,22 @@
         },
         "method": null,
         "network": "papc-public-ledger",
-        "proof_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+        "proof_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
         "source": "global_verification.deterministic_anchor",
         "status": "runtime_safe_fallback",
-        "transaction_hash": "global-papc-public-ledger-ad098800ebd47f72",
-        "tx_hash": "global-papc-public-ledger-ad098800ebd47f72"
+        "transaction_hash": "global-papc-public-ledger-ba37b071fda3e480",
+        "tx_hash": "global-papc-public-ledger-ba37b071fda3e480"
       },
-      "receipt_hash": "8d0363e2e3ae7203534e72c76892f35134bf50c745f28d96efdcec7ab362e606"
+      "receipt_hash": "ce0fb40425901d6b5ee836f6e7b64611befff30304d3aa6e79d1b57e12a242d3"
     }
   ],
   "federated_certificate": {
     "aggregate_status": "FEDERATED_QUORUM_VERIFIED",
     "authority_boundary": "federated_network_verifies_registry_without_creating_runtime_authority",
-    "certificate_id": "ftc-ab9f64ebf9f7",
+    "certificate_id": "ftc-c86968f8987a",
     "classification": "LEVEL_14_FEDERATED_TRUST_NETWORK",
     "level": "LEVEL_14",
-    "network_hash": "ab9f64ebf9f72a07b982d08f880405c085d3e2b7d084b96d2d9753c57fe0e935",
+    "network_hash": "c86968f8987a4d370ea2cf5b3dc8eb0730566752976903526cce21c41d389231",
     "node_count": 3,
     "nodes": [
       {
@@ -148,7 +148,7 @@
       }
     ],
     "quorum": 2,
-    "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+    "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
     "schema": "afritech.federated_trust_certificate.v1",
     "verified_count": 3,
     "witnesses": [
@@ -156,27 +156,27 @@
         "decision": "VERIFIED",
         "node_id": "afritech-core-node",
         "public_key": "9b55c08c44f4701115c97f13f61e9d45b162bd099c7917e209941c2563ac331b",
-        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
-        "signature": "19c578d5460dc902586d6f6da856fd99138855520a539fb57f34ccb1ce4fe3276301dbcf2c98427dc9d45e1b40a7cbe5c6e86730db17d120ad4ba251e845940c"
+        "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
+        "signature": "25b398a9eba34b423635133d45e64978cf9f01f1a3a48b4fa0761c12b00d8bfc215feddad1b610640361fa26d0e4f6190ae5036f1ef7cc9e5c7deee728cb6c08"
       },
       {
         "decision": "VERIFIED",
         "node_id": "partner-verifier-node",
         "public_key": "6dd718552a68253d33fcc703f487a399c9a85204f3bd5453e6c808ba9f620a14",
-        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
-        "signature": "4229c0d8a30418e363e00fc0a9284ed89e3e0bcb03517a98916ba43054f0957308e1f99de3c57aadf67625528ccc3b8943b6629da1effa8a220b513c2bc09704"
+        "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
+        "signature": "5015b81e47f2bb1f7bbccdced246c9fb8dab5171593166c14623ec4839ccd53fb7043080b3a2b86a30e93da836bdff201aed2a9ae4e3ac452fbd2dc629598f0e"
       },
       {
         "decision": "VERIFIED",
         "node_id": "government-observer-node",
         "public_key": "6b9045469388d73d5692740389e8f6cc0393fd07746279261de04ceecc319d55",
-        "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
-        "signature": "04732b2558b3369a7f2da26af62168dd629f10d7d240881a9e52d5ec6d1557587d9e32d5539dbcf25609ea86c3eb640e278a0dfca8e52a56c8ce15fcc8832d01"
+        "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
+        "signature": "678313ea96433c5da183b1d322a13affc0b9115943c0915a84ba43c6c1091c1d7682bae08138fa71062042d9420f56e252ee078e20e7d1f1ada2868b5fd7f608"
       }
     ]
   },
-  "federation_hash": "d0758e57edfd6c79d0ebd308411a47a30aac233f5c7a439c45594be23f4dc59b",
-  "global_bundle_hash": "88f0d30a7af3358e32efcf7aba09169a6cec09989012a110e6ffa18e36004bf7",
+  "federation_hash": "d2a244c4a340338a41ef82b51dcefbfd4281be5fb5413d05166258753e9bc5bc",
+  "global_bundle_hash": "2e90aa579e45cdda9fe2ceaa84a48bd6e7d3d3cd3d8c44d1fbbbc5cdad7339e6",
   "guarantees": {
     "cross_network_interoperable": true,
     "global_public_verification_available": true,
@@ -191,13 +191,13 @@
   "optional_onchain_anchor_supported": true,
   "read_only": true,
   "registry": {
-    "candidate_feature_count": 12,
+    "candidate_feature_count": 15,
     "claim_history": "docs/governance/AFRITECH_FEATURE_CLAIM_HISTORY.md",
     "classification": "GOVERNED_EVIDENCE_VALIDATED_FEATURE_REGISTRY",
-    "complete_feature_count": 12,
+    "complete_feature_count": 15,
     "creates_authority": false,
     "economic_activation_allowed": false,
-    "evidence_hash": "d6b89a830842d87f4591bb05d9c50d67dfc8a4dc0ed1350ba3f0a65192826268",
+    "evidence_hash": "6a4ef6be21bf4ecec96e8689dae9890b0eff3345076f1c90771ef131174ed4d2",
     "evidence_index": [
       {
         "hash": "e350a52926fd125c169f11d33057273a10830dbbe2077de8c77dabeade3ccf75",
@@ -250,6 +250,76 @@
         "type": "implementation"
       },
       {
+        "hash": "fca3db938afcb9f4c189efd40f601b88137ac2cc78479d6851c40696b07e5d7d",
+        "id": "3ceffd80593be27d",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afriride_system/backend/event_signatures.py",
+        "required": true,
+        "size_bytes": 7380,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "bbb88bdff4162f9d9716b5eec24ec70ca33bcb80dc1a1c7673b8bdef9a31e187",
+        "id": "3053335dd10dd612",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afriride_system/backend/evidence_engine.py",
+        "required": true,
+        "size_bytes": 2561,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "0475ff96b60b484516ee38c7ffecec9698b67dc8a7e50afae4493842ab8e8297",
+        "id": "a024dc6bab10d42c",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afriride_system/backend/replay_engine.py",
+        "required": true,
+        "size_bytes": 6541,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "2a5e82eae3cd55eeda3cc2defd91f6d489c65445c4579e64ed69d5d38c94c4be",
+        "id": "5c231322766556f9",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afriride_system/backend/trace_enforcement.py",
+        "required": true,
+        "size_bytes": 17654,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "1162cbfbbe357a266b1707d65f33027fecc2454cdb88323b3de99b013410f1f4",
+        "id": "a34b03facf46cd96",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afriride_system/tests/test_event_ledger_validation.py",
+        "required": true,
+        "size_bytes": 12760,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "baaa684a19aa8d12c73b53759d65ba6f49e6754b343b76344012e20102bfdae4",
+        "id": "5dab7846aa7ce25b",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afriride_system/tests/test_evidence_engine.py",
+        "required": true,
+        "size_bytes": 2075,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "test"
+      },
+      {
+        "hash": "45c423f972423e8549af6a20257c2209914ca6b52ff2efd1dfb72711f9dcfd78",
+        "id": "b70bbd77028b03a4",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afriride_system/tests/test_trace_enforcement.py",
+        "required": true,
+        "size_bytes": 14639,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "test"
+      },
+      {
         "hash": "af3b853466bf190e588f01b9e5988cdc9c6fa39301d9387287bfb1bdcadded84",
         "id": "88a3c5ddb7192c92",
         "origin_event": "feature-evidence:domain-surfaces:v1",
@@ -257,6 +327,16 @@
         "required": true,
         "size_bytes": 13797,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "5413067482180c657730c1bc753348d3645242b26b5be05c60c8f415fdf446f3",
+        "id": "6aa562db77e4a888",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "afritech/afripay/public_validation.py",
+        "required": true,
+        "size_bytes": 5380,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "implementation"
       },
       {
@@ -360,6 +440,16 @@
         "type": "implementation"
       },
       {
+        "hash": "3a725e42d2093b209ae72a090a5231786c13b0ade28617f39f209389c1f35134",
+        "id": "890736513781b155",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "afritech/architecture/blockchain_anchor.py",
+        "required": true,
+        "size_bytes": 12534,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
         "hash": "a2d2a19957871b004a7b8f6d1544ec1be2e939dfbb8e4c62ec9458eca1e9fab1",
         "id": "9a3399f4e0f6cc79",
         "origin_event": "feature-evidence:domain-surfaces:v1",
@@ -430,6 +520,16 @@
         "type": "implementation"
       },
       {
+        "hash": "12f56edb3d6c3c58b79bedddeea82a93c97ebe07110e5834beeee74f8d002080",
+        "id": "be618eb21443c9d7",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "afritech/ci/afriride_controlled_pilot_execution_receipt_validator.py",
+        "required": true,
+        "size_bytes": 17944,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
         "hash": "de0ea58a64da82516e40f9ff6e64aa48ab1187302e5364934c193333214a3b9c",
         "id": "c2c07ae99906f294",
         "origin_event": "feature-evidence:pilot-gates:v1",
@@ -447,6 +547,16 @@
         "required": true,
         "size_bytes": 8203,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "32301a19c022f86ac17ebfba9f5bb799d76a9902a3e07e7fbadb8d4b33ba30da",
+        "id": "69271c871107b09b",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "afritech/ci/afritech_blockchain_anchor_validator.py",
+        "required": true,
+        "size_bytes": 7438,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "boundary_guard"
       },
       {
@@ -477,6 +587,16 @@
         "required": true,
         "size_bytes": 522,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "boundary_guard"
+      },
+      {
+        "hash": "c2eb01e735e00aeb1cfa52b3fe963dbf3cf3f92bb3d66ce3240cdb040b5ccfd8",
+        "id": "2aa40c212342a408",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afritech/ci/identity_validator.py",
+        "required": true,
+        "size_bytes": 9892,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "boundary_guard"
       },
       {
@@ -580,6 +700,16 @@
         "type": "implementation"
       },
       {
+        "hash": "f373a7f590d88ceec1550faa7f604756e5e98df2c8be29e2343e96c0fecd152b",
+        "id": "5220c9783ccc11a7",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afritech/identity/mobility_participant.py",
+        "required": true,
+        "size_bytes": 6320,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "implementation"
+      },
+      {
         "hash": "625e5e61b30addfb54185fc57daccddc24ef3833a929f33934f917b073d59c23",
         "id": "70b4aa1562bf8f22",
         "origin_event": "feature-evidence:federation:v1",
@@ -597,6 +727,16 @@
         "required": true,
         "size_bytes": 6997,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "implementation"
+      },
+      {
+        "hash": "c744ced4cad2b8fd78ea611c91538043047d978acca30aa72b371a19e84d06c0",
+        "id": "d6cb89056656eab9",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afritech/security/device_identity.py",
+        "required": true,
+        "size_bytes": 1967,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "implementation"
       },
       {
@@ -640,6 +780,16 @@
         "type": "test"
       },
       {
+        "hash": "e138e020f5a60bcc5cfddba08752cf56a7134a38b98bf75e4700fb3624362733",
+        "id": "30f2d03e2f1e326c",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "afritech/tests/afripay/test_afripay_verifiable_payment_api.py",
+        "required": true,
+        "size_bytes": 4525,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "test"
+      },
+      {
         "hash": "88acb9ecd09300efbc6665143a165ad80c28577360655858c7c745237689cf21",
         "id": "fa87322ecf25d3b5",
         "origin_event": "feature-evidence:afripower-intelligence:v1",
@@ -672,11 +822,11 @@
       {
         "hash": "58cff95529dc0c205318f4d0593ca468274d9a782d85b0b98a852fa91bd85c20",
         "id": "97010d7525cf99ce",
-        "origin_event": "feature-evidence:trust-kernel:v1",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
         "path": "afritech/tests/crypto/test_blockchain_anchor.py",
         "required": true,
         "size_bytes": 4768,
-        "timestamp": "2026-06-16T00:00:00Z",
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "test"
       },
       {
@@ -770,6 +920,16 @@
         "type": "test"
       },
       {
+        "hash": "bf3c8a276eb5997a81e8a88cf18da7ed94ab8b86740f2566618edd1eda473521",
+        "id": "f03e0a0918c6c421",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "afritech/tests/identity/test_mobility_participant.py",
+        "required": true,
+        "size_bytes": 4448,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "test"
+      },
+      {
         "hash": "14d5be9b0a6bd02382af1f05d03ff8f2d09094d3c13cfc68d145560d045b0a78",
         "id": "e4aac3d4cac7ebdf",
         "origin_event": "feature-evidence:legal-evidence-export:v1",
@@ -810,22 +970,22 @@
         "type": "implementation"
       },
       {
-        "hash": "12a72ca0fa44fa2ecd6fda8f0db42797f5f23f43a0980a6e480055680b83c216",
+        "hash": "3bd647c3d6356003367466cf98cdd16202bf2f739547782ffa0f33eb1b0fffc9",
         "id": "e58ba19e1cbb6e9d",
         "origin_event": "feature-evidence:operational-tooling:v1",
         "path": "dashboard/src/App.jsx",
         "required": true,
-        "size_bytes": 99532,
+        "size_bytes": 101749,
         "timestamp": "2026-06-16T00:00:00Z",
         "type": "implementation"
       },
       {
-        "hash": "6a22fca735e215cf009ecf346ff31999ec8014c9509384679b7934a4116f89d4",
+        "hash": "6f897d42dc27993b5b4fcdf1d4673ea8a65b53bddd98460f321e1a113071720e",
         "id": "4d1788200dcaa94e",
         "origin_event": "feature-evidence:operational-tooling:v1",
         "path": "dashboard/tests/test_operator_dashboard_surface.py",
         "required": true,
-        "size_bytes": 6242,
+        "size_bytes": 6677,
         "timestamp": "2026-06-16T00:00:00Z",
         "type": "test"
       },
@@ -860,6 +1020,16 @@
         "type": "proof"
       },
       {
+        "hash": "7bb0d64347e4b53b00631aad6b221ed5f4e4e976e4e9ef3c65289cacdd50e27e",
+        "id": "e84389d19285c6b4",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "docs/architecture/AFRIID_UNIFIED_MOBILITY_PARTICIPANT_MODEL.md",
+        "required": true,
+        "size_bytes": 2469,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "proof"
+      },
+      {
         "hash": "add95bc6adbf77636826a35a46f9c5d170f506936de8f779b4481ea2697189a5",
         "id": "3fd88ef41da3bdc9",
         "origin_event": "feature-evidence:federation:v1",
@@ -877,6 +1047,26 @@
         "required": true,
         "size_bytes": 1629,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "b36e8694124522c2634c0d9e6b443135283be976ab2940329e6df80c7432296a",
+        "id": "4ca753f535734492",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
+        "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EXECUTION_RECEIPT.md",
+        "required": true,
+        "size_bytes": 5879,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "proof"
+      },
+      {
+        "hash": "1ff27519b79d72fbb4630acfb4bb0f6fa9e32e0570529d3b0ce9e6be6ce86f61",
+        "id": "d24227655be48e8a",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "docs/proof/ECONOMIC_TRUST_PROOF.md",
+        "required": true,
+        "size_bytes": 1895,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "proof"
       },
       {
@@ -947,6 +1137,16 @@
         "required": true,
         "size_bytes": 686,
         "timestamp": "2026-06-16T00:00:00Z",
+        "type": "replay"
+      },
+      {
+        "hash": "41a4dd3deedb0e2077ae4c3a56db0428abcec23e0b4b89d716c09bf96e8a4119",
+        "id": "8cf6fdf208667e7a",
+        "origin_event": "feature-evidence:driver-identity-proof:v1",
+        "path": "reports/adversarial_integrity_proof_v1/identity_spoofing.json",
+        "required": true,
+        "size_bytes": 1303,
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "replay"
       },
       {
@@ -1040,13 +1240,23 @@
         "type": "replay"
       },
       {
+        "hash": "1df42b51251ab8da0e6f00694a684b53ed2bcd67170eea7d7dde53394e49dc30",
+        "id": "b69d4b0eba80e632",
+        "origin_event": "feature-evidence:payment-proof-anchor:v1",
+        "path": "traces/pilot_runs/day_one_003/api_response_receipts.json",
+        "required": true,
+        "size_bytes": 5069,
+        "timestamp": "2026-06-17T00:00:00Z",
+        "type": "replay"
+      },
+      {
         "hash": "f49b2a2e9b310b89321bbe05a3bb8dfcd07b0a5d66713f5d65bb6ab8054414ae",
         "id": "7d9aa70a0f414c8f",
-        "origin_event": "feature-evidence:pilot-gates:v1",
+        "origin_event": "feature-evidence:trip-integrity-proof:v1",
         "path": "traces/pilot_runs/day_one_003/replay_verification_result.json",
         "required": true,
         "size_bytes": 3247,
-        "timestamp": "2026-06-16T00:00:00Z",
+        "timestamp": "2026-06-17T00:00:00Z",
         "type": "replay"
       },
       {
@@ -1070,8 +1280,8 @@
         "type": "replay"
       }
     ],
-    "feature_count": 12,
-    "feature_hash": "b819c1d51483720432bb954fb11be3f3aaccdd51abbd9ba4b0ff1fa8529bc153",
+    "feature_count": 15,
+    "feature_hash": "9e6c02dcf8555b576dd4d60840cacc99f02ce0856b9a9cb0d8756b92e354c604",
     "features": [
       {
         "activation_status": "GATED",
@@ -1712,6 +1922,222 @@
         "version": "v1"
       },
       {
+        "activation_status": "PRODUCTION_READY",
+        "boundary": "Identity proof verifies signer and participant evidence only; it cannot override replay, proof, dispatch, or payment truth.",
+        "boundary_guard": "afritech/ci/identity_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "governance-chain"
+        ],
+        "description": "Exports signed driver identity and event-origin verification as a public trust feature.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afriride_system/backend/event_signatures.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/identity/mobility_participant.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/security/device_identity.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afriride_system/tests/test_event_ledger_validation.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/identity/test_mobility_participant.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "reports/adversarial_integrity_proof_v1/identity_spoofing.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/architecture/AFRIID_UNIFIED_MOBILITY_PARTICIPANT_MODEL.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/identity_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "driver-identity-proof",
+        "id": "driver-identity-proof",
+        "last_updated": "2026-06-17",
+        "name": "Driver Identity Proof",
+        "status": "PRODUCTION_READY",
+        "technical_status": "IMPLEMENTED",
+        "use": "Exports signed driver identity and event-origin verification as a public trust feature.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "07f78365e6a5741c07a520ec42322ce5d9ad8195d5a4b0fbae83053ce560dd85",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "PRODUCTION_READY",
+        "boundary": "Trip integrity proof exports replay-verifiable evidence and does not authorize live field execution.",
+        "boundary_guard": "afritech/ci/afriride_controlled_pilot_execution_receipt_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "pilot-gates"
+        ],
+        "description": "Verifies that trip lifecycle events, trace hashes, replay receipts, and evidence exports match.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afriride_system/backend/trace_enforcement.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afriride_system/backend/evidence_engine.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afriride_system/backend/replay_engine.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afriride_system/tests/test_trace_enforcement.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afriride_system/tests/test_evidence_engine.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "traces/pilot_runs/day_one_003/replay_verification_result.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EXECUTION_RECEIPT.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afriride_controlled_pilot_execution_receipt_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "trip-integrity-proof",
+        "id": "trip-integrity-proof",
+        "last_updated": "2026-06-17",
+        "name": "Trip Integrity Proof",
+        "status": "PRODUCTION_READY",
+        "technical_status": "IMPLEMENTED",
+        "use": "Verifies that trip lifecycle events, trace hashes, replay receipts, and evidence exports match.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "cf207a1b911bfb6bf702c4516e1f23cd0f165e7e7fdd31b749929506ec1a6e6c",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
+        "activation_status": "PRODUCTION_READY",
+        "boundary": "Payment proof anchors prove exported payment evidence only; they do not activate settlement, pricing, escrow, or economic authority.",
+        "boundary_guard": "afritech/ci/afritech_blockchain_anchor_validator.py",
+        "dependencies": [
+          "trust-kernel",
+          "governance-chain"
+        ],
+        "description": "Packages payment and ledger receipt evidence into a signed, externally verifiable proof anchor.",
+        "evidence": [
+          {
+            "kind": "implementation",
+            "path": "afritech/afripay/protocol.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/afripay/public_validation.py",
+            "required": true
+          },
+          {
+            "kind": "implementation",
+            "path": "afritech/architecture/blockchain_anchor.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/afripay/test_afripay_verifiable_payment_api.py",
+            "required": true
+          },
+          {
+            "kind": "test",
+            "path": "afritech/tests/crypto/test_blockchain_anchor.py",
+            "required": true
+          },
+          {
+            "kind": "replay",
+            "path": "traces/pilot_runs/day_one_003/api_response_receipts.json",
+            "required": true
+          },
+          {
+            "kind": "proof",
+            "path": "docs/proof/ECONOMIC_TRUST_PROOF.md",
+            "required": true
+          },
+          {
+            "kind": "boundary_guard",
+            "path": "afritech/ci/afritech_blockchain_anchor_validator.py",
+            "required": true
+          }
+        ],
+        "evidence_complete": true,
+        "feature_id": "payment-proof-anchor",
+        "id": "payment-proof-anchor",
+        "last_updated": "2026-06-17",
+        "name": "Payment Proof Anchor",
+        "status": "PRODUCTION_READY",
+        "technical_status": "IMPLEMENTED",
+        "use": "Packages payment and ledger receipt evidence into a signed, externally verifiable proof anchor.",
+        "validation": {
+          "boundary_guard_exists": true,
+          "boundary_guard_valid": true,
+          "evidence_chain_hash": "13c405fe5887b1a6f57f99b4fa00b160d354cee6499922c9a7f72ad5414d6bd0",
+          "evidence_complete": true,
+          "invalid_optional_evidence": [],
+          "invalid_required_evidence": [],
+          "optional_evidence_count": 0,
+          "proof_admissible": true,
+          "required_evidence_count": 8
+        },
+        "version": "v1"
+      },
+      {
         "activation_status": "GATED",
         "boundary": "Planned product surfaces must remain planned until implementation and replay evidence exist.",
         "boundary_guard": "afritech/ci/surface_state_resolution_validator.py",
@@ -1916,7 +2342,7 @@
         "validation": {
           "boundary_guard_exists": true,
           "boundary_guard_valid": true,
-          "evidence_chain_hash": "e1f80d52f0dd5926d8477932525e8f359bf0e25c913da6a0a6d1882cd093c03c",
+          "evidence_chain_hash": "5ef3c6e68f0f98610fbb7d8156f138c00393741da79ee276cd8b1fd5b0c0c4c4",
           "evidence_complete": true,
           "invalid_optional_evidence": [],
           "invalid_required_evidence": [],
@@ -1931,9 +2357,14 @@
     "incomplete_feature_ids": [],
     "live_pilot_authorized": false,
     "production_proven": false,
-    "production_ready_feature_count": 0,
+    "production_ready_feature_count": 3,
+    "production_ready_feature_ids": [
+      "driver-identity-proof",
+      "trip-integrity-proof",
+      "payment-proof-anchor"
+    ],
     "read_only": true,
-    "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+    "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
     "signature": {
       "algorithm": "Ed25519",
       "public_key": "468cd019b1b41b1cae45e7e893bb261a2cca4456de49c881b2a2cbabdf1468d3",
@@ -1944,7 +2375,7 @@
         "REGISTRY_SIGNER",
         "VALIDATOR"
       ],
-      "value": "6053426b206f83b6cf3c7094f4d06004cc08856e973faa069fbc96b1b23f4c6986aaba46802ae90970448b27035da7a40a3a91c5ce59e1b5aa52a37051ad6300"
+      "value": "eec4f1eb745c27c77b81d1f4035452fdb9724ea324b833083455e1f8b7151d3afa833e912ecc9d0fdc94bbb14470e8696e7ea46c21de7bcb88b0d6b9f011fb0b"
     },
     "status": "FEATURE_REGISTRY_LEVEL_12",
     "system_status": {
@@ -1954,9 +2385,11 @@
       "feature_registry_status": "FEATURE_REGISTRY_LEVEL_12",
       "live_pilot_authorized": false,
       "production_proven": false
-    }
+    },
+    "verified_true": true,
+    "verified_true_threshold": 3
   },
-  "registry_hash": "ad098800ebd47f720f92f5b86c9c7cb363835ab89433148077484eb2f6d28971",
+  "registry_hash": "ba37b071fda3e480b180e15e82219d8ea97ca1fbfc4d35b926f114d5bab6613c",
   "schema": "afritech.global_public_verification_bundle.v1",
   "status": "GLOBAL_PUBLIC_VERIFICATION_READY"
 }
