@@ -1,8 +1,8 @@
-const DEFAULT_BASE_URL = "http://127.0.0.1:8000";
+const DEFAULT_BASE_URL = "https://api.afritechnology.com";
 const DEFAULT_TIMEOUT_MS = 5000;
 const DEFAULT_RETRIES = 2;
 
-let apiBaseUrl = process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || DEFAULT_BASE_URL;
+let apiBaseUrl = DEFAULT_BASE_URL;
 const tokenCache = new Map();
 
 export function getApiBaseUrl() {
