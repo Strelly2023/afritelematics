@@ -1247,7 +1247,8 @@ a {
 }
 
 .demo-script-panel,
-.monetization-panel {
+.monetization-panel,
+.git-pull-panel {
   display: grid;
   gap: 14px;
   margin-top: 18px;
@@ -1258,14 +1259,16 @@ a {
 }
 
 .demo-script-panel h3,
-.monetization-panel h3 {
+.monetization-panel h3,
+.git-pull-panel h3 {
   margin: 8px 0 0;
   color: #101827;
   font-size: 1.3rem;
 }
 
 .demo-script-list,
-.monetization-grid {
+.monetization-grid,
+.git-pull-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -1282,6 +1285,24 @@ a {
 }
 
 .monetization-grid p {
+  color: #59687b;
+  line-height: 1.5;
+}
+
+.git-pull-list code {
+  display: block;
+  overflow-wrap: anywhere;
+  border-radius: 6px;
+  background: #172033;
+  color: #e7f2ef;
+  padding: 10px;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.git-pull-list p {
   color: #59687b;
   line-height: 1.5;
 }
@@ -1305,7 +1326,8 @@ a {
   .intelligence-grid,
   .demo-flow-list,
   .demo-script-list,
-  .monetization-grid {
+  .monetization-grid,
+  .git-pull-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1376,7 +1398,8 @@ a {
   .intelligence-grid,
   .demo-flow-list,
   .demo-script-list,
-  .monetization-grid {
+  .monetization-grid,
+  .git-pull-list {
     grid-template-columns: 1fr;
   }
 

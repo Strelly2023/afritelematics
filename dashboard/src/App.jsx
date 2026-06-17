@@ -215,6 +215,40 @@ const FIRST_CUSTOMER_REVENUE_STEPS = [
   },
 ];
 
+const GIT_PULL_DEPLOY_PLAN = [
+  {
+    step: "1. Freeze local changes",
+    command: "git status -sb",
+    detail:
+      "Confirm the deployment host has no uncommitted production edits before pulling the Trust OS branch.",
+  },
+  {
+    step: "2. Pull shipped branch",
+    command: "git pull --ff-only origin afriride-live-pilot-001",
+    detail:
+      "Use fast-forward only so production never creates an unreviewed merge commit during rollout.",
+  },
+  {
+    step: "3. Build dashboard",
+    command: "cd dashboard && npm ci && npm run build",
+    detail:
+      "Install the locked dashboard dependencies and produce the static Trust OS bundle.",
+  },
+  {
+    step: "4. Verify trust checks",
+    command:
+      "pytest dashboard/tests/test_operator_dashboard_surface.py afriride_system/tests/test_django_blockchain_bridge.py -q",
+    detail:
+      "Confirm the UI contract and Django blockchain bridge still resolve on the target machine.",
+  },
+  {
+    step: "5. Promote public OS route",
+    command: "serve dashboard/dist behind /os",
+    detail:
+      "Expose the built dashboard at the public product route, then validate public trust endpoints from the browser.",
+  },
+];
+
 const GOVERNANCE_RULES = [
   {
     name: "Protected systems",
@@ -1648,6 +1682,7 @@ export default function OperatorDashboard() {
         <DemoFlow steps={DEMO_FLOW_STEPS} />
         <DemoRecordingScript script={INVESTOR_DEMO_SCRIPT} />
         <MonetizationPipeline steps={FIRST_CUSTOMER_REVENUE_STEPS} />
+        <GitPullPlan steps={GIT_PULL_DEPLOY_PLAN} />
       </section>
 
       <section id="validate" className="section-band">
@@ -3155,6 +3190,32 @@ function MonetizationPipeline({ steps }) {
             <h4>{step.customer}</h4>
             <p>{step.offer}</p>
             <KeyValue label="Commercial ask" value={step.price} />
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function GitPullPlan({ steps }) {
+  return (
+    <section className="git-pull-panel" aria-label="Git pull deployment plan">
+      <div className="record-card-header">
+        <div>
+          <span className="surface-chip">Deploy OS</span>
+          <h3>Git Pull Launch Plan</h3>
+        </div>
+        <strong>fast-forward only</strong>
+      </div>
+      <div className="git-pull-list">
+        {steps.map((step) => (
+          <article key={step.step} className="record-card">
+            <div className="record-card-header">
+              <strong>{step.step}</strong>
+              <span>operator action</span>
+            </div>
+            <code>{step.command}</code>
+            <p>{step.detail}</p>
           </article>
         ))}
       </div>
