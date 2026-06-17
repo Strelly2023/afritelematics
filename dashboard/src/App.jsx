@@ -1330,7 +1330,19 @@ export default function OperatorDashboard() {
 
   async function fetchOperatorState() {
     try {
-      const [systemHealth, activeRides, drivers, replayHealth, evidence, guards, trustMetrics, pilotMetrics, observabilityDashboard, auditDashboard, publicTrustDashboard] = await Promise.all([
+      const [
+        systemHealthResult,
+        activeRidesResult,
+        driversResult,
+        replayHealthResult,
+        evidenceResult,
+        guardsResult,
+        trustMetricsResult,
+        pilotMetricsResult,
+        observabilityDashboardResult,
+        auditDashboardResult,
+        publicTrustDashboardResult,
+      ] = await Promise.allSettled([
         readJson("/system/health"),
         readJson("/rides/active"),
         readJson("/system/drivers"),
@@ -1344,14 +1356,68 @@ export default function OperatorDashboard() {
         readPublicJson("/public/trust/dashboard"),
       ]);
 
+      const activeRides =
+        activeRidesResult.status === "fulfilled"
+          ? normalizeActiveRides(activeRidesResult.value)
+          : state.activeRides;
+      const drivers =
+        driversResult.status === "fulfilled" ? normalizeDrivers(driversResult.value) : state.drivers;
+      const replayHealth =
+        replayHealthResult.status === "fulfilled" ? replayHealthResult.value : state.replayHealth;
+      const evidence =
+        evidenceResult.status === "fulfilled" ? evidenceResult.value : state.evidence;
+      const guards =
+        guardsResult.status === "fulfilled" ? normalizeGuards(guardsResult.value) : state.guards;
+      const trustMetrics =
+        trustMetricsResult.status === "fulfilled" ? trustMetricsResult.value : state.trustMetrics;
+      const pilotMetrics =
+        pilotMetricsResult.status === "fulfilled" ? pilotMetricsResult.value : state.pilotMetrics;
+      const observabilityDashboard =
+        observabilityDashboardResult.status === "fulfilled"
+          ? observabilityDashboardResult.value
+          : state.observabilityDashboard;
+      const auditDashboard =
+        auditDashboardResult.status === "fulfilled"
+          ? auditDashboardResult.value
+          : state.auditDashboard;
+      const publicTrustDashboard =
+        publicTrustDashboardResult.status === "fulfilled"
+          ? publicTrustDashboardResult.value
+          : state.publicTrustDashboard;
+
+      let systemHealth =
+        systemHealthResult.status === "fulfilled" ? systemHealthResult.value : null;
+      if (!systemHealth) {
+        try {
+          const fallbackHealth = await readJson("/health");
+          systemHealth = {
+            ...state.systemHealth,
+            ...fallbackHealth,
+            service: fallbackHealth.service || state.systemHealth?.service || "afriride-api",
+            status: fallbackHealth.status || state.systemHealth?.status || "ok",
+            active_rides: activeRides.length,
+            completed_rides: state.systemHealth?.completed_rides || 0,
+            drivers_online: drivers.filter((driver) => driver.status === "ONLINE").length,
+            total_drivers: drivers.length,
+            replay_failures: replayHealth.failures || 0,
+            missing_traces: evidence.missing_traces || 0,
+            hash_chain_failures: replayHealth.hash_chain_failures || 0,
+            invariant_contract: state.systemHealth?.invariant_contract || "five-invariant-contract",
+            enforcement_mode: state.systemHealth?.enforcement_mode || "metadata-only",
+          };
+        } catch {
+          systemHealth = state.systemHealth;
+        }
+      }
+
       setState((current) => ({
         ...current,
         systemHealth,
-        activeRides: normalizeActiveRides(activeRides),
-        drivers: normalizeDrivers(drivers),
+        activeRides,
+        drivers,
         replayHealth,
         evidence,
-        guards: normalizeGuards(guards),
+        guards,
         trustMetrics,
         pilotMetrics,
         observabilityDashboard,
