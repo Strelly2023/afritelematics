@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
 
 import pytest
 
 
 _DJANGO_TABLES_READY = False
+ROOT = Path(__file__).resolve().parent
+DJANGO_APP = ROOT / "afriride_system/django_app"
+
+if str(DJANGO_APP) not in sys.path:
+    sys.path.insert(0, str(DJANGO_APP))
 
 
 def pytest_configure() -> None:

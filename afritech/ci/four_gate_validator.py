@@ -141,6 +141,8 @@ def validate_delivery_boundary() -> None:
         return
 
     for path in sorted(mobile_root.rglob("*.js")):
+        if "node_modules" in path.parts:
+            continue
         text = path.read_text(encoding="utf-8")
         for token in MOBILE_FORBIDDEN_DELIVERY_TOKENS:
             if token in text:
