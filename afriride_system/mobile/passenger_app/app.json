@@ -5,6 +5,9 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.ostrinov23.afriridepassenger"
+    },
     "extra": {
       "eas": {
         "projectId": "a443b31f-a6fe-4776-a955-876f8b74dba2"

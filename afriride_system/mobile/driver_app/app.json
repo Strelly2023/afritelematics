@@ -4,6 +4,9 @@
     "slug": "afriride-driver",
     "version": "0.1.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light"
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.ostrinov23.afriridedriver"
+    }
   }
 }
