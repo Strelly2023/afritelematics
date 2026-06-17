@@ -34,7 +34,7 @@ services:
       context: ../..
       dockerfile: deploy/staging/Dockerfile.dashboard
       args:
-        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-https://trust.afritech.example}
+        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-}
         VITE_AFRIRIDE_APP_VERSION: ${VITE_AFRIRIDE_APP_VERSION:-trust-node-1}
     restart: unless-stopped
     env_file:

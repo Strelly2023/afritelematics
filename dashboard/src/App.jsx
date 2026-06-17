@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 const API_BASE_URL =
-  import.meta?.env?.VITE_AFRIRIDE_API_URL || "http://127.0.0.1:8000";
+  import.meta?.env?.VITE_AFRIRIDE_API_URL ||
+  (globalThis.location?.hostname === "localhost" ||
+  globalThis.location?.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : globalThis.location?.origin || "");
 const TEST_MODE = import.meta?.env?.VITE_AFRIRIDE_TEST_MODE !== "false";
 const APP_VERSION = import.meta?.env?.VITE_AFRIRIDE_APP_VERSION || "0.1";
 const DEVICE_ID =

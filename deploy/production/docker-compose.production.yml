@@ -30,7 +30,7 @@ services:
       context: ../..
       dockerfile: deploy/staging/Dockerfile.dashboard
       args:
-        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-http://127.0.0.1:8000}
+        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-}
         VITE_AFRIRIDE_APP_VERSION: ${VITE_AFRIRIDE_APP_VERSION:-production-1}
     restart: unless-stopped
     env_file:
