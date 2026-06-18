@@ -61,6 +61,10 @@ active_rides = resolve_view(
 replay_health = resolve_view("replay_health")
 evidence_pipeline = resolve_view("evidence_pipeline")
 evidence_pipeline_summary = resolve_view("evidence_pipeline_summary")
+system_health = resolve_view("system_health")
+system_drivers = resolve_view("system_drivers")
+trust_metrics = resolve_view("trust_metrics")
+system_pilot_metrics = resolve_view("system_pilot_metrics")
 pilot_evidence = resolve_view("pilot_evidence")
 pilot_metrics = resolve_view("pilot_metrics")
 pilot_readiness = resolve_view("pilot_readiness")
@@ -101,9 +105,13 @@ urlpatterns = [
     path("ride/<str:ride_id>/complete", ride_complete),
 
     # ✅ system + evidence
+    path("system/health", system_health),
+    path("system/drivers", system_drivers),
     path("system/replay/health", replay_health),
     path("system/evidence", evidence_pipeline),
     path("system/evidence/summary", evidence_pipeline_summary),
+    path("system/trust-metrics", trust_metrics),
+    path("system/pilot-metrics", system_pilot_metrics),
 
     # ✅ pilot
     path("pilot/evidence", pilot_evidence),

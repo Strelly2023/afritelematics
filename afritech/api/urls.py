@@ -20,6 +20,10 @@ from afritech.api.afriride_driver_views import (
     ride_complete,
     ride_reject,
     ride_start,
+    system_drivers,
+    system_health,
+    system_pilot_metrics,
+    trust_metrics,
 )
 from afritech.api.verification_views import (
     verify_proof_view,
@@ -64,8 +68,12 @@ urlpatterns = [
     path("driver/<str:driver_id>/earnings", driver_earnings),
     path("driver/replay-history", driver_replay_history),
     path("rides/active", active_rides),
+    path("system/health", system_health),
+    path("system/drivers", system_drivers),
     path("system/replay/health", replay_health),
     path("system/evidence", evidence_pipeline),
+    path("system/trust-metrics", trust_metrics),
+    path("system/pilot-metrics", system_pilot_metrics),
     path("pilot/evidence", pilot_evidence),
     path("pilot/metrics", pilot_metrics),
     path("pilot/readiness", pilot_readiness),

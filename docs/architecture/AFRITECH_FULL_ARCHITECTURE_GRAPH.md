@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `268`
+- Startup-safe closure size: `269`
 - Django-bound modules declared in repo: `243`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `28`
+- Direct startup imports from `afritech.api.app`: `29`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (268 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (269 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (28)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (29)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (51 files)"]
+    Core --> Api["api (52 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `51` files
+- `api`: `52` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -104,9 +104,10 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (23)
+### Api (24)
 
 - `afritech.api.afriride_mobile_release_api`
+- `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.app`
 - `afritech.api.architecture_proof_api`
@@ -396,6 +397,7 @@ flowchart TD
 ## Direct Startup Imports
 
 - `afritech.api.afriride_mobile_release_api`
+- `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.architecture_proof_api`
 - `afritech.api.auth.jwt_device_auth`

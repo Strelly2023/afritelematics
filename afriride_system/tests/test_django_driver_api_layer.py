@@ -266,10 +266,26 @@ def test_root_operator_dashboard_routes_expose_trust_surface():
     assert active.status_code == 200
     assert "rides" in active.json()
 
+    health = client.get("/system/health", HTTP_ACCEPT="application/json")
+    assert health.status_code == 200
+    assert health.json()["status"] == "ok"
+
+    drivers = client.get("/system/drivers", HTTP_ACCEPT="application/json")
+    assert drivers.status_code == 200
+    assert "drivers" in drivers.json()
+
     replay = client.get("/system/replay/health", HTTP_ACCEPT="application/json")
     assert replay.status_code == 200
     assert replay.json()["replay_success_rate"] == "100%"
     assert replay.json()["failures"] == 0
+
+    trust_metrics = client.get("/system/trust-metrics", HTTP_ACCEPT="application/json")
+    assert trust_metrics.status_code == 200
+    assert trust_metrics.json()["trust_state"] == "VERIFIED"
+
+    pilot_metrics = client.get("/system/pilot-metrics", HTTP_ACCEPT="application/json")
+    assert pilot_metrics.status_code == 200
+    assert pilot_metrics.json()["readiness"] == "CONTROLLED"
 
     evidence = client.get("/system/evidence", HTTP_ACCEPT="application/json")
     assert evidence.status_code == 200

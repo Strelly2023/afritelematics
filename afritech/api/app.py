@@ -1,6 +1,7 @@
 """FastAPI entrypoint for the deterministic MVP production pipeline."""
 
 from __future__ import annotations
+from importlib import import_module
 import os
 from typing import Any
 
@@ -14,7 +15,7 @@ from fastapi.responses import JSONResponse
 
 from afritech.api.auth.jwt_device_auth import (
     authenticate_websocket,
-    build_auth_router,
+    build_auth_router as build_pilot_auth_router,
     reject_websocket,
     require_roles,
 )
@@ -34,6 +35,7 @@ from afritech.api.afriride_mobile_release_api import build_afriride_mobile_relea
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
+from afritech.api.afriride_operational_api import build_afriride_operational_router
 from afritech.api.feature_registry_api import build_feature_registry_router
 from afritech.architecture.anchor_indexer import ANCHOR_EVENT_SUBSCRIBER, ANCHOR_STREAM_HUB
 
@@ -107,8 +109,9 @@ partner_registry_store = PartnerRegistryStore(seed_partner_registry())
 # ✅ Core ingestion API
 app.include_router(build_router(mobile_event_ingestion))
 
-# ✅ Auth API
-app.include_router(build_auth_router())
+# ✅ Auth APIs
+app.include_router(build_pilot_auth_router())
+app.include_router(import_module("afriride_system.api.auth").build_auth_router())
 
 # ✅ Trace API (dashboard critical)
 trace_router = build_trace_router()
@@ -158,6 +161,25 @@ app.include_router(build_feature_registry_router())
 
 # ✅ Operator observability and audit APIs
 app.include_router(build_ops_governance_router())
+
+# ✅ AfriRide operational product API
+app.include_router(
+    import_module("afriride_system.api.passenger_routes").router,
+    prefix="/passenger",
+    tags=["afriride-passenger"],
+)
+app.include_router(
+    import_module("afriride_system.api.driver_routes").router,
+    prefix="/driver",
+    tags=["afriride-driver"],
+)
+app.include_router(
+    import_module("afriride_system.api.ride_routes").router,
+    prefix="/ride",
+    tags=["afriride-ride"],
+)
+app.include_router(import_module("afriride_system.api.system_routes").router)
+app.include_router(build_afriride_operational_router())
 
 
 @app.on_event("startup")
