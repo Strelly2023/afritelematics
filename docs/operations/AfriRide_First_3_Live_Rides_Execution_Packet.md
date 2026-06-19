@@ -1,4 +1,4 @@
-# AfriRide First 3 Live Rides Execution Packet
+# NovaRide First 3 Live Rides Execution Packet
 
 STATUS: LIVE FIELD EXECUTION PACKET
 CLASSIFICATION: FIRST REAL RIDES OPERATING SURFACE
@@ -6,7 +6,7 @@ GOVERNANCE MODE: ONE REHEARSAL, THEN LIVE RIDES
 
 ## Boundary
 
-This packet is for executing the first 3 real AfriRide rides after exactly one
+This packet is for executing the first 3 real NovaRide rides after exactly one
 rehearsal pass.
 
 It is not runtime authority, replay authority, regulatory approval, payment
@@ -237,7 +237,7 @@ rider consent is missing
 Use:
 
 ```text
-docs/operations/AfriRide_First_3_Live_Rides_Log_Template.csv
+docs/operations/NovaRide_First_3_Live_Rides_Log_Template.csv
 ```
 
 Required row per ride:
@@ -279,13 +279,13 @@ Ask for referrals only if the experience was good and explainable.
 Driver:
 
 ```text
-You completed one of the first AfriRide live rides. Do you know one driver who would value fair pricing and clear trip proof?
+You completed one of the first NovaRide live rides. Do you know one driver who would value fair pricing and clear trip proof?
 ```
 
 Rider:
 
 ```text
-You completed one of the first AfriRide live rides. Do you know one person in this service zone who would value a fair ride that can be explained if something goes wrong?
+You completed one of the first NovaRide live rides. Do you know one person in this service zone who would value a fair ride that can be explained if something goes wrong?
 ```
 
 Do not ask for public promotion before the first 10 rides are complete.

@@ -111,5 +111,6 @@ urlpatterns = [
     path("orchestrations/<str:orchestration_id>/pause", orchestration_pause_view),
     path("orchestrations/<str:orchestration_id>/resume", orchestration_resume_view),
     path("orchestrations/<str:orchestration_id>/abort", orchestration_abort_view),
+    path("novapay/", include("afriride_system.django_app.apps.afripay.urls")),
     path("afripay/", include("afriride_system.django_app.apps.afripay.urls")),
 ]

@@ -49,7 +49,7 @@ def admit_semantic_contract(request: SemanticAdmissionRequest) -> dict[str, Any]
 
 def create_semantic_admission_app() -> FastAPI:
     app = FastAPI(
-        title="AfriTech Semantic Admission API",
+        title="NovaTech Semantic Admission API",
         version="7.0.0-ga",
         description="Single-process constitutional semantic admission interface.",
     )

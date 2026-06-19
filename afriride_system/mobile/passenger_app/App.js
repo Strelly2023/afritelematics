@@ -22,7 +22,7 @@ import {
   requestRide,
   setApiBaseUrl,
   updateLocalProfile,
-} from "../shared/apiClient";
+} from "./apiClient";
 
 const DEFAULT_RIDER_ID = "rider-1";
 
@@ -207,7 +207,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>AfriRide Rider</Text>
+        <Text style={styles.title}>NovaRide Rider</Text>
         <Text style={styles.subtle}>Real execution surface over rider trust endpoints.</Text>
 
         <Panel title="Login">

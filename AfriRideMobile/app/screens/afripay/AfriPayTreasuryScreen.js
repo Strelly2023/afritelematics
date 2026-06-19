@@ -3,17 +3,17 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import AppButton from "../../components/AppButton";
 import AppCard from "../../components/AppCard";
 import StatusBadge from "../../components/StatusBadge";
-import { getAfriPayTreasuryPools } from "../../services/afripayService";
+import { getNovaPayTreasuryPools } from "../../services/afripayService";
 import { theme } from "../../theme/theme";
 
-export default function AfriPayTreasuryScreen() {
+export default function NovaPayTreasuryScreen() {
   const [pools, setPools] = useState([]);
   const [error, setError] = useState(null);
 
   async function loadPools() {
     setError(null);
     try {
-      const response = await getAfriPayTreasuryPools();
+      const response = await getNovaPayTreasuryPools();
       setPools(response.pools || []);
     } catch (err) {
       setError(err.message);

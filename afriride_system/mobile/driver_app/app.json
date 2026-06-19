@@ -1,12 +1,24 @@
 {
   "expo": {
-    "name": "AfriRide Driver",
+    "name": "NovaRide Driver",
     "slug": "afriride-driver",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.ostrinov23.afriridedriver"
-    }
+    },
+    "ios": {
+      "bundleIdentifier": "com.ostrinov23.afriridedriver",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "06f658a3-1573-4fb3-b3cd-501b6295d2f0"
+      }
+    },
+    "owner": "ostrinov23"
   }
 }

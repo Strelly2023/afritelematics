@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "http://127.0.0.1:8000";
+  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "https://api.afritechnology.com";
 
 export const REQUEST_TIMEOUT_MS = 8000;
 

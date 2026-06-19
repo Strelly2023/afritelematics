@@ -1,4 +1,4 @@
-# AfriRideMobile
+# NovaRide Mobile
 
 GA Elite role-separated mobile scaffold for Rider, Driver, and Operator workflows.
 
@@ -49,5 +49,9 @@ npm start
 Set the backend URL before field testing:
 
 ```text
-EXPO_PUBLIC_AFRIRIDE_API_URL=https://afriride-api.onrender.com
+EXPO_PUBLIC_NOVARIDE_API_URL=https://api.afritechnology.com
+EXPO_PUBLIC_AFRIRIDE_API_URL=https://api.afritechnology.com
 ```
+
+`EXPO_PUBLIC_AFRIRIDE_API_URL` remains accepted as a legacy compatibility
+alias for existing builds and deployment scripts.

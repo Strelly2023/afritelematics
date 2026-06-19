@@ -1,4 +1,4 @@
-# AfriTech Chain Promotion: Sepolia to Mainnet
+# NovaTech Chain Promotion: Sepolia to Mainnet
 
 Status: GA ELITE ROLLOUT RUNBOOK
 

@@ -19,6 +19,8 @@ async def compliance_metadata_middleware(
     request.state.enforcement_mode = ENFORCEMENT_MODE
 
     response = await call_next(request)
+    response.headers["X-NovaRide-Invariant-Contract"] = INVARIANT_CONTRACT
+    response.headers["X-NovaRide-Enforcement-Mode"] = ENFORCEMENT_MODE
     response.headers["X-AfriRide-Invariant-Contract"] = INVARIANT_CONTRACT
     response.headers["X-AfriRide-Enforcement-Mode"] = ENFORCEMENT_MODE
     return response

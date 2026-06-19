@@ -1,4 +1,4 @@
-# AfriRide Pilot Growth Operating Kit
+# NovaRide Pilot Growth Operating Kit
 
 STATUS: FIELD EXECUTION KIT
 CLASSIFICATION: DRIVER AND FIRST-USER ACQUISITION SURFACE
@@ -35,7 +35,7 @@ If none of those happened, the day stayed in system mode.
 ### Opening
 
 ```text
-Hi, I am helping launch AfriRide in one city with a small driver group.
+Hi, I am helping launch NovaRide in one city with a small driver group.
 The goal is simple: fair rides, predictable pricing, and every trip can be proven if there is a dispute.
 We are inviting 10-50 drivers for the controlled pilot.
 ```
@@ -58,7 +58,7 @@ Record answers exactly. Do not reinterpret complaints into architecture terms.
 Say:
 
 ```text
-AfriRide is different because every trip has a replay record.
+NovaRide is different because every trip has a replay record.
 If pricing, dispatch, or a dispute is questioned, we can reconstruct what happened instead of guessing.
 ```
 
@@ -127,7 +127,7 @@ friends and family referrals inside the service zone
 Invite message:
 
 ```text
-AfriRide is running a small invite-only ride pilot.
+NovaRide is running a small invite-only ride pilot.
 The promise is fair pricing, reliable pickup, and every trip can be proven if something goes wrong.
 We are inviting the first 100 users in one service zone.
 ```
@@ -179,7 +179,7 @@ Ride mix:
 Use the daily metrics template:
 
 ```text
-docs/operations/AfriRide_Pilot_Daily_Metrics_Template.csv
+docs/operations/NovaRide_Pilot_Daily_Metrics_Template.csv
 ```
 
 Required fields:
@@ -216,8 +216,8 @@ operator_decision
 Ask every evening:
 
 ```text
-Did real drivers move closer to trusting AfriRide?
-Did real users move closer to trusting AfriRide?
+Did real drivers move closer to trusting NovaRide?
+Did real users move closer to trusting NovaRide?
 Did any ride fail in a way replay could not explain?
 Did pricing feel fair to drivers and users?
 What is the single blocker to fix tomorrow?

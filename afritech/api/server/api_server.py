@@ -60,7 +60,7 @@ class ExecutionResponse(BaseModel):
 def create_app(base_path: str):
 
     app = FastAPI(
-        title="AfriTech Constitutional Runtime API",
+        title="NovaTech Constitutional Runtime API",
         version="5.0.0"
     )
 
@@ -127,7 +127,7 @@ def create_app(base_path: str):
     @app.get("/")
     def root():
         return {
-            "status": "AfriTech Runtime Active",
+            "status": "NovaTech Runtime Active",
             "mode": "constitutional_verified",
             "execution": "distributed_async_realtime",
             "queue": "redis",

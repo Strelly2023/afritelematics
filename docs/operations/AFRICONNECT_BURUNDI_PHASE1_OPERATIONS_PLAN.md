@@ -1,8 +1,8 @@
-# AfriConnect Burundi Phase 1 Operations Plan
+# NovaConnect Burundi Phase 1 Operations Plan
 
 ## Objective
 
-Start a real logistics operation, generate real delivery activity, and prepare for future AfriConnectTL proof integration without claiming protocol validation yet.
+Start a real logistics operation, generate real delivery activity, and prepare for future NovaConnectTL proof integration without claiming protocol validation yet.
 
 Phase 1 is business-first and manual by design.
 
@@ -159,7 +159,7 @@ Minimum operating dataset:
 
 This becomes the first real logistics dataset.
 
-## AfriTech Boundary
+## NovaTech Boundary
 
 At this stage:
 
@@ -170,7 +170,7 @@ At this stage:
 
 Phase 1 prepares manual receipts, structured data, and a clean delivery flow.
 
-Later, these records may become AfriConnectTL execution inputs.
+Later, these records may become NovaConnectTL execution inputs.
 
 ## Success Definition
 
@@ -181,12 +181,12 @@ Phase 1 succeeds when:
 - no major failures occur.
 - a consistent manual workflow is established.
 
-Only after this should AfriConnect move toward API integration and controlled replay execution.
+Only after this should NovaConnect move toward API integration and controlled replay execution.
 
 ## Final Operating Mode
 
-AfriConnect is the real logistics business.
+NovaConnect is the real logistics business.
 
-AfriConnectTL is the future proof system.
+NovaConnectTL is the future proof system.
 
 Business first. Protocol later. Truth after evidence.

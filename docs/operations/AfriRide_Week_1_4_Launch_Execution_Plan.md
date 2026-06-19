@@ -1,4 +1,4 @@
-# AfriRide Week 1-4 Launch Execution Plan
+# NovaRide Week 1-4 Launch Execution Plan
 
 STATUS: REAL-WORLD EXECUTION PLAN
 CLASSIFICATION: ONE-CITY LAUNCH OPERATING SURFACE
@@ -6,7 +6,7 @@ GOVERNANCE MODE: SHIP THIN, MEASURE REALITY, PRESERVE REPLAY PROOF
 
 ## Document Boundary
 
-This plan converts the AfriRide pilot dominance strategy into the first 28 days
+This plan converts the NovaRide pilot dominance strategy into the first 28 days
 of execution.
 
 It is not runtime authority, replay authority, regulatory approval, payment

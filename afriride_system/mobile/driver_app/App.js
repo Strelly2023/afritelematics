@@ -24,7 +24,7 @@ import {
   setDriverStatus,
   startTrip,
   updateLocalProfile,
-} from "../shared/apiClient";
+} from "./apiClient";
 
 const DEFAULT_DRIVER_ID = "driver-1";
 
@@ -202,7 +202,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>AfriRide Driver</Text>
+        <Text style={styles.title}>NovaRide Driver</Text>
         <Text style={styles.subtle}>Real execution surface over driver trust endpoints.</Text>
 
         <Panel title="Login">

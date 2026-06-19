@@ -1,4 +1,4 @@
-# AfriTech Safe Import Rules Checklist
+# NovaTech Safe Import Rules Checklist
 
 Status: AFRITECH SAFE IMPORT RULES CHECKLIST
 

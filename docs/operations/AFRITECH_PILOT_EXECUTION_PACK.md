@@ -1,9 +1,9 @@
-# AfriTech Pilot Execution Pack
+# NovaTech Pilot Execution Pack
 
 Status: PILOT EXECUTION PACK
 Classification: AFRTPPS_BOUND_OPERATIONAL_EXECUTION_SURFACE
 
-Purpose: translate the AfriTech architecture into a real pilot execution pack
+Purpose: translate the NovaTech architecture into a real pilot execution pack
 using the AFrTPPS layer of technology, processes, people, and skills.
 
 This pack is an operational execution surface.
@@ -48,7 +48,7 @@ Run a bounded pilot that proves:
 - run a replay-backed ride and evidence flow
 - interpret architecture compliance status
 - diagnose drift alerts
-- explain AfriCPPT verification boundaries
+- explain NovaCPPT verification boundaries
 - escalate incidents without bypassing replay truth
 
 ## Pilot Phases
@@ -88,7 +88,7 @@ Run a bounded pilot that proves:
 This pack permits only this bounded claim:
 
 ```text
-AfriTech can execute a bounded pilot through technology, processes, people, and
+NovaTech can execute a bounded pilot through technology, processes, people, and
 skills while preserving replay-backed authority
 ```
 

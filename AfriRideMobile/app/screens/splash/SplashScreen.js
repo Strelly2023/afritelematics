@@ -7,7 +7,7 @@ export default function SplashScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: theme.spacing.lg, gap: 18 }}>
       <AppHeader
-        title="AfriRide Mobile"
+        title="NovaRide Mobile"
         subtitle="Role-separated constitutional display surface"
       />
       <Text>Backend proof decides. Replay verifies. Mobile displays.</Text>

@@ -1,11 +1,11 @@
-# AfriTech Live Pilot Execution Checklist
+# NovaTech Live Pilot Execution Checklist
 
 Status: READY FOR REAL PILOT EXECUTION
 
 Classification: GOVERNED OPERATIONAL CHECKLIST
 
 Purpose: define the step-by-step live execution checklist for the first
-bounded AfriTech pilot on EC2.
+bounded NovaTech pilot on EC2.
 
 ## Phase 0. Scope Lock
 

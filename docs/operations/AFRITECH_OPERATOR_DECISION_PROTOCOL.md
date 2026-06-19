@@ -1,4 +1,4 @@
-# AfriTech Operator Decision Protocol Runbook
+# NovaTech Operator Decision Protocol Runbook
 
 Status: READY FOR PILOT DECISION EXECUTION
 

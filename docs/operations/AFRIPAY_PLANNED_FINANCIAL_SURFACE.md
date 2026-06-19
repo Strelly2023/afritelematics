@@ -1,20 +1,20 @@
-# AfriPay Planned Financial Surface
+# NovaPay Planned Financial Surface
 
 ## Definition
 
-AfriPay is the planned financial services and digital payments ecosystem domain within AfriTech.
+NovaPay is the planned financial services and digital payments ecosystem domain within NovaTech.
 
 Canonical definition:
 
-AfriPay is a replay-governed financial continuity layer that may emerge from real transaction flows across AfriTech domains.
+NovaPay is a replay-governed financial continuity layer that may emerge from real transaction flows across NovaTech domains.
 
-AfriPay does not begin as a wallet app, payment system, or financial platform.
+NovaPay does not begin as a wallet app, payment system, or financial platform.
 
 It begins only when real transaction evidence exists.
 
 ## Purpose
 
-AfriPay is intended to support secure digital value exchange, financial inclusion, cross-border commerce, and payment interoperability after real payment behavior has been observed.
+NovaPay is intended to support secure digital value exchange, financial inclusion, cross-border commerce, and payment interoperability after real payment behavior has been observed.
 
 ## Service Surface
 
@@ -34,17 +34,17 @@ These capabilities are conceptual only and not operationally validated.
 
 Execution precedes payment.
 
-AfriPay depends on real paid activity from other domains:
+NovaPay depends on real paid activity from other domains:
 
-- AfriRide ride payments
-- AfriConnect delivery payments
-- AfriEats food order payments
+- NovaRide ride payments
+- NovaConnect delivery payments
+- NovaEats food order payments
 
 Payment truth must emerge from observed economic activity, not from theoretical finance design.
 
 ## Current Status
 
-AfriPay = Conceptual Financial Surface
+NovaPay = Conceptual Financial Surface
 
 Architecture: Defined
 Execution: NONE
@@ -53,14 +53,14 @@ Activation: FORBIDDEN
 
 ## Hard Reality Gate
 
-AfriPay may only move toward activation after:
+NovaPay may only move toward activation after:
 
 - real paid transactions exist
 - payments are exchanged between parties
 - financial records are captured
 - receipts are recorded
 
-Until this gate is met, AfriPay remains frozen.
+Until this gate is met, NovaPay remains frozen.
 
 ## Future Recording Format
 
@@ -92,25 +92,25 @@ Until real payment records exist:
 
 ## Evidence Doctrine
 
-No transaction means no AfriPay.
+No transaction means no NovaPay.
 
 Real transaction evidence is the first admissible trigger.
 
-AfriTech does not create money flows. It observes, records, and proves them.
+NovaTech does not create money flows. It observes, records, and proves them.
 
 ## Ecosystem Sequencing
 
 ```text
-AfriRide      -> movement
-AfriConnect   -> logistics
-AfriEats      -> food
-AfriPay       -> finance
+NovaRide      -> movement
+NovaConnect   -> logistics
+NovaEats      -> food
+NovaPay       -> finance
 ```
 
 Current sequence:
 
 ```text
-AfriConnect -> real deliveries
-AfriEats -> conceptual frozen
-AfriPay -> conceptual frozen
+NovaConnect -> real deliveries
+NovaEats -> conceptual frozen
+NovaPay -> conceptual frozen
 ```

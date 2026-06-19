@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NovaTech">
+  <rect width="64" height="64" rx="14" fill="#101820"/>
+  <path d="M16 47V17h7.4l17.2 21.1V17H48v30h-7.4L23.4 25.9V47H16Z" fill="#ffffff"/>
+  <path d="M16 47h32v-6H16v6Z" fill="#0d8b72"/>
+  <path d="M47 17h-9v6h9v-6Z" fill="#1455d9"/>
+</svg>

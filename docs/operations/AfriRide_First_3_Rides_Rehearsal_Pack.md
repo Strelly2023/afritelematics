@@ -1,4 +1,4 @@
-# AfriRide First 3 Rides Rehearsal Pack
+# NovaRide First 3 Rides Rehearsal Pack
 
 STATUS: PRE-LIVE REHEARSAL PACK
 CLASSIFICATION: DRIVER CONVERSATION AND FIRST-RIDE SIMULATION SURFACE
@@ -37,7 +37,7 @@ the live ride was paused.
 ### Opening
 
 ```text
-Hi, my name is [name]. I am helping launch AfriRide in one city with a small driver group.
+Hi, my name is [name]. I am helping launch NovaRide in one city with a small driver group.
 We are not asking you to switch platforms today.
 We are testing a fair ride system where pricing is clear and every trip can be proven if there is a dispute.
 Can I ask you four quick questions about what is unfair in ride apps today?
@@ -52,10 +52,10 @@ Can I ask you four quick questions about what is unfair in ride apps today?
 4. What would make you trust a new ride system enough to test it?
 ```
 
-### Simple AfriRide Explanation
+### Simple NovaRide Explanation
 
 ```text
-AfriRide is built around one promise: fair rides with proof.
+NovaRide is built around one promise: fair rides with proof.
 If a trip is questioned, we do not guess.
 We replay the trip record and explain pricing, dispatch, pickup, dropoff, or failure clearly.
 ```
@@ -204,7 +204,7 @@ user can say whether the ride felt fair, reliable, and understandable
 Use the response card template:
 
 ```text
-docs/operations/AfriRide_First_Ride_Response_Cards.csv
+docs/operations/NovaRide_First_Ride_Response_Cards.csv
 ```
 
 Required scenarios:
@@ -246,14 +246,14 @@ Only ask after a driver or user has a good experience.
 Driver prompt:
 
 ```text
-You just completed a replay-backed AfriRide test ride.
+You just completed a replay-backed NovaRide test ride.
 Do you know one driver who cares about fair pricing and would give honest feedback?
 ```
 
 User prompt:
 
 ```text
-You just tried the AfriRide pilot.
+You just tried the NovaRide pilot.
 Do you know one person in this service zone who would value a fair, reliable ride with proof if something goes wrong?
 ```
 

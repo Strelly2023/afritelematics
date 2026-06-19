@@ -26,7 +26,7 @@ This executes:
 - AfriPro governance guard test
 - FastAPI adapter tests
 - Django runtime template smoke test
-- AfriTech gateway architecture tests
+- NovaTech gateway architecture tests
 - React dashboard production build
 
 ## Why the venv matters

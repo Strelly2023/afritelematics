@@ -12,11 +12,11 @@ const balances = [
   { currency: "USD", amount: "430.20", label: "Trade wallet" },
 ];
 
-export default function AfriPayHomeScreen({ navigation }) {
+export default function NovaPayHomeScreen({ navigation }) {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title}>AfriPay</Text>
+        <Text style={styles.title}>NovaPay</Text>
         <StatusBadge label="Live settlement off" tone="warning" />
       </View>
 

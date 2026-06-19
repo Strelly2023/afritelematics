@@ -1,10 +1,10 @@
-# AfriRide Production Launch Readiness Pack
+# NovaRide Production Launch Readiness Pack
 
 STATUS: PRODUCTION LAUNCH READINESS PACK
 classification: ENTERPRISE_GATED_LAUNCH_PACK
 
 Purpose: define the enterprise-grade launch decision pack required before a
-controlled AfriRide deployment is promoted into a production launch program.
+controlled NovaRide deployment is promoted into a production launch program.
 
 This pack is a launch decision surface, not a source of truth.
 

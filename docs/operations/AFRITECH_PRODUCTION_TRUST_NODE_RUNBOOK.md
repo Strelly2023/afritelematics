@@ -1,4 +1,4 @@
-# AfriTech Production Trust Node Runbook
+# NovaTech Production Trust Node Runbook
 
 Status: PRODUCTION TRUST NODE OPERATIONS
 Classification: LEVEL_16_ECOSYSTEM_TRUST_INFRASTRUCTURE_DEPLOYMENT

@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NovaProgramming | Governed Software Engineering</title>
+    <meta
+      name="description"
+      content="NovaProgramming combines AI-assisted engineering, repository intelligence, governance, and proof-backed execution for modern software teams."
+    />
+    <meta name="theme-color" content="#101820" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="canonical" href="https://afritechnology.com/programming.html" />
+    <link rel="alternate" hreflang="en" href="https://afritechnology.com/programming.html" />
+    <link rel="alternate" hreflang="fr" href="https://afritechnology.com/fr/programming.html" />
+    <link rel="alternate" hreflang="sw" href="https://afritechnology.com/sw/programming.html" />
+    <link rel="alternate" hreflang="x-default" href="https://afritechnology.com/programming.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="sw_KE" />
+    <meta property="og:site_name" content="NovaTech" />
+    <meta property="og:title" content="NovaProgramming | Governed Software Engineering" />
+    <meta
+      property="og:description"
+      content="Build software systems with AI-assisted engineering, repository intelligence, governance, and proof-backed execution."
+    />
+    <meta property="og:url" content="https://afritechnology.com/programming.html" />
+    <meta property="og:image" content="https://afritechnology.com/assets/og-preview.png" />
+    <meta property="og:image:alt" content="NovaTech trusted digital infrastructure platform" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NovaProgramming | Governed Software Engineering" />
+    <meta
+      name="twitter:description"
+      content="Build software systems with AI-assisted engineering, repository intelligence, governance, and proof-backed execution."
+    />
+    <meta name="twitter:image" content="https://afritechnology.com/assets/og-preview.png" />
+    <script src="assets/language-router.js" data-route="programming" defer></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #101820;
+        --muted: #55616d;
+        --line: #d9e1e8;
+        --paper: #f7f9fb;
+        --white: #ffffff;
+        --blue: #1455d9;
+        --green: #0d8b72;
+        --amber: #bd7b11;
+        --red: #b33f30;
+        --violet: #6545b8;
+        --shadow: 0 24px 60px rgba(16, 24, 32, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-bottom: 1px solid rgba(217, 225, 232, 0.78);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1180px;
+        min-height: 68px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        color: var(--white);
+        background:
+          linear-gradient(135deg, rgba(20, 85, 217, 0.92), rgba(13, 139, 114, 0.95)),
+          var(--blue);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .button.primary {
+        color: var(--white);
+        background: var(--ink);
+      }
+
+      .button.secondary {
+        color: var(--ink);
+        background: var(--white);
+        border-color: var(--line);
+      }
+
+      .button.ghost {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.13);
+        border-color: rgba(255, 255, 255, 0.24);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        color: var(--white);
+        background:
+          radial-gradient(circle at 14% 20%, rgba(101, 69, 184, 0.38), transparent 25%),
+          radial-gradient(circle at 86% 18%, rgba(13, 139, 114, 0.42), transparent 26%),
+          linear-gradient(135deg, #101820 0%, #142334 52%, #16212c 100%);
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.065) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.065) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: linear-gradient(to bottom, black, transparent 90%);
+      }
+
+      .hero-inner {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 0.96fr) minmax(420px, 1.04fr);
+        gap: 48px;
+        align-items: center;
+        max-width: 1180px;
+        min-height: min(820px, calc(100vh - 68px));
+        margin: 0 auto;
+        padding: 84px 24px 74px;
+      }
+
+      .eyebrow,
+      .status-badge {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        min-height: 32px;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.84);
+        background: rgba(255, 255, 255, 0.09);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .status-badge.live {
+        border-color: rgba(13, 139, 114, 0.48);
+        background: rgba(13, 139, 114, 0.18);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        margin-top: 22px;
+        max-width: 780px;
+        font-size: clamp(50px, 7vw, 92px);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        margin-top: 24px;
+        max-width: 660px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: clamp(18px, 2.3vw, 23px);
+        line-height: 1.45;
+      }
+
+      .hero-actions,
+      .inline-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .repo-console {
+        display: grid;
+        gap: 12px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: var(--shadow);
+      }
+
+      .console-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .console-header b {
+        font-size: 18px;
+      }
+
+      .console-header span {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+      }
+
+      .signal-row {
+        display: grid;
+        grid-template-columns: minmax(140px, 0.72fr) minmax(0, 1.28fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .signal-row b {
+        font-size: 14px;
+      }
+
+      .signal-row span {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .signal-row em {
+        color: #91dccf;
+        font-style: normal;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      section {
+        padding: 92px 24px;
+      }
+
+      .section-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .section-heading {
+        max-width: 810px;
+      }
+
+      .section-heading h2 {
+        font-size: clamp(34px, 4.5vw, 58px);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .section-heading p {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.65;
+      }
+
+      .band-white {
+        background: var(--white);
+      }
+
+      .band-ink {
+        color: var(--white);
+        background: var(--ink);
+      }
+
+      .band-ink .section-heading p {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 48px;
+        align-items: start;
+      }
+
+      .card-grid,
+      .capability-grid,
+      .workflow-grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 36px;
+      }
+
+      .capability-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .workflow-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .tile {
+        min-height: 220px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .tile h3 {
+        font-size: 21px;
+      }
+
+      .tile p {
+        margin-top: 12px;
+        color: var(--muted);
+        line-height: 1.58;
+      }
+
+      .tile ul {
+        display: grid;
+        gap: 8px;
+        margin: 18px 0 0;
+        padding: 0;
+        color: var(--muted);
+        list-style: none;
+        font-size: 14px;
+      }
+
+      .tile li::before {
+        content: "";
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-right: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        transform: translateY(-1px);
+      }
+
+      .accent-blue {
+        border-top: 4px solid var(--blue);
+      }
+
+      .accent-green {
+        border-top: 4px solid var(--green);
+      }
+
+      .accent-amber {
+        border-top: 4px solid var(--amber);
+      }
+
+      .accent-red {
+        border-top: 4px solid var(--red);
+      }
+
+      .accent-violet {
+        border-top: 4px solid var(--violet);
+      }
+
+      .workflow-step {
+        min-height: 150px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .workflow-step b {
+        display: block;
+        margin-bottom: 9px;
+        font-size: 17px;
+      }
+
+      .workflow-step span {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .compare-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 36px;
+      }
+
+      .compare-card {
+        min-height: 260px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .compare-card strong {
+        display: block;
+        margin-bottom: 16px;
+        font-size: 22px;
+      }
+
+      .compare-card p {
+        color: var(--muted);
+        line-height: 1.58;
+      }
+
+      .api-panel {
+        margin-top: 24px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #0f1822;
+        color: var(--white);
+      }
+
+      .api-panel strong {
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      .api-note {
+        display: block;
+        margin-bottom: 12px;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .api-panel code {
+        display: block;
+        padding: 8px 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .cta {
+        padding: 84px 24px;
+        color: var(--white);
+        background:
+          linear-gradient(135deg, rgba(101, 69, 184, 0.88), rgba(13, 139, 114, 0.9)),
+          var(--violet);
+      }
+
+      .cta-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .cta h2 {
+        font-size: clamp(34px, 4.4vw, 56px);
+        line-height: 1.02;
+      }
+
+      .cta p {
+        max-width: 720px;
+        margin-top: 14px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      footer {
+        padding: 36px 24px;
+        color: var(--muted);
+        background: var(--white);
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1180px;
+        margin: 0 auto;
+        font-size: 14px;
+      }
+
+      @media (max-width: 980px) {
+        .nav-links {
+          display: none;
+        }
+
+        .hero-inner,
+        .split,
+        .cta-inner {
+          grid-template-columns: 1fr;
+        }
+
+        .capability-grid,
+        .workflow-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .card-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .signal-row {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-actions {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 680px) {
+        section {
+          padding: 68px 18px;
+        }
+
+        .nav {
+          padding: 0 18px;
+        }
+
+        .hero-inner {
+          padding: 64px 18px 52px;
+        }
+
+        h1 {
+          font-size: 48px;
+        }
+
+        .hero-actions,
+        .inline-actions,
+        .cta-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .capability-grid,
+        .workflow-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .console-header,
+        .footer-inner {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="./" aria-label="NovaTech home">
+          <span class="brand-mark">N</span>
+          <span>NovaTech</span>
+        </a>
+        <div class="nav-links">
+          <a href="./">Home</a>
+          <a href="platform.html">NovaPower</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#trust">Trust</a>
+          <a href="fr/programming.html" data-lang="fr">FR</a>
+          <a href="sw/programming.html" data-lang="sw">SW</a>
+          <a class="button secondary" href="#contact">Request Demo</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-inner">
+          <div>
+            <span class="eyebrow">NovaProgramming engineering platform</span>
+            <div class="status-row" aria-label="Platform status">
+              <span class="status-badge">Governed Software Engineering</span>
+              <span class="status-badge live">Platform Status: Early Access</span>
+            </div>
+            <h1 id="hero-title">Build software systems you can explain, govern, and prove</h1>
+            <p class="hero-copy">
+              NovaProgramming is the engineering and repository intelligence layer of
+              NovaTech. It combines AI-assisted development, architecture analysis,
+              modernization support, and governance-aware delivery with proof-backed
+              execution through NovaPower and NovaTrust.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="button primary" href="#capabilities">Explore Capabilities</a>
+              <a class="button ghost" href="#workflow">View Workflow</a>
+              <a class="button ghost" href="platform.html">Connect to NovaPower</a>
+            </div>
+          </div>
+
+          <div class="repo-console" aria-label="Repository intelligence console">
+            <div class="console-header">
+              <b>Repository intelligence</b>
+              <span>Build context before generation</span>
+            </div>
+            <div class="signal-row">
+              <b>Repository map</b>
+              <span>Code surfaces, boundaries, routes, tests, and operational entry points.</span>
+              <em>Context</em>
+            </div>
+            <div class="signal-row">
+              <b>Architecture signals</b>
+              <span>Import topology, runtime boundaries, governance references, and drift indicators.</span>
+              <em>Govern</em>
+            </div>
+            <div class="signal-row">
+              <b>Delivery evidence</b>
+              <span>Tests, proof paths, replay surfaces, and validation output tied to change.</span>
+              <em>Verify</em>
+            </div>
+            <div class="signal-row">
+              <b>Execution link</b>
+              <span>NovaPower runtime and NovaTrust verification connect software work to evidence.</span>
+              <em>Operate</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="band-white" aria-labelledby="position-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="position-title">From coding assistance to governed engineering</h2>
+          </div>
+          <div class="section-heading">
+            <p>
+              Standard AI development tools help produce code. NovaProgramming is
+              positioned for the larger operating problem: understanding repositories,
+              changing systems safely, preserving architecture discipline, and connecting
+              delivery to proof.
+            </p>
+            <p>
+              The result is an engineering layer for teams that need software output,
+              system understanding, and trustable execution evidence in the same workflow.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="capabilities" aria-labelledby="capabilities-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="capabilities-title">Core capabilities</h2>
+            <p>
+              NovaProgramming covers the developer-facing work required to move from
+              idea to implementation without separating generation, architecture, tests,
+              documentation, and verification.
+            </p>
+          </div>
+
+          <div class="capability-grid">
+            <article class="tile accent-blue">
+              <h3>AI-assisted development</h3>
+              <p>Generate, modify, and explain code with awareness of existing project structure and delivery constraints.</p>
+            </article>
+            <article class="tile accent-green">
+              <h3>Repository intelligence</h3>
+              <p>Map files, routes, services, tests, boundaries, and product surfaces before making changes.</p>
+            </article>
+            <article class="tile accent-amber">
+              <h3>Architecture analysis</h3>
+              <p>Identify dependencies, import direction, governance references, and risky change surfaces.</p>
+            </article>
+            <article class="tile accent-violet">
+              <h3>Modernization</h3>
+              <p>Support refactoring, legacy upgrades, API alignment, and product migration without uncontrolled rewrites.</p>
+            </article>
+            <article class="tile accent-red">
+              <h3>Testing and documentation</h3>
+              <p>Connect implementation work to focused tests, operational docs, and public-facing clarity.</p>
+            </article>
+            <article class="tile accent-green">
+              <h3>Governed delivery</h3>
+              <p>Link software changes to validation, proof surfaces, and NovaPower execution discipline.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="workflow" class="band-ink" aria-labelledby="workflow-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="workflow-title">Engineering workflow</h2>
+            <p>
+              NovaProgramming makes software delivery a governed process. The workflow
+              starts with understanding, not generation, and ends with evidence, not just
+              a code diff.
+            </p>
+          </div>
+
+          <div class="workflow-grid" aria-label="NovaProgramming workflow">
+            <div class="workflow-step">
+              <b>Understand</b>
+              <span>Read repository structure, product surfaces, routes, and runtime boundaries.</span>
+            </div>
+            <div class="workflow-step">
+              <b>Design</b>
+              <span>Choose changes that fit the existing architecture and product goal.</span>
+            </div>
+            <div class="workflow-step">
+              <b>Implement</b>
+              <span>Build scoped changes across code, docs, API contracts, or website surfaces.</span>
+            </div>
+            <div class="workflow-step">
+              <b>Validate</b>
+              <span>Run focused checks, syntax validation, tests, and operational sanity checks.</span>
+            </div>
+            <div class="workflow-step">
+              <b>Prove</b>
+              <span>Connect outcomes to NovaTrust evidence and NovaPower execution where applicable.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="difference-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="difference-title">What makes it different</h2>
+            <p>
+              The point is not to be another editor feature. NovaProgramming is the
+              engineering layer for a platform where software work is connected to
+              governance, runtime behavior, and verification.
+            </p>
+          </div>
+
+          <div class="compare-grid">
+            <article class="compare-card">
+              <strong>Typical coding tools</strong>
+              <p>
+                Help developers generate, complete, or modify code. The trust boundary
+                often ends at the editor, and verification remains a separate operational
+                problem.
+              </p>
+            </article>
+            <article class="compare-card">
+              <strong>NovaProgramming</strong>
+              <p>
+                Connects software engineering to repository intelligence, architecture
+                governance, focused validation, NovaPower runtime context, and NovaTrust
+                proof surfaces.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="trust" class="band-white" aria-labelledby="trust-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="trust-title">Connected to NovaPower and NovaTrust</h2>
+            <p>
+              NovaProgramming builds and changes systems. NovaPower operates governed
+              execution. NovaTrust verifies proof, replay, receipt, and audit state.
+              Together, they move software delivery from output to evidence.
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="platform.html">Explore NovaPower</a>
+              <a class="button secondary" href="verify.html">Verify This Execution</a>
+            </div>
+          </div>
+
+          <div class="api-panel" aria-label="Verification surfaces">
+            <strong>Live verification endpoint available</strong>
+            <span class="api-note">NovaProgramming connects engineering work to explanation, verification, replay, and external verification surfaces.</span>
+            <code>GET /execution/{execution_id}/explain/</code>
+            <code>GET /public/verify/{anchor_id}</code>
+            <code>GET /ride/{ride_id}/replay</code>
+            <code>POST /system/external-verify/{ride_id}</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="band-white" aria-labelledby="services-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="services-title">Engineering and transformation services</h2>
+            <p>
+              NovaProgramming also supports the services side of the company: delivery,
+              modernization, integration, and technical advisory grounded in the same
+              governance and evidence model.
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <article class="tile accent-blue">
+              <h3>Software solutions</h3>
+              <p>Custom platforms, SaaS systems, web applications, mobile applications, APIs, and enterprise systems.</p>
+              <ul>
+                <li>Product engineering</li>
+                <li>API and backend delivery</li>
+                <li>Mobile and web implementation</li>
+              </ul>
+            </article>
+            <article class="tile accent-green">
+              <h3>Digital transformation</h3>
+              <p>Architecture consulting, modernization, cloud transition, integration, AI adoption, and governance readiness.</p>
+              <ul>
+                <li>Legacy system upgrades</li>
+                <li>System integration</li>
+                <li>Technical operating model</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band-white" aria-labelledby="claim-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="claim-title">Claim discipline</h2>
+          </div>
+          <div class="section-heading">
+            <p>
+              NovaProgramming should be described as the engineering and repository
+              intelligence layer of the NovaTech platform. It should not imply that every
+              planned IDE, SDK, or automation surface is generally available until those
+              surfaces are implemented, tested, and connected to verifiable evidence.
+              Public delivery metrics should only be shown after they are backed by
+              telemetry, tests, or exported proof artifacts.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="cta" aria-labelledby="cta-title">
+        <div class="cta-inner">
+          <div>
+            <h2 id="cta-title">Build software you can prove</h2>
+            <p>
+              NovaProgramming completes the public platform story: engineering work,
+              governed runtime, and verification infrastructure operating together.
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a class="button primary" href="platform.html">Explore NovaPower</a>
+            <a class="button ghost" href="./">Return Home</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <span>NovaProgramming by NovaTech</span>
+        <span>Governed software engineering and repository intelligence.</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-# AfriTech Domain TLS Cutover
+# NovaTech Domain TLS Cutover
 
 Status: READY FOR DOMAIN CUTOVER
 

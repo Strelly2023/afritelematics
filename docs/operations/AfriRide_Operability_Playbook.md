@@ -1,10 +1,10 @@
-# AfriRide Operability Playbook
+# NovaRide Operability Playbook
 
 ## Purpose
 
-AfriRide is now a replay-governed deterministic application core. The next challenge is human operability: making the system understandable, debuggable, and evolvable without weakening replay authority.
+NovaRide is now a replay-governed deterministic application core. The next challenge is human operability: making the system understandable, debuggable, and evolvable without weakening replay authority.
 
-This playbook defines the operability layer around AfriRide. It does not change the computational model, domain primitives, replay rules, or evidence-store authority boundaries.
+This playbook defines the operability layer around NovaRide. It does not change the computational model, domain primitives, replay rules, or evidence-store authority boundaries.
 
 ## Authority Rule
 
@@ -18,7 +18,7 @@ Any tool, user interface, guide, or workflow introduced by this playbook must ex
 
 ## Operational Vocabulary
 
-The canonical AfriTech terms stay unchanged in code and model documents. Operational language may be used in docs, onboarding, UI copy, and support workflows to reduce cognitive load.
+The canonical NovaTech terms stay unchanged in code and model documents. Operational language may be used in docs, onboarding, UI copy, and support workflows to reduce cognitive load.
 
 | Canonical term | Operational term | Meaning |
 | --- | --- | --- |
@@ -103,7 +103,7 @@ Use the admin UI or audit endpoint to inspect the ride, optimization artifacts, 
 
 ## Ladder of Understanding
 
-AfriRide should be learned in layers.
+NovaRide should be learned in layers.
 
 | Level | Audience goal | Required understanding |
 | --- | --- | --- |
@@ -111,7 +111,7 @@ AfriRide should be learned in layers.
 | 2 | Verify a ride | Trace, replay report, audit UI |
 | 3 | Debug a failure | Hash mismatch, drift, invalid evidence |
 | 4 | Extend safely | Change classes and replay contract tests |
-| 5 | Reason formally | AfriTech model, invariants, authority boundaries |
+| 5 | Reason formally | NovaTech model, invariants, authority boundaries |
 
 No onboarding path should require Level 5 knowledge before a user can run the golden path.
 
@@ -204,7 +204,7 @@ Required behavior:
 
 ## Safe Evolution Framework
 
-AfriRide can evolve, but changes must be classified before implementation.
+NovaRide can evolve, but changes must be classified before implementation.
 
 ### Class 1: Safe Changes
 
@@ -323,7 +323,7 @@ If any answer is no, the change is rejected or redesigned.
 
 ## Status
 
-This playbook defines the first operability boundary for AfriRide. It surrounds the replay-governed core with clarity systems while preserving the existing authority chain:
+This playbook defines the first operability boundary for NovaRide. It surrounds the replay-governed core with clarity systems while preserving the existing authority chain:
 
 ```text
 UI observes.

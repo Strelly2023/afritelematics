@@ -1,4 +1,4 @@
-# AfriRide City-Level Pilot Deployment Playbook
+# NovaRide City-Level Pilot Deployment Playbook
 
 STATUS: BOUNDED OPERATIONAL PILOT PLAN
 CLASSIFICATION: PILOT READINESS PLANNING SURFACE
@@ -6,12 +6,12 @@ GOVERNANCE MODE: REALITY -> NORMALIZATION -> ADMISSION -> EXECUTION -> WITNESS -
 
 ## Document Boundary
 
-This playbook defines a bounded city-level pilot path for AfriRide.
+This playbook defines a bounded city-level pilot path for NovaRide.
 
 It is not runtime authority, replay authority, proof authority, production
 deployment proof, compliance certification, or payment licensing proof.
 
-It is not evidence that AfriRide has completed a real-world city pilot.
+It is not evidence that NovaRide has completed a real-world city pilot.
 
 It must not be used to claim:
 
@@ -112,7 +112,7 @@ payment trigger event
 
 ### Purpose
 
-Test AfriRide under higher operational disorder after the Melbourne evidence
+Test NovaRide under higher operational disorder after the Melbourne evidence
 review is complete.
 
 ### Stress Conditions
@@ -461,7 +461,7 @@ incident_rejection_log
 
 ## Safe Final Classification
 
-This playbook defines how AfriRide may gather bounded city-level pilot evidence
+This playbook defines how NovaRide may gather bounded city-level pilot evidence
 without converting pilot planning into production truth.
 
 The pilot question is:

@@ -1,4 +1,4 @@
-# AfriRide Mobile API Contract
+# NovaRide Mobile API Contract
 
 ## Authentication
 

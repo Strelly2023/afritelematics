@@ -1,4 +1,4 @@
-# AfriTech First Operator Decision Scenario
+# NovaTech First Operator Decision Scenario
 
 Status: READY FOR DECISION SIMULATION
 
@@ -34,19 +34,19 @@ GO
 This scenario matches the current known-good local outputs:
 
 ```text
-AfriTech reconciliation validation PASSED
+NovaTech reconciliation validation PASSED
 scenario_id=airport-zone-001 deployment_type=airport
 operations=3 divergence_count=0
 divergence_score=0.000000 recommendation=continue
 ```
 
 ```text
-AfriTech operator decision protocol validation PASSED
+NovaTech operator decision protocol validation PASSED
 adr=ADR-0044 rule=RULE-064 binding=BIND-042
 ```
 
 ```text
-AfriTech live pilot execution validation PASSED
+NovaTech live pilot execution validation PASSED
 checklist=docs/operations/AFRITECH_LIVE_PILOT_EXECUTION_CHECKLIST.md
 ec2_test_run=docs/operations/AFRITECH_EC2_FIRST_TEST_RUN.md
 operator_scenario=docs/operations/AFRITECH_FIRST_OPERATOR_DECISION_SCENARIO.md

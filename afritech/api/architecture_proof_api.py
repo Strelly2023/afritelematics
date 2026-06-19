@@ -271,7 +271,7 @@ def build_architecture_proof_router() -> APIRouter:
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AfriTech Anchor Explorer</title>
+    <title>NovaTech Anchor Explorer</title>
     <style>
       body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f4f7fb; color: #142033; }
       main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
@@ -282,7 +282,7 @@ def build_architecture_proof_router() -> APIRouter:
   </head>
   <body>
     <main>
-      <h1>AfriTech Anchor Explorer</h1>
+      <h1>NovaTech Anchor Explorer</h1>
       <p>External anchor explorer app and public trust surfaces for anchored publications, live stream events, and ADR hashes.</p>
       <div class="panel">
         <div><a href="/public/architecture/anchors/dashboard">Anchor dashboard</a></div>
@@ -510,7 +510,7 @@ def build_architecture_proof_router() -> APIRouter:
                 "classification": "PUBLIC_TRUST_DASHBOARD",
                 "status": "READY",
                 "authority_boundary": proof.get("authority_boundary"),
-                "headline": "AfriTech public trust dashboard",
+                "headline": "NovaTech public trust dashboard",
                 "network": public_chain_receipt.get("network", "papc-testnet"),
                 "integrity": {
                     "runtime_boundary_status": proof.get("runtime_boundary_status"),

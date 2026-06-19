@@ -26,10 +26,13 @@ class RequiredScope:
 class AfriPaySecurityMiddleware:
     EXEMPT_PATHS = {
         "/api/afripay/auth/oauth/token",
+        "/api/novapay/auth/oauth/token",
         "/api/afripay/metrics/prometheus",
+        "/api/novapay/metrics/prometheus",
     }
     EXEMPT_PREFIXES = (
         "/api/afripay/webhooks/",
+        "/api/novapay/webhooks/",
     )
 
     def __init__(self, get_response: Callable):
@@ -40,7 +43,7 @@ class AfriPaySecurityMiddleware:
 
     def __call__(self, request):
         path = getattr(request, "path", "")
-        if not path.startswith("/api/afripay"):
+        if not path.startswith(("/api/afripay", "/api/novapay")):
             return self.get_response(request)
 
         identity_key = request.META.get("REMOTE_ADDR", "anonymous")

@@ -1,4 +1,4 @@
-# AfriTech EC2 First Test Run
+# NovaTech EC2 First Test Run
 
 Status: READY FOR FIRST REAL TEST RUN
 
@@ -72,31 +72,31 @@ These are the local outputs already observed against the current repository
 state:
 
 ```text
-AfriTech pilot dataset simulation validation PASSED
+NovaTech pilot dataset simulation validation PASSED
 scenario_id=airport-zone-001 deployment_type=airport
 operations=3 signals=21
 dataset_hash=06a34178db405a1d713f7e70a84884e8b67bcfc850f3d818428f3dd0d1721321
 ```
 
 ```text
-AfriTech field evidence runtime validation PASSED
+NovaTech field evidence runtime validation PASSED
 signals=7 events=7 collection_hash=d64a42bfcd0d4d7a9911029934637c6d11bbda0d353fd9ffeb6c0f1dff70f6b0 proof_hash=526043c8884f6c0ad9ca25ff01ec2dc185087909c260aec414623886a96c5ca7 ingestion_hash=a888942959bc32ba927cff58fe371952023d1b633e7643935e4b93167dc82d0c validation_hash=089f5f8b8e3c3b79d9e5a3df82888f4b683893babd5fa308640299123096dcae
 ```
 
 ```text
-AfriTech reconciliation validation PASSED
+NovaTech reconciliation validation PASSED
 scenario_id=airport-zone-001 deployment_type=airport
 operations=3 divergence_count=0
 divergence_score=0.000000 recommendation=continue
 ```
 
 ```text
-AfriTech operator decision protocol validation PASSED
+NovaTech operator decision protocol validation PASSED
 adr=ADR-0044 rule=RULE-064 binding=BIND-042
 ```
 
 ```text
-AfriTech live pilot execution validation PASSED
+NovaTech live pilot execution validation PASSED
 checklist=docs/operations/AFRITECH_LIVE_PILOT_EXECUTION_CHECKLIST.md
 ec2_test_run=docs/operations/AFRITECH_EC2_FIRST_TEST_RUN.md
 operator_scenario=docs/operations/AFRITECH_FIRST_OPERATOR_DECISION_SCENARIO.md

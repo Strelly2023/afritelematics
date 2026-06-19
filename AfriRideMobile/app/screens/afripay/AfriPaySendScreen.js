@@ -3,22 +3,22 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import AppButton from "../../components/AppButton";
 import AppCard from "../../components/AppCard";
 import StatusBadge from "../../components/StatusBadge";
-import { createAfriPayPayment, quoteAfriPayFx } from "../../services/afripayService";
+import { createNovaPayPayment, quoteNovaPayFx } from "../../services/afripayService";
 import { theme } from "../../theme/theme";
 
-export default function AfriPaySendScreen() {
+export default function NovaPaySendScreen() {
   const [amount, setAmount] = useState("100.00");
   const [recipient, setRecipient] = useState("burundi.merchant.001");
   const [quote, setQuote] = useState(null);
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState(null);
 
-  const reference = useMemo(() => `mobile.afripay.${Date.now()}`, []);
+  const reference = useMemo(() => `mobile.novapay.${Date.now()}`, []);
 
   async function handleQuote() {
     setError(null);
     try {
-      const response = await quoteAfriPayFx({
+      const response = await quoteNovaPayFx({
         amount,
         from_currency: "AUD",
         to_currency: "BIF",
@@ -32,7 +32,7 @@ export default function AfriPaySendScreen() {
   async function handleSend() {
     setError(null);
     try {
-      const response = await createAfriPayPayment({
+      const response = await createNovaPayPayment({
         payer_id: "mobile.user.001",
         payee_id: recipient,
         amount,

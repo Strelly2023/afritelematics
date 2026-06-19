@@ -1,10 +1,10 @@
-# AfriTech First Live Deployment Scenario
+# NovaTech First Live Deployment Scenario
 
 Status: FIRST LIVE OPERATION SCENARIO
 
 Classification: GOVERNED AIRPORT PILOT DEPLOYMENT SURFACE
 
-Purpose: define the first bounded live deployment scenario that moves AfriTech
+Purpose: define the first bounded live deployment scenario that moves NovaTech
 from architecture and simulation into controlled live operation.
 
 ## Scenario
@@ -54,7 +54,7 @@ bounded reality evidence through ADR-0042 runtime ingestion.
 
 ## Deployment Goal
 
-Validate that AfriTech can run a bounded real-world mobility operation where:
+Validate that NovaTech can run a bounded real-world mobility operation where:
 
 - dispatch selects a verified participant
 - raw field signals are ingested through ADR-0042

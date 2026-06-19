@@ -1,8 +1,13 @@
 import { assertBackendConfirmed } from "../constants/authority";
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "https://afriride-api.onrender.com";
-const API_TOKEN = process.env.EXPO_PUBLIC_AFRIRIDE_API_TOKEN || null;
+  process.env.EXPO_PUBLIC_NOVARIDE_API_URL ||
+  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL ||
+  "https://api.afritechnology.com";
+const API_TOKEN =
+  process.env.EXPO_PUBLIC_NOVARIDE_API_TOKEN ||
+  process.env.EXPO_PUBLIC_AFRIRIDE_API_TOKEN ||
+  null;
 
 export async function apiRequest(endpoint, methodOrOptions = "GET", body = null, token = null) {
   const options =

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: AfriRide Ride Lifecycle API
+  title: NovaRide Ride Lifecycle API
   version: 0.1.0
   description: Interface-only API contract for ride lifecycle, replay, receipt, and support.
 

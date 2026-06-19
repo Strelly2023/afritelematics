@@ -1,0 +1,17 @@
+{
+  "name": "NovaTech",
+  "short_name": "NovaTech",
+  "description": "Trusted digital infrastructure for governed execution.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f9fb",
+  "theme_color": "#101820",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-# AfriTech AWS EC2 Quickstart
+# NovaTech AWS EC2 Quickstart
 
-Purpose: turn a fresh Ubuntu EC2 host into a production-style AfriTech node
+Purpose: turn a fresh Ubuntu EC2 host into a production-style NovaTech node
 using the repo's existing Docker Compose deployment assets.
 
 This document is an operator quickstart. It is not proof that a public
@@ -12,7 +12,7 @@ production deployment is already active.
 - optional DNS A record for the later TLS cutover
 - repository available by `git clone` or file copy
 - production secrets prepared
-- AfriTech signing keypair available for host installation
+- NovaTech signing keypair available for host installation
 
 ## Step 1. Patch the host
 

@@ -3,10 +3,10 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import AppButton from "../../components/AppButton";
 import AppCard from "../../components/AppCard";
 import StatusBadge from "../../components/StatusBadge";
-import { anchorAfriPayProof, exportAfriPayProof } from "../../services/afripayService";
+import { anchorNovaPayProof, exportNovaPayProof } from "../../services/afripayService";
 import { theme } from "../../theme/theme";
 
-export default function AfriPayAuditScreen() {
+export default function NovaPayAuditScreen() {
   const [proof, setProof] = useState(null);
   const [anchorReceipt, setAnchorReceipt] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -19,7 +19,7 @@ export default function AfriPayAuditScreen() {
     setBusy(true);
     setError(null);
     try {
-      const response = await exportAfriPayProof({ anchor_network: "external_log" });
+      const response = await exportNovaPayProof({ anchor_network: "external_log" });
       setProof(response);
       setAnchorReceipt(response.chain_receipt || null);
     } catch (err) {
@@ -37,7 +37,7 @@ export default function AfriPayAuditScreen() {
     setBusy(true);
     setError(null);
     try {
-      const response = await anchorAfriPayProof(
+      const response = await anchorNovaPayProof(
         {
           proof_hash: proofHash,
           profile_name: anchorProfile,

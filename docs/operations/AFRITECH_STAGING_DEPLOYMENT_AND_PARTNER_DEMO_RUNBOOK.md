@@ -1,4 +1,4 @@
-# AfriTech Staging Deployment And Partner Demo Runbook
+# NovaTech Staging Deployment And Partner Demo Runbook
 
 Purpose: define the beyond-GA execution path for staging deployment, real secret
 injection, remote verification, controlled public exposure, and live partner

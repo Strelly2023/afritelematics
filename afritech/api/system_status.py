@@ -16,7 +16,7 @@ def build_system_status_router() -> APIRouter:
     def system_status() -> dict[str, Any]:
         return {
             "status": "active",
-            "service": "AfriTech Deterministic MVP Pipeline",
+            "service": "NovaTech Deterministic MVP Pipeline",
             "classification": "controlled_pilot_api",
             "product_ready": False,
             "docs": "/docs",

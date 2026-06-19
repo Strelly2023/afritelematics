@@ -1,4 +1,4 @@
-# AfriRide First 10 Rides Runbook
+# NovaRide First 10 Rides Runbook
 
 STATUS: DAY-ONE FIELD RUNBOOK
 CLASSIFICATION: FIRST REAL RIDES EXECUTION SURFACE
@@ -6,7 +6,7 @@ GOVERNANCE MODE: HUMAN-OPERATED, REPLAY-BACKED, TRUST-FIRST
 
 ## Boundary
 
-This runbook is for the first 10 real or controlled-live AfriRide rides.
+This runbook is for the first 10 real or controlled-live NovaRide rides.
 
 It is not runtime authority, replay authority, regulatory approval, payment
 licensing proof, production deployment proof, or evidence that the pilot has
@@ -188,7 +188,7 @@ lesson
 Use the KPI dashboard template:
 
 ```text
-docs/operations/AfriRide_Pilot_KPI_Dashboard_Template.csv
+docs/operations/NovaRide_Pilot_KPI_Dashboard_Template.csv
 ```
 
 ## Stop Rules

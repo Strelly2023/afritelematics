@@ -66,7 +66,7 @@ from afritech.trust_network import TrustRegistryStore
 # APPLICATION INIT
 # ============================================================
 
-app = FastAPI(title="AfriTech Deterministic MVP Pipeline")
+app = FastAPI(title="NovaTech Deterministic MVP Pipeline")
 
 # ✅ CORS (IMPORTANT for React dashboard)
 app.add_middleware(
@@ -147,7 +147,7 @@ app.include_router(
 # ✅ Public architecture proof and partner demo API
 app.include_router(build_architecture_proof_router())
 
-# ✅ AfriRide mobile release readiness API
+# ✅ NovaRide mobile release readiness API
 app.include_router(build_afriride_mobile_release_router())
 
 # ✅ Dashboard gateway API
@@ -162,7 +162,7 @@ app.include_router(build_feature_registry_router())
 # ✅ Operator observability and audit APIs
 app.include_router(build_ops_governance_router())
 
-# ✅ AfriRide operational product API
+# ✅ NovaRide operational product API
 app.include_router(
     import_module("afriride_system.api.passenger_routes").router,
     prefix="/passenger",
@@ -204,7 +204,8 @@ def root() -> dict[str, Any]:
     """Report bounded pilot API status without claiming product readiness."""
     return {
         "status": "active",
-        "service": "AfriTech Deterministic MVP Pipeline",
+        "service": "NovaTech Deterministic MVP Pipeline",
+        "legacy_service": "AfriTech Deterministic MVP Pipeline",
         "classification": "controlled_pilot_api",
         "product_ready": False,
         "docs": "/docs",

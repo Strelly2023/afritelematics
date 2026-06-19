@@ -1,8 +1,8 @@
-# AfriRide GA Elite Test Build Distribution
+# NovaRide GA Elite Test Build Distribution
 
 Artifact Type: Execution-Enabling Deployment Runbook
 
-Purpose: Build and distribute installable AfriRide Rider and Driver test apps for controlled field execution.
+Purpose: Build and distribute installable NovaRide Rider and Driver test apps for controlled field execution.
 
 Classification:
 
@@ -17,6 +17,7 @@ wave7_effect: 0
 The backend must be publicly reachable over HTTPS before field distribution.
 
 ```text
+EXPO_PUBLIC_NOVARIDE_API_URL=https://your-backend-url
 EXPO_PUBLIC_AFRIRIDE_API_URL=https://your-backend-url
 EXPO_PUBLIC_AFRIRIDE_TEST_MODE=true
 ```
@@ -28,7 +29,7 @@ Do not use localhost for field devices.
 App:
 
 ```text
-AfriRide Rider (Test)
+NovaRide Rider (Test)
 ```
 
 Build:
@@ -55,7 +56,7 @@ fail if TEST_MODE is disabled
 App:
 
 ```text
-AfriRide Driver (Test)
+NovaRide Driver (Test)
 ```
 
 Build:
@@ -85,6 +86,7 @@ Deploy the read-only dashboard to a tablet-accessible HTTPS URL.
 Required environment:
 
 ```text
+VITE_NOVARIDE_API_URL=https://your-backend-url
 VITE_AFRIRIDE_API_URL=https://your-backend-url
 VITE_AFRIRIDE_TEST_MODE=true
 ```

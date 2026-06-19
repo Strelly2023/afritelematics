@@ -16,6 +16,16 @@ from afriride_system.backend.trace_enforcement import TraceEnvelopeError
 
 
 RIDE_PATH_RE = re.compile(r"^/ride/([^/]+)/(accept|reject|arrive|start|complete)$")
+TRACE_HEADER_ALIASES = {
+    "event_id": ("X-NovaRide-Event-Id", "X-AfriRide-Event-Id"),
+    "device_id": ("X-NovaRide-Device-Id", "X-AfriRide-Device-Id"),
+    "local_timestamp": (
+        "X-NovaRide-Client-Timestamp",
+        "X-AfriRide-Client-Timestamp",
+    ),
+    "app_version": ("X-NovaRide-App-Version", "X-AfriRide-App-Version"),
+    "test_mode": ("X-NovaRide-Test-Mode", "X-AfriRide-Test-Mode"),
+}
 
 
 async def trace_enforcement_middleware(
@@ -57,6 +67,8 @@ async def trace_enforcement_middleware(
 
     response = await call_next(Request(request.scope, receive))
     if envelope is not None:
+        response.headers["X-NovaRide-Trace-Sequence"] = str(request.state.trace_sequence_id)
+        response.headers["X-NovaRide-Trace-Hash"] = str(request.state.trace_event_hash)
         response.headers["X-AfriRide-Trace-Sequence"] = str(request.state.trace_sequence_id)
         response.headers["X-AfriRide-Trace-Hash"] = str(request.state.trace_event_hash)
     return response
@@ -86,33 +98,33 @@ def _extract_envelope(
     return _bind_authenticated_identity(
         request,
         {
-        "event_id": request.headers.get("X-AfriRide-Event-Id"),
-        "device_id": request.headers.get("X-AfriRide-Device-Id"),
+        "event_id": _header(request, "event_id"),
+        "device_id": _header(request, "device_id"),
         "actor_type": _actor_type_from_path(request.url.path),
         "actor_id": "operator",
         "action": f"{request.method} {request.url.path}",
         "payload": payload,
-        "local_timestamp": request.headers.get("X-AfriRide-Client-Timestamp"),
-        "app_version": request.headers.get("X-AfriRide-App-Version"),
-        "test_mode": request.headers.get("X-AfriRide-Test-Mode") == "true",
+        "local_timestamp": _header(request, "local_timestamp"),
+        "app_version": _header(request, "app_version"),
+        "test_mode": _header(request, "test_mode") == "true",
         },
     )
 
 
 def _has_trace_headers(request: Request) -> bool:
-    return all(
-        request.headers.get(header)
-        for header in (
-            "X-AfriRide-Event-Id",
-            "X-AfriRide-Device-Id",
-            "X-AfriRide-Client-Timestamp",
-            "X-AfriRide-App-Version",
-        )
-    )
+    return all(_header(request, field) for field in ("event_id", "device_id", "local_timestamp", "app_version"))
 
 
 def _is_instrumented_request(request: Request) -> bool:
-    return request.headers.get("X-AfriRide-Test-Mode") == "true"
+    return _header(request, "test_mode") == "true"
+
+
+def _header(request: Request, field: str) -> str | None:
+    for header in TRACE_HEADER_ALIASES[field]:
+        value = request.headers.get(header)
+        if value:
+            return value
+    return None
 
 
 def _bind_authenticated_identity(request: Request, envelope: dict[str, Any]) -> dict[str, Any]:

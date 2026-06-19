@@ -1,4 +1,4 @@
-# AfriTech Full-System Verification Runbook
+# NovaTech Full-System Verification Runbook
 
 Status: PILOT DEPLOYMENT VERIFICATION RUNBOOK
 
@@ -101,7 +101,7 @@ Required checks:
 - evidence reviewer is named
 - deployment rollback owner is named
 - product surfaces are bounded
-- live-money movement is either disabled or explicitly governed by the AfriPay boundary
+- live-money movement is either disabled or explicitly governed by the NovaPay boundary
 
 Exit gate:
 
@@ -125,7 +125,7 @@ Required result:
 - four constitutional pillars validate
 - four ecosystem pillars validate
 - authority chain prints as `Constitution -> Deterministic Truth -> Replay -> Proof`
-- AfriTrust, AfriCloud, AfriAI, AfriPay, and AfriSync remain infrastructure capabilities
+- AfriTrust, AfriCloud, AfriAI, NovaPay, and AfriSync remain infrastructure capabilities
 
 Exit gate:
 
@@ -350,7 +350,7 @@ Stop the pilot immediately if:
 - dispatch participant binding fails
 - operation identity binding fails
 - exported evidence is not hash-stable
-- live-money movement occurs outside the governed AfriPay boundary
+- live-money movement occurs outside the governed NovaPay boundary
 - operator review cannot isolate a failed evidence artifact
 
 ## Phase 9. Simulation Reality Reconciliation

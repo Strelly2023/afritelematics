@@ -1,13 +1,13 @@
-# AfriRide Mobile Apps
+# NovaRide Mobile Apps
 
 STATUS: MOBILE EXECUTION SURFACES
 
-These Expo apps are interface layers over the AfriRide FastAPI service.
+These Expo apps are interface layers over the NovaRide FastAPI service.
 
-They do not define AfriTech correctness and are not part of `afritech.demo.proof`.
+They do not define NovaTech correctness and are not part of `afritech.demo.proof`.
 
 The rider, driver, and operator apps now execute against the authoritative
-AfriRide API. They remain non-authoritative clients over replay, evidence,
+NovaRide API. They remain non-authoritative clients over replay, evidence,
 receipt, and operational read surfaces.
 
 The earlier signed phone-event tester concept is retained only as a historical
@@ -17,7 +17,8 @@ It does not certify pilot completion or production readiness.
 
 ## API Base URL
 
-Set `EXPO_PUBLIC_AFRIRIDE_API_URL` for device testing.
+Set `EXPO_PUBLIC_NOVARIDE_API_URL` for device testing.
+`EXPO_PUBLIC_AFRIRIDE_API_URL` remains accepted as a legacy compatibility alias.
 
 Default:
 

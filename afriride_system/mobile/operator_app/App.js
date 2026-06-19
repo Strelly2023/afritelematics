@@ -118,7 +118,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>AfriRide Operator</Text>
+        <Text style={styles.title}>NovaRide Operator</Text>
         <Text style={styles.subtle}>
           Field operations, dispatch, monitoring, driver management, and incident handling over the authoritative trust surface.
         </Text>

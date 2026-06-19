@@ -10,7 +10,7 @@ export default function RiderHomeScreen({ navigation }) {
     <View style={{ flex: 1, padding: theme.spacing.lg, gap: 14 }}>
       <AppHeader title="Rider" subtitle="Request and observe backend-confirmed rides." />
       <AppButton title="Request Ride" onPress={() => navigation.navigate(ROUTES.REQUEST_RIDE)} />
-      <AppButton title="AfriPay Wallet" variant="secondary" onPress={() => navigation.navigate(ROUTES.AFRIPAY_HOME)} />
+      <AppButton title="NovaPay Wallet" variant="secondary" onPress={() => navigation.navigate(ROUTES.AFRIPAY_HOME)} />
       <AppButton title="Active Ride" onPress={() => navigation.navigate(ROUTES.ACTIVE_RIDE)} />
       <AppButton title="Ride History" onPress={() => navigation.navigate(ROUTES.RIDE_HISTORY)} />
     </View>

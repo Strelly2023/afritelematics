@@ -4,6 +4,23 @@
     "version": ">= 10.0.0"
   },
   "build": {
+    "preview": {
+      "developmentClient": false,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
+        "EXPO_PUBLIC_AFRIRIDE_API_URL": "https://api.afritechnology.com",
+        "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "0.1",
+        "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "rider-preview-device"
+      }
+    },
     "development": {
       "developmentClient": true,
       "distribution": "internal",
@@ -14,6 +31,7 @@
         "buildType": "apk"
       },
       "env": {
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
         "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "0.1",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "rider-dev-device"

@@ -1,4 +1,4 @@
-"""AfriRide FastAPI entry point."""
+"""NovaRide FastAPI entry point with AfriRide compatibility paths."""
 
 from __future__ import annotations
 import os
@@ -18,7 +18,7 @@ from afriride_system.api.trace_middleware import trace_enforcement_middleware
 from afriride_system.api.responses import error
 from afritech.api.ingestion.event_ingestion import EventIngestionAPI, build_router
 
-app = FastAPI(title="AfriRide API")
+app = FastAPI(title="NovaRide API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -53,7 +53,8 @@ def health() -> dict[str, str]:
 def health_check() -> dict[str, str]:
     return {
         "status": "ok",
-        "service": "afriride-api",
+        "service": "novaride-api",
+        "legacy_service": "afriride-api",
     }
 
 

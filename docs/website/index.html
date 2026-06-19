@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NovaTech | Trusted Digital Infrastructure</title>
+    <meta
+      name="description"
+      content="NovaTech builds trusted digital infrastructure for organizations to build, verify, govern, and operate software systems at scale with evidence."
+    />
+    <meta name="theme-color" content="#101820" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="canonical" href="https://afritechnology.com/" />
+    <link rel="alternate" hreflang="en" href="https://afritechnology.com/" />
+    <link rel="alternate" hreflang="fr" href="https://afritechnology.com/fr/" />
+    <link rel="alternate" hreflang="sw" href="https://afritechnology.com/sw/" />
+    <link rel="alternate" hreflang="x-default" href="https://afritechnology.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="sw_KE" />
+    <meta property="og:site_name" content="NovaTech" />
+    <meta property="og:title" content="NovaTech | Trusted Digital Infrastructure" />
+    <meta
+      property="og:description"
+      content="Build, verify, govern, and operate trustworthy digital systems at scale."
+    />
+    <meta property="og:url" content="https://afritechnology.com/" />
+    <meta property="og:image" content="https://afritechnology.com/assets/og-preview.png" />
+    <meta property="og:image:alt" content="NovaTech trusted digital infrastructure platform" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NovaTech | Trusted Digital Infrastructure" />
+    <meta
+      name="twitter:description"
+      content="Build, verify, govern, and operate trustworthy digital systems at scale."
+    />
+    <meta name="twitter:image" content="https://afritechnology.com/assets/og-preview.png" />
+    <script src="assets/language-router.js" data-route="home" defer></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #101820;
+        --muted: #55616d;
+        --line: #d9e1e8;
+        --paper: #f7f9fb;
+        --white: #ffffff;
+        --blue: #1455d9;
+        --green: #0d8b72;
+        --amber: #bd7b11;
+        --red: #b33f30;
+        --violet: #6545b8;
+        --shadow: 0 24px 60px rgba(16, 24, 32, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-bottom: 1px solid rgba(217, 225, 232, 0.78);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1180px;
+        min-height: 68px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        color: var(--white);
+        background:
+          linear-gradient(135deg, rgba(20, 85, 217, 0.92), rgba(13, 139, 114, 0.95)),
+          var(--blue);
+        font-size: 16px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .button.primary {
+        color: var(--white);
+        background: var(--ink);
+      }
+
+      .button.secondary {
+        color: var(--ink);
+        background: var(--white);
+        border-color: var(--line);
+      }
+
+      .button.ghost {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.13);
+        border-color: rgba(255, 255, 255, 0.24);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        min-height: min(820px, calc(100vh - 68px));
+        color: var(--white);
+        background:
+          radial-gradient(circle at 18% 18%, rgba(44, 194, 157, 0.42), transparent 26%),
+          radial-gradient(circle at 88% 18%, rgba(189, 123, 17, 0.34), transparent 22%),
+          linear-gradient(135deg, #0d1f2b 0%, #0e2c3f 46%, #15212f 100%);
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+        background-size: 54px 54px;
+        mask-image: linear-gradient(to bottom, black, transparent 92%);
+      }
+
+      .hero-inner {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 0.96fr) minmax(420px, 1.04fr);
+        gap: 52px;
+        align-items: center;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 86px 24px 76px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.84);
+        background: rgba(255, 255, 255, 0.09);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        margin-top: 22px;
+        max-width: 780px;
+        font-size: clamp(48px, 7vw, 86px);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        margin-top: 24px;
+        max-width: 640px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: clamp(18px, 2.4vw, 23px);
+        line-height: 1.45;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .platform-scene {
+        position: relative;
+        min-height: 520px;
+      }
+
+      .platform-ring {
+        position: absolute;
+        inset: 40px 0 24px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .system-node {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        width: 168px;
+        min-height: 92px;
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 16px 42px rgba(0, 0, 0, 0.19);
+      }
+
+      .system-node strong {
+        font-size: 16px;
+      }
+
+      .system-node span {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .node-core {
+        top: 178px;
+        left: calc(50% - 104px);
+        width: 208px;
+        min-height: 126px;
+        border-color: rgba(255, 255, 255, 0.34);
+        background: rgba(255, 255, 255, 0.19);
+      }
+
+      .node-programming {
+        top: 60px;
+        left: 32px;
+      }
+
+      .node-trust {
+        top: 60px;
+        right: 32px;
+      }
+
+      .node-pay {
+        bottom: 40px;
+        left: 32px;
+      }
+
+      .node-ride {
+        right: 32px;
+        bottom: 40px;
+      }
+
+      .flow-line {
+        position: absolute;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.52), transparent);
+      }
+
+      .line-a {
+        top: 185px;
+        left: 146px;
+        width: 250px;
+        transform: rotate(22deg);
+      }
+
+      .line-b {
+        top: 185px;
+        right: 146px;
+        width: 250px;
+        transform: rotate(-22deg);
+      }
+
+      .line-c {
+        bottom: 185px;
+        left: 146px;
+        width: 250px;
+        transform: rotate(-22deg);
+      }
+
+      .line-d {
+        right: 146px;
+        bottom: 185px;
+        width: 250px;
+        transform: rotate(22deg);
+      }
+
+      section {
+        padding: 92px 24px;
+      }
+
+      .section-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .section-heading {
+        max-width: 760px;
+      }
+
+      .section-heading h2 {
+        font-size: clamp(34px, 4.5vw, 58px);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .section-heading p {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.65;
+      }
+
+      .band-white {
+        background: var(--white);
+      }
+
+      .band-ink {
+        color: var(--white);
+        background: var(--ink);
+      }
+
+      .band-ink .section-heading p,
+      .band-ink .muted {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 48px;
+        align-items: start;
+      }
+
+      .proof-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 34px;
+      }
+
+      .stack-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+        gap: 24px;
+        align-items: stretch;
+        margin-top: 34px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .stack-panel h3 {
+        font-size: 24px;
+      }
+
+      .stack-panel p {
+        margin-top: 12px;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.55;
+      }
+
+      .stack-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stack-item {
+        min-height: 84px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .stack-item b {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+      }
+
+      .stack-item span {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .flow-step {
+        min-height: 132px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .flow-step b {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .flow-step span {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .proof-demo {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 28px;
+        align-items: stretch;
+        margin-top: 38px;
+      }
+
+      .proof-panel {
+        min-height: 330px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .proof-panel.dark {
+        color: var(--white);
+        border-color: transparent;
+        background:
+          linear-gradient(135deg, rgba(16, 24, 32, 0.96), rgba(17, 55, 69, 0.96)),
+          var(--ink);
+      }
+
+      .proof-panel h3 {
+        font-size: 26px;
+      }
+
+      .proof-panel p {
+        margin-top: 12px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .proof-panel.dark p {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .proof-steps {
+        display: grid;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .proof-step {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .proof-step span:first-child {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        color: var(--white);
+        background: var(--green);
+        font-weight: 800;
+        font-size: 13px;
+      }
+
+      .proof-step b {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 15px;
+      }
+
+      .proof-step small {
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .proof-meta {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .proof-meta div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        font-size: 14px;
+      }
+
+      .proof-meta span {
+        color: rgba(255, 255, 255, 0.68);
+      }
+
+      .proof-meta b {
+        text-align: right;
+      }
+
+      .capability-grid,
+      .product-grid,
+      .principle-grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 36px;
+      }
+
+      .capability-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .product-grid,
+      .principle-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tile {
+        min-height: 220px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .tile h3 {
+        font-size: 21px;
+      }
+
+      .tile-title {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        min-height: 26px;
+        padding: 0 9px;
+        border-radius: 999px;
+        color: var(--ink);
+        background: #ecf4f2;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .status-pill.direction {
+        color: #4c3b12;
+        background: #fff4d8;
+      }
+
+      .tile p {
+        margin-top: 12px;
+        color: var(--muted);
+        line-height: 1.58;
+      }
+
+      .tile ul {
+        display: grid;
+        gap: 8px;
+        margin: 18px 0 0;
+        padding: 0;
+        color: var(--muted);
+        list-style: none;
+        font-size: 14px;
+      }
+
+      .tile li::before {
+        content: "";
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-right: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        transform: translateY(-1px);
+      }
+
+      .accent-blue {
+        border-top: 4px solid var(--blue);
+      }
+
+      .accent-green {
+        border-top: 4px solid var(--green);
+      }
+
+      .accent-amber {
+        border-top: 4px solid var(--amber);
+      }
+
+      .accent-red {
+        border-top: 4px solid var(--red);
+      }
+
+      .accent-violet {
+        border-top: 4px solid var(--violet);
+      }
+
+      .protocol-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .protocol-item {
+        padding: 22px;
+        border-left: 4px solid var(--green);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .protocol-item h3 {
+        font-size: 21px;
+      }
+
+      .protocol-item p {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.55;
+      }
+
+      .status-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 38px;
+      }
+
+      .status-block {
+        min-height: 160px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .status-block strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .status-block p {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .cta {
+        padding: 84px 24px;
+        color: var(--white);
+        background:
+          linear-gradient(135deg, rgba(20, 85, 217, 0.9), rgba(13, 139, 114, 0.9)),
+          var(--blue);
+      }
+
+      .cta-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .cta h2 {
+        font-size: clamp(34px, 4.4vw, 56px);
+        line-height: 1.02;
+      }
+
+      .cta p {
+        max-width: 720px;
+        margin-top: 14px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      footer {
+        padding: 36px 24px;
+        color: var(--muted);
+        background: var(--white);
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1180px;
+        margin: 0 auto;
+        font-size: 14px;
+      }
+
+      @media (max-width: 980px) {
+        .nav-links {
+          display: none;
+        }
+
+        .hero-inner,
+        .split,
+        .cta-inner,
+        .stack-panel,
+        .proof-demo {
+          grid-template-columns: 1fr;
+        }
+
+        .platform-scene {
+          min-height: 460px;
+        }
+
+        .capability-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .proof-flow,
+        .stack-grid,
+        .status-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-actions {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 680px) {
+        section {
+          padding: 68px 18px;
+        }
+
+        .nav {
+          padding: 0 18px;
+        }
+
+        .hero-inner {
+          padding: 64px 18px 50px;
+        }
+
+        h1 {
+          font-size: 48px;
+        }
+
+        .hero-actions,
+        .cta-actions {
+          flex-direction: column;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .platform-scene {
+          min-height: 600px;
+        }
+
+        .platform-ring {
+          inset: 18px 0;
+        }
+
+        .system-node,
+        .node-core {
+          left: 24px;
+          right: 24px;
+          width: auto;
+          min-height: 84px;
+        }
+
+        .node-programming {
+          top: 42px;
+        }
+
+        .node-trust {
+          top: 150px;
+        }
+
+        .node-core {
+          top: 258px;
+        }
+
+        .node-pay {
+          bottom: 150px;
+        }
+
+        .node-ride {
+          bottom: 42px;
+        }
+
+        .flow-line {
+          display: none;
+        }
+
+        .capability-grid,
+        .product-grid,
+        .principle-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-inner {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="#top" aria-label="NovaTech home">
+          <span class="brand-mark">N</span>
+          <span>NovaTech</span>
+        </a>
+        <div class="nav-links">
+          <a href="#platform">Platform</a>
+          <a href="platform.html">NovaPower</a>
+          <a href="programming.html">NovaProgramming</a>
+          <a href="#trust">Trust</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#products">Products</a>
+          <a href="#developers">Developers</a>
+          <a href="fr/" data-lang="fr">FR</a>
+          <a href="sw/" data-lang="sw">SW</a>
+          <a class="button secondary" href="#contact">Request Demo</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-inner">
+          <div>
+            <span class="eyebrow">Governed digital infrastructure</span>
+            <h1 id="hero-title">Building trusted digital infrastructure for the future</h1>
+            <p class="hero-copy">
+              Build, verify, govern, and operate trustworthy digital systems at scale.
+              NovaTech develops platform technologies, governance systems, identity services,
+              payment infrastructure, and industry applications powered by NovaPower.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="button primary" href="platform.html">Explore the Platform</a>
+              <a class="button ghost" href="verify.html">Verify This Execution</a>
+              <a class="button ghost" href="#trust">See Verification in Action</a>
+              <a class="button ghost" href="#products">View Products</a>
+            </div>
+          </div>
+
+          <div class="platform-scene" aria-label="NovaPower platform map">
+            <div class="platform-ring"></div>
+            <div class="flow-line line-a"></div>
+            <div class="flow-line line-b"></div>
+            <div class="flow-line line-c"></div>
+            <div class="flow-line line-d"></div>
+            <div class="system-node node-programming">
+              <strong>NovaProgramming</strong>
+              <span>Build software systems with governed engineering.</span>
+            </div>
+            <div class="system-node node-trust">
+              <strong>NovaTrust</strong>
+              <span>Verify behavior with proof and assurance.</span>
+            </div>
+            <div class="system-node node-core">
+              <strong>NovaPower</strong>
+              <span>Operate deterministic, observable, and orchestrated digital infrastructure.</span>
+            </div>
+            <div class="system-node node-pay">
+              <strong>NovaPay</strong>
+              <span>Move value through secure payment infrastructure.</span>
+            </div>
+            <div class="system-node node-ride">
+              <strong>NovaRide</strong>
+              <span>Execute mobility operations on trusted platform services.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="band-white" aria-labelledby="trusted-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="trusted-title">Trusted infrastructure for a digital world</h2>
+          </div>
+          <div class="section-heading">
+            <p>
+              Modern organizations rely on software to deliver services, manage operations,
+              and move value. As systems grow in complexity, trust, transparency, and
+              operational reliability become critical.
+            </p>
+            <p>
+              NovaTech provides platform technologies, governance frameworks, and digital
+              infrastructure for verifiable, governed, and reliable digital operations.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="platform" class="band-ink" aria-labelledby="platform-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="platform-title">The NovaPower platform</h2>
+            <p>
+              NovaPower is the execution and intelligence platform at the core of the
+              NovaTech ecosystem. It unifies governance protocols, runtime services,
+              and architectural principles into one foundation for trusted operations.
+            </p>
+          </div>
+
+          <div class="proof-flow" aria-label="NovaTech execution model">
+            <div class="flow-step">
+              <b>Build</b>
+              <span>NovaProgramming turns ideas, requirements, and repositories into governed systems.</span>
+            </div>
+            <div class="flow-step">
+              <b>Verify</b>
+              <span>NovaTrust records proof, replay evidence, audit state, and assurance signals.</span>
+            </div>
+            <div class="flow-step">
+              <b>Govern</b>
+              <span>NovaCPPT applies policy, compliance, and architecture controls.</span>
+            </div>
+            <div class="flow-step">
+              <b>Operate</b>
+              <span>NovaPower coordinates execution, observability, orchestration, and platform services.</span>
+            </div>
+          </div>
+
+          <div class="stack-panel" aria-label="NovaTech platform stack">
+            <div>
+              <h3>NovaTech platform stack</h3>
+              <p>
+                The public story is simple enough to remember and precise enough to
+                defend: NovaProgramming builds, NovaTrust verifies, NovaCPPT governs,
+                and NovaPower operates.
+              </p>
+            </div>
+            <div class="stack-grid">
+              <div class="stack-item">
+                <b>NovaProgramming</b>
+                <span>Build governed software systems.</span>
+              </div>
+              <div class="stack-item">
+                <b>NovaTrust</b>
+                <span>Verify execution with evidence.</span>
+              </div>
+              <div class="stack-item">
+                <b>NovaCPPT</b>
+                <span>Govern policy and compliance.</span>
+              </div>
+              <div class="stack-item">
+                <b>NovaPower</b>
+                <span>Operate trusted digital infrastructure.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="trust" class="band-white" aria-labelledby="trust-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="trust-title">Verification in action</h2>
+            <p>
+              NovaTech is designed to make execution evidence visible. A completed
+              operational flow can produce proof, replay context, audit state, and a
+              verification path instead of relying only on logs or dashboard claims.
+            </p>
+          </div>
+
+          <div class="proof-demo">
+            <article class="proof-panel">
+              <h3>Example proof path</h3>
+              <p>
+                NovaRide demonstrates the platform model through mobility execution:
+                request, dispatch, driver action, trip completion, receipt, replay, and
+                verification.
+              </p>
+              <div class="proof-steps" aria-label="Example verified flow">
+                <div class="proof-step">
+                  <span>1</span>
+                  <div>
+                    <b>Operational event captured</b>
+                    <small>Ride request, driver state, acceptance, arrival, start, and completion are recorded.</small>
+                  </div>
+                </div>
+                <div class="proof-step">
+                  <span>2</span>
+                  <div>
+                    <b>Evidence generated</b>
+                    <small>Receipt, trace metadata, and replay inputs are linked to the execution result.</small>
+                  </div>
+                </div>
+                <div class="proof-step">
+                  <span>3</span>
+                  <div>
+                    <b>Verification exposed</b>
+                    <small>Public or partner-facing verification can check proof state without trusting screenshots.</small>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="proof-panel dark" aria-label="Proof signal example">
+              <h3>Proof signal</h3>
+              <p>
+                The trust layer turns an operational claim into evidence that can be
+                inspected, replayed, and governed.
+              </p>
+              <div class="proof-meta">
+                <div>
+                  <span>Execution status</span>
+                  <b>Completed</b>
+                </div>
+                <div>
+                  <span>Replay state</span>
+                  <b>Available</b>
+                </div>
+                <div>
+                  <span>Proof binding</span>
+                  <b>Receipt linked</b>
+                </div>
+                <div>
+                  <span>Governance state</span>
+                  <b>Validated</b>
+                </div>
+              </div>
+              <div class="hero-actions">
+                <a class="button ghost" href="#products">View Products</a>
+                <a class="button ghost" href="#developers">Developer Path</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band-white" aria-labelledby="protocols-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="protocols-title">Governance protocols and runtime services</h2>
+            <p>
+              NovaTech separates the foundation from the applications built on top of it.
+              Protocols define control. Runtime services deliver core platform capability.
+            </p>
+          </div>
+          <div class="protocol-list">
+            <article class="protocol-item">
+              <h3>NovaCPPT</h3>
+              <p>Governance protocol for compliance, integrity, and operational trust.</p>
+            </article>
+            <article class="protocol-item">
+              <h3>NovaTPPC</h3>
+              <p>Execution protocol for controlled, verifiable, and reliable system execution.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="section-inner">
+          <div class="capability-grid" id="capabilities">
+            <article class="tile accent-blue">
+              <h3>NovaProgramming</h3>
+              <p>AI-assisted software engineering, application development, repository intelligence, and enterprise delivery.</p>
+              <ul>
+                <li>Mobile and web applications</li>
+                <li>Enterprise platforms</li>
+                <li>APIs and cloud-native systems</li>
+              </ul>
+              <div class="hero-actions">
+                <a class="button secondary" href="programming.html">Explore NovaProgramming</a>
+              </div>
+            </article>
+            <article class="tile accent-green">
+              <h3>NovaTrust</h3>
+              <p>Verification, governance, proof systems, auditability, and assurance for trustworthy execution.</p>
+              <ul>
+                <li>Replay validation</li>
+                <li>Evidence and audit trails</li>
+                <li>Compliance state</li>
+              </ul>
+            </article>
+            <article class="tile accent-amber">
+              <h3>NovaID</h3>
+              <p>Identity, authentication, authorization, and participant management for digital systems.</p>
+              <ul>
+                <li>Access control</li>
+                <li>Participant identity</li>
+                <li>Authentication services</li>
+              </ul>
+            </article>
+            <article class="tile accent-red">
+              <h3>NovaPay</h3>
+              <p>Payments, value transfer, financial infrastructure, and transaction integration.</p>
+              <ul>
+                <li>Transaction processing</li>
+                <li>Payment integration</li>
+                <li>Financial operations</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="principles-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="principles-title">Architectural principles</h2>
+            <p>
+              The platform is designed around principles that make software behavior
+              visible, recoverable, and accountable.
+            </p>
+          </div>
+          <div class="principle-grid">
+            <article class="tile accent-blue">
+              <h3>Deterministic Truth</h3>
+              <p>Consistent, replayable, and verifiable execution that aligns system behavior with claims.</p>
+            </article>
+            <article class="tile accent-green">
+              <h3>Orchestration</h3>
+              <p>Coordinated workflows across services, systems, participants, and operational surfaces.</p>
+            </article>
+            <article class="tile accent-amber">
+              <h3>Data Locality</h3>
+              <p>Processing that respects where data exists and how operational context should be preserved.</p>
+            </article>
+            <article class="tile accent-violet">
+              <h3>Observability</h3>
+              <p>Full visibility into system behavior, execution status, proof evidence, and operational health.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="products" class="band-white" aria-labelledby="products-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="products-title">Products powered by NovaPower</h2>
+            <p>
+              NovaTech applications apply the platform foundation to industry systems.
+              Current implementation and roadmap scope should remain clearly separated
+              in public claims.
+            </p>
+          </div>
+          <div class="product-grid">
+            <article class="tile accent-green">
+              <div class="tile-title">
+                <h3>NovaRide</h3>
+                <span class="status-pill">Active Pilot</span>
+              </div>
+              <p>Mobility and transportation platform for ride services, driver operations, dispatch, and verification-backed trip flows.</p>
+            </article>
+            <article class="tile accent-blue">
+              <div class="tile-title">
+                <h3>NovaHealth</h3>
+                <span class="status-pill direction">Direction</span>
+              </div>
+              <p>Digital healthcare platform direction for medical systems, patient services, and governed health operations.</p>
+            </article>
+            <article class="tile accent-amber">
+              <div class="tile-title">
+                <h3>NovaLogistics</h3>
+                <span class="status-pill direction">Direction</span>
+              </div>
+              <p>Logistics and supply chain platform direction for transport, warehousing, and operational coordination.</p>
+            </article>
+            <article class="tile accent-violet">
+              <div class="tile-title">
+                <h3>NovaVirtualMall</h3>
+                <span class="status-pill direction">Direction</span>
+              </div>
+              <p>Digital commerce ecosystem direction for connecting businesses, customers, payments, and trusted transactions.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="status-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="status-title">Credible platform narrative</h2>
+            <p>
+              NovaTech messaging separates what exists, what is being expanded, and how the
+              market should understand the company.
+            </p>
+          </div>
+          <div class="status-strip">
+            <div class="status-block">
+              <strong>Implemented foundation</strong>
+              <p>Governance, replay, proof, verification, observability, mobility flow, and repository intelligence.</p>
+            </div>
+            <div class="status-block">
+              <strong>Platform direction</strong>
+              <p>NovaPower, NovaID, NovaPay, NovaHealth, NovaLogistics, and NovaVirtualMall.</p>
+            </div>
+            <div class="status-block">
+              <strong>External positioning</strong>
+              <p>Digital infrastructure for building, verifying, governing, and operating trustworthy systems.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="developers" class="band-white" aria-labelledby="developers-title">
+        <div class="section-inner split">
+          <div class="section-heading">
+            <h2 id="developers-title">For developers, partners, and operators</h2>
+          </div>
+          <div class="section-heading">
+            <p>
+              Build on NovaPower using APIs, SDKs, operational runbooks, and governance-aware
+              development tools. Partner with NovaTech to deliver trusted infrastructure
+              and industry solutions without separating delivery from assurance.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="#contact">Request Demo</a>
+              <a class="button secondary" href="platform.html">Explore Platform</a>
+              <a class="button secondary" href="#trust">See Verification</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="cta" aria-labelledby="cta-title">
+        <div class="cta-inner">
+          <div>
+            <h2 id="cta-title">Build trustworthy digital systems</h2>
+            <p>
+              NovaTech brings together platform technologies, governance frameworks,
+              identity services, payment infrastructure, and industry applications into
+              one ecosystem. Build. Verify. Govern. Operate.
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a class="button primary" href="#developers">Contact Us</a>
+            <a class="button ghost" href="platform.html">Explore NovaPower</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <span>NovaTech</span>
+        <span>Trusted digital infrastructure for governed execution.</span>
+      </div>
+    </footer>
+  </body>
+</html>

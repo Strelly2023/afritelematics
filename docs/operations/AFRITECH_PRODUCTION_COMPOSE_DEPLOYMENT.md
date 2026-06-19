@@ -1,4 +1,4 @@
-# AfriTech Production Compose Deployment
+# NovaTech Production Compose Deployment
 
 Purpose: define the shortest production-style deployment path after staging
 closure using Docker Compose, HTTP-only pilot edge routing, and the bounded
