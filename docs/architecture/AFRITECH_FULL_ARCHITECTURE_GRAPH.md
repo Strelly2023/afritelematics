@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `269`
-- Django-bound modules declared in repo: `243`
+- Startup-safe closure size: `302`
+- Django-bound modules declared in repo: `244`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `29`
+- Direct startup imports from `afritech.api.app`: `30`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (269 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (302 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (243 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (244 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (29)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (30)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (52 files)"]
+    Core --> Api["api (54 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `52` files
+- `api`: `54` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -104,8 +104,9 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (24)
+### Api (25)
 
+- `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
 - `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`
@@ -160,7 +161,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (206)
+### Other (238)
 
 - `afritech`
 - `afritech.afripay`
@@ -185,13 +186,45 @@ flowchart TD
 - `afritech.afripay.routing`
 - `afritech.afripay.treasury`
 - `afritech.afriprogramming`
+- `afritech.afriprogramming.assurance`
+- `afritech.afriprogramming.assurance.assurance_engine`
+- `afritech.afriprogramming.assurance.cert_signer`
+- `afritech.afriprogramming.assurance.certification`
+- `afritech.afriprogramming.assurance.continuous_engine`
+- `afritech.afriprogramming.assurance.crypto_hardening`
+- `afritech.afriprogramming.assurance.distributed_network`
+- `afritech.afriprogramming.assurance.event_streaming`
+- `afritech.afriprogramming.assurance.pki`
+- `afritech.afriprogramming.assurance.policy_registry`
+- `afritech.afriprogramming.assurance.replay_registry`
+- `afritech.afriprogramming.assurance.reports`
+- `afritech.afriprogramming.assurance.retention`
+- `afritech.afriprogramming.assurance.risk_engine`
+- `afritech.afriprogramming.assurance.risk_prediction`
+- `afritech.afriprogramming.assurance.signed_audit`
+- `afritech.afriprogramming.assurance.trust_engine`
+- `afritech.afriprogramming.assurance.trust_exchange`
+- `afritech.afriprogramming.assurance.trust_fabric`
+- `afritech.afriprogramming.assurance.trust_trends`
+- `afritech.afriprogramming.assurance.workflows`
+- `afritech.afriprogramming.assurance.zero_trust`
 - `afritech.afriprogramming.constants`
+- `afritech.afriprogramming.control_plane`
 - `afritech.afriprogramming.integration`
 - `afritech.afriprogramming.models`
+- `afritech.afriprogramming.persistence`
 - `afritech.afriprogramming.proposals`
+- `afritech.afriprogramming.roles`
+- `afritech.afriprogramming.schemas`
 - `afritech.afriprogramming.services`
 - `afritech.afriprogramming.tooling_manifest`
 - `afritech.afriprogramming.tooling_surfaces`
+- `afritech.afriprogramming.v9`
+- `afritech.afriprogramming.v9.crypto_governance`
+- `afritech.afriprogramming.v9.scheduler`
+- `afritech.afriprogramming.v9.schema`
+- `afritech.afriprogramming.v9.tracing`
+- `afritech.afriprogramming.v9.trust_consensus`
 - `afritech.afriride_mobile_release`
 - `afritech.afroprog_workspace`
 - `afritech.afroprog_workspace.models`
@@ -396,6 +429,7 @@ flowchart TD
 
 ## Direct Startup Imports
 
+- `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
 - `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`

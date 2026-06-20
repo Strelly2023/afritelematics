@@ -35,6 +35,9 @@ from afritech.api.afriride_mobile_release_api import build_afriride_mobile_relea
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
+from afritech.api.afriprogramming_control_api import (
+    build_afriprogramming_control_router,
+)
 from afritech.api.afriride_operational_api import build_afriride_operational_router
 from afritech.api.feature_registry_api import build_feature_registry_router
 from afritech.architecture.anchor_indexer import ANCHOR_EVENT_SUBSCRIBER, ANCHOR_STREAM_HUB
@@ -155,6 +158,9 @@ app.include_router(build_dashboard_gateway_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())
+
+# ✅ NovaProgramming internal toolchain API
+app.include_router(build_afriprogramming_control_router())
 
 # ✅ Governed feature registry API
 app.include_router(build_feature_registry_router())

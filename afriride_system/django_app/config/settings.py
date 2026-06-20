@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 
     # ✅ Your app
     "afritech",
-    "blockchain",
+    "afriride_system.django_app.blockchain",
     "afriride_system.django_app.apps.afripay",
 ]
 

@@ -1,4 +1,4 @@
-# AfriTech
+# NovaTech
 
 ## Sovereign Distributed Execution Ledger Protocol
 
@@ -8,7 +8,7 @@
 ![Consensus](https://img.shields.io/badge/consensus-byzantine--resilient-purple)
 ![License](https://img.shields.io/badge/license-Private-red)
 
-AfriTech is a Sovereign Distributed Execution Ledger Protocol (SDELP).
+NovaTech is a Sovereign Distributed Execution Ledger Protocol (SDELP).
 
 It combines deterministic execution, signed proofs, Byzantine-resilient consensus, trust scoring, ledger-backed state, replay verification, and an observable service layer.
 
@@ -75,7 +75,7 @@ Validated surfaces include:
 - 20-node adversarial simulation
 - Hardening and instability simulations
 - Logistics, finance, and supply-chain protocol scenarios
-- AfriRide ledger-backed ride coordination scenario
+- NovaRide ledger-backed ride coordination scenario
 
 Run the focused protocol suite:
 
@@ -87,9 +87,9 @@ python3 -m pytest \
   afritech/tests/distributed/test_sovereign_ledger_protocol.py
 ```
 
-## AfriRide Pilot
+## NovaRide Pilot
 
-AfriTech powers a controlled AfriRide distributed coordination scenario:
+NovaTech powers a controlled NovaRide distributed coordination scenario:
 
 - ride matching
 - pricing
@@ -178,4 +178,4 @@ Start with:
 
 ## Final Position
 
-AfriTech is a sovereign execution protocol capable of running real-world distributed systems, with live deployment controlled by explicit operational gates.
+NovaTech is a sovereign execution protocol capable of running real-world distributed systems, with live deployment controlled by explicit operational gates.

@@ -84,7 +84,7 @@ urlpatterns = [
 
     # ✅ include API modules
     path("api/", include("afritech.api.urls")),
-    path("api/blockchain/", include("blockchain.urls")),
+    path("api/blockchain/", include("afriride_system.django_app.blockchain.urls")),
 
     # ✅ verification
     path("verify/<uuid:event_id>", verify_event_view),

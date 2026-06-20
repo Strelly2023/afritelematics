@@ -28,6 +28,7 @@ def _b64url_decode(payload: str) -> bytes:
 class JWTClaims:
     sub: str
     role: str
+    organization_id: str
     exp: int
 
 
@@ -45,11 +46,18 @@ class JWTService:
         user_id: str,
         *,
         role: str = "OPERATOR",
+        organization_id: str | None = None,
         issued_at: int | None = None,
     ) -> str:
         now = int(time.time()) if issued_at is None else issued_at
         header = {"alg": "HS256", "typ": "JWT"}
-        payload = {"sub": user_id, "role": role.upper(), "exp": now + self.ttl_seconds}
+        payload = {
+            "sub": user_id,
+            "role": role.upper(),
+            "exp": now + self.ttl_seconds,
+        }
+        if organization_id:
+            payload["organization_id"] = organization_id
         signing_input = ".".join(
             (
                 _b64url_encode(json.dumps(header, sort_keys=True, separators=(",", ":")).encode()),
@@ -82,7 +90,15 @@ class JWTService:
         role = str(payload.get("role", "OPERATOR")).upper()
         if role not in AUTH_ROLES:
             raise ValueError("invalid_role")
-        return JWTClaims(sub=str(payload["sub"]), role=role, exp=int(payload["exp"]))
+        organization_id = str(
+            payload.get("organization_id", payload.get("tenant_id", "afritech-core"))
+        )
+        return JWTClaims(
+            sub=str(payload["sub"]),
+            role=role,
+            organization_id=organization_id,
+            exp=int(payload["exp"]),
+        )
 
 
 class DeviceBindingService:
@@ -161,7 +177,7 @@ def get_current_claims(authorization: str = Header(default="")) -> JWTClaims:
 
 
 def require_roles(*roles: str):
-    allowed = {role.upper() for role in roles}
+    allowed = {getattr(role, "value", role).upper() for role in roles}
 
     def dependency(claims: JWTClaims = Depends(get_current_claims)) -> JWTClaims:
         if allowed and claims.role not in allowed:
