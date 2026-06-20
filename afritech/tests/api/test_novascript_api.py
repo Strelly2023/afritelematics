@@ -30,12 +30,22 @@ def test_novascript_catalog_and_status_explain_product_boundary() -> None:
     assert status.status_code == 200
     assert status.json()["product"] == "NovaScript"
     assert status.json()["governed_by"] == "NovaProgramming"
+    assert "model_layer" in status.json()
+
+    model_status = client.get("/v1/novascript/model/status", headers=auth_headers(role="OPERATOR"))
+    assert model_status.status_code == 200
+    assert model_status.json()["model_layer"]["available"] is True
 
     catalog = client.get("/v1/novascript/catalog", headers=auth_headers(role="OPERATOR"))
     assert catalog.status_code == 200
     body = catalog.json()
     assert body["capabilities"][0] == "code_generation"
     assert body["relationship"]["builds"] == "NovaProgramming"
+    assert "prompt_registry" in body["model_layer"]
+
+    prompts = client.get("/v1/novascript/prompts", headers=auth_headers(role="DEVELOPER"))
+    assert prompts.status_code == 200
+    assert any(template["name"] == "generate" for template in prompts.json())
 
 
 def test_novascript_generation_and_explanation_are_development_time_only() -> None:
@@ -56,6 +66,8 @@ def test_novascript_generation_and_explanation_are_development_time_only() -> No
     assert generated_body["view"] == "novascript_generation"
     assert generated_body["generated_files"]
     assert generated_body["execution_preview"]["sandboxed"] is True
+    assert generated_body["model_layer"]["model_name"]
+    assert generated_body["governance_receipt"]["trust_score"] >= 0
 
     explanation = client.post(
         "/v1/novascript/explain",
@@ -100,3 +112,17 @@ def test_novascript_debug_architecture_docs_and_repo_intelligence() -> None:
     assert repo.status_code == 200
     assert repo.json()["product"] == "NovaScript"
     assert repo.json()["relationship"]["builds"] == "NovaProgramming"
+
+    memory = client.get(
+        "/v1/novascript/memory/project-employee-rbac",
+        headers=auth_headers(role="OPERATOR"),
+    )
+    assert memory.status_code == 200
+    assert memory.json()["project_id"] == "project-employee-rbac"
+
+    receipts = client.get(
+        "/v1/novascript/receipts/project-employee-rbac",
+        headers=auth_headers(role="OPERATOR"),
+    )
+    assert receipts.status_code == 200
+    assert isinstance(receipts.json(), list)

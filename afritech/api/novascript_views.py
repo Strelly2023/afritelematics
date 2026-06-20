@@ -24,9 +24,26 @@ def novascript_catalog(request) -> Response:
 
 
 @api_view(["GET"])
+def novascript_model_status(request) -> Response:
+    organization_id = str(request.query_params.get("organization_id", "")).strip() or None
+    return Response(SERVICE.model_status(organization_id=organization_id))
+
+
+@api_view(["GET"])
+def novascript_prompts(request) -> Response:
+    return Response(SERVICE.prompt_catalog())
+
+
+@api_view(["GET"])
 def novascript_context(request, project_id: str) -> Response:
     organization_id = str(request.query_params.get("organization_id", "")).strip() or None
     return Response(SERVICE.project_context(project_id, organization_id=organization_id))
+
+
+@api_view(["GET"])
+def novascript_memory(request, project_id: str) -> Response:
+    organization_id = str(request.query_params.get("organization_id", "")).strip() or None
+    return Response(SERVICE.memory_snapshot(project_id=project_id, organization_id=organization_id))
 
 
 @api_view(["POST"])
@@ -116,6 +133,12 @@ def novascript_docs(request) -> Response:
             organization_id=str(request.data.get("organization_id", "")).strip() or None,
         )
     )
+
+
+@api_view(["GET"])
+def novascript_receipts(request, project_id: str) -> Response:
+    organization_id = str(request.query_params.get("organization_id", "")).strip() or None
+    return Response(SERVICE.receipt_history(project_id=project_id, organization_id=organization_id))
 
 
 @api_view(["GET"])

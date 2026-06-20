@@ -7,6 +7,10 @@ from typing import Any
 
 from afritech.afroprog_workspace.models import afroprog_seed_projects
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
+from afritech.novascript.v2 import get_novascript_v2_engine
+
+
+_V2_ENGINE = get_novascript_v2_engine()
 
 
 @dataclass(frozen=True)
@@ -21,6 +25,7 @@ class NovaScriptService:
     default_project_id: str = "project-employee-rbac"
 
     def status(self, organization_id: str | None = None) -> dict[str, Any]:
+        v2_status = _V2_ENGINE.status(organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
         return {
             "product": "NovaScript",
             "category": "AI engineering intelligence system",
@@ -31,6 +36,14 @@ class NovaScriptService:
             "governed_by": "NovaProgramming",
             "builds_systems": True,
             "executes_systems": False,
+            "model_layer": v2_status["model_layer"],
+            "workspace_memory": v2_status["workspace_memory"],
+            "tool_calling": v2_status["tool_calling"],
+            "repository_graph_intelligence": v2_status["repository_graph_intelligence"],
+            "agent_workflow": v2_status["agent_workflow"],
+            "prompt_registry": v2_status["prompt_registry"],
+            "governance_receipts": v2_status["governance_receipts"],
+            "structured_output_parser": v2_status["structured_output_parser"],
             "relationship": {
                 "builds": "NovaProgramming",
                 "verifies": "NovaProgramming",
@@ -39,12 +52,13 @@ class NovaScriptService:
         }
 
     def catalog(self, organization_id: str | None = None) -> dict[str, Any]:
+        v2_status = _V2_ENGINE.status(organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
         return {
             "product": "NovaScript",
-            "category": "AI software engineering assistant",
+            "category": "AI engineering intelligence system",
             "positioning": (
-                "Designs, generates, explains, debugs, tests, and documents software "
-                "systems before execution"
+                "Designs, generates, explains, debugs, tests, documents, and reasons "
+                "about software systems before execution"
             ),
             "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
             "capabilities": [
@@ -56,10 +70,20 @@ class NovaScriptService:
                 "documentation_generation",
                 "integration_planning",
                 "repository_intelligence",
+                "prompt_execution",
+                "structured_output_parsing",
+                "workspace_memory",
+                "governance_receipts",
+                "workflow_orchestration",
             ],
             "stack": {
                 "languages": ["Python", "TypeScript", "JavaScript", "SQL", "Dart", "Shell"],
                 "targets": ["FastAPI", "Django", "React", "Flutter", "Docker", "CI/CD"],
+            },
+            "model_layer": {
+                "provider": v2_status["model_layer"]["provider"],
+                "model_name": v2_status["model_layer"]["model_name"],
+                "prompt_registry": _V2_ENGINE.prompt_catalog(),
             },
             "relationship": {
                 "builds": "NovaProgramming",
@@ -68,18 +92,53 @@ class NovaScriptService:
             "read_only": True,
         }
 
+    def model_status(self, organization_id: str | None = None) -> dict[str, Any]:
+        return _V2_ENGINE.status(organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
+
+    def prompt_catalog(self) -> list[dict[str, Any]]:
+        return _V2_ENGINE.prompt_catalog()
+
+    def memory_snapshot(
+        self,
+        *,
+        project_id: str | None = None,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        project = _select_project(project_id or self.default_project_id)
+        return _V2_ENGINE.memory_snapshot(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+        )
+
+    def receipt_history(
+        self,
+        *,
+        project_id: str | None = None,
+        organization_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        project = _select_project(project_id or self.default_project_id)
+        return _V2_ENGINE.receipt_history(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+        )
+
     def project_context(
         self,
         project_id: str | None = None,
         organization_id: str | None = None,
     ) -> dict[str, Any]:
         project = _select_project(project_id or self.default_project_id)
+        v2 = _V2_ENGINE.memory_snapshot(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+        )
         return {
             "product": "NovaScript",
             "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
             "project": project.canonical_dict(),
             "signals": _project_signals(project),
             "assistant_mode": "development_time",
+            "memory": v2,
             "relationship": {
                 "handoff": "NovaProgramming governance",
                 "runtime_boundary": "no execution authority",
@@ -101,6 +160,14 @@ class NovaScriptService:
         response_hash = sha256(
             f"{project.project_id}:{language}:{mode}:{prompt}".encode("utf-8")
         ).hexdigest()
+        v2 = _V2_ENGINE.execute(
+            prompt=prompt,
+            project_id=project.project_id,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            language=language,
+            mode=mode,
+            intent="generate",
+        )
         return {
             "view": "novascript_generation",
             "product": "NovaScript",
@@ -110,13 +177,26 @@ class NovaScriptService:
             "language": language,
             "project": project.canonical_dict(),
             "intent": _classify_intent(intent),
-            "generated_files": generated_files,
+            "generated_files": v2.get("generated_files") or generated_files,
+            "tool_results": v2.get("tool_results", []),
+            "repository_graph": v2.get("repository_graph", {}),
+            "architecture_knowledge": v2.get("architecture_knowledge", {}),
+            "technical_debt": v2.get("technical_debt", {}),
+            "trust_review": v2.get("trust_review", {}),
+            "workflow": v2.get("workflow", {}),
+            "memory": v2.get("memory", {}),
+            "governance_receipt": v2.get("governance_receipt", {}),
+            "receipt_id": v2.get("receipt_id"),
             "execution_preview": {
                 "sandboxed": True,
                 "mutation_allowed": False,
                 "next_step": "review in NovaProgramming",
             },
-            "response_hash": response_hash,
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
+            "response_hash": v2.get("response_hash", response_hash),
             "relationship": {
                 "builds": "NovaProgramming",
                 "governed_by": "NovaProgramming",
@@ -135,6 +215,7 @@ class NovaScriptService:
         imports = [line.strip() for line in lines if line.strip().startswith(("import ", "from "))]
         functions = [line.strip() for line in lines if line.strip().startswith("def ")]
         classes = [line.strip() for line in lines if line.strip().startswith("class ")]
+        v2 = _V2_ENGINE.explain(code=code, context=context, organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
         return {
             "view": "novascript_explanation",
             "product": "NovaScript",
@@ -146,6 +227,10 @@ class NovaScriptService:
                 "function_count": len(functions),
                 "class_count": len(classes),
                 "purpose": _infer_purpose(code),
+            },
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
             },
             "signals": {
                 "uses_async": any("async " in line for line in lines),
@@ -165,6 +250,12 @@ class NovaScriptService:
         organization_id: str | None = None,
     ) -> dict[str, Any]:
         lowered = f"{code}\n{error}\n{context}".lower()
+        v2 = _V2_ENGINE.debug(
+            code=code,
+            error=error,
+            context=context,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
         findings = []
         fixes = []
         if "module not found" in lowered or "importerror" in lowered:
@@ -189,6 +280,10 @@ class NovaScriptService:
             "context": context,
             "findings": findings,
             "suggested_fixes": fixes,
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
             "read_only": True,
         }
 
@@ -201,25 +296,43 @@ class NovaScriptService:
             components.append("identity")
         if any(word in lowered for word in ("queue", "stream", "event")):
             components.append("events")
+        v2 = _V2_ENGINE.architecture(
+            description=description,
+            stack=stack,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
         return {
             "view": "novascript_architecture",
             "product": "NovaScript",
             "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
             "description": description,
             "stack": stack,
-            "recommended_components": components,
+            "recommended_components": sorted(set(components + list(v2.get("recommended_components", [])))),
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
             "relationship": {"builds": "NovaProgramming", "governed_by": "NovaProgramming"},
             "read_only": True,
         }
 
     def tests(self, *, target: str, framework: str = "pytest", organization_id: str | None = None) -> dict[str, Any]:
+        v2 = _V2_ENGINE.tests(
+            target=target,
+            framework=framework,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
         return {
             "view": "novascript_tests",
             "product": "NovaScript",
             "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
             "target": target,
             "framework": framework,
-            "generated_tests": _test_skeleton(target, framework),
+            "generated_tests": v2.get("generated_files") or _test_skeleton(target, framework),
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
             "read_only": True,
         }
 
@@ -233,6 +346,13 @@ class NovaScriptService:
         organization_id: str | None = None,
     ) -> dict[str, Any]:
         metadata = metadata or {}
+        v2 = _V2_ENGINE.docs(
+            topic=topic,
+            audience=audience,
+            format=format,
+            metadata=metadata,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
         return {
             "view": "novascript_docs",
             "product": "NovaScript",
@@ -240,7 +360,7 @@ class NovaScriptService:
             "topic": topic,
             "audience": audience,
             "format": format,
-            "outline": [
+            "outline": v2.get("outline") or [
                 f"Overview of {topic}",
                 "Goals and scope",
                 "Implementation notes",
@@ -248,6 +368,10 @@ class NovaScriptService:
                 "Validation checklist",
             ],
             "metadata": metadata,
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
             "read_only": True,
         }
 
@@ -260,7 +384,20 @@ class NovaScriptService:
     ) -> dict[str, Any]:
         project = _select_project(project_id or self.default_project_id)
         signals = _project_signals(project)
-        dependencies = sorted({part for path in signals["file_paths"] for part in path.split("/") if part})
+        v2 = _V2_ENGINE.repository_intelligence(
+            project_id=project.project_id,
+            focus=focus,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
+        repository_graph = v2.get("repository_graph", {})
+        dependencies = sorted(
+            {
+                part
+                for path in repository_graph.get("signals", {}).get("file_paths", signals["file_paths"])
+                for part in path.split("/")
+                if part
+            }
+        )
         return {
             "view": "novascript_repo_intelligence",
             "product": "NovaScript",
@@ -269,6 +406,12 @@ class NovaScriptService:
             "focus": focus,
             "signals": signals,
             "dependencies": dependencies,
+            "repository_graph": repository_graph,
+            "technical_debt": v2.get("technical_debt", {}),
+            "model_layer": {
+                "provider": v2.get("provider"),
+                "model_name": v2.get("model_name"),
+            },
             "insight": _classify_intent(focus.lower() or project.description.lower()),
             "relationship": {"builds": "NovaProgramming", "governed_by": "NovaProgramming"},
             "read_only": True,

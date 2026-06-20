@@ -29,11 +29,23 @@ def build_novascript_router() -> APIRouter:
     ) -> dict[str, Any]:
         return service.status(organization_id=claims.organization_id)
 
+    @router.get("/model/status")
+    def model_status(
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return service.model_status(organization_id=claims.organization_id)
+
     @router.get("/catalog")
     def catalog(
         claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
     ) -> dict[str, Any]:
         return service.catalog(organization_id=claims.organization_id)
+
+    @router.get("/prompts")
+    def prompts(
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> list[dict[str, Any]]:
+        return service.prompt_catalog()
 
     @router.get("/context/{project_id}")
     def context(
@@ -41,6 +53,13 @@ def build_novascript_router() -> APIRouter:
         claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
     ) -> dict[str, Any]:
         return service.project_context(project_id, organization_id=claims.organization_id)
+
+    @router.get("/memory/{project_id}")
+    def memory(
+        project_id: str,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return service.memory_snapshot(project_id=project_id, organization_id=claims.organization_id)
 
     @router.post("/generate")
     def generate(
@@ -112,6 +131,13 @@ def build_novascript_router() -> APIRouter:
             metadata=body.metadata,
             organization_id=claims.organization_id,
         )
+
+    @router.get("/receipts/{project_id}")
+    def receipts(
+        project_id: str,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> list[dict[str, Any]]:
+        return service.receipt_history(project_id=project_id, organization_id=claims.organization_id)
 
     @router.get("/repo/{project_id}/intelligence")
     def repository_intelligence(

@@ -9,6 +9,7 @@ from afritech.novascript.schemas import (
     NovaScriptTestRequest,
 )
 from afritech.novascript.service import NovaScriptService, get_novascript_service
+from afritech.novascript.v2 import NovaScriptV2Engine, get_novascript_v2_engine
 
 __all__ = [
     "NovaScriptArchitectureRequest",
@@ -17,6 +18,8 @@ __all__ = [
     "NovaScriptGenerateRequest",
     "NovaScriptExplainRequest",
     "NovaScriptService",
+    "NovaScriptV2Engine",
     "NovaScriptTestRequest",
     "get_novascript_service",
+    "get_novascript_v2_engine",
 ]
