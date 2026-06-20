@@ -35,6 +35,7 @@ from afritech.api.afriride_mobile_release_api import build_afriride_mobile_relea
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
+from afritech.api.novascript_api import build_novascript_router
 from afritech.api.afriprogramming_control_api import (
     build_afriprogramming_control_router,
 )
@@ -158,6 +159,9 @@ app.include_router(build_dashboard_gateway_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())
+
+# ✅ NovaScript assistant API
+app.include_router(build_novascript_router())
 
 # ✅ NovaProgramming internal toolchain API
 app.include_router(build_afriprogramming_control_router())

@@ -12,6 +12,8 @@ NovaTech is a Sovereign Distributed Execution Ledger Protocol (SDELP).
 
 It combines deterministic execution, signed proofs, Byzantine-resilient consensus, trust scoring, ledger-backed state, replay verification, and an observable service layer.
 
+NovaScript is the companion AI engineering intelligence product for development-time code generation, explanation, debugging, architecture design, testing, and documentation.
+
 ## Core Principle
 
 ```text

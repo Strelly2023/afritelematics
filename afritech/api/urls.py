@@ -154,6 +154,18 @@ from afritech.api.afriprogramming_views import (
     novaprogramming_verify_lookup,
     novaprogramming_verify_replay,
 )
+from afritech.api.novascript_views import (
+    novascript_architecture,
+    novascript_catalog,
+    novascript_context,
+    novascript_debug,
+    novascript_docs,
+    novascript_explain,
+    novascript_generate,
+    novascript_repo_intelligence,
+    novascript_status,
+    novascript_tests,
+)
 from afritech.api.orchestration_views import (
     orchestration_abort_view,
     orchestration_detail_view,
@@ -311,4 +323,14 @@ urlpatterns = [
     path("novaprogramming/v9/traces", novaprogramming_v9_traces),
     path("novaprogramming/v9/assurance/scheduler/run", novaprogramming_v9_assurance_scheduler_run),
     path("novaprogramming/v9/assurance/scheduler/history", novaprogramming_v9_assurance_scheduler_history),
+    path("novascript/status", novascript_status),
+    path("novascript/catalog", novascript_catalog),
+    path("novascript/context/<str:project_id>", novascript_context),
+    path("novascript/generate", novascript_generate),
+    path("novascript/explain", novascript_explain),
+    path("novascript/debug", novascript_debug),
+    path("novascript/architecture", novascript_architecture),
+    path("novascript/tests", novascript_tests),
+    path("novascript/docs", novascript_docs),
+    path("novascript/repo/<str:project_id>/intelligence", novascript_repo_intelligence),
 ]
