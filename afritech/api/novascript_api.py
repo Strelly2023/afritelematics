@@ -35,6 +35,36 @@ def build_novascript_router() -> APIRouter:
     ) -> dict[str, Any]:
         return service.model_status(organization_id=claims.organization_id)
 
+    @router.get("/dashboard")
+    def dashboard(
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        status = service.status(organization_id=organization_id)
+        catalog = service.catalog(organization_id=organization_id)
+        risk = service.organization_risk_dashboard(organization_id=organization_id)
+        trust_graph = service.trust_graph()
+        trust_status = service.global_trust_status()
+        integrations = service.platform_integrations(organization_id=organization_id)
+        adoption = service.field_adoption_status()
+        assurance = service.model_status(organization_id=organization_id)
+        certification = service.standard_profile_status()
+        return {
+            "view": "novascript_dashboard",
+            "organization_id": organization_id,
+            "status": status,
+            "catalog": catalog,
+            "risk_dashboard": risk,
+            "trust_graph": trust_graph,
+            "global_trust": trust_status,
+            "platform_integrations": integrations,
+            "field_adoption": adoption,
+            "assurance": assurance,
+            "standard_profile": certification,
+            "read_only": True,
+            "governance_linked": True,
+        }
+
     @router.get("/catalog")
     def catalog(
         claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),

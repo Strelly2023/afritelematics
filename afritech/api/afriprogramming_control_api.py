@@ -70,6 +70,32 @@ def build_afriprogramming_control_router() -> APIRouter:
     ) -> dict[str, Any]:
         return control_plane.catalog(organization_id=claims.organization_id)
 
+    @router.get("/dashboard")
+    def dashboard(
+        role: str = "developers",
+        project_id: str = "project-employee-rbac",
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        return {
+            "view": "novaprogramming_dashboard",
+            "platform": "NovaProgramming",
+            "organization_id": organization_id,
+            "status": control_plane.status(organization_id=organization_id),
+            "catalog": control_plane.catalog(organization_id=organization_id),
+            "metrics": control_plane.metrics(organization_id=organization_id),
+            "trust": control_plane.trust(organization_id=organization_id),
+            "assurance": control_plane.assurance_status(organization_id=organization_id),
+            "certification": control_plane.certification(organization_id=organization_id),
+            "staff_dashboard": control_plane.staff_dashboard(
+                role=role,
+                project_id=project_id,
+                organization_id=organization_id,
+            ),
+            "read_only": True,
+            "governance_linked": True,
+        }
+
     @router.get("/staff/roles")
     def staff_roles(
         claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),

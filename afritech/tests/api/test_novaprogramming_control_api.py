@@ -46,6 +46,17 @@ def test_catalog_and_status_expose_control_plane_stack() -> None:
     assert body["products"][0]["name"] == "NovaProgramming Studio"
     assert body["stack"]["frameworks"] == ["Django", "FastAPI", "Spring"]
 
+    dashboard = client.get(
+        "/v1/novaprogramming/dashboard?role=developers&project_id=project-employee-rbac",
+        headers=auth_headers(role="DEVELOPER", user_id="dev-2"),
+    )
+    assert dashboard.status_code == 200
+    dashboard_body = dashboard.json()
+    assert dashboard_body["view"] == "novaprogramming_dashboard"
+    assert dashboard_body["status"]["platform"] == "NovaProgramming"
+    assert dashboard_body["metrics"]["view"] == "novaprogramming_metrics"
+    assert dashboard_body["staff_dashboard"]["role"] == "developers"
+
 
 def test_studio_generation_and_intelligence_views_are_proposal_only() -> None:
     client = build_client()

@@ -46,6 +46,15 @@ def test_novascript_catalog_and_status_explain_product_boundary() -> None:
     assert model_status.status_code == 200
     assert model_status.json()["model_layer"]["available"] is True
 
+    dashboard = client.get("/v1/novascript/dashboard", headers=auth_headers(role="OPERATOR"))
+    assert dashboard.status_code == 200
+    dashboard_body = dashboard.json()
+    assert dashboard_body["view"] == "novascript_dashboard"
+    assert dashboard_body["status"]["product"] == "NovaScript"
+    assert dashboard_body["risk_dashboard"]["mode"] == "organization_risk_dashboard"
+    assert dashboard_body["platform_integrations"]["mode"] == "platform_others_plug_into"
+    assert dashboard_body["read_only"] is True
+
     catalog = client.get("/v1/novascript/catalog", headers=auth_headers(role="OPERATOR"))
     assert catalog.status_code == 200
     body = catalog.json()
