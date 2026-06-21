@@ -17,7 +17,7 @@ def test_booking_screen_submits_request_through_prop() -> None:
     assert "Request ride" in source
 
 
-def test_rider_app_is_locked_to_test_build_profile() -> None:
+def test_rider_app_has_pilot_and_store_build_profiles() -> None:
     app = read("App.tsx")
     app_config = read("app.json")
     eas = read("eas.json")
@@ -32,20 +32,22 @@ def test_rider_app_is_locked_to_test_build_profile() -> None:
     assert "NSLocationWhenInUseUsageDescription" in app_config
     assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
-    assert "if (!TEST_MODE)" in app
-    assert 'throw new Error("Test mode required")' in app
+    assert "TEST_MODE ? \"Pilot\" : \"Live\"" in app
+    assert 'throw new Error("Test mode required")' not in app
 
 
 def test_ride_service_maps_required_contract_endpoints() -> None:
     source = read("core/api/ride.service.ts")
 
     assert "USE_MOCK_API" in source
-    assert '"/ride/request"' in source
-    assert "`/ride/${rideId}/status`" in source
-    assert "`/ride/${rideId}/receipt`" in source
-    assert "`/ride/${rideId}/replay`" in source
-    assert "`/ride/${rideId}/ledger-receipt`" in source
-    assert "`/ride/${rideId}/price-explanation`" in source
+    assert '"/v1/rider/rides"' in source
+    assert "/v1/rider/rides/${encodeURIComponent(rideId)}" in source
+    assert "/receipt" in source
+    assert "/replay" in source
+    assert "/ledger-receipt" in source
+    assert "/price-explanation" in source
+    assert "trust_score" in source
+    assert "timeline_events" in source
 
 
 def test_rider_api_client_sends_test_instrumentation() -> None:

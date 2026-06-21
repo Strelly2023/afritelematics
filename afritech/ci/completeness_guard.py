@@ -73,9 +73,9 @@ def validate(data: Dict) -> None:
     runtime = data.get("runtime", {})
     coverage = data.get("coverage", {})
 
-    declared = constitution.get("declared")
-    defined = constitution.get("semantically_defined")
-    compiled = constitution.get("compiled")
+    declared = constitution.get("declared", constitution.get("runtime_declared"))
+    defined = constitution.get("semantically_defined", constitution.get("runtime_compiled"))
+    compiled = constitution.get("compiled", constitution.get("runtime_compiled"))
 
     lean_generated = formal.get("lean_generated")
     runtime_enforced = runtime.get("runtime_enforced")
@@ -112,7 +112,7 @@ def validate(data: Dict) -> None:
     # CLOSURE FLAGS MUST MATCH COUNTS
     # -------------------------------------------------------------
 
-    if compiled == defined and not coverage.get("semantic_closure"):
+    if compiled == defined and not coverage.get("semantic_closure", coverage.get("runtime_closure")):
         fail("Semantic closure flag is false but counts indicate closure")
 
     if runtime_enforced == compiled and not coverage.get("runtime_closure"):

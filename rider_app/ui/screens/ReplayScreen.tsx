@@ -13,20 +13,32 @@ type ReplayScreenProps = {
 
 export function ReplayScreen({ replay }: ReplayScreenProps) {
   assertReplayEvidence(replay);
+  const timelineEvents =
+    replay.timelineEvents ||
+    (["REQUESTED", "DRIVER_ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"] as const).map(
+      (label) => ({ label, verified: replay.replayVerified }),
+    );
 
   return (
     <SurfacePanel>
-      <Text style={styles.title}>Replay</Text>
+      <Text style={styles.title}>Replay timeline</Text>
       <Text style={styles.verified}>
         {replay.replayVerified ? "Verified replay" : "Replay pending"}
       </Text>
       {replay.routeSummary ? (
         <Text style={styles.summary}>{replay.routeSummary}</Text>
       ) : null}
-      {replay.explanationSteps.map((step, index) => (
-        <View key={`${replay.replayId}-${index}`} style={styles.step}>
-          <Text style={styles.stepNumber}>{index + 1}</Text>
-          <Text style={styles.stepText}>{step}</Text>
+      {timelineEvents.map((event, index) => (
+        <View key={`${replay.replayId}-${event.label}`} style={styles.step}>
+          <Text style={event.verified ? styles.dotVerified : styles.dotPending}>
+            {event.verified ? "●" : "○"}
+          </Text>
+          <View style={styles.stepBody}>
+            <Text style={styles.stepText}>{event.label}</Text>
+            <Text style={styles.stepDetail}>
+              {replay.explanationSteps[index] || "Trace event verified by replay."}
+            </Text>
+          </View>
         </View>
       ))}
     </SurfacePanel>
@@ -34,20 +46,36 @@ export function ReplayScreen({ replay }: ReplayScreenProps) {
 }
 
 const styles = StyleSheet.create({
+  dotPending: {
+    color: colors.muted,
+    fontSize: 18,
+    fontWeight: "900",
+    width: 24,
+  },
+  dotVerified: {
+    color: colors.success,
+    fontSize: 18,
+    fontWeight: "900",
+    width: 24,
+  },
   step: {
     alignItems: "flex-start",
     flexDirection: "row",
     gap: spacing.sm,
   },
-  stepNumber: {
-    color: colors.primary,
-    fontWeight: "800",
-    width: 24,
+  stepBody: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  stepDetail: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 18,
   },
   stepText: {
-    color: colors.secondary,
-    flex: 1,
+    color: colors.ink,
     fontSize: 15,
+    fontWeight: "900",
   },
   summary: {
     color: colors.secondary,

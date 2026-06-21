@@ -18,6 +18,7 @@ ToolHandler = Callable[..., dict[str, Any]]
 class ToolResult:
     name: str
     output: dict[str, Any]
+    status: str = "ok"
 
 
 class ToolRegistry:
@@ -38,8 +39,34 @@ class ToolRegistry:
 
     def execute(self, name: str, **kwargs: Any) -> ToolResult:
         if name not in self._tools:
-            raise KeyError(name)
-        return ToolResult(name=name, output=self._tools[name](**kwargs))
+            return ToolResult(
+                name=name,
+                status="error",
+                output={
+                    "status": "tool_error",
+                    "error": {
+                        "type": "unknown_tool",
+                        "tool_name": name,
+                        "message": f"Tool is not registered: {name}",
+                        "available_tools": [item["name"] for item in self.list()],
+                    },
+                },
+            )
+        try:
+            return ToolResult(name=name, output=self._tools[name](**kwargs))
+        except Exception as exc:
+            return ToolResult(
+                name=name,
+                status="error",
+                output={
+                    "status": "tool_error",
+                    "error": {
+                        "type": exc.__class__.__name__,
+                        "tool_name": name,
+                        "message": str(exc),
+                    },
+                },
+            )
 
     def execute_many(self, calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
@@ -49,7 +76,7 @@ class ToolRegistry:
             if not isinstance(arguments, dict):
                 arguments = {}
             result = self.execute(name, **arguments)
-            results.append({"name": result.name, "output": result.output})
+            results.append({"name": result.name, "status": result.status, "output": result.output})
         return results
 
     def _tool_repository_graph(

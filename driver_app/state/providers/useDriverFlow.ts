@@ -90,7 +90,7 @@ export function useDriverFlow(driverId: string) {
           ? await markArrived(rideId, driverId)
           : action === "started"
             ? await startTrip(rideId, driverId)
-            : await completeTrip(rideId);
+            : await completeTrip(rideId, driverId);
       const evidence =
         trip.status === "completed" ? await loadDriverEvidence(driverId) : null;
       const requests =

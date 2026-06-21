@@ -17,6 +17,9 @@ export async function mockSetAvailability(
     driverId,
     status,
     updatedAt: "2026-06-02T09:00:00+10:00",
+    trustScore: 94,
+    verifiedRides: 152,
+    replayConsistencyPct: 100,
   };
 }
 
@@ -27,8 +30,10 @@ export async function mockGetRideRequests(): Promise<DriverRideRequest[]> {
       pickupText: "Kampala Road",
       dropoffText: "Nakasero",
       riderName: "Mirembe",
+      riderTrustScore: 91,
       status: "pending",
       quotedTotalText: "UGX 12,500",
+      etaText: "15 min",
     },
   ];
 }
@@ -44,6 +49,8 @@ export async function mockRideAction(
     pickupText: "Kampala Road",
     dropoffText: "Nakasero",
     nextInstruction: "Follow the system-provided trip state.",
+    trustScore: 94,
+    replayVerified: status === "completed",
   };
 }
 
@@ -54,6 +61,9 @@ export async function mockGetEarnings(): Promise<EarningsSummary> {
     totalText: "UGX 12,500",
     rideCount: 1,
     source: "core_system",
+    verifiedRideCount: 1,
+    disputeCount: 0,
+    trustScore: 94,
   };
 }
 
@@ -64,6 +74,8 @@ export async function mockGetReplayHistory(): Promise<DriverReplayHistoryItem[]>
       replayId: "replay.driver.mock.001",
       replayVerified: true,
       completedAt: "2026-06-02T09:24:00+10:00",
+      trustScore: 94,
+      timelineEvents: ["REQUESTED", "ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"],
     },
   ];
 }

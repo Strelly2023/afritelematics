@@ -24,6 +24,8 @@ type RideRequestResponse = {
   quoted_total?: string;
   currency?: string;
   confirmation_token?: string;
+  trust_score?: number;
+  ride_type?: RideRequestResult["rideType"];
 };
 
 type RideStatusResponse = {
@@ -33,6 +35,8 @@ type RideStatusResponse = {
   vehicle_label?: string;
   eta_text?: string;
   location_text?: string;
+  driver_trust_score?: number;
+  trust_score?: number;
 };
 
 type ReceiptResponse = {
@@ -43,6 +47,10 @@ type ReceiptResponse = {
   total_text?: string;
   started_at?: string;
   completed_at?: string;
+  trust_score?: number;
+  verification_status?: RideReceipt["verificationStatus"];
+  replay_match?: boolean;
+  evidence_complete?: boolean;
 };
 
 type ReplayResponse = {
@@ -51,6 +59,7 @@ type ReplayResponse = {
   replay_verified: boolean;
   route_summary?: string;
   explanation_steps?: string[];
+  timeline_events?: RideReplay["timelineEvents"];
 };
 
 type LedgerReceiptResponse = {
@@ -91,7 +100,7 @@ export async function requestRide(
     return mockRequestRide(payload);
   }
 
-  const result = await apiRequest<RideRequestResponse>("/ride/request", {
+  const result = await apiRequest<RideRequestResponse>("/v1/rider/rides", {
     method: "POST",
     body: {
       rider_id: payload.riderId,
@@ -106,6 +115,8 @@ export async function requestRide(
     quotedTotal: result.quoted_total,
     currency: result.currency,
     confirmationToken: result.confirmation_token,
+    trustScore: result.trust_score,
+    rideType: result.ride_type,
   };
 }
 
@@ -114,7 +125,9 @@ export async function getRideStatus(rideId: string): Promise<RideStatusSnapshot>
     return mockGetRideStatus(rideId);
   }
 
-  const result = await apiRequest<RideStatusResponse>(`/ride/${rideId}/status`);
+  const result = await apiRequest<RideStatusResponse>(
+    `/v1/rider/rides/${encodeURIComponent(rideId)}`,
+  );
 
   return {
     rideId: result.ride_id,
@@ -123,6 +136,8 @@ export async function getRideStatus(rideId: string): Promise<RideStatusSnapshot>
     vehicleLabel: result.vehicle_label,
     etaText: result.eta_text,
     locationText: result.location_text,
+    driverTrustScore: result.driver_trust_score,
+    trustScore: result.trust_score,
   };
 }
 
@@ -131,7 +146,9 @@ export async function getReceipt(rideId: string): Promise<RideReceipt> {
     return mockGetReceipt(rideId);
   }
 
-  const result = await apiRequest<ReceiptResponse>(`/ride/${rideId}/receipt`);
+  const result = await apiRequest<ReceiptResponse>(
+    `/v1/rider/rides/${encodeURIComponent(rideId)}/receipt`,
+  );
 
   return {
     rideId: result.ride_id,
@@ -141,6 +158,10 @@ export async function getReceipt(rideId: string): Promise<RideReceipt> {
     totalText: result.total_text,
     startedAt: result.started_at,
     completedAt: result.completed_at,
+    trustScore: result.trust_score,
+    verificationStatus: result.verification_status,
+    replayMatch: result.replay_match,
+    evidenceComplete: result.evidence_complete,
   };
 }
 
@@ -149,7 +170,9 @@ export async function getReplay(rideId: string): Promise<RideReplay> {
     return mockGetReplay(rideId);
   }
 
-  const result = await apiRequest<ReplayResponse>(`/ride/${rideId}/replay`);
+  const result = await apiRequest<ReplayResponse>(
+    `/v1/rider/rides/${encodeURIComponent(rideId)}/replay`,
+  );
 
   return {
     rideId: result.ride_id,
@@ -157,6 +180,7 @@ export async function getReplay(rideId: string): Promise<RideReplay> {
     replayVerified: result.replay_verified,
     routeSummary: result.route_summary,
     explanationSteps: result.explanation_steps || [],
+    timelineEvents: result.timeline_events,
   };
 }
 
@@ -168,7 +192,7 @@ export async function getLedgerReceipt(
   }
 
   const result = await apiRequest<LedgerReceiptResponse>(
-    `/ride/${rideId}/ledger-receipt`,
+    `/v1/rider/rides/${encodeURIComponent(rideId)}/ledger-receipt`,
   );
 
   return {
@@ -193,7 +217,7 @@ export async function getPriceExplanation(
   }
 
   const result = await apiRequest<PriceExplanationResponse>(
-    `/ride/${rideId}/price-explanation`,
+    `/v1/rider/rides/${encodeURIComponent(rideId)}/price-explanation`,
   );
 
   return {

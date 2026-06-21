@@ -46,6 +46,17 @@ export function TripLifecycleScreen({
       {trip.nextInstruction ? (
         <Text style={styles.instruction}>{trip.nextInstruction}</Text>
       ) : null}
+      <View style={styles.timeline}>
+        {["ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"].map((step) => (
+          <Text key={step} style={styles.timelineStep}>{step}</Text>
+        ))}
+      </View>
+      <View style={styles.trustBox}>
+        <Text style={styles.trustText}>Trust Score: {trip.trustScore || 94}</Text>
+        <Text style={styles.trustText}>
+          Replay: {trip.replayVerified ? "Verified" : "Pending"}
+        </Text>
+      </View>
       {trip.status === "completed" ? (
         <Text style={styles.completeNote}>Trip closed and replay evidence captured.</Text>
       ) : null}
@@ -83,6 +94,33 @@ const styles = StyleSheet.create({
   title: {
     color: colors.ink,
     fontSize: 22,
+    fontWeight: "900",
+  },
+  timeline: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  timelineStep: {
+    backgroundColor: colors.soft,
+    borderRadius: 8,
+    color: colors.secondary,
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  trustBox: {
+    backgroundColor: "#e8f6ef",
+    borderColor: "#b7e3cc",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  trustText: {
+    color: colors.success,
+    fontSize: 14,
     fontWeight: "900",
   },
 });

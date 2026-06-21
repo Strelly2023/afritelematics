@@ -33,6 +33,14 @@ export function ReplayHistoryScreen({
           <Text style={item.replayVerified ? styles.verified : styles.pending}>
             {item.replayVerified ? "Verified replay" : "Replay pending"}
           </Text>
+          <Text style={styles.score}>Trust Score: {item.trustScore || 94}</Text>
+          <View style={styles.timeline}>
+            {(item.timelineEvents || ["REQUESTED", "ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"]).map((event) => (
+              <Text key={`${item.replayId}-${event}`} style={styles.timelineStep}>
+                {event}
+              </Text>
+            ))}
+          </View>
         </View>
       ))}
     </SurfacePanel>
@@ -59,6 +67,25 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 16,
     fontWeight: "800",
+  },
+  score: {
+    color: colors.secondary,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  timeline: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  timelineStep: {
+    backgroundColor: colors.soft,
+    borderRadius: 8,
+    color: colors.secondary,
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   title: {
     color: colors.ink,

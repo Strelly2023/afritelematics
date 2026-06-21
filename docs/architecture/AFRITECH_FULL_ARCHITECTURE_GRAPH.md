@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `317`
+- Startup-safe closure size: `347`
 - Django-bound modules declared in repo: `245`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `31`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (317 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (347 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -162,7 +162,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (252)
+### Other (282)
 
 - `afritech`
 - `afritech.afripay`
@@ -255,6 +255,8 @@ flowchart TD
 - `afritech.core.engine`
 - `afritech.core.matching_engine`
 - `afritech.core.runtime`
+- `afritech.core.runtime.receipts`
+- `afritech.core.runtime.system_enforcement.execution_guard`
 - `afritech.core.runtime.worker`
 - `afritech.core.runtime.worker.worker`
 - `afritech.crypto.anchor_publication`
@@ -382,14 +384,25 @@ flowchart TD
 - `afritech.novascript.schemas`
 - `afritech.novascript.service`
 - `afritech.novascript.v2`
+- `afritech.novascript.v2.adoption`
+- `afritech.novascript.v2.certificates`
+- `afritech.novascript.v2.compliance`
+- `afritech.novascript.v2.economy`
 - `afritech.novascript.v2.engine`
+- `afritech.novascript.v2.explainability`
+- `afritech.novascript.v2.federation`
 - `afritech.novascript.v2.graph`
+- `afritech.novascript.v2.intelligence`
 - `afritech.novascript.v2.knowledge`
 - `afritech.novascript.v2.memory`
+- `afritech.novascript.v2.monitoring`
 - `afritech.novascript.v2.parser`
+- `afritech.novascript.v2.persistence`
+- `afritech.novascript.v2.policy`
 - `afritech.novascript.v2.prompts`
 - `afritech.novascript.v2.providers`
 - `afritech.novascript.v2.receipts`
+- `afritech.novascript.v2.remediation`
 - `afritech.novascript.v2.tools`
 - `afritech.novascript.v2.workflow`
 - `afritech.ops_dashboard`
@@ -401,6 +414,23 @@ flowchart TD
 - `afritech.runtime_monitoring.anomaly_to_proposal`
 - `afritech.runtime_monitoring.monitor`
 - `afritech.runtime_monitoring.monitoring_validators`
+- `afritech.sdk`
+- `afritech.sdk.external_verifier`
+- `afritech.sdk.novascript`
+- `afritech.sdk.partner_registry`
+- `afritech.sdk.partner_verification`
+- `afritech.sdk.public_verifier`
+- `afritech.sdk.semantic_admission`
+- `afritech.sdk.trust_network`
+- `afritech.semantic_engine.evaluator.evaluator`
+- `afritech.semantic_engine.inspection`
+- `afritech.semantic_engine.ir.hasher`
+- `afritech.semantic_engine.ir.schema`
+- `afritech.semantic_engine.optimizer.normalizer`
+- `afritech.semantic_engine.parser.ir_builder`
+- `afritech.semantic_engine.proof.proof_builder`
+- `afritech.semantic_engine.satisfiability.solver`
+- `afritech.shared.types`
 - `afritech.simulation`
 - `afritech.simulation.pilot_dataset`
 - `afritech.simulation.validation_receipt`

@@ -27,16 +27,50 @@ export function EarningsScreen({ earnings }: EarningsScreenProps) {
         <Text style={styles.label}>Rides</Text>
         <Text style={styles.value}>{earnings.rideCount}</Text>
       </View>
+      <View style={styles.grid}>
+        <Metric label="Verified rides" value={earnings.verifiedRideCount || earnings.rideCount} />
+        <Metric label="Disputes" value={earnings.disputeCount || 0} />
+        <Metric label="Trust score" value={earnings.trustScore || 94} />
+      </View>
       <Text style={styles.source}>Source: {earnings.source}</Text>
     </SurfacePanel>
   );
 }
 
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <View style={styles.metric}>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  grid: {
+    gap: spacing.sm,
+  },
   label: {
     color: colors.muted,
     fontSize: 14,
     fontWeight: "700",
+  },
+  metric: {
+    backgroundColor: colors.soft,
+    borderRadius: 8,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  metricLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+  },
+  metricValue: {
+    color: colors.ink,
+    fontSize: 20,
+    fontWeight: "900",
   },
   period: {
     color: colors.muted,

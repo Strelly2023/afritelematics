@@ -17,6 +17,11 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
         <Text style={styles.mapText}>{status.locationText || "Location pending"}</Text>
       </View>
       <Text style={styles.status}>Current status: {status.status}</Text>
+      <View style={styles.statusRail}>
+        {["REQUESTED", "ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"].map((step) => (
+          <Text key={step} style={styles.step}>{step}</Text>
+        ))}
+      </View>
     </SurfacePanel>
   );
 }
@@ -40,5 +45,19 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 16,
     fontWeight: "700",
+  },
+  statusRail: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  step: {
+    backgroundColor: colors.soft,
+    borderRadius: 8,
+    color: colors.secondary,
+    fontSize: 12,
+    fontWeight: "800",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
 });

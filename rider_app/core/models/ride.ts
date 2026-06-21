@@ -20,6 +20,8 @@ export type RideRequestResult = {
   quotedTotal?: string;
   currency?: string;
   confirmationToken?: string;
+  trustScore?: number;
+  rideType?: "Economy" | "Premium" | "Scheduled" | "Airport";
 };
 
 export type RideStatusSnapshot = {
@@ -29,6 +31,8 @@ export type RideStatusSnapshot = {
   vehicleLabel?: string;
   etaText?: string;
   locationText?: string;
+  driverTrustScore?: number;
+  trustScore?: number;
 };
 
 export type RideReceipt = {
@@ -39,6 +43,10 @@ export type RideReceipt = {
   totalText?: string;
   startedAt?: string;
   completedAt?: string;
+  trustScore?: number;
+  verificationStatus?: "PASSED" | "REVIEW_REQUIRED" | "FAILED";
+  replayMatch?: boolean;
+  evidenceComplete?: boolean;
 };
 
 export type LedgerReceiptSummary = {
@@ -60,6 +68,10 @@ export type RideReplay = {
   replayVerified: boolean;
   routeSummary?: string;
   explanationSteps: string[];
+  timelineEvents?: Array<{
+    label: "REQUESTED" | "DRIVER_ACCEPTED" | "ARRIVED" | "STARTED" | "COMPLETED";
+    verified: boolean;
+  }>;
 };
 
 export type PriceExplanation = {
@@ -70,4 +82,11 @@ export type PriceExplanation = {
     label: string;
     amountText: string;
   }>;
+};
+
+export type RideHistoryItem = {
+  rideId: string;
+  status: RideStatus;
+  trustScore?: number;
+  verificationStatus?: "PASSED" | "REVIEW_REQUIRED" | "FAILED";
 };

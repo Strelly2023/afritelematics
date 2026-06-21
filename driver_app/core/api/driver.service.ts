@@ -25,6 +25,9 @@ type AvailabilityResponse = {
   driver_id: string;
   status: AvailabilityStatus;
   updated_at?: string;
+  trust_score?: number;
+  verified_rides?: number;
+  replay_consistency_pct?: number;
 };
 
 type RideRequestResponse = {
@@ -34,6 +37,8 @@ type RideRequestResponse = {
   rider_name?: string;
   status: DriverRideRequest["status"];
   quoted_total_text?: string;
+  rider_trust_score?: number;
+  eta_text?: string;
 };
 
 type TripResponse = {
@@ -43,6 +48,8 @@ type TripResponse = {
   pickup_text?: string;
   dropoff_text?: string;
   next_instruction?: string;
+  trust_score?: number;
+  replay_verified?: boolean;
 };
 
 type EarningsResponse = {
@@ -51,14 +58,27 @@ type EarningsResponse = {
   total_text: string;
   ride_count: number;
   source: "core_system";
+  verified_ride_count?: number;
+  dispute_count?: number;
+  trust_score?: number;
 };
 
 type ReplayHistoryResponse = {
-  rides: Array<{
+  items?: Array<{
     ride_id: string;
     replay_id: string;
     replay_verified: boolean;
     completed_at?: string;
+    trust_score?: number;
+    timeline_events?: DriverReplayHistoryItem["timelineEvents"];
+  }>;
+  rides?: Array<{
+    ride_id: string;
+    replay_id: string;
+    replay_verified: boolean;
+    completed_at?: string;
+    trust_score?: number;
+    timeline_events?: DriverReplayHistoryItem["timelineEvents"];
   }>;
 };
 
@@ -67,6 +87,9 @@ function mapAvailability(result: AvailabilityResponse): DriverAvailability {
     driverId: result.driver_id,
     status: result.status,
     updatedAt: result.updated_at,
+    trustScore: result.trust_score,
+    verifiedRides: result.verified_rides,
+    replayConsistencyPct: result.replay_consistency_pct,
   };
 }
 
@@ -78,6 +101,8 @@ function mapTrip(result: TripResponse): TripSnapshot {
     pickupText: result.pickup_text,
     dropoffText: result.dropoff_text,
     nextInstruction: result.next_instruction,
+    trustScore: result.trust_score,
+    replayVerified: result.replay_verified,
   };
 }
 
@@ -89,13 +114,15 @@ export async function setAvailability(
     return mockSetAvailability(driverId, status);
   }
 
-  const result = await apiRequest<AvailabilityResponse>("/driver/availability", {
-    method: "POST",
-    body: {
-      driver_id: driverId,
-      status,
+  const result = await apiRequest<AvailabilityResponse>(
+    `/v1/driver/${encodeURIComponent(driverId)}/availability`,
+    {
+      method: "POST",
+      body: {
+        status,
+      },
     },
-  });
+  );
 
   return mapAvailability(result);
 }
@@ -107,17 +134,22 @@ export async function getRideRequests(
     return mockGetRideRequests();
   }
 
-  const result = await apiRequest<{ rides: RideRequestResponse[] }>(
-    `/driver/${encodeURIComponent(driverId)}/queue`,
+  const result = await apiRequest<{
+    items?: RideRequestResponse[];
+    rides?: RideRequestResponse[];
+  }>(
+    `/v1/driver/${encodeURIComponent(driverId)}/ride-queue`,
   );
 
-  return result.rides.map((ride) => ({
+  return (result.items || result.rides || []).map((ride) => ({
     rideId: ride.ride_id,
     pickupText: ride.pickup_text,
     dropoffText: ride.dropoff_text,
     riderName: ride.rider_name,
     status: ride.status,
     quotedTotalText: ride.quoted_total_text,
+    riderTrustScore: ride.rider_trust_score,
+    etaText: ride.eta_text,
   }));
 }
 
@@ -130,10 +162,13 @@ export async function acceptRide(
     return mockRideAction(rideId, "accepted");
   }
 
-  const result = await apiRequest<TripResponse>(`/ride/${rideId}/accept`, {
-    method: "POST",
-    body: { driver_id: driverId },
-  });
+  const result = await apiRequest<TripResponse>(
+    `/v1/driver/rides/${encodeURIComponent(rideId)}/accept`,
+    {
+      method: "POST",
+      body: { driver_id: driverId },
+    },
+  );
 
   const latencyMs = Date.now() - startedAt;
   void capturePilotEvidence(
@@ -159,10 +194,13 @@ export async function rejectRide(
     return mockRideAction(rideId, "cancelled");
   }
 
-  const result = await apiRequest<TripResponse>(`/ride/${rideId}/reject`, {
-    method: "POST",
-    body: { driver_id: driverId },
-  });
+  const result = await apiRequest<TripResponse>(
+    `/v1/driver/rides/${encodeURIComponent(rideId)}/reject`,
+    {
+      method: "POST",
+      body: { driver_id: driverId },
+    },
+  );
 
   return mapTrip(result);
 }
@@ -175,10 +213,13 @@ export async function markArrived(
     return mockRideAction(rideId, "arrived");
   }
 
-  const result = await apiRequest<TripResponse>("/ride/arrive", {
-    method: "POST",
-    body: { ride_id: rideId, driver_id: driverId },
-  });
+  const result = await apiRequest<TripResponse>(
+    `/v1/driver/rides/${encodeURIComponent(rideId)}/arrive`,
+    {
+      method: "POST",
+      body: { driver_id: driverId },
+    },
+  );
 
   return mapTrip(result);
 }
@@ -191,10 +232,13 @@ export async function startTrip(
     return mockRideAction(rideId, "started");
   }
 
-  const result = await apiRequest<TripResponse>(`/ride/${rideId}/start`, {
-    method: "POST",
-    body: { driver_id: driverId },
-  });
+  const result = await apiRequest<TripResponse>(
+    `/v1/driver/rides/${encodeURIComponent(rideId)}/start`,
+    {
+      method: "POST",
+      body: { driver_id: driverId },
+    },
+  );
 
   return mapTrip(result);
 }
@@ -207,10 +251,13 @@ export async function completeTrip(
     return mockRideAction(rideId, "completed");
   }
 
-  const result = await apiRequest<TripResponse>(`/ride/${rideId}/complete`, {
-    method: "POST",
-    body: { driver_id: driverId },
-  });
+  const result = await apiRequest<TripResponse>(
+    `/v1/driver/rides/${encodeURIComponent(rideId)}/complete`,
+    {
+      method: "POST",
+      body: { driver_id: driverId },
+    },
+  );
 
   return mapTrip(result);
 }
@@ -221,7 +268,7 @@ export async function getEarnings(driverId: string): Promise<EarningsSummary> {
   }
 
   const result = await apiRequest<EarningsResponse>(
-    `/driver/${encodeURIComponent(driverId)}/earnings`,
+    `/v1/driver/${encodeURIComponent(driverId)}/earnings`,
   );
 
   return {
@@ -230,6 +277,9 @@ export async function getEarnings(driverId: string): Promise<EarningsSummary> {
     totalText: result.total_text,
     rideCount: result.ride_count,
     source: result.source,
+    verifiedRideCount: result.verified_ride_count,
+    disputeCount: result.dispute_count,
+    trustScore: result.trust_score,
   };
 }
 
@@ -241,13 +291,15 @@ export async function getReplayHistory(
   }
 
   const result = await apiRequest<ReplayHistoryResponse>(
-    `/driver/replay-history?driver_id=${encodeURIComponent(driverId)}`,
+    `/v1/driver/${encodeURIComponent(driverId)}/replay-history`,
   );
 
-  return result.rides.map((ride) => ({
+  return (result.items || result.rides || []).map((ride) => ({
     rideId: ride.ride_id,
     replayId: ride.replay_id,
     replayVerified: ride.replay_verified,
     completedAt: ride.completed_at,
+    trustScore: ride.trust_score,
+    timelineEvents: ride.timeline_events,
   }));
 }

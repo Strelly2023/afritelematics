@@ -19,6 +19,8 @@ export async function mockRequestRide(
     quotedTotal: "UGX 12,500",
     currency: "UGX",
     confirmationToken: "mock-confirmation-token",
+    trustScore: 92,
+    rideType: "Economy",
   };
 }
 
@@ -32,6 +34,8 @@ export async function mockGetRideStatus(
     vehicleLabel: "Toyota Axio UBA 421X",
     etaText: "Arrived",
     locationText: "Completed at Nakasero",
+    driverTrustScore: 94,
+    trustScore: 92,
   };
 }
 
@@ -44,6 +48,10 @@ export async function mockGetReceipt(rideId: string): Promise<RideReceipt> {
     totalText: "UGX 12,500",
     startedAt: "2026-05-31T09:00:00+10:00",
     completedAt: "2026-05-31T09:18:00+10:00",
+    trustScore: 92,
+    verificationStatus: "PASSED",
+    replayMatch: true,
+    evidenceComplete: true,
   };
 }
 
@@ -57,6 +65,13 @@ export async function mockGetReplay(rideId: string): Promise<RideReplay> {
       "Ride request was accepted through the API contract.",
       "Trip status was confirmed by the system evidence stream.",
       "Completion evidence was verified before receipt display.",
+    ],
+    timelineEvents: [
+      { label: "REQUESTED", verified: true },
+      { label: "DRIVER_ACCEPTED", verified: true },
+      { label: "ARRIVED", verified: true },
+      { label: "STARTED", verified: true },
+      { label: "COMPLETED", verified: true },
     ],
   };
 }

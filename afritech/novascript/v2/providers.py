@@ -37,6 +37,7 @@ class PromptExecutionResult:
     parsed_output: dict[str, Any]
     tool_calls: list[dict[str, Any]]
     confidence: float
+    orchestration: dict[str, Any]
 
 
 class ModelProvider(Protocol):
@@ -69,14 +70,127 @@ class LocalReasoningProvider:
         return json.dumps(payload, sort_keys=True)
 
 
+class LocalCodeProvider(LocalReasoningProvider):
+    name = "local-code-engine"
+
+
+class LocalArchitectureProvider(LocalReasoningProvider):
+    name = "local-architecture-engine"
+
+
+class LocalDebugProvider(LocalReasoningProvider):
+    name = "local-debug-engine"
+
+
+class LocalDocumentationProvider(LocalReasoningProvider):
+    name = "local-documentation-engine"
+
+
+class LocalRepositoryProvider(LocalReasoningProvider):
+    name = "local-repository-intelligence-engine"
+
+
+class OpenAIHybridProvider(LocalReasoningProvider):
+    name = "openai-hybrid-engine"
+
+    def generate(self, request: PromptExecutionRequest, context: ExecutionContext) -> str:
+        if os.environ.get("NOVASCRIPT_OPENAI_ENABLED", "").lower() not in {"1", "true", "yes"}:
+            return super().generate(request, context)
+        api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+        if not api_key:
+            return super().generate(request, context)
+        try:
+            from openai import OpenAI  # type: ignore
+
+            client = OpenAI(api_key=api_key)
+            response = client.responses.create(
+                model=os.environ.get("NOVASCRIPT_OPENAI_MODEL", "gpt-4.1-mini"),
+                input=context.prompt_text,
+            )
+            text = getattr(response, "output_text", "") or super().generate(request, context)
+        except Exception:
+            return super().generate(request, context)
+        payload = json.loads(super().generate(request, context))
+        payload["provider"] = self.name
+        payload["external_model"] = "openai"
+        payload["external_output_digest"] = text[:120]
+        return json.dumps(payload, sort_keys=True)
+
+
+class ModelRouter:
+    def __init__(self) -> None:
+        self._routes: dict[str, tuple[str, ModelProvider]] = {
+            "generate": ("novascript-v3-code", LocalCodeProvider()),
+            "generate_code": ("novascript-v3-code", LocalCodeProvider()),
+            "code_generation": ("novascript-v3-code", LocalCodeProvider()),
+            "tests": ("novascript-v3-test", LocalCodeProvider()),
+            "architecture": ("novascript-v3-architecture", LocalArchitectureProvider()),
+            "design": ("novascript-v3-architecture", LocalArchitectureProvider()),
+            "debug": ("novascript-v3-debug", LocalDebugProvider()),
+            "docs": ("novascript-v3-docs", LocalDocumentationProvider()),
+            "repo_intelligence": ("novascript-v3-repository", LocalRepositoryProvider()),
+            "repository_intelligence": ("novascript-v3-repository", LocalRepositoryProvider()),
+            "explain": ("novascript-v3-explain", LocalReasoningProvider()),
+        }
+
+    def route(self, intent: str) -> tuple[str, ModelProvider]:
+        return self._routes.get(intent.lower().strip(), ("novascript-v3-general", LocalReasoningProvider()))
+
+    def status(self) -> list[dict[str, str]]:
+        return [
+            {"intent": intent, "model_name": model_name, "provider": provider.name}
+            for intent, (model_name, provider) in sorted(self._routes.items())
+        ]
+
+
+class MultiProviderOrchestrator:
+    def __init__(self) -> None:
+        self._external = OpenAIHybridProvider()
+
+    def choose(
+        self,
+        *,
+        intent: str,
+        routed_provider: ModelProvider,
+        overridden_provider: ModelProvider | None = None,
+    ) -> tuple[ModelProvider, dict[str, Any]]:
+        if overridden_provider is not None:
+            provider = overridden_provider
+            strategy = "explicit_provider_override"
+        elif os.environ.get("NOVASCRIPT_PROVIDER_STRATEGY", "").lower() in {"hybrid", "openai"}:
+            provider = self._external
+            strategy = "openai_local_hybrid"
+        else:
+            provider = routed_provider
+            strategy = "local_specialized"
+        return provider, {
+            "strategy": strategy,
+            "intent": intent,
+            "primary_provider": getattr(provider, "name", "unknown"),
+            "fallback_provider": "local-reasoning",
+            "external_model_configured": bool(os.environ.get("OPENAI_API_KEY")),
+        }
+
+
 class ModelProviderLayer:
     def __init__(self, provider: ModelProvider | None = None, model_name: str | None = None) -> None:
+        self._provider_overridden = provider is not None
         self.provider = provider or _resolve_provider()
-        self.model_name = model_name or os.environ.get("NOVASCRIPT_MODEL_NAME", "novascript-local-v2")
+        self.model_name = model_name or os.environ.get("NOVASCRIPT_MODEL_NAME", "novascript-v3-general")
+        self.router = ModelRouter()
+        self.orchestrator = MultiProviderOrchestrator()
         self._registry = get_prompt_registry()
         self._parser = get_structured_output_parser()
 
     def execute(self, request: PromptExecutionRequest) -> PromptExecutionResult:
+        routed_model_name, routed_provider = self.router.route(request.intent)
+        overridden = self.provider if self._provider_overridden or os.environ.get("NOVASCRIPT_MODEL_PROVIDER") else None
+        provider, orchestration = self.orchestrator.choose(
+            intent=request.intent,
+            routed_provider=routed_provider,
+            overridden_provider=overridden,
+        )
+        model_name = os.environ.get("NOVASCRIPT_MODEL_NAME", routed_model_name)
         prompt_name = _prompt_name_for_intent(request.intent)
         template = self._registry.get(prompt_name)
         prompt_text = template.render(
@@ -98,24 +212,39 @@ class ModelProviderLayer:
         )
         context = ExecutionContext(
             prompt_name=prompt_name,
-            model_name=self.model_name,
+            model_name=model_name,
             prompt_text=prompt_text,
             tool_names=template.default_tools,
         )
-        raw_output = self.provider.generate(request, context)
+        raw_output = provider.generate(request, context)
         parsed = self._parser.parse(raw_output).data
         tool_calls = parsed.get("tool_calls", [])
         if not isinstance(tool_calls, list):
             tool_calls = []
         confidence = float(parsed.get("confidence", 0.6))
         return PromptExecutionResult(
-            provider_name=getattr(self.provider, "name", "local"),
-            model_name=self.model_name,
+            provider_name=getattr(provider, "name", "local"),
+            model_name=model_name,
             raw_output=raw_output,
             parsed_output=parsed,
             tool_calls=tool_calls,
             confidence=confidence,
+            orchestration=orchestration,
         )
+
+    def status(self) -> dict[str, Any]:
+        return {
+            "provider": "multi-model-router",
+            "model_name": self.model_name,
+            "available": True,
+            "routing": self.router.status(),
+            "orchestration": {
+                "mode": "multi_provider",
+                "providers": ["local_specialized", "openai_hybrid"],
+                "openai_configured": bool(os.environ.get("OPENAI_API_KEY")),
+                "strategy": os.environ.get("NOVASCRIPT_PROVIDER_STRATEGY", "local_specialized"),
+            },
+        }
 
 
 def _resolve_provider() -> ModelProvider:

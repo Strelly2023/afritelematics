@@ -1,8 +1,8 @@
-# NovaPay GA Elite Implementation Surface
+# AfriPay GA Elite Implementation Surface
 
 ## Status
 
-NovaPay is now implemented as a deterministic Financial Operating System core.
+AfriPay is now implemented as a deterministic Financial Operating System core.
 
 Implementation: ACTIVE CORE
 Live Settlement: FORBIDDEN BY DEFAULT
@@ -68,15 +68,15 @@ Live settlement requires an explicit compliance activation reference.
 
 ADR -> INVARIANT -> BINDING -> RULE -> GUARD -> CI
 
-NovaPay remains bounded by observed economic evidence.
+AfriPay remains bounded by observed economic evidence.
 
-No transaction means no NovaPay.
+No transaction means no AfriPay.
 
-NovaTech does not create money flows. It observes, records, and proves them.
+AfriTech does not create money flows. It observes, records, and proves them.
 
 ## Scope
 
-This implementation creates a backend core that can support NovaRide, Agro
+This implementation creates a backend core that can support AfriRide, Agro
 payments, remittances, merchant payments, and business finance workflows. It is
 not a regulatory claim, bank license claim, deployed payment platform claim, or
 production settlement claim.

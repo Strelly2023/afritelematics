@@ -306,10 +306,14 @@ def safe_load(stream: Any) -> Any:
         raise YAMLError(str(exc)) from exc
 
 
-def safe_dump(data: Any, sort_keys: bool = True, **_: Any) -> str:
+def safe_dump(data: Any, stream: Any = None, sort_keys: bool = True, **_: Any) -> str:
     if _REAL_YAML is not None:
-        return _REAL_YAML.safe_dump(data, sort_keys=sort_keys)
-    return json.dumps(data, indent=2, sort_keys=sort_keys, ensure_ascii=False)
+        text = _REAL_YAML.safe_dump(data, sort_keys=sort_keys)
+    else:
+        text = json.dumps(data, indent=2, sort_keys=sort_keys, ensure_ascii=False)
+    if stream is not None and hasattr(stream, "write"):
+        stream.write(text)
+    return text
 
 
 def dump(data: Any, *args: Any, **kwargs: Any) -> str:

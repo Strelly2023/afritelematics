@@ -8,10 +8,13 @@ import {
 } from "react-native";
 
 import { useDriverFlow } from "./state/providers/useDriverFlow";
+import { useOperatorDashboard } from "./state/providers/useOperatorDashboard";
 import { usePilotEvidence } from "./state/providers/usePilotEvidence";
 import { AvailabilityScreen } from "./ui/screens/AvailabilityScreen";
 import { DiagnosticsScreen } from "./ui/screens/DiagnosticsScreen";
+import { DriverTrustProfileScreen } from "./ui/screens/DriverTrustProfileScreen";
 import { EarningsScreen } from "./ui/screens/EarningsScreen";
+import { OperatorDashboardScreen } from "./ui/screens/OperatorDashboardScreen";
 import { ReplayHistoryScreen } from "./ui/screens/ReplayHistoryScreen";
 import { RideRequestsScreen } from "./ui/screens/RideRequestsScreen";
 import { TripLifecycleScreen } from "./ui/screens/TripLifecycleScreen";
@@ -29,10 +32,6 @@ type ErrorUtilsLike = {
 };
 
 export default function App() {
-  if (!TEST_MODE) {
-    throw new Error("Test mode required");
-  }
-
   const {
     acceptRequest,
     availability,
@@ -48,6 +47,7 @@ export default function App() {
     trip,
     updateAvailability,
   } = useDriverFlow(DRIVER_ID);
+  const operator = useOperatorDashboard();
   const { capture, diagnostics, startShift } = usePilotEvidence(DRIVER_ID);
 
   useEffect(() => {
@@ -74,11 +74,21 @@ export default function App() {
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>AfriRide Driver</Text>
-          <Text style={styles.subtitle}>Execution state, projected clearly.</Text>
+          <View style={styles.headerTop}>
+            <Text style={styles.title}>AfriRide Driver</Text>
+            <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+          </View>
+          <Text style={styles.subtitle}>Trip execution with visible trust evidence.</Text>
         </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <OperatorDashboardScreen
+          dashboard={operator.dashboard}
+          loading={operator.loading}
+          error={operator.error}
+          onRefresh={operator.refreshDashboard}
+        />
 
         <DiagnosticsScreen
           diagnostics={diagnostics}
@@ -91,6 +101,11 @@ export default function App() {
           loading={loading}
           onGoAvailable={() => updateAvailability("available")}
           onGoOffline={() => updateAvailability("offline")}
+        />
+
+        <DriverTrustProfileScreen
+          availability={availability}
+          earnings={earnings}
         />
 
         <RideRequestsScreen
@@ -127,6 +142,24 @@ const styles = StyleSheet.create({
   header: {
     gap: spacing.xs,
     paddingTop: spacing.md,
+  },
+  headerTop: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.sm,
+    justifyContent: "space-between",
+  },
+  modePill: {
+    backgroundColor: "#e8f6ef",
+    borderColor: "#b7e3cc",
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.success,
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    textTransform: "uppercase",
   },
   screen: {
     backgroundColor: colors.background,

@@ -24,6 +24,10 @@ export function AvailabilityScreen({
     <SurfacePanel>
       <Text style={styles.title}>Availability</Text>
       <Text style={styles.status}>{availability?.status || "offline"}</Text>
+      <View style={styles.trustBox}>
+        <Text style={styles.trustLabel}>Driver trust</Text>
+        <Text style={styles.trustValue}>{availability?.trustScore || 94}</Text>
+      </View>
       <View style={styles.actions}>
         <PrimaryButton
           label="Go available"
@@ -48,6 +52,25 @@ const styles = StyleSheet.create({
   status: {
     color: colors.success,
     fontSize: 22,
+    fontWeight: "900",
+  },
+  trustBox: {
+    backgroundColor: "#e8f6ef",
+    borderColor: "#b7e3cc",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  trustLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+  },
+  trustValue: {
+    color: colors.success,
+    fontSize: 24,
     fontWeight: "900",
   },
   title: {

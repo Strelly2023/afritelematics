@@ -30,6 +30,7 @@ class NovaScriptService:
             "product": "NovaScript",
             "category": "AI engineering intelligence system",
             "status": "ready",
+            "version": "NovaScript V7",
             "product_ready": True,
             "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
             "role": "development_time_system_builder",
@@ -38,11 +39,64 @@ class NovaScriptService:
             "executes_systems": False,
             "model_layer": v2_status["model_layer"],
             "workspace_memory": v2_status["workspace_memory"],
+            "persistent_evolving_memory": v2_status["persistent_evolving_memory"],
             "tool_calling": v2_status["tool_calling"],
             "repository_graph_intelligence": v2_status["repository_graph_intelligence"],
             "agent_workflow": v2_status["agent_workflow"],
+            "planning_engine": v2_status["planning_engine"],
+            "deterministic_artifacts": v2_status["deterministic_artifacts"],
+            "trust_evolution_analytics": v2_status["trust_evolution_analytics"],
             "prompt_registry": v2_status["prompt_registry"],
             "governance_receipts": v2_status["governance_receipts"],
+            "policy_driven_trust_engine": v2_status["policy_driven_trust_engine"],
+            "cross_system_federation": v2_status["cross_system_federation"],
+            "cross_organization_federation": v2_status["cross_organization_federation"],
+            "policy_dsl": v2_status["policy_dsl"],
+            "policy_registry": v2_status["policy_registry"],
+            "deployment_feedback_loop": v2_status["deployment_feedback_loop"],
+            "deployment_ai_agents": v2_status["deployment_ai_agents"],
+            "trust_forecasting": v2_status["trust_forecasting"],
+            "continuous_assurance": v2_status["continuous_assurance"],
+            "architecture_evolution_tracking": v2_status["architecture_evolution_tracking"],
+            "architecture_evolution_ledger": v2_status["architecture_evolution_ledger"],
+            "continuous_repository_intelligence": v2_status["continuous_repository_intelligence"],
+            "engineering_risk_scoring": v2_status["engineering_risk_scoring"],
+            "technical_debt_prediction": v2_status["technical_debt_prediction"],
+            "enterprise_knowledge_graph": v2_status["enterprise_knowledge_graph"],
+            "autonomous_engineering_workflows": v2_status["autonomous_engineering_workflows"],
+            "autonomous_remediation": v2_status["autonomous_remediation"],
+            "external_audit_api": v2_status["external_audit_api"],
+            "certificate_chain_verification": v2_status["certificate_chain_verification"],
+            "postgresql_canonical_persistence": v2_status["postgresql_canonical_persistence"],
+            "signed_certification_authority_hierarchy": v2_status["signed_certification_authority_hierarchy"],
+            "continuous_assurance_monitoring_service": v2_status["continuous_assurance_monitoring_service"],
+            "policy_registry_lifecycle_management": v2_status["policy_registry_lifecycle_management"],
+            "trust_trend_analytics": v2_status["trust_trend_analytics"],
+            "opentelemetry_integration": v2_status["opentelemetry_integration"],
+            "organization_risk_dashboards": v2_status["organization_risk_dashboards"],
+            "evidence_retention_governance": v2_status["evidence_retention_governance"],
+            "multi_organization_trust_network": v2_status["multi_organization_trust_network"],
+            "formal_assurance_reporting": v2_status["formal_assurance_reporting"],
+            "global_trust_network": v2_status["global_trust_network"],
+            "tokenized_trust_economy": v2_status["tokenized_trust_economy"],
+            "autonomous_self_upgrading_systems": v2_status["autonomous_self_upgrading_systems"],
+            "ai_regulatory_compliance_layer": v2_status["ai_regulatory_compliance_layer"],
+            "novascript_trust_standard": v2_status["novascript_trust_standard"],
+            "platform_plugin_registry": v2_status["platform_plugin_registry"],
+            "field_adoption": v2_status["field_adoption"],
+            "real_organization_onboarding": v2_status["real_organization_onboarding"],
+            "real_audit_packages": v2_status["real_audit_packages"],
+            "real_production_evidence": v2_status["real_production_evidence"],
+            "audit_marketplace": v2_status["audit_marketplace"],
+            "canonical_doctrine_layer": v2_status["canonical_doctrine_layer"],
+            "decision_explainability": v2_status["decision_explainability"],
+            "federated_trust_graph": v2_status["federated_trust_graph"],
+            "assurance_drift_detection": v2_status["assurance_drift_detection"],
+            "portable_verification_package": v2_status["portable_verification_package"],
+            "formal_standard_family": v2_status["formal_standard_family"],
+            "adoption_certification_program": v2_status["adoption_certification_program"],
+            "public_trust_portal": v2_status["public_trust_portal"],
+            "architecture_evolution_observatory": v2_status["architecture_evolution_observatory"],
             "structured_output_parser": v2_status["structured_output_parser"],
             "relationship": {
                 "builds": "NovaProgramming",
@@ -75,6 +129,67 @@ class NovaScriptService:
                 "workspace_memory",
                 "governance_receipts",
                 "workflow_orchestration",
+                "multi_model_routing",
+                "persistent_evolving_memory",
+                "planning_engine",
+                "deterministic_artifact_output",
+                "trust_evolution_analytics",
+                "policy_driven_trust_engine",
+                "cross_system_federation",
+                "external_model_integration",
+                "deployment_feedback_loop",
+                "long_term_organizational_memory",
+                "trust_forecasting",
+                "architecture_evolution_tracking",
+                "multi_provider_orchestration",
+                "continuous_repository_intelligence",
+                "engineering_risk_scoring",
+                "governance_receipt_verification",
+                "technical_debt_prediction",
+                "autonomous_engineering_workflows",
+                "enterprise_scale_knowledge_graph",
+                "cross_organization_federation",
+                "policy_dsl",
+                "policy_registry",
+                "continuous_assurance_engine",
+                "certificate_chain_verification",
+                "architecture_evolution_ledger",
+                "institutional_memory",
+                "federated_trust_exchange",
+                "autonomous_remediation",
+                "deployment_ai_agents",
+                "external_audit_api",
+                "postgresql_canonical_persistence",
+                "signed_certification_authority_hierarchy",
+                "continuous_assurance_monitoring_service",
+                "policy_registry_lifecycle_management",
+                "trust_trend_analytics",
+                "opentelemetry_integration",
+                "organization_risk_dashboards",
+                "evidence_retention_governance",
+                "multi_organization_trust_network",
+                "formal_assurance_reporting",
+                "global_trust_network",
+                "tokenized_trust_economy",
+                "autonomous_self_upgrading_systems",
+                "ai_regulatory_compliance_layer",
+                "novascript_trust_standard",
+                "platform_others_plug_into",
+                "field_adoption",
+                "real_organizations",
+                "real_audits",
+                "real_trust_exchanges",
+                "real_production_evidence",
+                "audit_marketplace",
+                "canonical_doctrine_layer",
+                "decision_explainability",
+                "federated_trust_graph",
+                "assurance_drift_detection",
+                "portable_verification_package",
+                "formal_standard_family",
+                "adoption_certification_program",
+                "public_trust_portal",
+                "architecture_evolution_observatory",
             ],
             "stack": {
                 "languages": ["Python", "TypeScript", "JavaScript", "SQL", "Dart", "Shell"],
@@ -120,6 +235,151 @@ class NovaScriptService:
         return _V2_ENGINE.receipt_history(
             organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
             project_id=project.project_id,
+        )
+
+    def trust_analytics(
+        self,
+        *,
+        project_id: str | None = None,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        project = _select_project(project_id or self.default_project_id)
+        return _V2_ENGINE.trust_analytics(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+        )
+
+    def verify_receipt(self, receipt: dict[str, Any]) -> dict[str, Any]:
+        return _V2_ENGINE.verify_receipt(receipt)
+
+    def verify_audit_package(self, package: dict[str, Any]) -> dict[str, Any]:
+        return _V2_ENGINE.verify_audit_package(package)
+
+    def validate_artifact(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return _V2_ENGINE.validate_artifact(payload)
+
+    def register_policy(self, source: str) -> dict[str, Any]:
+        return _V2_ENGINE.register_policy(source)
+
+    def transition_policy(self, *, policy_id: str, status: str) -> dict[str, Any]:
+        return _V2_ENGINE.transition_policy(policy_id=policy_id, status=status)
+
+    def federation_status(self) -> dict[str, Any]:
+        return _V2_ENGINE.federation_status()
+
+    def global_trust_status(self) -> dict[str, Any]:
+        return _V2_ENGINE.global_trust_status()
+
+    def trust_graph(self) -> dict[str, Any]:
+        return _V2_ENGINE.trust_graph()
+
+    def organization_risk_dashboard(self, *, organization_id: str | None = None) -> dict[str, Any]:
+        return _V2_ENGINE.organization_risk_dashboard(organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
+
+    def standard_profile_status(self) -> dict[str, Any]:
+        return _V2_ENGINE.standard_profile_status()
+
+    def platform_integrations(self, *, organization_id: str | None = None) -> dict[str, Any]:
+        return _V2_ENGINE.platform_integrations_status(organization_id=organization_id or DEFAULT_ORGANIZATION_ID)
+
+    def register_platform_integration(
+        self,
+        *,
+        integration_name: str,
+        integration_type: str,
+        scopes: list[str],
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        return _V2_ENGINE.register_platform_integration(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            integration_name=integration_name,
+            integration_type=integration_type,
+            scopes=scopes,
+        )
+
+    def field_adoption_status(self) -> dict[str, Any]:
+        return _V2_ENGINE.field_adoption_status()
+
+    def onboard_organization(
+        self,
+        *,
+        organization_id: str,
+        legal_name: str,
+        sector: str,
+        trust_domain: str,
+    ) -> dict[str, Any]:
+        return _V2_ENGINE.onboard_organization(
+            organization_id=organization_id,
+            legal_name=legal_name,
+            sector=sector,
+            trust_domain=trust_domain,
+        )
+
+    def record_production_evidence(
+        self,
+        *,
+        project_id: str | None = None,
+        environment: str = "production",
+        evidence_type: str = "deployment_validation",
+        validation_status: str = "validated",
+        evidence_hash: str | None = None,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        project = _select_project(project_id or self.default_project_id)
+        return _V2_ENGINE.record_production_evidence(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+            environment=environment,
+            evidence_type=evidence_type,
+            validation_status=validation_status,
+            evidence_hash=evidence_hash,
+        )
+
+    def public_receipt(self, receipt_id: str) -> dict[str, Any] | None:
+        return _V2_ENGINE.public_receipt(receipt_id)
+
+    def public_certificate(self, certificate_id: str) -> dict[str, Any] | None:
+        return _V2_ENGINE.public_certificate(certificate_id)
+
+    def public_assurance_report(self, report_id: str) -> dict[str, Any] | None:
+        return _V2_ENGINE.public_assurance_report(report_id)
+
+    def portable_verification_package(self, receipt_id: str) -> dict[str, Any] | None:
+        return _V2_ENGINE.portable_verification_package(receipt_id)
+
+    def trust_exchange(
+        self,
+        *,
+        issuer_org: str,
+        subject_org: str,
+        receipt_hash: str,
+        trust_score: int,
+    ) -> dict[str, Any]:
+        return _V2_ENGINE.trust_exchange(
+            issuer_org=issuer_org,
+            subject_org=subject_org,
+            receipt_hash=receipt_hash,
+            trust_score=trust_score,
+        )
+
+    def record_deployment_feedback(
+        self,
+        *,
+        project_id: str | None = None,
+        environment: str = "staging",
+        status: str = "validated",
+        validation_score: int = 100,
+        evidence: dict[str, Any] | None = None,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        project = _select_project(project_id or self.default_project_id)
+        return _V2_ENGINE.record_deployment_feedback(
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+            project_id=project.project_id,
+            environment=environment,
+            status=status,
+            validation_score=validation_score,
+            evidence=evidence or {},
         )
 
     def project_context(
@@ -182,10 +442,55 @@ class NovaScriptService:
             "repository_graph": v2.get("repository_graph", {}),
             "architecture_knowledge": v2.get("architecture_knowledge", {}),
             "technical_debt": v2.get("technical_debt", {}),
+            "technical_debt_prediction": v2.get("technical_debt_prediction", {}),
             "trust_review": v2.get("trust_review", {}),
+            "policy_trust": v2.get("policy_trust", {}),
+            "policy_decision": v2.get("policy_decision", {}),
+            "policy_registry": v2.get("policy_registry", {}),
+            "trust_forecast": v2.get("trust_forecast", {}),
+            "engineering_risk": v2.get("engineering_risk", {}),
+            "architecture_evolution": v2.get("architecture_evolution", {}),
+            "architecture_evolution_ledger": v2.get("architecture_evolution_ledger", {}),
+            "enterprise_knowledge_graph": v2.get("enterprise_knowledge_graph", {}),
+            "autonomous_engineering_workflows": v2.get("autonomous_engineering_workflows", []),
+            "autonomous_remediation": v2.get("autonomous_remediation", {}),
+            "deployment_ai_agents": v2.get("deployment_ai_agents", {}),
+            "continuous_assurance": v2.get("continuous_assurance", {}),
+            "continuous_repository_intelligence": v2.get("continuous_repository_intelligence", {}),
+            "deployment_feedback": v2.get("deployment_feedback", {}),
+            "federation": v2.get("federation", {}),
             "workflow": v2.get("workflow", {}),
+            "planning_engine": v2.get("planning_engine", {}),
+            "model_routing": v2.get("model_routing", {}),
+            "multi_provider_orchestration": v2.get("multi_provider_orchestration", {}),
             "memory": v2.get("memory", {}),
+            "memory_evolution": v2.get("memory_evolution", {}),
             "governance_receipt": v2.get("governance_receipt", {}),
+            "certificate_chain": v2.get("certificate_chain", {}),
+            "trust_exchange": v2.get("trust_exchange", {}),
+            "trust_token": v2.get("trust_token", {}),
+            "global_trust_network": v2.get("global_trust_network", {}),
+            "canonical_persistence": v2.get("canonical_persistence", {}),
+            "persistence_status": v2.get("persistence_status", {}),
+            "assurance_monitoring": v2.get("assurance_monitoring", {}),
+            "organization_risk_dashboard": v2.get("organization_risk_dashboard", {}),
+            "evidence_retention": v2.get("evidence_retention", {}),
+            "formal_assurance_report": v2.get("formal_assurance_report", {}),
+            "audit_marketplace_package": v2.get("audit_marketplace_package", {}),
+            "decision_explainability": v2.get("decision_explainability", {}),
+            "trust_graph": v2.get("trust_graph", {}),
+            "assurance_drift": v2.get("assurance_drift", {}),
+            "portable_verification_package": v2.get("portable_verification_package", {}),
+            "adoption_certification": v2.get("adoption_certification", {}),
+            "architecture_observatory": v2.get("architecture_observatory", {}),
+            "standard_profile": v2.get("standard_profile", {}),
+            "platform_integrations": v2.get("platform_integrations", {}),
+            "field_adoption": v2.get("field_adoption", {}),
+            "production_evidence": v2.get("production_evidence", {}),
+            "regulatory_compliance": v2.get("regulatory_compliance", {}),
+            "self_upgrade_plan": v2.get("self_upgrade_plan", {}),
+            "opentelemetry": v2.get("opentelemetry", {}),
+            "trust_evolution": v2.get("trust_evolution", {}),
             "receipt_id": v2.get("receipt_id"),
             "execution_preview": {
                 "sandboxed": True,

@@ -10,7 +10,7 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_driver_app_is_locked_to_test_build_profile() -> None:
+def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     app = read("App.tsx")
     app_config = read("app.json")
     eas = read("eas.json")
@@ -25,8 +25,8 @@ def test_driver_app_is_locked_to_test_build_profile() -> None:
     assert '"owner": "ostrinov23"' in app_config
     assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
-    assert "if (!TEST_MODE)" in app
-    assert 'throw new Error("Test mode required")' in app
+    assert "TEST_MODE ? \"Pilot\" : \"Live\"" in app
+    assert 'throw new Error("Test mode required")' not in app
 
 
 def test_driver_api_layer_owns_required_http_paths() -> None:
@@ -34,16 +34,37 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     evidence = read("core/services/pilotEvidence.service.ts")
 
     assert "USE_MOCK_API" in source
-    assert '"/driver/availability"' in source
-    assert "`/driver/${encodeURIComponent(driverId)}/queue`" in source
-    assert "`/ride/${rideId}/accept`" in source
-    assert "`/ride/${rideId}/reject`" in source
-    assert '"/ride/arrive"' in source
-    assert "`/ride/${rideId}/start`" in source
-    assert "`/ride/${rideId}/complete`" in source
-    assert "`/driver/${encodeURIComponent(driverId)}/earnings`" in source
-    assert "`/driver/replay-history?driver_id=${encodeURIComponent(driverId)}`" in source
+    assert "/v1/driver/${encodeURIComponent(driverId)}/availability" in source
+    assert "/v1/driver/${encodeURIComponent(driverId)}/ride-queue" in source
+    assert "/v1/driver/rides/${encodeURIComponent(rideId)}/accept" in source
+    assert "/v1/driver/rides/${encodeURIComponent(rideId)}/reject" in source
+    assert "/v1/driver/rides/${encodeURIComponent(rideId)}/arrive" in source
+    assert "/v1/driver/rides/${encodeURIComponent(rideId)}/start" in source
+    assert "/v1/driver/rides/${encodeURIComponent(rideId)}/complete" in source
+    assert "/v1/driver/${encodeURIComponent(driverId)}/earnings" in source
+    assert "/v1/driver/${encodeURIComponent(driverId)}/replay-history" in source
+    assert "trust_score" in source
+    assert "replay_verified" in source
     assert "/pilot/evidence" in evidence
+
+
+def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
+    app = read("App.tsx")
+    screen = read("ui/screens/OperatorDashboardScreen.tsx")
+    service = read("core/api/operator.service.ts")
+    mock = read("core/api/mockOperator.service.ts")
+
+    assert "OperatorDashboardScreen" in app
+    assert "useOperatorDashboard" in app
+    assert "Fleet Trust" in screen
+    assert "Pilot Evidence" in screen
+    assert "Replay Exceptions" in screen
+    assert "Driver Trust Trends" in screen
+    assert "Public Verification Status" in screen
+    assert '"/v1/operator/dashboard"' in service
+    assert "USE_MOCK_API" in service
+    assert "fleetTrustScore" in mock
+    assert "publicVerification" in mock
 
 
 def test_driver_api_client_sends_test_instrumentation() -> None:

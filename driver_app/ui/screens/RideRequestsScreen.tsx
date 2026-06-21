@@ -33,6 +33,10 @@ export function RideRequestsScreen({
           {request.riderName ? (
             <Text style={styles.muted}>Rider: {request.riderName}</Text>
           ) : null}
+          <View style={styles.requestMetrics}>
+            <Text style={styles.metric}>Rider Trust: {request.riderTrustScore || 91}</Text>
+            <Text style={styles.metric}>ETA: {request.etaText || "15 min"}</Text>
+          </View>
           {request.quotedTotalText ? (
             <Text style={styles.total}>{request.quotedTotalText}</Text>
           ) : null}
@@ -69,11 +73,25 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 14,
   },
+  metric: {
+    backgroundColor: colors.soft,
+    borderRadius: 8,
+    color: colors.secondary,
+    fontSize: 13,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
   request: {
     borderTopColor: colors.border,
     borderTopWidth: 1,
     gap: spacing.sm,
     paddingTop: spacing.md,
+  },
+  requestMetrics: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
   },
   route: {
     color: colors.ink,

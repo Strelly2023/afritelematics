@@ -196,7 +196,7 @@ def build_feature_registry_router() -> APIRouter:
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NovaTech Global Public Verification Layer</title>
+    <title>AfriTech Global Public Verification Layer</title>
     <style>
       body {{ margin: 0; background: #f7f9fc; color: #172033; font-family: Inter, Arial, sans-serif; }}
       main {{ max-width: 1120px; margin: 0 auto; padding: 36px 20px 56px; }}
@@ -216,8 +216,8 @@ def build_feature_registry_router() -> APIRouter:
   <body>
     <main>
       <div class="status">{status}</div>
-      <h1>NovaTech Global Public Verification Layer</h1>
-      <p>Partners and public-sector observers can validate exported truth across independent networks without relying on the originating NovaTech system.</p>
+      <h1>AfriTech Global Public Verification Layer</h1>
+      <p>Partners and public-sector observers can validate exported truth across independent networks without relying on the originating AfriTech system.</p>
       <section class="grid">
         <article class="panel">
           <span>Classification</span>
@@ -310,7 +310,7 @@ def build_feature_registry_router() -> APIRouter:
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NovaTech Ecosystem Trust Infrastructure</title>
+    <title>AfriTech Ecosystem Trust Infrastructure</title>
     <style>
       body {{ margin: 0; background: #f7f9fc; color: #172033; font-family: Inter, Arial, sans-serif; }}
       main {{ max-width: 1120px; margin: 0 auto; padding: 36px 20px 56px; }}
@@ -330,7 +330,7 @@ def build_feature_registry_router() -> APIRouter:
   <body>
     <main>
       <div class="status">{status}</div>
-      <h1>NovaTech Ecosystem Trust Infrastructure</h1>
+      <h1>AfriTech Ecosystem Trust Infrastructure</h1>
       <p>Level 16 publishes an adoption-ready trust certificate for organizations, government observers, live public-ledger anchoring, and interoperable verification standards.</p>
       <section class="grid">
         <article class="panel">
@@ -387,7 +387,7 @@ def build_feature_registry_router() -> APIRouter:
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NovaTech Feature Registry Trust Portal</title>
+    <title>AfriTech Feature Registry Trust Portal</title>
     <style>
       body {{ margin: 0; background: #f5f7fb; color: #172033; font-family: Inter, Arial, sans-serif; }}
       main {{ max-width: 1120px; margin: 0 auto; padding: 36px 20px 56px; }}
@@ -407,7 +407,7 @@ def build_feature_registry_router() -> APIRouter:
   <body>
     <main>
       <div class="status">{status}</div>
-      <h1>NovaTech Feature Registry Trust Portal</h1>
+      <h1>AfriTech Feature Registry Trust Portal</h1>
       <p>External partners can validate that exported feature claims are replay-derived, evidence-complete, boundary guarded, signed, and production gated.</p>
       <section class="grid">
         <article class="panel">

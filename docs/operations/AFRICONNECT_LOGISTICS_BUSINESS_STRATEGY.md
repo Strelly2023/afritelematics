@@ -1,17 +1,17 @@
-# NovaConnect Transport, Logistics & Warehouse Strategy
+# AfriConnect Transport, Logistics & Warehouse Strategy
 
 ## Positioning
 
-NovaConnect Transport, Logistics & Warehouse is the customer-facing business.
+AfriConnect Transport, Logistics & Warehouse is the customer-facing business.
 
-NovaTech is the replay-governed technology engine that can support verifiable logistics execution as evidence matures.
+AfriTech is the replay-governed technology engine that can support verifiable logistics execution as evidence matures.
 
 Together they define a dual structure:
 
-- Business layer: NovaConnect Transport, Logistics & Warehouse
-- Technology layer: NovaTech and NovaConnectTL
+- Business layer: AfriConnect Transport, Logistics & Warehouse
+- Technology layer: AfriTech and AfriConnectTL
 
-NovaConnect should be positioned as a logistics company building verifiable delivery capability, not as a fully proven autonomous logistics network.
+AfriConnect should be positioned as a logistics company building verifiable delivery capability, not as a fully proven autonomous logistics network.
 
 ## Core Promise
 
@@ -23,9 +23,9 @@ request -> pickup -> delivery -> receipt -> replay verification
 
 The business value is trust, traceability, and clearer accountability across transport, logistics, and warehousing.
 
-## NovaTech Advantage
+## AfriTech Advantage
 
-NovaTech gives NovaConnect a long-term moat through:
+AfriTech gives AfriConnect a long-term moat through:
 
 - replay-governed execution
 - proof-of-delivery receipts
@@ -37,7 +37,7 @@ Truth authority must come from replay receipts and evidence bundles, not from AP
 
 ## AgroSolidarite Integration
 
-NovaConnect can support AgroSolidarite by connecting:
+AfriConnect can support AgroSolidarite by connecting:
 
 - farm production
 - transport
@@ -125,7 +125,7 @@ Phase 3: Scale discipline
 
 ## Allowed Claims
 
-NovaConnect may say:
+AfriConnect may say:
 
 - We provide logistics services.
 - We are building verifiable delivery systems.
@@ -134,7 +134,7 @@ NovaConnect may say:
 
 ## Forbidden Claims
 
-NovaConnect must not claim:
+AfriConnect must not claim:
 
 - autonomous logistics network
 - fully proven logistics system
@@ -144,8 +144,8 @@ NovaConnect must not claim:
 
 ## Current Operating Boundary
 
-NovaConnect is a real business strategy.
+AfriConnect is a real business strategy.
 
-NovaConnectTL is the NovaTech logistics execution surface for controlled simulation and future evidence generation.
+AfriConnectTL is the AfriTech logistics execution surface for controlled simulation and future evidence generation.
 
 Real-world business operations may begin manually and conservatively, but protocol-backed claims require evidence bundles, replay receipts, and verified delivery records.

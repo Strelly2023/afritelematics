@@ -16,7 +16,6 @@ import re
 import sys
 
 from pathlib import Path
-from datetime import datetime, timezone
 from typing import Dict, Set
 
 
@@ -184,8 +183,6 @@ def build_report() -> Dict:
     report = {
 
         "schema": "afritech.proof.completeness.v1",
-
-        "generated_at": datetime.now(timezone.utc).isoformat(),
 
         "constitution": {
 

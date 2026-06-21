@@ -14,6 +14,7 @@ type PrimaryButtonProps = {
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  tone?: "primary" | "secondary";
   style?: StyleProp<ViewStyle>;
 };
 
@@ -21,6 +22,7 @@ export function PrimaryButton({
   label,
   onPress,
   disabled,
+  tone = "primary",
   style,
 }: PrimaryButtonProps) {
   return (
@@ -30,6 +32,7 @@ export function PrimaryButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
+        tone === "secondary" ? styles.secondary : styles.primary,
         disabled ? styles.disabled : null,
         pressed ? styles.pressed : null,
         style,
@@ -43,8 +46,8 @@ export function PrimaryButton({
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    backgroundColor: colors.primary,
     borderRadius: 8,
+    borderWidth: 1,
     minHeight: 48,
     justifyContent: "center",
     paddingHorizontal: spacing.lg,
@@ -59,5 +62,13 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.82,
+  },
+  primary: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  secondary: {
+    backgroundColor: colors.secondary,
+    borderColor: colors.secondary,
   },
 });

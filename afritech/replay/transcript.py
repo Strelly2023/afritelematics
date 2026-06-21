@@ -265,11 +265,12 @@ class ReplayTranscriptGenerator:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with path.open("w", encoding="utf-8") as f:
-            yaml.safe_dump(
-                transcript,
-                f,
-                sort_keys=True,
-                allow_unicode=True,
+            f.write(
+                yaml.safe_dump(
+                    transcript,
+                    sort_keys=True,
+                    allow_unicode=True,
+                )
             )
 
 

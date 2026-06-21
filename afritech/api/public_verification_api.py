@@ -38,7 +38,7 @@ def build_public_verification_router(
   <head>
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <title>NovaPay Public Verification Portal</title>
+    <title>AfriPay Public Verification Portal</title>
     <style>
       :root {{ color-scheme: light; }}
       body {{ font-family: Inter, Arial, sans-serif; margin: 0; background: #f5f7fa; color: #122033; }}
@@ -59,7 +59,7 @@ def build_public_verification_router(
     <main>
       <header>
         <div class='status'>Read-only public surface</div>
-        <h1>NovaPay Public Verification Portal</h1>
+        <h1>AfriPay Public Verification Portal</h1>
         <p>Independent parties can verify exported evidence, chain anchors, and trust dashboards without operator credentials.</p>
       </header>
       <section class='grid'>
@@ -78,8 +78,8 @@ def build_public_verification_router(
         <div class='panel'>
           <div class='label'>Audit packages</div>
           <ul>
-            <li><a href='/api/novapay/proofs/artifacts?download_format=json'>NovaPay proof bundle JSON</a></li>
-            <li><a href='/api/novapay/proofs/artifacts?download_format=pdf'>NovaPay proof bundle PDF</a></li>
+            <li><a href='/api/afripay/proofs/artifacts?download_format=json'>AfriPay proof bundle JSON</a></li>
+            <li><a href='/api/afripay/proofs/artifacts?download_format=pdf'>AfriPay proof bundle PDF</a></li>
           </ul>
         </div>
         <div class='panel'>
