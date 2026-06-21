@@ -93,3 +93,9 @@ deploy/production/.env.production.save
 deploy/production/secrets/
 *.pem
 deploy/production/.env.production.trust-node
+ignored:
+novascript-site/dist/
+novascript-site/node_modules/
+
+# Expo static prototype exports
+*/dist-web-prototype/
