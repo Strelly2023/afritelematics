@@ -119,8 +119,10 @@ use TestFlight or internal/ad hoc distribution
 Field team package:
 
 ```text
-driver app link
-rider app link
+local download page: http://127.0.0.1:8765/afriride-test-apps-download.html
+phone/LAN download page: http://192.168.20.14:8765/afriride-test-apps-download.html
+driver app link: http://192.168.20.14:8765/afriride-driver-live_pilot_001-release.apk
+rider app link: http://192.168.20.14:8765/afriride-rider-live_pilot_001-release.apk
 operator dashboard URL
 driver IDs
 rider IDs

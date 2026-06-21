@@ -291,6 +291,41 @@ Required behavior:
 - Same lifecycle truth as Rider app.
 - Replay history cannot be edited locally.
 
+## Operator Dashboard Wireframes
+
+### Operator Dashboard
+
+```text
++----------------------------------------------------------------------------------+
+| AfriRide Operator Dashboard                                             Refresh |
+|----------------------------------------------------------------------------------|
+| Fleet Trust Control                                                              |
+|                                                                                  |
+| [ Fleet Trust        ] [ Pilot Evidence     ]                                   |
+| [ Replay Exceptions  ] [ Public Verification]                                   |
+|                                                                                  |
+| Driver Trust Trends                                                              |
+| Mon  ████████████  93                                                            |
+| Tue  █████████████ 94                                                            |
+| Wed  ██████████████ 95                                                           |
+| Thu  ███████████████ 96                                                          |
+|                                                                                  |
+| Pilot Evidence                                                                   |
+| Verified rides today: 48                                                         |
+| GPS signal loss: 0                                                               |
+| Route deviations: 1                                                              |
+| Latency breaches: 0                                                              |
+| Public checks: 37                                                                |
++----------------------------------------------------------------------------------+
+```
+
+Required behavior:
+
+- Refresh triggers a bounded reload and disables the button while loading.
+- Metric cards use `good` and `warn` tone variants based on trust state.
+- Driver trust trend bars scale by score and clamp between 8% and 100%.
+- Public verification status is shown as operational, degraded, or offline.
+
 ## Accessibility Requirements
 
 - Minimum touch target: 44 by 44 points.
@@ -314,9 +349,11 @@ Driver / 03 Trip Lifecycle
 Driver / 04 Earnings
 Driver / 05 Trust Profile
 Driver / 06 Replay History
+Operator / 01 Dashboard
 Shared / TrustBadge States
 Shared / LifecycleRail States
 Shared / VerificationActions
+Shared / MetricCard States
 ```
 
 ## Boundary Copy

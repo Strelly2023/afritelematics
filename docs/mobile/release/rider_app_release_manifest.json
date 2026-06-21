@@ -11,6 +11,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
+  "apk_url": "http://192.168.20.14:8765/afriride-rider-live_pilot_001-release.apk",
   "required_capabilities": [
     "rider_auth",
     "pickup_destination_entry",
@@ -22,14 +23,17 @@
     "replay_status",
     "support_ticket"
   ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/afriride-rider-live_pilot_001-release.apk"
+  },
   "required_backend_contracts": [
-    "POST /auth/login",
-    "POST /rides/request",
-    "GET /rides/:id",
-    "GET /proof/:ride_id",
-    "GET /replay/:ride_id/status",
-    "GET /ledger/:ride_id",
-    "POST /support/ticket"
+    "POST /v1/mobile/auth/session",
+    "POST /v1/rider/rides",
+    "GET /v1/rider/rides/{ride_id}",
+    "GET /v1/rider/rides/{ride_id}/receipt",
+    "GET /v1/rider/rides/{ride_id}/replay",
+    "GET /v1/rider/rides/{ride_id}/ledger-receipt",
+    "GET /v1/rider/rides/{ride_id}/price-explanation"
   ],
   "required_store_assets": [
     "app_icon_512",

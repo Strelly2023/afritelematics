@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `347`
+- Startup-safe closure size: `348`
 - Django-bound modules declared in repo: `245`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `31`
+- Direct startup imports from `afritech.api.app`: `32`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (347 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (348 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (31)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (32)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (56 files)"]
+    Core --> Api["api (57 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `56` files
+- `api`: `57` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -104,10 +104,11 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (26)
+### Api (27)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
+- `afritech.api.afriride_next_gen_mobile_api`
 - `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.app`
@@ -476,6 +477,7 @@ flowchart TD
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
+- `afritech.api.afriride_next_gen_mobile_api`
 - `afritech.api.afriride_operational_api`
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.architecture_proof_api`

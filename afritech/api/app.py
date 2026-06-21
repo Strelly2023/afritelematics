@@ -32,6 +32,7 @@ from afritech.api.public_verification_api import build_public_verification_route
 from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
+from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
@@ -153,6 +154,7 @@ app.include_router(build_architecture_proof_router())
 
 # ✅ NovaRide mobile release readiness API
 app.include_router(build_afriride_mobile_release_router())
+app.include_router(build_afriride_next_gen_mobile_router())
 
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())

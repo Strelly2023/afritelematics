@@ -17,6 +17,7 @@ from afriride_system.api.system_routes import router as system_router
 from afriride_system.api.trace_middleware import trace_enforcement_middleware
 from afriride_system.api.responses import error
 from afritech.api.ingestion.event_ingestion import EventIngestionAPI, build_router
+from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
 
 app = FastAPI(title="NovaRide API")
 app.add_middleware(
@@ -40,6 +41,7 @@ app.include_router(passenger_router, prefix="/passenger", tags=["passenger"])
 app.include_router(driver_router, prefix="/driver", tags=["driver"])
 app.include_router(ride_router, prefix="/ride", tags=["ride"])
 app.include_router(system_router)
+app.include_router(build_afriride_next_gen_mobile_router())
 _AFRIRIDE_EVENT_SECRET = os.environ.get("AFRIRIDE_EVENT_INGESTION_SECRET", secrets.token_urlsafe(32))
 app.include_router(build_router(EventIngestionAPI(secret=_AFRIRIDE_EVENT_SECRET)))
 

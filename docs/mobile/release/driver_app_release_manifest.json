@@ -11,6 +11,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
+  "apk_url": "http://192.168.20.14:8765/afriride-driver-live_pilot_001-release.apk",
   "required_capabilities": [
     "driver_auth",
     "availability_toggle",
@@ -22,14 +23,22 @@
     "pilot_diagnostics",
     "support_ticket"
   ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/afriride-driver-live_pilot_001-release.apk"
+  },
   "required_backend_contracts": [
-    "POST /auth/login",
-    "POST /driver/availability",
-    "GET /driver/:driver_id/queue",
-    "POST /rides/accept",
-    "POST /rides/start",
-    "POST /rides/complete",
-    "GET /driver/:driver_id/earnings"
+    "POST /v1/mobile/auth/session",
+    "GET /v1/driver/{driver_id}/availability",
+    "POST /v1/driver/{driver_id}/availability",
+    "GET /v1/driver/{driver_id}/ride-queue",
+    "POST /v1/driver/rides/{ride_id}/accept",
+    "POST /v1/driver/rides/{ride_id}/reject",
+    "POST /v1/driver/rides/{ride_id}/arrive",
+    "POST /v1/driver/rides/{ride_id}/start",
+    "POST /v1/driver/rides/{ride_id}/complete",
+    "GET /v1/driver/{driver_id}/earnings",
+    "GET /v1/driver/{driver_id}/replay-history",
+    "GET /v1/operator/dashboard"
   ],
   "required_store_assets": [
     "app_icon_512",
