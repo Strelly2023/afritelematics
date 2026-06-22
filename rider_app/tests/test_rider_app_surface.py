@@ -91,6 +91,41 @@ def test_replay_screen_requires_verified_evidence() -> None:
     assert "replay.explanationSteps" in source
 
 
+def test_novaride_trust_uix_primitives_are_integrated() -> None:
+    widgets = [
+        "TrustScoreCard",
+        "LifecycleTimeline",
+        "HumanReceiptCard",
+        "VerificationStatusCard",
+        "MapPreviewCard",
+        "PaymentVerificationCard",
+        "EvidenceSummaryCard",
+        "RiderTrustDashboard",
+    ]
+
+    for widget in widgets:
+        source = read(f"ui/widgets/{widget}.tsx")
+        assert f"function {widget}" in source
+
+    live_tracking = read("ui/screens/LiveTrackingScreen.tsx")
+    receipt = read("ui/screens/ReceiptScreen.tsx")
+    replay = read("ui/screens/ReplayScreen.tsx")
+    tokens = read("ui/theme/trustTokens.ts")
+
+    assert "trustLevelColor" in tokens
+    assert "TrustScoreCard" in live_tracking
+    assert "MapPreviewCard" in live_tracking
+    assert "LifecycleTimeline" in live_tracking
+    assert "VerificationStatusCard" in live_tracking
+    assert "TrustScoreCard" in receipt
+    assert "HumanReceiptCard" in receipt
+    assert "PaymentVerificationCard" in receipt
+    assert "EvidenceSummaryCard" in receipt
+    assert "TrustScoreCard" in replay
+    assert "LifecycleTimeline" in replay
+    assert "EvidenceSummaryCard" in replay
+
+
 def test_price_explanation_screen_shows_core_source() -> None:
     source = read("ui/screens/PriceExplanationScreen.tsx")
 

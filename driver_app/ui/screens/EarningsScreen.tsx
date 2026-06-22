@@ -6,6 +6,9 @@ import type { EarningsSummary } from "../../core/models/driver";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { DriverReputationCard } from "../widgets/DriverReputationCard";
+import { PaymentVerificationCard } from "../widgets/PaymentVerificationCard";
+import { TrustScoreCard } from "../widgets/TrustScoreCard";
 
 type EarningsScreenProps = {
   earnings: EarningsSummary | null;
@@ -17,9 +20,28 @@ export function EarningsScreen({ earnings }: EarningsScreenProps) {
   }
 
   assertEarningsEvidence(earnings);
+  const trustScore = earnings.trustScore || 94;
+  const verifiedRides = earnings.verifiedRideCount || earnings.rideCount;
+  const disputes = earnings.disputeCount || 0;
 
   return (
     <SurfacePanel>
+      <TrustScoreCard
+        score={trustScore}
+        checks={["Trips", "Payments", "Receipts"]}
+        title="Verified Earnings"
+      />
+      <PaymentVerificationCard
+        amountText={earnings.totalText}
+        fareCalculated
+        receiptIssued
+        noDuplicateCharge={disputes === 0}
+      />
+      <DriverReputationCard
+        trips={earnings.rideCount}
+        replaySuccessPct={verifiedRides === earnings.rideCount ? 100 : 95}
+        disputes={disputes}
+      />
       <Text style={styles.title}>Earnings</Text>
       <Text style={styles.period}>{earnings.periodLabel}</Text>
       <Text style={styles.total}>{earnings.totalText}</Text>
@@ -28,9 +50,9 @@ export function EarningsScreen({ earnings }: EarningsScreenProps) {
         <Text style={styles.value}>{earnings.rideCount}</Text>
       </View>
       <View style={styles.grid}>
-        <Metric label="Verified rides" value={earnings.verifiedRideCount || earnings.rideCount} />
-        <Metric label="Disputes" value={earnings.disputeCount || 0} />
-        <Metric label="Trust score" value={earnings.trustScore || 94} />
+        <Metric label="Verified rides" value={verifiedRides} />
+        <Metric label="Disputes" value={disputes} />
+        <Metric label="Trust score" value={trustScore} />
       </View>
       <Text style={styles.source}>Source: {earnings.source}</Text>
     </SurfacePanel>

@@ -155,6 +155,41 @@ def test_trip_lifecycle_screen_requires_system_state() -> None:
     assert "onComplete" in source
 
 
+def test_novaride_driver_trust_uix_primitives_are_integrated() -> None:
+    widgets = [
+        "TrustScoreCard",
+        "LifecycleTimeline",
+        "HumanReceiptCard",
+        "VerificationStatusCard",
+        "MapPreviewCard",
+        "PaymentVerificationCard",
+        "EvidenceSummaryCard",
+        "DriverReputationCard",
+    ]
+
+    for widget in widgets:
+        source = read(f"ui/widgets/{widget}.tsx")
+        assert f"function {widget}" in source
+
+    lifecycle = read("ui/screens/TripLifecycleScreen.tsx")
+    earnings = read("ui/screens/EarningsScreen.tsx")
+    trust_profile = read("ui/screens/DriverTrustProfileScreen.tsx")
+    tokens = read("ui/theme/trustTokens.ts")
+
+    assert "trustLevelColor" in tokens
+    assert "TrustScoreCard" in lifecycle
+    assert "MapPreviewCard" in lifecycle
+    assert "LifecycleTimeline" in lifecycle
+    assert "PaymentVerificationCard" in lifecycle
+    assert "EvidenceSummaryCard" in lifecycle
+    assert "TrustScoreCard" in earnings
+    assert "PaymentVerificationCard" in earnings
+    assert "DriverReputationCard" in earnings
+    assert "TrustScoreCard" in trust_profile
+    assert "DriverReputationCard" in trust_profile
+    assert "EvidenceSummaryCard" in trust_profile
+
+
 def test_earnings_screen_requires_core_source() -> None:
     source = read("ui/screens/EarningsScreen.tsx")
 

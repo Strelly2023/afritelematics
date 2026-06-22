@@ -6,6 +6,10 @@ import type { RideReplay } from "../../core/models/ride";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { EvidenceSummaryCard } from "../widgets/EvidenceSummaryCard";
+import { LifecycleTimeline, type LifecycleStep } from "../widgets/LifecycleTimeline";
+import { MapPreviewCard } from "../widgets/MapPreviewCard";
+import { TrustScoreCard } from "../widgets/TrustScoreCard";
 
 type ReplayScreenProps = {
   replay: RideReplay;
@@ -21,7 +25,26 @@ export function ReplayScreen({ replay }: ReplayScreenProps) {
 
   return (
     <SurfacePanel>
-      <Text style={styles.title}>Replay timeline</Text>
+      <TrustScoreCard
+        score={replay.replayVerified ? 96 : 58}
+        checks={["Route", "Timeline", "Receipt"]}
+        title="Replay Verification"
+      />
+      <MapPreviewCard
+        routeText={replay.routeSummary || "Route verification available after replay"}
+        pickupConfirmed={replay.replayVerified}
+        dropoffConfirmed={replay.replayVerified}
+        gpsTraceAvailable={replay.replayVerified}
+      />
+      <LifecycleTimeline steps={buildReplayTimeline(timelineEvents)} />
+      <EvidenceSummaryCard
+        summary={
+          replay.replayVerified
+            ? "This trip replay matches the verified route and lifecycle events."
+            : "Replay is still pending and should be reviewed before final trust is confirmed."
+        }
+      />
+      <Text style={styles.title}>Replay details</Text>
       <Text style={styles.verified}>
         {replay.replayVerified ? "Verified replay" : "Replay pending"}
       </Text>
@@ -43,6 +66,25 @@ export function ReplayScreen({ replay }: ReplayScreenProps) {
       ))}
     </SurfacePanel>
   );
+}
+
+function buildReplayTimeline(
+  timelineEvents: Array<{ label: string; verified: boolean }>,
+): LifecycleStep[] {
+  return timelineEvents.map((event) => ({
+    label: humanReplayLabel(event.label),
+    completed: event.verified,
+    current: !event.verified,
+  }));
+}
+
+function humanReplayLabel(label: string): string {
+  switch (label) {
+    case "DRIVER_ACCEPTED":
+      return "Accepted";
+    default:
+      return label.charAt(0) + label.slice(1).toLowerCase();
+  }
 }
 
 const styles = StyleSheet.create({

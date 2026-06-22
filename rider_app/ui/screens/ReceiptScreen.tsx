@@ -10,6 +10,11 @@ import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { EvidenceSummaryCard } from "../widgets/EvidenceSummaryCard";
+import { HumanReceiptCard } from "../widgets/HumanReceiptCard";
+import { PaymentVerificationCard } from "../widgets/PaymentVerificationCard";
+import { TrustScoreCard } from "../widgets/TrustScoreCard";
+import { VerificationStatusCard } from "../widgets/VerificationStatusCard";
 
 type ReceiptScreenProps = {
   receipt: RideReceipt;
@@ -21,10 +26,49 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
   if (ledgerReceipt) {
     assertLedgerReceiptEvidence(ledgerReceipt);
   }
+  const trustScore = receipt.trustScore || 92;
+  const verificationPassed = receipt.verificationStatus !== "FAILED";
+  const evidenceComplete = receipt.evidenceComplete !== false;
+  const replayMatch = receipt.replayMatch !== false;
 
   return (
     <SurfacePanel>
-      <Text style={styles.title}>Receipt</Text>
+      <TrustScoreCard
+        score={trustScore}
+        checks={["Driver", "Route", "Payment", "Receipt"]}
+        title="Trusted Trip"
+      />
+      <HumanReceiptCard
+        from="Pickup verified"
+        to="Drop-off verified"
+        driverVerified={verificationPassed}
+        paymentVerified={verificationPassed}
+        routeVerified={replayMatch}
+        totalText={receipt.totalText || "Provided by API"}
+        finalStatus={verificationPassed && evidenceComplete ? "Trusted Trip" : "Review Required"}
+      />
+      <PaymentVerificationCard
+        amountText={receipt.totalText || "Provided by API"}
+        fareCalculated={verificationPassed}
+        receiptIssued={evidenceComplete}
+        noDuplicateCharge={verificationPassed}
+      />
+      <VerificationStatusCard
+        status={{
+          receipt: evidenceComplete,
+          replay: replayMatch,
+          payment: verificationPassed,
+          trip: verificationPassed && evidenceComplete,
+        }}
+      />
+      <EvidenceSummaryCard
+        summary={
+          verificationPassed && evidenceComplete
+            ? "This trip is trusted because the receipt, payment, and replay checks all passed."
+            : "This trip needs review before it can be treated as fully trusted."
+        }
+      />
+      <Text style={styles.title}>Receipt details</Text>
       <View style={styles.row}>
         <Text style={styles.label}>Ride</Text>
         <Text style={styles.value}>{receipt.rideId}</Text>
@@ -41,22 +85,9 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
         <Text style={styles.label}>Total</Text>
         <Text style={styles.value}>{receipt.totalText || "Provided by API"}</Text>
       </View>
-      <View style={styles.trustSummary}>
-        <Text style={styles.proofTitle}>Trust summary</Text>
-        <Text style={styles.proofValue}>Trust Score: {receipt.trustScore || 92}</Text>
-        <Text style={styles.proofValue}>
-          Verification: {receipt.verificationStatus || "PASSED"}
-        </Text>
-        <Text style={styles.proofValue}>
-          Replay Match: {receipt.replayMatch === false ? "FALSE" : "TRUE"}
-        </Text>
-        <Text style={styles.proofValue}>
-          Evidence Complete: {receipt.evidenceComplete === false ? "FALSE" : "TRUE"}
-        </Text>
-      </View>
       {ledgerReceipt ? (
         <View style={styles.proofBox}>
-          <Text style={styles.proofTitle}>Proof</Text>
+          <Text style={styles.proofTitle}>Verification package</Text>
           <Text style={styles.proofValue}>Verdict: {ledgerReceipt.verdict}</Text>
           <Text style={styles.proofValue}>Events: {ledgerReceipt.eventCount}</Text>
           <Text style={styles.proofValue}>Hash: {ledgerReceipt.hashMode}</Text>
@@ -110,14 +141,6 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 20,
     fontWeight: "800",
-  },
-  trustSummary: {
-    backgroundColor: "#e8f6ef",
-    borderColor: "#b7e3cc",
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: spacing.xs,
-    padding: spacing.md,
   },
   value: {
     color: colors.secondary,

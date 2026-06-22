@@ -5,6 +5,9 @@ import type { DriverAvailability, EarningsSummary } from "../../core/models/driv
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { DriverReputationCard } from "../widgets/DriverReputationCard";
+import { EvidenceSummaryCard } from "../widgets/EvidenceSummaryCard";
+import { TrustScoreCard } from "../widgets/TrustScoreCard";
 
 type DriverTrustProfileScreenProps = {
   availability: DriverAvailability | null;
@@ -18,9 +21,27 @@ export function DriverTrustProfileScreen({
   const trustScore = earnings?.trustScore || availability?.trustScore || 94;
   const verifiedRides = availability?.verifiedRides || earnings?.verifiedRideCount || 0;
   const replayConsistency = availability?.replayConsistencyPct || 100;
+  const disputes = earnings?.disputeCount || 0;
 
   return (
     <SurfacePanel>
+      <TrustScoreCard
+        score={trustScore}
+        checks={["Trips", "Replay", "Payments"]}
+        title="Driver Trust"
+      />
+      <DriverReputationCard
+        trips={earnings?.rideCount || verifiedRides}
+        replaySuccessPct={replayConsistency}
+        disputes={disputes}
+      />
+      <EvidenceSummaryCard
+        summary={
+          disputes === 0
+            ? "This driver profile is trusted through verified trips, replay consistency, and clean earnings history."
+            : "This driver profile has disputes that should be reviewed before high-trust dispatch."
+        }
+      />
       <View style={styles.header}>
         <Text style={styles.title}>Driver trust profile</Text>
         <Text style={styles.status}>Trusted driver</Text>
