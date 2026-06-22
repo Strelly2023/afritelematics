@@ -12,8 +12,8 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `354`
-- Django-bound modules declared in repo: `245`
+- Startup-safe closure size: `358`
+- Django-bound modules declared in repo: `246`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `35`
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (354 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (358 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (245 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (246 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -166,19 +166,22 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (285)
+### Other (289)
 
 - `afritech`
 - `afritech.afripay`
 - `afritech.afripay.api`
 - `afritech.afripay.audit_sandbox`
 - `afritech.afripay.billing`
+- `afritech.afripay.certification_fraud`
+- `afritech.afripay.compliance`
 - `afritech.afripay.config`
 - `afritech.afripay.events`
 - `afritech.afripay.exceptions`
 - `afritech.afripay.external_packages`
 - `afritech.afripay.fx`
 - `afritech.afripay.guards`
+- `afritech.afripay.intelligence`
 - `afritech.afripay.ledger`
 - `afritech.afripay.models`
 - `afritech.afripay.money`
@@ -220,6 +223,7 @@ flowchart TD
 - `afritech.afriprogramming.models`
 - `afritech.afriprogramming.persistence`
 - `afritech.afriprogramming.proposals`
+- `afritech.afriprogramming.rbac`
 - `afritech.afriprogramming.roles`
 - `afritech.afriprogramming.schemas`
 - `afritech.afriprogramming.services`

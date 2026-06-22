@@ -7,6 +7,12 @@ from afritech.afripay.audit_sandbox import (
     verify_audit_package,
     verify_independent_audit_sandbox,
 )
+from afritech.afripay.certification_fraud import (
+    NovaPayCertificationEvidence,
+    NovaPayFraudAssessment,
+    NovaPayFraudCertificationEngine,
+    NovaPayTrustContext,
+)
 from afritech.afripay.external_packages import (
     InvestorTechnicalDossier,
     ProviderCertificationEvidence,
@@ -44,6 +50,10 @@ __all__ = [
     "Money",
     "PaymentOrchestrator",
     "TreasuryEngine",
+    "NovaPayCertificationEvidence",
+    "NovaPayFraudAssessment",
+    "NovaPayFraudCertificationEngine",
+    "NovaPayTrustContext",
     "RecursiveProofBundle",
     "ProtocolAnchorVerification",
     "SignedProofEvidence",

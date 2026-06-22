@@ -8,11 +8,14 @@ from typing import Callable
 from django.http import JsonResponse
 
 from afritech.monitoring.alerts import send_integrity_alert
+from afritech.afriprogramming.rbac import role_payment_scopes
+from afriride_system.api.auth import JWT as AfriRideJWT
 from afriride_system.django_app.apps.afripay.security import (
     AfriPayRateLimiter,
     APIKeyService,
     OAuth2TokenService,
     parse_authorization_header,
+    SecurityPrincipal,
     send_auth_alert,
 )
 
@@ -67,7 +70,10 @@ class AfriPaySecurityMiddleware:
         scheme, token = auth
         try:
             if scheme == "oauth2":
-                principal = self.oauth.verify_access_token(token)
+                try:
+                    principal = self.oauth.verify_access_token(token)
+                except ValueError as exc:
+                    principal = self._principal_from_role_token(token, exc)
             else:
                 principal = self.api_keys.authenticate(token)
         except ValueError as exc:
@@ -76,7 +82,23 @@ class AfriPaySecurityMiddleware:
             return JsonResponse({"detail": str(exc)}, status=status)
 
         request.afripay_principal = principal
-        request.afripay_auth_scheme = scheme
+        request.afripay_auth_scheme = principal.scheme
         request.afripay_scopes = set(principal.scopes)
         request.afripay_identity = principal.subject
         return self.get_response(request)
+
+    @staticmethod
+    def _principal_from_role_token(token: str, original_error: ValueError):
+        try:
+            claims = AfriRideJWT.verify_token(token)
+        except ValueError as exc:
+            raise original_error from exc
+        scopes = role_payment_scopes(claims.role)
+        if not scopes:
+            raise original_error
+        return SecurityPrincipal(
+            subject=claims.sub,
+            scheme="rbac_jwt",
+            scopes=tuple(scopes),
+            client_name=claims.role,
+        )

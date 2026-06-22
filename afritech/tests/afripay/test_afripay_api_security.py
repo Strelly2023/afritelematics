@@ -1,18 +1,28 @@
 from __future__ import annotations
 
+import base64
 from decimal import Decimal
+import hashlib
+import hmac
 import json
+import os
+import time
 from importlib import import_module
 from urllib.parse import parse_qs
 
 import httpx
 import pytest
 from django.utils import timezone
+from django.http import HttpResponse
 from rest_framework.test import APIRequestFactory
 
 from afritech.afripay.money import Money
 from afritech.afripay.models import PaymentRoute as DomainPaymentRoute
 from afritech.afripay.providers_sandbox import FlutterwaveSandboxProvider, MpesaSandboxProvider
+from afritech.afriprogramming.rbac import canonical_role_name
+
+
+os.environ.setdefault("AFRIRIDE_JWT_SECRET", "afripay-rbac-test-secret")
 
 
 def afripay_models():
@@ -29,6 +39,41 @@ def afripay_security():
 
 def afripay_middleware():
     return import_module("afriride_system.django_app.apps.afripay.middleware")
+
+
+def _b64url_encode(payload: bytes) -> str:
+    return base64.urlsafe_b64encode(payload).rstrip(b"=").decode("ascii")
+
+
+def _afriride_test_token(subject: str, role: str) -> str:
+    secret = os.environ["AFRIRIDE_JWT_SECRET"].encode("utf-8")
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload = {
+        "sub": subject,
+        "role": canonical_role_name(role),
+        "exp": int(time.time()) + 12 * 60 * 60,
+    }
+    signing_input = ".".join(
+        (
+            _b64url_encode(json.dumps(header, sort_keys=True, separators=(",", ":")).encode()),
+            _b64url_encode(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()),
+        )
+    )
+    signature = hmac.new(secret, signing_input.encode("ascii"), hashlib.sha256).digest()
+    return f"{signing_input}.{_b64url_encode(signature)}"
+
+
+def _rbac_authed_request(factory, method: str, path: str, data: dict | None, subject: str, role: str, scopes: list[str]):
+    token = _afriride_test_token(subject, role)
+    request = getattr(factory, method)(
+        path,
+        data or {},
+        format="json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    middleware = afripay_middleware().AfriPaySecurityMiddleware(lambda req: HttpResponse(status=204))
+    middleware(request)
+    return request
 
 
 @pytest.mark.django_db
@@ -110,6 +155,188 @@ def test_middleware_allows_webhook_prefix_without_bearer():
     response = middleware(request)
 
     assert response.status_code == 204
+
+
+@pytest.mark.django_db
+def test_middleware_maps_afriride_role_tokens_to_payment_scopes():
+    factory = APIRequestFactory()
+    token = _afriride_test_token("driver-1", "DRIVER")
+    request = factory.get("/api/afripay/payments", HTTP_AUTHORIZATION=f"Bearer {token}")
+    middleware = afripay_middleware().AfriPaySecurityMiddleware(lambda req: HttpResponse(status=204))
+
+    response = middleware(request)
+
+    assert response.status_code == 204
+    assert request.afripay_auth_scheme == "rbac_jwt"
+    assert request.afripay_identity == "driver-1"
+    assert "payments:read" in request.afripay_scopes
+    assert "payouts:read" in request.afripay_scopes
+
+
+@pytest.mark.django_db
+def test_rbac_jwt_payment_create_requires_subject_bound_payer():
+    factory = APIRequestFactory()
+    allowed_request = _rbac_authed_request(
+        factory,
+        "post",
+        "/api/afripay/payments",
+        {
+            "payer_id": "driver-1",
+            "payer_country": "AU",
+            "payer_kyc_level": 2,
+            "payee_id": "merchant.001",
+            "payee_country": "BI",
+            "payee_kyc_level": 2,
+            "amount": "18.00",
+            "currency": "AUD",
+            "reference": "rbac.payment.allowed",
+            "preference": "balanced",
+        },
+        subject="driver-1",
+        role="DRIVER",
+        scopes=["payments:write", "payments:read", "wallets:read", "monitoring:read"],
+    )
+    allowed_response = afripay_views().payment_create_view(allowed_request)
+
+    assert allowed_response.status_code == 201
+    assert allowed_response.data["identity_context"]["identity_bound"] is True
+    assert allowed_response.data["identity_context"]["binding_mode"] == "subject_bound"
+
+    denied_request = _rbac_authed_request(
+        factory,
+        "post",
+        "/api/afripay/payments",
+        {
+            "payer_id": "driver-1",
+            "payer_country": "AU",
+            "payer_kyc_level": 2,
+            "payee_id": "merchant.001",
+            "payee_country": "BI",
+            "payee_kyc_level": 2,
+            "amount": "18.00",
+            "currency": "AUD",
+            "reference": "rbac.payment.denied",
+            "preference": "balanced",
+        },
+        subject="driver-2",
+        role="DRIVER",
+        scopes=["payments:write", "payments:read", "wallets:read", "monitoring:read"],
+    )
+    denied_response = afripay_views().payment_create_view(denied_request)
+
+    assert denied_response.status_code == 403
+    assert "subject-bound" in denied_response.data["detail"]
+
+
+@pytest.mark.django_db
+def test_rbac_jwt_payment_and_wallet_details_are_owner_bound():
+    models = afripay_models()
+    payer = models.AfriPayParty.objects.create(
+        party_id="driver-1",
+        country="AU",
+        kyc_level=2,
+        risk_score=Decimal("0"),
+    )
+    payee = models.AfriPayParty.objects.create(
+        party_id="merchant.001",
+        country="BI",
+        kyc_level=2,
+        risk_score=Decimal("0"),
+    )
+    wallet = models.Wallet.objects.create(
+        wallet_id="wallet.driver.1",
+        owner=payer,
+        wallet_type="personal",
+        home_country="AU",
+    )
+    models.Transaction.objects.create(
+        transaction_id="tx.rbac.001",
+        reference="rbac.payment.detail",
+        payer=payer,
+        payee=payee,
+        amount=Decimal("18.00"),
+        currency="AUD",
+        transaction_type="payment",
+        metadata={},
+    )
+
+    factory = APIRequestFactory()
+    denied_payment_request = _rbac_authed_request(
+        factory,
+        "get",
+        "/api/afripay/payments/rbac.payment.detail",
+        None,
+        subject="driver-2",
+        role="DRIVER",
+        scopes=["payments:read", "wallets:read", "monitoring:read"],
+    )
+    denied_payment_response = afripay_views().payment_detail_view(denied_payment_request, "rbac.payment.detail")
+    assert denied_payment_response.status_code == 403
+
+    allowed_payment_request = _rbac_authed_request(
+        factory,
+        "get",
+        "/api/afripay/payments/rbac.payment.detail",
+        None,
+        subject="driver-1",
+        role="DRIVER",
+        scopes=["payments:read", "wallets:read", "monitoring:read"],
+    )
+    allowed_payment_response = afripay_views().payment_detail_view(allowed_payment_request, "rbac.payment.detail")
+    assert allowed_payment_response.status_code == 200
+    assert allowed_payment_response.data["reference"] == "rbac.payment.detail"
+
+    denied_wallet_request = _rbac_authed_request(
+        factory,
+        "get",
+        "/api/afripay/wallets/wallet.driver.1",
+        None,
+        subject="driver-2",
+        role="DRIVER",
+        scopes=["wallets:read", "monitoring:read"],
+    )
+    denied_wallet_response = afripay_views().wallet_detail_view(denied_wallet_request, "wallet.driver.1")
+    assert denied_wallet_response.status_code == 403
+
+    allowed_wallet_request = _rbac_authed_request(
+        factory,
+        "get",
+        "/api/afripay/wallets/wallet.driver.1",
+        None,
+        subject="driver-1",
+        role="DRIVER",
+        scopes=["wallets:read", "monitoring:read"],
+    )
+    allowed_wallet_response = afripay_views().wallet_detail_view(allowed_wallet_request, "wallet.driver.1")
+    assert allowed_wallet_response.status_code == 200
+    assert allowed_wallet_response.data["wallet_id"] == "wallet.driver.1"
+
+
+@pytest.mark.django_db
+def test_novapay_wiring_surface_exposes_control_plane_links():
+    factory = APIRequestFactory()
+    request = factory.get(
+        "/api/novapay/wiring",
+        {"organization_id": "tenant-001", "role": "ADMIN", "limit": "4"},
+    )
+    request.afripay_principal = afripay_security().SecurityPrincipal(
+        subject="afripay-console",
+        scheme="oauth2",
+        scopes=("monitoring:read",),
+        client_name="afripay-console",
+    )
+    request.afripay_scopes = {"monitoring:read"}
+
+    response = afripay_views().wiring_view(request)
+
+    assert response.status_code == 200
+    assert response.data["status"] == "wired"
+    assert response.data["organization_id"] == "tenant-001"
+    assert set(response.data["wiring"]) == {"novasync", "novatrust", "novaid", "novapay", "control_plane"}
+    assert response.data["wiring"]["novasync"]["signed_audit_chain"]["read_only"] is True
+    assert response.data["wiring"]["novapay"]["billing_preview"]["read_only"] is True
+    assert response.data["wiring"]["control_plane"]["controlled_execution_activation"]["read_only"] is True
+    assert any(link["path"] == "/api/novapay/wiring" for link in response.data["links"])
 
 
 def _mock_transport(callback):

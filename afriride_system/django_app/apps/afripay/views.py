@@ -33,6 +33,8 @@ from afritech.afripay.reconciliation import (
     LedgerReconciliationEngine,
     validate_global_ledger_integrity,
 )
+from afritech.afriprogramming.control_plane import get_control_plane
+from afritech.afriprogramming.rbac import canonical_role_name
 from afriride_system.django_app.apps.afripay.models import (
     APIKeyCredential,
     Escrow,
@@ -86,6 +88,88 @@ API_KEYS = APIKeyService()
 
 def _principal(request) -> SecurityPrincipal | None:
     return getattr(request, "afripay_principal", None)
+
+
+def _principal_scheme(request) -> str:
+    principal = _principal(request)
+    if principal is not None:
+        scheme = getattr(principal, "scheme", "")
+        if scheme:
+            return str(scheme)
+    return str(getattr(request, "afripay_auth_scheme", "") or "")
+
+
+def _principal_subject(request) -> str | None:
+    principal = _principal(request)
+    if principal is not None:
+        subject = getattr(principal, "subject", "")
+        if subject:
+            return str(subject)
+    identity = getattr(request, "afripay_identity", "")
+    return str(identity) if identity else None
+
+
+def _principal_role(request) -> str | None:
+    if _principal_scheme(request) != "rbac_jwt":
+        return None
+    principal = _principal(request)
+    role = ""
+    if principal is not None:
+        role = str(getattr(principal, "client_name", "") or "")
+    if not role:
+        role = str(getattr(request, "afripay_role", "") or "")
+    return canonical_role_name(role) if role else None
+
+
+def _is_subject_bound_actor(request) -> bool:
+    return _principal_scheme(request) == "rbac_jwt"
+
+
+def _is_admin_actor(request) -> bool:
+    return _principal_role(request) == "ADMIN"
+
+
+def _subject_bound_access_allowed(request, subjects: tuple[str, ...]) -> bool:
+    if not _is_subject_bound_actor(request):
+        return True
+    if _is_admin_actor(request):
+        return True
+    subject = _principal_subject(request)
+    return bool(subject and subject in subjects)
+
+
+def _identity_context(
+    request,
+    *,
+    payer_id: str | None = None,
+    payee_id: str | None = None,
+    wallet_owner_id: str | None = None,
+) -> dict[str, Any]:
+    principal = _principal(request)
+    scheme = _principal_scheme(request) or "unknown"
+    role = _principal_role(request)
+    subject = _principal_subject(request)
+    context: dict[str, Any] = {
+        "authenticated": principal is not None,
+        "subject": subject,
+        "scheme": scheme,
+        "client_name": getattr(principal, "client_name", None) if principal is not None else None,
+        "role": role,
+        "identity_bound": _is_subject_bound_actor(request),
+        "binding_mode": "service_account",
+    }
+    if _is_subject_bound_actor(request):
+        if role == "ADMIN":
+            context["binding_mode"] = "administrator_override"
+        else:
+            context["binding_mode"] = "subject_bound"
+    if payer_id is not None:
+        context["payer_id"] = payer_id
+    if payee_id is not None:
+        context["payee_id"] = payee_id
+    if wallet_owner_id is not None:
+        context["wallet_owner_id"] = wallet_owner_id
+    return context
 
 
 def _require_scope_response(request, scope: str) -> Response | None:
@@ -176,11 +260,18 @@ def payment_create_view(request) -> Response:
     serializer = PaymentCreateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     data = dict(serializer.validated_data)
+    identity_context = _identity_context(
+        request,
+        payer_id=str(data["payer_id"]),
+        payee_id=str(data["payee_id"]),
+    )
+    if not _subject_bound_access_allowed(request, (str(data["payer_id"]),)):
+        return Response({"detail": "payment creation requires subject-bound payer_id"}, status=403)
+    metadata = dict(data.get("metadata") or {})
+    metadata["identity_context"] = identity_context
+    data["metadata"] = metadata
     idempotency_key = request.headers.get("Idempotency-Key") or data["reference"]
     idempotency = PersistentIdempotencyStore()
-    existing = idempotency.get_existing_response(idempotency_key)
-    if existing is not None:
-        return Response(existing, status=200)
     with db_transaction.atomic():
         claim, created = idempotency.claim(idempotency_key, data)
     if not created:
@@ -189,10 +280,16 @@ def payment_create_view(request) -> Response:
         return Response({"detail": "idempotency key already claimed"}, status=409)
     if data.pop("async_processing", False):
         task = enqueue_payment_processing(data, idempotency_key=idempotency_key)
-        response = {"status": "queued", "reference": data["reference"], "task_id": task["task_id"]}
+        response = {
+            "status": "queued",
+            "reference": data["reference"],
+            "task_id": task["task_id"],
+            "identity_context": identity_context,
+        }
         idempotency.store_response(idempotency_key, response)
         return Response(response, status=202)
     response = _create_payment_sync(data)
+    response["identity_context"] = identity_context
     idempotency.store_response(idempotency_key, response)
     return Response(response, status=201)
 
@@ -202,7 +299,15 @@ def payment_detail_view(request, reference: str) -> Response:
     scope_error = _require_scope_response(request, "payments:read")
     if scope_error is not None:
         return scope_error
-    tx = Transaction.objects.prefetch_related("routes").get(reference=reference)
+    try:
+        tx = Transaction.objects.prefetch_related("routes").get(reference=reference)
+    except Transaction.DoesNotExist:
+        return Response({"detail": "payment not found"}, status=404)
+    if not _subject_bound_access_allowed(
+        request,
+        (str(tx.payer.party_id), str(tx.payee.party_id)),
+    ):
+        return Response({"detail": "payment access requires participant ownership"}, status=403)
     return Response(TransactionSerializer(tx).data)
 
 
@@ -228,8 +333,98 @@ def wallet_detail_view(request, wallet_id: str) -> Response:
     scope_error = _require_scope_response(request, "wallets:read")
     if scope_error is not None:
         return scope_error
-    wallet = Wallet.objects.prefetch_related("currency_accounts").get(wallet_id=wallet_id)
+    try:
+        wallet = Wallet.objects.prefetch_related("currency_accounts").get(wallet_id=wallet_id)
+    except Wallet.DoesNotExist:
+        return Response({"detail": "wallet not found"}, status=404)
+    if not _subject_bound_access_allowed(request, (str(wallet.owner.party_id),)):
+        return Response({"detail": "wallet access requires owner ownership"}, status=403)
     return Response(WalletSerializer(wallet).data)
+
+
+@api_view(["GET"])
+def wiring_view(request) -> Response:
+    scope_error = _require_scope_response(request, "monitoring:read")
+    if scope_error is not None:
+        return scope_error
+
+    query_params = getattr(request, "query_params", None) or getattr(request, "GET", {})
+    organization_id = (
+        query_params.get("organization_id")
+        or request.headers.get("X-Organization-Id")
+        or "afritech-core"
+    )
+    limit = int(query_params.get("limit") or 24)
+    role = canonical_role_name(str(query_params.get("role") or _principal_role(request) or "ADMIN"))
+    control_plane = get_control_plane()
+
+    signed_audit_chain = control_plane.signed_audit_chain(organization_id=organization_id)
+    signed_audit_verify = control_plane.signed_audit_verify(organization_id=organization_id)
+    distributed_trust_network = control_plane.distributed_trust_network(organization_id=organization_id)
+    trust = control_plane.trust(organization_id=organization_id)
+    trust_risk = control_plane.trust_risk(organization_id=organization_id)
+    certification = control_plane.certification(organization_id=organization_id)
+    identity_bindings = control_plane.identity_bindings(organization_id=organization_id)
+    rbac_catalog = control_plane.rbac_catalog(organization_id=organization_id)
+    rbac_role = control_plane.rbac_role(role=role, organization_id=organization_id)
+    billing_summary = control_plane.billing_summary(organization_id=organization_id)
+    billing_preview = control_plane.billing_preview(organization_id=organization_id)
+    billing_records = control_plane.billing_records(organization_id=organization_id, limit=limit)
+    controlled_execution = control_plane.controlled_execution_activation(
+        organization_id=organization_id,
+        limit=limit,
+    )
+    identity_context = _identity_context(request)
+
+    return Response(
+        {
+            "view": "novapay_wiring",
+            "product": "NovaPay",
+            "organization_id": organization_id,
+            "status": "wired",
+            "identity_context": identity_context,
+            "wiring": {
+                "novasync": {
+                    "status": "synchronized",
+                    "signed_audit_chain": signed_audit_chain,
+                    "signed_audit_verify": signed_audit_verify,
+                    "distributed_trust_network": distributed_trust_network,
+                },
+                "novatrust": {
+                    "status": "verified",
+                    "trust": trust,
+                    "trust_risk": trust_risk,
+                    "certification": certification,
+                },
+                "novaid": {
+                    "status": "authority_bound",
+                    "identity_bindings": identity_bindings,
+                    "rbac_catalog": rbac_catalog,
+                    "rbac_role": rbac_role,
+                },
+                "novapay": {
+                    "status": "finance_ready",
+                    "billing_summary": billing_summary,
+                    "billing_preview": billing_preview,
+                    "billing_records": billing_records,
+                },
+                "control_plane": {
+                    "status": "execution_ready",
+                    "controlled_execution_activation": controlled_execution,
+                },
+            },
+            "links": [
+                {"label": "NovaPay Payments", "path": "/api/novapay/payments"},
+                {"label": "NovaPay Wiring", "path": "/api/novapay/wiring"},
+                {"label": "NovaTech Intranet", "path": "/v1/novatech/intranet/platform"},
+                {"label": "Organization Billing", "path": "/v1/novatech/organizations/{organization_id}/billing"},
+                {"label": "Controlled Execution", "path": "/v1/novatech/organizations/{organization_id}/execution"},
+            ],
+            "read_only": True,
+            "projection_only": True,
+            "governance_linked": True,
+        }
+    )
 
 
 @api_view(["GET"])

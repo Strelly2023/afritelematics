@@ -10,6 +10,7 @@ from afriride_system.django_app.apps.afripay import views
 urlpatterns = [
     path("auth/oauth/token", views.oauth_token_view),
     path("auth/api-keys", views.api_key_issue_view),
+    path("wiring", views.wiring_view),
     path("payments", views.payment_create_view),
     path("payments/<str:reference>", views.payment_detail_view),
     path("fx/quote", views.fx_quote_view),
