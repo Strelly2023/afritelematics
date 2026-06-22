@@ -59,6 +59,7 @@ from afritech.afroprog_workspace.models import (
     ProjectWorkspace,
     afroprog_seed_projects,
 )
+from afritech.novascript import get_novascript_service
 
 
 STAFF_ROLES: tuple[str, ...] = (
@@ -1239,6 +1240,56 @@ def build_billing_summary(organization_id: str | None = None) -> dict[str, Any]:
     }
 
 
+def build_billing_preview(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    usage_total = _STORE.count_usage(organization_id=org_id)
+    latest = _STORE.latest_trust_score(organization_id=org_id)
+    estimated_amount = round(usage_total * 0.05, 2)
+    return {
+        "view": "novaprogramming_billing_preview",
+        "organization_id": org_id,
+        "plan": "enterprise",
+        "usage_total": usage_total,
+        "estimated_amount": estimated_amount,
+        "billing_enabled": False,
+        "trust_score": latest["trust_score"] if latest else None,
+        "classification": latest["classification"] if latest else None,
+        "read_only": True,
+    }
+
+
+def build_billing_records(
+    *,
+    organization_id: str | None = None,
+    limit: int = 100,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    records = _STORE.list_billing_records(organization_id=org_id, limit=limit)
+    return {
+        "view": "novaprogramming_billing_records",
+        "organization_id": org_id,
+        "count": len(records),
+        "billing_records": records,
+        "read_only": True,
+    }
+
+
+def build_organization_directory(
+    *,
+    organization_id: str | None = None,
+    limit: int = 100,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    organizations = _STORE.list_organizations(organization_id=organization_id, limit=limit)
+    return {
+        "view": "novaprogramming_organization_directory",
+        "organization_id": org_id,
+        "organization_count": len(organizations),
+        "organizations": organizations,
+        "read_only": True,
+    }
+
+
 def build_policy_registry(organization_id: str | None = None) -> dict[str, Any]:
     org_id = organization_id or DEFAULT_ORGANIZATION_ID
     service = _policy_registry()
@@ -1370,6 +1421,2145 @@ def build_trust_trends(organization_id: str | None = None) -> dict[str, Any]:
         **trends,
         "read_only": True,
     }
+
+
+def _analytics_clamp(value: float | int, *, minimum: int = 0, maximum: int = 100) -> int:
+    return max(minimum, min(maximum, int(round(float(value)))))
+
+
+def _analytics_series(series: list[int]) -> dict[str, Any]:
+    if not series:
+        return {
+            "count": 0,
+            "first": 0,
+            "latest": 0,
+            "delta": 0,
+            "slope": 0.0,
+            "direction": "stable",
+            "average": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+        }
+    first = series[0]
+    latest = series[-1]
+    delta = latest - first
+    slope = delta / max(1, len(series) - 1)
+    if slope > 0.5:
+        direction = "rising"
+    elif slope < -0.5:
+        direction = "falling"
+    else:
+        direction = "stable"
+    return {
+        "count": len(series),
+        "first": first,
+        "latest": latest,
+        "delta": delta,
+        "slope": round(slope, 2),
+        "direction": direction,
+        "average": round(sum(series) / len(series), 2),
+        "minimum": min(series),
+        "maximum": max(series),
+    }
+
+
+def _analytics_payload_metrics(payload: dict[str, Any]) -> dict[str, int]:
+    pilot_evidence = payload.get("pilot_evidence") or {}
+    driver_trust_trend = payload.get("driver_trust_trend") or []
+    trust_score = int(payload.get("fleet_trust_score") or payload.get("trust_score") or 0)
+    active_drivers = int(payload.get("active_drivers") or 0)
+    verified_rides_today = int(payload.get("verified_rides_today") or payload.get("completed_rides") or 0)
+    evidence_packets_today = int(payload.get("evidence_packets_today") or payload.get("receipts_count") or 0)
+    open_replay_exceptions = int(payload.get("open_replay_exceptions") or payload.get("guard_count") or 0)
+    replay_exception_rate_pct = float(payload.get("replay_exception_rate_pct") or 0.0)
+    shift_count = int(
+        pilot_evidence.get("shift_count")
+        or payload.get("total_rides")
+        or verified_rides_today
+        or len(driver_trust_trend)
+        or 0
+    )
+    gps_signal_loss_events = int(pilot_evidence.get("gps_signal_loss_events") or 0)
+    route_deviation_events = int(pilot_evidence.get("route_deviation_events") or 0)
+    latency_breaches = int(pilot_evidence.get("latency_breaches") or 0)
+    total_rides = max(verified_rides_today, shift_count)
+    receipts_count = evidence_packets_today
+    trace_count = max(total_rides, receipts_count)
+    missing_traces = max(0, trace_count - receipts_count)
+    replay_failures = open_replay_exceptions + route_deviation_events
+    hash_chain_failures = route_deviation_events
+    guard_count = open_replay_exceptions
+    alert_count = max(0, replay_failures + missing_traces + latency_breaches + gps_signal_loss_events)
+    evidence_coverage = 0 if trace_count == 0 else _analytics_clamp((receipts_count / trace_count) * 100)
+    trust_health = _analytics_clamp(trust_score - replay_failures * 10 - missing_traces * 4 - alert_count * 2)
+    replay_health_score = _analytics_clamp(
+        100 - replay_failures * 12 - hash_chain_failures * 6 - gps_signal_loss_events * 4 - latency_breaches * 2
+    )
+    exception_pressure = max(
+        0,
+        replay_failures + missing_traces + gps_signal_loss_events + latency_breaches + int(round(replay_exception_rate_pct / 10)),
+    )
+    return {
+        "trust_score": trust_score,
+        "trust_health": trust_health,
+        "replay_health_score": replay_health_score,
+        "evidence_coverage": evidence_coverage,
+        "exception_pressure": exception_pressure,
+        "alert_count": alert_count,
+        "active_drivers": active_drivers,
+        "completed_rides": verified_rides_today,
+        "total_rides": total_rides,
+        "guard_count": guard_count,
+        "replay_failures": replay_failures,
+        "hash_chain_failures": hash_chain_failures,
+        "missing_traces": missing_traces,
+        "receipts_count": receipts_count,
+        "trace_count": trace_count,
+    }
+
+
+def record_dashboard_analytics_snapshot(
+    *,
+    payload: dict[str, Any],
+    source: str,
+    snapshot_type: str = "operator_dashboard",
+    organization_id: str | None = None,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    metrics = _analytics_payload_metrics(payload)
+    return _STORE.store_dashboard_analytics_snapshot(
+        organization_id=org_id,
+        source=source,
+        snapshot_type=snapshot_type,
+        payload=payload,
+        **metrics,
+    )
+
+
+def _build_dashboard_analytics_context(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    snapshot_type: str = "operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    snapshots = _STORE.list_dashboard_analytics_snapshots(
+        organization_id=org_id,
+        source=source,
+        snapshot_type=snapshot_type,
+        limit=limit,
+    )
+    history = list(reversed(snapshots))
+    trust_series = [item["trust_score"] for item in history]
+    coverage_series = [item["evidence_coverage"] for item in history]
+    exception_series = [item["exception_pressure"] for item in history]
+    latest = history[-1] if history else None
+    trust_trend = _analytics_series(trust_series)
+    coverage_trend = _analytics_series(coverage_series)
+    exception_trend = _analytics_series(exception_series)
+    source_breakdown: dict[str, int] = {}
+    for item in history:
+        source_breakdown[item["source"]] = source_breakdown.get(item["source"], 0) + 1
+
+    insights: list[dict[str, Any]] = []
+    if latest is not None:
+        if trust_trend["direction"] == "rising":
+            trust_message = "Trust is improving across the retained history."
+            trust_severity = "good"
+        elif trust_trend["direction"] == "falling":
+            trust_message = "Trust is drifting lower across the retained history."
+            trust_severity = "warning"
+        else:
+            trust_message = "Trust is stable across the retained history."
+            trust_severity = "info"
+        insights.append(
+            {
+                "id": "trust-trend",
+                "title": "Trust trend",
+                "severity": trust_severity,
+                "detail": (
+                    f"Latest trust score is {latest['trust_score']} with a {trust_trend['direction']} "
+                    f"trend and {trust_trend['delta']} net change over {trust_trend['count']} samples. "
+                    f"{trust_message}"
+                ),
+            }
+        )
+
+        if coverage_trend["direction"] == "rising":
+            coverage_message = "Evidence coverage is strengthening."
+            coverage_severity = "good"
+        elif coverage_trend["direction"] == "falling":
+            coverage_message = "Evidence coverage is weakening."
+            coverage_severity = "warning"
+        else:
+            coverage_message = "Evidence coverage is steady."
+            coverage_severity = "info"
+        insights.append(
+            {
+                "id": "evidence-trend",
+                "title": "Evidence coverage",
+                "severity": coverage_severity,
+                "detail": (
+                    f"Latest coverage is {latest['evidence_coverage']}% with {latest['receipts_count']} "
+                    f"receipts over {latest['trace_count']} traces. {coverage_message}"
+                ),
+            }
+        )
+
+        if exception_trend["direction"] == "rising":
+            exception_message = "Exception pressure is increasing and should be watched."
+            exception_severity = "critical" if latest["exception_pressure"] > 2 else "warning"
+        elif exception_trend["direction"] == "falling":
+            exception_message = "Exception pressure is easing."
+            exception_severity = "good"
+        else:
+            exception_message = "Exception pressure is flat."
+            exception_severity = "info"
+        insights.append(
+            {
+                "id": "exception-trend",
+                "title": "Replay exception pressure",
+                "severity": exception_severity,
+                "detail": (
+                    f"Current pressure is {latest['exception_pressure']} with {latest['replay_failures']} replay "
+                    f"failure(s) and {latest['missing_traces']} missing trace(s). {exception_message}"
+                ),
+            }
+        )
+
+        insights.append(
+            {
+                "id": "history-depth",
+                "title": "Persistent history",
+                "severity": "info",
+                "detail": (
+                    f"{len(history)} analytics snapshot(s) are retained in the rolling history from "
+                    f"{len(source_breakdown)} source(s)."
+                ),
+            }
+        )
+
+        if latest["guard_count"] > 0:
+            insights.append(
+                {
+                    "id": "guard-pressure",
+                    "title": "Guard pressure",
+                    "severity": "warning" if latest["guard_count"] <= 2 else "critical",
+                    "detail": (
+                        f"{latest['guard_count']} guard violation(s) remain visible in the live operating window."
+                    ),
+                }
+            )
+
+    trust_prediction = latest["trust_score"] if latest is not None else 0
+    coverage_prediction = latest["evidence_coverage"] if latest is not None else 0
+    exception_prediction = latest["exception_pressure"] if latest is not None else 0
+    trust_adjustment = trust_trend["slope"] * 3 - exception_trend["slope"] * 2
+    coverage_adjustment = coverage_trend["slope"] * 2 - max(0.0, exception_trend["slope"])
+    exception_adjustment = exception_trend["slope"] * 2 + max(0.0, 100 - coverage_prediction) / 25
+    predicted_trust_score = _analytics_clamp(trust_prediction + trust_adjustment)
+    predicted_coverage = _analytics_clamp(coverage_prediction + coverage_adjustment)
+    predicted_exception_pressure = _analytics_clamp(exception_prediction + exception_adjustment)
+    if predicted_trust_score >= 90 and predicted_exception_pressure <= 2 and predicted_coverage >= 95:
+        risk_level = "low"
+        headline = "The current operating band should stay stable in the next cycle."
+    elif predicted_trust_score >= 80 and predicted_exception_pressure <= 5:
+        risk_level = "medium"
+        headline = "The next cycle is likely stable, but exception pressure deserves review."
+    else:
+        risk_level = "high"
+        headline = "The next cycle may drift without intervention."
+    confidence = 0.55 + min(0.25, len(history) / 40) - abs(exception_trend["slope"]) * 0.02
+    confidence = round(max(0.5, min(0.95, confidence)), 2)
+    watch_items = [
+        item
+        for item in [
+            "Replay exceptions are increasing." if exception_trend["direction"] == "rising" else None,
+            "Evidence coverage is below the ideal band." if predicted_coverage < 95 else None,
+            "Trust is trending down." if trust_trend["direction"] == "falling" else None,
+            "Guard pressure is present." if latest and latest["guard_count"] > 0 else None,
+        ]
+        if item is not None
+    ]
+    if not watch_items:
+        watch_items = ["Maintain the current replay-backed operating band."]
+
+    return {
+        "view": "novatech_operator_analytics",
+        "organization_id": org_id,
+        "source": source or "all",
+        "history": {
+            "count": len(history),
+            "items": history,
+            "source_breakdown": source_breakdown,
+        },
+        "latest": latest,
+        "trend": {
+            "trust": trust_trend,
+            "evidence": coverage_trend,
+            "exceptions": exception_trend,
+        },
+        "insights": insights,
+        "prediction": {
+            "horizon": "next_cycle",
+            "predicted_trust_score": predicted_trust_score,
+            "predicted_evidence_coverage": predicted_coverage,
+            "predicted_exception_pressure": predicted_exception_pressure,
+            "risk_level": risk_level,
+            "confidence": confidence,
+            "headline": headline,
+            "watch_items": watch_items,
+        },
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_dashboard_analytics(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    return _build_dashboard_analytics_context(
+        organization_id=organization_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+
+
+def build_dashboard_analytics_history(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    analytics = _build_dashboard_analytics_context(
+        organization_id=organization_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_operator_analytics_history",
+        "organization_id": analytics["organization_id"],
+        "source": analytics["source"],
+        "history": analytics["history"],
+        "trend": analytics["trend"],
+        "latest": analytics["latest"],
+        "read_only": True,
+    }
+
+
+def build_dashboard_analytics_insights(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    analytics = _build_dashboard_analytics_context(
+        organization_id=organization_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_operator_analytics_insights",
+        "organization_id": analytics["organization_id"],
+        "source": analytics["source"],
+        "insights": analytics["insights"],
+        "trend": analytics["trend"],
+        "latest": analytics["latest"],
+        "read_only": True,
+    }
+
+
+def build_dashboard_analytics_prediction(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    analytics = _build_dashboard_analytics_context(
+        organization_id=organization_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_operator_analytics_prediction",
+        "organization_id": analytics["organization_id"],
+        "source": analytics["source"],
+        "prediction": analytics["prediction"],
+        "trend": analytics["trend"],
+        "latest": analytics["latest"],
+        "read_only": True,
+    }
+
+
+def _decision_risk_level(score: int) -> str:
+    if score >= 75:
+        return "critical"
+    if score >= 50:
+        return "high"
+    if score >= 25:
+        return "medium"
+    return "low"
+
+
+def _decision_lane_from_signals(
+    *,
+    trust_health: int,
+    replay_health_score: int,
+    evidence_coverage: int,
+    exception_pressure: int,
+    guard_count: int,
+    missing_traces: int,
+    risk_score: int,
+    trust_trend: dict[str, Any],
+) -> str:
+    if (
+        risk_score >= 75
+        or trust_health < 55
+        or replay_health_score < 55
+        or exception_pressure >= 8
+        or guard_count >= 3
+        or missing_traces >= 6
+    ):
+        return "escalate"
+    if (
+        risk_score >= 50
+        or trust_health < 70
+        or replay_health_score < 70
+        or exception_pressure >= 4
+        or guard_count > 0
+        or missing_traces > 0
+    ):
+        return "review"
+    if risk_score >= 25 or evidence_coverage < 95 or trust_trend.get("direction") == "falling":
+        return "watch"
+    return "observe"
+
+
+def _decision_priority_from_lane(lane: str) -> str:
+    return {
+        "observe": "low",
+        "watch": "medium",
+        "review": "high",
+        "escalate": "critical",
+    }.get(lane, "medium")
+
+
+def _decision_action_from_lane(lane: str) -> str:
+    return {
+        "observe": "continue_monitoring",
+        "watch": "increase_observation",
+        "review": "open_operator_review",
+        "escalate": "escalate_incident",
+    }.get(lane, "increase_observation")
+
+
+def _unique_items(*groups: list[str]) -> list[str]:
+    items: list[str] = []
+    for group in groups:
+        for item in group:
+            if item not in items:
+                items.append(item)
+    return items
+
+
+def _build_dashboard_decision_context(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    decision_type: str = "operator_decision",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    analytics = _build_dashboard_analytics_context(
+        organization_id=org_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    latest_analytics = analytics["latest"] or {
+        "trust_score": 0,
+        "trust_health": 0,
+        "replay_health_score": 0,
+        "evidence_coverage": 0,
+        "exception_pressure": 0,
+        "alert_count": 0,
+        "active_drivers": 0,
+        "completed_rides": 0,
+        "total_rides": 0,
+        "guard_count": 0,
+        "replay_failures": 0,
+        "hash_chain_failures": 0,
+        "missing_traces": 0,
+        "receipts_count": 0,
+        "trace_count": 0,
+    }
+    decision_history = _STORE.list_ai_decision_snapshots(
+        organization_id=org_id,
+        source=source,
+        decision_type=decision_type,
+        limit=limit,
+    )
+    history = list(reversed(decision_history))
+    latest = history[-1] if history else None
+    risk_service = _risk_prediction_service()
+    risk_prediction = risk_service.latest(organization_id=org_id, entity_type="organization")
+
+    trust_score = int(latest_analytics.get("trust_score", 0))
+    trust_health = int(latest_analytics.get("trust_health", 0))
+    replay_health_score = int(latest_analytics.get("replay_health_score", 0))
+    evidence_coverage = int(latest_analytics.get("evidence_coverage", 0))
+    exception_pressure = int(latest_analytics.get("exception_pressure", 0))
+    alert_count = int(latest_analytics.get("alert_count", 0))
+    guard_count = int(latest_analytics.get("guard_count", 0))
+    replay_failures = int(latest_analytics.get("replay_failures", 0))
+    hash_chain_failures = int(latest_analytics.get("hash_chain_failures", 0))
+    missing_traces = int(latest_analytics.get("missing_traces", 0))
+    completed_rides = int(latest_analytics.get("completed_rides", 0))
+    active_drivers = int(latest_analytics.get("active_drivers", 0))
+    total_rides = int(latest_analytics.get("total_rides", 0))
+    stability_index = _analytics_clamp(
+        (trust_health * 0.35) + (replay_health_score * 0.35) + (evidence_coverage * 0.2)
+        - (exception_pressure * 6)
+        - (guard_count * 4)
+        - (missing_traces * 2),
+    )
+
+    if risk_prediction is not None:
+        risk_score = int(risk_prediction.get("risk_score", 0))
+        confidence = round(float(risk_prediction.get("confidence", 0.0)), 2)
+        risk_level = str(risk_prediction.get("risk_level") or _decision_risk_level(risk_score))
+        risk_explanation = list(risk_prediction.get("explanation") or [])
+        risk_features = dict(risk_prediction.get("features") or {})
+    else:
+        risk_score = _analytics_clamp(
+            100
+            - trust_health * 0.45
+            - replay_health_score * 0.35
+            - evidence_coverage * 0.12
+            + exception_pressure * 7
+            + guard_count * 6
+            + missing_traces * 4,
+        )
+        confidence = round(
+            max(0.55, min(0.92, 0.58 + min(0.2, len(history) / 40) - abs(analytics["trend"]["exceptions"]["slope"]) * 0.02)),
+            2,
+        )
+        risk_level = _decision_risk_level(risk_score)
+        risk_explanation = []
+        risk_features = {
+            "trust_score": trust_score,
+            "replay_health_score": replay_health_score,
+            "evidence_coverage": evidence_coverage,
+        }
+
+    lane = _decision_lane_from_signals(
+        trust_health=trust_health,
+        replay_health_score=replay_health_score,
+        evidence_coverage=evidence_coverage,
+        exception_pressure=exception_pressure,
+        guard_count=guard_count,
+        missing_traces=missing_traces,
+        risk_score=risk_score,
+        trust_trend=analytics["trend"]["trust"],
+    )
+    action = _decision_action_from_lane(lane)
+    priority = _decision_priority_from_lane(lane)
+
+    if lane == "observe":
+        summary = "Operating signals are stable. Continue monitoring and preserve the current replay-backed band."
+        recommended_actions = [
+            "Maintain the current operating cadence.",
+            "Keep live sampling active.",
+            "Review the next polling cycle for drift.",
+        ]
+    elif lane == "watch":
+        summary = "The system is still healthy, but trend drift deserves closer observation."
+        recommended_actions = [
+            "Increase observation on replay exceptions.",
+            "Review evidence coverage against the current window.",
+            "Keep the current release posture unchanged.",
+        ]
+    elif lane == "review":
+        summary = "Replay, evidence, or guard pressure is visible. Open an operator review before widening activity."
+        recommended_actions = [
+            "Inspect the latest replay exception list.",
+            "Verify evidence gaps and missing traces.",
+            "Pause non-essential changes until the review closes.",
+        ]
+    else:
+        summary = "Risk is elevated. Escalate to the operator lead and stabilize the surface before new changes proceed."
+        recommended_actions = [
+            "Escalate the incident to the operator lead.",
+            "Isolate the affected trust window.",
+            "Hold non-essential deployments until trust recovers.",
+        ]
+
+    watch_items = _unique_items(
+        list(analytics["prediction"]["watch_items"]),
+        [f"Risk level {risk_level}"] if risk_level else [],
+        risk_explanation,
+    )
+    if not watch_items:
+        watch_items = ["Maintain the current replay-backed operating band."]
+
+    signal_map = {
+        "trust_score": trust_score,
+        "trust_health": trust_health,
+        "replay_health_score": replay_health_score,
+        "evidence_coverage": evidence_coverage,
+        "exception_pressure": exception_pressure,
+        "alert_count": alert_count,
+        "guard_count": guard_count,
+        "replay_failures": replay_failures,
+        "hash_chain_failures": hash_chain_failures,
+        "missing_traces": missing_traces,
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "confidence": confidence,
+        "stability_index": stability_index,
+        "completed_rides": completed_rides,
+        "active_drivers": active_drivers,
+        "total_rides": total_rides,
+        "latest_risk_prediction": risk_prediction,
+        "risk_features": risk_features,
+    }
+
+    current = {
+        "decision_type": decision_type,
+        "organization_id": org_id,
+        "source": source or "all",
+        "decision_lane": lane,
+        "decision_action": action,
+        "decision_priority": priority,
+        "decision_summary": summary,
+        "confidence": confidence,
+        "risk_level": risk_level,
+        "risk_score": risk_score,
+        "stability_index": stability_index,
+        "recommended_actions": recommended_actions,
+        "watch_items": watch_items,
+        "advisory_only": True,
+        "execution_authority": False,
+        "signals": signal_map,
+        "playbook": recommended_actions,
+        "reasoning": {
+            "trust_trend": analytics["trend"]["trust"],
+            "evidence_trend": analytics["trend"]["evidence"],
+            "exception_trend": analytics["trend"]["exceptions"],
+            "risk_prediction": risk_prediction,
+        },
+        "analytics_latest": latest_analytics,
+        "latest_record_id": latest["decision_id"] if latest else None,
+    }
+
+    return {
+        "view": "novatech_operator_decision_engine",
+        "organization_id": org_id,
+        "source": source or "all",
+        "current": current,
+        "latest": latest,
+        "history": {
+            "count": len(history),
+            "items": history,
+            "source_breakdown": {
+                item["source"]: sum(1 for row in history if row["source"] == item["source"])
+                for item in history
+            },
+        },
+        "signals": signal_map,
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_dashboard_decisions(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    return _build_dashboard_decision_context(
+        organization_id=organization_id,
+        source=source,
+        decision_type="operator_decision",
+        limit=limit,
+    )
+
+
+def build_dashboard_decisions_history(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    decisions = _build_dashboard_decision_context(
+        organization_id=organization_id,
+        source=source,
+        decision_type="operator_decision",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_operator_decision_history",
+        "organization_id": decisions["organization_id"],
+        "source": decisions["source"],
+        "current": decisions["current"],
+        "latest": decisions["latest"],
+        "history": decisions["history"],
+        "signals": decisions["signals"],
+        "read_only": True,
+    }
+
+
+def record_dashboard_decision_snapshot(
+    *,
+    payload: dict[str, Any],
+    source: str,
+    decision_type: str = "operator_decision",
+    organization_id: str | None = None,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    context = _build_dashboard_decision_context(
+        organization_id=org_id,
+        source=source,
+        decision_type=decision_type,
+        limit=24,
+    )
+    current = context["current"]
+    record_payload = {
+        "trigger_payload": payload,
+        "decision": current,
+        "signals": context["signals"],
+        "history_depth": context["history"]["count"],
+    }
+    return _STORE.store_ai_decision_snapshot(
+        organization_id=org_id,
+        source=source,
+        decision_type=decision_type,
+        decision_lane=current["decision_lane"],
+        decision_action=current["decision_action"],
+        decision_priority=current["decision_priority"],
+        decision_summary=current["decision_summary"],
+        trust_score=current["signals"]["trust_score"],
+        trust_health=current["signals"]["trust_health"],
+        replay_health_score=current["signals"]["replay_health_score"],
+        evidence_coverage=current["signals"]["evidence_coverage"],
+        exception_pressure=current["signals"]["exception_pressure"],
+        alert_count=current["signals"]["alert_count"],
+        guard_count=current["signals"]["guard_count"],
+        replay_failures=current["signals"]["replay_failures"],
+        hash_chain_failures=current["signals"]["hash_chain_failures"],
+        missing_traces=current["signals"]["missing_traces"],
+        risk_score=current["signals"]["risk_score"],
+        risk_level=current["signals"]["risk_level"],
+        confidence=current["signals"]["confidence"],
+        stability_index=current["signals"]["stability_index"],
+        recommended_actions=current["recommended_actions"],
+        watch_items=current["watch_items"],
+        payload=record_payload,
+    )
+
+
+def _decision_quality_band(score: int) -> str:
+    if score >= 85:
+        return "excellent"
+    if score >= 70:
+        return "strong"
+    if score >= 55:
+        return "guarded"
+    return "weak"
+
+
+def _action_lane_from_decision_lane(lane: str) -> str:
+    return {
+        "observe": "monitor",
+        "watch": "notify",
+        "review": "prepare",
+        "escalate": "safeguard",
+    }.get(lane, "notify")
+
+
+def _action_mode_from_quality(score: int) -> str:
+    if score >= 85:
+        return "controlled_autonomy"
+    if score >= 70:
+        return "guided_control"
+    if score >= 55:
+        return "guarded_control"
+    return "hold_for_review"
+
+
+def _control_signal_from_action_lane(action_lane: str, quality_band: str) -> str:
+    if quality_band == "weak":
+        return "require_operator_review"
+    return {
+        "monitor": "maintain_monitoring",
+        "notify": "publish_watch_notification",
+        "prepare": "open_operator_review",
+        "safeguard": "publish_critical_safeguard",
+    }.get(action_lane, "maintain_monitoring")
+
+
+def _safety_gate_from_quality(action_lane: str, quality_band: str) -> str:
+    if quality_band == "weak":
+        return "hold"
+    if action_lane == "safeguard":
+        return "review"
+    if quality_band == "guarded":
+        return "guarded"
+    return "pass"
+
+
+def _history_alignment_score(
+    history: list[dict[str, Any]],
+    *,
+    trust_health: int,
+    replay_health_score: int,
+    evidence_coverage: int,
+) -> int:
+    if not history:
+        return _analytics_clamp((trust_health + replay_health_score + evidence_coverage) / 3)
+
+    values: list[int] = []
+    for item in history[:5]:
+        values.append(int(item.get("stability_index", 0)))
+        confidence = item.get("confidence")
+        if confidence is not None:
+            values.append(_analytics_clamp(float(confidence) * 100))
+        calibrated_confidence = item.get("calibrated_confidence")
+        if calibrated_confidence is not None:
+            values.append(_analytics_clamp(float(calibrated_confidence) * 100))
+    if not values:
+        return _analytics_clamp((trust_health + replay_health_score + evidence_coverage) / 3)
+    return _analytics_clamp(sum(values) / len(values))
+
+
+def _action_priority_from_quality(action_lane: str, quality_band: str) -> str:
+    if action_lane == "safeguard" or quality_band == "weak":
+        return "critical"
+    if action_lane == "prepare":
+        return "high"
+    if action_lane == "notify":
+        return "medium"
+    return "low"
+
+
+def _execution_tier_from_action_context(
+    *,
+    action_lane: str,
+    quality_band: str,
+    calibrated_confidence: float,
+    safety_gate: str,
+) -> str:
+    if safety_gate == "hold" or quality_band == "weak":
+        return "advisory"
+    if action_lane == "safeguard":
+        return "supervised"
+    if quality_band == "guarded" or calibrated_confidence < 0.75:
+        return "assisted"
+    if quality_band in {"strong", "excellent"} and calibrated_confidence >= 0.8:
+        return "controlled"
+    return "assisted"
+
+
+def _build_dashboard_action_context(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    action_type: str = "controlled_autonomous_action",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    decision_context = _build_dashboard_decision_context(
+        organization_id=org_id,
+        source=source,
+        decision_type="operator_decision",
+        limit=limit,
+    )
+    decision_current = decision_context["current"]
+    decision_latest = decision_context["latest"] or {}
+    decision_history = list(decision_context["history"]["items"])
+    action_history = _STORE.list_ai_action_snapshots(
+        organization_id=org_id,
+        source=source,
+        action_type=action_type,
+        limit=limit,
+    )
+    history = list(reversed(action_history))
+    latest = history[-1] if history else None
+
+    trust_score = int(decision_current["signals"].get("trust_score", 0))
+    trust_health = int(decision_current["signals"].get("trust_health", 0))
+    replay_health_score = int(decision_current["signals"].get("replay_health_score", 0))
+    evidence_coverage = int(decision_current["signals"].get("evidence_coverage", 0))
+    exception_pressure = int(decision_current["signals"].get("exception_pressure", 0))
+    alert_count = int(decision_current["signals"].get("alert_count", 0))
+    guard_count = int(decision_current["signals"].get("guard_count", 0))
+    replay_failures = int(decision_current["signals"].get("replay_failures", 0))
+    hash_chain_failures = int(decision_current["signals"].get("hash_chain_failures", 0))
+    missing_traces = int(decision_current["signals"].get("missing_traces", 0))
+    stability_index = int(decision_current["signals"].get("stability_index", 0))
+    decision_lane = str(decision_current.get("decision_lane", "observe"))
+    decision_priority = str(decision_current.get("decision_priority", "low"))
+    raw_confidence = float(decision_current.get("confidence", 0.0))
+    evidence_alignment_score = _analytics_clamp(
+        evidence_coverage
+        - missing_traces * 4
+        - replay_failures * 6
+        - hash_chain_failures * 5
+        - guard_count * 4,
+    )
+    history_alignment_score = _history_alignment_score(
+        history or decision_history,
+        trust_health=trust_health,
+        replay_health_score=replay_health_score,
+        evidence_coverage=evidence_coverage,
+    )
+    decision_quality_score = _analytics_clamp(
+        (trust_health * 0.24)
+        + (replay_health_score * 0.24)
+        + (evidence_alignment_score * 0.28)
+        + (history_alignment_score * 0.18)
+        + (stability_index * 0.06),
+    )
+    quality_band = _decision_quality_band(decision_quality_score)
+    calibrated_confidence = round(
+        max(
+            0.1,
+            min(
+                0.99,
+                (raw_confidence * 0.55)
+                + (decision_quality_score / 100 * 0.35)
+                + (evidence_alignment_score / 100 * 0.1),
+            ),
+        ),
+        2,
+    )
+    action_lane = _action_lane_from_decision_lane(decision_lane)
+    action_mode = _action_mode_from_quality(decision_quality_score)
+    control_signal = _control_signal_from_action_lane(action_lane, quality_band)
+    safety_gate = _safety_gate_from_quality(action_lane, quality_band)
+    automation_tier = {"monitor": 0, "notify": 1, "prepare": 2, "safeguard": 3}.get(action_lane, 1)
+    action_priority = _action_priority_from_quality(action_lane, quality_band)
+    execution_tier = _execution_tier_from_action_context(
+        action_lane=action_lane,
+        quality_band=quality_band,
+        calibrated_confidence=calibrated_confidence,
+        safety_gate=safety_gate,
+    )
+    execution_tier_ready = execution_tier == "controlled" and safety_gate == "pass"
+    execution_tier_summary = {
+        "advisory": "The control plane stays read-only and only explains the current state.",
+        "assisted": "The control plane can recommend limited, supervised follow-up actions.",
+        "controlled": "The control plane is ready for tightly bounded, operator-supervised execution.",
+        "supervised": "The control plane requires explicit human supervision before any escalation.",
+    }.get(execution_tier, "The control plane remains read-only.")
+    execution_tier_controls = {
+        "advisory": [
+            "Observe the current operating window.",
+            "Keep the dashboard projection-only.",
+        ],
+        "assisted": [
+            "Recommend a limited review action.",
+            "Refresh evidence before widening scope.",
+        ],
+        "controlled": [
+            "Allow only bounded, operator-supervised control handoff.",
+            "Keep execution authority disabled until the operator confirms.",
+        ],
+        "supervised": [
+            "Escalate to a human reviewer.",
+            "Hold automated changes until the safety gate clears.",
+        ],
+    }.get(execution_tier, ["Keep the dashboard projection-only."])
+    calibration_notes = _unique_items(
+        [
+            f"Quality band {quality_band}",
+            f"Evidence alignment {evidence_alignment_score}",
+            f"History alignment {history_alignment_score}",
+        ],
+        decision_current.get("watch_items", []),
+    )
+    if not calibration_notes:
+        calibration_notes = ["Decision quality calibration is awaiting more persistent history."]
+
+    control_actions = {
+        "monitor": [
+            "Maintain the current monitoring cadence.",
+            "Keep the dashboard on read-only projection mode.",
+        ],
+        "notify": [
+            "Publish a watch notification to the operator surface.",
+            "Increase live observation for the next window.",
+        ],
+        "prepare": [
+            "Open an operator review for the current trust window.",
+            "Refresh evidence before widening activity.",
+        ],
+        "safeguard": [
+            "Escalate the incident to the operator lead.",
+            "Hold non-essential changes until calibration recovers.",
+        ],
+    }.get(action_lane, ["Maintain the current monitoring cadence."])
+
+    operator_guidance = _unique_items(
+        list(decision_current.get("recommended_actions") or []),
+        control_actions,
+        calibration_notes,
+    )
+    quality_summary = (
+        f"Evidence-calibrated decision quality is {decision_quality_score}/100 "
+        f"with a {quality_band} band, {execution_tier} execution tier, and {round(calibrated_confidence * 100)}% calibrated confidence."
+    )
+
+    current = {
+        "action_type": action_type,
+        "organization_id": org_id,
+        "source": source or "all",
+        "decision_id": decision_latest.get("latest_record_id") or decision_current.get("latest_record_id"),
+        "decision_lane": decision_lane,
+        "decision_priority": decision_priority,
+        "action_lane": action_lane,
+        "action_mode": action_mode,
+        "action_priority": action_priority,
+        "action_summary": quality_summary,
+        "control_signal": control_signal,
+        "safety_gate": safety_gate,
+        "automation_tier": automation_tier,
+        "execution_tier": execution_tier,
+        "execution_tier_ready": execution_tier_ready,
+        "execution_tier_summary": execution_tier_summary,
+        "execution_tier_controls": execution_tier_controls,
+        "decision_quality_score": decision_quality_score,
+        "evidence_alignment_score": evidence_alignment_score,
+        "calibrated_confidence": calibrated_confidence,
+        "history_alignment_score": history_alignment_score,
+        "quality_band": quality_band,
+        "decision_quality": {
+            "score": decision_quality_score,
+            "band": quality_band,
+            "calibrated_confidence": calibrated_confidence,
+            "evidence_alignment_score": evidence_alignment_score,
+            "history_alignment_score": history_alignment_score,
+            "trust_alignment_score": trust_health,
+            "replay_alignment_score": replay_health_score,
+            "evidence_calibrated": True,
+            "summary": quality_summary,
+        },
+        "decision": decision_current,
+        "control_actions": control_actions,
+        "operator_guidance": operator_guidance,
+        "recommended_actions": list(decision_current.get("recommended_actions") or []),
+        "watch_items": _unique_items(
+            list(decision_current.get("watch_items") or []),
+            calibration_notes,
+        ),
+        "advisory_only": True,
+        "execution_authority": False,
+        "read_only": True,
+        "projection_only": True,
+        "signals": {
+            **decision_current["signals"],
+            "decision_quality_score": decision_quality_score,
+            "evidence_alignment_score": evidence_alignment_score,
+            "calibrated_confidence": calibrated_confidence,
+            "history_alignment_score": history_alignment_score,
+            "quality_band": quality_band,
+            "execution_tier": execution_tier,
+            "execution_tier_ready": execution_tier_ready,
+            "action_lane": action_lane,
+            "action_mode": action_mode,
+            "control_signal": control_signal,
+            "safety_gate": safety_gate,
+        },
+        "reasoning": {
+            "decision": decision_current["reasoning"],
+            "calibration": {
+                "quality_band": quality_band,
+                "decision_quality_score": decision_quality_score,
+                "evidence_alignment_score": evidence_alignment_score,
+                "history_alignment_score": history_alignment_score,
+                "calibrated_confidence": calibrated_confidence,
+                "raw_confidence": raw_confidence,
+                "safety_gate": safety_gate,
+                "execution_tier": execution_tier,
+                "execution_tier_ready": execution_tier_ready,
+            },
+        },
+        "latest_record_id": latest["action_id"] if latest else None,
+    }
+
+    return {
+        "view": "novatech_operator_action_engine",
+        "organization_id": org_id,
+        "source": source or "all",
+        "current": current,
+        "latest": latest,
+        "history": {
+            "count": len(history),
+            "items": history,
+            "source_breakdown": {
+                item["source"]: sum(1 for row in history if row["source"] == item["source"])
+                for item in history
+            },
+        },
+        "signals": current["signals"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def _outcome_band_from_score(score: int) -> str:
+    if score >= 85:
+        return "excellent"
+    if score >= 70:
+        return "strong"
+    if score >= 55:
+        return "guarded"
+    return "weak"
+
+
+def _outcome_status_from_score(score: int) -> str:
+    if score >= 85:
+        return "measured"
+    if score >= 70:
+        return "learning"
+    if score >= 55:
+        return "review"
+    return "recalibrate"
+
+
+def _learning_band_from_outcome(
+    *,
+    outcome_score: int,
+    trust_trend: dict[str, Any],
+    exception_pressure: int,
+) -> str:
+    if outcome_score >= 85 and trust_trend.get("direction") == "rising" and exception_pressure <= 1:
+        return "recalibrate"
+    if outcome_score >= 70 and trust_trend.get("direction") != "falling":
+        return "learn"
+    if outcome_score >= 55:
+        return "watch"
+    return "hold"
+
+
+def _build_outcome_context(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    outcome_type: str = "measured_outcome",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    analytics_context = _build_dashboard_analytics_context(
+        organization_id=org_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    decision_context = _build_dashboard_decision_context(
+        organization_id=org_id,
+        source=source,
+        decision_type="operator_decision",
+        limit=limit,
+    )
+    action_context = _build_dashboard_action_context(
+        organization_id=org_id,
+        source=source,
+        action_type="controlled_autonomous_action",
+        limit=limit,
+    )
+    stored_outcomes = _STORE.list_outcome_snapshots(
+        organization_id=org_id,
+        source=source,
+        outcome_type=outcome_type,
+        limit=limit,
+    )
+    history = list(reversed(stored_outcomes))
+    latest = history[-1] if history else None
+    latest_analytics = analytics_context["latest"] or {
+        "trust_score": 0,
+        "trust_health": 0,
+        "replay_health_score": 0,
+        "evidence_coverage": 0,
+        "exception_pressure": 0,
+        "alert_count": 0,
+        "guard_count": 0,
+        "replay_failures": 0,
+        "hash_chain_failures": 0,
+        "missing_traces": 0,
+        "receipts_count": 0,
+        "trace_count": 0,
+    }
+    current_action = action_context["current"]
+    current_decision = decision_context["current"]
+
+    trust_score = int(latest_analytics.get("trust_score", 0))
+    trust_health = int(latest_analytics.get("trust_health", 0))
+    replay_health_score = int(latest_analytics.get("replay_health_score", 0))
+    evidence_coverage = int(latest_analytics.get("evidence_coverage", 0))
+    exception_pressure = int(latest_analytics.get("exception_pressure", 0))
+    decision_quality_score = int(current_action.get("decision_quality_score", 0))
+    evidence_alignment_score = int(current_action.get("evidence_alignment_score", 0))
+    calibrated_confidence = float(current_action.get("calibrated_confidence", 0.0))
+    history_alignment_score = int(current_action.get("history_alignment_score", 0))
+    outcome_score = _analytics_clamp(
+        (decision_quality_score * 0.4)
+        + (trust_health * 0.2)
+        + (replay_health_score * 0.18)
+        + (evidence_coverage * 0.14)
+        + (history_alignment_score * 0.08)
+        - (exception_pressure * 3),
+    )
+    outcome_band = _outcome_band_from_score(outcome_score)
+    learning_band = _learning_band_from_outcome(
+        outcome_score=outcome_score,
+        trust_trend=analytics_context["trend"]["trust"],
+        exception_pressure=exception_pressure,
+    )
+    outcome_status = _outcome_status_from_score(outcome_score)
+
+    measurement_summary = (
+        f"Outcome score {outcome_score}/100 from trust {trust_score}, replay health {replay_health_score}, "
+        f"and evidence coverage {evidence_coverage}%."
+    )
+    learning_actions = {
+        "excellent": [
+            "Preserve the current control band.",
+            "Recalibrate only when new evidence arrives.",
+        ],
+        "strong": [
+            "Continue learning from the current window.",
+            "Keep the next review cycle active.",
+        ],
+        "guarded": [
+            "Review exception pressure before widening scope.",
+            "Keep the learning loop on watch.",
+        ],
+        "weak": [
+            "Hold further automation changes.",
+            "Recalibrate before the next operator review.",
+        ],
+    }.get(
+        outcome_band,
+        ["Maintain the current measurement loop."],
+    )
+    recalibration_notes = _unique_items(
+        [
+            f"Outcome band {outcome_band}",
+            f"Learning band {learning_band}",
+            f"Decision quality {decision_quality_score}",
+            f"Calibrated confidence {round(calibrated_confidence * 100)}%",
+        ],
+        current_action.get("watch_items", []),
+        analytics_context["prediction"]["watch_items"],
+    )
+    if not recalibration_notes:
+        recalibration_notes = ["Outcome learning is awaiting more persistent evidence."]
+    watch_items = _unique_items(
+        list(current_action.get("watch_items") or []),
+        list(analytics_context["prediction"]["watch_items"] or []),
+        [f"Outcome status {outcome_status}"],
+    )
+    if not watch_items:
+        watch_items = ["Maintain the current observation loop."]
+
+    outcome_current = {
+        "outcome_type": outcome_type,
+        "organization_id": org_id,
+        "source": source or "all",
+        "decision_id": current_action.get("decision_id") or current_decision.get("latest_record_id"),
+        "action_id": current_action.get("latest_record_id") or (latest["action_id"] if latest else ""),
+        "outcome_status": outcome_status,
+        "outcome_band": outcome_band,
+        "learning_band": learning_band,
+        "outcome_score": outcome_score,
+        "measurement_summary": measurement_summary,
+        "decision_quality_score": decision_quality_score,
+        "evidence_alignment_score": evidence_alignment_score,
+        "calibrated_confidence": calibrated_confidence,
+        "history_alignment_score": history_alignment_score,
+        "trust_score": trust_score,
+        "trust_health": trust_health,
+        "replay_health_score": replay_health_score,
+        "evidence_coverage": evidence_coverage,
+        "exception_pressure": exception_pressure,
+        "execution_tier": current_action.get("execution_tier", "advisory"),
+        "execution_tier_ready": bool(current_action.get("execution_tier_ready", False)),
+        "control_signal": current_action.get("control_signal", "maintain_monitoring"),
+        "safety_gate": current_action.get("safety_gate", "hold"),
+        "learning_actions": learning_actions,
+        "recalibration_notes": recalibration_notes,
+        "watch_items": watch_items,
+        "signals": {
+            **current_action.get("signals", {}),
+            "outcome_score": outcome_score,
+            "outcome_band": outcome_band,
+            "learning_band": learning_band,
+            "outcome_status": outcome_status,
+        },
+        "reasoning": {
+            "decision": current_action.get("reasoning", {}),
+            "learning": {
+                "trend": analytics_context["trend"],
+                "prediction": analytics_context["prediction"],
+                "measurement_summary": measurement_summary,
+            },
+        },
+        "advisory_only": True,
+        "execution_authority": False,
+        "read_only": True,
+        "projection_only": True,
+    }
+
+    outcome_trend = _analytics_series([item["outcome_score"] for item in history] if history else [outcome_score])
+    registry = {
+        "count": len(history),
+        "items": history,
+        "source_breakdown": {
+            item["source"]: sum(1 for row in history if row["source"] == item["source"])
+            for item in history
+        },
+    }
+    if latest is None:
+        latest = outcome_current
+    scoring = {
+        "current": outcome_current,
+        "band": outcome_band,
+        "score": outcome_score,
+        "trend": outcome_trend,
+        "breakdown": {
+            "decision_quality_score": decision_quality_score,
+            "trust_health": trust_health,
+            "replay_health_score": replay_health_score,
+            "evidence_coverage": evidence_coverage,
+            "history_alignment_score": history_alignment_score,
+            "exception_pressure_penalty": exception_pressure * 3,
+        },
+    }
+    learning = {
+        "cycle": [
+            "observe",
+            "decide",
+            "recommend",
+            "measure_outcome",
+            "learn",
+            "recalibrate",
+        ],
+        "band": learning_band,
+        "trend": outcome_trend,
+        "recommendations": learning_actions,
+        "recalibration_notes": recalibration_notes,
+        "watch_items": watch_items,
+    }
+    replay_hash = sha256(
+        json.dumps(
+            {
+                "organization_id": org_id,
+                "source": source,
+                "outcome_type": outcome_type,
+                "states": learning["cycle"],
+                "score": outcome_score,
+                "band": outcome_band,
+            },
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()
+    replay = {
+        "states": learning["cycle"],
+        "replayable": True,
+        "replay_hash": replay_hash,
+        "latest_action_id": outcome_current["action_id"],
+        "latest_decision_id": outcome_current["decision_id"],
+        "outcome_score": outcome_score,
+        "outcome_band": outcome_band,
+        "status": outcome_status,
+    }
+    return {
+        "view": "novatech_outcome_intelligence",
+        "organization_id": org_id,
+        "source": source or "all",
+        "current": outcome_current,
+        "latest": latest,
+        "history": registry,
+        "registry": registry,
+        "learning": learning,
+        "scoring": scoring,
+        "replay": replay,
+        "signals": outcome_current["signals"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_outcome_status(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    return _build_outcome_context(
+        organization_id=organization_id,
+        source=source,
+        outcome_type="measured_outcome",
+        limit=limit,
+    )
+
+
+def build_outcome_registry(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    outcome = _build_outcome_context(
+        organization_id=organization_id,
+        source=source,
+        outcome_type="measured_outcome",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_outcome_registry",
+        "organization_id": outcome["organization_id"],
+        "source": outcome["source"],
+        "current": outcome["current"],
+        "latest": outcome["latest"],
+        "history": outcome["history"],
+        "registry": outcome["registry"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_outcome_learning(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    outcome = _build_outcome_context(
+        organization_id=organization_id,
+        source=source,
+        outcome_type="measured_outcome",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_outcome_learning",
+        "organization_id": outcome["organization_id"],
+        "source": outcome["source"],
+        "current": outcome["current"],
+        "latest": outcome["latest"],
+        "history": outcome["history"],
+        "learning": outcome["learning"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_outcome_scoring(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    outcome = _build_outcome_context(
+        organization_id=organization_id,
+        source=source,
+        outcome_type="measured_outcome",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_outcome_scoring",
+        "organization_id": outcome["organization_id"],
+        "source": outcome["source"],
+        "current": outcome["current"],
+        "latest": outcome["latest"],
+        "history": outcome["history"],
+        "scoring": outcome["scoring"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_outcome_replay(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    outcome = _build_outcome_context(
+        organization_id=organization_id,
+        source=source,
+        outcome_type="measured_outcome",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_outcome_replay",
+        "organization_id": outcome["organization_id"],
+        "source": outcome["source"],
+        "current": outcome["current"],
+        "latest": outcome["latest"],
+        "history": outcome["history"],
+        "replay": outcome["replay"],
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_organization_onboarding(
+    *,
+    organization_id: str,
+    legal_name: str,
+    sector: str,
+    trust_domain: str,
+) -> dict[str, Any]:
+    novascript = get_novascript_service()
+    adoption = novascript.onboard_organization(
+        organization_id=organization_id,
+        legal_name=legal_name,
+        sector=sector,
+        trust_domain=trust_domain,
+    )
+    return {
+        "view": "novatech_organization_onboarding",
+        "organization_id": organization_id,
+        "status": "onboarded",
+        "organization": adoption,
+        "global_trust": novascript.global_trust_status(),
+        "trust_graph": novascript.trust_graph(),
+        "read_only": False,
+        "projection_only": False,
+        "governance_linked": True,
+    }
+
+
+def _normalize_controlled_execution_tier(value: str | None) -> str:
+    tier = str(value or "controlled").strip().lower()
+    if tier in {"advisory", "assisted", "controlled", "supervised"}:
+        return tier
+    return "controlled"
+
+
+def build_controlled_execution_activation(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "novatech_controlled_execution_activation",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    directory = build_organization_directory(organization_id=org_id, limit=limit)
+    billing_preview = build_billing_preview(organization_id=org_id)
+    billing_ready = bool(billing_preview.get("plan"))
+    tenants = list(directory.get("organizations", []))
+    current_tenant = next(
+        (tenant for tenant in tenants if tenant.get("organization_id") == org_id),
+        tenants[0] if tenants else None,
+    )
+    tenant_ready = bool(current_tenant and current_tenant.get("status") in {"active", "pilot_ready", "certified"})
+    action_surface = build_dashboard_actions(
+        organization_id=org_id,
+        source="afriride_operator_dashboard",
+        limit=limit,
+    )
+    execution = action_surface["current"]
+    activation_history = _STORE.list_ai_action_snapshots(
+        organization_id=org_id,
+        source=source,
+        action_type="controlled_execution_activation",
+        limit=limit,
+    )
+    history = list(reversed(activation_history))
+    latest = history[-1] if history else None
+    trigger_payload = {}
+    if latest:
+        payload = latest.get("payload", {})
+        if isinstance(payload, dict):
+            maybe_trigger_payload = payload.get("trigger_payload", {})
+            if isinstance(maybe_trigger_payload, dict):
+                trigger_payload = maybe_trigger_payload
+
+    requested_tier = _normalize_controlled_execution_tier(trigger_payload.get("requested_tier"))
+    acknowledged = bool(trigger_payload.get("acknowledged", False))
+    operator_note = str(trigger_payload.get("operator_note") or "").strip()
+    activation_ready = bool(
+        tenant_ready
+        and billing_ready
+        and bool(execution.get("execution_tier_ready", False))
+        and execution.get("safety_gate") == "pass"
+    )
+    activation_status = "enabled" if activation_ready and acknowledged and requested_tier == "controlled" else "held"
+    activation_reason = _unique_items(
+        [
+            f"tenant ready: {tenant_ready}",
+            f"billing ready: {billing_ready}",
+            f"execution tier ready: {bool(execution.get('execution_tier_ready', False))}",
+            f"safety gate: {execution.get('safety_gate', 'hold')}",
+            f"requested tier: {requested_tier}",
+            f"acknowledged: {acknowledged}",
+        ],
+        [
+            f"tenant status: {(current_tenant or {}).get('status', 'discovered')}",
+            f"billing plan: {billing_preview.get('plan', 'enterprise')}",
+            f"execution tier: {execution.get('execution_tier', 'advisory')}",
+        ],
+    )
+    activation_scope = [
+        "operator-supervised review only",
+        "bounded execution recommendations",
+        "projection-only dashboard updates",
+        "no execution authority",
+    ]
+    activation_guardrails = [
+        "advisory_only remains true",
+        "execution_authority remains false",
+        "read_only remains true",
+        "projection_only remains true",
+        "safety gate must stay pass or guarded",
+    ]
+    return {
+        "view": "novatech_controlled_execution_activation",
+        "organization_id": org_id,
+        "status": activation_status,
+        "activation": {
+            "activation_status": activation_status,
+            "activation_ready": activation_ready,
+            "requested_tier": requested_tier,
+            "acknowledged": acknowledged,
+            "operator_note": operator_note,
+            "safe_execution_enabled": activation_ready,
+            "execution_tier": execution.get("execution_tier", "advisory"),
+            "execution_tier_ready": bool(execution.get("execution_tier_ready", False)),
+            "execution_tier_summary": execution.get("execution_tier_summary", ""),
+            "execution_tier_controls": list(execution.get("execution_tier_controls", [])),
+            "control_signal": execution.get("control_signal", "maintain_monitoring"),
+            "safety_gate": execution.get("safety_gate", "hold"),
+            "decision_quality_score": int(execution.get("decision_quality_score", 0) or 0),
+            "calibrated_confidence": float(execution.get("calibrated_confidence", 0) or 0),
+            "activation_scope": activation_scope,
+            "activation_guardrails": activation_guardrails,
+            "activation_reason": activation_reason,
+            "advisory_only": True,
+            "execution_authority": False,
+            "read_only": True,
+            "projection_only": True,
+        },
+        "safe_execution": execution,
+        "directory": directory,
+        "billing": billing_preview,
+        "readiness": {
+            "tenant_ready": tenant_ready,
+            "billing_ready": billing_ready,
+            "execution_tier_ready": bool(execution.get("execution_tier_ready", False)),
+            "safety_gate": execution.get("safety_gate", "hold"),
+        },
+        "history": {
+            "count": len(history),
+            "items": history,
+            "source_breakdown": {
+                item["source"]: sum(1 for row in history if row["source"] == item["source"])
+                for item in history
+            },
+        },
+        "latest": latest,
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+    }
+
+
+def build_federated_trust_network(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    novascript = get_novascript_service()
+    global_trust = novascript.global_trust_status()
+    trust_graph = novascript.trust_graph()
+    distributed = build_distributed_trust_network(organization_id=org_id)
+    members = list(global_trust.get("members", []))
+    member_ids = [
+        str(member.get("organization_id") or "").strip()
+        for member in members
+        if str(member.get("organization_id") or "").strip()
+    ]
+    tenant_pairs: list[dict[str, Any]] = []
+    for issuer_org in member_ids:
+        for subject_org in member_ids:
+            if issuer_org == subject_org:
+                continue
+            tenant_pairs.append(
+                {
+                    "issuer_org": issuer_org,
+                    "subject_org": subject_org,
+                    "exchange_modes": ["trust_exchange", "proof_exchange", "certification_exchange"],
+                    "routes": {
+                        "trust_exchange": "/v1/novascript/federation/trust-exchange",
+                        "proof_exchange": "/v1/novaprogramming/verify/replay/{execution_id}",
+                        "certification_exchange": "/v1/novaprogramming/certification",
+                    },
+                    "status": "ready",
+                }
+            )
+            if len(tenant_pairs) >= 12:
+                break
+        if len(tenant_pairs) >= 12:
+            break
+    exchange_catalog = [
+        {
+            "service_id": "trust-exchange",
+            "service_type": "Trust Services",
+            "name": "Trust Exchange",
+            "description": "Cross-tenant trust exchange and federation verification.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novascript/federation/trust-exchange",
+                "/v1/novaprogramming/trust/exchange/events",
+                "/v1/novaprogramming/trust/exchange/verify",
+            ],
+        },
+        {
+            "service_id": "proof-exchange",
+            "service_type": "Verification Services",
+            "name": "Proof Exchange",
+            "description": "Replay-backed receipts and verification packages consumable across tenants.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novaprogramming/verify/replay/{execution_id}",
+                "/public/trust/{receipt_id}",
+                "/public/trust/{receipt_id}/package",
+                "/public/verify/portal",
+            ],
+        },
+        {
+            "service_id": "certification-exchange",
+            "service_type": "Certification Services",
+            "name": "Certification Exchange",
+            "description": "Certification status, standards, and attestation exchanges across tenants.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novaprogramming/certification",
+                "/v1/novaprogramming/certification/issue",
+                "/v1/novaprogramming/certification/verify",
+                "/v1/novaprogramming/certificate/transparency/log",
+            ],
+        },
+        {
+            "service_id": "replay-exchange",
+            "service_type": "Replay Services",
+            "name": "Replay Exchange",
+            "description": "Outcome replay, proof reconstruction, and audit replay surfaces.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novatech/outcomes/replay",
+                "/v1/novatech/outcomes/status",
+                "/v1/novatech/intranet/actions",
+            ],
+        },
+    ]
+    return {
+        "view": "novatech_federated_trust_network",
+        "organization_id": org_id,
+        "status": "ready" if global_trust.get("member_count", len(member_ids)) else "bootstrapping",
+        "global_trust": global_trust,
+        "trust_graph": trust_graph,
+        "distributed_trust_network": distributed,
+        "exchange_catalog": exchange_catalog,
+        "tenant_pairs": tenant_pairs,
+        "member_count": global_trust.get("member_count", len(member_ids)),
+        "organization_count": global_trust.get("member_count", len(member_ids)),
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+    }
+
+
+def build_trust_marketplace_services(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    novascript = get_novascript_service()
+    global_trust = novascript.global_trust_status()
+    trust_graph = novascript.trust_graph()
+    adoption_status = novascript.field_adoption_status()
+    services = [
+        {
+            "service_id": "trust-services",
+            "service_type": "Trust Services",
+            "name": "Trust Exchange",
+            "summary": "Cross-tenant trust scoring, exchange, and federation routing.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novascript/federation/trust-exchange",
+                "/v1/novaprogramming/trust/exchange/events",
+            ],
+        },
+        {
+            "service_id": "verification-services",
+            "service_type": "Verification Services",
+            "name": "Proof Verification",
+            "summary": "Receipt verification, proof lookup, and replay-backed receipt packages.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/public/trust/{receipt_id}",
+                "/public/trust/{receipt_id}/package",
+                "/public/verify/portal",
+            ],
+        },
+        {
+            "service_id": "certification-services",
+            "service_type": "Certification Services",
+            "name": "Certification Exchange",
+            "summary": "Certification issuance, transparency, and attestation exchange.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novaprogramming/certification",
+                "/v1/novaprogramming/certification/issue",
+                "/v1/novaprogramming/certification/verify",
+                "/v1/novaprogramming/certificate/transparency/log",
+            ],
+        },
+        {
+            "service_id": "replay-services",
+            "service_type": "Replay Services",
+            "name": "Replay Exchange",
+            "summary": "Outcome replay, proof replay, and governed audit reconstruction.",
+            "consumable_across_tenants": True,
+            "status": "ready",
+            "routes": [
+                "/v1/novatech/outcomes/replay",
+                "/v1/novaprogramming/verify/replay/{execution_id}",
+                "/v1/novatech/outcomes/status",
+            ],
+        },
+    ]
+    return {
+        "view": "novatech_trust_marketplace_services",
+        "organization_id": org_id,
+        "status": "ready",
+        "service_count": len(services),
+        "tenant_count": adoption_status.get("organization_count", 0),
+        "global_trust": global_trust,
+        "trust_graph": trust_graph,
+        "services": services,
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+    }
+
+
+def build_trust_marketplace(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    services = build_trust_marketplace_services(organization_id=org_id)
+    federation = build_federated_trust_network(organization_id=org_id)
+    return {
+        "view": "novatech_trust_marketplace",
+        "organization_id": org_id,
+        "status": "ready",
+        "summary": {
+            "service_count": services["service_count"],
+            "tenant_count": services["tenant_count"],
+            "trust_member_count": federation["member_count"],
+            "exchange_modes": ["trust_exchange", "proof_exchange", "certification_exchange", "replay_exchange"],
+        },
+        "services": services["services"],
+        "federated_trust_network": federation,
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+    }
+
+
+def build_marketplace_onboarding_strategy(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    marketplace = build_trust_marketplace(organization_id=org_id)
+    partner_cohort = [
+        {
+            "name": "City mobility operator",
+            "role": "Pilot launch partner",
+            "goal": "Use replay-backed dispute evidence and registry publication in a live city corridor sandbox.",
+        },
+        {
+            "name": "Enterprise fleet platform",
+            "role": "Compliance integration partner",
+            "goal": "Adopt verification API and audit export bundles for fleet exception handling.",
+        },
+        {
+            "name": "Insurance or claims workflow",
+            "role": "Verification partner",
+            "goal": "Validate receipt and trace evidence packets for post-ride disputes.",
+        },
+        {
+            "name": "Government mobility observer",
+            "role": "Public-interest pilot",
+            "goal": "Review replay-linked audit packets without receiving runtime mutation authority.",
+        },
+        {
+            "name": "Marketplace infrastructure partner",
+            "role": "Trust network node",
+            "goal": "Participate in quorum verification and registry-backed trust packet exchange.",
+        },
+    ]
+    phases = [
+        {
+            "phase": "discover",
+            "title": "Discover",
+            "goal": "Identify a partner cohort and map the trust domain before any exchange begins.",
+            "entry_criteria": [
+                "organization onboarded",
+                "public trust surfaces available",
+            ],
+        },
+        {
+            "phase": "verify",
+            "title": "Verify",
+            "goal": "Run proof exchange, verification sessions, and registry publication checks.",
+            "entry_criteria": [
+                "replay-backed receipt available",
+                "verification package generated",
+            ],
+        },
+        {
+            "phase": "certify",
+            "title": "Certify",
+            "goal": "Issue certification and link the tenant into the federated trust graph.",
+            "entry_criteria": [
+                "verification quorum complete",
+                "trust score threshold met",
+            ],
+        },
+        {
+            "phase": "publish",
+            "title": "Publish",
+            "goal": "Expose the partner in the marketplace catalog with bounded read-only surfaces.",
+            "entry_criteria": [
+                "certification issued",
+                "partner registry entry published",
+            ],
+        },
+        {
+            "phase": "exchange",
+            "title": "Exchange",
+            "goal": "Allow cross-tenant trust, proof, certification, and replay services to be consumed.",
+            "entry_criteria": [
+                "federated trust edge established",
+                "marketplace service published",
+            ],
+        },
+    ]
+    requirements = [
+        "organization onboarding completed",
+        "public verification packet available",
+        "trust score and replay score meet minimum thresholds",
+        "operator acknowledges read-only governance boundary",
+    ]
+    return {
+        "view": "novatech_marketplace_onboarding",
+        "organization_id": org_id,
+        "status": "ready",
+        "summary": {
+            "service_count": marketplace["summary"]["service_count"],
+            "tenant_count": marketplace["summary"]["tenant_count"],
+            "trust_member_count": marketplace["summary"]["trust_member_count"],
+            "exchange_modes": list(marketplace["summary"]["exchange_modes"]),
+        },
+        "partner_cohort": partner_cohort,
+        "phases": phases,
+        "requirements": requirements,
+        "marketplace": marketplace,
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+    }
+
+
+def build_dashboard_actions(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    return _build_dashboard_action_context(
+        organization_id=organization_id,
+        source=source,
+        action_type="controlled_autonomous_action",
+        limit=limit,
+    )
+
+
+def build_dashboard_actions_history(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    actions = _build_dashboard_action_context(
+        organization_id=organization_id,
+        source=source,
+        action_type="controlled_autonomous_action",
+        limit=limit,
+    )
+    return {
+        "view": "novatech_operator_action_history",
+        "organization_id": actions["organization_id"],
+        "source": actions["source"],
+        "current": actions["current"],
+        "latest": actions["latest"],
+        "history": actions["history"],
+        "signals": actions["signals"],
+        "read_only": True,
+    }
+
+
+def build_workflow_instances(
+    organization_id: str | None = None,
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    workflows = _workflow_service().instances(organization_id=org_id, limit=limit)
+    templates = [
+        {
+            "workflow_name": "deployment",
+            "steps": list(("requested", "approved", "deployed", "verified", "certified")),
+            "purpose": "Controlled delivery lifecycle",
+        },
+        {
+            "workflow_name": "assurance",
+            "steps": list(("collected", "recomputed", "checked", "alerted", "closed")),
+            "purpose": "Continuous evidence and trust checking",
+        },
+        {
+            "workflow_name": "federation",
+            "steps": list(("registered", "validated", "published", "verified")),
+            "purpose": "Partner and trust network publication",
+        },
+    ]
+    return {
+        "view": "novaprogramming_workflows",
+        "organization_id": org_id,
+        "workflow_count": len(workflows),
+        "workflows": workflows,
+        "templates": templates,
+        "read_only": True,
+    }
+
+
+def record_dashboard_outcome_snapshot(
+    *,
+    payload: dict[str, Any],
+    source: str,
+    outcome_type: str = "measured_outcome",
+    action_snapshot_id: str | None = None,
+    decision_snapshot_id: str | None = None,
+    organization_id: str | None = None,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    context = _build_outcome_context(
+        organization_id=org_id,
+        source=source,
+        outcome_type=outcome_type,
+        limit=24,
+    )
+    current = context["current"]
+    action_id = action_snapshot_id or current["action_id"] or "action-unbound"
+    decision_id = decision_snapshot_id or current["decision_id"] or "decision-unbound"
+    record_payload = {
+        "trigger_payload": payload,
+        "outcome": current,
+        "signals": context["signals"],
+        "history_depth": context["history"]["count"],
+    }
+    return _STORE.store_outcome_snapshot(
+        organization_id=org_id,
+        source=source,
+        outcome_type=outcome_type,
+        decision_id=decision_id,
+        action_id=action_id,
+        outcome_status=current["outcome_status"],
+        outcome_band=current["outcome_band"],
+        learning_band=current["learning_band"],
+        outcome_score=current["outcome_score"],
+        trust_score=current["trust_score"],
+        trust_health=current["trust_health"],
+        replay_health_score=current["replay_health_score"],
+        evidence_coverage=current["evidence_coverage"],
+        exception_pressure=current["exception_pressure"],
+        decision_quality_score=current["decision_quality_score"],
+        evidence_alignment_score=current["evidence_alignment_score"],
+        calibrated_confidence=current["calibrated_confidence"],
+        history_alignment_score=current["history_alignment_score"],
+        execution_tier=current["execution_tier"],
+        execution_tier_ready=current["execution_tier_ready"],
+        measurement_summary=current["measurement_summary"],
+        learning_actions=current["learning_actions"],
+        recalibration_notes=current["recalibration_notes"],
+        watch_items=current["watch_items"],
+        payload=record_payload,
+    )
+
+
+def record_dashboard_action_snapshot(
+    *,
+    payload: dict[str, Any],
+    source: str,
+    action_type: str = "controlled_autonomous_action",
+    decision_snapshot_id: str | None = None,
+    organization_id: str | None = None,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    context = _build_dashboard_action_context(
+        organization_id=org_id,
+        source=source,
+        action_type=action_type,
+        limit=24,
+    )
+    current = context["current"]
+    record_payload = {
+        "trigger_payload": payload,
+        "decision": current["decision"],
+        "action": current,
+        "signals": context["signals"],
+        "history_depth": context["history"]["count"],
+    }
+    decision_id = decision_snapshot_id or current["decision_id"] or "decision-unbound"
+    action_record = _STORE.store_ai_action_snapshot(
+        organization_id=org_id,
+        source=source,
+        action_type=action_type,
+        decision_id=decision_id,
+        decision_lane=current["decision_lane"],
+        action_lane=current["action_lane"],
+        action_mode=current["action_mode"],
+        action_priority=current["action_priority"],
+        action_summary=current["action_summary"],
+        control_signal=current["control_signal"],
+        safety_gate=current["safety_gate"],
+        automation_tier=current["automation_tier"],
+        decision_quality_score=current["decision_quality_score"],
+        evidence_alignment_score=current["evidence_alignment_score"],
+        calibrated_confidence=current["calibrated_confidence"],
+        history_alignment_score=current["history_alignment_score"],
+        quality_band=current["quality_band"],
+        trust_score=current["signals"]["trust_score"],
+        trust_health=current["signals"]["trust_health"],
+        replay_health_score=current["signals"]["replay_health_score"],
+        evidence_coverage=current["signals"]["evidence_coverage"],
+        exception_pressure=current["signals"]["exception_pressure"],
+        alert_count=current["signals"]["alert_count"],
+        guard_count=current["signals"]["guard_count"],
+        replay_failures=current["signals"]["replay_failures"],
+        hash_chain_failures=current["signals"]["hash_chain_failures"],
+        missing_traces=current["signals"]["missing_traces"],
+        stability_index=current["signals"]["stability_index"],
+        recommended_actions=current["recommended_actions"],
+        watch_items=current["watch_items"],
+        payload=record_payload,
+    )
+    record_dashboard_outcome_snapshot(
+        payload=payload,
+        source=source,
+        outcome_type="measured_outcome",
+        action_snapshot_id=action_record["action_id"],
+        decision_snapshot_id=decision_id,
+        organization_id=org_id,
+    )
+    return action_record
 
 
 def build_retention(organization_id: str | None = None) -> dict[str, Any]:
@@ -2772,6 +4962,178 @@ class NovaProgrammingControlPlane:
     def trust_trends(self, organization_id: str | None = None) -> dict[str, Any]:
         return build_trust_trends(organization_id=organization_id)
 
+    def dashboard_analytics(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_analytics(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_analytics_history(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_analytics_history(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_analytics_insights(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_analytics_insights(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_analytics_prediction(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_analytics_prediction(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_decisions(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_decisions(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_decisions_history(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_decisions_history(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_actions(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_actions(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_actions_history(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_actions_history(organization_id=organization_id, source=source, limit=limit)
+
+    def outcome_status(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_outcome_status(organization_id=organization_id, source=source, limit=limit)
+
+    def outcome_registry(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_outcome_registry(organization_id=organization_id, source=source, limit=limit)
+
+    def outcome_learning(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_outcome_learning(organization_id=organization_id, source=source, limit=limit)
+
+    def outcome_scoring(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_outcome_scoring(organization_id=organization_id, source=source, limit=limit)
+
+    def outcome_replay(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_outcome_replay(organization_id=organization_id, source=source, limit=limit)
+
+    def workflow_instances(
+        self,
+        *,
+        organization_id: str | None = None,
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_workflow_instances(organization_id=organization_id, limit=limit)
+
+    def record_dashboard_analytics_snapshot(
+        self,
+        *,
+        payload: dict[str, Any],
+        source: str,
+        snapshot_type: str = "operator_dashboard",
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        return record_dashboard_analytics_snapshot(
+            payload=payload,
+            source=source,
+            snapshot_type=snapshot_type,
+            organization_id=organization_id,
+        )
+
+    def record_dashboard_decision_snapshot(
+        self,
+        *,
+        payload: dict[str, Any],
+        source: str,
+        decision_type: str = "operator_decision",
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        return record_dashboard_decision_snapshot(
+            payload=payload,
+            source=source,
+            decision_type=decision_type,
+            organization_id=organization_id,
+        )
+
+    def record_dashboard_action_snapshot(
+        self,
+        *,
+        payload: dict[str, Any],
+        source: str,
+        action_type: str = "controlled_autonomous_action",
+        decision_snapshot_id: str | None = None,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        return record_dashboard_action_snapshot(
+            payload=payload,
+            source=source,
+            action_type=action_type,
+            decision_snapshot_id=decision_snapshot_id,
+            organization_id=organization_id,
+        )
+
     def retention(self, organization_id: str | None = None) -> dict[str, Any]:
         return build_retention(organization_id=organization_id)
 
@@ -3254,6 +5616,82 @@ class NovaProgrammingControlPlane:
     def billing_summary(self, organization_id: str | None = None) -> dict[str, Any]:
         return build_billing_summary(organization_id=organization_id)
 
+    def billing_preview(self, organization_id: str | None = None) -> dict[str, Any]:
+        return build_billing_preview(organization_id=organization_id)
+
+    def billing_records(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        return build_billing_records(organization_id=organization_id, limit=limit)
+
+    def organizations(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        return build_organization_directory(organization_id=organization_id, limit=limit)
+
+    def onboard_organization(
+        self,
+        *,
+        organization_id: str,
+        legal_name: str,
+        sector: str,
+        trust_domain: str,
+    ) -> dict[str, Any]:
+        return build_organization_onboarding(
+            organization_id=organization_id,
+            legal_name=legal_name,
+            sector=sector,
+            trust_domain=trust_domain,
+        )
+
+    def federated_trust_network(self, organization_id: str | None = None) -> dict[str, Any]:
+        return build_federated_trust_network(organization_id=organization_id)
+
+    def trust_marketplace_services(self, organization_id: str | None = None) -> dict[str, Any]:
+        return build_trust_marketplace_services(organization_id=organization_id)
+
+    def trust_marketplace(self, organization_id: str | None = None) -> dict[str, Any]:
+        return build_trust_marketplace(organization_id=organization_id)
+
+    def marketplace_onboarding_strategy(self, organization_id: str | None = None) -> dict[str, Any]:
+        return build_marketplace_onboarding_strategy(organization_id=organization_id)
+
+    def activate_controlled_execution(
+        self,
+        *,
+        organization_id: str | None = None,
+        acknowledged: bool = True,
+        requested_tier: str = "controlled",
+        operator_note: str = "Operator acknowledged controlled execution readiness.",
+        source: str = "novatech_controlled_execution_activation",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        org_id = organization_id or DEFAULT_ORGANIZATION_ID
+        record_dashboard_action_snapshot(
+            organization_id=org_id,
+            payload={
+                "acknowledged": bool(acknowledged),
+                "requested_tier": requested_tier,
+                "operator_note": operator_note,
+            },
+            source=source,
+            action_type="controlled_execution_activation",
+        )
+        return build_controlled_execution_activation(
+            organization_id=org_id,
+            source=source,
+            limit=limit,
+        )
+
+    def controlled_execution_activation(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str = "novatech_controlled_execution_activation",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_controlled_execution_activation(
+            organization_id=organization_id,
+            source=source,
+            limit=limit,
+        )
+
     def insights(self, organization_id: str | None = None) -> dict[str, Any]:
         return build_insights(organization_id=organization_id)
 
@@ -3369,6 +5807,25 @@ __all__ = [
     "build_assurance_report_generate",
     "build_assurance_run",
     "build_assurance_status",
+    "build_dashboard_analytics",
+    "build_dashboard_analytics_history",
+    "build_dashboard_analytics_insights",
+    "build_dashboard_analytics_prediction",
+    "build_dashboard_decisions",
+    "build_dashboard_decisions_history",
+    "build_dashboard_actions",
+    "build_dashboard_actions_history",
+    "build_outcome_status",
+    "build_outcome_registry",
+    "build_outcome_learning",
+    "build_outcome_scoring",
+    "build_outcome_replay",
+    "build_organization_onboarding",
+    "build_federated_trust_network",
+    "build_trust_marketplace_services",
+    "build_trust_marketplace",
+    "build_workflow_instances",
+    "build_organization_directory",
     "build_catalog",
     "build_certificate_chains",
     "build_certificate_issue",
@@ -3396,6 +5853,7 @@ __all__ = [
     "build_governance_policy",
     "build_insights",
     "build_v9_schema",
+    "build_billing_preview",
     "build_trust_consensus",
     "build_certificate_transparency_append",
     "build_certificate_transparency_log",
@@ -3405,6 +5863,7 @@ __all__ = [
     "build_trace_spans",
     "build_assurance_scheduler_run",
     "build_assurance_scheduler_history",
+    "build_billing_records",
     "build_federation_claim",
     "build_federation_register",
     "build_federation_verify",
@@ -3446,6 +5905,8 @@ __all__ = [
     "build_trust_fabric_signed_request_verify",
     "build_trust_negotiation",
     "build_trust_negotiations",
+    "build_controlled_execution_activation",
+    "build_marketplace_onboarding_strategy",
     "build_staff_dashboard",
     "build_status",
     "build_studio_context",
@@ -3459,4 +5920,7 @@ __all__ = [
     "default_control_plane",
     "get_control_plane",
     "lookup_proof",
+    "record_dashboard_analytics_snapshot",
+    "record_dashboard_decision_snapshot",
+    "record_dashboard_action_snapshot",
 ]

@@ -50,6 +50,29 @@ class WebSocketHub:
 
         return message
 
+    async def publish_event(
+        self,
+        channel_id: str,
+        event_type: str,
+        data: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """Publish a typed event to an observation-only websocket channel."""
+
+        sequence = self.sequence_by_ride.get(channel_id, 0) + 1
+        self.sequence_by_ride[channel_id] = sequence
+        message = {
+            "type": event_type,
+            "channel": channel_id,
+            "data": deepcopy(dict(data)),
+            "sequence": sequence,
+            "authority": "projection_only",
+        }
+
+        for client in tuple(self.channels.get(self.channel_for(channel_id), ())):
+            await client.send_json(message)
+
+        return message
+
     def channel_for(self, ride_id: str) -> str:
         if not ride_id:
             raise ValueError("ride_id must be non-empty")

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { connectDashboardRealtime } from "./realtime";
 
 const API_BASE_URL =
   import.meta?.env?.VITE_AFRIRIDE_API_URL ||
@@ -41,7 +42,20 @@ const EMPTY_OPERATOR_STATE = {
   ecosystemVerification: null,
   dashboardGatewayStatus: null,
   trustBadge: null,
+  novatechOrgPlatform: null,
+  novatechSaas: null,
+  novatechOutcomeStatus: null,
+  novatechTrustNetwork: null,
+  novatechMarketplace: null,
+  novatechControlledExecutionActivation: null,
+  novatechMarketplaceOnboarding: null,
+  liveAnalytics: null,
+  analyticsArchive: null,
+  decisionArchive: null,
+  actionArchive: null,
 };
+
+const MAX_ANALYTICS_POINTS = 16;
 
 const PROPOSALS = [
   {
@@ -601,6 +615,110 @@ const PRODUCTIZED_TRUST_FEATURE_IDS = [
   "payment-proof-anchor",
 ];
 
+const NOVATECH_PLATFORM_NAV = [
+  { label: "Main", href: "#home", detail: "NovaTech home" },
+  { label: "Organization OS", href: "#organization", detail: "Intranet + extranet" },
+  { label: "SaaS / Tenants", href: "#saas", detail: "Organizations + billing" },
+  { label: "Outcome Intelligence", href: "#outcomes", detail: "Outcome + trust network" },
+  { label: "NovaProgramming", href: "/v1/novaprogramming/dashboard", detail: "Engineering layer" },
+  { label: "NovaScript", href: "/v1/novascript/dashboard", detail: "AI + trust layer" },
+  { label: "NovaTrust", href: "/public/trust/dashboard", detail: "Verification layer" },
+  { label: "NovaPower", href: "#power", detail: "Infrastructure layer" },
+  { label: "NovaID / AfriID", href: "#identity", detail: "Identity layer" },
+  { label: "NovaPay / AfriPay", href: "#payments", detail: "Payments layer" },
+  { label: "Products", href: "#products", detail: "Business apps" },
+];
+
+const NOVATECH_CORE_LAYERS = [
+  {
+    name: "NovaProgramming",
+    status: "Live",
+    route: "/v1/novaprogramming/dashboard",
+    summary: "Engineering control, metrics, RBAC, staff dashboards, and governed release surfaces.",
+  },
+  {
+    name: "NovaScript",
+    status: "Live",
+    route: "/v1/novascript/dashboard",
+    summary: "AI system state, risk analysis, trust graph, and repository intelligence.",
+  },
+  {
+    name: "NovaTrust",
+    status: "Planned",
+    route: "/public/trust/dashboard",
+    summary: "Identity verification, proof surfaces, and fraud-aware trust review.",
+  },
+  {
+    name: "NovaPower",
+    status: "Planned",
+    route: "#power",
+    summary: "Compute, scaling, uptime, and backend resource posture.",
+  },
+  {
+    name: "NovaID / AfriID",
+    status: "Planned",
+    route: "#identity",
+    summary: "User identity, authentication, KYC, rider and driver identity binding.",
+  },
+  {
+    name: "NovaPay / AfriPay",
+    status: "Planned",
+    route: "#payments",
+    summary: "Transactions, payouts, wallet flows, and ride payment settlement.",
+  },
+];
+
+const NOVATECH_PRODUCT_LAYERS = [
+  {
+    name: "AfriRide / NovaRide",
+    status: "Active",
+    route: "/v1/operator/dashboard",
+    summary: "Mobility execution, receipts, replay, and operator monitoring.",
+  },
+  {
+    name: "AfriEat / NovaEat",
+    status: "Planned",
+    route: "#products",
+    summary: "Food delivery and logistics with payment-backed fulfillment.",
+  },
+  {
+    name: "AfriPro / NovaPro",
+    status: "Planned",
+    route: "/v1/novaprogramming/dashboard",
+    summary: "Professional services, task marketplace, and governed workforce flows.",
+  },
+  {
+    name: "NovaVirtualMall",
+    status: "Planned",
+    route: "#products",
+    summary: "E-commerce product marketplace with verified purchase flow.",
+  },
+  {
+    name: "NovaLogistics",
+    status: "Planned",
+    route: "#products",
+    summary: "Delivery network and fleet management surfaces.",
+  },
+  {
+    name: "NovaHealth",
+    status: "Planned",
+    route: "#products",
+    summary: "Medical services and telehealth control planes.",
+  },
+  {
+    name: "NovaLearn",
+    status: "Planned",
+    route: "#products",
+    summary: "Education platform, courses, and learning operations.",
+  },
+  {
+    name: "NovaTalent",
+    status: "Planned",
+    route: "#products",
+    summary: "Hiring and workforce marketplace surfaces.",
+  },
+];
+
 const PROTOCOL_COMPONENTS = [
   "Trust packet schema",
   "Registry publication semantics",
@@ -1072,6 +1190,412 @@ function normalizeDrivers(payload) {
   }));
 }
 
+function normalizeAnalyticsSnapshot(snapshot) {
+  return {
+    snapshotId: snapshot.snapshot_id || snapshot.snapshotId || "",
+    organizationId: snapshot.organization_id || snapshot.organizationId || "",
+    source: snapshot.source || "unknown",
+    snapshotType: snapshot.snapshot_type || snapshot.snapshotType || "operator_dashboard",
+    trustScore: toNumber(snapshot.trust_score ?? snapshot.trustScore, 0),
+    trustHealth: toNumber(snapshot.trust_health ?? snapshot.trustHealth, 0),
+    replayHealthScore: toNumber(snapshot.replay_health_score ?? snapshot.replayHealthScore, 0),
+    evidenceCoverage: toNumber(snapshot.evidence_coverage ?? snapshot.evidenceCoverage, 0),
+    exceptionPressure: toNumber(snapshot.exception_pressure ?? snapshot.exceptionPressure, 0),
+    alertCount: toNumber(snapshot.alert_count ?? snapshot.alertCount, 0),
+    activeDrivers: toNumber(snapshot.active_drivers ?? snapshot.activeDrivers, 0),
+    completedRides: toNumber(snapshot.completed_rides ?? snapshot.completedRides, 0),
+    totalRides: toNumber(snapshot.total_rides ?? snapshot.totalRides, 0),
+    guardCount: toNumber(snapshot.guard_count ?? snapshot.guardCount, 0),
+    replayFailures: toNumber(snapshot.replay_failures ?? snapshot.replayFailures, 0),
+    hashChainFailures: toNumber(snapshot.hash_chain_failures ?? snapshot.hashChainFailures, 0),
+    missingTraces: toNumber(snapshot.missing_traces ?? snapshot.missingTraces, 0),
+    receiptsCount: toNumber(snapshot.receipts_count ?? snapshot.receiptsCount, 0),
+    traceCount: toNumber(snapshot.trace_count ?? snapshot.traceCount, 0),
+    snapshotHash: snapshot.snapshot_hash || snapshot.snapshotHash || "",
+    windowBucket: snapshot.window_bucket || snapshot.windowBucket || "",
+    createdAt: snapshot.created_at || snapshot.createdAt || "",
+    payload: snapshot.payload || {},
+  };
+}
+
+function normalizeAnalyticsArchive(payload) {
+  if (!payload) {
+    return null;
+  }
+
+  const historyItems = Array.isArray(payload.history?.items)
+    ? payload.history.items
+    : Array.isArray(payload.history)
+      ? payload.history
+      : [];
+  const latest = payload.latest ? normalizeAnalyticsSnapshot(payload.latest) : null;
+  const prediction = payload.prediction
+    ? {
+        ...payload.prediction,
+        riskLevel: payload.prediction.risk_level || payload.prediction.riskLevel || "unknown",
+        watchItems: payload.prediction.watch_items || payload.prediction.watchItems || [],
+        headline: payload.prediction.headline || payload.prediction.summary || "",
+        confidence: toNumber(payload.prediction.confidence, 0),
+        predictedTrustScore: toNumber(
+          payload.prediction.predicted_trust_score ?? payload.prediction.predictedTrustScore,
+          0,
+        ),
+        predictedEvidenceCoverage: toNumber(
+          payload.prediction.predicted_evidence_coverage ??
+            payload.prediction.predictedEvidenceCoverage,
+          0,
+        ),
+        predictedExceptionPressure: toNumber(
+          payload.prediction.predicted_exception_pressure ??
+            payload.prediction.predictedExceptionPressure,
+          0,
+        ),
+      }
+    : null;
+
+  return {
+    ...payload,
+    history: {
+      ...(payload.history || {}),
+      items: historyItems.map(normalizeAnalyticsSnapshot),
+    },
+    latest,
+    prediction,
+  };
+}
+
+function normalizeDecisionSnapshot(snapshot) {
+  if (!snapshot) {
+    return null;
+  }
+
+  return {
+    decisionId: snapshot.decision_id || snapshot.decisionId || "",
+    organizationId: snapshot.organization_id || snapshot.organizationId || "",
+    source: snapshot.source || "unknown",
+    decisionType: snapshot.decision_type || snapshot.decisionType || "operator_decision",
+    decisionLane: snapshot.decision_lane || snapshot.decisionLane || "observe",
+    decisionAction: snapshot.decision_action || snapshot.decisionAction || "continue_monitoring",
+    decisionPriority: snapshot.decision_priority || snapshot.decisionPriority || "low",
+    decisionSummary: snapshot.decision_summary || snapshot.decisionSummary || "",
+    trustScore: toNumber(snapshot.trust_score ?? snapshot.trustScore, 0),
+    trustHealth: toNumber(snapshot.trust_health ?? snapshot.trustHealth, 0),
+    replayHealthScore: toNumber(snapshot.replay_health_score ?? snapshot.replayHealthScore, 0),
+    evidenceCoverage: toNumber(snapshot.evidence_coverage ?? snapshot.evidenceCoverage, 0),
+    exceptionPressure: toNumber(snapshot.exception_pressure ?? snapshot.exceptionPressure, 0),
+    alertCount: toNumber(snapshot.alert_count ?? snapshot.alertCount, 0),
+    guardCount: toNumber(snapshot.guard_count ?? snapshot.guardCount, 0),
+    replayFailures: toNumber(snapshot.replay_failures ?? snapshot.replayFailures, 0),
+    hashChainFailures: toNumber(snapshot.hash_chain_failures ?? snapshot.hashChainFailures, 0),
+    missingTraces: toNumber(snapshot.missing_traces ?? snapshot.missingTraces, 0),
+    riskScore: toNumber(snapshot.risk_score ?? snapshot.riskScore, 0),
+    riskLevel: snapshot.risk_level || snapshot.riskLevel || "unknown",
+    confidence: toNumber(snapshot.confidence, 0),
+    stabilityIndex: toNumber(snapshot.stability_index ?? snapshot.stabilityIndex, 0),
+    recommendedActions:
+      snapshot.recommended_actions || snapshot.recommendedActions || snapshot.playbook || [],
+    watchItems: snapshot.watch_items || snapshot.watchItems || [],
+    snapshotHash: snapshot.snapshot_hash || snapshot.snapshotHash || "",
+    windowBucket: snapshot.window_bucket || snapshot.windowBucket || "",
+    createdAt: snapshot.created_at || snapshot.createdAt || "",
+    payload: snapshot.payload || {},
+  };
+}
+
+function normalizeDecisionArchive(payload) {
+  if (!payload) {
+    return null;
+  }
+
+  const historyItems = Array.isArray(payload.history?.items)
+    ? payload.history.items
+    : Array.isArray(payload.history)
+      ? payload.history
+      : [];
+  const current = payload.current
+    ? {
+        ...payload.current,
+        decisionType:
+          payload.current.decision_type || payload.current.decisionType || "operator_decision",
+        decisionLane:
+          payload.current.decision_lane || payload.current.decisionLane || "observe",
+        decisionAction:
+          payload.current.decision_action || payload.current.decisionAction || "continue_monitoring",
+        decisionPriority:
+          payload.current.decision_priority || payload.current.decisionPriority || "low",
+        decisionSummary:
+          payload.current.decision_summary || payload.current.decisionSummary || "",
+        trustScore: toNumber(payload.current.trust_score ?? payload.current.trustScore, 0),
+        trustHealth: toNumber(payload.current.trust_health ?? payload.current.trustHealth, 0),
+        replayHealthScore: toNumber(
+          payload.current.replay_health_score ?? payload.current.replayHealthScore,
+          0,
+        ),
+        evidenceCoverage: toNumber(
+          payload.current.evidence_coverage ?? payload.current.evidenceCoverage,
+          0,
+        ),
+        exceptionPressure: toNumber(
+          payload.current.exception_pressure ?? payload.current.exceptionPressure,
+          0,
+        ),
+        alertCount: toNumber(payload.current.alert_count ?? payload.current.alertCount, 0),
+        guardCount: toNumber(payload.current.guard_count ?? payload.current.guardCount, 0),
+        replayFailures: toNumber(payload.current.replay_failures ?? payload.current.replayFailures, 0),
+        hashChainFailures: toNumber(
+          payload.current.hash_chain_failures ?? payload.current.hashChainFailures,
+          0,
+        ),
+        missingTraces: toNumber(payload.current.missing_traces ?? payload.current.missingTraces, 0),
+        riskScore: toNumber(payload.current.risk_score ?? payload.current.riskScore, 0),
+        riskLevel: payload.current.risk_level || payload.current.riskLevel || "unknown",
+        confidence: toNumber(payload.current.confidence, 0),
+        stabilityIndex: toNumber(
+          payload.current.stability_index ?? payload.current.stabilityIndex,
+          0,
+        ),
+        recommendedActions:
+          payload.current.recommended_actions ||
+          payload.current.recommendedActions ||
+          payload.current.playbook ||
+          [],
+        watchItems: payload.current.watch_items || payload.current.watchItems || [],
+        advisoryOnly: payload.current.advisory_only ?? payload.current.advisoryOnly ?? true,
+        executionAuthority:
+          payload.current.execution_authority ?? payload.current.executionAuthority ?? false,
+        signals: payload.current.signals || {},
+        reasoning: payload.current.reasoning || {},
+        analyticsLatest: payload.current.analytics_latest
+          ? normalizeAnalyticsSnapshot(payload.current.analytics_latest)
+          : null,
+        latestRecordId: payload.current.latest_record_id || payload.current.latestRecordId || null,
+        readOnly: true,
+        projectionOnly: true,
+      }
+    : null;
+
+  const latest = payload.latest ? normalizeDecisionSnapshot(payload.latest) : null;
+
+  return {
+    ...payload,
+    current,
+    latest,
+    history: {
+      ...(payload.history || {}),
+      items: historyItems.map(normalizeDecisionSnapshot),
+      source_breakdown: payload.history?.source_breakdown || {},
+    },
+    signals: payload.signals || current?.signals || {},
+    readOnly: payload.read_only ?? payload.readOnly ?? true,
+    projectionOnly: payload.projection_only ?? payload.projectionOnly ?? true,
+  };
+}
+
+function normalizeActionSnapshot(snapshot) {
+  if (!snapshot) {
+    return null;
+  }
+
+  const decisionQuality = snapshot.decision_quality || {};
+
+  return {
+    actionId: snapshot.action_id || snapshot.actionId || "",
+    organizationId: snapshot.organization_id || snapshot.organizationId || "",
+    source: snapshot.source || "unknown",
+    actionType: snapshot.action_type || snapshot.actionType || "controlled_autonomous_action",
+    decisionId: snapshot.decision_id || snapshot.decisionId || "",
+    decisionLane: snapshot.decision_lane || snapshot.decisionLane || "observe",
+    decisionPriority: snapshot.decision_priority || snapshot.decisionPriority || "low",
+    actionLane: snapshot.action_lane || snapshot.actionLane || "monitor",
+    actionMode: snapshot.action_mode || snapshot.actionMode || "guided_control",
+    actionPriority: snapshot.action_priority || snapshot.actionPriority || "low",
+    actionSummary: snapshot.action_summary || snapshot.actionSummary || "",
+    controlSignal: snapshot.control_signal || snapshot.controlSignal || "maintain_monitoring",
+    safetyGate: snapshot.safety_gate || snapshot.safetyGate || "pass",
+    automationTier: toNumber(snapshot.automation_tier ?? snapshot.automationTier, 0),
+    executionTier:
+      snapshot.execution_tier ||
+      snapshot.executionTier ||
+      snapshot.payload?.action?.execution_tier ||
+      snapshot.payload?.action?.executionTier ||
+      "advisory",
+    executionTierReady:
+      snapshot.execution_tier_ready ??
+      snapshot.executionTierReady ??
+      snapshot.payload?.action?.execution_tier_ready ??
+      snapshot.payload?.action?.executionTierReady ??
+      false,
+    executionTierSummary:
+      snapshot.execution_tier_summary ||
+      snapshot.executionTierSummary ||
+      snapshot.payload?.action?.execution_tier_summary ||
+      snapshot.payload?.action?.executionTierSummary ||
+      "",
+    executionTierControls:
+      snapshot.execution_tier_controls ||
+      snapshot.executionTierControls ||
+      snapshot.payload?.action?.execution_tier_controls ||
+      snapshot.payload?.action?.executionTierControls ||
+      [],
+    decisionQualityScore: toNumber(
+      snapshot.decision_quality_score ?? snapshot.decisionQualityScore ?? decisionQuality.score,
+      0,
+    ),
+    evidenceAlignmentScore: toNumber(
+      snapshot.evidence_alignment_score ??
+        snapshot.evidenceAlignmentScore ??
+        decisionQuality.evidence_alignment_score ??
+        decisionQuality.evidenceAlignmentScore,
+      0,
+    ),
+    calibratedConfidence: toNumber(
+      snapshot.calibrated_confidence ??
+        snapshot.calibratedConfidence ??
+        decisionQuality.calibrated_confidence ??
+        decisionQuality.calibratedConfidence,
+      0,
+    ),
+    historyAlignmentScore: toNumber(
+      snapshot.history_alignment_score ??
+        snapshot.historyAlignmentScore ??
+        decisionQuality.history_alignment_score ??
+        decisionQuality.historyAlignmentScore,
+      0,
+    ),
+    qualityBand:
+      snapshot.quality_band ||
+      snapshot.qualityBand ||
+      decisionQuality.band ||
+      "unknown",
+    trustScore: toNumber(snapshot.trust_score ?? snapshot.trustScore, 0),
+    trustHealth: toNumber(snapshot.trust_health ?? snapshot.trustHealth, 0),
+    replayHealthScore: toNumber(snapshot.replay_health_score ?? snapshot.replayHealthScore, 0),
+    evidenceCoverage: toNumber(snapshot.evidence_coverage ?? snapshot.evidenceCoverage, 0),
+    exceptionPressure: toNumber(snapshot.exception_pressure ?? snapshot.exceptionPressure, 0),
+    alertCount: toNumber(snapshot.alert_count ?? snapshot.alertCount, 0),
+    guardCount: toNumber(snapshot.guard_count ?? snapshot.guardCount, 0),
+    replayFailures: toNumber(snapshot.replay_failures ?? snapshot.replayFailures, 0),
+    hashChainFailures: toNumber(snapshot.hash_chain_failures ?? snapshot.hashChainFailures, 0),
+    missingTraces: toNumber(snapshot.missing_traces ?? snapshot.missingTraces, 0),
+    stabilityIndex: toNumber(snapshot.stability_index ?? snapshot.stabilityIndex, 0),
+    recommendedActions:
+      snapshot.recommended_actions || snapshot.recommendedActions || snapshot.control_actions || [],
+    watchItems: snapshot.watch_items || snapshot.watchItems || [],
+    controlActions: snapshot.control_actions || snapshot.controlActions || [],
+    operatorGuidance: snapshot.operator_guidance || snapshot.operatorGuidance || [],
+    signals: snapshot.signals || {},
+    reasoning: snapshot.reasoning || {},
+    decision: snapshot.decision ? normalizeDecisionSnapshot(snapshot.decision) : null,
+    decisionQuality:
+      snapshot.decision_quality || snapshot.decisionQuality
+        ? {
+            score: toNumber(decisionQuality.score ?? snapshot.decision_quality_score, 0),
+            band:
+              decisionQuality.band ||
+              snapshot.quality_band ||
+              snapshot.qualityBand ||
+              "unknown",
+            calibratedConfidence: toNumber(
+              decisionQuality.calibrated_confidence ??
+                decisionQuality.calibratedConfidence ??
+                snapshot.calibrated_confidence ??
+                snapshot.calibratedConfidence,
+              0,
+            ),
+            evidenceAlignmentScore: toNumber(
+              decisionQuality.evidence_alignment_score ??
+                decisionQuality.evidenceAlignmentScore ??
+                snapshot.evidence_alignment_score ??
+                snapshot.evidenceAlignmentScore,
+              0,
+            ),
+            historyAlignmentScore: toNumber(
+              decisionQuality.history_alignment_score ??
+                decisionQuality.historyAlignmentScore ??
+                snapshot.history_alignment_score ??
+                snapshot.historyAlignmentScore,
+              0,
+            ),
+            trustAlignmentScore: toNumber(
+              decisionQuality.trust_alignment_score ??
+                decisionQuality.trustAlignmentScore ??
+                snapshot.trust_health,
+              0,
+            ),
+            replayAlignmentScore: toNumber(
+              decisionQuality.replay_alignment_score ??
+                decisionQuality.replayAlignmentScore ??
+                snapshot.replay_health_score,
+              0,
+            ),
+            evidenceCalibrated:
+              decisionQuality.evidence_calibrated ?? decisionQuality.evidenceCalibrated ?? true,
+            summary: decisionQuality.summary || snapshot.action_summary || "",
+          }
+        : {
+            score: toNumber(snapshot.decision_quality_score ?? snapshot.decisionQualityScore, 0),
+            band: snapshot.quality_band || snapshot.qualityBand || "unknown",
+            calibratedConfidence: toNumber(
+              snapshot.calibrated_confidence ?? snapshot.calibratedConfidence,
+              0,
+            ),
+            evidenceAlignmentScore: toNumber(
+              snapshot.evidence_alignment_score ?? snapshot.evidenceAlignmentScore,
+              0,
+            ),
+            historyAlignmentScore: toNumber(
+              snapshot.history_alignment_score ?? snapshot.historyAlignmentScore,
+              0,
+            ),
+            trustAlignmentScore: toNumber(snapshot.trust_health ?? snapshot.trustHealth, 0),
+            replayAlignmentScore: toNumber(
+              snapshot.replay_health_score ?? snapshot.replayHealthScore,
+              0,
+            ),
+            evidenceCalibrated: true,
+            summary: snapshot.action_summary || "",
+          },
+    snapshotHash: snapshot.snapshot_hash || snapshot.snapshotHash || "",
+    windowBucket: snapshot.window_bucket || snapshot.windowBucket || "",
+    createdAt: snapshot.created_at || snapshot.createdAt || "",
+    payload: snapshot.payload || {},
+    readOnly: true,
+    projectionOnly: true,
+    advisoryOnly: true,
+  };
+}
+
+function normalizeActionArchive(payload) {
+  if (!payload) {
+    return null;
+  }
+
+  const historyItems = Array.isArray(payload.history?.items)
+    ? payload.history.items
+    : Array.isArray(payload.history)
+      ? payload.history
+      : [];
+  const current = payload.current
+    ? normalizeActionSnapshot(payload.current)
+    : null;
+  const latest = payload.latest ? normalizeActionSnapshot(payload.latest) : null;
+
+  return {
+    ...payload,
+    current,
+    latest,
+    history: {
+      ...(payload.history || {}),
+      items: historyItems.map(normalizeActionSnapshot),
+      source_breakdown: payload.history?.source_breakdown || {},
+    },
+    signals: payload.signals || current?.signals || current?.decisionQuality || {},
+    reasoning: payload.reasoning || current?.reasoning || {},
+    readOnly: payload.read_only ?? payload.readOnly ?? true,
+    projectionOnly: payload.projection_only ?? payload.projectionOnly ?? true,
+  };
+}
+
 function deriveTrustState(state) {
   const failures = Number(state.replayHealth.failures || 0);
   const missingTraces = Number(state.evidence.missing_traces || 0);
@@ -1293,10 +1817,340 @@ function deriveMaturitySignals(state) {
   });
 }
 
+function toNumber(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function parsePercent(value, fallback = 0) {
+  if (typeof value === "string") {
+    const match = value.match(/(\d+(?:\.\d+)?)/);
+    if (match) {
+      return toNumber(match[1], fallback);
+    }
+  }
+  return toNumber(value, fallback);
+}
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function buildLiveAnalyticsSnapshot({
+  trustMetrics,
+  replayHealth,
+  evidence,
+  pilotMetrics,
+  observabilityDashboard,
+  guards,
+  drivers,
+  activeRides,
+  liveEvents,
+}) {
+  const timestamp = new Date().toLocaleTimeString();
+  const trustScore = toNumber(trustMetrics?.trust_score, 0);
+  const replayFailures = toNumber(replayHealth?.failures, 0);
+  const hashChainFailures = toNumber(replayHealth?.hash_chain_failures, 0);
+  const replaySuccessRate = parsePercent(replayHealth?.replay_success_rate, 100);
+  const missingTraces = toNumber(evidence?.missing_traces, 0);
+  const receiptsCount = toNumber(evidence?.receipts_count, 0);
+  const traceCount = toNumber(evidence?.trace_count, 0);
+  const completedRides = toNumber(pilotMetrics?.completed_rides, 0);
+  const totalRides = toNumber(
+    pilotMetrics?.total_rides,
+    activeRides.length > 0 ? activeRides.length : completedRides,
+  );
+  const onlineDrivers = drivers.filter((driver) => driver.status === "ONLINE").length;
+  const driverCount = drivers.length;
+  const guardCount = guards.length;
+  const alertCount = toNumber(observabilityDashboard?.alerts?.length, 0);
+  const exceptionCount = replayFailures + hashChainFailures + missingTraces + guardCount;
+  const evidenceCoverage =
+    traceCount > 0
+      ? clampNumber(Math.round((receiptsCount / traceCount) * 100), 0, 100)
+      : receiptsCount > 0
+        ? 100
+        : 0;
+  const trustHealth = clampNumber(
+    trustScore - replayFailures * 14 - missingTraces * 5 - guardCount * 8,
+    0,
+    100,
+  );
+  const replayHealthScore = clampNumber(
+    replaySuccessRate - replayFailures * 18 - hashChainFailures * 14 - missingTraces * 6 - guardCount * 8,
+    0,
+    100,
+  );
+  const alertTone =
+    exceptionCount > 0
+      ? "critical"
+      : trustScore >= 90
+        ? "good"
+        : "warn";
+
+  const notifications = buildOperatorNotifications({
+    timestamp,
+    trustScore,
+    replayFailures,
+    hashChainFailures,
+    replaySuccessRate,
+    missingTraces,
+    guardCount,
+    alertCount,
+    liveEvents,
+  });
+
+  return {
+    timestamp,
+    trustScore,
+    trustHealth,
+    replayFailures,
+    hashChainFailures,
+    replaySuccessRate,
+    missingTraces,
+    receiptsCount,
+    traceCount,
+    completedRides,
+    totalRides,
+    onlineDrivers,
+    driverCount,
+    guardCount,
+    alertCount,
+    exceptionCount,
+    evidenceCoverage,
+    replayHealthScore,
+    alertTone,
+    notifications,
+  };
+}
+
+function buildOperatorNotifications({
+  timestamp,
+  trustScore,
+  replayFailures,
+  hashChainFailures,
+  missingTraces,
+  guardCount,
+  alertCount,
+  decisionLane,
+  decisionSummary,
+  decisionQualityScore,
+  decisionQualityBand,
+  controlSignal,
+  safetyGate,
+  calibratedConfidence,
+  executionTier,
+  executionTierReady,
+  liveEvents,
+}) {
+  const notifications = [];
+
+  if (replayFailures > 0 || hashChainFailures > 0) {
+    notifications.push({
+      id: "replay-exception",
+      severity: replayFailures + hashChainFailures > 1 ? "critical" : "warning",
+      title: "Replay exception detected",
+      detail: `${replayFailures} replay failure(s) and ${hashChainFailures} hash-chain issue(s) are present in the current trust window.`,
+      source: "Replay health",
+      timestamp,
+    });
+  }
+
+  if (missingTraces > 0) {
+    notifications.push({
+      id: "pilot-evidence-gap",
+      severity: "warning",
+      title: "Pilot evidence gap",
+      detail: `${missingTraces} trace(s) are missing from the current evidence pipeline snapshot.`,
+      source: "Evidence pipeline",
+      timestamp,
+    });
+  }
+
+  if (trustScore > 0 && trustScore < 90) {
+    notifications.push({
+      id: "trust-drift",
+      severity: trustScore < 80 ? "critical" : "warning",
+      title: "Trust score softened",
+      detail: `Current trust score is ${trustScore}. The live analytics trail is below the preferred operating band.`,
+      source: "Trust metrics",
+      timestamp,
+    });
+  }
+
+  if (guardCount > 0) {
+    notifications.push({
+      id: "guard-violations",
+      severity: guardCount > 2 ? "critical" : "warning",
+      title: "Operator guard violations",
+      detail: `${guardCount} guard violation(s) are currently visible on the control surface.`,
+      source: "Governance guardrail",
+      timestamp,
+    });
+  }
+
+  if (alertCount > 0) {
+    notifications.push({
+      id: "observability-alerts",
+      severity: alertCount > 2 ? "critical" : "warning",
+      title: "Observability alerts present",
+      detail: `${alertCount} operator alert(s) were published by the observability dashboard.`,
+      source: "Observability dashboard",
+      timestamp,
+    });
+  }
+
+  if (decisionLane === "review" || decisionLane === "escalate") {
+    notifications.push({
+      id: "decision-engine",
+      severity: decisionLane === "escalate" ? "critical" : "warning",
+      title:
+        decisionLane === "escalate"
+          ? "Decision engine escalated review"
+          : "Decision engine opened operator review",
+      detail:
+        decisionSummary ||
+        "The AI decision engine recommends operator review for the current trust window.",
+      source: "AI decision engine",
+      timestamp,
+    });
+  }
+
+  if (
+    safetyGate === "hold" ||
+    decisionQualityBand === "weak" ||
+    (Number.isFinite(decisionQualityScore) && decisionQualityScore > 0 && decisionQualityScore < 70)
+  ) {
+    notifications.push({
+      id: "action-quality-calibration",
+      severity: safetyGate === "hold" || decisionQualityScore < 55 ? "critical" : "warning",
+      title:
+        safetyGate === "hold"
+          ? "Autonomous action engine held"
+          : "Decision quality calibration weakened",
+      detail:
+        safetyGate === "hold"
+          ? "The controlled autonomous action engine is in hold mode until evidence alignment improves."
+          : `Decision quality is ${decisionQualityScore || 0}/100 with ${decisionQualityBand || "unknown"} calibration${calibratedConfidence ? ` and ${Math.round(calibratedConfidence * 100)}% calibrated confidence` : ""}.`,
+      source: controlSignal || "Action calibration",
+      timestamp,
+    });
+  }
+
+  if (controlSignal === "require_operator_review") {
+    notifications.push({
+      id: "action-review-required",
+      severity: "warning",
+      title: "Operator review required",
+      detail:
+        "The action engine is advisory-only and is requesting operator review before any higher-risk handling.",
+      source: "Action control signal",
+      timestamp,
+    });
+  }
+
+  if (executionTierReady || executionTier === "controlled") {
+    notifications.push({
+      id: "controlled-execution-tier",
+      severity: executionTierReady ? "info" : "warning",
+      title:
+        executionTierReady
+          ? "Controlled execution tier enabled"
+          : "Controlled execution tier pending",
+      detail:
+        executionTierReady
+          ? "Decision quality and evidence alignment are strong enough for operator-supervised limited automation proposals."
+          : "The system is approaching a controlled execution tier, but the safety gate or calibrated confidence is not yet strong enough.",
+      source: "Controlled autonomy",
+      timestamp,
+    });
+  }
+
+  liveEvents
+    .filter((event) => event.type || event.data?.source || event.data?.summary || event.data?.status)
+    .slice(0, 4)
+    .forEach((event, index) => {
+      notifications.push({
+        id: `live-event-${index}`,
+        severity: event.type && String(event.type).includes("ALERT") ? "warning" : "info",
+        title: event.type || "Dashboard event",
+        detail:
+          typeof event.data?.source === "string"
+            ? event.data.source
+            : event.channel || "Live dashboard stream event",
+        source: "WebSocket stream",
+        timestamp,
+      });
+    });
+
+  return notifications.slice(0, 8);
+}
+
+function appendAnalyticsTrail(trail, snapshot) {
+  return [...trail, snapshot].slice(-MAX_ANALYTICS_POINTS);
+}
+
+function chartPoints(series, key) {
+  return series.map((point) => toNumber(point[key], 0));
+}
+
+function buildPolylinePath(values, width, height, padding = 8) {
+  if (values.length === 0) {
+    return "";
+  }
+
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const innerWidth = width - padding * 2;
+  const innerHeight = height - padding * 2;
+  const step = values.length > 1 ? innerWidth / (values.length - 1) : innerWidth;
+  const range = max === min ? 0 : max - min;
+
+  return values
+    .map((value, index) => {
+      const x = padding + step * index;
+      const normalized = range === 0 ? 0.5 : (value - min) / range;
+      const y = height - padding - normalized * innerHeight;
+      return `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+}
+
+function buildAreaPath(values, width, height, padding = 8) {
+  if (values.length === 0) {
+    return "";
+  }
+
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const innerWidth = width - padding * 2;
+  const innerHeight = height - padding * 2;
+  const step = values.length > 1 ? innerWidth / (values.length - 1) : innerWidth;
+  const range = max === min ? 0 : max - min;
+
+  const topPath = values
+    .map((value, index) => {
+      const x = padding + step * index;
+      const normalized = range === 0 ? 0.5 : (value - min) / range;
+      const y = height - padding - normalized * innerHeight;
+      return `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+  const closingPoints = [
+    `L${(padding + innerWidth).toFixed(2)},${(height - padding).toFixed(2)}`,
+    `L${padding.toFixed(2)},${(height - padding).toFixed(2)}`,
+    "Z",
+  ];
+  return `${topPath} ${closingPoints.join(" ")}`;
+}
+
 export default function OperatorDashboard() {
   const [state, setState] = useState(EMPTY_OPERATOR_STATE);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
+  const [liveConnection, setLiveConnection] = useState("connecting");
+  const [liveEvents, setLiveEvents] = useState([]);
+  const [analyticsTrail, setAnalyticsTrail] = useState([]);
   const [conversation, setConversation] = useState([
     {
       role: "system",
@@ -1310,6 +2164,7 @@ export default function OperatorDashboard() {
   const [afriprogScenarioKey, setAfriprogScenarioKey] = useState(
     AFRIPROG_DEMO_SCENARIOS[0].key,
   );
+  const [controlledExecutionBusy, setControlledExecutionBusy] = useState(false);
   const [governanceSubmission, setGovernanceSubmission] = useState(null);
   const [walkthroughMode, setWalkthroughMode] = useState(false);
   const [walkthroughStep, setWalkthroughStep] = useState(0);
@@ -1328,8 +2183,47 @@ export default function OperatorDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    let socket = null;
+    let cancelled = false;
+
+    operatorToken()
+      .then((token) => {
+        if (cancelled) {
+          return;
+        }
+
+        socket = connectDashboardRealtime(token, {
+          onOpen: () => setLiveConnection("connected"),
+          onClose: () => setLiveConnection("disconnected"),
+          onError: () => setLiveConnection("error"),
+          onMessage: (message) => {
+            setLiveConnection("connected");
+            setLiveEvents((current) => [message, ...current].slice(0, 8));
+            setLastUpdated(new Date().toISOString());
+            if (message?.data?.summary && typeof message.data.summary === "object") {
+              setError(null);
+            }
+          },
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLiveConnection("error");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, []);
+
   async function fetchOperatorState() {
     try {
+      const organizationId = state.novatechSaas?.organization_id || "org-nova";
       const [
         systemHealthResult,
         activeRidesResult,
@@ -1342,6 +2236,16 @@ export default function OperatorDashboard() {
         observabilityDashboardResult,
         auditDashboardResult,
         publicTrustDashboardResult,
+        operatorAnalyticsResult,
+        operatorDecisionsResult,
+        operatorActionsResult,
+        novatechPlatformResult,
+        novatechSaasResult,
+        novatechOutcomeStatusResult,
+        novatechTrustNetworkResult,
+        novatechMarketplaceResult,
+        novatechControlledExecutionActivationResult,
+        novatechMarketplaceOnboardingResult,
       ] = await Promise.allSettled([
         readJson("/system/health"),
         readJson("/rides/active"),
@@ -1354,6 +2258,16 @@ export default function OperatorDashboard() {
         readJson("/v1/ops/observability/dashboard"),
         readJson("/v1/ops/audit/dashboard"),
         readPublicJson("/public/trust/dashboard"),
+        readJson("/v1/operator/analytics"),
+        readJson("/v1/operator/decisions"),
+        readJson("/v1/operator/actions"),
+        readJson("/v1/novatech/intranet/platform"),
+        readJson("/v1/novatech/saas/status"),
+        readJson("/v1/novatech/outcomes/status"),
+        readJson("/v1/novatech/trust-network/status"),
+        readJson("/v1/novatech/marketplace/status"),
+        readJson(`/v1/novatech/organizations/${organizationId}/execution/activation`),
+        readJson("/v1/novatech/marketplace/onboarding"),
       ]);
 
       const activeRides =
@@ -1384,6 +2298,55 @@ export default function OperatorDashboard() {
         publicTrustDashboardResult.status === "fulfilled"
           ? publicTrustDashboardResult.value
           : state.publicTrustDashboard;
+      const analyticsArchive =
+        operatorAnalyticsResult.status === "fulfilled"
+          ? normalizeAnalyticsArchive(operatorAnalyticsResult.value)
+          : state.analyticsArchive;
+      const decisionArchive =
+        operatorDecisionsResult.status === "fulfilled"
+          ? normalizeDecisionArchive(operatorDecisionsResult.value)
+          : state.decisionArchive;
+      const actionArchive =
+        operatorActionsResult.status === "fulfilled"
+          ? normalizeActionArchive(operatorActionsResult.value)
+          : state.actionArchive;
+      const novatechOrgPlatform =
+        novatechPlatformResult.status === "fulfilled"
+          ? novatechPlatformResult.value
+          : state.novatechOrgPlatform;
+      const novatechSaas =
+        novatechSaasResult.status === "fulfilled" ? novatechSaasResult.value : state.novatechSaas;
+      const novatechOutcomeStatus =
+        novatechOutcomeStatusResult.status === "fulfilled"
+          ? novatechOutcomeStatusResult.value
+          : state.novatechOutcomeStatus;
+      const novatechTrustNetwork =
+        novatechTrustNetworkResult.status === "fulfilled"
+          ? novatechTrustNetworkResult.value
+          : state.novatechTrustNetwork;
+      const novatechMarketplace =
+        novatechMarketplaceResult.status === "fulfilled"
+          ? novatechMarketplaceResult.value
+          : state.novatechMarketplace;
+      const novatechControlledExecutionActivation =
+        novatechControlledExecutionActivationResult.status === "fulfilled"
+          ? novatechControlledExecutionActivationResult.value
+          : state.novatechControlledExecutionActivation;
+      const novatechMarketplaceOnboarding =
+        novatechMarketplaceOnboardingResult.status === "fulfilled"
+          ? novatechMarketplaceOnboardingResult.value
+          : state.novatechMarketplaceOnboarding;
+      const liveAnalytics = buildLiveAnalyticsSnapshot({
+        trustMetrics,
+        replayHealth,
+        evidence,
+        pilotMetrics,
+        observabilityDashboard,
+        guards,
+        drivers,
+        activeRides,
+        liveEvents,
+      });
 
       let systemHealth =
         systemHealthResult.status === "fulfilled" ? systemHealthResult.value : null;
@@ -1423,7 +2386,21 @@ export default function OperatorDashboard() {
         observabilityDashboard,
         auditDashboard,
         publicTrustDashboard,
+        novatechOrgPlatform,
+        novatechSaas,
+        novatechOutcomeStatus,
+        novatechTrustNetwork,
+        novatechMarketplace,
+        novatechControlledExecutionActivation,
+        novatechMarketplaceOnboarding,
+        liveAnalytics,
+        analyticsArchive,
+        decisionArchive,
+        actionArchive,
       }));
+      if (liveAnalytics) {
+        setAnalyticsTrail((current) => appendAnalyticsTrail(current, liveAnalytics));
+      }
       setLastUpdated(new Date().toLocaleTimeString());
       setError(null);
     } catch (err) {
@@ -1487,6 +2464,24 @@ export default function OperatorDashboard() {
     }));
   }
 
+  async function activateControlledExecution() {
+    const organizationId = state.novatechSaas?.organization_id || "org-nova";
+    setControlledExecutionBusy(true);
+    try {
+      await writeJson(`/v1/novatech/organizations/${organizationId}/execution/activate`, {
+        acknowledged: true,
+        requested_tier: "controlled",
+        operator_note: "Operator acknowledged controlled execution readiness.",
+      });
+      await fetchOperatorState();
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "controlled_execution_activation_failed");
+    } finally {
+      setControlledExecutionBusy(false);
+    }
+  }
+
   async function askTrustSystem(event) {
     event.preventDefault();
     const query = conversationInput.trim();
@@ -1536,12 +2531,88 @@ export default function OperatorDashboard() {
   const liveEconomySignals = useMemo(() => deriveEconomySignals(state), [state]);
   const liveProductSurfaces = useMemo(() => deriveProductSurfaces(state), [state]);
   const liveMaturitySignals = useMemo(() => deriveMaturitySignals(state), [state]);
+  const liveAnalyticsSnapshot = useMemo(
+    () =>
+      state.liveAnalytics ||
+      buildLiveAnalyticsSnapshot({
+        trustMetrics: state.trustMetrics,
+        replayHealth: state.replayHealth,
+        evidence: state.evidence,
+        pilotMetrics: state.pilotMetrics,
+        observabilityDashboard: state.observabilityDashboard,
+        guards: state.guards,
+        drivers: state.drivers,
+        activeRides: state.activeRides,
+        liveEvents,
+      }),
+    [
+      state.liveAnalytics,
+      state.trustMetrics,
+      state.replayHealth,
+      state.evidence,
+      state.pilotMetrics,
+      state.observabilityDashboard,
+      state.guards,
+      state.drivers,
+      state.activeRides,
+      liveEvents,
+      ],
+  );
   const afriprogScenario = useMemo(
     () =>
       AFRIPROG_DEMO_SCENARIOS.find((scenario) => scenario.key === afriprogScenarioKey) ||
       AFRIPROG_DEMO_SCENARIOS[0],
     [afriprogScenarioKey],
   );
+  const persistedAnalyticsHistory = state.analyticsArchive?.history?.items || [];
+  const persistedAnalyticsLatest =
+    state.analyticsArchive?.latest ||
+    (persistedAnalyticsHistory.length > 0
+      ? persistedAnalyticsHistory[persistedAnalyticsHistory.length - 1]
+      : null);
+  const persistedAnalyticsInsights = state.analyticsArchive?.insights || [];
+  const persistedAnalyticsPrediction = state.analyticsArchive?.prediction || null;
+  const persistedAnalyticsTrend = state.analyticsArchive?.trend || null;
+  const persistedAnalyticsSourceBreakdown =
+    state.analyticsArchive?.history?.source_breakdown || {};
+  const persistedDecisionHistory = state.decisionArchive?.history?.items || [];
+  const persistedDecisionLatest =
+    state.decisionArchive?.latest ||
+    (persistedDecisionHistory.length > 0
+      ? persistedDecisionHistory[persistedDecisionHistory.length - 1]
+      : null);
+  const persistedDecisionCurrent = state.decisionArchive?.current || persistedDecisionLatest;
+  const persistedDecisionSourceBreakdown =
+    state.decisionArchive?.history?.source_breakdown || {};
+  const persistedActionHistory = state.actionArchive?.history?.items || [];
+  const persistedActionLatest =
+    state.actionArchive?.latest ||
+    (persistedActionHistory.length > 0
+      ? persistedActionHistory[persistedActionHistory.length - 1]
+      : null);
+  const persistedActionCurrent = state.actionArchive?.current || persistedActionLatest;
+  const persistedActionSourceBreakdown = state.actionArchive?.history?.source_breakdown || {};
+  const novatechOrgPlatform = state.novatechOrgPlatform;
+  const novatechOrgPlatformSurfaces = novatechOrgPlatform?.surfaces || {};
+  const novatechSaas = state.novatechSaas;
+  const novatechSaasTenants = novatechSaas?.organizations || [];
+  const novatechSaasBilling = novatechSaas?.billing || null;
+  const novatechSaasBillingSurface = novatechSaas?.billing_surface || null;
+  const novatechSaasExecution = novatechSaas?.safe_execution || null;
+  const novatechCurrentTenant =
+    novatechSaasTenants.find((tenant) => tenant.organization_id === novatechSaas?.organization_id) ||
+    novatechSaasTenants[0] ||
+    null;
+  const novatechOutcomeStatus = state.novatechOutcomeStatus;
+  const novatechOutcomeCurrent = novatechOutcomeStatus?.current || null;
+  const novatechOutcomeRegistry = novatechOutcomeStatus?.registry || null;
+  const novatechOutcomeLearning = novatechOutcomeStatus?.learning || null;
+  const novatechOutcomeScoring = novatechOutcomeStatus?.scoring || null;
+  const novatechOutcomeReplay = novatechOutcomeStatus?.replay || null;
+  const novatechTrustNetwork = state.novatechTrustNetwork;
+  const novatechMarketplace = state.novatechMarketplace;
+  const novatechControlledExecutionActivation = state.novatechControlledExecutionActivation;
+  const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const rollbackReady =
     Number(state.evidence.missing_traces || 0) === 0 &&
     Number(state.replayHealth.failures || 0) === 0;
@@ -1554,6 +2625,38 @@ export default function OperatorDashboard() {
       ["governance", "execution", "proof", "trust", "intelligence"].includes(layer.id),
     )
     .map((layer) => [layer.name, layer.status]);
+  const liveNotifications = useMemo(
+    () =>
+      buildOperatorNotifications({
+        timestamp: new Date().toLocaleTimeString(),
+        trustScore: toNumber(state.trustMetrics?.trust_score, 0),
+        replayFailures: toNumber(state.replayHealth.failures, 0),
+        hashChainFailures: toNumber(state.replayHealth.hash_chain_failures, 0),
+        missingTraces: toNumber(state.evidence.missing_traces, 0),
+        guardCount: state.guards.length,
+        alertCount: toNumber(state.observabilityDashboard?.alerts?.length, 0),
+        decisionLane: persistedDecisionCurrent?.decisionLane,
+        decisionSummary: persistedDecisionCurrent?.decisionSummary,
+        decisionQualityScore: persistedActionCurrent?.decisionQualityScore,
+        decisionQualityBand: persistedActionCurrent?.qualityBand,
+        controlSignal: persistedActionCurrent?.controlSignal,
+        safetyGate: persistedActionCurrent?.safetyGate,
+        calibratedConfidence: persistedActionCurrent?.calibratedConfidence,
+        executionTier: persistedActionCurrent?.executionTier,
+        executionTierReady: persistedActionCurrent?.executionTierReady,
+        liveEvents,
+      }),
+    [
+      state.trustMetrics,
+      state.replayHealth,
+      state.evidence,
+      state.guards,
+      state.observabilityDashboard,
+      liveEvents,
+      persistedDecisionCurrent,
+      persistedActionCurrent,
+    ],
+  );
 
   function submitToGovernance() {
     const submission = buildGovernanceSubmission(afriprogScenario);
@@ -1598,25 +2701,356 @@ export default function OperatorDashboard() {
     <main className="app-shell">
       <header className="os-topbar" aria-label="AfriTech OS command shell">
         <div>
-          <strong>AFRITECH OS</strong>
-          <span>Verified Sovereign Execution Platform</span>
+          <strong>NOVATECH OS</strong>
+          <span>NovaTechSol / Nova Technology Solution</span>
         </div>
         <label className="os-search">
-          <span>Search proof, layer, product</span>
-          <input defaultValue="EVT-001" aria-label="Search proof, layer, product" />
+          <span>Search product, layer, route</span>
+          <input defaultValue="NovaScript" aria-label="Search product, layer, route" />
         </label>
-        <div className="verified-lock">Locked verified</div>
+        <div className="verified-lock">Intranet ready</div>
       </header>
+
+      <section className="section-band novatech-home-band" id="home">
+        <div className="novatech-home-grid">
+          <div className="hero-copy">
+            <p className="eyebrow">NovaTech Platform</p>
+            <h1>NovaTechSol / Nova Technology Solution</h1>
+            <p className="hero-summary">
+              One browser entrypoint for NovaProgramming, NovaScript, trust,
+              infrastructure, identity, payments, and product lines. The browser
+              shows the platform architecture first, then links into the live
+              dashboards below.
+            </p>
+            <div className="hero-actions" aria-label="NovaTech navigation">
+              <a className="button primary" href="/novatech/intranet/">
+                Open Intranet
+              </a>
+              <a className="button secondary" href="/v1/novascript/dashboard">
+                NovaScript
+              </a>
+              <a className="button secondary" href="/v1/novaprogramming/dashboard">
+                NovaProgramming
+              </a>
+              <a className="button secondary" href="/v1/operator/dashboard">
+                AfriRide Ops
+              </a>
+            </div>
+          </div>
+
+          <div className="trust-status">
+            <p>Platform Snapshot</p>
+            <strong>Core layers linked</strong>
+            <span>
+              NovaProgramming, NovaScript, NovaTrust, NovaPower, NovaID, and
+              NovaPay are organized as a browser-first platform shell.
+            </span>
+            <div className="trust-meta">
+              <span>Home: NovaTechSol</span>
+              <span>Access: authenticated staff</span>
+              <span>Authority: read-only portal</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <nav className="layer-shell platform-nav" aria-label="NovaTech platform navigation">
+        {NOVATECH_PLATFORM_NAV.map((item) => (
+          <a key={item.label} href={item.href}>
+            <strong>{item.label}</strong>
+            <span>{item.detail}</span>
+          </a>
+        ))}
+      </nav>
+
+      <section className="section-band platform-band">
+        <SectionIntro
+          eyebrow="Platform Architecture"
+          title="Core layers and product surfaces"
+          question="Browser navigation is structured around the control layers first, then the vertical products underneath."
+        />
+        <div className="operator-grid">
+          <OperatorPanel title="Core Platform Layers">
+            <div className="stack">
+              {NOVATECH_CORE_LAYERS.map((layer) => (
+                <article key={layer.name} className="record-card">
+                  <div className="record-card-header">
+                    <strong>{layer.name}</strong>
+                    <span>{layer.status}</span>
+                  </div>
+                  <p>{layer.summary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">{layer.route}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Vertical Products">
+            <div className="stack">
+              {NOVATECH_PRODUCT_LAYERS.map((product) => (
+                <article key={product.name} className="record-card">
+                  <div className="record-card-header">
+                    <strong>{product.name}</strong>
+                    <span>{product.status}</span>
+                  </div>
+                  <p>{product.summary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">{product.route}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band organization-band" id="organization">
+        <SectionIntro
+          eyebrow="Organization OS"
+          title="NovaTech intranet, extranet, knowledge, workflows, and comms"
+          question="The organization platform unifies internal control, external access, files, workflows, and messages behind one read-only browser surface."
+        />
+        {novatechOrgPlatform ? (
+          <>
+            <div className="metric-grid">
+              <TrustMetric
+                label="Intranet"
+                value={novatechOrgPlatformSurfaces.intranet?.status || "ready"}
+                helper={novatechOrgPlatformSurfaces.intranet?.summary || "Internal dashboards and control surfaces"}
+                tone="success"
+              />
+              <TrustMetric
+                label="Extranet"
+                value={novatechOrgPlatformSurfaces.extranet?.status || "ready"}
+                helper={novatechOrgPlatformSurfaces.extranet?.summary || "External proof and verification portals"}
+                tone="success"
+              />
+              <TrustMetric
+                label="Knowledge"
+                value={novatechOrgPlatformSurfaces.knowledge?.project_count || 0}
+                helper="Workspace projects, files, and document roots"
+              />
+              <TrustMetric
+                label="Workflows"
+                value={novatechOrgPlatformSurfaces.workflows?.workflow_count || 0}
+                helper="Workflow templates and live instances"
+              />
+              <TrustMetric
+                label="Comms"
+                value={novatechOrgPlatformSurfaces.comms?.message_count || 0}
+                helper="Read-only operational messages"
+              />
+            </div>
+            <div className="operator-grid">
+              <OperatorPanel title="Intranet">
+                <div className="stack">
+                  <article className="record-card">
+                    <div className="record-card-header">
+                      <strong>{novatechOrgPlatformSurfaces.intranet?.title || "NovaTech Intranet"}</strong>
+                      <span>{novatechOrgPlatformSurfaces.intranet?.status || "ready"}</span>
+                    </div>
+                    <p>{novatechOrgPlatformSurfaces.intranet?.summary}</p>
+                    <div className="chip-row">
+                      <span className="surface-chip">
+                        {novatechOrgPlatformSurfaces.intranet?.route || "/novatech/intranet/"}
+                      </span>
+                      {Object.values(novatechOrgPlatformSurfaces.intranet?.dashboards || {}).map((route) => (
+                        <span key={route} className="surface-chip">
+                          {route}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </OperatorPanel>
+
+              <OperatorPanel title="Extranet">
+                <div className="stack">
+                  <article className="record-card">
+                    <div className="record-card-header">
+                      <strong>{novatechOrgPlatformSurfaces.extranet?.title || "NovaTech Extranet"}</strong>
+                      <span>{novatechOrgPlatformSurfaces.extranet?.status || "ready"}</span>
+                    </div>
+                    <p>{novatechOrgPlatformSurfaces.extranet?.summary}</p>
+                    <div className="chip-row">
+                      {(novatechOrgPlatformSurfaces.extranet?.audiences || []).map((audience) => (
+                        <span key={audience} className="surface-chip">
+                          {audience}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="chip-row">
+                      {(novatechOrgPlatformSurfaces.extranet?.routes || []).map((route) => (
+                        <span key={route} className="surface-chip">
+                          {route}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </OperatorPanel>
+
+              <OperatorPanel title="Knowledge">
+                <div className="stack">
+                  <article className="record-card">
+                    <div className="record-card-header">
+                      <strong>{novatechOrgPlatformSurfaces.knowledge?.title || "NovaKnowledge"}</strong>
+                      <span>{novatechOrgPlatformSurfaces.knowledge?.status || "ready"}</span>
+                    </div>
+                    <p>{novatechOrgPlatformSurfaces.knowledge?.summary}</p>
+                    <div className="chip-row">
+                      <span className="surface-chip">
+                        Projects {novatechOrgPlatformSurfaces.knowledge?.project_count || 0}
+                      </span>
+                      <span className="surface-chip">
+                        Files {novatechOrgPlatformSurfaces.knowledge?.file_count || 0}
+                      </span>
+                      <span className="surface-chip">
+                        {novatechOrgPlatformSurfaces.knowledge?.route || "/v1/novatech/intranet/knowledge"}
+                      </span>
+                    </div>
+                    <div className="chip-row">
+                      {(novatechOrgPlatformSurfaces.knowledge?.document_roots || []).map((root) => (
+                        <span key={root} className="surface-chip">
+                          {root}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </OperatorPanel>
+
+              <OperatorPanel title="Workflows">
+                <div className="stack">
+                  <article className="record-card">
+                    <div className="record-card-header">
+                      <strong>{novatechOrgPlatformSurfaces.workflows?.title || "NovaWorkflow"}</strong>
+                      <span>{novatechOrgPlatformSurfaces.workflows?.status || "ready"}</span>
+                    </div>
+                    <p>{novatechOrgPlatformSurfaces.workflows?.summary}</p>
+                    <div className="chip-row">
+                      <span className="surface-chip">
+                        Workflows {novatechOrgPlatformSurfaces.workflows?.workflow_count || 0}
+                      </span>
+                      <span className="surface-chip">
+                        {novatechOrgPlatformSurfaces.workflows?.route || "/v1/novatech/intranet/workflows"}
+                      </span>
+                    </div>
+                    <div className="stack compact-stack">
+                      {(novatechOrgPlatformSurfaces.workflows?.templates || []).map((template) => (
+                        <div key={template.workflow_name} className="reason-chip reason-chip-success">
+                          {template.workflow_name}: {template.purpose}
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </OperatorPanel>
+
+              <OperatorPanel title="Comms">
+                <div className="stack">
+                  <article className="record-card">
+                    <div className="record-card-header">
+                      <strong>{novatechOrgPlatformSurfaces.comms?.title || "NovaComms"}</strong>
+                      <span>{novatechOrgPlatformSurfaces.comms?.status || "ready"}</span>
+                    </div>
+                    <p>{novatechOrgPlatformSurfaces.comms?.summary}</p>
+                    <div className="chip-row">
+                      <span className="surface-chip">
+                        Messages {novatechOrgPlatformSurfaces.comms?.message_count || 0}
+                      </span>
+                      <span className="surface-chip">
+                        {novatechOrgPlatformSurfaces.comms?.route || "/v1/novatech/intranet/comms"}
+                      </span>
+                    </div>
+                    <div className="chip-row">
+                      {(novatechOrgPlatformSurfaces.comms?.channels || []).map((channel) => (
+                        <span key={channel.name} className="surface-chip">
+                          {channel.name}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="stack compact-stack">
+                      {(novatechOrgPlatformSurfaces.comms?.messages || []).slice(0, 4).map((message) => (
+                        <div key={`${message.channel}-${message.created_at}-${message.title}`} className="reason-chip">
+                          {message.channel}: {message.title}
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </OperatorPanel>
+            </div>
+          </>
+        ) : (
+          <EmptyState label="NovaTech organizational surfaces will appear after the first platform snapshot." />
+        )}
+      </section>
+
+      <section className="section-band realtime-band">
+        <SectionIntro
+          eyebrow="Live System"
+          title="Realtime dashboard stream"
+          question="The browser listens to websocket events so ride, operations, and intranet changes surface without manual refresh."
+        />
+        <div className="operator-grid realtime-grid">
+          <OperatorPanel title="Connection State">
+            <div className="record-card">
+              <div className="record-card-header">
+                <strong>Dashboard socket</strong>
+                <span className={`status-${liveConnection === "connected" ? "success" : liveConnection === "connecting" ? "neutral" : "warning"}`}>
+                  {liveConnection}
+                </span>
+              </div>
+              <p>
+                Live websocket channel: <span className="surface-chip">/ws/dashboard</span>
+              </p>
+              <div className="chip-row">
+                <span className="surface-chip">Auto-updates enabled</span>
+                <span className="surface-chip">Sequence aware</span>
+                <span className="surface-chip">Projection only</span>
+              </div>
+              <div className="key-value">
+                <span>Last update</span>
+                <strong>{lastUpdated || "Awaiting first event"}</strong>
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Live Event Stream">
+            <div className="stack">
+              {liveEvents.length > 0 ? (
+                liveEvents.map((event, index) => (
+                  <article key={`${event.sequence || index}-${event.type || "event"}`} className="record-card">
+                    <div className="record-card-header">
+                      <strong>{event.type || "DASHBOARD_EVENT"}</strong>
+                      <span>#{event.sequence || index + 1}</span>
+                    </div>
+                    <p>{event.data?.source || event.channel || "dashboard"}</p>
+                    <pre className="realtime-event-json">
+                      {JSON.stringify(event.data || event, null, 2)}
+                    </pre>
+                  </article>
+                ))
+              ) : (
+                <div className="empty-state">Waiting for backend events...</div>
+              )}
+            </div>
+          </OperatorPanel>
+        </div>
+      </section>
 
       <header className="hero trust-os-hero">
         <div className="hero-copy">
           <p className="eyebrow">Trust OS Interface</p>
-          <h1>A browser for truth.</h1>
+          <h1>A browser for truth and operations.</h1>
           <p className="hero-summary">
             AfriTech OS turns doctrine, governance, execution, proof, trust,
             intelligence, economy, and products into one investor-ready command
-            surface. It is not an admin panel; it is the front-end of sovereign
-            trust infrastructure.
+            surface. NovaTech uses the same browser shell to organize platform
+            layers and product dashboards into one internal control system.
           </p>
           <div className="hero-actions" aria-label="Primary actions">
             <a className="button primary" href="#demo-flow">
@@ -2664,6 +4098,761 @@ export default function OperatorDashboard() {
         </div>
       </section>
 
+      <section className="section-band analytics-band">
+        <SectionIntro
+          eyebrow="Live Analytics"
+          title="Trust, replay, evidence, and operator alerts"
+          question="The charts below are driven by the current trust snapshot and the rolling websocket trail, so they stay live without changing the authority model."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Live Trust Analytics">
+            <AnalyticsTrendPanel
+              title="Trust score trend"
+              description="A rolling snapshot of the live trust score and derived health band."
+              history={analyticsTrail}
+              valueKey="trustScore"
+              currentValue={liveAnalyticsSnapshot.trustScore || 0}
+              accent="#1f7a55"
+              unit=""
+              stats={[
+                { label: "Trust health", value: liveAnalyticsSnapshot.trustHealth || 0 },
+                { label: "Drivers online", value: liveAnalyticsSnapshot.onlineDrivers || 0 },
+                { label: "Notifications", value: liveNotifications.length || 0 },
+              ]}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="Live Replay Exception Alerts">
+            <AnalyticsTrendPanel
+              title="Exception pressure"
+              description="Replay failures, hash-chain failures, missing traces, and guard violations aggregated into one live pressure line."
+              history={analyticsTrail}
+              valueKey="exceptionCount"
+              currentValue={liveAnalyticsSnapshot.exceptionCount || 0}
+              accent="#c2410c"
+              stats={[
+                { label: "Replay success", value: `${liveAnalyticsSnapshot.replaySuccessRate || 0}%` },
+                { label: "Replay failures", value: liveAnalyticsSnapshot.replayFailures || 0 },
+                { label: "Hash-chain", value: liveAnalyticsSnapshot.hashChainFailures || 0 },
+                { label: "Guards", value: liveAnalyticsSnapshot.guardCount || 0 },
+              ]}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="Live Pilot Evidence Trends">
+            <AnalyticsTrendPanel
+              title="Evidence coverage"
+              description="Receipt and trace coverage evolve with each polling cycle and ride projection update."
+              history={analyticsTrail}
+              valueKey="evidenceCoverage"
+              currentValue={`${liveAnalyticsSnapshot.evidenceCoverage || 0}%`}
+              accent="#185b8c"
+              unit="%"
+              stats={[
+                { label: "Receipts", value: liveAnalyticsSnapshot.receiptsCount || 0 },
+                { label: "Traces", value: liveAnalyticsSnapshot.traceCount || 0 },
+                { label: "Completed rides", value: liveAnalyticsSnapshot.completedRides || 0 },
+              ]}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="Live Operator Notifications">
+            <NotificationFeed notifications={liveNotifications} />
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band analytics-band analytics-history-band">
+        <SectionIntro
+          eyebrow="Persistent Intelligence"
+          title="History, AI insights, and predictive analytics"
+          question="These panels read from the persisted analytics store, so operators can review long-running trust patterns and forecast the next operating window."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Persistent Trust History">
+            <AnalyticsTrendPanel
+              title="Trust history"
+              description="Deduped operator snapshots retained across refresh cycles and sessions."
+              history={persistedAnalyticsHistory}
+              valueKey="trustScore"
+              currentValue={persistedAnalyticsLatest?.trustScore || liveAnalyticsSnapshot.trustScore || 0}
+              accent="#1f7a55"
+              stats={[
+                { label: "Trust health", value: persistedAnalyticsLatest?.trustHealth || 0 },
+                { label: "Replay health", value: persistedAnalyticsLatest?.replayHealthScore || 0 },
+                { label: "Trend delta", value: persistedAnalyticsTrend?.trust?.delta || 0 },
+              ]}
+            />
+            <div className="chip-row">
+              <span className="surface-chip">
+                Source: {persistedAnalyticsLatest?.source || "afriride_operator_dashboard"}
+              </span>
+              <span className="surface-chip">
+                Window: {persistedAnalyticsLatest?.windowBucket || "live"}
+              </span>
+              <span className="surface-chip">
+                Snapshots: {persistedAnalyticsHistory.length || 0}
+              </span>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="AI Insights">
+            <AnalyticsInsightFeed insights={persistedAnalyticsInsights} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Predictive Analytics">
+            <PredictionPanel
+              prediction={persistedAnalyticsPrediction}
+              latest={persistedAnalyticsLatest}
+              trend={persistedAnalyticsTrend}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="History Trail">
+            <AnalyticsHistoryFeed
+              history={persistedAnalyticsHistory}
+              sourceBreakdown={persistedAnalyticsSourceBreakdown}
+            />
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band decision-band">
+        <SectionIntro
+          eyebrow="AI Decision Engine"
+          title="Persistent decisioning and operator guidance"
+          question="The engine translates persisted analytics into a read-only operating lane, action, and explanation trail without taking execution authority."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Current Decision">
+            <DecisionSummaryPanel decision={persistedDecisionCurrent} latest={persistedDecisionLatest} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Decision Stability Trend">
+            <AnalyticsTrendPanel
+              title="Stability index"
+              description="Persisted decisions accumulate a stability score so operators can see whether the lane is strengthening or drifting."
+              history={persistedDecisionHistory}
+              valueKey="stabilityIndex"
+              currentValue={persistedDecisionCurrent?.stabilityIndex || 0}
+              accent="#2f6f73"
+              stats={[
+                { label: "Lane", value: persistedDecisionCurrent?.decisionLane || "observe" },
+                { label: "Priority", value: persistedDecisionCurrent?.decisionPriority || "low" },
+                { label: "Risk", value: persistedDecisionCurrent?.riskLevel || "unknown" },
+              ]}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="Decision Guidance">
+            <DecisionGuidancePanel decision={persistedDecisionCurrent} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Decision History">
+            <DecisionHistoryFeed
+              history={persistedDecisionHistory}
+              sourceBreakdown={persistedDecisionSourceBreakdown}
+            />
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band action-band">
+        <SectionIntro
+          eyebrow="Controlled autonomy"
+          title="Evidence-calibrated action intelligence"
+          question="The action engine converts decision quality into operator guidance, safety gates, and a persistent review trail without granting execution authority."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Current Action">
+            <ActionSummaryPanel action={persistedActionCurrent} latest={persistedActionLatest} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Decision Quality Trend">
+            <AnalyticsTrendPanel
+              title="Quality calibration"
+              description="Persisted actions accumulate a calibrated quality score so operators can see whether guidance is converging or drifting."
+              history={persistedActionHistory}
+              valueKey="decisionQualityScore"
+              currentValue={persistedActionCurrent?.decisionQualityScore || 0}
+              accent="#0f766e"
+              stats={[
+                { label: "Action lane", value: persistedActionCurrent?.actionLane || "monitor" },
+                { label: "Mode", value: persistedActionCurrent?.actionMode || "guided_control" },
+                { label: "Gate", value: persistedActionCurrent?.safetyGate || "pass" },
+                { label: "Tier", value: persistedActionCurrent?.automationTier || 0 },
+              ]}
+            />
+          </OperatorPanel>
+
+          <OperatorPanel title="Action Guidance">
+            <ActionGuidancePanel action={persistedActionCurrent} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Action History">
+            <ActionHistoryFeed
+              history={persistedActionHistory}
+              sourceBreakdown={persistedActionSourceBreakdown}
+            />
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band saas-band" id="saas">
+        <SectionIntro
+          eyebrow="SaaS Platform"
+          title="Multi-tenant organizations, billing, and safe execution"
+          question="The platform keeps tenant isolation, billing previews, and execution readiness in one governed directory without granting automatic authority."
+        />
+        <p className="section-note">
+          Safe execution remains advisory-only. Billing is previewed from usage evidence, tenants are
+          isolated per organization, and controlled execution only becomes ready when trust,
+          billing, and safety gates align.
+        </p>
+        <div className="metric-grid">
+          <TrustMetric
+            label="Tenants"
+            value={novatechSaas?.tenant_count || 0}
+            helper="Organizations merged from the store and adoption registry."
+          />
+          <TrustMetric
+            label="Billing estimate"
+            value={
+              novatechSaasBilling
+                ? `AUD ${Number(novatechSaasBilling.estimated_amount || 0).toFixed(2)}`
+                : "AUD 0.00"
+            }
+            helper="Usage-derived preview only, no automated billing authority."
+          />
+          <TrustMetric
+            label="Execution gate"
+            value={novatechSaasExecution?.execution_tier || "advisory"}
+            helper={novatechSaasExecution?.safe_execution_enabled ? "Enabled for operator review" : "Held pending readiness"}
+            tone={novatechSaasExecution?.safe_execution_enabled ? "success" : "warning"}
+          />
+          <TrustMetric
+            label="Readiness"
+            value={novatechSaasExecution?.safe_execution_enabled ? "Enabled" : "Held"}
+            helper="Execution authority stays disabled while the engine stays projection-only."
+            tone={novatechSaasExecution?.safe_execution_enabled ? "success" : "neutral"}
+          />
+        </div>
+        <div className="operator-grid">
+          <OperatorPanel title="Tenant Directory">
+            <div className="stack">
+              {novatechSaasTenants.length > 0 ? (
+                novatechSaasTenants.map((tenant) => (
+                  <article key={tenant.organization_id} className="record-card">
+                    <div className="record-card-header">
+                      <strong>{tenant.organization_name || tenant.organization_id}</strong>
+                      <span>{tenant.status}</span>
+                    </div>
+                    <p>{tenant.legal_name || tenant.organization_name}</p>
+                    <div className="chip-row">
+                      <span className="surface-chip">{tenant.organization_id}</span>
+                      <span className="surface-chip">{tenant.trust_domain}</span>
+                      <span className="surface-chip">{tenant.sector}</span>
+                      <span className="surface-chip">{tenant.certification_label || "Uncertified"}</span>
+                    </div>
+                    <div className="chip-row">
+                      <span className="surface-chip">Billing {tenant.billing_plan}</span>
+                      <span className="surface-chip">
+                        Est. AUD {Number(tenant.billing_estimated_amount || 0).toFixed(2)}
+                      </span>
+                      <span className="surface-chip">Trust {tenant.trust_score}</span>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <EmptyState label="Tenant directory will appear after organizations are onboarded." />
+              )}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Billing & Subscriptions">
+            {novatechSaasBillingSurface ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Billing preview</strong>
+                    <span>{novatechSaasBillingSurface.summary?.plan || "enterprise"}</span>
+                  </div>
+                  <p>
+                    Usage total {novatechSaasBillingSurface.summary?.usage_total || 0} with estimated
+                    amount AUD {Number(novatechSaasBillingSurface.summary?.estimated_amount || 0).toFixed(2)}.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Trust {novatechSaasBillingSurface.summary?.trust_score ?? 0}
+                    </span>
+                    <span className="surface-chip">
+                      Billing {novatechSaasBillingSurface.summary?.billing_enabled ? "enabled" : "preview"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Subscription preview</strong>
+                    <span>{novatechSaasBillingSurface.subscription_preview?.status || "active"}</span>
+                  </div>
+                  <p>
+                    {novatechSaasBillingSurface.subscription_preview?.plan_name || "enterprise"} at{" "}
+                    {novatechSaasBillingSurface.subscription_preview?.recurring_amount?.currency || "AUD"}{" "}
+                    {novatechSaasBillingSurface.subscription_preview?.recurring_amount?.amount || "0.00"}.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Next billing {novatechSaasBillingSurface.subscription_preview?.next_billing_at || "pending"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Invoice preview</strong>
+                    <span>{novatechSaasBillingSurface.invoice_preview?.status || "open"}</span>
+                  </div>
+                  <p>
+                    Invoice {novatechSaasBillingSurface.invoice_preview?.invoice_id || "pending"} due{" "}
+                    {novatechSaasBillingSurface.invoice_preview?.due_at || "pending"}.
+                  </p>
+                </article>
+                <div className="chip-row">
+                  {(novatechSaasBillingSurface.billing_history || []).slice(0, 4).map((record) => (
+                    <span key={record.billing_id} className="surface-chip">
+                      {record.plan} | AUD {Number(record.estimated_amount || 0).toFixed(2)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <EmptyState label="Billing preview will appear after tenant usage is recorded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Safe Execution Engine">
+            {novatechSaasExecution ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novatechSaasExecution.execution_tier || "advisory"}</strong>
+                    <span>{novatechSaasExecution.safe_execution_enabled ? "enabled" : "held"}</span>
+                  </div>
+                  <p>{novatechSaasExecution.action_summary || "Safe execution is waiting on the next readiness window."}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">Gate {novatechSaasExecution.safety_gate || "hold"}</span>
+                    <span className="surface-chip">
+                      Control {novatechSaasExecution.control_signal || "maintain_monitoring"}
+                    </span>
+                    <span className="surface-chip">
+                      Quality {novatechSaasExecution.decision_quality_score || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Confidence {Math.round((novatechSaasExecution.calibrated_confidence || 0) * 100)}%
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Controlled execution activation</strong>
+                    <span>
+                      {novatechControlledExecutionActivation?.activation?.activation_status || "held"}
+                    </span>
+                  </div>
+                  <p>
+                    {novatechControlledExecutionActivation?.activation?.activation_reason ||
+                      "Activate the controlled tier once the readiness gate and operator acknowledgment align."}
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Requested {novatechControlledExecutionActivation?.activation?.requested_tier || "controlled"}
+                    </span>
+                    <span className="surface-chip">
+                      Ack {novatechControlledExecutionActivation?.activation?.acknowledged ? "yes" : "no"}
+                    </span>
+                    <span className="surface-chip">
+                      Ready {novatechControlledExecutionActivation?.activation?.activation_ready ? "yes" : "no"}
+                    </span>
+                    <span className="surface-chip">
+                      Scope {novatechControlledExecutionActivation?.activation?.activation_scope?.length || 0}
+                    </span>
+                  </div>
+                  <div className="feature-action-row">
+                    <button
+                      type="button"
+                      className="button primary"
+                      onClick={activateControlledExecution}
+                      disabled={
+                        controlledExecutionBusy || !novatechSaasExecution?.safe_execution_enabled
+                      }
+                    >
+                      {controlledExecutionBusy ? "Activating..." : "Activate controlled execution"}
+                    </button>
+                    <span className="surface-chip">
+                      {novatechControlledExecutionActivation?.activation?.safe_execution_enabled
+                        ? "Enabled for review"
+                        : "Held pending readiness"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Readiness checks</strong>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Tenant {novatechSaasExecution.readiness?.tenant_ready ? "ready" : "hold"}
+                    </span>
+                    <span className="surface-chip">
+                      Billing {novatechSaasExecution.readiness?.billing_ready ? "ready" : "hold"}
+                    </span>
+                    <span className="surface-chip">
+                      Execution {novatechSaasExecution.readiness?.execution_tier_ready ? "ready" : "hold"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Operator reasons</strong>
+                  <div className="stack compact-stack">
+                    {(novatechSaas?.reasons || []).map((reason) => (
+                      <div key={reason} className="reason-chip">
+                        {reason}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Safe execution will appear after a tenant snapshot is available." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Current Tenant Detail">
+            {novatechCurrentTenant ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novatechCurrentTenant.organization_name}</strong>
+                    <span>{novatechCurrentTenant.status}</span>
+                  </div>
+                  <p>{novatechCurrentTenant.legal_name || novatechCurrentTenant.organization_name}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">{novatechCurrentTenant.tenant_model}</span>
+                    <span className="surface-chip">{novatechCurrentTenant.source}</span>
+                    <span className="surface-chip">{novatechCurrentTenant.trust_domain}</span>
+                  </div>
+                  <div className="chip-row">
+                    <span className="surface-chip">{novatechCurrentTenant.certification_label || "Uncertified"}</span>
+                    <span className="surface-chip">{novatechCurrentTenant.billing_status}</span>
+                    <span className="surface-chip">Trust {novatechCurrentTenant.trust_score}</span>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Current tenant details will appear after the first organization snapshot." />
+            )}
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band outcome-band" id="outcomes">
+        <SectionIntro
+          eyebrow="Outcome Intelligence"
+          title="Outcome registry, learning, scoring, and replay"
+          question="The platform measures results, keeps the memory, and recalibrates without taking authority away from the operator."
+        />
+        <p className="section-note">
+          Outcome intelligence stays projection-only. It composes trust, replay, and evidence into
+          a persistent operating memory that operators can review, trend, and exchange across
+          tenants.
+        </p>
+        <div className="metric-grid">
+          <TrustMetric
+            label="Outcome score"
+            value={novatechOutcomeCurrent?.outcome_score || 0}
+            helper={novatechOutcomeCurrent?.measurement_summary || "Measured from trust, replay, and evidence."}
+            tone={novatechOutcomeCurrent?.outcome_band === "excellent" ? "success" : "neutral"}
+          />
+          <TrustMetric
+            label="Learning band"
+            value={novatechOutcomeLearning?.band || "hold"}
+            helper="Observe → decide → recommend → measure outcome → learn → recalibrate."
+            tone={novatechOutcomeLearning?.band === "recalibrate" ? "success" : "warning"}
+          />
+          <TrustMetric
+            label="Trust network"
+            value={novatechTrustNetwork?.member_count || novatechTrustNetwork?.global_trust?.member_count || 0}
+            helper="Federated organizations exchanging trust, proof, and certification."
+          />
+          <TrustMetric
+            label="Marketplace services"
+            value={novatechMarketplace?.summary?.service_count || novatechMarketplace?.service_count || 0}
+            helper="Trust, verification, certification, and replay services."
+          />
+        </div>
+        <div className="operator-grid">
+          <OperatorPanel title="Outcome Registry">
+            <div className="stack">
+              <AnalyticsTrendPanel
+                title="Outcome score trend"
+                description="Historical outcome scores are persisted and replayable."
+                history={novatechOutcomeRegistry?.items || []}
+                valueKey="outcome_score"
+                currentValue={novatechOutcomeCurrent?.outcome_score || 0}
+                accent="#195d8a"
+                unit=""
+                stats={[
+                  { label: "Status", value: novatechOutcomeCurrent?.outcome_status || "learning" },
+                  { label: "Band", value: novatechOutcomeCurrent?.outcome_band || "guarded" },
+                  { label: "History", value: novatechOutcomeRegistry?.count || 0 },
+                ]}
+              />
+              {novatechOutcomeCurrent ? (
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novatechOutcomeCurrent.outcome_type}</strong>
+                    <span>{novatechOutcomeCurrent.outcome_status}</span>
+                  </div>
+                  <p>{novatechOutcomeCurrent.measurement_summary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">Band {novatechOutcomeCurrent.outcome_band}</span>
+                    <span className="surface-chip">Learning {novatechOutcomeCurrent.learning_band}</span>
+                    <span className="surface-chip">Replay {novatechOutcomeReplay?.status || "ready"}</span>
+                    <span className="surface-chip">
+                      Score {novatechOutcomeScoring?.score || novatechOutcomeCurrent.outcome_score || 0}
+                    </span>
+                  </div>
+                </article>
+              ) : (
+                <EmptyState label="Outcome registry will appear after the first outcome snapshot." />
+              )}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Outcome Learning">
+            {novatechOutcomeLearning ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novatechOutcomeLearning.band}</strong>
+                    <span>{novatechOutcomeLearning.cycle?.length || 0} steps</span>
+                  </div>
+                  <p>
+                    {novatechOutcomeCurrent?.measurement_summary ||
+                      "Outcome learning keeps the platform ready for recalibration."}
+                  </p>
+                  <div className="chip-row">
+                    {(novatechOutcomeLearning.cycle || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Recommendations</strong>
+                  <div className="stack compact-stack">
+                    {(novatechOutcomeLearning.recommendations || []).map((recommendation) => (
+                      <div key={recommendation} className="reason-chip">
+                        {recommendation}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Recalibration notes</strong>
+                  <div className="chip-row">
+                    {(novatechOutcomeLearning.recalibration_notes || []).map((note) => (
+                      <span key={note} className="surface-chip">
+                        {note}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Watch items</strong>
+                  <div className="chip-row">
+                    {(novatechOutcomeLearning.watch_items || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Outcome learning will appear after a measured outcome is stored." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Federated Trust Network">
+            {novatechTrustNetwork ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Global trust</strong>
+                    <span>{novatechTrustNetwork.status || "ready"}</span>
+                  </div>
+                  <p>
+                    Members {novatechTrustNetwork.member_count || 0} and exchanges{" "}
+                    {novatechTrustNetwork.exchange_catalog?.length || 0}.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Nodes {novatechTrustNetwork.distributed_trust_network?.peers?.length || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Trust graph {novatechTrustNetwork.trust_graph?.node_count || 0} nodes
+                    </span>
+                    <span className="surface-chip">
+                      Exchanges {novatechTrustNetwork.trust_graph?.edge_count || 0}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Exchange catalog</strong>
+                  <div className="stack compact-stack">
+                    {(novatechTrustNetwork.exchange_catalog || []).map((entry) => (
+                      <article key={entry.service_id} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{entry.name}</strong>
+                          <span>{entry.service_type}</span>
+                        </div>
+                        <p>{entry.description}</p>
+                        <div className="chip-row">
+                          {entry.routes.map((route) => (
+                            <span key={route} className="surface-chip">
+                              {route}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Tenant exchange pairs</strong>
+                  <div className="stack compact-stack">
+                    {(novatechTrustNetwork.tenant_pairs || []).slice(0, 4).map((pair) => (
+                      <div key={`${pair.issuer_org}:${pair.subject_org}`} className="reason-chip">
+                        {pair.issuer_org} &rarr; {pair.subject_org}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Federated trust network will appear after organizations are onboarded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Trust Marketplace">
+            {novatechMarketplace ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Marketplace status</strong>
+                    <span>{novatechMarketplace.status || "ready"}</span>
+                  </div>
+                  <p>
+                    {novatechMarketplace.summary?.service_count || novatechMarketplace.service_count || 0} services
+                    available across {novatechMarketplace.summary?.tenant_count || novatechMarketplace.tenant_count || 0} tenants.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Trust network {novatechMarketplace.summary?.trust_member_count || 0}
+                    </span>
+                    {(novatechMarketplace.summary?.exchange_modes || []).map((mode) => (
+                      <span key={mode} className="surface-chip">
+                        {mode.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <div className="stack compact-stack">
+                  {(novatechMarketplace.services || []).map((service) => (
+                    <article key={service.service_id} className="record-card">
+                      <div className="record-card-header">
+                        <strong>{service.name}</strong>
+                        <span>{service.service_type}</span>
+                      </div>
+                      <p>{service.summary}</p>
+                      <div className="chip-row">
+                        <span className="surface-chip">
+                          {service.consumable_across_tenants ? "cross-tenant" : "tenant-only"}
+                        </span>
+                        {service.routes.map((route) => (
+                          <span key={route} className="surface-chip">
+                            {route}
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <EmptyState label="Trust marketplace services will appear after the marketplace surface is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Partner Onboarding Strategy">
+            {novatechMarketplaceOnboarding ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Marketplace rollout</strong>
+                    <span>{novatechMarketplaceOnboarding.status || "ready"}</span>
+                  </div>
+                  <p>
+                    {novatechMarketplaceOnboarding.summary?.service_count || 0} services across{" "}
+                    {novatechMarketplaceOnboarding.summary?.tenant_count || 0} tenants with{" "}
+                    {novatechMarketplaceOnboarding.summary?.trust_member_count || 0} trust members.
+                  </p>
+                  <div className="chip-row">
+                    {(novatechMarketplaceOnboarding.summary?.exchange_modes || []).map((mode) => (
+                      <span key={mode} className="surface-chip">
+                        {mode.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <div className="stack compact-stack">
+                  {(novatechMarketplaceOnboarding.phases || []).map((phase) => (
+                    <article key={phase.phase} className="record-card">
+                      <div className="record-card-header">
+                        <strong>{phase.title}</strong>
+                        <span>{phase.phase}</span>
+                      </div>
+                      <p>{phase.goal}</p>
+                      <div className="chip-row">
+                        {(phase.entry_criteria || []).map((criterion) => (
+                          <span key={criterion} className="surface-chip">
+                            {criterion}
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <div className="stack compact-stack">
+                  {(novatechMarketplaceOnboarding.partner_cohort || FIRST_PARTNER_COHORT).map(
+                    (partner) => (
+                      <article key={partner.name} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{partner.name}</strong>
+                          <span>{partner.role}</span>
+                        </div>
+                        <p>{partner.goal}</p>
+                      </article>
+                    ),
+                  )}
+                </div>
+              </div>
+            ) : (
+              <EmptyState label="Partner onboarding strategy will appear after the marketplace surface is loaded." />
+            )}
+          </OperatorPanel>
+        </div>
+      </section>
+
       <section className="section-band scale-band">
         <SectionIntro
           eyebrow="Externalize"
@@ -3572,6 +5761,694 @@ function KeyValue({ label, value, tone = "neutral" }) {
 
 function EmptyState({ label }) {
   return <div className="empty-state">{label}</div>;
+}
+
+function AnalyticsTrendPanel({
+  title,
+  description,
+  history,
+  valueKey,
+  currentValue,
+  accent = "#1f7a55",
+  unit = "",
+  stats = [],
+  emptyLabel = "Collecting live samples...",
+}) {
+  const values = chartPoints(history, valueKey);
+  const latest = values.length > 0 ? values[values.length - 1] : 0;
+  const min = values.length > 0 ? Math.min(...values) : 0;
+  const max = values.length > 0 ? Math.max(...values) : 0;
+  const svgWidth = 360;
+  const svgHeight = 128;
+
+  return (
+    <div className="analytics-trend-panel">
+      <div className="record-card-header">
+        <div>
+          <span className="surface-chip">Live analytics</span>
+          <h4>{title}</h4>
+        </div>
+        <strong>{currentValue}</strong>
+      </div>
+      <p>{description}</p>
+      {values.length > 0 ? (
+        <svg
+          className="analytics-chart"
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          role="img"
+          aria-label={title}
+        >
+          <defs>
+            <linearGradient id={`analytics-area-${valueKey}`} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={accent} stopOpacity="0.24" />
+              <stop offset="100%" stopColor={accent} stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width={svgWidth} height={svgHeight} rx="8" fill="#f8fbfc" />
+          <path d={buildAreaPath(values, svgWidth, svgHeight, 12)} fill={`url(#analytics-area-${valueKey})`} />
+          <path
+            d={buildPolylinePath(values, svgWidth, svgHeight, 12)}
+            fill="none"
+            stroke={accent}
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : (
+        <EmptyState label={emptyLabel} />
+      )}
+      <div className="analytics-stat-row" aria-label={`${title} summary stats`}>
+        <div>
+          <span>Latest</span>
+          <strong>
+            {latest}
+            {unit}
+          </strong>
+        </div>
+        <div>
+          <span>Low</span>
+          <strong>
+            {min}
+            {unit}
+          </strong>
+        </div>
+        <div>
+          <span>High</span>
+          <strong>
+            {max}
+            {unit}
+          </strong>
+        </div>
+      </div>
+      {stats.length > 0 && (
+        <div className="analytics-stat-row analytics-stat-row-secondary">
+          {stats.map((stat) => (
+            <div key={stat.label}>
+              <span>{stat.label}</span>
+              <strong>{stat.value}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NotificationFeed({ notifications }) {
+  if (notifications.length === 0) {
+    return <EmptyState label="No operator notifications yet." />;
+  }
+
+  return (
+    <div className="stack">
+      {notifications.map((notification) => (
+        <article key={notification.id} className={`record-card notification-card notification-${notification.severity}`}>
+          <div className="record-card-header">
+            <strong>{notification.title}</strong>
+            <span>{notification.severity}</span>
+          </div>
+          <p>{notification.detail}</p>
+          <div className="chip-row">
+            <span className="surface-chip">{notification.source}</span>
+            <span className="surface-chip">{notification.timestamp || "live"}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function AnalyticsInsightFeed({ insights }) {
+  if (!insights || insights.length === 0) {
+    return <EmptyState label="AI insights will appear after the first persisted analytics snapshot." />;
+  }
+
+  return (
+    <div className="stack">
+      {insights.map((insight) => (
+        <article
+          key={insight.id}
+          className={`record-card insight-card insight-${insight.severity || "info"}`}
+        >
+          <div className="record-card-header">
+            <strong>{insight.title}</strong>
+            <span>{insight.severity || "info"}</span>
+          </div>
+          <p>{insight.detail}</p>
+          <div className="chip-row">
+            <span className="surface-chip">AI insight</span>
+            {insight.id && <span className="surface-chip">{insight.id}</span>}
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function PredictionPanel({ prediction, latest, trend }) {
+  if (!prediction) {
+    return (
+      <EmptyState label="Predictive analytics will appear once the history store contains enough snapshots." />
+    );
+  }
+
+  const riskTone =
+    (prediction.riskLevel || prediction.risk_level) === "low"
+      ? "success"
+      : (prediction.riskLevel || prediction.risk_level) === "medium"
+        ? "warning"
+        : "warning";
+  const forecastTrust =
+    prediction.predictedTrustScore ?? prediction.predicted_trust_score ?? 0;
+  const forecastCoverage =
+    prediction.predictedEvidenceCoverage ?? prediction.predicted_evidence_coverage ?? 0;
+  const forecastException =
+    prediction.predictedExceptionPressure ?? prediction.predicted_exception_pressure ?? 0;
+  const watchItems = prediction.watchItems || prediction.watch_items || [];
+
+  return (
+    <div className="stack">
+      <article
+        className={`record-card prediction-card prediction-${
+          prediction.riskLevel || prediction.risk_level || "low"
+        }`}
+      >
+        <div className="record-card-header">
+          <strong>{prediction.headline || "Predictive outlook"}</strong>
+          <span>{prediction.riskLevel || prediction.risk_level || "unknown"}</span>
+        </div>
+        <p>{prediction.confidence ? `Confidence ${Math.round(prediction.confidence * 100)}%` : ""}</p>
+        <div className="prediction-metrics">
+          <KeyValue
+            label="Forecast trust"
+            value={forecastTrust}
+            tone={riskTone}
+          />
+          <KeyValue
+            label="Forecast coverage"
+            value={`${forecastCoverage}%`}
+            tone={forecastCoverage >= 95 ? "success" : "warning"}
+          />
+          <KeyValue
+            label="Exception pressure"
+            value={forecastException}
+            tone={riskTone}
+          />
+        </div>
+        {Array.isArray(watchItems) && watchItems.length > 0 && (
+          <div className="chip-row">
+            {watchItems.map((item) => (
+              <span key={item} className="surface-chip">
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Forecast context</strong>
+          <span>{trend?.trust?.direction || "stable"}</span>
+        </div>
+        <p>
+          Latest trust {latest?.trustScore ?? 0}, coverage {latest?.evidenceCoverage ?? 0}%, pressure{" "}
+          {latest?.exceptionPressure ?? 0}. The forecast is derived from the persisted analytics trail.
+        </p>
+      </article>
+    </div>
+  );
+}
+
+function AnalyticsHistoryFeed({ history, sourceBreakdown }) {
+  if (!history || history.length === 0) {
+    return <EmptyState label="No persistent analytics history yet. The dashboard will seed it automatically." />;
+  }
+
+  const recentHistory = history.slice(-8).reverse();
+
+  return (
+    <div className="stack">
+      <div className="chip-row">
+        {Object.entries(sourceBreakdown || {}).map(([source, count]) => (
+          <span key={source} className="surface-chip">
+            {source}: {count}
+          </span>
+        ))}
+      </div>
+      {recentHistory.map((snapshot) => (
+        <article key={snapshot.snapshotId} className="record-card history-card">
+          <div className="record-card-header">
+            <strong>
+              {snapshot.createdAt
+                ? new Date(snapshot.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })
+                : snapshot.windowBucket || "live"}
+            </strong>
+            <span>{snapshot.source}</span>
+          </div>
+          <div className="chip-row">
+            <span className="surface-chip">Trust {snapshot.trustScore}</span>
+            <span className="surface-chip">Coverage {snapshot.evidenceCoverage}%</span>
+            <span className="surface-chip">Pressure {snapshot.exceptionPressure}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function decisionLaneTone(lane) {
+  if (lane === "escalate") {
+    return "critical";
+  }
+  if (lane === "review") {
+    return "warning";
+  }
+  if (lane === "watch") {
+    return "neutral";
+  }
+  return "success";
+}
+
+function DecisionSummaryPanel({ decision, latest }) {
+  if (!decision) {
+    return <EmptyState label="No decision snapshots are available yet. The operator dashboard seeds one automatically." />;
+  }
+
+  const laneTone = decisionLaneTone(decision.decisionLane);
+  const reasoning = decision.reasoning || {};
+  const trustTrend = reasoning.trust_trend || {};
+  const evidenceTrend = reasoning.evidence_trend || {};
+  const exceptionTrend = reasoning.exception_trend || {};
+  const riskPrediction = reasoning.risk_prediction || {};
+
+  return (
+    <div className="stack">
+      <article className={`record-card decision-card decision-${decision.decisionLane || "observe"}`}>
+        <div className="record-card-header">
+          <div>
+            <strong>{decision.decisionLane || "observe"}</strong>
+            <span className="decision-action-label">
+              {decision.decisionAction || "continue_monitoring"}
+            </span>
+          </div>
+          <span>{decision.decisionPriority || "low"}</span>
+        </div>
+        <p>{decision.decisionSummary || "The decision engine is waiting for a persisted operating window."}</p>
+        <div className="decision-stat-row">
+          <KeyValue label="Confidence" value={`${Math.round((decision.confidence || 0) * 100)}%`} tone={laneTone} />
+          <KeyValue label="Stability" value={decision.stabilityIndex || 0} tone={laneTone} />
+          <KeyValue label="Risk" value={`${decision.riskLevel || "unknown"} / ${decision.riskScore || 0}`} />
+          <KeyValue label="Latest record" value={latest?.decisionId || decision.latestRecordId || "pending"} />
+        </div>
+        <div className="chip-row">
+          <span className="surface-chip">{decision.advisoryOnly ? "Advisory only" : "Execution ready"}</span>
+          <span className="surface-chip">{decision.readOnly ? "Read only" : "Writable"}</span>
+          <span className="surface-chip">{decision.projectionOnly ? "Projection only" : "Authority"}</span>
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Why this lane was chosen</strong>
+          <span>{riskPrediction.risk_level || decision.riskLevel || "unknown"}</span>
+        </div>
+        <div className="stack compact-stack">
+          {trustTrend.direction && (
+            <div className="reason-chip">
+              Trust trend: {trustTrend.direction} {trustTrend.slope ?? 0}
+            </div>
+          )}
+          {evidenceTrend.direction && (
+            <div className="reason-chip">
+              Evidence trend: {evidenceTrend.direction} {evidenceTrend.slope ?? 0}
+            </div>
+          )}
+          {exceptionTrend.direction && (
+            <div className="reason-chip">
+              Exception trend: {exceptionTrend.direction} {exceptionTrend.slope ?? 0}
+            </div>
+          )}
+          {riskPrediction.confidence !== undefined && (
+            <div className="reason-chip">
+              Risk confidence: {Math.round((riskPrediction.confidence || 0) * 100)}%
+            </div>
+          )}
+          {(!trustTrend.direction && !evidenceTrend.direction && !exceptionTrend.direction && !riskPrediction.confidence) && (
+            <div className="reason-chip reason-chip-success">
+              Awaiting the first persisted decision explanation.
+            </div>
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function DecisionGuidancePanel({ decision }) {
+  if (!decision) {
+    return <EmptyState label="Decision guidance appears after the engine records the first snapshot." />;
+  }
+
+  const metrics = [
+    { label: "Trust health", value: decision.trustHealth || 0 },
+    { label: "Replay health", value: decision.replayHealthScore || 0 },
+    { label: "Evidence coverage", value: `${decision.evidenceCoverage || 0}%` },
+    { label: "Exception pressure", value: decision.exceptionPressure || 0 },
+    { label: "Alert count", value: decision.alertCount || 0 },
+    { label: "Guard count", value: decision.guardCount || 0 },
+    { label: "Replay failures", value: decision.replayFailures || 0 },
+    { label: "Missing traces", value: decision.missingTraces || 0 },
+  ];
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="decision-key-grid">
+          {metrics.map((metric) => (
+            <KeyValue key={metric.label} label={metric.label} value={metric.value} />
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Recommended actions</strong>
+          <span>{decision.decisionLane || "observe"}</span>
+        </div>
+        <div className="stack compact-stack">
+          {(decision.recommendedActions || []).map((action) => (
+            <div key={action} className="reason-chip reason-chip-success">
+              {action}
+            </div>
+          ))}
+          {(!decision.recommendedActions || decision.recommendedActions.length === 0) && (
+            <div className="reason-chip reason-chip-success">
+              Keep the current replay-backed operating band.
+            </div>
+          )}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Watch items</strong>
+          <span>{(decision.watchItems || []).length}</span>
+        </div>
+        <div className="chip-row">
+          {(decision.watchItems || []).map((item) => (
+            <span key={item} className="surface-chip">
+              {item}
+            </span>
+          ))}
+          {(!decision.watchItems || decision.watchItems.length === 0) && (
+            <span className="surface-chip">No active watch items</span>
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function DecisionHistoryFeed({ history, sourceBreakdown }) {
+  if (!history || history.length === 0) {
+    return <EmptyState label="No persistent decision history yet. The decision engine will seed on the next operator dashboard run." />;
+  }
+
+  const recentHistory = history.slice(-8).reverse();
+
+  return (
+    <div className="stack">
+      <div className="chip-row">
+        {Object.entries(sourceBreakdown || {}).map(([source, count]) => (
+          <span key={source} className="surface-chip">
+            {source}: {count}
+          </span>
+        ))}
+      </div>
+      {recentHistory.map((snapshot) => (
+        <article
+          key={snapshot.decisionId}
+          className={`record-card decision-history-card decision-${snapshot.decisionLane || "observe"}`}
+        >
+          <div className="record-card-header">
+            <strong>
+              {snapshot.createdAt
+                ? new Date(snapshot.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })
+                : snapshot.windowBucket || "live"}
+            </strong>
+            <span>{snapshot.decisionPriority || "low"}</span>
+          </div>
+          <p>{snapshot.decisionSummary}</p>
+          <div className="chip-row">
+            <span className="surface-chip">{snapshot.decisionLane}</span>
+            <span className="surface-chip">{snapshot.decisionAction}</span>
+            <span className="surface-chip">Stability {snapshot.stabilityIndex}</span>
+            <span className="surface-chip">Risk {snapshot.riskLevel}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function actionLaneTone(lane) {
+  if (lane === "safeguard") {
+    return "critical";
+  }
+  if (lane === "prepare") {
+    return "warning";
+  }
+  if (lane === "notify") {
+    return "neutral";
+  }
+  return "success";
+}
+
+function ActionSummaryPanel({ action, latest }) {
+  if (!action) {
+    return <EmptyState label="No action snapshots are available yet. The controlled autonomous action engine seeds one automatically." />;
+  }
+
+  const actionTone = actionLaneTone(action.actionLane);
+  const decisionQuality = action.decisionQuality || {};
+  const decision = action.decision || {};
+  const calibrationReasoning = action.reasoning?.calibration || {};
+
+  return (
+    <div className="stack">
+      <article className={`record-card action-card action-${action.actionLane || "monitor"}`}>
+        <div className="record-card-header">
+          <div>
+            <strong>{action.actionLane || "monitor"}</strong>
+            <span className="action-action-label">
+              {action.actionMode || "guided_control"}
+            </span>
+          </div>
+          <span>{action.actionPriority || "low"}</span>
+        </div>
+        <p>{action.actionSummary || "Decision quality calibration is awaiting the first persisted action window."}</p>
+        <div className="action-stat-row">
+          <KeyValue label="Quality" value={`${action.decisionQualityScore || 0}/100`} tone={actionTone} />
+          <KeyValue
+            label="Confidence"
+            value={`${Math.round((action.calibratedConfidence || 0) * 100)}%`}
+            tone={actionTone}
+          />
+          <KeyValue
+            label="Gate"
+            value={action.safetyGate || "pass"}
+            tone={action.safetyGate === "hold" ? "warning" : "neutral"}
+          />
+          <KeyValue
+            label="Execution tier"
+            value={action.executionTier || "advisory"}
+            tone={action.executionTierReady ? "success" : action.executionTier === "controlled" ? "warning" : "neutral"}
+          />
+          <KeyValue label="Latest record" value={latest?.actionId || action.actionId || "pending"} />
+        </div>
+        <div className="chip-row">
+          <span className="surface-chip">{action.advisoryOnly ? "Advisory only" : "Execution ready"}</span>
+          <span className="surface-chip">{action.readOnly ? "Read only" : "Writable"}</span>
+          <span className="surface-chip">{action.projectionOnly ? "Projection only" : "Authority"}</span>
+          <span className="surface-chip">{action.controlSignal || "maintain_monitoring"}</span>
+          <span className="surface-chip">{action.executionTier || "advisory"}</span>
+        </div>
+        {action.executionTierSummary && (
+          <div className="reason-chip reason-chip-success">{action.executionTierSummary}</div>
+        )}
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Calibration rationale</strong>
+          <span>{action.qualityBand || "unknown"}</span>
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip">
+            Decision lane: {action.decisionLane || "observe"} / {action.decisionPriority || "low"}
+          </div>
+          <div className="reason-chip">
+            Calibration score: {action.decisionQualityScore || 0}/100
+          </div>
+          <div className="reason-chip">
+            Evidence alignment: {action.evidenceAlignmentScore || 0}
+          </div>
+          <div className="reason-chip">
+            History alignment: {action.historyAlignmentScore || 0}
+          </div>
+          {calibrationReasoning.quality_band && (
+            <div className="reason-chip">
+              Calibration band: {calibrationReasoning.quality_band}
+            </div>
+          )}
+          {calibrationReasoning.safety_gate && (
+            <div className="reason-chip">
+              Safety gate: {calibrationReasoning.safety_gate}
+            </div>
+          )}
+          {calibrationReasoning.execution_tier && (
+            <div className="reason-chip">
+              Execution tier: {calibrationReasoning.execution_tier}
+            </div>
+          )}
+          {decisionQuality.summary && <div className="reason-chip">{decisionQuality.summary}</div>}
+          {decision.decisionSummary && <div className="reason-chip">{decision.decisionSummary}</div>}
+          {(!decisionQuality.summary && !decision.decisionSummary) && (
+            <div className="reason-chip reason-chip-success">
+              Awaiting more persistent evidence to refine the calibration trail.
+            </div>
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function ActionGuidancePanel({ action }) {
+  if (!action) {
+    return <EmptyState label="Action guidance appears after the engine records the first calibrated snapshot." />;
+  }
+
+  const metrics = [
+    { label: "Trust health", value: action.trustHealth || 0 },
+    { label: "Replay health", value: action.replayHealthScore || 0 },
+    { label: "Evidence coverage", value: `${action.evidenceCoverage || 0}%` },
+    { label: "Exception pressure", value: action.exceptionPressure || 0 },
+    { label: "Guard count", value: action.guardCount || 0 },
+    { label: "Decision quality", value: action.decisionQualityScore || 0 },
+    { label: "Calibrated confidence", value: `${Math.round((action.calibratedConfidence || 0) * 100)}%` },
+    { label: "Execution tier", value: action.executionTier || "advisory" },
+    { label: "Automation tier", value: action.automationTier || 0 },
+  ];
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="action-key-grid">
+          {metrics.map((metric) => (
+            <KeyValue key={metric.label} label={metric.label} value={metric.value} />
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Recommended control actions</strong>
+          <span>{action.actionLane || "monitor"}</span>
+        </div>
+        <div className="stack compact-stack">
+          {(action.controlActions || []).map((controlAction) => (
+            <div key={controlAction} className="reason-chip reason-chip-success">
+              {controlAction}
+            </div>
+          ))}
+          {(action.executionTierControls || []).map((control) => (
+            <div key={control} className="reason-chip">
+              {control}
+            </div>
+          ))}
+          {action.executionTierReady && (
+            <div className="reason-chip reason-chip-success">
+              Controlled execution tier is ready for operator-supervised limited automation proposals.
+            </div>
+          )}
+          {(!action.controlActions || action.controlActions.length === 0) && (
+            <div className="reason-chip reason-chip-success">
+              Maintain the current replay-backed operating band.
+            </div>
+          )}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Watch items</strong>
+          <span>{(action.watchItems || []).length}</span>
+        </div>
+        <div className="chip-row">
+          {(action.watchItems || []).map((item) => (
+            <span key={item} className="surface-chip">
+              {item}
+            </span>
+          ))}
+          {(!action.watchItems || action.watchItems.length === 0) && (
+            <span className="surface-chip">No active watch items</span>
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function ActionHistoryFeed({ history, sourceBreakdown }) {
+  if (!history || history.length === 0) {
+    return <EmptyState label="No persistent action history yet. The action engine will seed on the next dashboard run." />;
+  }
+
+  const recentHistory = history.slice(-8).reverse();
+
+  return (
+    <div className="stack">
+      <div className="chip-row">
+        {Object.entries(sourceBreakdown || {}).map(([source, count]) => (
+          <span key={source} className="surface-chip">
+            {source}: {count}
+          </span>
+        ))}
+      </div>
+      {recentHistory.map((snapshot) => (
+        <article
+          key={snapshot.actionId}
+          className={`record-card action-history-card action-${snapshot.actionLane || "monitor"}`}
+        >
+          <div className="record-card-header">
+            <strong>
+              {snapshot.createdAt
+                ? new Date(snapshot.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })
+                : snapshot.windowBucket || "live"}
+            </strong>
+            <span>{snapshot.actionPriority || "low"}</span>
+          </div>
+          <p>{snapshot.actionSummary}</p>
+          <div className="chip-row">
+            <span className="surface-chip">{snapshot.actionLane}</span>
+            <span className="surface-chip">{snapshot.actionMode}</span>
+            <span className="surface-chip">Quality {snapshot.decisionQualityScore}</span>
+            <span className="surface-chip">Confidence {Math.round((snapshot.calibratedConfidence || 0) * 100)}%</span>
+            <span className="surface-chip">Gate {snapshot.safetyGate}</span>
+            <span className="surface-chip">Tier {snapshot.executionTier || "advisory"}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
 }
 
 function GovernanceFeedbackPanel({ submission }) {

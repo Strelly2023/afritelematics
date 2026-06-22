@@ -23,6 +23,7 @@ from afritech.api.ingestion.event_ingestion import (
     EventIngestionAPI,
     build_router,
 )
+from afritech.api.realtime.dashboard_bus import dashboard_hub, publish_dashboard_event as broadcast_dashboard_event
 from afritech.api.realtime.ws_server import WebSocketHub
 from afritech.api.trace_api import build_trace_router
 from afritech.api.system_status import build_system_status_router
@@ -37,6 +38,7 @@ from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
 from afritech.api.novascript_api import build_novascript_public_router, build_novascript_router
+from afritech.api.novatech_intranet_api import build_novatech_intranet_router
 from afritech.api.afriprogramming_control_api import (
     build_afriprogramming_control_router,
 )
@@ -158,6 +160,7 @@ app.include_router(build_afriride_next_gen_mobile_router())
 
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())
+app.include_router(build_novatech_intranet_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())
@@ -251,7 +254,7 @@ class FastAPIWebSocketClient:
 # REALTIME WEBSOCKET
 # ============================================================
 
-@app.websocket("/ws/{ride_id}")
+@app.websocket("/ws/ride/{ride_id}")
 async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
     """Subscribe a client to observation-only projected ride state."""
 
@@ -281,6 +284,39 @@ async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
 
 
 # ============================================================
+# REALTIME DASHBOARD SOCKET
+# ============================================================
+
+@app.websocket("/ws/dashboard")
+async def dashboard_socket(websocket: WebSocket) -> None:
+    """Subscribe a client to the live dashboard observation channel."""
+
+    claims = authenticate_websocket(websocket, roles={"OPERATOR", "VERIFIER", "PARTNER", "OBSERVER", "DEVELOPER"})
+    if claims is None:
+        await reject_websocket(websocket)
+        return
+
+    await websocket.accept()
+    client = FastAPIWebSocketClient(websocket)
+    dashboard_hub.subscribe("dashboard", client)
+
+    try:
+        await websocket.send_json(
+            {
+                "channel": "dashboard",
+                "status": "connected",
+                "subscriber": claims.sub,
+                "role": claims.role,
+                "authority": "projection_only",
+            }
+        )
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        dashboard_hub.unsubscribe("dashboard", client)
+
+
+# ============================================================
 # REALTIME PUBLISH (PILOT)
 # ============================================================
 
@@ -294,7 +330,32 @@ async def publish_ride_projection(
 
     data = dict(payload.get("data", payload))
     message = await realtime_hub.publish_state_update(ride_id, data)
+    await broadcast_dashboard_event(
+        "RIDE_PROJECTION_UPDATE",
+        {
+            "ride_id": ride_id,
+            "projection": data,
+            "source": "ride_projection",
+            "status": data.get("status") or data.get("state") or "UNKNOWN",
+        },
+    )
 
+    return {
+        "status": "published",
+        "message": message,
+    }
+
+
+@app.post("/v1/realtime/dashboard/publish")
+async def publish_dashboard_projection(
+    payload: dict[str, Any],
+    _: object = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")),
+) -> dict[str, Any]:
+    """Pilot-only dashboard event publisher for live browser projections."""
+
+    event_type = str(payload.get("type", "DASHBOARD_SNAPSHOT"))
+    data = dict(payload.get("data", payload))
+    message = await broadcast_dashboard_event(event_type, data)
     return {
         "status": "published",
         "message": message,

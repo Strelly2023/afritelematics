@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `348`
+- Startup-safe closure size: `351`
 - Django-bound modules declared in repo: `245`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `32`
+- Direct startup imports from `afritech.api.app`: `34`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (348 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (351 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (32)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (34)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (57 files)"]
+    Core --> Api["api (59 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -81,13 +81,13 @@ flowchart TD
 
     Ride --> Backend["backend (28 files)"]
     Ride --> Django["django_app (99 files)"]
-    Ui --> Dashboard["src (2 files)"]
+    Ui --> Dashboard["src (3 files)"]
     Deploy --> Production["production (3 files)"]
 ```
 
 ## Repo Area Counts
 
-- `api`: `57` files
+- `api`: `59` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -99,12 +99,12 @@ flowchart TD
 - `runtime`: `79` files
 - `afriride_backend`: `28` files
 - `afriride_django`: `99` files
-- `dashboard_ui`: `2` files
+- `dashboard_ui`: `3` files
 - `deploy_production`: `3` files
 
 ## Startup Inventory
 
-### Api (27)
+### Api (29)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -124,11 +124,13 @@ flowchart TD
 - `afritech.api.ingestion`
 - `afritech.api.ingestion.event_ingestion`
 - `afritech.api.novascript_api`
+- `afritech.api.novatech_intranet_api`
 - `afritech.api.ops_governance_api`
 - `afritech.api.partner_registry_api`
 - `afritech.api.partner_verification_api`
 - `afritech.api.public_verification_api`
 - `afritech.api.realtime`
+- `afritech.api.realtime.dashboard_bus`
 - `afritech.api.realtime.ws_server`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
@@ -163,12 +165,13 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (282)
+### Other (283)
 
 - `afritech`
 - `afritech.afripay`
 - `afritech.afripay.api`
 - `afritech.afripay.audit_sandbox`
+- `afritech.afripay.billing`
 - `afritech.afripay.config`
 - `afritech.afripay.events`
 - `afritech.afripay.exceptions`
@@ -486,10 +489,12 @@ flowchart TD
 - `afritech.api.feature_registry_api`
 - `afritech.api.ingestion.event_ingestion`
 - `afritech.api.novascript_api`
+- `afritech.api.novatech_intranet_api`
 - `afritech.api.ops_governance_api`
 - `afritech.api.partner_registry_api`
 - `afritech.api.partner_verification_api`
 - `afritech.api.public_verification_api`
+- `afritech.api.realtime.dashboard_bus`
 - `afritech.api.realtime.ws_server`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`

@@ -9,6 +9,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Header
 
 from afritech.api.auth.jwt_device_auth import JWT
+from afritech.afriprogramming.control_plane import get_control_plane
 
 
 def get_gateway() -> Any:
@@ -389,12 +390,13 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
 
     @router.get("/operator/dashboard")
     def operator_dashboard(gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+        control_plane = get_control_plane()
         service = _system_service(gateway, trace_log)
         trust = service.trust_metrics()
         pilot = service.pilot_metrics()
         evidence = service.evidence_pipeline()
         replay = service.replay_health()
-        return {
+        payload = {
             "fleet_trust_score": trust["trust_score"],
             "active_drivers": trust["drivers_online"],
             "verified_rides_today": pilot["completed_rides"],
@@ -414,6 +416,97 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
                 "latency_breaches": 0,
             },
         }
+        try:
+            analytics_snapshot = control_plane.record_dashboard_analytics_snapshot(
+                payload=payload,
+                source="afriride_operator_dashboard",
+                snapshot_type="operator_dashboard",
+            )
+            payload["analytics_snapshot_id"] = analytics_snapshot["snapshot_id"]
+            payload["analytics_snapshot_window"] = analytics_snapshot["window_bucket"]
+        except Exception:
+            payload["analytics_snapshot_id"] = None
+            payload["analytics_snapshot_window"] = None
+        try:
+            decision_snapshot = control_plane.record_dashboard_decision_snapshot(
+                payload=payload,
+                source="afriride_operator_dashboard",
+                decision_type="operator_decision",
+            )
+            payload["decision_snapshot_id"] = decision_snapshot["decision_id"]
+            payload["decision_snapshot_window"] = decision_snapshot["window_bucket"]
+        except Exception:
+            payload["decision_snapshot_id"] = None
+            payload["decision_snapshot_window"] = None
+        try:
+            action_snapshot = control_plane.record_dashboard_action_snapshot(
+                payload=payload,
+                source="afriride_operator_dashboard",
+                decision_snapshot_id=payload.get("decision_snapshot_id"),
+                action_type="controlled_autonomous_action",
+            )
+            payload["action_snapshot_id"] = action_snapshot["action_id"]
+            payload["action_snapshot_window"] = action_snapshot["window_bucket"]
+        except Exception:
+            payload["action_snapshot_id"] = None
+            payload["action_snapshot_window"] = None
+        return payload
+
+    @router.get("/operator/analytics")
+    def operator_analytics(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_analytics(source=source, limit=limit)
+
+    @router.get("/operator/analytics/history")
+    def operator_analytics_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_analytics_history(source=source, limit=limit)
+
+    @router.get("/operator/analytics/insights")
+    def operator_analytics_insights(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_analytics_insights(source=source, limit=limit)
+
+    @router.get("/operator/analytics/predictions")
+    def operator_analytics_predictions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_analytics_prediction(source=source, limit=limit)
+
+    @router.get("/operator/decisions")
+    def operator_decisions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_decisions(source=source, limit=limit)
+
+    @router.get("/operator/decisions/history")
+    def operator_decisions_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_decisions_history(source=source, limit=limit)
+
+    @router.get("/operator/actions")
+    def operator_actions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_actions(source=source, limit=limit)
+
+    @router.get("/operator/actions/history")
+    def operator_actions_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return get_control_plane().dashboard_actions_history(source=source, limit=limit)
 
     @router.get("/operator/replay-exceptions")
     def replay_exceptions(gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:

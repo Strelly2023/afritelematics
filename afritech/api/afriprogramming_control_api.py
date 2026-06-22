@@ -1011,6 +1011,102 @@ def build_afriprogramming_control_router() -> APIRouter:
     ) -> dict[str, Any]:
         return control_plane.insights(organization_id=claims.organization_id)
 
+    @router.get("/analytics")
+    def analytics(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_analytics(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/analytics/history")
+    def analytics_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_analytics_history(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/analytics/insights")
+    def analytics_insights(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_analytics_insights(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/analytics/predictions")
+    def analytics_predictions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_analytics_prediction(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/decisions")
+    def decisions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_decisions(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/decisions/history")
+    def decisions_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_decisions_history(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/actions")
+    def actions(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_actions(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
+    @router.get("/actions/history")
+    def actions_history(
+        source: str = "afriride_operator_dashboard",
+        limit: int = 24,
+        claims = Depends(require_roles(Role.OPERATOR, Role.VERIFIER, Role.OBSERVER, Role.DEVELOPER)),
+    ) -> dict[str, Any]:
+        return control_plane.dashboard_actions_history(
+            organization_id=claims.organization_id,
+            source=source,
+            limit=limit,
+        )
+
     @router.get("/v9/schema")
     def v9_schema(
         partition_count: int = 4,

@@ -52,6 +52,27 @@ _POSTGRES_INSERT_REPLACE_TARGETS: dict[str, tuple[str, ...]] = {
     "verification_proofs": ("proof_id",),
     "deployment_receipts": ("receipt_id",),
     "replay_records": ("replay_id",),
+    "dashboard_analytics_snapshots": (
+        "organization_id",
+        "source",
+        "snapshot_type",
+        "window_bucket",
+        "snapshot_hash",
+    ),
+    "ai_decision_snapshots": (
+        "organization_id",
+        "source",
+        "decision_type",
+        "window_bucket",
+        "snapshot_hash",
+    ),
+    "ai_action_snapshots": (
+        "organization_id",
+        "source",
+        "action_type",
+        "window_bucket",
+        "snapshot_hash",
+    ),
     "policy_definitions": ("organization_id", "policy_name", "version"),
     "certification_records": ("certification_id",),
     "retention_policies": ("retention_id",),
@@ -292,6 +313,133 @@ class PlatformStore:
             event_type TEXT NOT NULL,
             payload_json TEXT NOT NULL,
             created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS dashboard_analytics_snapshots (
+            snapshot_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            snapshot_type TEXT NOT NULL,
+            trust_score INTEGER NOT NULL,
+            trust_health INTEGER NOT NULL,
+            replay_health_score INTEGER NOT NULL,
+            evidence_coverage INTEGER NOT NULL,
+            exception_pressure INTEGER NOT NULL,
+            alert_count INTEGER NOT NULL,
+            active_drivers INTEGER NOT NULL,
+            completed_rides INTEGER NOT NULL,
+            total_rides INTEGER NOT NULL,
+            guard_count INTEGER NOT NULL,
+            replay_failures INTEGER NOT NULL,
+            hash_chain_failures INTEGER NOT NULL,
+            missing_traces INTEGER NOT NULL,
+            receipts_count INTEGER NOT NULL,
+            trace_count INTEGER NOT NULL,
+            payload_json TEXT NOT NULL,
+            snapshot_hash TEXT NOT NULL,
+            window_bucket TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(organization_id, source, snapshot_type, window_bucket, snapshot_hash)
+        );
+        CREATE TABLE IF NOT EXISTS ai_decision_snapshots (
+            decision_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            decision_type TEXT NOT NULL,
+            decision_lane TEXT NOT NULL,
+            decision_action TEXT NOT NULL,
+            decision_priority TEXT NOT NULL,
+            decision_summary TEXT NOT NULL,
+            trust_score INTEGER NOT NULL,
+            trust_health INTEGER NOT NULL,
+            replay_health_score INTEGER NOT NULL,
+            evidence_coverage INTEGER NOT NULL,
+            exception_pressure INTEGER NOT NULL,
+            alert_count INTEGER NOT NULL,
+            guard_count INTEGER NOT NULL,
+            replay_failures INTEGER NOT NULL,
+            hash_chain_failures INTEGER NOT NULL,
+            missing_traces INTEGER NOT NULL,
+            risk_score INTEGER NOT NULL,
+            risk_level TEXT NOT NULL,
+            confidence REAL NOT NULL,
+            stability_index INTEGER NOT NULL,
+            recommended_actions_json TEXT NOT NULL,
+            watch_items_json TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            snapshot_hash TEXT NOT NULL,
+            window_bucket TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(organization_id, source, decision_type, window_bucket, snapshot_hash)
+        );
+        CREATE TABLE IF NOT EXISTS ai_action_snapshots (
+            action_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            action_type TEXT NOT NULL,
+            decision_id TEXT NOT NULL,
+            decision_lane TEXT NOT NULL,
+            action_lane TEXT NOT NULL,
+            action_mode TEXT NOT NULL,
+            action_priority TEXT NOT NULL,
+            action_summary TEXT NOT NULL,
+            control_signal TEXT NOT NULL,
+            safety_gate TEXT NOT NULL,
+            automation_tier INTEGER NOT NULL,
+            decision_quality_score INTEGER NOT NULL,
+            evidence_alignment_score INTEGER NOT NULL,
+            calibrated_confidence REAL NOT NULL,
+            history_alignment_score INTEGER NOT NULL,
+            quality_band TEXT NOT NULL,
+            trust_score INTEGER NOT NULL,
+            trust_health INTEGER NOT NULL,
+            replay_health_score INTEGER NOT NULL,
+            evidence_coverage INTEGER NOT NULL,
+            exception_pressure INTEGER NOT NULL,
+            alert_count INTEGER NOT NULL,
+            guard_count INTEGER NOT NULL,
+            replay_failures INTEGER NOT NULL,
+            hash_chain_failures INTEGER NOT NULL,
+            missing_traces INTEGER NOT NULL,
+            stability_index INTEGER NOT NULL,
+            recommended_actions_json TEXT NOT NULL,
+            watch_items_json TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            snapshot_hash TEXT NOT NULL,
+            window_bucket TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(organization_id, source, action_type, window_bucket, snapshot_hash)
+        );
+        CREATE TABLE IF NOT EXISTS outcome_snapshots (
+            outcome_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+            outcome_type TEXT NOT NULL,
+            decision_id TEXT NOT NULL,
+            action_id TEXT NOT NULL,
+            outcome_status TEXT NOT NULL,
+            outcome_band TEXT NOT NULL,
+            learning_band TEXT NOT NULL,
+            outcome_score INTEGER NOT NULL,
+            trust_score INTEGER NOT NULL,
+            trust_health INTEGER NOT NULL,
+            replay_health_score INTEGER NOT NULL,
+            evidence_coverage INTEGER NOT NULL,
+            exception_pressure INTEGER NOT NULL,
+            decision_quality_score INTEGER NOT NULL,
+            evidence_alignment_score INTEGER NOT NULL,
+            calibrated_confidence REAL NOT NULL,
+            history_alignment_score INTEGER NOT NULL,
+            execution_tier TEXT NOT NULL,
+            execution_tier_ready INTEGER NOT NULL,
+            measurement_summary TEXT NOT NULL,
+            learning_actions_json TEXT NOT NULL,
+            recalibration_notes_json TEXT NOT NULL,
+            watch_items_json TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            snapshot_hash TEXT NOT NULL,
+            window_bucket TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(organization_id, source, outcome_type, window_bucket, snapshot_hash)
         );
         CREATE TABLE IF NOT EXISTS replay_records (
             replay_id TEXT PRIMARY KEY,
@@ -1655,6 +1803,740 @@ class PlatformStore:
             rows = conn.execute(query, params).fetchall()
         return [self._row_to_trust_stream(row) for row in rows]
 
+    def store_dashboard_analytics_snapshot(
+        self,
+        *,
+        organization_id: str,
+        source: str,
+        snapshot_type: str,
+        trust_score: int,
+        trust_health: int,
+        replay_health_score: int,
+        evidence_coverage: int,
+        exception_pressure: int,
+        alert_count: int,
+        active_drivers: int,
+        completed_rides: int,
+        total_rides: int,
+        guard_count: int,
+        replay_failures: int,
+        hash_chain_failures: int,
+        missing_traces: int,
+        receipts_count: int,
+        trace_count: int,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        created_at = _now()
+        window_bucket = created_at[:16]
+        snapshot_hash = _hash_payload(
+            {
+                "organization_id": organization_id,
+                "source": source,
+                "snapshot_type": snapshot_type,
+                "trust_score": int(trust_score),
+                "trust_health": int(trust_health),
+                "replay_health_score": int(replay_health_score),
+                "evidence_coverage": int(evidence_coverage),
+                "exception_pressure": int(exception_pressure),
+                "alert_count": int(alert_count),
+                "active_drivers": int(active_drivers),
+                "completed_rides": int(completed_rides),
+                "total_rides": int(total_rides),
+                "guard_count": int(guard_count),
+                "replay_failures": int(replay_failures),
+                "hash_chain_failures": int(hash_chain_failures),
+                "missing_traces": int(missing_traces),
+                "receipts_count": int(receipts_count),
+                "trace_count": int(trace_count),
+                "payload": payload,
+            }
+        )
+        record = {
+            "snapshot_id": f"analytics-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "source": source,
+            "snapshot_type": snapshot_type,
+            "trust_score": int(trust_score),
+            "trust_health": int(trust_health),
+            "replay_health_score": int(replay_health_score),
+            "evidence_coverage": int(evidence_coverage),
+            "exception_pressure": int(exception_pressure),
+            "alert_count": int(alert_count),
+            "active_drivers": int(active_drivers),
+            "completed_rides": int(completed_rides),
+            "total_rides": int(total_rides),
+            "guard_count": int(guard_count),
+            "replay_failures": int(replay_failures),
+            "hash_chain_failures": int(hash_chain_failures),
+            "missing_traces": int(missing_traces),
+            "receipts_count": int(receipts_count),
+            "trace_count": int(trace_count),
+            "payload": payload,
+            "snapshot_hash": snapshot_hash,
+            "window_bucket": window_bucket,
+            "created_at": created_at,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO dashboard_analytics_snapshots (
+                    snapshot_id, organization_id, source, snapshot_type,
+                    trust_score, trust_health, replay_health_score,
+                    evidence_coverage, exception_pressure, alert_count,
+                    active_drivers, completed_rides, total_rides,
+                    guard_count, replay_failures, hash_chain_failures,
+                    missing_traces, receipts_count, trace_count,
+                    payload_json, snapshot_hash, window_bucket, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["snapshot_id"],
+                    organization_id,
+                    source,
+                    snapshot_type,
+                    record["trust_score"],
+                    record["trust_health"],
+                    record["replay_health_score"],
+                    record["evidence_coverage"],
+                    record["exception_pressure"],
+                    record["alert_count"],
+                    record["active_drivers"],
+                    record["completed_rides"],
+                    record["total_rides"],
+                    record["guard_count"],
+                    record["replay_failures"],
+                    record["hash_chain_failures"],
+                    record["missing_traces"],
+                    record["receipts_count"],
+                    record["trace_count"],
+                    json.dumps(payload, sort_keys=True),
+                    snapshot_hash,
+                    window_bucket,
+                    created_at,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_dashboard_analytics_snapshots(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        snapshot_type: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM dashboard_analytics_snapshots"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if source is not None:
+            clauses.append("source = ?")
+            params.append(source)
+        if snapshot_type is not None:
+            clauses.append("snapshot_type = ?")
+            params.append(snapshot_type)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_dashboard_analytics_snapshot(row) for row in rows]
+
+    def latest_dashboard_analytics_snapshot(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        snapshot_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        snapshots = self.list_dashboard_analytics_snapshots(
+            organization_id=organization_id,
+            source=source,
+            snapshot_type=snapshot_type,
+            limit=1,
+        )
+        return snapshots[0] if snapshots else None
+
+    def store_ai_decision_snapshot(
+        self,
+        *,
+        organization_id: str,
+        source: str,
+        decision_type: str,
+        decision_lane: str,
+        decision_action: str,
+        decision_priority: str,
+        decision_summary: str,
+        trust_score: int,
+        trust_health: int,
+        replay_health_score: int,
+        evidence_coverage: int,
+        exception_pressure: int,
+        alert_count: int,
+        guard_count: int,
+        replay_failures: int,
+        hash_chain_failures: int,
+        missing_traces: int,
+        risk_score: int,
+        risk_level: str,
+        confidence: float,
+        stability_index: int,
+        recommended_actions: list[str],
+        watch_items: list[str],
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        created_at = _now()
+        window_bucket = created_at[:16]
+        snapshot_hash = _hash_payload(
+            {
+                "organization_id": organization_id,
+                "source": source,
+                "decision_type": decision_type,
+                "decision_lane": decision_lane,
+                "decision_action": decision_action,
+                "decision_priority": decision_priority,
+                "decision_summary": decision_summary,
+                "trust_score": int(trust_score),
+                "trust_health": int(trust_health),
+                "replay_health_score": int(replay_health_score),
+                "evidence_coverage": int(evidence_coverage),
+                "exception_pressure": int(exception_pressure),
+                "alert_count": int(alert_count),
+                "guard_count": int(guard_count),
+                "replay_failures": int(replay_failures),
+                "hash_chain_failures": int(hash_chain_failures),
+                "missing_traces": int(missing_traces),
+                "risk_score": int(risk_score),
+                "risk_level": risk_level,
+                "confidence": float(confidence),
+                "stability_index": int(stability_index),
+                "recommended_actions": recommended_actions,
+                "watch_items": watch_items,
+                "payload": payload,
+            }
+        )
+        record = {
+            "decision_id": f"decision-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "source": source,
+            "decision_type": decision_type,
+            "decision_lane": decision_lane,
+            "decision_action": decision_action,
+            "decision_priority": decision_priority,
+            "decision_summary": decision_summary,
+            "trust_score": int(trust_score),
+            "trust_health": int(trust_health),
+            "replay_health_score": int(replay_health_score),
+            "evidence_coverage": int(evidence_coverage),
+            "exception_pressure": int(exception_pressure),
+            "alert_count": int(alert_count),
+            "guard_count": int(guard_count),
+            "replay_failures": int(replay_failures),
+            "hash_chain_failures": int(hash_chain_failures),
+            "missing_traces": int(missing_traces),
+            "risk_score": int(risk_score),
+            "risk_level": risk_level,
+            "confidence": float(confidence),
+            "stability_index": int(stability_index),
+            "recommended_actions": list(recommended_actions),
+            "watch_items": list(watch_items),
+            "payload": payload,
+            "snapshot_hash": snapshot_hash,
+            "window_bucket": window_bucket,
+            "created_at": created_at,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO ai_decision_snapshots (
+                    decision_id, organization_id, source, decision_type,
+                    decision_lane, decision_action, decision_priority, decision_summary,
+                    trust_score, trust_health, replay_health_score, evidence_coverage,
+                    exception_pressure, alert_count, guard_count, replay_failures,
+                    hash_chain_failures, missing_traces, risk_score, risk_level,
+                    confidence, stability_index, recommended_actions_json, watch_items_json,
+                    payload_json, snapshot_hash, window_bucket, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["decision_id"],
+                    organization_id,
+                    source,
+                    decision_type,
+                    decision_lane,
+                    decision_action,
+                    decision_priority,
+                    decision_summary,
+                    record["trust_score"],
+                    record["trust_health"],
+                    record["replay_health_score"],
+                    record["evidence_coverage"],
+                    record["exception_pressure"],
+                    record["alert_count"],
+                    record["guard_count"],
+                    record["replay_failures"],
+                    record["hash_chain_failures"],
+                    record["missing_traces"],
+                    record["risk_score"],
+                    risk_level,
+                    record["confidence"],
+                    record["stability_index"],
+                    json.dumps(recommended_actions, sort_keys=True),
+                    json.dumps(watch_items, sort_keys=True),
+                    json.dumps(payload, sort_keys=True),
+                    snapshot_hash,
+                    window_bucket,
+                    created_at,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def store_ai_action_snapshot(
+        self,
+        *,
+        organization_id: str,
+        source: str,
+        action_type: str,
+        decision_id: str,
+        decision_lane: str,
+        action_lane: str,
+        action_mode: str,
+        action_priority: str,
+        action_summary: str,
+        control_signal: str,
+        safety_gate: str,
+        automation_tier: int,
+        decision_quality_score: int,
+        evidence_alignment_score: int,
+        calibrated_confidence: float,
+        history_alignment_score: int,
+        quality_band: str,
+        trust_score: int,
+        trust_health: int,
+        replay_health_score: int,
+        evidence_coverage: int,
+        exception_pressure: int,
+        alert_count: int,
+        guard_count: int,
+        replay_failures: int,
+        hash_chain_failures: int,
+        missing_traces: int,
+        stability_index: int,
+        recommended_actions: list[str],
+        watch_items: list[str],
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        created_at = _now()
+        window_bucket = created_at[:16]
+        snapshot_hash = _hash_payload(
+            {
+                "organization_id": organization_id,
+                "source": source,
+                "action_type": action_type,
+                "decision_id": decision_id,
+                "decision_lane": decision_lane,
+                "action_lane": action_lane,
+                "action_mode": action_mode,
+                "action_priority": action_priority,
+                "action_summary": action_summary,
+                "control_signal": control_signal,
+                "safety_gate": safety_gate,
+                "automation_tier": int(automation_tier),
+                "decision_quality_score": int(decision_quality_score),
+                "evidence_alignment_score": int(evidence_alignment_score),
+                "calibrated_confidence": float(calibrated_confidence),
+                "history_alignment_score": int(history_alignment_score),
+                "quality_band": quality_band,
+                "trust_score": int(trust_score),
+                "trust_health": int(trust_health),
+                "replay_health_score": int(replay_health_score),
+                "evidence_coverage": int(evidence_coverage),
+                "exception_pressure": int(exception_pressure),
+                "alert_count": int(alert_count),
+                "guard_count": int(guard_count),
+                "replay_failures": int(replay_failures),
+                "hash_chain_failures": int(hash_chain_failures),
+                "missing_traces": int(missing_traces),
+                "stability_index": int(stability_index),
+                "recommended_actions": recommended_actions,
+                "watch_items": watch_items,
+                "payload": payload,
+            }
+        )
+        record = {
+            "action_id": f"action-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "source": source,
+            "action_type": action_type,
+            "decision_id": decision_id,
+            "decision_lane": decision_lane,
+            "action_lane": action_lane,
+            "action_mode": action_mode,
+            "action_priority": action_priority,
+            "action_summary": action_summary,
+            "control_signal": control_signal,
+            "safety_gate": safety_gate,
+            "automation_tier": int(automation_tier),
+            "decision_quality_score": int(decision_quality_score),
+            "evidence_alignment_score": int(evidence_alignment_score),
+            "calibrated_confidence": float(calibrated_confidence),
+            "history_alignment_score": int(history_alignment_score),
+            "quality_band": quality_band,
+            "trust_score": int(trust_score),
+            "trust_health": int(trust_health),
+            "replay_health_score": int(replay_health_score),
+            "evidence_coverage": int(evidence_coverage),
+            "exception_pressure": int(exception_pressure),
+            "alert_count": int(alert_count),
+            "guard_count": int(guard_count),
+            "replay_failures": int(replay_failures),
+            "hash_chain_failures": int(hash_chain_failures),
+            "missing_traces": int(missing_traces),
+            "stability_index": int(stability_index),
+            "recommended_actions": list(recommended_actions),
+            "watch_items": list(watch_items),
+            "payload": payload,
+            "snapshot_hash": snapshot_hash,
+            "window_bucket": window_bucket,
+            "created_at": created_at,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO ai_action_snapshots (
+                    action_id, organization_id, source, action_type,
+                    decision_id, decision_lane, action_lane, action_mode,
+                    action_priority, action_summary, control_signal, safety_gate,
+                    automation_tier, decision_quality_score, evidence_alignment_score,
+                    calibrated_confidence, history_alignment_score, quality_band,
+                    trust_score, trust_health, replay_health_score, evidence_coverage,
+                    exception_pressure, alert_count, guard_count, replay_failures,
+                    hash_chain_failures, missing_traces, stability_index,
+                    recommended_actions_json, watch_items_json, payload_json,
+                    snapshot_hash, window_bucket, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["action_id"],
+                    organization_id,
+                    source,
+                    action_type,
+                    decision_id,
+                    decision_lane,
+                    action_lane,
+                    action_mode,
+                    action_priority,
+                    action_summary,
+                    control_signal,
+                    safety_gate,
+                    int(automation_tier),
+                    int(decision_quality_score),
+                    int(evidence_alignment_score),
+                    float(calibrated_confidence),
+                    int(history_alignment_score),
+                    quality_band,
+                    record["trust_score"],
+                    record["trust_health"],
+                    record["replay_health_score"],
+                    record["evidence_coverage"],
+                    record["exception_pressure"],
+                    record["alert_count"],
+                    record["guard_count"],
+                    record["replay_failures"],
+                    record["hash_chain_failures"],
+                    record["missing_traces"],
+                    record["stability_index"],
+                    json.dumps(recommended_actions, sort_keys=True),
+                    json.dumps(watch_items, sort_keys=True),
+                    json.dumps(payload, sort_keys=True),
+                    snapshot_hash,
+                    window_bucket,
+                    created_at,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_ai_decision_snapshots(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        decision_type: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM ai_decision_snapshots"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if source is not None:
+            clauses.append("source = ?")
+            params.append(source)
+        if decision_type is not None:
+            clauses.append("decision_type = ?")
+            params.append(decision_type)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_ai_decision_snapshot(row) for row in rows]
+
+    def latest_ai_decision_snapshot(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        decision_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        snapshots = self.list_ai_decision_snapshots(
+            organization_id=organization_id,
+            source=source,
+            decision_type=decision_type,
+            limit=1,
+        )
+        return snapshots[0] if snapshots else None
+
+    def list_ai_action_snapshots(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        action_type: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM ai_action_snapshots"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if source is not None:
+            clauses.append("source = ?")
+            params.append(source)
+        if action_type is not None:
+            clauses.append("action_type = ?")
+            params.append(action_type)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_ai_action_snapshot(row) for row in rows]
+
+    def latest_ai_action_snapshot(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        action_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        snapshots = self.list_ai_action_snapshots(
+            organization_id=organization_id,
+            source=source,
+            action_type=action_type,
+            limit=1,
+        )
+        return snapshots[0] if snapshots else None
+
+    def store_outcome_snapshot(
+        self,
+        *,
+        organization_id: str,
+        source: str,
+        outcome_type: str,
+        decision_id: str,
+        action_id: str,
+        outcome_status: str,
+        outcome_band: str,
+        learning_band: str,
+        outcome_score: int,
+        trust_score: int,
+        trust_health: int,
+        replay_health_score: int,
+        evidence_coverage: int,
+        exception_pressure: int,
+        decision_quality_score: int,
+        evidence_alignment_score: int,
+        calibrated_confidence: float,
+        history_alignment_score: int,
+        execution_tier: str,
+        execution_tier_ready: bool,
+        measurement_summary: str,
+        learning_actions: list[str],
+        recalibration_notes: list[str],
+        watch_items: list[str],
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        created_at = _now()
+        window_bucket = created_at[:16]
+        snapshot_hash = _hash_payload(
+            {
+                "organization_id": organization_id,
+                "source": source,
+                "outcome_type": outcome_type,
+                "decision_id": decision_id,
+                "action_id": action_id,
+                "outcome_status": outcome_status,
+                "outcome_band": outcome_band,
+                "learning_band": learning_band,
+                "outcome_score": int(outcome_score),
+                "trust_score": int(trust_score),
+                "trust_health": int(trust_health),
+                "replay_health_score": int(replay_health_score),
+                "evidence_coverage": int(evidence_coverage),
+                "exception_pressure": int(exception_pressure),
+                "decision_quality_score": int(decision_quality_score),
+                "evidence_alignment_score": int(evidence_alignment_score),
+                "calibrated_confidence": float(calibrated_confidence),
+                "history_alignment_score": int(history_alignment_score),
+                "execution_tier": execution_tier,
+                "execution_tier_ready": bool(execution_tier_ready),
+                "measurement_summary": measurement_summary,
+                "learning_actions": learning_actions,
+                "recalibration_notes": recalibration_notes,
+                "watch_items": watch_items,
+                "payload": payload,
+            }
+        )
+        record = {
+            "outcome_id": f"outcome-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "source": source,
+            "outcome_type": outcome_type,
+            "decision_id": decision_id,
+            "action_id": action_id,
+            "outcome_status": outcome_status,
+            "outcome_band": outcome_band,
+            "learning_band": learning_band,
+            "outcome_score": int(outcome_score),
+            "trust_score": int(trust_score),
+            "trust_health": int(trust_health),
+            "replay_health_score": int(replay_health_score),
+            "evidence_coverage": int(evidence_coverage),
+            "exception_pressure": int(exception_pressure),
+            "decision_quality_score": int(decision_quality_score),
+            "evidence_alignment_score": int(evidence_alignment_score),
+            "calibrated_confidence": float(calibrated_confidence),
+            "history_alignment_score": int(history_alignment_score),
+            "execution_tier": execution_tier,
+            "execution_tier_ready": bool(execution_tier_ready),
+            "measurement_summary": measurement_summary,
+            "learning_actions": list(learning_actions),
+            "recalibration_notes": list(recalibration_notes),
+            "watch_items": list(watch_items),
+            "payload": payload,
+            "snapshot_hash": snapshot_hash,
+            "window_bucket": window_bucket,
+            "created_at": created_at,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO outcome_snapshots (
+                    outcome_id, organization_id, source, outcome_type,
+                    decision_id, action_id, outcome_status, outcome_band,
+                    learning_band, outcome_score, trust_score, trust_health,
+                    replay_health_score, evidence_coverage, exception_pressure,
+                    decision_quality_score, evidence_alignment_score,
+                    calibrated_confidence, history_alignment_score,
+                    execution_tier, execution_tier_ready, measurement_summary,
+                    learning_actions_json, recalibration_notes_json,
+                    watch_items_json, payload_json, snapshot_hash, window_bucket,
+                    created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["outcome_id"],
+                    organization_id,
+                    source,
+                    outcome_type,
+                    decision_id,
+                    action_id,
+                    outcome_status,
+                    outcome_band,
+                    learning_band,
+                    record["outcome_score"],
+                    record["trust_score"],
+                    record["trust_health"],
+                    record["replay_health_score"],
+                    record["evidence_coverage"],
+                    record["exception_pressure"],
+                    record["decision_quality_score"],
+                    record["evidence_alignment_score"],
+                    record["calibrated_confidence"],
+                    record["history_alignment_score"],
+                    execution_tier,
+                    1 if execution_tier_ready else 0,
+                    measurement_summary,
+                    json.dumps(learning_actions, sort_keys=True),
+                    json.dumps(recalibration_notes, sort_keys=True),
+                    json.dumps(watch_items, sort_keys=True),
+                    json.dumps(payload, sort_keys=True),
+                    snapshot_hash,
+                    window_bucket,
+                    created_at,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_outcome_snapshots(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        outcome_type: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM outcome_snapshots"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if source is not None:
+            clauses.append("source = ?")
+            params.append(source)
+        if outcome_type is not None:
+            clauses.append("outcome_type = ?")
+            params.append(outcome_type)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_outcome_snapshot(row) for row in rows]
+
+    def latest_outcome_snapshot(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = None,
+        outcome_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        snapshots = self.list_outcome_snapshots(
+            organization_id=organization_id,
+            source=source,
+            outcome_type=outcome_type,
+            limit=1,
+        )
+        return snapshots[0] if snapshots else None
+
     def store_replay_record(
         self,
         *,
@@ -1894,6 +2776,31 @@ class PlatformStore:
                 billing_enabled=False,
             )
         return summary
+
+    def list_billing_records(
+        self,
+        *,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM billing_records"
+        params: list[Any] = []
+        if organization_id is not None:
+            query += " WHERE organization_id = ?"
+            params.append(organization_id)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_billing_record(row) for row in rows]
+
+    def latest_billing_record(
+        self,
+        *,
+        organization_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        records = self.list_billing_records(organization_id=organization_id, limit=1)
+        return records[0] if records else None
 
     def store_policy_definition(
         self,
@@ -4449,6 +5356,18 @@ class PlatformStore:
             federation_event_count = conn.execute("SELECT COUNT(*) FROM federation_events" + query_filter, params).fetchone()[0]
             stream_topic_count = conn.execute("SELECT COUNT(*) FROM event_stream_topics" + query_filter, params).fetchone()[0]
             stream_event_count = conn.execute("SELECT COUNT(*) FROM event_stream_events" + query_filter, params).fetchone()[0]
+            analytics_snapshot_count = conn.execute(
+                "SELECT COUNT(*) FROM dashboard_analytics_snapshots" + query_filter,
+                params,
+            ).fetchone()[0]
+            ai_decision_snapshot_count = conn.execute(
+                "SELECT COUNT(*) FROM ai_decision_snapshots" + query_filter,
+                params,
+            ).fetchone()[0]
+            ai_action_snapshot_count = conn.execute(
+                "SELECT COUNT(*) FROM ai_action_snapshots" + query_filter,
+                params,
+            ).fetchone()[0]
             workflow_count = conn.execute("SELECT COUNT(*) FROM workflow_instances" + query_filter, params).fetchone()[0]
             workflow_step_count = conn.execute("SELECT COUNT(*) FROM workflow_steps" + query_filter, params).fetchone()[0]
             zero_trust_policy_count = conn.execute("SELECT COUNT(*) FROM zero_trust_policies" + query_filter, params).fetchone()[0]
@@ -4489,6 +5408,9 @@ class PlatformStore:
             "federation_events": federation_event_count,
             "stream_topics": stream_topic_count,
             "stream_events": stream_event_count,
+            "dashboard_analytics_snapshots": analytics_snapshot_count,
+            "ai_decision_snapshots": ai_decision_snapshot_count,
+            "ai_action_snapshots": ai_action_snapshot_count,
             "workflows": workflow_count,
             "workflow_steps": workflow_step_count,
             "zero_trust_policies": zero_trust_policy_count,
@@ -4513,6 +5435,9 @@ class PlatformStore:
             "deployments": snapshot["deployments"],
             "deployment_requests": snapshot["deployment_requests"],
             "deployment_receipts": snapshot["deployment_receipts"],
+            "dashboard_analytics_snapshots": snapshot["dashboard_analytics_snapshots"],
+            "ai_decision_snapshots": snapshot["ai_decision_snapshots"],
+            "ai_action_snapshots": snapshot["ai_action_snapshots"],
             "certifications": snapshot["certifications"],
             "trust_score": snapshot["trust_score"],
             "usage_total": snapshot["usage_total"],
@@ -4644,6 +5569,147 @@ class PlatformStore:
         }
 
     @staticmethod
+    def _row_to_dashboard_analytics_snapshot(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "snapshot_id": row["snapshot_id"],
+            "organization_id": row["organization_id"],
+            "source": row["source"],
+            "snapshot_type": row["snapshot_type"],
+            "trust_score": int(row["trust_score"]),
+            "trust_health": int(row["trust_health"]),
+            "replay_health_score": int(row["replay_health_score"]),
+            "evidence_coverage": int(row["evidence_coverage"]),
+            "exception_pressure": int(row["exception_pressure"]),
+            "alert_count": int(row["alert_count"]),
+            "active_drivers": int(row["active_drivers"]),
+            "completed_rides": int(row["completed_rides"]),
+            "total_rides": int(row["total_rides"]),
+            "guard_count": int(row["guard_count"]),
+            "replay_failures": int(row["replay_failures"]),
+            "hash_chain_failures": int(row["hash_chain_failures"]),
+            "missing_traces": int(row["missing_traces"]),
+            "receipts_count": int(row["receipts_count"]),
+            "trace_count": int(row["trace_count"]),
+            "payload": json.loads(row["payload_json"]),
+            "snapshot_hash": row["snapshot_hash"],
+            "window_bucket": row["window_bucket"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _row_to_ai_decision_snapshot(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "decision_id": row["decision_id"],
+            "organization_id": row["organization_id"],
+            "source": row["source"],
+            "decision_type": row["decision_type"],
+            "decision_lane": row["decision_lane"],
+            "decision_action": row["decision_action"],
+            "decision_priority": row["decision_priority"],
+            "decision_summary": row["decision_summary"],
+            "trust_score": int(row["trust_score"]),
+            "trust_health": int(row["trust_health"]),
+            "replay_health_score": int(row["replay_health_score"]),
+            "evidence_coverage": int(row["evidence_coverage"]),
+            "exception_pressure": int(row["exception_pressure"]),
+            "alert_count": int(row["alert_count"]),
+            "guard_count": int(row["guard_count"]),
+            "replay_failures": int(row["replay_failures"]),
+            "hash_chain_failures": int(row["hash_chain_failures"]),
+            "missing_traces": int(row["missing_traces"]),
+            "risk_score": int(row["risk_score"]),
+            "risk_level": row["risk_level"],
+            "confidence": float(row["confidence"]),
+            "stability_index": int(row["stability_index"]),
+            "recommended_actions": json.loads(row["recommended_actions_json"]),
+            "watch_items": json.loads(row["watch_items_json"]),
+            "payload": json.loads(row["payload_json"]),
+            "snapshot_hash": row["snapshot_hash"],
+            "window_bucket": row["window_bucket"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _row_to_ai_action_snapshot(row: sqlite3.Row) -> dict[str, Any]:
+        payload = json.loads(row["payload_json"])
+        action_payload = payload.get("action", {}) if isinstance(payload, dict) else {}
+        return {
+            "action_id": row["action_id"],
+            "organization_id": row["organization_id"],
+            "source": row["source"],
+            "action_type": row["action_type"],
+            "decision_id": row["decision_id"],
+            "decision_lane": row["decision_lane"],
+            "action_lane": row["action_lane"],
+            "action_mode": row["action_mode"],
+            "action_priority": row["action_priority"],
+            "action_summary": row["action_summary"],
+            "control_signal": row["control_signal"],
+            "safety_gate": row["safety_gate"],
+            "automation_tier": int(row["automation_tier"]),
+            "decision_quality_score": int(row["decision_quality_score"]),
+            "evidence_alignment_score": int(row["evidence_alignment_score"]),
+            "calibrated_confidence": float(row["calibrated_confidence"]),
+            "history_alignment_score": int(row["history_alignment_score"]),
+            "quality_band": row["quality_band"],
+            "execution_tier": action_payload.get("execution_tier"),
+            "execution_tier_ready": bool(action_payload.get("execution_tier_ready", False)),
+            "execution_tier_summary": action_payload.get("execution_tier_summary", ""),
+            "execution_tier_controls": action_payload.get("execution_tier_controls", []),
+            "trust_score": int(row["trust_score"]),
+            "trust_health": int(row["trust_health"]),
+            "replay_health_score": int(row["replay_health_score"]),
+            "evidence_coverage": int(row["evidence_coverage"]),
+            "exception_pressure": int(row["exception_pressure"]),
+            "alert_count": int(row["alert_count"]),
+            "guard_count": int(row["guard_count"]),
+            "replay_failures": int(row["replay_failures"]),
+            "hash_chain_failures": int(row["hash_chain_failures"]),
+            "missing_traces": int(row["missing_traces"]),
+            "stability_index": int(row["stability_index"]),
+            "recommended_actions": json.loads(row["recommended_actions_json"]),
+            "watch_items": json.loads(row["watch_items_json"]),
+            "payload": payload,
+            "snapshot_hash": row["snapshot_hash"],
+            "window_bucket": row["window_bucket"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _row_to_outcome_snapshot(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "outcome_id": row["outcome_id"],
+            "organization_id": row["organization_id"],
+            "source": row["source"],
+            "outcome_type": row["outcome_type"],
+            "decision_id": row["decision_id"],
+            "action_id": row["action_id"],
+            "outcome_status": row["outcome_status"],
+            "outcome_band": row["outcome_band"],
+            "learning_band": row["learning_band"],
+            "outcome_score": int(row["outcome_score"]),
+            "trust_score": int(row["trust_score"]),
+            "trust_health": int(row["trust_health"]),
+            "replay_health_score": int(row["replay_health_score"]),
+            "evidence_coverage": int(row["evidence_coverage"]),
+            "exception_pressure": int(row["exception_pressure"]),
+            "decision_quality_score": int(row["decision_quality_score"]),
+            "evidence_alignment_score": int(row["evidence_alignment_score"]),
+            "calibrated_confidence": float(row["calibrated_confidence"]),
+            "history_alignment_score": int(row["history_alignment_score"]),
+            "execution_tier": row["execution_tier"],
+            "execution_tier_ready": bool(row["execution_tier_ready"]),
+            "measurement_summary": row["measurement_summary"],
+            "learning_actions": json.loads(row["learning_actions_json"]),
+            "recalibration_notes": json.loads(row["recalibration_notes_json"]),
+            "watch_items": json.loads(row["watch_items_json"]),
+            "payload": json.loads(row["payload_json"]),
+            "snapshot_hash": row["snapshot_hash"],
+            "window_bucket": row["window_bucket"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
     def _row_to_replay(row: sqlite3.Row) -> dict[str, Any]:
         return {
             "replay_id": row["replay_id"],
@@ -4666,6 +5732,53 @@ class PlatformStore:
             "context": json.loads(row["context_json"]),
             "created_at": row["created_at"],
         }
+
+    @staticmethod
+    def _row_to_organization(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "organization_id": row["organization_id"],
+            "organization_name": row["organization_name"],
+            "created_at": row["created_at"],
+            "status": "active",
+            "source": "store",
+        }
+
+    @staticmethod
+    def _row_to_billing_record(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "billing_id": row["billing_id"],
+            "organization_id": row["organization_id"],
+            "plan": row["plan"],
+            "usage_total": int(row["usage_total"]),
+            "estimated_amount": float(row["estimated_amount"]),
+            "billing_enabled": bool(row["billing_enabled"]),
+            "created_at": row["created_at"],
+            "status": "active" if row["billing_enabled"] else "preview",
+        }
+
+    def list_organizations(
+        self,
+        *,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM organizations"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_organization(row) for row in rows]
+
+    def latest_organization(self, *, organization_id: str | None = None) -> dict[str, Any] | None:
+        organizations = self.list_organizations(organization_id=organization_id, limit=1)
+        return organizations[0] if organizations else None
 
     @staticmethod
     def _row_to_policy_definition(row: sqlite3.Row) -> dict[str, Any]:

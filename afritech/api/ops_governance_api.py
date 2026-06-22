@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 
 from afritech.api.auth.jwt_device_auth import require_roles
+from afritech.api.realtime.dashboard_bus import publish_dashboard_snapshot
 from afritech.monitoring.realtime_anomaly_alerting import build_realtime_anomaly_alerts
 from afritech.runtime_monitoring.monitor import collect_runtime_events
 from afritech.compliance.continuous_assurance import (
@@ -20,19 +21,35 @@ def build_ops_governance_router() -> APIRouter:
     router = APIRouter(tags=["ops-governance"])
 
     @router.get("/v1/ops/observability/dashboard")
-    def observability_dashboard(
+    async def observability_dashboard(
         _: object = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER")),
     ) -> dict[str, Any]:
-        return build_observability_dashboard()
+        dashboard = build_observability_dashboard()
+        await publish_dashboard_snapshot(
+            {
+                "source": "ops_observability_dashboard",
+                "status": dashboard.get("status"),
+                "summary": dashboard.get("summary", dashboard),
+            }
+        )
+        return dashboard
 
     @router.get("/v1/ops/audit/dashboard")
-    def audit_dashboard(
+    async def audit_dashboard(
         _: object = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER")),
     ) -> dict[str, Any]:
-        return build_audit_dashboard()
+        dashboard = build_audit_dashboard()
+        await publish_dashboard_snapshot(
+            {
+                "source": "ops_audit_dashboard",
+                "status": dashboard.get("status"),
+                "summary": dashboard.get("summary", dashboard),
+            }
+        )
+        return dashboard
 
     @router.get("/v1/ops/continuous-assurance/dashboard")
-    def continuous_assurance_dashboard(
+    async def continuous_assurance_dashboard(
         _: object = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER")),
     ) -> dict[str, Any]:
         runtime_events = collect_runtime_events(
@@ -50,12 +67,20 @@ def build_ops_governance_router() -> APIRouter:
             receipt_hash="d" * 64,
             opened_at="2026-06-14T00:00:00Z",
         )
-        return build_continuous_assurance_dashboard(
+        dashboard = build_continuous_assurance_dashboard(
             anomaly_alerts=alerts,
             monitoring_status="WATCH" if alerts else "GREEN",
             submission_ready=True,
             regulator_ready=True,
         )
+        await publish_dashboard_snapshot(
+            {
+                "source": "ops_continuous_assurance_dashboard",
+                "status": dashboard.get("monitoring_status"),
+                "alerts": len(alerts),
+            }
+        )
+        return dashboard
 
     @router.post("/v1/ops/regulatory/submission/preview")
     def regulatory_submission_preview(

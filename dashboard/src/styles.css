@@ -39,6 +39,18 @@ a {
   align-items: center;
 }
 
+.novatech-home-band {
+  padding-top: 28px;
+  padding-bottom: 24px;
+}
+
+.novatech-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.6fr);
+  gap: 24px;
+  align-items: center;
+}
+
 .hero-copy {
   max-width: 820px;
 }
@@ -165,6 +177,50 @@ a {
 
 .pipeline a + a {
   border-left: 1px solid #d8e1e8;
+}
+
+.platform-nav {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.platform-nav a {
+  min-height: 78px;
+}
+
+.platform-band {
+  background:
+    radial-gradient(circle at top right, rgba(31, 122, 85, 0.08), transparent 30%),
+    linear-gradient(180deg, #f4faf6 0%, #f5f7fb 100%);
+}
+
+.organization-band {
+  background:
+    radial-gradient(circle at top left, rgba(24, 91, 140, 0.08), transparent 32%),
+    linear-gradient(180deg, #f5fbff 0%, #f5f7fb 100%);
+}
+
+.saas-band {
+  background:
+    radial-gradient(circle at top right, rgba(170, 112, 29, 0.08), transparent 32%),
+    linear-gradient(180deg, #fff9f0 0%, #f5f7fb 100%);
+}
+
+.realtime-band {
+  background:
+    radial-gradient(circle at top left, rgba(24, 91, 140, 0.09), transparent 32%),
+    linear-gradient(180deg, #f6fbff 0%, #f5f7fb 100%);
+}
+
+.analytics-band {
+  background:
+    radial-gradient(circle at top right, rgba(47, 111, 115, 0.09), transparent 32%),
+    linear-gradient(180deg, #f6fbff 0%, #f5f7fb 100%);
+}
+
+.analytics-history-band {
+  background:
+    radial-gradient(circle at top left, rgba(31, 122, 85, 0.08), transparent 30%),
+    linear-gradient(180deg, #f7fbfd 0%, #f5f7fb 100%);
 }
 
 .error-banner {
@@ -469,6 +525,260 @@ a {
   margin: 0 0 12px;
   color: #101827;
   font-size: 1.1rem;
+}
+
+.realtime-event-json {
+  overflow: auto;
+  margin: 12px 0 0;
+  border-radius: 6px;
+  background: #172033;
+  padding: 12px;
+  color: #d9f3e8;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.analytics-trend-panel h4 {
+  margin: 4px 0 0;
+  color: #101827;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.analytics-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.analytics-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.analytics-stat-row > div {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #f8fbfc;
+  padding: 10px 12px;
+}
+
+.analytics-stat-row span {
+  display: block;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.analytics-stat-row strong {
+  display: block;
+  margin-top: 4px;
+  color: #101827;
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+.analytics-stat-row-secondary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.notification-card {
+  border-left: 4px solid #c7d4df;
+}
+
+.notification-critical {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.notification-warning {
+  border-left-color: #d97706;
+  background: #fffaf1;
+}
+
+.notification-info {
+  border-left-color: #185b8c;
+  background: #f5fbff;
+}
+
+.insight-card {
+  border-left: 4px solid #64748b;
+}
+
+.insight-good {
+  border-left-color: #1f7a55;
+  background: #f4fbf7;
+}
+
+.insight-warning {
+  border-left-color: #d97706;
+  background: #fffaf1;
+}
+
+.insight-critical {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.prediction-card {
+  border-left: 4px solid #185b8c;
+}
+
+.prediction-low {
+  border-left-color: #1f7a55;
+  background: #f4fbf7;
+}
+
+.prediction-medium {
+  border-left-color: #d97706;
+  background: #fffaf1;
+}
+
+.prediction-high {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.prediction-metrics {
+  display: grid;
+  gap: 2px;
+  margin-top: 12px;
+}
+
+.history-card {
+  border-left: 4px solid #185b8c;
+}
+
+.history-card .chip-row,
+.prediction-card .chip-row {
+  margin-top: 12px;
+}
+
+.decision-band {
+  background:
+    radial-gradient(circle at top left, rgba(31, 122, 85, 0.1), transparent 32%),
+    linear-gradient(180deg, #f6fbf8 0%, #f5f7fb 100%);
+}
+
+.decision-card {
+  border-left: 4px solid #2f6f73;
+}
+
+.decision-action-label {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.decision-observe {
+  border-left-color: #1f7a55;
+  background: #f4fbf7;
+}
+
+.decision-watch {
+  border-left-color: #d97706;
+  background: #fffaf1;
+}
+
+.decision-review {
+  border-left-color: #185b8c;
+  background: #f5fbff;
+}
+
+.decision-escalate {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.decision-stat-row,
+.decision-key-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.decision-history-card {
+  border-left: 4px solid #2f6f73;
+}
+
+.decision-history-card .chip-row,
+.decision-card .chip-row,
+.decision-summary-card .chip-row {
+  margin-top: 12px;
+}
+
+.action-band {
+  background:
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.11), transparent 32%),
+    linear-gradient(180deg, #f6fcfb 0%, #f5f7fb 100%);
+}
+
+.action-card {
+  border-left: 4px solid #0f766e;
+}
+
+.action-action-label {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.action-monitor {
+  border-left-color: #1f7a55;
+  background: #f4fbf7;
+}
+
+.action-notify {
+  border-left-color: #0f766e;
+  background: #f4fbfb;
+}
+
+.action-prepare {
+  border-left-color: #d97706;
+  background: #fffaf1;
+}
+
+.action-safeguard {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.action-stat-row,
+.action-key-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.action-history-card {
+  border-left: 4px solid #0f766e;
+}
+
+.action-history-card .chip-row,
+.action-card .chip-row {
+  margin-top: 12px;
 }
 
 .conversation-panel {
