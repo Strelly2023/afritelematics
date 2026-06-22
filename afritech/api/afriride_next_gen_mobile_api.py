@@ -7,9 +7,11 @@ from importlib import import_module
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Header
+from pydantic import BaseModel, Field
 
-from afritech.api.auth.jwt_device_auth import JWT
+from afritech.api.auth.jwt_device_auth import JWT, require_roles
 from afritech.afriprogramming.control_plane import get_control_plane
+from afritech.afriprogramming.rbac import canonical_role_name
 
 
 def get_gateway() -> Any:
@@ -36,26 +38,54 @@ def _runtime() -> Any:
     return import_module("afriride_system.api.dependencies.runtime")
 
 
+class RBACAssignmentRequest(BaseModel):
+    organization_id: str | None = None
+    subject_type: str = "user"
+    subject_id: str
+    role: str
+    granted_by: str | None = None
+    granted_role: str = "ADMIN"
+    status: str = "active"
+    notes: list[str] = Field(default_factory=list)
+
+
 def build_afriride_next_gen_mobile_router() -> APIRouter:
     router = APIRouter(prefix="/v1", tags=["afriride-next-gen-mobile"])
 
     @router.post("/mobile/auth/session")
     def create_mobile_session(payload: dict[str, Any]) -> dict[str, Any]:
         actor_id = str(payload.get("actor_id", "")).strip()
-        role = str(payload.get("role", "")).strip().upper()
+        role = canonical_role_name(str(payload.get("role", "")).strip())
         device_id = str(payload.get("device_id", "")).strip()
         app_version = str(payload.get("app_version", "0.1")).strip()
         platform = str(payload.get("platform", "unknown")).strip()
         if not actor_id:
             raise HTTPException(status_code=400, detail="actor_id required")
-        if role not in {"RIDER", "DRIVER", "OPERATOR"}:
+        if role not in {
+            "CUSTOMER",
+            "DRIVER",
+            "DISPATCHER",
+            "FLEET_OWNER",
+            "ADMIN",
+            "CLIENT",
+            "SUPPLIER",
+            "INVESTOR",
+            "OPERATOR",
+            "VERIFIER",
+            "PARTNER",
+            "DEVELOPER",
+            "DEVICE",
+            "OBSERVER",
+        }:
             raise HTTPException(status_code=400, detail="invalid_role")
 
         expires_at = datetime.now(UTC) + timedelta(hours=12)
+        role_profile = get_control_plane().rbac_role(role=role)
         return {
             "session_id": f"sess-{actor_id}",
             "actor_id": actor_id,
             "role": role,
+            "requested_role": str(payload.get("role", "")).strip(),
             "expires_at": expires_at.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
             "api_base_url": "https://api.afrtechnology.com",
             "token": JWT.create_token(actor_id, role=role),
@@ -64,7 +94,97 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
                 "app_version": app_version,
                 "platform": platform,
             },
+            "rbac": {
+                "role": role_profile["role"]["role"],
+                "label": role_profile["role"]["label"],
+                "category": role_profile["role"]["category"],
+                "aliases": role_profile["role"]["aliases"],
+                "permissions": role_profile["role"]["permissions"],
+                "visible_panels": role_profile["role"]["visible_panels"],
+                "api_surfaces": role_profile["role"]["api_surfaces"],
+                "dashboard_surface": role_profile["role"]["dashboard_surface"],
+            },
         }
+
+    @router.get("/afriride/rbac/catalog")
+    def afriride_rbac_catalog(
+        limit: int = 100,
+        claims = Depends(require_roles("CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN", "OPERATOR", "VERIFIER")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_catalog(
+            organization_id=claims.organization_id,
+            limit=limit,
+        )
+
+    @router.get("/afriride/rbac/roles/{role}")
+    def afriride_rbac_role(
+        role: str,
+        claims = Depends(require_roles("CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN", "OPERATOR", "VERIFIER")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_role(role=role, organization_id=claims.organization_id)
+
+    @router.get("/afriride/rbac/roles/{role}/dashboard")
+    def afriride_rbac_role_dashboard(
+        role: str,
+        limit: int = 100,
+        claims = Depends(require_roles("CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN", "OPERATOR", "VERIFIER")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_role_dashboard(
+            role=role,
+            organization_id=claims.organization_id,
+            limit=limit,
+        )
+
+    @router.get("/afriride/rbac/assignments")
+    def afriride_rbac_assignments(
+        limit: int = 100,
+        role: str | None = None,
+        subject_type: str | None = None,
+        subject_id: str | None = None,
+        status: str | None = None,
+        claims = Depends(require_roles("ADMIN")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_assignments(
+            organization_id=claims.organization_id,
+            role=role,
+            subject_type=subject_type,
+            subject_id=subject_id,
+            status=status,
+            limit=limit,
+        )
+
+    @router.post("/afriride/rbac/assignments")
+    def afriride_rbac_assign_role(
+        payload: RBACAssignmentRequest,
+        claims = Depends(require_roles("ADMIN")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_assign_role(
+            organization_id=payload.organization_id or claims.organization_id,
+            subject_type=payload.subject_type,
+            subject_id=payload.subject_id,
+            role=payload.role,
+            granted_by=payload.granted_by or claims.sub,
+            granted_role=payload.granted_role,
+            status=payload.status,
+            notes=payload.notes,
+        )
+
+    @router.get("/afriride/rbac/check")
+    def afriride_rbac_check(
+        role: str,
+        permission: str,
+        actor_id: str | None = None,
+        owner_id: str | None = None,
+        assigned_driver_id: str | None = None,
+        claims = Depends(require_roles("CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN", "OPERATOR", "VERIFIER")),
+    ) -> dict[str, Any]:
+        return get_control_plane().rbac_check_access(
+            role=role,
+            permission=permission,
+            actor_id=actor_id,
+            owner_id=owner_id,
+            assigned_driver_id=assigned_driver_id,
+        )
 
     @router.post("/rider/rides")
     def request_ride(

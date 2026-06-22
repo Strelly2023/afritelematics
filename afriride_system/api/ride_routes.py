@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 
+from afriride_system.api.auth import claims_from_request
 from afriride_system.api.dependencies.runtime import get_gateway, get_trace_log
 from afriride_system.api.idempotency import (
     IdempotencyConflict,
@@ -35,6 +36,7 @@ from afriride_system.backend.receipt_engine import ReceiptEngine
 from afriride_system.backend.replay_engine import ReplayEngine
 from afriride_system.backend.state import RideSession
 from afriride_system.backend.trace_enforcement import TraceEvent
+from afritech.afriprogramming.rbac import evaluate_rbac_access
 
 router = APIRouter()
 
@@ -44,6 +46,7 @@ def accept_ride_contract(
     ride_id: str,
     payload: dict[str, Any],
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     return _ride_action(
@@ -52,6 +55,7 @@ def accept_ride_contract(
         ride_id,
         payload,
         idempotency_key,
+        request=request,
     )
 
 
@@ -75,6 +79,7 @@ def start_ride_contract(
     ride_id: str,
     payload: dict[str, Any],
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     return _ride_action(
@@ -83,6 +88,7 @@ def start_ride_contract(
         ride_id,
         payload,
         idempotency_key,
+        request=request,
     )
 
 
@@ -91,6 +97,7 @@ def arrive_ride_contract(
     ride_id: str,
     payload: dict[str, Any],
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     return _ride_action(
@@ -99,6 +106,7 @@ def arrive_ride_contract(
         ride_id,
         payload,
         idempotency_key,
+        request=request,
     )
 
 
@@ -107,6 +115,7 @@ def complete_ride_contract(
     ride_id: str,
     payload: dict[str, Any],
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     return _ride_action(
@@ -115,15 +124,22 @@ def complete_ride_contract(
         ride_id,
         payload,
         idempotency_key,
+        request=request,
     )
 
 
 @router.get("/{ride_id}/receipt")
 def ride_receipt_contract(
     ride_id: str,
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
+    _enforce_proof_access(
+        request,
+        permission="receipt.view.own",
+        ride=ride,
+    )
     receipt = ReceiptEngine().derive(ride.ride_id, _proof_events_for_ride(ride))
     return receipt.canonical_dict()
 
@@ -131,9 +147,15 @@ def ride_receipt_contract(
 @router.get("/{ride_id}/replay")
 def ride_replay_contract(
     ride_id: str,
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
+    _enforce_proof_access(
+        request,
+        permission="replay.view.own",
+        ride=ride,
+    )
     replay = ReplayEngine().replay(ride_id, _proof_events_for_ride(ride))
     payload = replay.canonical_dict()
     payload.update(
@@ -152,9 +174,15 @@ def ride_replay_contract(
 @router.get("/{ride_id}/evidence")
 def ride_evidence_contract(
     ride_id: str,
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
+    _enforce_proof_access(
+        request,
+        permission="proof.view.own",
+        ride=ride,
+    )
     evidence = EvidenceEngine().derive(ride.ride_id, _proof_events_for_ride(ride))
     return evidence.canonical_dict()
 
@@ -162,9 +190,15 @@ def ride_evidence_contract(
 @router.get("/{ride_id}/ledger-receipt")
 def ride_ledger_receipt_contract(
     ride_id: str,
+    request: Request = None,
     gateway: AfriRideGateway = Depends(get_gateway),
 ) -> dict:
     ride = _completed_ride(gateway, ride_id)
+    _enforce_proof_access(
+        request,
+        permission="receipt.view.own",
+        ride=ride,
+    )
     events, signature_validator = _signed_ride_events(ride)
     receipt = LedgerReceiptGenerator(
         validator=EventLedgerValidator(
@@ -187,10 +221,16 @@ def _ride_action(
     ride_id: str,
     payload: dict[str, Any],
     idempotency_key: str | None,
+    request: Request = None,
 ) -> dict:
     try:
         driver_id = _driver_id(payload)
         command = RideAction(driver_id=driver_id, ride_id=ride_id).model_dump()
+        _enforce_driver_access(
+            request,
+            permission=_command_permission(command_name),
+            driver_id=driver_id,
+        )
         return run_once(
             idempotency_key,
             lambda: action(command),
@@ -220,6 +260,66 @@ def _completed_ride(gateway: AfriRideGateway, ride_id: str) -> RideSession:
 
 def _proof_events_for_ride(ride: RideSession) -> tuple[TraceEvent, ...]:
     return proof_events_for_ride(get_trace_log(), ride)
+
+
+def _command_permission(command_name: str) -> str:
+    return {
+        "accept_ride_contract": "ride.accept",
+        "start_trip_contract": "ride.start",
+        "arrive_trip_contract": "ride.arrive",
+        "complete_trip_contract": "ride.complete",
+    }.get(command_name, "ride.view.assigned")
+
+
+def _enforce_driver_access(
+    request: Request | None,
+    *,
+    permission: str,
+    driver_id: str,
+    privileged_roles: tuple[str, ...] = ("ADMIN",),
+) -> None:
+    claims = claims_from_request(request)
+    if claims is None:
+        return
+    decision = evaluate_rbac_access(
+        role=claims.role,
+        permission=permission,
+        actor_id=claims.sub,
+        owner_id=driver_id,
+        privileged_roles=privileged_roles,
+    )
+    if not decision["allowed"]:
+        raise HTTPException(status_code=403, detail=decision["reason"])
+
+
+def _enforce_proof_access(
+    request: Request | None,
+    *,
+    permission: str,
+    ride: RideSession,
+    privileged_roles: tuple[str, ...] = ("ADMIN", "DISPATCHER", "FLEET_OWNER"),
+) -> None:
+    claims = claims_from_request(request)
+    if claims is None:
+        return
+    actor_id = claims.sub
+    selected_permission = permission
+    owner_id = ride.passenger_id
+    assigned_driver_id: str | None = None
+    if actor_id == ride.assigned_driver:
+        selected_permission = permission.replace(".own", ".assigned")
+        owner_id = None
+        assigned_driver_id = ride.assigned_driver
+    decision = evaluate_rbac_access(
+        role=claims.role,
+        permission=selected_permission,
+        actor_id=actor_id,
+        owner_id=owner_id,
+        assigned_driver_id=assigned_driver_id,
+        privileged_roles=privileged_roles,
+    )
+    if not decision["allowed"]:
+        raise HTTPException(status_code=403, detail=decision["reason"])
 
 def _signed_ride_events(
     ride: RideSession,

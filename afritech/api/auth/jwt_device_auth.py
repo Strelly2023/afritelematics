@@ -12,6 +12,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, WebSocket, status
 
+from afritech.afriprogramming.rbac import AUTH_ROLE_ORDER, canonical_role_name, role_implies_role
 from afritech.security.device_identity import DeviceIdentity, DeviceRegistry
 
 
@@ -50,10 +51,13 @@ class JWTService:
         issued_at: int | None = None,
     ) -> str:
         now = int(time.time()) if issued_at is None else issued_at
+        role = canonical_role_name(role)
+        if role not in AUTH_ROLES:
+            raise ValueError("invalid_role")
         header = {"alg": "HS256", "typ": "JWT"}
         payload = {
             "sub": user_id,
-            "role": role.upper(),
+            "role": role,
             "exp": now + self.ttl_seconds,
         }
         if organization_id:
@@ -87,7 +91,7 @@ class JWTService:
         current_time = int(time.time()) if now is None else now
         if int(payload["exp"]) < current_time:
             raise ValueError("token_expired")
-        role = str(payload.get("role", "OPERATOR")).upper()
+        role = canonical_role_name(str(payload.get("role", "OPERATOR")))
         if role not in AUTH_ROLES:
             raise ValueError("invalid_role")
         organization_id = str(
@@ -118,7 +122,7 @@ class DeviceBindingService:
         return identity
 
 
-AUTH_ROLES = frozenset({"OPERATOR", "VERIFIER", "PARTNER", "DEVELOPER", "DEVICE", "OBSERVER"})
+AUTH_ROLES = frozenset(AUTH_ROLE_ORDER)
 _EPHEMERAL_JWT_SECRET = secrets.token_urlsafe(48)
 JWT = JWTService(os.environ.get("AFRITECH_JWT_SECRET", _EPHEMERAL_JWT_SECRET))
 
@@ -180,7 +184,7 @@ def require_roles(*roles: str):
     allowed = {getattr(role, "value", role).upper() for role in roles}
 
     def dependency(claims: JWTClaims = Depends(get_current_claims)) -> JWTClaims:
-        if allowed and claims.role not in allowed:
+        if allowed and not any(role_implies_role(claims.role, required) for required in allowed):
             raise HTTPException(status_code=403, detail="insufficient_role")
         return claims
 

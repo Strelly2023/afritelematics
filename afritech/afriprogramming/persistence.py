@@ -11,6 +11,8 @@ from threading import Lock
 from typing import Any
 from uuid import uuid4
 
+from afritech.afriprogramming.rbac import canonical_role_name, role_definition
+
 
 DEFAULT_ORGANIZATION_ID = "afritech-core"
 
@@ -467,6 +469,23 @@ class PlatformStore:
             estimated_amount REAL NOT NULL,
             billing_enabled INTEGER NOT NULL,
             created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS rbac_role_assignments (
+            assignment_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            subject_type TEXT NOT NULL,
+            subject_id TEXT NOT NULL,
+            role_key TEXT NOT NULL,
+            role_label TEXT NOT NULL,
+            permissions_json TEXT NOT NULL,
+            granted_by TEXT NOT NULL,
+            granted_role TEXT NOT NULL,
+            status TEXT NOT NULL,
+            notes_json TEXT NOT NULL,
+            assignment_hash TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, subject_type, subject_id, role_key)
         );
         CREATE TABLE IF NOT EXISTS policy_definitions (
             policy_id TEXT PRIMARY KEY,
@@ -2816,6 +2835,158 @@ class PlatformStore:
     ) -> dict[str, Any] | None:
         records = self.list_billing_records(organization_id=organization_id, limit=1)
         return records[0] if records else None
+
+    def store_rbac_role_assignment(
+        self,
+        *,
+        organization_id: str | None = None,
+        subject_type: str,
+        subject_id: str,
+        role: str,
+        granted_by: str,
+        granted_role: str = "ADMIN",
+        status: str = "active",
+        notes: list[str] | None = None,
+    ) -> dict[str, Any]:
+        org_id = organization_id or DEFAULT_ORGANIZATION_ID
+        self._touch_organization(org_id)
+        notes = notes or []
+        role_key = canonical_role_name(role)
+        granted_role_key = canonical_role_name(granted_role)
+        profile = role_definition(role_key)
+        now = _now()
+        assignment = {
+            "assignment_id": f"rbac-{uuid4().hex[:12]}",
+            "organization_id": org_id,
+            "subject_type": subject_type.strip().lower(),
+            "subject_id": subject_id.strip(),
+            "role_key": role_key,
+            "role_label": profile["label"],
+            "permissions": list(profile["permissions"]),
+            "granted_by": granted_by.strip(),
+            "granted_role": granted_role_key,
+            "status": status.strip().lower() or "active",
+            "notes": notes,
+            "assignment_hash": _hash_payload(
+                {
+                    "organization_id": org_id,
+                    "subject_type": subject_type.strip().lower(),
+                    "subject_id": subject_id.strip(),
+                    "role_key": role_key,
+                    "granted_by": granted_by.strip(),
+                    "granted_role": granted_role_key,
+                    "status": status.strip().lower() or "active",
+                    "notes": notes,
+                }
+            ),
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO rbac_role_assignments (
+                    assignment_id, organization_id, subject_type, subject_id,
+                    role_key, role_label, permissions_json, granted_by,
+                    granted_role, status, notes_json, assignment_hash,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    assignment["assignment_id"],
+                    org_id,
+                    assignment["subject_type"],
+                    assignment["subject_id"],
+                    role_key,
+                    assignment["role_label"],
+                    json.dumps(assignment["permissions"], sort_keys=True),
+                    assignment["granted_by"],
+                    assignment["granted_role"],
+                    assignment["status"],
+                    json.dumps(notes, sort_keys=True),
+                    assignment["assignment_hash"],
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return assignment
+
+    def list_rbac_role_assignments(
+        self,
+        *,
+        organization_id: str | None = None,
+        subject_type: str | None = None,
+        subject_id: str | None = None,
+        role: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM rbac_role_assignments"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if subject_type is not None:
+            clauses.append("subject_type = ?")
+            params.append(subject_type.strip().lower())
+        if subject_id is not None:
+            clauses.append("subject_id = ?")
+            params.append(subject_id.strip())
+        if role is not None:
+            clauses.append("role_key = ?")
+            params.append(canonical_role_name(role))
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status.strip().lower())
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_rbac_role_assignment(row) for row in rows]
+
+    def latest_rbac_role_assignment(
+        self,
+        *,
+        organization_id: str | None = None,
+        subject_type: str | None = None,
+        subject_id: str | None = None,
+        role: str | None = None,
+    ) -> dict[str, Any] | None:
+        records = self.list_rbac_role_assignments(
+            organization_id=organization_id,
+            subject_type=subject_type,
+            subject_id=subject_id,
+            role=role,
+            limit=1,
+        )
+        return records[0] if records else None
+
+    def rbac_role_summary(
+        self,
+        *,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        assignments = self.list_rbac_role_assignments(organization_id=organization_id, limit=500)
+        role_counts: dict[str, int] = {}
+        subject_counts: dict[str, int] = {}
+        active_count = 0
+        for assignment in assignments:
+            role_counts[assignment["role_key"]] = role_counts.get(assignment["role_key"], 0) + 1
+            subject_counts[assignment["subject_type"]] = subject_counts.get(assignment["subject_type"], 0) + 1
+            if assignment["status"] == "active":
+                active_count += 1
+        return {
+            "organization_id": organization_id or "all",
+            "assignment_count": len(assignments),
+            "active_assignment_count": active_count,
+            "role_counts": role_counts,
+            "subject_counts": subject_counts,
+            "status": "ready" if assignments else "empty",
+        }
 
     def store_policy_definition(
         self,
@@ -5905,6 +6076,25 @@ class PlatformStore:
             "billing_enabled": bool(row["billing_enabled"]),
             "created_at": row["created_at"],
             "status": "active" if row["billing_enabled"] else "preview",
+        }
+
+    @staticmethod
+    def _row_to_rbac_role_assignment(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "assignment_id": row["assignment_id"],
+            "organization_id": row["organization_id"],
+            "subject_type": row["subject_type"],
+            "subject_id": row["subject_id"],
+            "role_key": row["role_key"],
+            "role_label": row["role_label"],
+            "permissions": json.loads(row["permissions_json"]),
+            "granted_by": row["granted_by"],
+            "granted_role": row["granted_role"],
+            "status": row["status"],
+            "notes": json.loads(row["notes_json"]),
+            "assignment_hash": row["assignment_hash"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
         }
 
     def list_organizations(

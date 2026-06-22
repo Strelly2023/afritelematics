@@ -43,6 +43,14 @@ from afritech.afriprogramming.assurance import (
 )
 from afritech.afriprogramming.models import AfriProgrammingEngineeringPlan
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID, get_platform_store
+from afritech.afriprogramming.rbac import (
+    build_rbac_access_check,
+    build_rbac_assignments,
+    build_rbac_catalog,
+    build_rbac_role_dashboard,
+    evaluate_rbac_access,
+    canonical_role_name,
+)
 from afritech.afriprogramming.v9 import (
     AssuranceScheduler,
     CertificateTransparencyLogService,
@@ -5625,6 +5633,101 @@ class NovaProgrammingControlPlane:
     def organizations(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
         return build_organization_directory(organization_id=organization_id, limit=limit)
 
+    def rbac_catalog(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        assignments = _STORE.list_rbac_role_assignments(organization_id=organization_id, limit=limit)
+        return build_rbac_catalog(organization_id=organization_id, assignments=assignments)
+
+    def rbac_role(
+        self,
+        role: str,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        assignments = _STORE.list_rbac_role_assignments(organization_id=organization_id, limit=limit)
+        return build_rbac_role_dashboard(
+            role=role,
+            assignments=assignments,
+            organization_id=organization_id or DEFAULT_ORGANIZATION_ID,
+        )
+
+    def rbac_assign_role(
+        self,
+        *,
+        organization_id: str | None = None,
+        subject_type: str,
+        subject_id: str,
+        role: str,
+        granted_by: str,
+        granted_role: str = "ADMIN",
+        status: str = "active",
+        notes: list[str] | None = None,
+    ) -> dict[str, Any]:
+        return _STORE.store_rbac_role_assignment(
+            organization_id=organization_id,
+            subject_type=subject_type,
+            subject_id=subject_id,
+            role=role,
+            granted_by=granted_by,
+            granted_role=granted_role,
+            status=status,
+            notes=notes,
+        )
+
+    def rbac_assignments(
+        self,
+        *,
+        organization_id: str | None = None,
+        subject_type: str | None = None,
+        subject_id: str | None = None,
+        role: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        assignments = _STORE.list_rbac_role_assignments(
+            organization_id=organization_id,
+            subject_type=subject_type,
+            subject_id=subject_id,
+            role=role,
+            status=status,
+            limit=limit,
+        )
+        return build_rbac_assignments(organization_id=organization_id, assignments=assignments)
+
+    def rbac_check_access(
+        self,
+        *,
+        role: str,
+        permission: str,
+        actor_id: str | None = None,
+        owner_id: str | None = None,
+        assigned_driver_id: str | None = None,
+        privileged_roles: tuple[str, ...] = ("ADMIN",),
+    ) -> dict[str, Any]:
+        if actor_id is None and owner_id is None and assigned_driver_id is None:
+            return build_rbac_access_check(role=role, permission=permission)
+        return evaluate_rbac_access(
+            role=role,
+            permission=permission,
+            actor_id=actor_id,
+            owner_id=owner_id,
+            assigned_driver_id=assigned_driver_id,
+            privileged_roles=privileged_roles,
+        )
+
+    def rbac_role_dashboard(
+        self,
+        *,
+        role: str,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        assignments = _STORE.list_rbac_role_assignments(organization_id=organization_id, limit=limit)
+        return build_rbac_role_dashboard(
+            role=role,
+            organization_id=organization_id,
+            assignments=assignments,
+        )
+
     def onboard_organization(
         self,
         *,
@@ -5826,6 +5929,10 @@ __all__ = [
     "build_trust_marketplace",
     "build_workflow_instances",
     "build_organization_directory",
+    "build_rbac_catalog",
+    "build_rbac_assignments",
+    "build_rbac_access_check",
+    "build_rbac_role_dashboard",
     "build_catalog",
     "build_certificate_chains",
     "build_certificate_issue",

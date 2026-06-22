@@ -16,8 +16,10 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 
+from afritech.afriprogramming.rbac import AUTH_ROLE_ORDER, canonical_role_name, role_implies_role
 
-ROLES = frozenset({"RIDER", "DRIVER", "OPERATOR"})
+
+ROLES = frozenset(AUTH_ROLE_ORDER)
 
 
 def _b64url_encode(payload: bytes) -> str:
@@ -44,6 +46,7 @@ class JWTService:
         self.ttl_seconds = ttl_seconds
 
     def create_token(self, user_id: str, role: str, *, issued_at: int | None = None) -> str:
+        role = canonical_role_name(role)
         if role not in ROLES:
             raise ValueError("invalid_role")
         now = int(time.time()) if issued_at is None else issued_at
@@ -78,7 +81,7 @@ class JWTService:
         current_time = int(time.time()) if now is None else now
         if int(payload["exp"]) < current_time:
             raise ValueError("token_expired")
-        role = str(payload.get("role", ""))
+        role = canonical_role_name(str(payload.get("role", "")))
         if role not in ROLES:
             raise ValueError("invalid_role")
         return AuthClaims(sub=str(payload["sub"]), role=role, exp=int(payload["exp"]))
@@ -93,7 +96,7 @@ def build_auth_router(jwt_service: JWTService = JWT) -> APIRouter:
     @router.post("/token")
     def create_token(payload: dict[str, Any]) -> dict[str, str]:
         user_id = str(payload.get("user_id", "")).strip()
-        role = str(payload.get("role", "")).strip().upper()
+        role = canonical_role_name(str(payload.get("role", "")).strip())
         if not user_id:
             raise HTTPException(status_code=400, detail="user_id required")
         if role not in ROLES:
@@ -121,7 +124,7 @@ async def auth_middleware(
     except ValueError as exc:
         return _auth_error(401, str(exc))
 
-    if claims.role not in required_roles:
+    if not any(role_implies_role(claims.role, required) for required in required_roles):
         return _auth_error(403, "insufficient_role")
 
     request.state.auth_claims = claims
@@ -134,15 +137,15 @@ def _required_roles(method: str, path: str) -> set[str] | None:
     if path in {"/", "/health"} or path.startswith("/auth/"):
         return None
     if path.startswith("/system/") or path == "/rides/active":
-        return {"OPERATOR"}
+        return {"OPERATOR", "ADMIN"}
     if path.startswith("/passenger/"):
-        return {"RIDER", "OPERATOR"} if method == "GET" else {"RIDER"}
+        return {"CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN"} if method == "GET" else {"CUSTOMER", "ADMIN"}
     if path.startswith("/driver/"):
-        return {"DRIVER", "OPERATOR"} if method == "GET" else {"DRIVER"}
+        return {"DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN"} if method == "GET" else {"DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN"}
     if path.startswith("/ride/"):
         if method == "POST":
-            return {"DRIVER"}
-        return {"RIDER", "DRIVER", "OPERATOR"}
+            return {"DRIVER", "ADMIN"}
+        return {"CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN"}
     return None
 
 
@@ -156,3 +159,9 @@ def _auth_error(status_code: int, message: str) -> JSONResponse:
             }
         },
     )
+
+
+def claims_from_request(request: Request | None) -> AuthClaims | None:
+    if request is None:
+        return None
+    return getattr(request.state, "auth_claims", None)
