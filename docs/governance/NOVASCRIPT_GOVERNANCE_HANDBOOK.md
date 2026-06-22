@@ -2,6 +2,9 @@
 
 This handbook is the operational reference for NovaScript governance.
 
+For the full administrator and staff operating reference, see
+`docs/governance/NOVATECH_PLATFORM_ADMINISTRATOR_AND_STAFF_MANUAL_V2.md`.
+
 ## Policy Registry
 
 The policy registry stores policies as versioned governance code. Each policy has:

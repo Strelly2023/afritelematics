@@ -1,0 +1,23 @@
+{
+  "document_id": "NOVATECH-EXECUTIVE-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.378163+00:00",
+  "profile": "executive",
+  "source_documents": [
+    {
+      "path": "docs/governance/NOVASCRIPT_GOVERNANCE_HANDBOOK.md",
+      "sha256": "6aecb87673ed58ea69db078c9c938eb334a0f36d9388b6fc1b12fbebf9bff5e7"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Operational_Civilization_Platform_Master_Plan.md",
+      "sha256": "6b6de6d019672b3ed1e6e09eb063c3ea77fb9043b6806fcb36859b1f4a65731d"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_ENTERPRISE_READINESS_REVIEW.md",
+      "sha256": "88be3b2de5599244dd56f5f71aa69be9a3388bef5095ee9336f5734ea21c6b83"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_MONETIZATION_AND_ECOSYSTEM_EXPANSION_BLUEPRINT.md",
+      "sha256": "214655c025369cbba8738d20c0005ba1a20f2574b8b52e68e0968aadff7e1882"
+    }
+  ]
+}

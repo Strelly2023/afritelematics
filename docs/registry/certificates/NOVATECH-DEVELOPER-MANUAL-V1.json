@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "2c3181d81267a947ed669154d3a2ba1da9c42a7a7eba621c75ab7eca7096d056",
+  "document_id": "NOVATECH-DEVELOPER-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.477299+00:00",
+  "owner": "NovaTech Engineering",
+  "profile": "developer",
+  "source_count": 4,
+  "source_manifest": "docs/registry/lineage/NOVATECH-DEVELOPER-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH DEVELOPER MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

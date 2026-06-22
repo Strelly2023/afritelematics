@@ -1,0 +1,27 @@
+{
+  "document_id": "NOVATECH-AUDITOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.444209+00:00",
+  "profile": "auditor",
+  "source_documents": [
+    {
+      "path": "docs/governance/NOVASCRIPT_GOVERNANCE_HANDBOOK.md",
+      "sha256": "6aecb87673ed58ea69db078c9c938eb334a0f36d9388b6fc1b12fbebf9bff5e7"
+    },
+    {
+      "path": "docs/standards/AFRICPPT_PROTOCOL_SPEC.md",
+      "sha256": "4b013ddd4617f41c6613d85a2ba4db21e3507311908da4cb8306e5acb9e33d95"
+    },
+    {
+      "path": "docs/standards/AFRIRIDE_TRUST_PROTOCOL_SPEC.md",
+      "sha256": "74dc2604a26bded54e223798e3c26c2afc0b0bd935d458e081ab2941510806f7"
+    },
+    {
+      "path": "docs/operations/AFRITECH_PRODUCTION_TRUST_NODE_RUNBOOK.md",
+      "sha256": "24e9da0f98f5d7f711b4c4b8af3f74ad7c82eba53c154aa7651bc8cb2ce741d0"
+    },
+    {
+      "path": "docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md",
+      "sha256": "76d5fe0f05b01b1bbec087654e0b89dec7eb03364233649f2c557cb58e6a2888"
+    }
+  ]
+}

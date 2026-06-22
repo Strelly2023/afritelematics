@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "d9ec18dafb43eeb06df28c47156b3a26cec99059b0a2e470eb09bba79316fbd8",
+  "document_id": "NOVATECH-EXECUTIVE-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.378713+00:00",
+  "owner": "NovaTech Platform Leadership",
+  "profile": "executive",
+  "source_count": 4,
+  "source_manifest": "docs/registry/lineage/NOVATECH-EXECUTIVE-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH EXECUTIVE MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "4a8e3806e0a5769d72d7e036d7de82317280cb4d80c5f251e2ea01f39578b22c",
+  "document_id": "NOVATECH-PARTNER-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.510809+00:00",
+  "owner": "NovaTech Platform Partnerships",
+  "profile": "partner",
+  "source_count": 4,
+  "source_manifest": "docs/registry/lineage/NOVATECH-PARTNER-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH PARTNER MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

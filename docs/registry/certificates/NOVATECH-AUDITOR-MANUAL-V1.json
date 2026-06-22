@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "1f278ef68ea148c9b53c9ced3b9fd2ac4db3562c3e5c33a5d7e2d26c0389dc45",
+  "document_id": "NOVATECH-AUDITOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.445046+00:00",
+  "owner": "NovaTech Trust and Audit",
+  "profile": "auditor",
+  "source_count": 5,
+  "source_manifest": "docs/registry/lineage/NOVATECH-AUDITOR-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH AUDITOR MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

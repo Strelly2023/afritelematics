@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_FULL_REFERENCE",
+  "document_hash": "ede6d9d15deb6c9a1c71a6d453e84b6a3ece1d8c4ae3fe06dc3a791bba1df45f",
+  "document_id": "NOVATECH-FULL-REFERENCE-V2",
+  "generated_at": "2026-06-22T04:24:45.343140+00:00",
+  "owner": "NovaTech Platform Operations",
+  "profile": "full_reference",
+  "source_count": 193,
+  "source_manifest": "docs/registry/lineage/NOVATECH-FULL-REFERENCE-V2.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH PLATFORM ADMINISTRATOR & STAFF MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

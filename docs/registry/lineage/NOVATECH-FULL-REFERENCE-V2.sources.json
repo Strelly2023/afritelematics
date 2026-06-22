@@ -1,0 +1,779 @@
+{
+  "document_id": "NOVATECH-FULL-REFERENCE-V2",
+  "generated_at": "2026-06-22T04:24:45.316590+00:00",
+  "profile": "full_reference",
+  "source_documents": [
+    {
+      "path": "docs/api/AFRIRIDE_NEXT_GEN_MOBILE_API_CONTRACT.md",
+      "sha256": "055a7c1de5bd71b2927b113027a27f148b83553e919bd507a10ffbf30f11143b"
+    },
+    {
+      "path": "docs/api/afriride_mobile_api_contract.md",
+      "sha256": "742070efba59aaf65a92c3dcb2cf96d8ce4f6f0feb5361a62f50b6a3adba8ab7"
+    },
+    {
+      "path": "docs/api/state_service_api.md",
+      "sha256": "e4276935a10dd1bfc50b4617a37f7fd3e1a18ffd18d51f2a768acaf83035c49c"
+    },
+    {
+      "path": "docs/adoption/NOVASCRIPT_ADOPTION_GUIDE.md",
+      "sha256": "2de04e1c7f6a138310bafd1ae8e383fb67474ecbea6d581c68ec08a95c92c68c"
+    },
+    {
+      "path": "docs/business/AFRIRIDE_FIRST_CONTRACT_PRICING.md",
+      "sha256": "20806fb210304f63d2dd3498c8811b5a64eaabceec1babb588eb16cd6b6c60f9"
+    },
+    {
+      "path": "docs/business/AFRIRIDE_MONETIZATION_MODEL.md",
+      "sha256": "baf0eb31cfd135e626b08cc754506e1a4dee14db43964ed9058f84885ede89f8"
+    },
+    {
+      "path": "docs/business/AFRIRIDE_PRICING_AND_PACKAGING_REFINEMENT.md",
+      "sha256": "1b1b538bb6b3f28cdefd6c6e156205f83abafcab69d97f00ca1bb21f9840aa10"
+    },
+    {
+      "path": "docs/business/AFRITECH_FIRST_CONTRACT_TEMPLATE.md",
+      "sha256": "ed8b3ac2466d7b7a3feeb1c2e292074315815a62f2c2d26896a4b81d60000d95"
+    },
+    {
+      "path": "docs/business/AFRITECH_FIRST_REVENUE_CONVERSION_PLAN.md",
+      "sha256": "080d7aa7ea60e4bdec26fad92b6af9b87325b1ca17a4c149be7ab4c2f8dbce4f"
+    },
+    {
+      "path": "docs/business/AFRITECH_NEGOTIATION_SCENARIOS.md",
+      "sha256": "b2feab50d5566440e7559681b6e672570a80be4dd2e09da922eb3b22b126a1bb"
+    },
+    {
+      "path": "docs/business/AFRITECH_TRUST_SLA_CONTRACT_LANGUAGE.md",
+      "sha256": "43fcef57e7bdcb0af920dfabb6915d4edf840dbe33ebf5b9eeacab70a7ab792c"
+    },
+    {
+      "path": "docs/business/AFRITECH_VERIFICATION_GUARANTEE_PRICING.md",
+      "sha256": "ffa9935ddf0b4b616725b504549d7b203a1663b9a6b8e5fa6b0f8b488614dc4a"
+    },
+    {
+      "path": "docs/certification/NOVASCRIPT_CERTIFICATION_PROGRAM.md",
+      "sha256": "bc43beb96bd53d97b0a5427afa93267ffac5e7917debf7fc4cf2ada486ed7525"
+    },
+    {
+      "path": "docs/certification/NOVATECH_DOCUMENTATION_CERTIFICATION_PROGRAM.md",
+      "sha256": "852b2be9464786ccd9dcd2ca52a2456b497721f8438bcfc1e30dd58e22f856c5"
+    },
+    {
+      "path": "docs/governance/AFRITECH_FEATURE_CLAIM_HISTORY.md",
+      "sha256": "1e904c7642b4ae592d82de13b7310a1fd7dc659c48b75968582175c6800dcc0d"
+    },
+    {
+      "path": "docs/governance/NOVASCRIPT_GOVERNANCE_HANDBOOK.md",
+      "sha256": "6aecb87673ed58ea69db078c9c938eb334a0f36d9388b6fc1b12fbebf9bff5e7"
+    },
+    {
+      "path": "docs/operations/AFRICONNECT_BURUNDI_PHASE1_OPERATIONS_PLAN.md",
+      "sha256": "c8b98cc0eaa51f4d6018dd2968fb56bc5a64b2ed281d69d91ff473ab95e9512a"
+    },
+    {
+      "path": "docs/operations/AFRICONNECT_LOGISTICS_BUSINESS_STRATEGY.md",
+      "sha256": "f9cf24c1a8c2356db9062c5e3e16edc5cc9ec8b10ebdeadf3392804990bb36c3"
+    },
+    {
+      "path": "docs/operations/AFRIEATS_PLANNED_ECOSYSTEM_SURFACE.md",
+      "sha256": "3d1c06717dfeb82d2399e11a595b891585197573eb68f5e9baee09560e0fa65a"
+    },
+    {
+      "path": "docs/operations/AFRIPAY_CONTINUOUS_ASSURANCE_DASHBOARD.md",
+      "sha256": "c10045d139b8502ca4aec386ce76e0093a2f8e0c1ab09fec0f63e67110314e7d"
+    },
+    {
+      "path": "docs/operations/AFRIPAY_GA_ELITE_IMPLEMENTATION.md",
+      "sha256": "94b0e2aa4a674614a113a4481453bab0e37ccf4104830397e86841a64180fd77"
+    },
+    {
+      "path": "docs/operations/AFRIPAY_PLANNED_FINANCIAL_SURFACE.md",
+      "sha256": "3fbb339685167bd9afa781cd580c6fce29f46658d0bccc0421f694a225fc5408"
+    },
+    {
+      "path": "docs/operations/AFRIRIDE_PRODUCTION_LAUNCH_READINESS_PACK.md",
+      "sha256": "e9808822339e7c65d384076545be0da056dac49a5453c964c790be76939bb7ca"
+    },
+    {
+      "path": "docs/operations/AFRIRIDE_TEST_BUILD_DISTRIBUTION.md",
+      "sha256": "5cd1d49494191de0f62c16a3c78544028e92f8633916aabfd976e6abc69badce"
+    },
+    {
+      "path": "docs/operations/AFRITECH_AWS_EC2_QUICKSTART.md",
+      "sha256": "0763228a849e3a7228eabdec26bcc1e6e6277ae12a7b93ada5cc81a0ce51b431"
+    },
+    {
+      "path": "docs/operations/AFRITECH_CHAIN_PROMOTION_SEPOLIA_TO_MAINNET.md",
+      "sha256": "8fb2e8f7f0133a4bf532239b5c6616ae069bd2ccb2bed81870cbf1e5a030a0a7"
+    },
+    {
+      "path": "docs/operations/AFRITECH_DOMAIN_TLS_CUTOVER.md",
+      "sha256": "828388735dce8f1d5d89dd7054cfa28ade89999f0303e2169ad37a232cab3dfc"
+    },
+    {
+      "path": "docs/operations/AFRITECH_EC2_FIRST_TEST_RUN.md",
+      "sha256": "b69ee41391cb5bf5efd9f0597b2c1804ed7602d67e588ad76ef2c32be6e26146"
+    },
+    {
+      "path": "docs/operations/AFRITECH_FIRST_LIVE_DEPLOYMENT_SCENARIO.md",
+      "sha256": "1d09601fd80aa90c934d38ec4d56c77991023495f4faa11c02fefb67ec81ccf3"
+    },
+    {
+      "path": "docs/operations/AFRITECH_FIRST_OPERATOR_DECISION_SCENARIO.md",
+      "sha256": "d34b30ae9448c807be3eab3ef66941c98799e624f5e2f308624e2ef7ce009c42"
+    },
+    {
+      "path": "docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md",
+      "sha256": "76d5fe0f05b01b1bbec087654e0b89dec7eb03364233649f2c557cb58e6a2888"
+    },
+    {
+      "path": "docs/operations/AFRITECH_LIVE_PILOT_EXECUTION_CHECKLIST.md",
+      "sha256": "e10105123ac0998a28299bfdd31c8777d2141611ec224e90eb0a9bbc8265dbc1"
+    },
+    {
+      "path": "docs/operations/AFRITECH_OPERATOR_DECISION_PROTOCOL.md",
+      "sha256": "9c718eca5dd98b3b9118a1abc748ab0bd97cbfb616e151b44ba0235318b0bf7a"
+    },
+    {
+      "path": "docs/operations/AFRITECH_PILOT_EXECUTION_PACK.md",
+      "sha256": "db3aa8c1bb1a2eb772a20ab9205c2b6395311f65de5817b09175f9c025f6ec8e"
+    },
+    {
+      "path": "docs/operations/AFRITECH_PRODUCTION_COMPOSE_DEPLOYMENT.md",
+      "sha256": "a01cb5bcfdcd006cb413604b6388cb7b756c845c8991bb7e78432b504f9b273f"
+    },
+    {
+      "path": "docs/operations/AFRITECH_PRODUCTION_TRUST_NODE_RUNBOOK.md",
+      "sha256": "24e9da0f98f5d7f711b4c4b8af3f74ad7c82eba53c154aa7651bc8cb2ce741d0"
+    },
+    {
+      "path": "docs/operations/AFRITECH_SAFE_IMPORT_RULES_CHECKLIST.md",
+      "sha256": "55047d014989b1539b46258d6b468998545d620979e909e4925bebb18be2c6ee"
+    },
+    {
+      "path": "docs/operations/AFRITECH_STAGING_DEPLOYMENT_AND_PARTNER_DEMO_RUNBOOK.md",
+      "sha256": "af449b8bc86ef04f143697547fd14142b353ba964cf1c817b2428c75a6acd556"
+    },
+    {
+      "path": "docs/operations/AFROPROG_WORKSPACE_VERIFICATION.md",
+      "sha256": "df07cdea11e3562d784cc400edc4fcc021172ef764419b1565ff3fcab4034930"
+    },
+    {
+      "path": "docs/operations/AfriRide_City_Level_Pilot_Deployment_Playbook.md",
+      "sha256": "52dff2874f4c441881149e7eb0054156d0e4358111be6959e9b5ce774e68f61d"
+    },
+    {
+      "path": "docs/operations/AfriRide_First_10_Rides_Runbook.md",
+      "sha256": "c476a623086a2048e52fb6fa1b8ad883c8bece30f0819cad515ca01ddf43230c"
+    },
+    {
+      "path": "docs/operations/AfriRide_First_3_Live_Rides_Execution_Packet.md",
+      "sha256": "71077c6b4269e6b3f55c121c7460fc5d76b7a0d2340f54f1477944e4dc3ec066"
+    },
+    {
+      "path": "docs/operations/AfriRide_First_3_Rides_Rehearsal_Pack.md",
+      "sha256": "cbea0b7a6b705ee0ce7815394590293fde37689ae0471c3ab94937ed11d7d54c"
+    },
+    {
+      "path": "docs/operations/AfriRide_Operability_Playbook.md",
+      "sha256": "6a762d1375944260b32d67d049102c28f4be321c9f2523f8eb4e6648eb01a5ad"
+    },
+    {
+      "path": "docs/operations/AfriRide_Pilot_Growth_Operating_Kit.md",
+      "sha256": "7ace56b8403738c67a1aa36c2f063c881d8587f5ffeda5947cc4db056cca6ffb"
+    },
+    {
+      "path": "docs/operations/AfriRide_Week_1_4_Launch_Execution_Plan.md",
+      "sha256": "4d6adeff00e5e1ca58b68499d618e7269b7f25ba9e9aa05779ee7d2a9b00005d"
+    },
+    {
+      "path": "docs/partners/AFRIRIDE_FIRST_PARTNER_DEAL_STRATEGY.md",
+      "sha256": "99c39e85df54da8fd5ec21d4494da2355bed152f665aa35db46b0af7a6fb1d57"
+    },
+    {
+      "path": "docs/partners/AFRIRIDE_PARTNER_OBJECTION_HANDLING.md",
+      "sha256": "3055a77d9703f9f44883f8a8df92b4744c1d4017e0879bc2077338d2658fd779"
+    },
+    {
+      "path": "docs/partners/AFRIRIDE_PARTNER_ONBOARDING_KIT.md",
+      "sha256": "5fe9fbc2ee1b44fad6276b9c0e3ed5f827eae438b631b68c951cd44324abd983"
+    },
+    {
+      "path": "docs/partners/AFRIRIDE_PARTNER_ONBOARDING_PLAYBOOK.md",
+      "sha256": "9dba1e966f1fc4c362760ca3fa9a1d48cf917521803862ff7477004a7b9bba09"
+    },
+    {
+      "path": "docs/partners/AFRITECH_EXTERNAL_VERIFIER_CLI_PACKAGE.md",
+      "sha256": "00629a5ae38c222abb95066a0c5a955c630210e93653f854ccfcb429be108228"
+    },
+    {
+      "path": "docs/partners/AFRITECH_EXTERNAL_VERIFIER_SDK_ROLLOUT.md",
+      "sha256": "200fbf9c44d03b3d3c66e3f36abcb2fe3f460491c8b0c62d130c458e3d9a2bce"
+    },
+    {
+      "path": "docs/partners/AFRITECH_FIRST_EXTERNAL_PARTNER_VERIFICATION_SESSION.md",
+      "sha256": "add95bc6adbf77636826a35a46f9c5d170f506936de8f779b4481ea2697189a5"
+    },
+    {
+      "path": "docs/partners/AFRITECH_LIVE_ECOSYSTEM_ONBOARDING.md",
+      "sha256": "f157898a39633e955c9f94bb06ef99754c995e30ffc5f5a97d745df6244a0dfc"
+    },
+    {
+      "path": "docs/partners/AFRITECH_LIVE_SYSTEM_INTEGRITY_DEMO.md",
+      "sha256": "91e7437a00649d83272349bbcf3ca5b88a9d1d5262e7fb57bb737745cb8b64c1"
+    },
+    {
+      "path": "docs/partners/AFRITECH_PARTNER_ARCHITECTURE_ONE_PAGER.md",
+      "sha256": "cec00a03b817b6f25c88f04871100fa011eb969d36a23286faa4e5d5f2f32f6f"
+    },
+    {
+      "path": "docs/partners/AFRITECH_RUNTIME_OBJECTION_HANDLING.md",
+      "sha256": "8e507119d3e6295e4b4a742142cb7ac25a5df2a02a123a6483a0237261a9b5f4"
+    },
+    {
+      "path": "docs/pilot/AFRICONNECTTL_PHASE2_LOGISTICS_EXECUTION_SPEC.md",
+      "sha256": "010c2d1e6cecaeeb53efe6eac808aeb84196a4343ebacb13b46ce3effb0a779d"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_DEPLOYMENT_TOPOLOGY.md",
+      "sha256": "3d81ddb85ba3e0a590b309840dfb636b54aeb5a39357ee4e2a94d8cb6a9f3d7f"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_FIRST_PILOT_ROLLOUT_PLAN.md",
+      "sha256": "1a0e0dbcd6af1960d7c8ad72d26ff03dad8285b3256a25e3ee3e0eb408760e03"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_GA_ELITE_READINESS_MATRIX.md",
+      "sha256": "c73ff7cdaf71ed57e0b8172987f9841ae29ab5ce62ee5884d181354c06c055c2"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_MELBOURNE_FIRST_REAL_PILOT_LAUNCH_PLAN.md",
+      "sha256": "7450a2b4bbb266ef71e053254aacde608455c69360420632ffb2a1f1829e4b4e"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_MULTI_NODE_PRODUCTION_PILOT_PREP.md",
+      "sha256": "171e63e104eb97f1dd861fc0d12f1ddff315dbfa4ab8930f1bda5c574e124077"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md",
+      "sha256": "3c473e1b48498ee5f375bc008f4cb23b919f89bf841ecd52344cb063e490cd21"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PHASE2_MIGRATION_GOVERNANCE_SPEC.md",
+      "sha256": "ea92b0e978b3a2735ac1dbab73226cf952f3176cf8fc50d53b9acc1b2798b581"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PHASE3_LIVE_OPERATIONS_MONITORING_GOVERNANCE_SPEC.md",
+      "sha256": "c2a2301293fcea6d5cc48a3d2ce1d9b9ce10987814b9775fa555abf8ee04e005"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PILOT_ACTIVATION_CHECKLIST.md",
+      "sha256": "e223ffdd19a79e64f1fdd867e3fb31a7992f015be255e15e7e7d6576780dad83"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PILOT_EXECUTION_PLAN.md",
+      "sha256": "f40be1722ef8bc77e4d9c15014de03651392ce33d7fc147d50aa0bf385a33150"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PILOT_READINESS.md",
+      "sha256": "d32dc710d79dc8c3bdad3ef9ea419ba782c20180da2d65b5d70c96c27848bad1"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_POSTGRES_CUTOVER_RUNBOOK.md",
+      "sha256": "fe5aa434376e5f5511e9a18b5167ddd950ac3c64aa7bf977cff7bf29df87cbfa"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_POSTGRES_RUNTIME_VALIDATION_CHECKLIST.md",
+      "sha256": "ff1480784d1f7bd6581443ddc2b4a09e2f80880979545bc9c111bbadfced4fa6"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_PRODUCTION_RISK_CHECKLIST.md",
+      "sha256": "fd5fbafd45ecd0defce72315b7cdfc8cece2f46709f020839ad7d449b468870f"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_REAL_DEVICE_INSTALLATION_PATH.md",
+      "sha256": "46bcce7b5f0eec4e955e20240b148f9f2b17d872752327c2d888781799ee4720"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_REAL_WORLD_ACTIVATION_PLAYBOOK.md",
+      "sha256": "dbfa9a05bb06f4818e5f3328cce40f5b27e38439b85cdc0821fcd45c35df1b0c"
+    },
+    {
+      "path": "docs/pilot/AFRIRIDE_RISK_CONTROL_REGISTER.md",
+      "sha256": "766869dc9df086c1b6113e042d5f0025adc7b9c1eafab9bbaf39022da3dbbb8e"
+    },
+    {
+      "path": "docs/pilot/CONTROLLED_PILOT_TRACE_PROTOCOL.md",
+      "sha256": "1b0133da49cc617ff8ec25058b9e5dffad1fceb4e35f8a74536947d869014b9c"
+    },
+    {
+      "path": "docs/pilot/pilot_architecture.md",
+      "sha256": "961529a65867d0492d787420fe780f35f0ff87f959a61f1bc500829eb2106f37"
+    },
+    {
+      "path": "docs/proof/AFRIPOWER_INTELLIGENCE_CHECKPOINT.md",
+      "sha256": "9ce46c1480804746e6f0e3a19fd3375ecbda250960c6ec135b39e06c63cb0102"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_BUJUMBURA_UVIRA_PHASE_EXECUTION_CONTROL.md",
+      "sha256": "9008562318b28851eb2871127957a450ef3cacd7b3a323aa501d0634c5556244"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_CERTIFICATION.md",
+      "sha256": "a1e2eaaa208ee40635b69d4c070051a9cf3f31c88d1cb92ca9c513e32c820b30"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EVIDENCE_AUTOMATION.md",
+      "sha256": "a827406f118bafba36e4afcabcf73313e8e2e3394a04d042279fbe83e77c1ad8"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EVIDENCE_BUNDLE.md",
+      "sha256": "327c5ef5b5458edb268900b708a58c9730ea5491cdd66513bf76818f041b61ff"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_EXECUTION_RECEIPT.md",
+      "sha256": "b36e8694124522c2634c0d9e6b443135283be976ab2940329e6df80c7432296a"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_LAYER.md",
+      "sha256": "35907a11bbea5eef86cfbeb892ac0eda85b6808acace39770a3cf3f766a51cb9"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_RUNBOOK.md",
+      "sha256": "f1b115c83f3cf46cf0e961ead1e1bde9d971d399bbd7020e541b92ad89ee8e09"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_CONTROLLED_PILOT_SCENARIO_MATRIX.md",
+      "sha256": "060cfce5f469f14917d8435b37b403cb01e346586ecdf62fe2a6f807d4b861f8"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_EVIDENCE_ORIGIN_CONTROL.md",
+      "sha256": "c896bee8f7a5594dcba264d20ec1a356cb4ba025089fe748db24a03275c71c50"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_EXECUTION_GRADE_PILOT_SYSTEM.md",
+      "sha256": "11097e20a3feac808fbc8725cb0af186bd1d6cf1ad62b5d6c4e010515108b148"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_FIELD_EXECUTION_TRANSITION_BOUNDARY.md",
+      "sha256": "0ac020dde075eb7ce87b76d7be358799efa836486cc16254d043f77f9ec59857"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_GA_ELITE_PILOT_ROLLOUT_STRATEGY.md",
+      "sha256": "a8d6b838c4b42917f9859278d9a14583d95a2780bfa658568a6358795937d1f9"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_GA_ELIVE_WORKFLOW.md",
+      "sha256": "a961544e70f0231619b7ad5f9b9df5ad0749432e629764395de6e071abdaf2d6"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_GLOBAL_VALIDATION_PHASE_EXECUTION_CONTROL.md",
+      "sha256": "b896eb27e8fbe370a3594315c641d1a88d4f43fdd0508a8e84cd6dbe0b548d87"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_KINSHASA_PHASE_EXECUTION_CONTROL.md",
+      "sha256": "9799f283397a4f4bd2f880019732443f6cd2daec2be1949129df0b1da9e6696c"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_MARKETPLACE_PROOF.md",
+      "sha256": "ff6fba81c0c037119f07b4c4bcaa9c6fce0dff1a5662367fbd6ed4c12b541d78"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_MELBOURNE_PHASE_EXECUTION_CONTROL.md",
+      "sha256": "f02ed199f2096adc3034ed288d2723b9f0afbb1d3ddb8adad18270c8bfd47321"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_PHASE5_CLOSURE.md",
+      "sha256": "ab6a5f4c02f255413804e52edc4a2992c2aeaa9b78282ade18c66c99f283d0fb"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_PHASE5_READINESS_CERTIFICATE.md",
+      "sha256": "b0324469101ff905e0323d2b2984a7f0088649cf87a1821e8b83288f08ef8e38"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_PILOT_EXECUTION_CHECKLIST.md",
+      "sha256": "958241b9a8f281267924c3abf646987907895f15aabf798adb4ed92f8c61b7aa"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_PILOT_METRICS_DASHBOARD.md",
+      "sha256": "5e34ff1014c192df48789d366a5ccb7d980270c9452827a7165cf617881d0b14"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_WAVE6_CONTROLLED_PILOT_READINESS_CONTRACT.md",
+      "sha256": "4be44a005dd7d3c64b778cdc01c780c7dd4be00b480f658f7e9ca8861385d4b6"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_WAVE6_EXECUTION_CHECKPOINT.md",
+      "sha256": "755780b554836c2c0ee4ec1760ff51aafcaacf9c580e117e79185987196bc2ca"
+    },
+    {
+      "path": "docs/proof/AFRIRIDE_WAVE7_GO_NO_GO_GATE.md",
+      "sha256": "765f1fe00cb2fd6240a00880c72b757f91bd18875a7b8f3f1d51f123e92d57eb"
+    },
+    {
+      "path": "docs/proof/AFRITECH_CONSTITUTION_V1_CHECKPOINT.md",
+      "sha256": "c8d9e15cdf816853cc27bd9e7d496dc52fbd0b71bf1458626323a55b1e44cf45"
+    },
+    {
+      "path": "docs/proof/DURABLE_QUEUE_PROOF.md",
+      "sha256": "6aaffbfe1981e4f7d13e02cf26b8d7cc27e0d00780effbac6a16adc48e23d433"
+    },
+    {
+      "path": "docs/proof/ECONOMIC_TRUST_PROOF.md",
+      "sha256": "1ff27519b79d72fbb4630acfb4bb0f6fa9e32e0570529d3b0ce9e6be6ce86f61"
+    },
+    {
+      "path": "docs/proof/ENTROPY_BOUND_EXECUTION_PROOF.md",
+      "sha256": "2c87972da3fffca59fda6218e80e688ab84757da1319872ed17af0c7bf81662c"
+    },
+    {
+      "path": "docs/proof/GA_ELITE_CHECKPOINT_1250.md",
+      "sha256": "24df5076844e2bbff0b7c80fde5c001353d27dafd28cfb05c323a2e88082b30c"
+    },
+    {
+      "path": "docs/proof/GA_ELITE_CHECKPOINT_1392.md",
+      "sha256": "67a6cbfc3e094358e3d41a3262f0aab278917f63d6027b1488af6eae268bba6f"
+    },
+    {
+      "path": "docs/proof/LOAD_PROOF_REPORT.md",
+      "sha256": "ad3d6536887c10793e1d21e5d9bf4140654b90dffdd1fa9dd4219e6ef5b51bd3"
+    },
+    {
+      "path": "docs/proof/MOBILE_PILOT_E2E_PROOF.md",
+      "sha256": "675c68203f0310ddc5f5f987041973b4b030583ceb972c4b61ddfed97d438f66"
+    },
+    {
+      "path": "docs/proof/MULTI_NODE_FAULT_PROOF.md",
+      "sha256": "acb6541ce8db3f61b4e5bc3088654665e12ad5f1374e3ccd769e3afad6c75ea3"
+    },
+    {
+      "path": "docs/proof/OBSERVABILITY_PROOF.md",
+      "sha256": "7e707d0cca6735bc43be6bb73df0792042312feba731f226f8235561a4e16cbb"
+    },
+    {
+      "path": "docs/proof/PERSISTENT_EVENT_STORE_PROOF.md",
+      "sha256": "82f10948008c77ea202a8d44893ee3218b81fdcd9f4afb90b51f65780e1fbb13"
+    },
+    {
+      "path": "docs/proof/PRODUCTION_READINESS_CERTIFICATE.md",
+      "sha256": "f33cda116068c7018a8da6c3d7138c86d63bc9914e1e5fccdacd3bffdbb4f566"
+    },
+    {
+      "path": "docs/proof/PROJECTION_ENRICHED_EXPLANATION_CHECKPOINT.md",
+      "sha256": "5f6ce665345d76706d3afc38c20ca04e7486ba48546b32cc97e1bef10cc32ba8"
+    },
+    {
+      "path": "docs/proof/PROOF_ALIGNED_POSITIONING.md",
+      "sha256": "25369140f5ad1e31c157a6c2ff0f8b06f64b34c991addc76233526609adcf585"
+    },
+    {
+      "path": "docs/proof/SECURITY_ADVERSARIAL_PROOF.md",
+      "sha256": "dbc2903cea5e243ffecda54a1c74bfcf762f2a9fbe734505519f2df698a67f16"
+    },
+    {
+      "path": "docs/roadmap/AFRITECH_FEATURE_TO_PROOF_MATRIX.md",
+      "sha256": "524208ef788c7b006889dcd6b99f06572467945c4c336e0e6299e4c673d8cba5"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_AWS_CICD_Deployment_Pipeline.md",
+      "sha256": "35494c8f796bdd1b33ecd5f160b99713017c30e195df9f3410439446fcd492ba"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_AWS_Deployment_Plan.md",
+      "sha256": "acb9d81bcf69bcbe8b6e29099ba4dfceb8bebc3a6a26d3733f194d8943f435ba"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Action_Level_Production_Transformation_Plan.md",
+      "sha256": "52b000400eeb62bfe2369b320e1c6c2511d7745ab925dd4bfc230800174d41b7"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Complete_Production_Readiness_Plan.md",
+      "sha256": "69ac3946b28b1d00f31b5dd3da1125d665081b6c736518579e7f3d419fdf018a"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Multi_Region_Deployment_Roadmap.md",
+      "sha256": "8623025bc6765e27fe5bf45ab4b7d2ee6acc35347574ea5572533f38c01c9612"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Operational_Strengthening_Plan.md",
+      "sha256": "23ee966e3b047293a48079c5c597df3f4692089a4be4cd6e01689f9be7b842f0"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Pilot_Dominance_Strategy.md",
+      "sha256": "0ccc0a3831999c1dd1cc7a6d621d4a09c23c09fb14f5aa5e45b00eb13d244a2d"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Production_Grade_System_Roadmap.md",
+      "sha256": "6e98de5fb8a4e5b37ee7c81b1856a8a9cf43e1b4b131abcb796c5d14e6da0bd8"
+    },
+    {
+      "path": "docs/roadmap/AfriRide_Real_World_Mobility_Transition_Plan.md",
+      "sha256": "7ebd6c497f8c794f2e252c1030079f75ff415f888ba884970b94f898351d7ebf"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Category_Creation_Strategy.md",
+      "sha256": "a0c63a5752734eb237dc60fa4a49c2476ef976118a9e60ee0c6944558fee8f46"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Operational_Civilization_Platform_Master_Plan.md",
+      "sha256": "6b6de6d019672b3ed1e6e09eb063c3ea77fb9043b6806fcb36859b1f4a65731d"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Operational_Evolution_Execution_Matrix.md",
+      "sha256": "7253325ba203608f6c0b7927e60084df45094bd86389a6e097c39a3e63fed040"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave1_Constitutional_Interface_Registry.md",
+      "sha256": "63dcf3ce4142166a556e224279188c8d77736f07b25e1d1859fa1120a975c489"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave1_Epoch_Compatibility_Policy.md",
+      "sha256": "309ba6c0a40376ed0ef70724fecffd924753bf42723adb40d6ef1abbba61421b"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave1_Epoch_Translator_Lifecycle_Policy.md",
+      "sha256": "6f5e545782d7593370e047f6ad2bcc8bc33fcb48034771615c373b6147bb208b"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave1_Sacred_Kernel_Inventory.md",
+      "sha256": "89509117d92f6a57fe7b8e6ddfcdd1b8539f1095cdef76c8fac5637df4601907"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Canonical_Explanation_Composition_Policy.md",
+      "sha256": "37a441c836b231abf5614c79e890ce218a7252dfd0cd226503cacc258153f7b2"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Cognitive_Salience_Governance_Policy.md",
+      "sha256": "2cd4f2f6ee7ee99103bc68b7c9646824c81ca5fdf2ca286e50f75eb59e45c87f"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Cognitive_Scale_Governance_Policy.md",
+      "sha256": "e9f3aee16211591358e11c3868d4b5f49bef98e4410fb393b6c04d59bb2af08d"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Compatibility_Observability_Plan.md",
+      "sha256": "1b924b366e53992419be39bdeaea494e304812a801a54eb24aa088f05d9e0f28"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Cross_Surface_Cognition_Consistency_Policy.md",
+      "sha256": "a41d47190c75cef4a4fc0711934ab9bed9e2cb10c0810c1c55ad1e02e8194b9c"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Interpretation_Containment_Policy.md",
+      "sha256": "2c6aefb597e2c23a09653d2433a328d71d6d9a955d7a59713e7217c19344c6f2"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave2_Temporal_Cognition_Consistency_Policy.md",
+      "sha256": "f8dba6623be85a5614552deeea4184f8fa9a8a1bcf581e9196d664d14efc8e91"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Adaptive_Cognition_Governance_Policy.md",
+      "sha256": "a5e80f28f616ee450fe7a2168dbfe4e61f1fe14b92b38b3ce899a734055c456e"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Anticipatory_Suppression_Governance_Policy.md",
+      "sha256": "3c1adc447b5229c3702cc2c5823f525847b137ededf2f17e05492edf881d1557"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Convergence_Governance_Policy.md",
+      "sha256": "c34261d1b7895686da55372e211841a580a7468a751690d2ba624684bfb124f6"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Equilibrium_Governance_Policy.md",
+      "sha256": "4b0d12b3af368b14e55468bc8570d886322398411216a7584925077ccb5767de"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Harmonization_Governance_Policy.md",
+      "sha256": "f07d4254e9d7e7e4bc542f7d3424279a625e6d7f8f961d582eda69abaef81737"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Inevitability_Governance_Policy.md",
+      "sha256": "1ed1f920bf67e419599ba705a038ea21ead4ecb815c3d4640c06320a2cf36c2f"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Inevitability_Reinforcement_Governance_Policy.md",
+      "sha256": "22410faac719bec32a13ae6aa432c0fef2ba1aba87d91aa45654a7a3d388d2ef"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Interpretation_Governance_Policy.md",
+      "sha256": "10881868da8ca3e22eb24b96a46ab3010203041e5edd65684da5705502dd8101"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Path_Dependence_Governance_Policy.md",
+      "sha256": "6c53811e15af29fc13b63f226b40fb0a0936bf93ea79d83bd3ee57315fa5d757"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Constitutional_Precedent_Governance_Policy.md",
+      "sha256": "31f861ce7117e78bdfe93d6be0387543fc176416c2e9a4500d1a6c4500fb17df"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Objective_Evolution_Governance_Policy.md",
+      "sha256": "53cd3928386dc625bf84cb6d847e844d480da773545d16ff422480a10963f357"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Optimization_Governance_Policy.md",
+      "sha256": "d50ed48ee414b6fb977e30a85d3abdc4c67b8aebd162ea928afd91297ecb63a8"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Autonomous_Policy_Synthesis_Governance_Policy.md",
+      "sha256": "c91ad1268a5a3e604500c4a21f0d75d68448b1e4225b6eff9b8ad51733572e9b"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Wave3_Collective_Adaptive_Feedback_Governance_Policy.md",
+      "sha256": "34a08c2710478de0c5bcc3cf89db5170f802fad1c8248add43bdc7543aa74863"
+    },
+    {
+      "path": "docs/roadmap/ECOSYSTEM_GRADUATION_ROADMAP.md",
+      "sha256": "d7f3cd7bd33448857a1d84e17845a1e6624122f44ceda25d1eea295bff7dde1d"
+    },
+    {
+      "path": "docs/standards/AFRICPPT_PROTOCOL_SPEC.md",
+      "sha256": "4b013ddd4617f41c6613d85a2ba4db21e3507311908da4cb8306e5acb9e33d95"
+    },
+    {
+      "path": "docs/standards/AFRIRIDE_PROTOCOL_STANDARDIZATION_AND_OUTREACH.md",
+      "sha256": "9c102011f6cf39dc2617592081ba11b935d6209bea543c867f08c82c63878461"
+    },
+    {
+      "path": "docs/standards/AFRIRIDE_TRUST_PROTOCOL_SPEC.md",
+      "sha256": "74dc2604a26bded54e223798e3c26c2afc0b0bd935d458e081ab2941510806f7"
+    },
+    {
+      "path": "docs/standards/NTS_v1.md",
+      "sha256": "6624d27c2668eafe50e2f13628a377122a98aae25311a067eac8707784812989"
+    },
+    {
+      "path": "docs/strategy/AFRIRIDE_REAL_MARKET_LAUNCH_STRATEGY.md",
+      "sha256": "ad649e851a0939dfd6bcb3809d60d6d41e2767c7adeed063686832e43b980e00"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_ENTERPRISE_READINESS_REVIEW.md",
+      "sha256": "88be3b2de5599244dd56f5f71aa69be9a3388bef5095ee9336f5734ea21c6b83"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_GLOBAL_TRUST_FIRST_CUSTOMER_STRATEGY.md",
+      "sha256": "1dbe68a6a20fa206352e67169c592107f06f8d738bd7cf1f3bb9f4aed502cc88"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_MONETIZATION_AND_ECOSYSTEM_EXPANSION_BLUEPRINT.md",
+      "sha256": "214655c025369cbba8738d20c0005ba1a20f2574b8b52e68e0968aadff7e1882"
+    },
+    {
+      "path": "docs/strategy/NOVATECH_DOCUMENTATION_COMPLIANCE_AND_MARKETPLACE_STRATEGY.md",
+      "sha256": "dbaaa02c7129abb7c163bc1ffeadbf468fea46ffeae463df9940c84e960196fd"
+    },
+    {
+      "path": "docs/vision/AfriRide_GA_Elite_MVP.md",
+      "sha256": "423ce955719a7dbf9edf9069a894eb9dc62be32871e2f21e5844f1c35e5b8f9f"
+    },
+    {
+      "path": "docs/vision/AfriRide_Generation_3_Mobility_Operating_System.md",
+      "sha256": "28e209733ad0f3468a4988da45ffb574897d7e3846ce071e9f3aea68b3868397"
+    },
+    {
+      "path": "docs/vision/AfriRide_Two_App_System.md",
+      "sha256": "e37f0a553763a53dfd590f6228a5154ae05f71f7c78f63693000be563e4d29e2"
+    },
+    {
+      "path": "docs/vision/AfriTech_Ecosystem_Vision_Roadmap.md",
+      "sha256": "ee55a7e1350de1bfb8350a14089d4b1f275bf27b1c58644e5aaa13ba315f2f97"
+    },
+    {
+      "path": "docs/vision/AfriTech_Gen3_Platform_Architecture.md",
+      "sha256": "978171a52958da0d64aa64aa80231ec4081a2a43951673c5536f1e11984fb15f"
+    },
+    {
+      "path": "docs/vision/AfriTech_Super_Ecosystem.md",
+      "sha256": "533443c8ecfdb9114fee9fcbdbc41cf3c87175deb9f62ed35ee27189e47e6bd8"
+    },
+    {
+      "path": "docs/vision/Nova_Ecosystem_Naming_Strategy.md",
+      "sha256": "436bea856aa7d4cdd79d722f8475a78ce2e9cda6b715fe27207a5797b719ddec"
+    },
+    {
+      "path": "docs/whitepaper/AFRIPAY_GA_ELITE_TECHNICAL_WHITEPAPER.md",
+      "sha256": "d0b75674e8fe410a9b339a3a04871df1d0a61da2891ae48c490e6020c91d6e78"
+    },
+    {
+      "path": "docs/whitepaper/AFRIRIDE_PARTNER_ARCHITECTURE_WHITEPAPER.md",
+      "sha256": "ba2896b6f03e56e6601e5ed5b0eaf0ba79dabe1a782a6f1444be26a73d83ecfa"
+    },
+    {
+      "path": "docs/whitepaper/AFRITECH_ARCHITECTURE_COMPLIANCE_EXPORT_PACK.md",
+      "sha256": "4ff62a73d9f42e125544710360c140024a330f674c632bb00eba0dc53457c336"
+    },
+    {
+      "path": "docs/whitepaper/NOVASCRIPT_TRUST_FRAMEWORK_ISO_DRAFT.md",
+      "sha256": "084846e3b3845d1464508778e479491eb3428cececc7b8a744c1bfc2bd4a1aee"
+    },
+    {
+      "path": "docs/whitepaper/afriride_reference_implementation_v1.md",
+      "sha256": "de4896fa4d589aee079f395e7dacf95e878e16d41ff7b20703d41940ac299a16"
+    },
+    {
+      "path": "docs/whitepaper/afritech_model_v1.md",
+      "sha256": "349c369a2cd946a752ea0d4b68384e0aae91f2ee99c715ed972fb2299941193a"
+    },
+    {
+      "path": "docs/whitepaper/afritech_model_v1_consistency_audit.md",
+      "sha256": "fac58aa7ea33db753b4e37b2dd301dbc856519b5c393db691931a8b91d08cf40"
+    },
+    {
+      "path": "docs/whitepaper/afritech_model_v1_diagrams.md",
+      "sha256": "b7cf2a8148432346461cbde517fc586c18507cea148a89476632c6f65852943f"
+    },
+    {
+      "path": "docs/mobile/AFRIPAY_SUPER_APP_DESIGN.md",
+      "sha256": "bcbb7650447db483349e177db5cc5b63cd48e9ca7f25a8abeb670a043388b3f9"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_APP_STORE_AND_PLAY_STORE_RELEASE_CHECKLIST.md",
+      "sha256": "90b5481f205e1d7b5259f3775a9c75d613ddb5647faa23fbd93d54ea1fec3e2d"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_DEVICE_CERTIFICATION_TEST_PLAN.md",
+      "sha256": "2124866ccb705b683ac66d51adadc567b1af4de173cdef57530ee11d15143f77"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_MOBILE_PLATFORM_READINESS.md",
+      "sha256": "b31306d4cc42d428053ec4faced76cf8219e933424f23a97a2ea60d831911f78"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_MOBILE_UX_POLISH_GUIDE.md",
+      "sha256": "d87adbacbbfe6189bafa4a7f17bfc4ff5986382a40c2f6170390c33a8323fc21"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_NEXT_GEN_UI_WIREFRAMES.md",
+      "sha256": "df2aa0f97a1cd9b7d7b703ac2ecec0db67357f292ddc16080dd741002aeb5a91"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_OFFLINE_FIRST_EVENT_QUEUE_SPEC.md",
+      "sha256": "e58994eeee8674bc2d6416c6383385f5c2112a5317c4920a378bfaca4411ddd1"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_REACT_NATIVE_APP_STORE_BUILD_PLAN.md",
+      "sha256": "aed1422bcf97b61e1eefa2f189a70404a95b00f136877b0de1d11d58ce24955c"
+    },
+    {
+      "path": "docs/mobile/afriride_app_store_master_plan.md",
+      "sha256": "7a014c34d318e0e8009bf075a6499a1bdf72aeeb21cb79dca50475737ff5595a"
+    },
+    {
+      "path": "docs/mobile/legal/privacy_policy_template.md",
+      "sha256": "734a56907ccb0abac1b6b6dd1c59eab1236a88d8c339d0442abd6681e4501ab5"
+    },
+    {
+      "path": "docs/mobile/legal/support_page_template.md",
+      "sha256": "63244695ea7ac3fc0c21542eaeea0681cdc76a44d57fa8d30708cdab71dcf490"
+    },
+    {
+      "path": "docs/mobile/legal/terms_of_service_template.md",
+      "sha256": "c09eb301438dd79b0ad0282fd5322dd5bd47263239c25945293246a2e2085a92"
+    },
+    {
+      "path": "docs/mobile/store_listing_content.md",
+      "sha256": "90c8f1a1bc9ca221c8501a3ececb720a076c1263c8f6e1dbea2105ec2d73b167"
+    }
+  ]
+}

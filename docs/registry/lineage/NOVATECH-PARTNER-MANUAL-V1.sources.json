@@ -1,0 +1,23 @@
+{
+  "document_id": "NOVATECH-PARTNER-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.510361+00:00",
+  "profile": "partner",
+  "source_documents": [
+    {
+      "path": "docs/partners/AFRIRIDE_PARTNER_ONBOARDING_PLAYBOOK.md",
+      "sha256": "9dba1e966f1fc4c362760ca3fa9a1d48cf917521803862ff7477004a7b9bba09"
+    },
+    {
+      "path": "docs/operations/AfriRide_Operability_Playbook.md",
+      "sha256": "6a762d1375944260b32d67d049102c28f4be321c9f2523f8eb4e6648eb01a5ad"
+    },
+    {
+      "path": "docs/standards/AFRIRIDE_TRUST_PROTOCOL_SPEC.md",
+      "sha256": "74dc2604a26bded54e223798e3c26c2afc0b0bd935d458e081ab2941510806f7"
+    },
+    {
+      "path": "docs/operations/AFRITECH_STAGING_DEPLOYMENT_AND_PARTNER_DEMO_RUNBOOK.md",
+      "sha256": "af449b8bc86ef04f143697547fd14142b353ba964cf1c817b2428c75a6acd556"
+    }
+  ]
+}

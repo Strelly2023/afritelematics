@@ -1,0 +1,74 @@
+registry_id: NOVATECH_DOCUMENT_REGISTRY_V1
+status: ACTIVE
+validator_version: novatech-doc-system-v1
+documents:
+- id: NOVATECH-FULL-REFERENCE-V2
+  profile: full_reference
+  title: NOVATECH PLATFORM ADMINISTRATOR & STAFF MANUAL
+  owner: NovaTech Platform Operations
+  classification: GENERATED_FULL_REFERENCE
+  status: ACTIVE
+  output: docs/governance/NOVATECH_PLATFORM_ADMINISTRATOR_AND_STAFF_MANUAL_V2.md
+  source_manifest: docs/registry/lineage/NOVATECH-FULL-REFERENCE-V2.sources.json
+  certificate: docs/registry/certificates/NOVATECH-FULL-REFERENCE-V2.json
+  minimum_words: 100000
+- id: NOVATECH-EXECUTIVE-MANUAL-V1
+  profile: executive
+  title: NOVATECH EXECUTIVE MANUAL
+  owner: NovaTech Platform Leadership
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_EXECUTIVE_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-EXECUTIVE-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-EXECUTIVE-MANUAL-V1.json
+  minimum_words: 3000
+- id: NOVATECH-OPERATOR-MANUAL-V1
+  profile: operator
+  title: NOVATECH OPERATOR MANUAL
+  owner: NovaTech Operations
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_OPERATOR_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-OPERATOR-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-OPERATOR-MANUAL-V1.json
+  minimum_words: 2800
+- id: NOVATECH-AUDITOR-MANUAL-V1
+  profile: auditor
+  title: NOVATECH AUDITOR MANUAL
+  owner: NovaTech Trust and Audit
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_AUDITOR_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-AUDITOR-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-AUDITOR-MANUAL-V1.json
+  minimum_words: 2600
+- id: NOVATECH-DEVELOPER-MANUAL-V1
+  profile: developer
+  title: NOVATECH DEVELOPER MANUAL
+  owner: NovaTech Engineering
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_DEVELOPER_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-DEVELOPER-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-DEVELOPER-MANUAL-V1.json
+  minimum_words: 2600
+- id: NOVATECH-PARTNER-MANUAL-V1
+  profile: partner
+  title: NOVATECH PARTNER MANUAL
+  owner: NovaTech Platform Partnerships
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_PARTNER_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-PARTNER-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-PARTNER-MANUAL-V1.json
+  minimum_words: 2200
+- id: NOVATECH-INVESTOR-MANUAL-V1
+  profile: investor
+  title: NOVATECH INVESTOR MANUAL
+  owner: NovaTech Strategy
+  classification: GENERATED_ROLE_MANUAL
+  status: ACTIVE
+  output: docs/governance/NOVATECH_INVESTOR_MANUAL.md
+  source_manifest: docs/registry/lineage/NOVATECH-INVESTOR-MANUAL-V1.sources.json
+  certificate: docs/registry/certificates/NOVATECH-INVESTOR-MANUAL-V1.json
+  minimum_words: 2200

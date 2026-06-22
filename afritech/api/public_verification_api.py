@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from html import escape
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 
 from afritech.architecture.integrity_proof import build_architecture_integrity_proof
+from afritech.docs.document_system import load_documentation_compliance_registry
 from afritech.partner_registry import PartnerRegistryStore
 from afritech.partner_verification import PartnerVerificationStore
 from afritech.trust_network import TrustRegistryStore
@@ -21,6 +23,21 @@ def build_public_verification_router(
 ) -> APIRouter:
     router = APIRouter(tags=["public-verification"])
 
+    def _documentation_registry_snapshot() -> dict[str, Any]:
+        try:
+            return load_documentation_compliance_registry() or {}
+        except FileNotFoundError:
+            return {
+                "registry_id": "NOVATECH_DOCUMENTATION_COMPLIANCE_REGISTRY_V1",
+                "status": "ACTIVE",
+                "standard_protocol": {
+                    "name": "AfriCPPT",
+                    "expansion": "Global standard protocol for proof, compliance, and trust portability",
+                    "publication_surface": "/v1/novatech/documentation/standard",
+                },
+                "linked_surfaces": {},
+            }
+
     @router.get("/public/verify/health")
     def public_verify_health() -> dict[str, Any]:
         return {
@@ -31,8 +48,8 @@ def build_public_verification_router(
 
     @router.get("/public/verify/portal", response_class=HTMLResponse)
     def public_verify_portal() -> str:
-        proof = build_architecture_integrity_proof().canonical_dict()
-        anchor_id = proof.get("verification_packet", {}).get("anchor_id", "unknown")
+        documentation_registry = _documentation_registry_snapshot()
+        standard_protocol = documentation_registry.get("standard_protocol", {})
         return f"""<!doctype html>
 <html lang='en'>
   <head>
@@ -67,13 +84,22 @@ def build_public_verification_router(
           <div class='label'>Proof exports</div>
           <ul>
             <li><a href='/public/architecture/proof'>Architecture proof</a></li>
-            <li><a href='/public/verify/{anchor_id}'>Public verification packet</a></li>
+            <li><code>/public/verify/{{anchor_id}}</code></li>
             <li><a href='/public/trust/dashboard'>Public trust dashboard</a></li>
             <li><a href='/public/architecture/anchors/dashboard'>Anchor dashboard</a></li>
             <li><a href='/public/architecture/anchors/explorer'>Anchor explorer</a></li>
             <li><a href='/public/architecture/anchors/verification'>Etherscan verification</a></li>
             <li><a href='/public/architecture/anchors/reconciliation'>Cross-network reconciliation</a></li>
           </ul>
+        </div>
+        <div class='panel'>
+          <div class='label'>Documentation compliance</div>
+          <ul>
+            <li><a href='/public/documentation/portal'>Documentation compliance portal</a></li>
+            <li><code>/public/documentation/{{organization_id}}</code></li>
+            <li><a href='/v1/novatech/documentation/standard'>Standard protocol surface</a></li>
+          </ul>
+          <p><code>{escape(str(standard_protocol.get("name", "AfriCPPT")))}</code></p>
         </div>
         <div class='panel'>
           <div class='label'>Audit packages</div>
@@ -85,7 +111,7 @@ def build_public_verification_router(
         <div class='panel'>
           <div class='label'>Evidence boundary</div>
           <p>This portal is read-only. It does not mutate replay, governance, or settlement state.</p>
-          <p><code>{proof.get('authority_boundary')}</code></p>
+          <p><code>public_lookup_is_registry_and_packet_read_only</code></p>
         </div>
       </section>
     </main>
@@ -94,12 +120,19 @@ def build_public_verification_router(
     @router.get("/public/registry")
     def public_registry() -> dict[str, Any]:
         proof = build_architecture_integrity_proof().canonical_dict()
+        documentation_registry = _documentation_registry_snapshot()
         entries = [entry.canonical_dict() for entry in registry_store.list_entries()]
         entries.append(proof["registry_entry"])
         return {
             "classification": "CONTROLLED_PUBLIC_VERIFICATION",
             "entries": entries,
             "count": len(entries),
+            "documentation": {
+                "registry_id": documentation_registry.get("registry_id", "NOVATECH_DOCUMENTATION_COMPLIANCE_REGISTRY_V1"),
+                "status": documentation_registry.get("status", "ACTIVE"),
+                "standard_protocol": documentation_registry.get("standard_protocol", {}),
+                "portal": "/public/documentation/portal",
+            },
             "authority_boundary": "public_lookup_is_registry_and_packet_read_only",
         }
 

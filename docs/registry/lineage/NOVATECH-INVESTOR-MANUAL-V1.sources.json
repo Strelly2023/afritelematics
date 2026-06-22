@@ -1,0 +1,23 @@
+{
+  "document_id": "NOVATECH-INVESTOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.543650+00:00",
+  "profile": "investor",
+  "source_documents": [
+    {
+      "path": "docs/strategy/AFRITECH_ENTERPRISE_READINESS_REVIEW.md",
+      "sha256": "88be3b2de5599244dd56f5f71aa69be9a3388bef5095ee9336f5734ea21c6b83"
+    },
+    {
+      "path": "docs/strategy/AFRITECH_MONETIZATION_AND_ECOSYSTEM_EXPANSION_BLUEPRINT.md",
+      "sha256": "214655c025369cbba8738d20c0005ba1a20f2574b8b52e68e0968aadff7e1882"
+    },
+    {
+      "path": "docs/roadmap/AfriTech_Operational_Civilization_Platform_Master_Plan.md",
+      "sha256": "6b6de6d019672b3ed1e6e09eb063c3ea77fb9043b6806fcb36859b1f4a65731d"
+    },
+    {
+      "path": "docs/vision/Nova_Ecosystem_Naming_Strategy.md",
+      "sha256": "436bea856aa7d4cdd79d722f8475a78ce2e9cda6b715fe27207a5797b719ddec"
+    }
+  ]
+}

@@ -47,6 +47,7 @@ const EMPTY_OPERATOR_STATE = {
   novatechOutcomeStatus: null,
   novatechTrustNetwork: null,
   novatechMarketplace: null,
+  novatechDocumentationCompliance: null,
   novatechControlledExecutionActivation: null,
   novatechMarketplaceOnboarding: null,
   liveAnalytics: null,
@@ -2244,6 +2245,7 @@ export default function OperatorDashboard() {
         novatechOutcomeStatusResult,
         novatechTrustNetworkResult,
         novatechMarketplaceResult,
+        novatechDocumentationComplianceResult,
         novatechControlledExecutionActivationResult,
         novatechMarketplaceOnboardingResult,
       ] = await Promise.allSettled([
@@ -2266,6 +2268,7 @@ export default function OperatorDashboard() {
         readJson("/v1/novatech/outcomes/status"),
         readJson("/v1/novatech/trust-network/status"),
         readJson("/v1/novatech/marketplace/status"),
+        readJson("/v1/novatech/documentation/status"),
         readJson(`/v1/novatech/organizations/${organizationId}/execution/activation`),
         readJson("/v1/novatech/marketplace/onboarding"),
       ]);
@@ -2328,6 +2331,10 @@ export default function OperatorDashboard() {
         novatechMarketplaceResult.status === "fulfilled"
           ? novatechMarketplaceResult.value
           : state.novatechMarketplace;
+      const novatechDocumentationCompliance =
+        novatechDocumentationComplianceResult.status === "fulfilled"
+          ? novatechDocumentationComplianceResult.value
+          : state.novatechDocumentationCompliance;
       const novatechControlledExecutionActivation =
         novatechControlledExecutionActivationResult.status === "fulfilled"
           ? novatechControlledExecutionActivationResult.value
@@ -2391,6 +2398,7 @@ export default function OperatorDashboard() {
         novatechOutcomeStatus,
         novatechTrustNetwork,
         novatechMarketplace,
+        novatechDocumentationCompliance,
         novatechControlledExecutionActivation,
         novatechMarketplaceOnboarding,
         liveAnalytics,
@@ -2611,6 +2619,7 @@ export default function OperatorDashboard() {
   const novatechOutcomeReplay = novatechOutcomeStatus?.replay || null;
   const novatechTrustNetwork = state.novatechTrustNetwork;
   const novatechMarketplace = state.novatechMarketplace;
+  const novatechDocumentationCompliance = state.novatechDocumentationCompliance;
   const novatechControlledExecutionActivation = state.novatechControlledExecutionActivation;
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const rollbackReady =
@@ -4521,6 +4530,135 @@ export default function OperatorDashboard() {
               </div>
             ) : (
               <EmptyState label="Safe execution will appear after a tenant snapshot is available." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Documentation Compliance">
+            {novatechDocumentationCompliance ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>
+                      {novatechDocumentationCompliance.compliance_registry?.classification ||
+                        "DOCUMENTATION_COMPLIANCE_PRODUCT"}
+                    </strong>
+                    <span>{novatechDocumentationCompliance.compliance_registry?.status || "active"}</span>
+                  </div>
+                  <p>
+                    {novatechDocumentationCompliance.compliance_registry?.positioning?.certification_layer ||
+                      "ISO-style certification layer"} with
+                    {" "}
+                    {novatechDocumentationCompliance.compliance_registry?.positioning?.government_compliance ||
+                      "government compliance positioning"}.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Documents {novatechDocumentationCompliance.summary?.document_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Policies {novatechDocumentationCompliance.summary?.policy_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Trust {novatechDocumentationCompliance.summary?.trust_score || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Training {Number(novatechDocumentationCompliance.summary?.training_completion_rate || 0).toFixed(2)}%
+                    </span>
+                    <span className="surface-chip">
+                      Assurance {novatechDocumentationCompliance.summary?.assurance_status || "unknown"}
+                    </span>
+                    <span className="surface-chip">
+                      Standard {novatechDocumentationCompliance.summary?.standard_protocol || "AfriCPPT"}
+                    </span>
+                    <span className="surface-chip">
+                      Tenants {novatechDocumentationCompliance.summary?.tenant_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Tenant {novatechDocumentationCompliance.summary?.current_tenant_status || "unknown"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Organization OS and governance</strong>
+                  <div className="chip-row">
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.organization_governance?.directory_surface || "/v1/novatech/organizations"}
+                    >
+                      Organization directory
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.organization_governance?.detail_surface || "/v1/novatech/organizations/org-nova"}
+                    >
+                      Tenant detail
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.organization_governance?.billing_surface || "/v1/novatech/organizations/org-nova/billing"}
+                    >
+                      Billing
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.organization_governance?.execution_surface || "/v1/novatech/organizations/org-nova/execution"}
+                    >
+                      Execution
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.organization_governance?.public_documentation_portal || "/public/documentation/portal"}
+                    >
+                      Public docs portal
+                    </a>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Certification and public verification</strong>
+                  <div className="chip-row">
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.certification_issuance?.issue_surface || "/v1/novatech/documentation/certification/issue"}
+                    >
+                      Issue certification
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.public_verification?.portal_surface || "/public/verify/portal"}
+                    >
+                      Public verification
+                    </a>
+                    <a
+                      className="surface-chip"
+                      href={novatechDocumentationCompliance.public_verification?.documentation_portal_surface || "/public/documentation/portal"}
+                    >
+                      Documentation portal
+                    </a>
+                    <span className="surface-chip">
+                      Policy {novatechDocumentationCompliance.summary?.policy_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Trust {novatechDocumentationCompliance.summary?.trust_score || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Assurance {novatechDocumentationCompliance.summary?.assurance_status || "unknown"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Marketplace and onboarding</strong>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Services {novatechDocumentationCompliance.summary?.marketplace_services || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Onboarding {novatechDocumentationCompliance.marketplace_onboarding?.phases?.length || 0} phases
+                    </span>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Documentation compliance will appear after the registry is loaded." />
             )}
           </OperatorPanel>
 

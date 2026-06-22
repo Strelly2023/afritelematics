@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "2d4ea6d74a501a409f25191f7f38448448d95621ec48116c160ff6e20c79a63a",
+  "document_id": "NOVATECH-INVESTOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.544405+00:00",
+  "owner": "NovaTech Strategy",
+  "profile": "investor",
+  "source_count": 4,
+  "source_manifest": "docs/registry/lineage/NOVATECH-INVESTOR-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH INVESTOR MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

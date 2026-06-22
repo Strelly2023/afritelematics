@@ -1,0 +1,23 @@
+{
+  "document_id": "NOVATECH-OPERATOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.412466+00:00",
+  "profile": "operator",
+  "source_documents": [
+    {
+      "path": "docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md",
+      "sha256": "76d5fe0f05b01b1bbec087654e0b89dec7eb03364233649f2c557cb58e6a2888"
+    },
+    {
+      "path": "docs/operations/AFRITECH_OPERATOR_DECISION_PROTOCOL.md",
+      "sha256": "9c718eca5dd98b3b9118a1abc748ab0bd97cbfb616e151b44ba0235318b0bf7a"
+    },
+    {
+      "path": "docs/operations/AfriRide_Operability_Playbook.md",
+      "sha256": "6a762d1375944260b32d67d049102c28f4be321c9f2523f8eb4e6648eb01a5ad"
+    },
+    {
+      "path": "docs/operations/AfriRide_First_10_Rides_Runbook.md",
+      "sha256": "c476a623086a2048e52fb6fa1b8ad883c8bece30f0819cad515ca01ddf43230c"
+    }
+  ]
+}

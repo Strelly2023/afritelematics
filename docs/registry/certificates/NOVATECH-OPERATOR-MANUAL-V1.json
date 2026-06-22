@@ -1,0 +1,13 @@
+{
+  "classification": "GENERATED_ROLE_MANUAL",
+  "document_hash": "b46e1eba92eff3653645f68346c93ea9024489345035e86014a0887544918d2e",
+  "document_id": "NOVATECH-OPERATOR-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.412928+00:00",
+  "owner": "NovaTech Operations",
+  "profile": "operator",
+  "source_count": 4,
+  "source_manifest": "docs/registry/lineage/NOVATECH-OPERATOR-MANUAL-V1.sources.json",
+  "status": "ACTIVE",
+  "title": "NOVATECH OPERATOR MANUAL",
+  "validator_version": "novatech-doc-system-v1"
+}

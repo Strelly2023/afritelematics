@@ -136,3 +136,4 @@ def test_public_verification_portal_links_anchor_dashboard() -> None:
     assert response.status_code == 200
     assert "/public/architecture/anchors/dashboard" in response.text
     assert "/public/architecture/anchors/verification" in response.text
+    assert "/public/documentation/portal" in response.text

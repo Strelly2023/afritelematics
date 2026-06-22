@@ -1,0 +1,23 @@
+{
+  "document_id": "NOVATECH-DEVELOPER-MANUAL-V1",
+  "generated_at": "2026-06-22T04:24:45.476842+00:00",
+  "profile": "developer",
+  "source_documents": [
+    {
+      "path": "docs/api/AFRIRIDE_NEXT_GEN_MOBILE_API_CONTRACT.md",
+      "sha256": "055a7c1de5bd71b2927b113027a27f148b83553e919bd507a10ffbf30f11143b"
+    },
+    {
+      "path": "docs/mobile/AFRIRIDE_MOBILE_UX_POLISH_GUIDE.md",
+      "sha256": "d87adbacbbfe6189bafa4a7f17bfc4ff5986382a40c2f6170390c33a8323fc21"
+    },
+    {
+      "path": "docs/operations/AFRITECH_PILOT_EXECUTION_PACK.md",
+      "sha256": "db3aa8c1bb1a2eb772a20ab9205c2b6395311f65de5817b09175f9c025f6ec8e"
+    },
+    {
+      "path": "docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md",
+      "sha256": "76d5fe0f05b01b1bbec087654e0b89dec7eb03364233649f2c557cb58e6a2888"
+    }
+  ]
+}

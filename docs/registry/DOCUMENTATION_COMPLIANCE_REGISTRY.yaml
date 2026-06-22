@@ -1,0 +1,133 @@
+registry_id: NOVATECH_DOCUMENTATION_COMPLIANCE_REGISTRY_V1
+status: ACTIVE
+validator_version: novatech-doc-system-v1
+generated_at: '2026-06-22T04:24:45.549742+00:00'
+classification: DOCUMENTATION_COMPLIANCE_PRODUCT
+positioning:
+  certification_layer: ISO-style certification layer
+  government_compliance: Government compliance positioning
+  monetization: Trust-as-a-service
+  marketplace: Global partner marketplace
+standard_protocol:
+  name: AfriCPPT
+  expansion: Global standard protocol for proof, compliance, and trust portability
+  publication_surface: /v1/novatech/documentation/standard
+source_documents:
+- path: docs/governance/NOVATECH_PLATFORM_ADMINISTRATOR_AND_STAFF_MANUAL_V2.md
+  sha256: ede6d9d15deb6c9a1c71a6d453e84b6a3ece1d8c4ae3fe06dc3a791bba1df45f
+- path: docs/governance/NOVASCRIPT_GOVERNANCE_HANDBOOK.md
+  sha256: 6aecb87673ed58ea69db078c9c938eb334a0f36d9388b6fc1b12fbebf9bff5e7
+- path: docs/certification/NOVATECH_DOCUMENTATION_CERTIFICATION_PROGRAM.md
+  sha256: 852b2be9464786ccd9dcd2ca52a2456b497721f8438bcfc1e30dd58e22f856c5
+- path: docs/certification/NOVASCRIPT_CERTIFICATION_PROGRAM.md
+  sha256: bc43beb96bd53d97b0a5427afa93267ffac5e7917debf7fc4cf2ada486ed7525
+- path: docs/strategy/NOVATECH_DOCUMENTATION_COMPLIANCE_AND_MARKETPLACE_STRATEGY.md
+  sha256: dbaaa02c7129abb7c163bc1ffeadbf468fea46ffeae463df9940c84e960196fd
+- path: docs/standards/AFRICPPT_PROTOCOL_SPEC.md
+  sha256: 4b013ddd4617f41c6613d85a2ba4db21e3507311908da4cb8306e5acb9e33d95
+- path: docs/standards/AFRIRIDE_TRUST_PROTOCOL_SPEC.md
+  sha256: 74dc2604a26bded54e223798e3c26c2afc0b0bd935d458e081ab2941510806f7
+- path: docs/operations/AFRITECH_FULL_SYSTEM_VERIFICATION_RUNBOOK.md
+  sha256: 76d5fe0f05b01b1bbec087654e0b89dec7eb03364233649f2c557cb58e6a2888
+- path: docs/operations/AFRITECH_OPERATOR_DECISION_PROTOCOL.md
+  sha256: 9c718eca5dd98b3b9118a1abc748ab0bd97cbfb616e151b44ba0235318b0bf7a
+linked_surfaces:
+  document_registry:
+    path: docs/registry/DOCUMENT_REGISTRY.yaml
+    document_count: 7
+    certificate_count: 7
+    lineage_root: docs/registry/lineage
+    certificate_root: docs/registry/certificates
+  organization_os:
+    api_surface: /v1/novatech/intranet/platform
+    directory_surface: /v1/novatech/organizations
+    description: Organization OS surfaces for tenant directory, internal operations,
+      and governed workspace visibility.
+  tenant_governance:
+    api_surface: /v1/novatech/organizations/{organization_id}
+    billing_surface: /v1/novatech/organizations/{organization_id}/billing
+    execution_surface: /v1/novatech/organizations/{organization_id}/execution
+    execution_activation_surface: /v1/novatech/organizations/{organization_id}/execution/activation
+    onboarding_surface: /v1/novatech/organizations/onboard
+    description: Tenant governance surfaces for organization lifecycle, billing, and
+      controlled execution readiness.
+  policy_registry:
+    api_surface: /v1/novatech/documentation/policy
+    source_surface: /v1/novaprogramming/policy
+    description: Policy registry and decision review for documentation governance.
+  certification_registry:
+    api_surface: /v1/novatech/documentation/certification
+    issuance_surface: /v1/novatech/documentation/certification/issue
+    source_surface: /v1/novaprogramming/certification
+    description: Certification registry and issuance for manuals and compliance packs.
+  certification_issuance:
+    api_surface: /v1/novatech/documentation/certification/issue
+    registry_surface: /v1/novatech/documentation/certification
+    source_surface: /v1/novaprogramming/certification
+    description: Certification issuance surface for document compliance certificates
+      and public verification readiness.
+  trust_registry:
+    api_surface: /v1/novatech/documentation/trust
+    source_surface: /v1/novaprogramming/trust
+    description: Trust registry, risk, and verification surfaces for documentation
+      artifacts.
+  operator_training_records:
+    api_surface: /v1/novatech/documentation/training
+    storage_table: operator_training_records
+    description: Training acknowledgements and completion records for manuals and
+      staff.
+  continuous_assurance_reports:
+    api_surface: /v1/novatech/documentation/assurance
+    report_surface: /v1/novatech/documentation/assurance/report
+    history_surface: /v1/novatech/documentation/assurance/history
+    description: Continuous assurance status, history, and report generation surfaces.
+  public_verification_portal:
+    portal_surface: /public/verify/portal
+    documentation_portal_surface: /public/documentation/portal
+    verification_surface: /public/documentation/{organization_id}
+    description: Public verification portal surfaces for external documentation and
+      trust review.
+  marketplace:
+    api_surface: /v1/novatech/documentation/marketplace
+    onboarding_surface: /v1/novatech/documentation/onboarding
+    trust_marketplace_surface: /v1/novatech/marketplace/status
+    description: Trust marketplace, partner onboarding, and certification service
+      listing.
+product_categories:
+- Document certification
+- Organization OS
+- Tenant governance
+- Policy registry
+- Trust registry
+- Operator training records
+- Continuous assurance reports
+- Certification issuance
+- Public verification portal
+- Trust-as-a-service
+- Marketplace onboarding
+marketplace_services:
+- Verification Services
+- Certification Services
+- Replay Services
+- Trust Services
+partner_onboarding_strategy:
+  surface: /v1/novatech/documentation/onboarding
+  phases:
+  - verify the partner use case
+  - attach the partner to the registry and trust surfaces
+  - publish the role-specific manual set
+  - complete operator training and acknowledgement
+  - issue the first compliance and certification record
+  - list the partner in the trust marketplace
+  - continue assurance and renewal
+assurance_model:
+  status_surface: /v1/novatech/documentation/assurance
+  report_surface: /v1/novatech/documentation/assurance/report
+  history_surface: /v1/novatech/documentation/assurance/history
+  roles:
+  - operator
+  - trust
+  - finance
+  - developer
+  - partner
+  - investor

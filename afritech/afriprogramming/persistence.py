@@ -508,6 +508,21 @@ class PlatformStore:
             issued_at TEXT NOT NULL,
             payload_json TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS operator_training_records (
+            training_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            manual_id TEXT NOT NULL,
+            manual_version TEXT NOT NULL,
+            role TEXT NOT NULL,
+            trainee_user_id TEXT NOT NULL,
+            trainer_user_id TEXT NOT NULL,
+            completion_status TEXT NOT NULL,
+            assessment_score INTEGER NOT NULL,
+            evidence_count INTEGER NOT NULL,
+            acknowledgement_hash TEXT NOT NULL,
+            notes_json TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );
         CREATE TABLE IF NOT EXISTS assurance_runs (
             assurance_run_id TEXT PRIMARY KEY,
             organization_id TEXT NOT NULL,
@@ -3050,6 +3065,140 @@ class PlatformStore:
         records = self.list_certification_records(organization_id=organization_id, limit=1)
         return records[0] if records else None
 
+    def store_operator_training_record(
+        self,
+        *,
+        organization_id: str,
+        manual_id: str,
+        manual_version: str,
+        role: str,
+        trainee_user_id: str,
+        trainer_user_id: str,
+        completion_status: str,
+        assessment_score: int,
+        evidence_count: int,
+        notes: list[str] | None = None,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        notes = notes or []
+        record = {
+            "training_id": f"training-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "manual_id": manual_id,
+            "manual_version": manual_version,
+            "role": role,
+            "trainee_user_id": trainee_user_id,
+            "trainer_user_id": trainer_user_id,
+            "completion_status": completion_status,
+            "assessment_score": int(assessment_score),
+            "evidence_count": int(evidence_count),
+            "acknowledgement_hash": _hash_payload(
+                {
+                    "organization_id": organization_id,
+                    "manual_id": manual_id,
+                    "manual_version": manual_version,
+                    "role": role,
+                    "trainee_user_id": trainee_user_id,
+                    "trainer_user_id": trainer_user_id,
+                    "completion_status": completion_status,
+                    "assessment_score": int(assessment_score),
+                    "evidence_count": int(evidence_count),
+                    "notes": notes,
+                }
+            ),
+            "notes": notes,
+            "created_at": _now(),
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO operator_training_records (
+                    training_id, organization_id, manual_id, manual_version,
+                    role, trainee_user_id, trainer_user_id, completion_status,
+                    assessment_score, evidence_count, acknowledgement_hash,
+                    notes_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["training_id"],
+                    organization_id,
+                    manual_id,
+                    manual_version,
+                    role,
+                    trainee_user_id,
+                    trainer_user_id,
+                    completion_status,
+                    record["assessment_score"],
+                    record["evidence_count"],
+                    record["acknowledgement_hash"],
+                    json.dumps(notes, sort_keys=True),
+                    record["created_at"],
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_operator_training_records(
+        self,
+        *,
+        organization_id: str | None = None,
+        manual_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM operator_training_records"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if manual_id is not None:
+            clauses.append("manual_id = ?")
+            params.append(manual_id)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_operator_training_record(row) for row in rows]
+
+    def latest_operator_training_record(
+        self,
+        *,
+        organization_id: str | None = None,
+        manual_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        records = self.list_operator_training_records(
+            organization_id=organization_id,
+            manual_id=manual_id,
+            limit=1,
+        )
+        return records[0] if records else None
+
+    def operator_training_summary(
+        self,
+        *,
+        organization_id: str | None = None,
+    ) -> dict[str, Any]:
+        records = self.list_operator_training_records(organization_id=organization_id, limit=100)
+        completed = [record for record in records if record["completion_status"] == "completed"]
+        latest = records[0] if records else None
+        average_score = round(sum(record["assessment_score"] for record in records) / len(records), 2) if records else 0.0
+        role_counts: dict[str, int] = {}
+        for record in records:
+            role = record["role"]
+            role_counts[role] = role_counts.get(role, 0) + 1
+        return {
+            "organization_id": organization_id or "all",
+            "count": len(records),
+            "completed_count": len(completed),
+            "completion_rate": round((len(completed) / len(records)) * 100.0, 2) if records else 0.0,
+            "average_score": average_score,
+            "latest": latest,
+            "role_counts": role_counts,
+            "status": "ready" if records else "empty",
+        }
+
     def store_assurance_run(
         self,
         *,
@@ -5346,6 +5495,7 @@ class PlatformStore:
             assurance_count = conn.execute("SELECT COUNT(*) FROM assurance_records" + query_filter, params).fetchone()[0]
             trust_count = conn.execute("SELECT COUNT(*) FROM trust_scores" + query_filter, params).fetchone()[0]
             certification_count = conn.execute("SELECT COUNT(*) FROM certification_records" + query_filter, params).fetchone()[0]
+            training_count = conn.execute("SELECT COUNT(*) FROM operator_training_records" + query_filter, params).fetchone()[0]
             assurance_run_count = conn.execute("SELECT COUNT(*) FROM assurance_runs" + query_filter, params).fetchone()[0]
             policy_count = conn.execute("SELECT COUNT(*) FROM policy_definitions" + query_filter, params).fetchone()[0]
             decision_count = conn.execute("SELECT COUNT(*) FROM policy_decisions" + query_filter, params).fetchone()[0]
@@ -5399,6 +5549,7 @@ class PlatformStore:
             "assurance_runs": assurance_run_count,
             "trust_scores": trust_count,
             "certifications": certification_count,
+            "operator_training_records": training_count,
             "policies": policy_count,
             "policy_decisions": decision_count,
             "signing_keys": key_count,
@@ -5826,6 +5977,24 @@ class PlatformStore:
             "public_key_id": row["public_key_id"],
             "issued_at": row["issued_at"],
             "payload": json.loads(row["payload_json"]),
+        }
+
+    @staticmethod
+    def _row_to_operator_training_record(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "training_id": row["training_id"],
+            "organization_id": row["organization_id"],
+            "manual_id": row["manual_id"],
+            "manual_version": row["manual_version"],
+            "role": row["role"],
+            "trainee_user_id": row["trainee_user_id"],
+            "trainer_user_id": row["trainer_user_id"],
+            "completion_status": row["completion_status"],
+            "assessment_score": int(row["assessment_score"]),
+            "evidence_count": int(row["evidence_count"]),
+            "acknowledgement_hash": row["acknowledgement_hash"],
+            "notes": json.loads(row["notes_json"]),
+            "created_at": row["created_at"],
         }
 
     @staticmethod

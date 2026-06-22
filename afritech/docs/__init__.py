@@ -1,0 +1,2 @@
+"""NovaTech documentation system package."""
+
