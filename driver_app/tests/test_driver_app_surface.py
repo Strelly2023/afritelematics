@@ -190,6 +190,33 @@ def test_novaride_driver_trust_uix_primitives_are_integrated() -> None:
     assert "EvidenceSummaryCard" in trust_profile
 
 
+def test_driver_product_completion_surfaces_are_wired() -> None:
+    app = read("App.tsx")
+    screens = [
+        "DriverLoginScreen",
+        "DriverProfileScreen",
+        "VehicleManagementScreen",
+        "DriverNotificationsScreen",
+    ]
+
+    for screen in screens:
+        source = read(f"ui/screens/{screen}.tsx")
+        assert f"function {screen}" in source
+        assert screen in app
+
+    tabs = read("ui/widgets/ProductTabs.tsx")
+
+    assert "ProductTabs" in app
+    assert '"control"' in app
+    assert '"trips"' in app
+    assert '"trust"' in app
+    assert '"profile"' in app
+    assert '"alerts"' in app
+    assert "setAuthenticated(true)" in app
+    assert "availability?.status" in app
+    assert "accessibilityRole=\"button\"" in tabs
+
+
 def test_earnings_screen_requires_core_source() -> None:
     source = read("ui/screens/EarningsScreen.tsx")
 

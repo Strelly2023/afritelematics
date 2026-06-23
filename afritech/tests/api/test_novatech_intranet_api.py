@@ -69,12 +69,17 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     payload = platform.json()
     assert payload["view"] == "novatech_intranet_platform"
     assert payload["surfaces"]["intranet"]["route"] == "/novatech/intranet/"
+    assert payload["surfaces"]["intranet"]["dashboards"]["core_platform_console"] == "/v1/core-platform/console"
+    assert payload["surfaces"]["intranet"]["dashboards"]["novatrust_explorer"] == "/trust/explorer/{receipt_or_trust_id}"
     assert payload["surfaces"]["extranet"]["audiences"] == [
         "CLIENT",
         "PARTNER",
         "SUPPLIER",
         "INVESTOR",
     ]
+    assert any(route["path"] == "/v1/novatech/extranet/status" for route in payload["routes"])
+    assert any(route["path"] == "/v1/core-platform/console" for route in payload["routes"])
+    assert any(route["path"] == "/trust/explorer/{receipt_or_trust_id}" for route in payload["routes"])
     assert payload["surfaces"]["knowledge"]["project_count"] >= 1
     assert payload["surfaces"]["workflows"]["read_only"] is True
     assert payload["surfaces"]["comms"]["message_count"] >= 0
@@ -82,6 +87,9 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     extranet = client.get("/v1/novatech/extranet/status", headers=auth_headers(role="OPERATOR"))
     assert extranet.status_code == 200
     assert extranet.json()["route"] == "/novatech/extranet/"
+    assert "/trust/explorer/{receipt_or_trust_id}" in extranet.json()["routes"]
+    assert extranet.json()["public_verification"]["trust_explorer"] == "/trust/explorer/{receipt_or_trust_id}"
+    assert extranet.json()["partner_surface"]["core_console"] == "/v1/core-platform/console"
 
     knowledge = client.get("/v1/novatech/intranet/knowledge", headers=auth_headers(role="OPERATOR"))
     assert knowledge.status_code == 200

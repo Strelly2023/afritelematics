@@ -235,6 +235,21 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "ride_type": ride_type,
         }
 
+    @router.get("/rider/rides/history")
+    def rider_history(gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+        items = []
+        for ride in gateway.dispatcher.rides.values():
+            validation = trace_log.validate_ride(ride.ride_id) if ride.events else None
+            items.append(
+                {
+                    "ride_id": ride.ride_id,
+                    "status": _mobile_ride_status(ride.status),
+                    "trust_score": 92 if ride.status == "COMPLETED" else 88,
+                    "verification_status": "PASSED" if validation and validation.valid else "REVIEW_REQUIRED",
+                }
+            )
+        return {"items": items}
+
     @router.get("/rider/rides/{ride_id}")
     def rider_status(ride_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
         ride = _require_ride(gateway, ride_id)
@@ -322,21 +337,6 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
                 {"label": "Total", "amount_text": f"AUD {total:.2f}"},
             ],
         }
-
-    @router.get("/rider/rides/history")
-    def rider_history(gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
-        items = []
-        for ride in gateway.dispatcher.rides.values():
-            validation = trace_log.validate_ride(ride.ride_id) if ride.events else None
-            items.append(
-                {
-                    "ride_id": ride.ride_id,
-                    "status": _mobile_ride_status(ride.status),
-                    "trust_score": 92 if ride.status == "COMPLETED" else 88,
-                    "verification_status": "PASSED" if validation and validation.valid else "REVIEW_REQUIRED",
-                }
-            )
-        return {"items": items}
 
     @router.get("/driver/{driver_id}/availability")
     def driver_availability(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:

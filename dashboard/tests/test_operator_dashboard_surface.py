@@ -53,6 +53,43 @@ def test_operator_dashboard_is_read_only_surface() -> None:
     assert "Replay & Evidence Control" in source
 
 
+def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
+    source = read("src/App.jsx")
+
+    assert "Unified Trust Operating Console" in source
+    assert "Console Wireframes" in source
+    assert "NovaTechSol Core Flow" in source
+    assert "Identity to authority to execution to payment to proof to intelligence to evolution" in source
+    assert "/console/identity" in source
+    assert "/console/authority" in source
+    assert "/console/payments" in source
+    assert "/console/trust" in source
+    assert "/console/intelligence" in source
+    assert "/console/programming" in source
+    assert "NovaID / AfriID" in source
+    assert "NovaPower" in source
+    assert "NovaPay / AfriPay" in source
+    assert "NovaTrust" in source
+    assert "NovaScript" in source
+    assert "NovaProgramming" in source
+    assert "NovaID Command Surface" in source
+    assert "NovaPower Policy Surface" in source
+    assert "NovaPay Transaction Surface" in source
+    assert "NovaTrust Explorer" in source
+    assert "NovaScript Intelligence Surface" in source
+    assert "NovaProgramming Studio" in source
+    assert "NovaTrust Public Explorer UI" in source
+    assert "/trust/explorer/:receipt_id" in source
+    assert "/v1/core-platform/trust/explorer/:receipt_id" in source
+    assert "/v1/core-platform/pilot/flow" in source
+    assert "TrustExplorerFrontend" in source
+    assert "PDF audit export" in read("src/TrustExplorer.jsx")
+    assert "Ed25519 signature" in read("src/TrustExplorer.jsx")
+    assert "fetch(`${apiBaseUrl}/v1/core-platform/trust/explorer/${receiptId}`)" in read("src/TrustExplorer.jsx")
+    assert "Real-time Auditor Dashboard" in read("src/AuditorDashboard.jsx")
+    assert "/trust/auditor/dashboard?ids=" in read("src/AuditorDashboard.jsx")
+
+
 def test_operator_dashboard_exposes_required_operator_panels() -> None:
     source = read("src/App.jsx")
 

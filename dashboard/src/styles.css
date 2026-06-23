@@ -1758,3 +1758,50 @@ a {
     grid-template-columns: 1fr;
   }
 }
+.trust-explorer-frontend {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.trust-explorer-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.trust-explorer-step {
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  background: #f4f7fb;
+  font-weight: 700;
+  text-align: center;
+}
+
+.trust-explorer-step small {
+  display: block;
+  margin-top: 4px;
+  color: #5d6b7f;
+  font-weight: 600;
+}
+
+.auditor-dashboard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.auditor-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}

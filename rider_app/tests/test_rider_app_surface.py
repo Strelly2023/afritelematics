@@ -126,6 +126,34 @@ def test_novaride_trust_uix_primitives_are_integrated() -> None:
     assert "EvidenceSummaryCard" in replay
 
 
+def test_rider_product_completion_surfaces_are_wired() -> None:
+    app = read("App.tsx")
+    screens = [
+        "RiderLoginScreen",
+        "RiderProfileScreen",
+        "RiderNotificationsScreen",
+        "EvidenceScreen",
+    ]
+
+    for screen in screens:
+        source = read(f"ui/screens/{screen}.tsx")
+        assert f"function {screen}" in source
+        assert screen in app
+
+    tabs = read("ui/widgets/ProductTabs.tsx")
+    evidence = read("ui/screens/EvidenceScreen.tsx")
+
+    assert "ProductTabs" in app
+    assert '"book"' in app
+    assert '"track"' in app
+    assert '"history"' in app
+    assert '"profile"' in app
+    assert '"alerts"' in app
+    assert "setAuthenticated(true)" in app
+    assert "ledgerReceipt?.eventCount ?? 0" in evidence
+    assert "accessibilityRole=\"button\"" in tabs
+
+
 def test_price_explanation_screen_shows_core_source() -> None:
     source = read("ui/screens/PriceExplanationScreen.tsx")
 

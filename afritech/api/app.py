@@ -40,6 +40,10 @@ from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
 from afritech.api.novascript_api import build_novascript_public_router, build_novascript_router
 from afritech.api.novatech_intranet_api import build_novatech_intranet_router
 from afritech.api.documentation_compliance_api import build_documentation_compliance_router
+from afritech.api.core_platform_api import (
+    build_core_platform_router,
+    build_public_trust_explorer_router,
+)
 from afritech.api.afriprogramming_control_api import (
     build_afriprogramming_control_router,
 )
@@ -163,6 +167,10 @@ app.include_router(build_afriride_next_gen_mobile_router())
 app.include_router(build_dashboard_gateway_router())
 app.include_router(build_novatech_intranet_router())
 app.include_router(build_documentation_compliance_router())
+
+# ✅ NovaTechSol core platform API
+app.include_router(build_core_platform_router())
+app.include_router(build_public_trust_explorer_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())

@@ -110,6 +110,10 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         assert replay.status_code == 200
         assert replay.json()["replay_verified"] is True
 
+        rider_history = client.get("/v1/rider/rides/history")
+        assert rider_history.status_code == 200
+        assert rider_history.json()["items"][0]["ride_id"] == "ride-next-gen-001"
+
         operator = client.get("/v1/operator/dashboard")
         assert operator.status_code == 200
         payload = operator.json()

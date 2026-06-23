@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { AuditorDashboard } from "./AuditorDashboard";
 import { connectDashboardRealtime } from "./realtime";
+import { TrustExplorerFrontend } from "./TrustExplorer";
 
 const API_BASE_URL =
   import.meta?.env?.VITE_AFRIRIDE_API_URL ||
@@ -633,41 +635,107 @@ const NOVATECH_PLATFORM_NAV = [
 const NOVATECH_CORE_LAYERS = [
   {
     name: "NovaProgramming",
-    status: "Live",
-    route: "/v1/novaprogramming/dashboard",
+    status: "Wired",
+    route: "/console/programming",
     summary: "Engineering control, metrics, RBAC, staff dashboards, and governed release surfaces.",
   },
   {
     name: "NovaScript",
-    status: "Live",
-    route: "/v1/novascript/dashboard",
+    status: "Wired",
+    route: "/console/intelligence",
     summary: "AI system state, risk analysis, trust graph, and repository intelligence.",
   },
   {
     name: "NovaTrust",
-    status: "Planned",
-    route: "/public/trust/dashboard",
-    summary: "Identity verification, proof surfaces, and fraud-aware trust review.",
+    status: "Wired",
+    route: "/console/trust",
+    summary: "Proof packets, replay validation, event timeline, and external verification surfaces.",
   },
   {
     name: "NovaPower",
-    status: "Planned",
-    route: "#power",
-    summary: "Compute, scaling, uptime, and backend resource posture.",
+    status: "Wired",
+    route: "/console/authority",
+    summary: "Policy decisions for roles, scopes, tenants, ownership, and risk controls.",
   },
   {
     name: "NovaID / AfriID",
-    status: "Planned",
-    route: "#identity",
-    summary: "User identity, authentication, KYC, rider and driver identity binding.",
+    status: "Wired",
+    route: "/console/identity",
+    summary: "Identity binding, organizations, devices, sessions, roles, and KYC posture.",
   },
   {
     name: "NovaPay / AfriPay",
-    status: "Planned",
-    route: "#payments",
-    summary: "Transactions, payouts, wallet flows, and ride payment settlement.",
+    status: "Wired",
+    route: "/console/payments",
+    summary: "Intent validation, transaction execution, receipts, settlements, and finance audit trails.",
   },
 ];
+
+const NOVATECH_CORE_CONSOLE_MODULES = [
+  { key: "identity", label: "NovaID / AfriID", path: "/console/identity", metric: "Identity" },
+  { key: "authority", label: "NovaPower", path: "/console/authority", metric: "Authority" },
+  { key: "payments", label: "NovaPay / AfriPay", path: "/console/payments", metric: "Payment" },
+  { key: "trust", label: "NovaTrust", path: "/console/trust", metric: "Proof" },
+  { key: "intelligence", label: "NovaScript", path: "/console/intelligence", metric: "Intelligence" },
+  { key: "programming", label: "NovaProgramming", path: "/console/programming", metric: "Evolution" },
+];
+
+const NOVATECH_CORE_FLOW = [
+  "Identity",
+  "Authority",
+  "Execution",
+  "Payment",
+  "Proof",
+  "Intelligence",
+  "Evolution",
+];
+
+const NOVATECH_CONSOLE_WIREFRAMES = [
+  {
+    screen: "/console/identity",
+    title: "NovaID Command Surface",
+    zones: ["Session status", "Organization switcher", "Device registry", "Role editor"],
+  },
+  {
+    screen: "/console/authority",
+    title: "NovaPower Policy Surface",
+    zones: ["Policy table", "Decision trace", "Review queue", "Control log"],
+  },
+  {
+    screen: "/console/payments",
+    title: "NovaPay Transaction Surface",
+    zones: ["Intent queue", "Transactions", "Receipts", "Settlements"],
+  },
+  {
+    screen: "/console/trust",
+    title: "NovaTrust Explorer",
+    zones: ["Timeline", "Actor", "Action", "Replay result"],
+  },
+  {
+    screen: "/console/intelligence",
+    title: "NovaScript Intelligence Surface",
+    zones: ["Ask system", "Risk assistant", "Audit summary", "Recommendations"],
+  },
+  {
+    screen: "/console/programming",
+    title: "NovaProgramming Studio",
+    zones: ["Project list", "Proposal editor", "Diff viewer", "Validator results"],
+  },
+];
+
+const NOVATRUST_PUBLIC_EXPLORER = {
+  route: "/trust/explorer/:receipt_id",
+  apiRoute: "/v1/core-platform/trust/explorer/:receipt_id",
+  pilotFlow: "/v1/core-platform/pilot/flow",
+  zones: [
+    "Timeline",
+    "Actor",
+    "Authority decision",
+    "Payment receipt",
+    "Replay result",
+    "AI explanation",
+  ],
+};
 
 const NOVATECH_PRODUCT_LAYERS = [
   {
@@ -2778,6 +2846,53 @@ export default function OperatorDashboard() {
           title="Core layers and product surfaces"
           question="Browser navigation is structured around the control layers first, then the vertical products underneath."
         />
+        <OperatorPanel title="Unified Trust Operating Console">
+          <div className="stack">
+            <div className="record-card">
+              <div className="record-card-header">
+                <strong>NovaTechSol Core Flow</strong>
+                <span>2026 platform wiring</span>
+              </div>
+              <p>
+                Identity to authority to execution to payment to proof to intelligence to evolution,
+                exposed as one browser entrypoint for the core platform only.
+              </p>
+              <div className="chip-row">
+                {NOVATECH_CORE_FLOW.map((step) => (
+                  <span key={step} className="surface-chip">{step}</span>
+                ))}
+              </div>
+            </div>
+            <div className="operator-grid dense-grid">
+              {NOVATECH_CORE_CONSOLE_MODULES.map((module) => (
+                <article key={module.key} className="record-card">
+                  <div className="record-card-header">
+                    <strong>{module.label}</strong>
+                    <span>{module.metric}</span>
+                  </div>
+                  <p>{module.path}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </OperatorPanel>
+        <OperatorPanel title="Console Wireframes">
+          <div className="operator-grid dense-grid">
+            {NOVATECH_CONSOLE_WIREFRAMES.map((wireframe) => (
+              <article key={wireframe.screen} className="record-card">
+                <div className="record-card-header">
+                  <strong>{wireframe.title}</strong>
+                  <span>{wireframe.screen}</span>
+                </div>
+                <div className="chip-row">
+                  {wireframe.zones.map((zone) => (
+                    <span key={zone} className="surface-chip">{zone}</span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
         <div className="operator-grid">
           <OperatorPanel title="Core Platform Layers">
             <div className="stack">
@@ -3490,6 +3605,7 @@ export default function OperatorDashboard() {
                 while AfriProgramming remains the authority path for activation.
               </p>
             </article>
+            <AuditorDashboard receiptIds={["demo-receipt", "pilot-demo-receipt"]} />
           </div>
         </OperatorPanel>
         <div className="operator-grid afriprog-grid">
@@ -5101,6 +5217,36 @@ export default function OperatorDashboard() {
           The Trust Explorer is a public registry and verification visualization
           surface. It stays replay-linked and bounded: {TRUST_EXPLORER_RULE}.
         </p>
+        <OperatorPanel title="NovaTrust Public Explorer UI">
+          <div className="stack">
+            <TrustExplorerFrontend explorer={NOVATRUST_PUBLIC_EXPLORER} />
+            <article className="record-card">
+              <div className="record-card-header">
+                <strong>{NOVATRUST_PUBLIC_EXPLORER.route}</strong>
+                <span>public verification</span>
+              </div>
+              <p>
+                External verifiers can inspect a receipt or trust identifier without
+                gaining execution authority. The API packet is available at {NOVATRUST_PUBLIC_EXPLORER.apiRoute}.
+              </p>
+              <div className="chip-row">
+                {NOVATRUST_PUBLIC_EXPLORER.zones.map((zone) => (
+                  <span key={zone} className="surface-chip">{zone}</span>
+                ))}
+              </div>
+            </article>
+            <article className="record-card">
+              <div className="record-card-header">
+                <strong>Deploy one pilot flow</strong>
+                <span>{NOVATRUST_PUBLIC_EXPLORER.pilotFlow}</span>
+              </div>
+              <p>
+                Run one authenticated core-platform payment flow, persist the proof
+                packet, then open the generated NovaTrust explorer link.
+              </p>
+            </article>
+          </div>
+        </OperatorPanel>
         <div className="metric-grid">
           <TrustMetric
             label="Published registry entries"

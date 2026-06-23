@@ -13,6 +13,7 @@ from afritech.sdk.novascript import (
     verify_audit_package,
     verify_receipt,
 )
+from afritech.sdk.novatrust import NovaTrustClient, NovaTrustVerificationResult
 
 __all__ = [
     "ExternalVerifierClient",
@@ -21,6 +22,8 @@ __all__ = [
     "PublicVerifierClient",
     "SemanticAdmissionClient",
     "TrustNetworkClient",
+    "NovaTrustClient",
+    "NovaTrustVerificationResult",
     "evaluate_policy",
     "submit_trust_exchange",
     "validate_artifact",

@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `358`
+- Startup-safe closure size: `375`
 - Django-bound modules declared in repo: `246`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `35`
+- Direct startup imports from `afritech.api.app`: `36`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (358 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (375 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (35)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (36)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (60 files)"]
+    Core --> Api["api (61 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -81,13 +81,13 @@ flowchart TD
 
     Ride --> Backend["backend (28 files)"]
     Ride --> Django["django_app (99 files)"]
-    Ui --> Dashboard["src (3 files)"]
+    Ui --> Dashboard["src (5 files)"]
     Deploy --> Production["production (3 files)"]
 ```
 
 ## Repo Area Counts
 
-- `api`: `60` files
+- `api`: `61` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -99,12 +99,12 @@ flowchart TD
 - `runtime`: `79` files
 - `afriride_backend`: `28` files
 - `afriride_django`: `99` files
-- `dashboard_ui`: `3` files
+- `dashboard_ui`: `5` files
 - `deploy_production`: `3` files
 
 ## Startup Inventory
 
-### Api (30)
+### Api (31)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -119,6 +119,7 @@ flowchart TD
 - `afritech.api.contracts`
 - `afritech.api.contracts.rules`
 - `afritech.api.contracts.validator`
+- `afritech.api.core_platform_api`
 - `afritech.api.dashboard_gateway_api`
 - `afritech.api.documentation_compliance_api`
 - `afritech.api.feature_registry_api`
@@ -166,7 +167,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (289)
+### Other (305)
 
 - `afritech`
 - `afritech.afripay`
@@ -268,6 +269,21 @@ flowchart TD
 - `afritech.core.runtime.system_enforcement.execution_guard`
 - `afritech.core.runtime.worker`
 - `afritech.core.runtime.worker.worker`
+- `afritech.core_platform`
+- `afritech.core_platform.anchoring`
+- `afritech.core_platform.audit_export`
+- `afritech.core_platform.auditor_dashboard`
+- `afritech.core_platform.compliance_report`
+- `afritech.core_platform.export_bundle`
+- `afritech.core_platform.migration_system`
+- `afritech.core_platform.models`
+- `afritech.core_platform.orm`
+- `afritech.core_platform.payments`
+- `afritech.core_platform.payments.providers`
+- `afritech.core_platform.persistence`
+- `afritech.core_platform.qr`
+- `afritech.core_platform.services`
+- `afritech.core_platform.signing`
 - `afritech.crypto.anchor_publication`
 - `afritech.crypto.external_anchor`
 - `afritech.crypto.merkle`
@@ -428,6 +444,7 @@ flowchart TD
 - `afritech.sdk`
 - `afritech.sdk.external_verifier`
 - `afritech.sdk.novascript`
+- `afritech.sdk.novatrust`
 - `afritech.sdk.partner_registry`
 - `afritech.sdk.partner_verification`
 - `afritech.sdk.public_verifier`
@@ -492,6 +509,7 @@ flowchart TD
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.architecture_proof_api`
 - `afritech.api.auth.jwt_device_auth`
+- `afritech.api.core_platform_api`
 - `afritech.api.dashboard_gateway_api`
 - `afritech.api.documentation_compliance_api`
 - `afritech.api.feature_registry_api`
