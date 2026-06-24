@@ -217,8 +217,11 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
         headers=auth_headers(role="OBSERVER"),
     )
     assert provider_status.status_code == 200
-    assert provider_status.json()["providers"]["stripe"]["available"] is True
-    assert "ready_for_real_charge" in provider_status.json()["providers"]["stripe"]
+    body = provider_status.json()["providers"]
+    assert body["payid"]["available"] is True
+    assert body["payid"]["mode"] in {"controlled_pilot", "live_gateway"}
+    assert body["stripe"]["available"] is True
+    assert "ready_for_real_charge" in body["stripe"]
 
     pilot = client.post(
         "/v1/core-platform/pilot/flow",

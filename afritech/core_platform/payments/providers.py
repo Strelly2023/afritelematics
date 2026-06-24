@@ -8,6 +8,9 @@ key is supplied, while remaining safe in unconfigured test environments.
 from __future__ import annotations
 
 import os
+from typing import Any
+
+import httpx
 
 from afritech.core_platform.models import PaymentIntent
 from afritech.core_platform.payments.contracts import (
@@ -19,18 +22,91 @@ from afritech.core_platform.payments.contracts import (
 class PayIDProvider:
     name = "payid"
 
+    def __init__(
+        self,
+        *,
+        live: bool = False,
+        transport: httpx.BaseTransport | None = None,
+    ) -> None:
+        self.live = live and _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+        self.transport = transport
+
     def authorize(self, intent: PaymentIntent) -> PaymentProviderResult:
-        reference = f"PAYID-{intent.organization_id}-{intent.intent_id}".upper()
+        if not self.live:
+            reference = f"PAYID-{intent.organization_id}-{intent.intent_id}".upper()
+            return PaymentProviderResult(
+                provider=self.name,
+                provider_reference=reference,
+                status="completed",
+                settlement_status="settlement_pending",
+                raw={
+                    "rail": "payid",
+                    "mode": "controlled_pilot",
+                    "destination": intent.destination,
+                    "amount": str(intent.amount),
+                    "currency": intent.currency.upper(),
+                },
+            )
+
+        collection_url = os.environ.get("NOVAPAY_PAYID_COLLECTION_URL", "").rstrip("/")
+        api_token = os.environ.get("NOVAPAY_PAYID_API_TOKEN", "")
+        merchant_id = os.environ.get("NOVAPAY_PAYID_MERCHANT_ID", "")
+        callback_url = os.environ.get("NOVAPAY_PAYID_CALLBACK_URL", "")
+        if not all((collection_url, api_token, merchant_id, callback_url)):
+            raise RuntimeError("payid_live_configuration_incomplete")
+
+        payload: dict[str, Any] = {
+            "amount": str(intent.amount),
+            "currency": intent.currency.upper(),
+            "payid": intent.destination,
+            "merchant_id": merchant_id,
+            "merchant_reference": intent.intent_id,
+            "callback_url": callback_url,
+            "metadata": {
+                "organization_id": intent.organization_id,
+                "actor_id": intent.actor_id,
+            },
+        }
+        extra = os.environ.get("NOVAPAY_PAYID_REQUEST_TEMPLATE_JSON")
+        if extra:
+            import json
+
+            configured = json.loads(extra)
+            if not isinstance(configured, dict):
+                raise RuntimeError("payid_request_template_must_be_object")
+            payload.update(configured)
+
+        with httpx.Client(timeout=20.0, transport=self.transport) as client:
+            response = client.post(
+                collection_url,
+                headers={
+                    "Authorization": f"Bearer {api_token}",
+                    "Content-Type": "application/json",
+                    "Idempotency-Key": (
+                        f"novapay:{intent.organization_id}:{intent.intent_id}"
+                    ),
+                },
+                json=payload,
+            )
+        response.raise_for_status()
+        raw = response.json()
+        reference_field = os.environ.get(
+            "NOVAPAY_PAYID_REFERENCE_FIELD",
+            "transaction_id",
+        )
+        reference = str(raw.get(reference_field) or intent.intent_id)
         return PaymentProviderResult(
             provider=self.name,
             provider_reference=reference,
-            status="completed",
-            settlement_status="settlement_pending",
+            status=str(raw.get("status", "pending")),
+            settlement_status=str(
+                raw.get("settlement_status", "pending_provider_confirmation")
+            ),
             raw={
-                "rail": "payid",
-                "destination": intent.destination,
-                "amount": str(intent.amount),
+                "mode": "live_gateway",
+                "provider_status": str(raw.get("status", "submitted")),
                 "currency": intent.currency.upper(),
+                "merchant_id": merchant_id,
             },
         )
 
@@ -98,7 +174,7 @@ def provider_for(
     if normalized == "stripe":
         return StripeProvider(live=live)
     if normalized in {"payid", "pay_id", "osko"}:
-        return PayIDProvider()
+        return PayIDProvider(live=live)
     if normalized in {
         "mobile_money",
         "mobile-money",
@@ -119,3 +195,25 @@ def provider_for(
 
         return mobile_money_provider_for(normalized, intent=intent, live=live)
     raise ValueError(f"unsupported payment provider: {name}")
+
+
+def payid_status() -> dict[str, Any]:
+    live_enabled = _env_bool("NOVAPAY_PAYID_LIVE_ENABLED")
+    collection_url = os.environ.get("NOVAPAY_PAYID_COLLECTION_URL", "")
+    api_token = os.environ.get("NOVAPAY_PAYID_API_TOKEN", "")
+    merchant_id = os.environ.get("NOVAPAY_PAYID_MERCHANT_ID", "")
+    callback_url = os.environ.get("NOVAPAY_PAYID_CALLBACK_URL", "")
+    configured = bool(collection_url and api_token and merchant_id and callback_url)
+    return {
+        "available": True,
+        "mode": "live_gateway" if live_enabled and configured else "controlled_pilot",
+        "live_mode_enabled": live_enabled,
+        "configured": configured,
+        "ready_for_real_charge": live_enabled and configured,
+        "merchant_id_configured": bool(merchant_id),
+        "callback_url_configured": bool(callback_url),
+    }
+
+
+def _env_bool(name: str) -> bool:
+    return os.environ.get(name, "").lower() in {"1", "true", "yes"}

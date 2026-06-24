@@ -27,6 +27,7 @@ from afritech.core_platform.compliance_report import build_enterprise_audit_repo
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan
 from afritech.core_platform.payments.mobile_money import mobile_money_catalog
+from afritech.core_platform.payments.providers import payid_status
 from afritech.core_platform.persistence import (
     InMemoryCorePlatformStore,
     PostgresCorePlatformStore,
@@ -444,11 +445,7 @@ def build_core_platform_router() -> APIRouter:
         return {
             "view": "core_platform_payment_provider_status",
             "providers": {
-                "payid": {
-                    "available": True,
-                    "mode": "controlled_pilot",
-                    "licensed_live_payments": False,
-                },
+                "payid": payid_status(),
                 "stripe": {
                     "available": True,
                     "live_mode_enabled": stripe_live,
@@ -510,7 +507,7 @@ def build_core_platform_router() -> APIRouter:
                 "node_propagation_endpoint": True,
                 "audit_ready_settlement_events": True,
                 "provider_integration_ready": True,
-                "licensed_live_payments": False,
+                "licensed_live_payments": payid_status()["ready_for_real_charge"],
                 "mobile_money": {
                     "countries": ["BI", "CD", "KE"],
                     "controlled_pilot_ready": True,

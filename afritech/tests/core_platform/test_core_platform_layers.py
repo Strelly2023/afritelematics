@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+import httpx
 
 import pytest
 
@@ -187,11 +188,54 @@ def test_payment_provider_adapters_support_payid_and_stripe_pilot_mode() -> None
     assert payid.provider == "payid"
     assert payid.status == "completed"
     assert payid.provider_reference.startswith("PAYID-")
+    assert payid.raw["mode"] == "controlled_pilot"
 
     stripe = StripeProvider(api_key=None, live=False).authorize(intent)
     assert stripe.provider == "stripe"
     assert stripe.status == "completed"
     assert stripe.settlement_status == "requires_live_provider"
+
+
+def test_payment_provider_adapters_support_live_payid_gateway(monkeypatch) -> None:
+    monkeypatch.setenv("NOVAPAY_PAYID_LIVE_ENABLED", "true")
+    monkeypatch.setenv("NOVAPAY_PAYID_COLLECTION_URL", "https://payid.example.com/collections")
+    monkeypatch.setenv("NOVAPAY_PAYID_API_TOKEN", "token-123")
+    monkeypatch.setenv("NOVAPAY_PAYID_MERCHANT_ID", "merchant-123")
+    monkeypatch.setenv("NOVAPAY_PAYID_CALLBACK_URL", "https://api.example.com/webhooks/payments")
+
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            200,
+            json={
+                "transaction_id": "payid-live-001",
+                "status": "confirmed",
+                "settlement_status": "submitted",
+            },
+        )
+
+    intent = PaymentIntent(
+        intent_id="intent-payid-live-001",
+        actor_id="user-provider",
+        organization_id="org-provider",
+        amount=Decimal("12.00"),
+        currency="aud",
+        destination="invoice@payid.example",
+    )
+
+    provider = PayIDProvider(live=True, transport=httpx.MockTransport(handler))
+    result = provider.authorize(intent)
+
+    assert result.provider == "payid"
+    assert result.provider_reference == "payid-live-001"
+    assert result.status == "confirmed"
+    assert result.settlement_status == "submitted"
+    assert requests[0].url.path == "/collections"
+    assert requests[0].headers["idempotency-key"] == (
+        "novapay:org-provider:intent-payid-live-001"
+    )
 
 
 def test_in_memory_persistence_retrieves_by_trust_and_receipt_id() -> None:
