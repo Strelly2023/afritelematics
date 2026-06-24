@@ -136,7 +136,25 @@ def build_auth_router(
     router = APIRouter(prefix="/v1", tags=["pilot-auth"])
 
     @router.post("/auth/token")
-    def create_token(payload: dict[str, Any]) -> dict[str, str]:
+    def create_token(
+        payload: dict[str, Any],
+        x_afritech_bootstrap_secret: str = Header(default=""),
+    ) -> dict[str, str]:
+        environment = os.environ.get("AFRITECH_ENV", "development").lower()
+        if environment in {"production", "prod"}:
+            enabled = os.environ.get(
+                "AFRITECH_ALLOW_PILOT_TOKEN_ISSUANCE", ""
+            ).lower() in {"1", "true", "yes"}
+            expected = os.environ.get("AFRITECH_AUTH_BOOTSTRAP_SECRET", "")
+            if (
+                not enabled
+                or not expected
+                or not hmac.compare_digest(x_afritech_bootstrap_secret, expected)
+            ):
+                raise HTTPException(
+                    status_code=403,
+                    detail="production_token_issuance_disabled",
+                )
         user_id = str(payload.get("user_id", ""))
         role = str(payload.get("role", "OPERATOR")).upper()
         if not user_id:

@@ -73,6 +73,9 @@ class StripeProvider:
         payment_intent = stripe.PaymentIntent.create(
             amount=int(intent.amount * 100),
             currency=intent.currency.lower(),
+            idempotency_key=(
+                f"novapay:{intent.organization_id}:{intent.intent_id}"
+            ),
             metadata={
                 "intent_id": intent.intent_id,
                 "actor_id": intent.actor_id,
@@ -97,4 +100,4 @@ def provider_for(name: str, *, live: bool = False) -> PayIDProvider | StripeProv
         return StripeProvider(live=live)
     if normalized in {"payid", "pay_id", "osko"}:
         return PayIDProvider()
-    return PayIDProvider()
+    raise ValueError(f"unsupported payment provider: {name}")

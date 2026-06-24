@@ -12,8 +12,8 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `375`
-- Django-bound modules declared in repo: `246`
+- Startup-safe closure size: `379`
+- Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `36`
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (375 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (379 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (246 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (248 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -167,7 +167,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (305)
+### Other (309)
 
 - `afritech`
 - `afritech.afripay`
@@ -284,6 +284,7 @@ flowchart TD
 - `afritech.core_platform.qr`
 - `afritech.core_platform.services`
 - `afritech.core_platform.signing`
+- `afritech.core_platform.trust_node`
 - `afritech.crypto.anchor_publication`
 - `afritech.crypto.external_anchor`
 - `afritech.crypto.merkle`
@@ -374,6 +375,9 @@ flowchart TD
 - `afritech.extensions.afriprog.validator_runner`
 - `afritech.extensions.afriprog.validator_runner.command_result`
 - `afritech.features`
+- `afritech.fintech`
+- `afritech.fintech.webhook_security`
+- `afritech.fintech.webhooks`
 - `afritech.global_verification`
 - `afritech.governance`
 - `afritech.governance.adr_anchor`

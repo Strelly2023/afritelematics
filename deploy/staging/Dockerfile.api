@@ -1,10 +1,19 @@
 FROM python:3.11-slim
 
+# --- Environment configuration ---
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# --- System dependencies (recommended minimal set) ---
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- App directory ---
 WORKDIR /app
 
+# --- Copy project files ---
 COPY pyproject.toml README.md /app/
 COPY afritech /app/afritech
 COPY afriride_system /app/afriride_system
@@ -17,9 +26,16 @@ COPY docs /app/docs
 COPY reports /app/reports
 COPY traces /app/traces
 
+# --- Install Python dependencies ---
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir . uvicorn
 
+# --- Expose API port ---
 EXPOSE 8000
 
-CMD ["uvicorn", "afritech.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# --- Healthcheck (matches your system behavior) ---
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+# Compose may override this command for production worker tuning.
+CMD ["uvicorn", "afritech.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--proxy-headers"]

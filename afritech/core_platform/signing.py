@@ -12,9 +12,7 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
-    PrivateFormat,
     PublicFormat,
-    NoEncryption,
 )
 
 
@@ -92,12 +90,12 @@ def _load_private_key() -> Ed25519PrivateKey:
     encoded = os.environ.get("NOVATRUST_ED25519_PRIVATE_KEY_B64")
     if encoded:
         raw = base64.b64decode(encoded)
-        if len(raw) == 32:
-            return Ed25519PrivateKey.from_private_bytes(raw)
-        return Ed25519PrivateKey.from_private_bytes(
-            Ed25519PrivateKey.from_private_bytes(raw[:32])
-            .private_bytes(Encoding.Raw, PrivateFormat.Raw, NoEncryption())
-        )
+        if len(raw) != 32:
+            raise ValueError("NOVATRUST_ED25519_PRIVATE_KEY_B64 must decode to 32 bytes")
+        return Ed25519PrivateKey.from_private_bytes(raw)
+    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+    if environment in {"production", "prod"}:
+        raise RuntimeError("production_novatrust_signing_key_required")
     return Ed25519PrivateKey.from_private_bytes(_DEV_PRIVATE_KEY_SEED)
 
 
@@ -106,11 +104,18 @@ def signing_key_status() -> SigningKeyStatus:
     configured_key_id = os.environ.get("NOVATRUST_SIGNING_KEY_ID")
     return SigningKeyStatus(
         active_key_id=configured_key_id or ("novatrust-kms-ed25519" if kms_key_id else "novatrust-dev-ed25519"),
-        provider="aws_kms" if kms_key_id else "local_ed25519",
+        provider="aws_kms_metadata_only" if kms_key_id else "local_ed25519",
         kms_key_id=kms_key_id,
         rotation_enabled=os.environ.get("NOVATRUST_KEY_ROTATION_ENABLED", "true").lower() in {"1", "true", "yes"},
         rotation_interval_days=int(os.environ.get("NOVATRUST_KEY_ROTATION_DAYS", "90")),
     )
+
+
+def signing_key_ready() -> bool:
+    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+    if environment not in {"production", "prod"}:
+        return True
+    return bool(os.environ.get("NOVATRUST_ED25519_PRIVATE_KEY_B64"))
 
 
 def build_key_rotation_plan() -> dict[str, object]:
