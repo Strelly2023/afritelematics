@@ -13,6 +13,7 @@ from typing import Any
 import httpx
 
 from afritech.core_platform.models import PaymentIntent
+from afritech.core_platform.cbdc import CBDCProvider
 from afritech.core_platform.payments.contracts import (
     PaymentProviderAdapter,
     PaymentProviderResult,
@@ -175,6 +176,8 @@ def provider_for(
         return StripeProvider(live=live)
     if normalized in {"payid", "pay_id", "osko"}:
         return PayIDProvider(live=live)
+    if normalized in {"cbdc", "central_bank_digital_currency", "digital_cash"}:
+        return CBDCProvider(live=live)
     if normalized in {
         "mobile_money",
         "mobile-money",

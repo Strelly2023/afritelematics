@@ -40,9 +40,13 @@ def default_fx_engine() -> FXEngine:
         {
             ("AUD", "BIF"): "1900.00",
             ("AUD", "CDF"): "1725.00",
+            ("AUD", "KES"): "84.00",
             ("AUD", "USD"): "0.66",
             ("USD", "BIF"): "2875.00",
             ("USD", "CDF"): "2600.00",
+            ("USD", "KES"): "150.00",
             ("KES", "USD"): "0.0077",
+            ("KES", "BIF"): "13.00",
+            ("KES", "CDF"): "11.50",
         }
     )

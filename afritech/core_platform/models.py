@@ -131,6 +131,48 @@ class PaymentReceipt:
 
 
 @dataclass(frozen=True)
+class SettlementPlan:
+    route_id: str
+    route_class: str
+    corridor: str
+    source_country: str
+    settlement_country: str
+    source_currency: str
+    settlement_currency: str
+    source_amount: str
+    settlement_amount: str
+    provider: str
+    rail: str
+    route_hint: str
+    fx_provider: str | None
+    fx_reference: str | None
+    fx_rate: str | None
+    fx_locked: bool
+    metadata: Mapping[str, Any]
+
+    def canonical(self) -> dict[str, Any]:
+        return {
+            "route_id": self.route_id,
+            "route_class": self.route_class,
+            "corridor": self.corridor,
+            "source_country": self.source_country,
+            "settlement_country": self.settlement_country,
+            "source_currency": self.source_currency,
+            "settlement_currency": self.settlement_currency,
+            "source_amount": self.source_amount,
+            "settlement_amount": self.settlement_amount,
+            "provider": self.provider,
+            "rail": self.rail,
+            "route_hint": self.route_hint,
+            "fx_provider": self.fx_provider,
+            "fx_reference": self.fx_reference,
+            "fx_rate": self.fx_rate,
+            "fx_locked": self.fx_locked,
+            "metadata": dict(self.metadata),
+        }
+
+
+@dataclass(frozen=True)
 class TrustReceipt:
     trust_id: str
     subject_id: str
@@ -195,6 +237,7 @@ class CorePlatformFlowResult:
     identity: Identity
     decision: AuthorityDecision
     payment: PaymentReceipt | None
+    settlement: SettlementPlan | None
     trust: TrustReceipt
     explanation: ScriptExplanation
     proposal: ProgrammingProposal | None
@@ -204,6 +247,7 @@ class CorePlatformFlowResult:
             "identity": self.identity.canonical(),
             "decision": self.decision.canonical(),
             "payment": self.payment.canonical() if self.payment else None,
+            "settlement": self.settlement.canonical() if self.settlement else None,
             "trust": self.trust.canonical(),
             "explanation": self.explanation.canonical(),
             "proposal": self.proposal.canonical() if self.proposal else None,

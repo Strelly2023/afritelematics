@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `381`
+- Startup-safe closure size: `384`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `36`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (381 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (384 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -167,7 +167,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (311)
+### Other (314)
 
 - `afritech`
 - `afritech.afripay`
@@ -273,7 +273,9 @@ flowchart TD
 - `afritech.core_platform.anchoring`
 - `afritech.core_platform.audit_export`
 - `afritech.core_platform.auditor_dashboard`
+- `afritech.core_platform.cbdc`
 - `afritech.core_platform.compliance_report`
+- `afritech.core_platform.event_bus`
 - `afritech.core_platform.export_bundle`
 - `afritech.core_platform.migration_system`
 - `afritech.core_platform.models`
@@ -285,6 +287,7 @@ flowchart TD
 - `afritech.core_platform.persistence`
 - `afritech.core_platform.qr`
 - `afritech.core_platform.services`
+- `afritech.core_platform.settlement`
 - `afritech.core_platform.signing`
 - `afritech.core_platform.trust_node`
 - `afritech.crypto.anchor_publication`

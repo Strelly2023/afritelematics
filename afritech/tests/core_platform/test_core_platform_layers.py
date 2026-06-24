@@ -18,12 +18,16 @@ from afritech.core_platform import (
 from afritech.core_platform.audit_export import render_audit_pdf
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.anchoring import anchor_packet, build_optional_blockchain_anchor
+from afritech.core_platform.cbdc import cbdc_status
+from afritech.core_platform.event_bus import build_event_bus_status
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan, list_migrations
 from afritech.core_platform.orm import CoreTrustPacketRecord
 from afritech.core_platform.qr import render_qr_png
+from afritech.core_platform.settlement import SettlementRouter, build_settlement_status
 from afritech.core_platform.signing import sign_packet, verify_packet_signature
 from afritech.core_platform.signing import build_key_rotation_plan, signing_key_status
+from afritech.core_platform.trust_node import build_trust_node_network_status
 
 
 def test_core_platform_overview_is_product_app_free() -> None:
@@ -94,6 +98,59 @@ def test_core_platform_allows_identity_bound_payment_and_records_proof() -> None
     assert result.explanation.risk_level == "LOW"
     assert result.proposal is not None
     assert result.proposal.lifecycle_state == "ready_for_validation"
+
+
+def test_core_platform_cross_border_settlement_routes_through_fx_and_mobile_money() -> None:
+    platform = NovaTechCorePlatform()
+    identity = NovaIDService().bind_identity(
+        identity_id="user-cross-border",
+        email="cross-border@novatech.local",
+        roles=("admin",),
+        organization_id="org-cross-border",
+        scopes=("payments:write", "trust:read"),
+    )
+    request = AuthorityRequest(
+        action="payment.execute",
+        organization_id="org-cross-border",
+        required_roles=("admin",),
+        required_scopes=("payments:write",),
+        resource_owner_id="user-cross-border",
+        risk_score=Decimal("0.15"),
+    )
+    intent = PaymentIntent(
+        intent_id="intent-cross-border",
+        actor_id="user-cross-border",
+        organization_id="org-cross-border",
+        amount=Decimal("10.00"),
+        currency="AUD",
+        destination="+254700000001",
+        metadata={"country": "KE", "description": "cross-border test"},
+    )
+
+    planned = SettlementRouter().plan(
+        intent,
+        provider="mobile_money",
+    )
+    assert planned.plan.route_class == "cross_border"
+    assert planned.plan.settlement_currency == "KES"
+
+    result = platform.execute_payment_flow(
+        identity=identity,
+        request=request,
+        payment_intent=intent,
+        provider="mobile_money",
+    )
+
+    assert result.payment is not None
+    assert result.payment.provider == "mpesa_ke"
+    assert result.payment.currency == "KES"
+    assert result.payment.status == "pending"
+    assert result.settlement is not None
+    assert result.settlement.route_class == "cross_border"
+    assert result.settlement.settlement_country == "KE"
+    assert result.settlement.settlement_currency == "KES"
+    assert result.settlement.fx_locked is True
+    assert result.trust.packet["settlement"]["settlement_currency"] == "KES"
 
 
 def test_core_platform_denies_cross_tenant_payment_before_execution() -> None:
@@ -371,3 +428,17 @@ def test_core_platform_migration_system_lists_sql_migrations() -> None:
     plan = build_migration_plan()
     assert plan["style"] == "alembic_compatible_linear_sql"
     assert "001_core_trust_packets" in plan["pending"]
+
+
+def test_core_platform_settlement_event_bus_trust_node_and_cbdc_status() -> None:
+    settlement = build_settlement_status()
+    event_bus = build_event_bus_status()
+    trust_nodes = build_trust_node_network_status(configured_nodes=3, healthy_nodes=3)
+    cbdc = cbdc_status()
+
+    assert settlement["available"] is True
+    assert settlement["cross_border_supported"] is True
+    assert event_bus["event_bus"]["ready"] is True
+    assert trust_nodes["distributed_validation_ready"] is True
+    assert trust_nodes["consensus_layer"] == "future_non_authoritative"
+    assert cbdc["available"] is True

@@ -17,9 +17,13 @@ from afritech.core_platform.models import (
     PaymentReceipt,
     ProgrammingProposal,
     ScriptExplanation,
+    SettlementPlan,
     TrustReceipt,
 )
+from afritech.core_platform.event_bus import EventBus, build_event_bus
 from afritech.core_platform.payments.providers import provider_for
+from afritech.core_platform.settlement import SettlementRouter
+from afritech.core_platform.signing import kms_signing_status, signing_key_status
 
 
 CORE_FLOW = (
@@ -114,6 +118,15 @@ class NovaPowerEngine:
 class NovaPayService:
     """Provider-neutral payment execution facade."""
 
+    def __init__(
+        self,
+        *,
+        settlement_router: SettlementRouter | None = None,
+        event_bus: EventBus | None = None,
+    ) -> None:
+        self.settlement_router = settlement_router or SettlementRouter()
+        self.event_bus = event_bus or build_event_bus()
+
     def execute(
         self,
         intent: PaymentIntent,
@@ -132,29 +145,54 @@ class NovaPayService:
         if intent.amount <= Decimal("0"):
             raise ValueError("payment amount must be positive")
 
+        settlement = self.settlement_router.plan(
+            intent,
+            provider=provider,
+            live_provider=live_provider,
+        )
+        provider_intent = settlement.intent
         provider_result = provider_for(
             provider,
             live=live_provider,
-            intent=intent,
-        ).authorize(intent)
+            intent=provider_intent,
+        ).authorize(provider_intent)
         payment_id = _new_id("pay")
         payload = {
             "intent": intent.canonical(),
+            "settlement": settlement.plan.canonical(),
+            "settlement_intent": provider_intent.canonical(),
             "decision": decision.canonical(),
             "provider": provider_result.provider,
             "provider_reference": provider_result.provider_reference,
             "provider_status": provider_result.status,
             "payment_id": payment_id,
+            "security": {
+                "signing": signing_key_status().canonical(),
+                "kms": kms_signing_status().canonical(),
+                "event_bus": self.event_bus.status(),
+            },
         }
         proof_hash = _stable_hash(payload)
+        self.event_bus.publish(
+            "novapay.payment.executed",
+            {
+                "intent_id": intent.intent_id,
+                "organization_id": intent.organization_id,
+                "payment_id": payment_id,
+                "provider": provider_result.provider,
+                "settlement_status": provider_result.settlement_status,
+                "corridor": settlement.plan.corridor,
+                "route_class": settlement.plan.route_class,
+            },
+        )
         return PaymentReceipt(
             receipt_id=_new_id("receipt"),
             payment_id=payment_id,
             status=provider_result.status,
             actor_id=identity.identity_id,
             organization_id=identity.organization_id,
-            amount=intent.amount,
-            currency=intent.currency.upper(),
+            amount=provider_intent.amount,
+            currency=provider_intent.currency.upper(),
             provider=provider_result.provider,
             proof_hash=proof_hash,
             provider_reference=provider_result.provider_reference,
@@ -270,11 +308,17 @@ class NovaTechCorePlatform:
     ) -> CorePlatformFlowResult:
         decision = self.authority.evaluate(request, identity)
         payment: PaymentReceipt | None = None
+        settlement: SettlementPlan | None = None
         packet: dict[str, object] = {
             "identity": identity.canonical(),
             "authority": decision.canonical(),
             "payment_intent": payment_intent.canonical(),
             "flow": CORE_FLOW,
+            "security": {
+                "signing": signing_key_status().canonical(),
+                "kms": kms_signing_status().canonical(),
+                "event_bus": self.payments.event_bus.status(),
+            },
         }
 
         if decision.allowed:
@@ -285,7 +329,13 @@ class NovaTechCorePlatform:
                 provider=provider,
                 live_provider=live_provider,
             )
+            settlement = self.payments.settlement_router.plan(
+                payment_intent,
+                provider=provider,
+                live_provider=live_provider,
+            ).plan
             packet["payment"] = payment.canonical()
+            packet["settlement"] = settlement.canonical()
             event_type = "core.payment.completed"
         else:
             event_type = "core.payment.denied"
@@ -319,6 +369,7 @@ class NovaTechCorePlatform:
             identity=identity,
             decision=decision,
             payment=payment,
+            settlement=settlement,
             trust=trust,
             explanation=explanation,
             proposal=proposal,

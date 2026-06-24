@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping, Protocol
@@ -161,9 +162,36 @@ def federation_readiness(*, configured_nodes: int, healthy_nodes: int) -> dict[s
     }
 
 
+def build_trust_node_network_status(
+    *,
+    configured_nodes: int | None = None,
+    healthy_nodes: int | None = None,
+) -> dict[str, Any]:
+    configured = configured_nodes if configured_nodes is not None else int(os.environ.get("NOVATRUST_FEDERATION_NODES", "1"))
+    healthy = healthy_nodes if healthy_nodes is not None else int(os.environ.get("NOVATRUST_FEDERATION_HEALTHY_NODES", "1"))
+    validator_quorum = max(2, configured // 2 + 1) if configured > 0 else 1
+    return {
+        "view": "novatrust_trust_node_network_status",
+        "configured_nodes": configured,
+        "healthy_nodes": healthy,
+        "validator_quorum": validator_quorum,
+        "import_layer": "ready" if healthy >= 1 else "configuration_required",
+        "federation_layer": "ready" if configured >= 2 and healthy >= 2 else "configuration_required",
+        "distributed_validation_ready": configured >= 3 and healthy >= validator_quorum,
+        "consensus_layer": "future_non_authoritative",
+        "event_bus_backend": os.environ.get("NOVAPAY_EVENT_BUS_BACKEND", "in_memory"),
+        "event_bus_brokers_configured": bool(os.environ.get("NOVAPAY_EVENT_BUS_KAFKA_BROKERS", "")),
+        "authority_boundary": (
+            "Federation and consensus observations cannot authorize payments, "
+            "settlement, policy overrides, or runtime mutation."
+        ),
+    }
+
+
 __all__ = [
     "TrustImportResult",
     "TrustNodeEnvelope",
     "federation_readiness",
     "import_trust_envelope",
+    "build_trust_node_network_status",
 ]

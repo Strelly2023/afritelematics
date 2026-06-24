@@ -222,6 +222,23 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
     assert body["payid"]["mode"] in {"controlled_pilot", "live_gateway"}
     assert body["stripe"]["available"] is True
     assert "ready_for_real_charge" in body["stripe"]
+    assert body["cbdc"]["available"] is True
+    assert provider_status.json()["settlement"]["cross_border_supported"] is True
+    assert provider_status.json()["event_bus"]["event_bus"]["ready"] is True
+
+    settlement = client.get(
+        "/v1/core-platform/payments/settlement/status",
+        headers=auth_headers(role="OBSERVER"),
+    )
+    assert settlement.status_code == 200
+    assert settlement.json()["available"] is True
+
+    trust_nodes = client.get(
+        "/v1/core-platform/trust/node/network/status",
+        headers=auth_headers(role="OBSERVER"),
+    )
+    assert trust_nodes.status_code == 200
+    assert trust_nodes.json()["consensus_layer"] == "future_non_authoritative"
 
     pilot = client.post(
         "/v1/core-platform/pilot/flow",

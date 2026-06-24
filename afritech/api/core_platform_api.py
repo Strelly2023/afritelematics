@@ -20,12 +20,15 @@ from afritech.core_platform import (
     PaymentIntent,
     build_core_platform_overview,
 )
+from afritech.core_platform.cbdc import cbdc_status
 from afritech.core_platform.anchoring import anchor_packet, build_optional_blockchain_anchor
 from afritech.core_platform.audit_export import render_audit_pdf
 from afritech.core_platform.auditor_dashboard import build_auditor_dashboard
+from afritech.core_platform.event_bus import build_event_bus_status
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan
+from afritech.core_platform.settlement import build_settlement_status
 from afritech.core_platform.payments.mobile_money import mobile_money_catalog
 from afritech.core_platform.payments.providers import payid_status
 from afritech.core_platform.persistence import (
@@ -36,12 +39,14 @@ from afritech.core_platform.qr import render_qr_png
 from afritech.core_platform.signing import (
     AuditSignature,
     build_key_rotation_plan,
+    kms_signing_status,
     sign_packet,
     signing_key_ready,
     signing_key_status,
     verify_packet_signature,
 )
 from afritech.core_platform.trust_node import (
+    build_trust_node_network_status,
     TrustNodeEnvelope,
     federation_readiness,
     import_trust_envelope,
@@ -140,7 +145,9 @@ def _stored_signature(identifier: str, packet: dict[str, Any]) -> AuditSignature
     stored = getter(identifier) if callable(getter) else None
     if stored is None:
         return sign_packet(packet)
-    stored_signature = cast(Mapping[str, str], stored)
+    if not isinstance(stored, Mapping):
+        return sign_packet(packet)
+    stored_signature = dict(cast(Mapping[str, str], stored))
     return AuditSignature(**stored_signature)
 
 
@@ -148,6 +155,8 @@ def _existing_intent(organization_id: str, intent_id: str) -> dict[str, Any] | N
     getter = getattr(CORE_PLATFORM_STORE, "get_by_intent", None)
     packet = getter(organization_id, intent_id) if callable(getter) else None
     if packet is None:
+        return None
+    if not isinstance(packet, Mapping):
         return None
     return dict(cast(Mapping[str, Any], packet))
 
@@ -453,8 +462,27 @@ def build_core_platform_router() -> APIRouter:
                     "ready_for_real_charge": stripe_live and stripe_key,
                 },
                 "mobile_money": mobile_money_catalog(),
+                "cbdc": cbdc_status(),
             },
+            "settlement": build_settlement_status(),
+            "event_bus": build_event_bus_status(),
         }
+
+    @router.get("/payments/settlement/status")
+    def settlement_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_settlement_status()
+
+    @router.get("/trust/node/network/status")
+    def trust_node_network_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_trust_node_network_status()
 
     @router.get("/payments/mobile-money/catalog")
     def mobile_money_status(
@@ -488,7 +516,7 @@ def build_core_platform_router() -> APIRouter:
                 "audit": "ready",
                 "signature": "ready" if signing_key_ready() else "blocked",
                 "replay": "ready",
-                "import": "ready",
+                "import": build_trust_node_network_status()["import_layer"],
                 "federation": federation["federation_layer"],
                 "consensus": "future_non_authoritative",
             },
@@ -499,6 +527,10 @@ def build_core_platform_router() -> APIRouter:
                 "auditor_mode_active": True,
                 "federation_ready": federation["federation_ready"],
                 "multi_node_consensus_ready": False,
+                "settlement_routing_ready": True,
+                "fx_engine_ready": True,
+                "event_bus_ready": build_event_bus_status()["event_bus"]["ready"],
+                "cbdc_adapter_ready": cbdc_status()["ready_for_real_charge"],
             },
             "fintech": {
                 "provider_abstraction": True,
@@ -508,11 +540,15 @@ def build_core_platform_router() -> APIRouter:
                 "audit_ready_settlement_events": True,
                 "provider_integration_ready": True,
                 "licensed_live_payments": payid_status()["ready_for_real_charge"],
+                "settlement_router": build_settlement_status(),
+                "event_bus": build_event_bus_status(),
+                "trust_node_network": build_trust_node_network_status(),
                 "mobile_money": {
                     "countries": ["BI", "CD", "KE"],
                     "controlled_pilot_ready": True,
                     "operator_contracts_required_for_live": True,
                 },
+                "cbdc": cbdc_status(),
             },
             "authority_boundary": federation["authority_boundary"],
         }
@@ -863,7 +899,9 @@ def build_public_trust_explorer_router() -> APIRouter:
         )
         if payment is None:
             raise HTTPException(status_code=404, detail="payment_not_found")
-        payment_record = cast(Mapping[str, Any], payment)
+        if not isinstance(payment, Mapping):
+            raise HTTPException(status_code=404, detail="payment_not_found")
+        payment_record = dict(cast(Mapping[str, Any], payment))
         if str(payment_record.get("provider", "")) != event.provider:
             raise HTTPException(status_code=409, detail="payment_provider_mismatch")
 
