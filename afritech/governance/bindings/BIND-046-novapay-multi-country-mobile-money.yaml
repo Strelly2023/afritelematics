@@ -1,0 +1,42 @@
+id: BIND-046
+description: >
+  Binds ADR-0048 and RULE-068 to NovaPay mobile-money routing, secure callback
+  handling, persistence, configuration, tests, and operator documentation.
+bindings:
+  - id: BIND-046-1
+    target: afritech/core_platform/payments/mobile_money.py
+    binding_type: MODULE
+    responsibilities:
+      - country-aware provider routing
+      - E.164 and currency validation
+      - Daraja and partner-contract adapters
+  - id: BIND-046-2
+    target: afritech/api/core_platform_api.py
+    binding_type: API
+    responsibilities:
+      - provider catalog
+      - payment execution
+      - authenticated settlement evidence
+  - id: BIND-046-3
+    target: afritech/tests/core_platform/test_mobile_money.py
+    binding_type: TEST
+    responsibilities:
+      - routing and currency validation
+      - Daraja request verification
+      - callback-to-trust proof verification
+  - id: BIND-046-4
+    target: docs/architecture/NOVAPAY_MULTI_COUNTRY_MOBILE_MONEY.md
+    binding_type: DOCUMENT
+    responsibilities:
+      - operator contract and authority boundaries
+linked_adr:
+  - ADR-0048
+linked_rules:
+  - RULE-068
+linked_invariants:
+  - IA-NPMM-001
+  - IA-NPMM-002
+  - IA-NPMM-003
+  - IA-NPMM-004
+  - IA-NPMM-005
+  - IA-NPMM-006

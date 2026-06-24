@@ -8,18 +8,12 @@ key is supplied, while remaining safe in unconfigured test environments.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
 
 from afritech.core_platform.models import PaymentIntent
-
-
-@dataclass(frozen=True)
-class PaymentProviderResult:
-    provider: str
-    provider_reference: str
-    status: str
-    settlement_status: str
-    raw: dict[str, object]
+from afritech.core_platform.payments.contracts import (
+    PaymentProviderAdapter,
+    PaymentProviderResult,
+)
 
 
 class PayIDProvider:
@@ -94,10 +88,34 @@ class StripeProvider:
         )
 
 
-def provider_for(name: str, *, live: bool = False) -> PayIDProvider | StripeProvider:
+def provider_for(
+    name: str,
+    *,
+    live: bool = False,
+    intent: PaymentIntent | None = None,
+) -> PaymentProviderAdapter:
     normalized = name.strip().lower()
     if normalized == "stripe":
         return StripeProvider(live=live)
     if normalized in {"payid", "pay_id", "osko"}:
         return PayIDProvider()
+    if normalized in {
+        "mobile_money",
+        "mobile-money",
+        "momo",
+        "mpesa_ke",
+        "airtel_money_ke",
+        "lumicash_bi",
+        "ecocash_bi",
+        "orange_money_cd",
+        "airtel_money_cd",
+        "mpesa_cd",
+    }:
+        if intent is None:
+            raise ValueError("payment intent required for mobile money provider")
+        from afritech.core_platform.payments.mobile_money import (
+            mobile_money_provider_for,
+        )
+
+        return mobile_money_provider_for(normalized, intent=intent, live=live)
     raise ValueError(f"unsupported payment provider: {name}")

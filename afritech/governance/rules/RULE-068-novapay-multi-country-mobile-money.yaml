@@ -1,0 +1,23 @@
+id: RULE-068
+title: NovaPay Multi-Country Mobile Money Governance
+status: active
+scope: afritech/core_platform/payments
+rules:
+  - Country and currency routing must be deterministic.
+  - Mobile-money destinations must use E.164 format.
+  - Provider initiation must remain pending until callback verification.
+  - Live mode requires global activation and provider-specific activation.
+  - Live mode requires operator credentials and commercial approval evidence.
+  - Callback events must be authenticated, fresh, idempotent, and payment-bound.
+  - Accepted callbacks must create signed NovaTrust settlement receipts.
+  - Settlement evidence remains non-authoritative for licensing and accounting.
+linked_invariants:
+  - IA-NPMM-001
+  - IA-NPMM-002
+  - IA-NPMM-003
+  - IA-NPMM-004
+  - IA-NPMM-005
+  - IA-NPMM-006
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL

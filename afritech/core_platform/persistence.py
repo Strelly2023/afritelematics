@@ -39,8 +39,13 @@ class InMemoryCorePlatformStore:
             self.by_receipt_id[result.payment.receipt_id] = packet
 
     def save_trust_receipt(self, receipt: TrustReceipt) -> None:
-        packet = {"trust": receipt.canonical(), "payment": None}
+        packet = {
+            "trust": receipt.canonical(),
+            "payment": receipt.packet.get("payment"),
+            "settlement": receipt.packet.get("settlement"),
+        }
         self.by_trust_id[receipt.trust_id] = packet
+        self.signatures[receipt.trust_id] = sign_packet(packet).canonical()
 
     def get_trust_packet(self, identifier: str) -> dict[str, object] | None:
         return self.by_trust_id.get(identifier) or self.by_receipt_id.get(identifier)
@@ -117,6 +122,29 @@ class InMemoryCorePlatformStore:
         if key in self.webhook_events:
             return False
         self.webhook_events.add(key)
+        return True
+
+    def save_settlement_event(
+        self,
+        *,
+        provider: str,
+        event_id: str,
+        payment_id: str | None,
+        provider_reference: str,
+        settlement_status: str,
+        payload: Mapping[str, Any],
+        receipt: TrustReceipt,
+    ) -> bool:
+        if not self.claim_webhook_event(
+            provider=provider,
+            event_id=event_id,
+            payment_id=payment_id,
+            provider_reference=provider_reference,
+            settlement_status=settlement_status,
+            payload=payload,
+        ):
+            return False
+        self.save_trust_receipt(receipt)
         return True
 
 
@@ -220,6 +248,40 @@ class PostgresCorePlatformStore:
                     record.event_type,
                     json.dumps(packet, sort_keys=True),
                     intent_id or None,
+                    json.dumps(signature, sort_keys=True),
+                ),
+            )
+
+    def save_trust_receipt(self, receipt: TrustReceipt) -> None:
+        packet: dict[str, object] = {
+            "trust": receipt.canonical(),
+            "payment": receipt.packet.get("payment"),
+            "settlement": receipt.packet.get("settlement"),
+        }
+        signature = sign_packet(packet).canonical()
+        payment = receipt.packet.get("payment")
+        receipt_id = (
+            str(payment.get("receipt_id"))
+            if isinstance(payment, Mapping) and payment.get("receipt_id")
+            else None
+        )
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO novatech_core_trust_packets
+                    (
+                        id, receipt_id, organization_id, event_type, packet,
+                        signature, source_node, imported
+                    )
+                VALUES (%s, %s, %s, %s, %s, %s, 'novatech-primary', FALSE)
+                ON CONFLICT (id) DO NOTHING
+                """,
+                (
+                    receipt.trust_id,
+                    receipt_id,
+                    receipt.organization_id,
+                    receipt.event_type,
+                    json.dumps(packet, sort_keys=True),
                     json.dumps(signature, sort_keys=True),
                 ),
             )
@@ -413,6 +475,71 @@ class PostgresCorePlatformStore:
                 ),
             )
             return cursor.rowcount == 1
+
+    def save_settlement_event(
+        self,
+        *,
+        provider: str,
+        event_id: str,
+        payment_id: str | None,
+        provider_reference: str,
+        settlement_status: str,
+        payload: Mapping[str, Any],
+        receipt: TrustReceipt,
+    ) -> bool:
+        packet: dict[str, object] = {
+            "trust": receipt.canonical(),
+            "payment": receipt.packet.get("payment"),
+            "settlement": receipt.packet.get("settlement"),
+        }
+        signature = sign_packet(packet).canonical()
+        payment = receipt.packet.get("payment")
+        receipt_id = (
+            str(payment.get("receipt_id"))
+            if isinstance(payment, Mapping) and payment.get("receipt_id")
+            else None
+        )
+        with self._connect() as conn:
+            claimed = conn.execute(
+                """
+                INSERT INTO novatech_payment_webhook_events
+                    (
+                        provider, event_id, payment_id, provider_reference,
+                        settlement_status, payload
+                    )
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON CONFLICT (provider, event_id) DO NOTHING
+                """,
+                (
+                    provider,
+                    event_id,
+                    payment_id,
+                    provider_reference,
+                    settlement_status,
+                    json.dumps(dict(payload), sort_keys=True),
+                ),
+            )
+            if claimed.rowcount != 1:
+                return False
+            conn.execute(
+                """
+                INSERT INTO novatech_core_trust_packets
+                    (
+                        id, receipt_id, organization_id, event_type, packet,
+                        signature, source_node, imported
+                    )
+                VALUES (%s, %s, %s, %s, %s, %s, 'novatech-primary', FALSE)
+                """,
+                (
+                    receipt.trust_id,
+                    receipt_id,
+                    receipt.organization_id,
+                    receipt.event_type,
+                    json.dumps(packet, sort_keys=True),
+                    json.dumps(signature, sort_keys=True),
+                ),
+            )
+        return True
 
     def _connect(self):
         import psycopg

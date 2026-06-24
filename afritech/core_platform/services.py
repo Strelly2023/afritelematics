@@ -132,7 +132,11 @@ class NovaPayService:
         if intent.amount <= Decimal("0"):
             raise ValueError("payment amount must be positive")
 
-        provider_result = provider_for(provider, live=live_provider).authorize(intent)
+        provider_result = provider_for(
+            provider,
+            live=live_provider,
+            intent=intent,
+        ).authorize(intent)
         payment_id = _new_id("pay")
         payload = {
             "intent": intent.canonical(),

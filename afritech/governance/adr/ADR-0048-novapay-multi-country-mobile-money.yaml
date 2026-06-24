@@ -1,0 +1,38 @@
+id: ADR-0048
+title: NovaPay Multi-Country Mobile Money
+status: ACCEPTED
+decision: >
+  Add country-aware NovaPay mobile-money collection adapters for Kenya,
+  Burundi, and DR Congo. Provider initiation remains non-settling. Only
+  authenticated, replay-safe callbacks matched to an existing payment may
+  produce signed settlement evidence.
+context:
+  - Kenya supports public Safaricom Daraja integration.
+  - Burundi and several DR Congo operator APIs require commercial onboarding.
+  - Mobile-money operator callbacks differ and require a normalized secure gateway.
+invariants:
+  - id: IA-NPMM-001
+    statement: Provider initiation must never be represented as settlement.
+  - id: IA-NPMM-002
+    statement: Country, currency, and E.164 destination must be consistent.
+  - id: IA-NPMM-003
+    statement: Live execution requires explicit activation, credentials, and commercial approval.
+  - id: IA-NPMM-004
+    statement: Settlement callbacks must be authenticated, fresh, replay-safe, and payment-bound.
+  - id: IA-NPMM-005
+    statement: Every accepted settlement callback must create signed NovaTrust evidence.
+  - id: IA-NPMM-006
+    statement: Mobile-money evidence does not grant settlement or regulatory authority.
+forbidden:
+  - simulated_payment_claimed_as_live
+  - provider_initiation_claimed_as_settlement
+  - unsigned_provider_callback
+  - duplicate_callback_mutation
+  - unlicensed_live_payment_claim
+verification:
+  document: docs/architecture/NOVAPAY_MULTI_COUNTRY_MOBILE_MONEY.md
+  validator: afritech.ci.novapay_mobile_money_validator
+rules:
+  - RULE-068
+bindings:
+  - BIND-046

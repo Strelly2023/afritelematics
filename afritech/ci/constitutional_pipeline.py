@@ -222,6 +222,11 @@ PIPELINE: tuple[PipelineStep, ...] = (
         "STATIC",
     ),
     module_step(
+        "novapay_mobile_money_validator",
+        "afritech.ci.novapay_mobile_money_validator",
+        "STATIC",
+    ),
+    module_step(
         "afriride_mobile_release_validator",
         "afritech.ci.afriride_mobile_release_validator",
         "STATIC",

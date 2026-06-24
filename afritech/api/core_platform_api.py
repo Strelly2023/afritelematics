@@ -6,7 +6,7 @@ from decimal import Decimal
 from html import escape
 import json
 import os
-from typing import Any, Callable, cast
+from typing import Any, Callable, Mapping, cast
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
@@ -26,6 +26,7 @@ from afritech.core_platform.auditor_dashboard import build_auditor_dashboard
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan
+from afritech.core_platform.payments.mobile_money import mobile_money_catalog
 from afritech.core_platform.persistence import (
     InMemoryCorePlatformStore,
     PostgresCorePlatformStore,
@@ -136,13 +137,18 @@ def _identity_from_claims(claims: JWTClaims) -> Any:
 def _stored_signature(identifier: str, packet: dict[str, Any]) -> AuditSignature:
     getter = getattr(CORE_PLATFORM_STORE, "get_signature", None)
     stored = getter(identifier) if callable(getter) else None
-    return AuditSignature(**stored) if stored else sign_packet(packet)
+    if stored is None:
+        return sign_packet(packet)
+    stored_signature = cast(Mapping[str, str], stored)
+    return AuditSignature(**stored_signature)
 
 
 def _existing_intent(organization_id: str, intent_id: str) -> dict[str, Any] | None:
     getter = getattr(CORE_PLATFORM_STORE, "get_by_intent", None)
     packet = getter(organization_id, intent_id) if callable(getter) else None
-    return dict(packet) if packet is not None else None
+    if packet is None:
+        return None
+    return dict(cast(Mapping[str, Any], packet))
 
 
 def _store_get_flow(identifier: str) -> Any | None:
@@ -449,8 +455,17 @@ def build_core_platform_router() -> APIRouter:
                     "api_key_configured": stripe_key,
                     "ready_for_real_charge": stripe_live and stripe_key,
                 },
+                "mobile_money": mobile_money_catalog(),
             },
         }
+
+    @router.get("/payments/mobile-money/catalog")
+    def mobile_money_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return mobile_money_catalog()
 
     @router.get("/readiness")
     def readiness(
@@ -496,6 +511,11 @@ def build_core_platform_router() -> APIRouter:
                 "audit_ready_settlement_events": True,
                 "provider_integration_ready": True,
                 "licensed_live_payments": False,
+                "mobile_money": {
+                    "countries": ["BI", "CD", "KE"],
+                    "controlled_pilot_ready": True,
+                    "operator_contracts_required_for_live": True,
+                },
             },
             "authority_boundary": federation["authority_boundary"],
         }
@@ -802,7 +822,16 @@ def build_public_trust_explorer_router() -> APIRouter:
         x_novapay_timestamp: str = Header(default=""),
         x_novapay_signature: str = Header(default=""),
     ) -> dict[str, Any]:
-        secret = os.environ.get("NOVAPAY_WEBHOOK_SECRET", "")
+        provider_name = str(payload.get("provider", "")).strip().upper()
+        provider_secret_name = (
+            "NOVAPAY_"
+            + "".join(character if character.isalnum() else "_" for character in provider_name)
+            + "_WEBHOOK_SECRET"
+        )
+        secret = os.environ.get(provider_secret_name) or os.environ.get(
+            "NOVAPAY_WEBHOOK_SECRET",
+            "",
+        )
         try:
             verified = verify_webhook(
                 payload,
@@ -837,29 +866,9 @@ def build_public_trust_explorer_router() -> APIRouter:
         )
         if payment is None:
             raise HTTPException(status_code=404, detail="payment_not_found")
-        if str(payment.get("provider", "")) != event.provider:
+        payment_record = cast(Mapping[str, Any], payment)
+        if str(payment_record.get("provider", "")) != event.provider:
             raise HTTPException(status_code=409, detail="payment_provider_mismatch")
-
-        claim = getattr(CORE_PLATFORM_STORE, "claim_webhook_event", None)
-        if not callable(claim):
-            raise HTTPException(
-                status_code=503,
-                detail="webhook_idempotency_store_unavailable",
-            )
-        if not claim(
-            provider=verified.provider,
-            event_id=verified.event_id,
-            payment_id=event.payment_id,
-            provider_reference=event.provider_reference,
-            settlement_status=settlement_status,
-            payload=payload,
-        ):
-            return {
-                "status": "duplicate",
-                "event_id": verified.event_id,
-                "provider": verified.provider,
-                "trust_action": "none",
-            }
 
         evidence = {
             "event_id": verified.event_id,
@@ -870,6 +879,38 @@ def build_public_trust_explorer_router() -> APIRouter:
             "settlement_status": settlement_status,
         }
         signature = sign_packet(evidence)
+        trust_receipt = NovaTechCorePlatform().trust.record(
+            subject_id=str(payment_record.get("actor_id", "payment-provider")),
+            organization_id=str(payment_record.get("organization_id", "afritech-core")),
+            event_type=f"core.payment.{settlement_status}",
+            packet={
+                "payment": dict(payment_record),
+                "settlement": evidence,
+                "provider_callback_authenticated": True,
+                "settlement_authority": False,
+            },
+        )
+        save_settlement = getattr(CORE_PLATFORM_STORE, "save_settlement_event", None)
+        if not callable(save_settlement):
+            raise HTTPException(
+                status_code=503,
+                detail="settlement_trust_store_unavailable",
+            )
+        if not save_settlement(
+            provider=verified.provider,
+            event_id=verified.event_id,
+            payment_id=event.payment_id,
+            provider_reference=event.provider_reference,
+            settlement_status=settlement_status,
+            payload=payload,
+            receipt=trust_receipt,
+        ):
+            return {
+                "status": "duplicate",
+                "event_id": verified.event_id,
+                "provider": verified.provider,
+                "trust_action": "none",
+            }
         return {
             "status": "received",
             "event_type": "payment.webhook.received",
@@ -878,6 +919,8 @@ def build_public_trust_explorer_router() -> APIRouter:
             "signature_verified": verify_packet_signature(evidence, signature),
             "trust_action": "settlement_event_ready",
             "settlement_authority": False,
+            "settlement_trust": trust_receipt.canonical(),
+            "trust_explorer": f"/trust/explorer/{trust_receipt.trust_id}",
         }
 
     return router
