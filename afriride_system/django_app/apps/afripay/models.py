@@ -52,9 +52,9 @@ class CurrencyAccount(TimeStampedModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["wallet", "currency"], name="afripay_unique_wallet_currency"),
-            models.CheckConstraint(check=models.Q(balance__gte=0), name="afp_cur_bal_nonneg"),
-            models.CheckConstraint(check=models.Q(locked_balance__gte=0), name="afp_cur_locked_nonneg"),
-            models.CheckConstraint(check=models.Q(balance__gte=models.F("locked_balance")), name="afripay_locked_lte_balance"),
+            models.CheckConstraint(condition=models.Q(balance__gte=0), name="afp_cur_bal_nonneg"),
+            models.CheckConstraint(condition=models.Q(locked_balance__gte=0), name="afp_cur_locked_nonneg"),
+            models.CheckConstraint(condition=models.Q(balance__gte=models.F("locked_balance")), name="afripay_locked_lte_balance"),
         ]
 
 
@@ -84,7 +84,7 @@ class Transaction(TimeStampedModel):
             models.Index(fields=["payee", "status"], name="afripay_tx_payee_status_idx"),
         ]
         constraints = [
-            models.CheckConstraint(check=models.Q(amount__gt=0), name="afripay_tx_amount_positive"),
+            models.CheckConstraint(condition=models.Q(amount__gt=0), name="afripay_tx_amount_positive"),
         ]
 
 
@@ -128,8 +128,8 @@ class EntryLine(TimeStampedModel):
 
     class Meta:
         constraints = [
-            models.CheckConstraint(check=models.Q(debit__gte=0), name="afp_entry_debit_nonneg"),
-            models.CheckConstraint(check=models.Q(credit__gte=0), name="afp_entry_credit_nonneg"),
+            models.CheckConstraint(condition=models.Q(debit__gte=0), name="afp_entry_debit_nonneg"),
+            models.CheckConstraint(condition=models.Q(credit__gte=0), name="afp_entry_credit_nonneg"),
         ]
 
 
@@ -166,9 +166,9 @@ class LiquidityPool(TimeStampedModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["provider", "currency"], name="afp_unique_provider_pool"),
-            models.CheckConstraint(check=models.Q(balance__gte=0), name="afp_pool_bal_nonneg"),
-            models.CheckConstraint(check=models.Q(reserved__gte=0), name="afp_pool_res_nonneg"),
-            models.CheckConstraint(check=models.Q(balance__gte=models.F("reserved")), name="afp_pool_res_lte_bal"),
+            models.CheckConstraint(condition=models.Q(balance__gte=0), name="afp_pool_bal_nonneg"),
+            models.CheckConstraint(condition=models.Q(reserved__gte=0), name="afp_pool_res_nonneg"),
+            models.CheckConstraint(condition=models.Q(balance__gte=models.F("reserved")), name="afp_pool_res_lte_bal"),
         ]
 
 
