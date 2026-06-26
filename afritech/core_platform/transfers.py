@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Mapping
 from uuid import uuid4
 
@@ -350,8 +351,8 @@ class TransferReceipt:
 
 @dataclass(frozen=True)
 class TransferExecutionContext:
-    quote: dict[str, Any]
-    unsigned_quote: dict[str, Any]
+    quote: Mapping[str, Any]
+    unsigned_quote: Mapping[str, Any]
     quote_hash: str
     source_amount: Decimal
     provider: str
@@ -482,8 +483,8 @@ class NovaPayTransferService:
             raise ValueError("missing_route_hint")
         resolved_provider = _normalize_transfer_provider(resolved_provider)
         return TransferExecutionContext(
-            quote=quote_payload,
-            unsigned_quote=unsigned_quote,
+            quote=MappingProxyType(dict(quote_payload)),
+            unsigned_quote=MappingProxyType(unsigned_quote),
             quote_hash=quote_hash,
             source_amount=source_amount,
             provider=resolved_provider,
@@ -638,8 +639,8 @@ class NovaPayTransferService:
         decision: AuthorityDecision,
         live_provider: bool = False,
     ) -> TransferReceipt:
-        quote_payload = context.quote
-        unsigned_quote = context.unsigned_quote
+        quote_payload = dict(context.quote)
+        unsigned_quote = dict(context.unsigned_quote)
         quote_hash = context.quote_hash
 
         if not decision.allowed:

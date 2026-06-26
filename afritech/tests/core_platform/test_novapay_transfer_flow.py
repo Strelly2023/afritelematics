@@ -5,8 +5,12 @@ from fastapi.testclient import TestClient
 
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.core_platform_api import build_core_platform_router
+from decimal import Decimal
+
 from afritech.core_platform.cryptographic_consensus import _hash
 from afritech.core_platform.hash_domains import HASH_DOMAINS
+from afritech.core_platform.models import Identity
+from afritech.core_platform.transfers import NovaPayTransferService
 
 
 def _client() -> TestClient:
@@ -187,3 +191,34 @@ def test_novapay_transfer_rejects_missing_route_hint() -> None:
     )
     assert execute.status_code == 400
     assert execute.json()["detail"] == "missing_route_hint"
+
+
+def test_novapay_transfer_execution_context_is_read_only() -> None:
+    service = NovaPayTransferService()
+    identity = Identity(
+        identity_id="sender-1",
+        email="sender@example.com",
+        roles=("RIDER",),
+        organization_id="org-pay",
+    )
+    quote = service.quote(
+        identity=identity,
+        recipient_name="Amina Okello",
+        recipient_identifier="+254700000001",
+        recipient_country="KE",
+        amount=Decimal("100.00"),
+        source_currency="AUD",
+        payout_method="bank_deposit",
+        use_case="transparent_pricing",
+        memo="family support",
+    )
+
+    context = service.validate_quote(quote)
+
+    try:
+        context.unsigned_quote["source_amount"] = "999.00"  # type: ignore[index]
+        raised = False
+    except TypeError:
+        raised = True
+
+    assert raised is True
