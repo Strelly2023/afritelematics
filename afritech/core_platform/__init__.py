@@ -86,6 +86,18 @@ from afritech.core_platform.payments import (
     StripeProvider,
 )
 from afritech.core_platform.stateless_verifier import verify_stateless_privacy_qr
+from afritech.core_platform.stack import (
+    NovaTechStack,
+    StackLayer,
+    StackSurface,
+    build_novatech_stack,
+    build_novatech_stack_readiness,
+)
+from afritech.core_platform.transfers import (
+    NovaPayTransferService,
+    TransferQuote,
+    TransferReceipt,
+)
 from afritech.core_platform.zk_receipts import (
     build_zk_receipt,
     build_zk_receipt_qr_bundle,
@@ -99,6 +111,7 @@ __all__ = [
     "Identity",
     "NovaIDService",
     "NovaPayService",
+    "NovaPayTransferService",
     "NovaPowerEngine",
     "NovaProgrammingService",
     "NovaScriptService",
@@ -114,6 +127,11 @@ __all__ = [
     "SettlementPlan",
     "SettlementRouter",
     "SettlementResult",
+    "NovaTechStack",
+    "StackLayer",
+    "StackSurface",
+    "TransferQuote",
+    "TransferReceipt",
     "ValidatorConsensusCertificate",
     "ValidatorConsensusEngine",
     "ValidatorConsensusEnvelope",
@@ -154,6 +172,8 @@ __all__ = [
     "decode_privacy_qr_payload",
     "encode_privacy_qr_payload",
     "verify_stateless_privacy_qr",
+    "build_novatech_stack",
+    "build_novatech_stack_readiness",
     "build_zk_receipt",
     "build_zk_receipt_qr_bundle",
     "verify_zk_receipt",

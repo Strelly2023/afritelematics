@@ -25,6 +25,7 @@ from afritech.core_platform.consensus import ValidatorConsensusEngine
 from afritech.core_platform.payments.providers import provider_for
 from afritech.core_platform.settlement import SettlementRouter
 from afritech.core_platform.signing import kms_signing_status, signing_key_status
+from afritech.core_platform.transfers import NovaPayTransferService
 from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
 
 
@@ -282,6 +283,10 @@ class NovaTechCorePlatform:
         self.identity = identity or NovaIDService()
         self.authority = authority or NovaPowerEngine()
         self.payments = payments or NovaPayService()
+        self.transfers = NovaPayTransferService(
+            payments=self.payments,
+            settlement_router=self.payments.settlement_router,
+        )
         self.trust = trust or NovaTrustService()
         self.intelligence = intelligence or NovaScriptService()
         self.programming = programming or NovaProgrammingService()

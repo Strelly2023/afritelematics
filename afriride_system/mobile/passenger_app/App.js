@@ -28,6 +28,7 @@ import {
 } from "../shared/novarideUi";
 import { ProofWorkbench } from "../shared/verificationWorkbench";
 import { deriveRiderMission } from "../shared/novarideMission";
+import { NovaPayTransferPanel } from "../shared/novapayTransfer";
 import {
   deriveHashes,
   formatCount,
@@ -642,6 +643,21 @@ export default function App() {
                 <ActionButton title="Track ride" tone="secondary" onPress={handleRefreshStatus} disabled={loading} flex />
               </View>
             </SectionCard>
+          ) : null}
+
+          {viewMode !== "diagnostics" ? (
+            <NovaPayTransferPanel
+              role="RIDER"
+              userId={riderId}
+              title="NovaPay Wallet"
+              subtitle="Send verified transfers with transparent pricing, bank deposit, cash pickup, and mobile-money routes."
+              defaultRecipientCountry="KE"
+              defaultAmount="100.00"
+              defaultSourceCurrency="AUD"
+              defaultPayoutMethod="bank_deposit"
+              defaultUseCase="transparent_pricing"
+              mode="send"
+            />
           ) : null}
 
           {viewMode !== "diagnostics" ? (

@@ -20,6 +20,8 @@ from afritech.core_platform import (
     NovaTechCorePlatform,
     PaymentIntent,
     build_core_platform_overview,
+    build_novatech_stack,
+    build_novatech_stack_readiness,
 )
 from afritech.core_platform.cbdc import cbdc_status
 from afritech.core_platform.consensus import build_validator_consensus_status
@@ -177,7 +179,7 @@ class ProofReceiptPayload(BaseModel):
 
 class ProofReceiptVerifyPayload(BaseModel):
     receipt: dict[str, Any]
-    group_public_keys: list[str] = Field(default_factory=list)
+    group_public_keys: list[str | bytes] = Field(default_factory=list)
 
 
 class ProofReceiptQrPayload(BaseModel):
@@ -191,6 +193,27 @@ class ProofReceiptMobileVerifyPayload(BaseModel):
 
 
 class ProofReceiptOnchainPayload(BaseModel):
+    receipt: dict[str, Any]
+
+
+class TransferQuotePayload(BaseModel):
+    recipient_name: str
+    recipient_identifier: str
+    recipient_country: str
+    amount: Decimal
+    source_currency: str = "AUD"
+    payout_method: str = "bank_deposit"
+    use_case: str = "transparent_pricing"
+    memo: str | None = None
+
+
+class TransferExecutePayload(BaseModel):
+    quote: dict[str, Any]
+    provider: str = "payid"
+    live_provider: bool = False
+
+
+class TransferVerifyPayload(BaseModel):
     receipt: dict[str, Any]
 
 
@@ -510,6 +533,26 @@ def build_core_platform_router() -> APIRouter:
     ) -> dict[str, object]:
         return core_platform_console_payload()
 
+    @router.get("/stack")
+    def stack(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_novatech_stack().canonical()
+
+    @router.get("/transfers/features")
+    def transfer_features() -> dict[str, Any]:
+        return NovaTechCorePlatform().transfers.build_features()
+
+    @router.get("/transfers/rails")
+    def transfer_rails() -> dict[str, Any]:
+        return NovaTechCorePlatform().transfers.build_rails()
+
+    @router.get("/transfers/limits")
+    def transfer_limits() -> dict[str, Any]:
+        return NovaTechCorePlatform().transfers.build_limits()
+
     @router.get("/identity/me")
     def identity_me(
         claims: JWTClaims = Depends(
@@ -621,6 +664,78 @@ def build_core_platform_router() -> APIRouter:
             "idempotent_replay": False,
             "trust_explorer": f"/trust/explorer/{result.trust.trust_id}",
         }
+
+    @router.post("/transfers/quote")
+    def quote_transfer(
+        payload: TransferQuotePayload,
+        claims: JWTClaims = Depends(
+            require_roles("RIDER", "DRIVER", "OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        platform = NovaTechCorePlatform()
+        identity = _identity_from_claims(claims)
+        quote = platform.transfers.quote(
+            identity=identity,
+            recipient_name=payload.recipient_name,
+            recipient_identifier=payload.recipient_identifier,
+            recipient_country=payload.recipient_country,
+            amount=payload.amount,
+            source_currency=payload.source_currency,
+            payout_method=payload.payout_method,
+            use_case=payload.use_case,
+            memo=payload.memo,
+        )
+        return {
+            "view": "novapay_transfer_quote",
+            "layer": "NovaPay",
+            "quote": quote.canonical(),
+        }
+
+    @router.post("/transfers/execute")
+    def execute_transfer(
+        payload: TransferExecutePayload,
+        claims: JWTClaims = Depends(
+            require_roles("RIDER", "DRIVER", "OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        platform = NovaTechCorePlatform()
+        identity = _identity_from_claims(claims)
+        quote = payload.quote
+        amount = Decimal(str(quote.get("source_amount", "0")))
+        decision = platform.authority.evaluate(
+            AuthorityRequest(
+                action="transfer.execute",
+                organization_id=identity.organization_id,
+                required_roles=(claims.role,),
+                required_scopes=("payments:write",),
+                resource_owner_id=identity.identity_id,
+                risk_score=Decimal("0.12") if amount <= Decimal("1000") else Decimal("0.52") if amount <= Decimal("10000") else Decimal("0.82"),
+                risk_score_max=Decimal("0.85"),
+            ),
+            identity,
+        )
+        receipt = platform.transfers.execute(
+            quote,
+            identity=identity,
+            decision=decision,
+            provider=payload.provider,
+            live_provider=payload.live_provider,
+        )
+        return {
+            "view": "novapay_transfer_receipt",
+            "layer": "NovaPay",
+            "decision": decision.canonical(),
+            "receipt": receipt.canonical(),
+        }
+
+    @router.post("/transfers/verify")
+    def verify_transfer(
+        payload: TransferVerifyPayload,
+        _: JWTClaims = Depends(
+            require_roles("RIDER", "DRIVER", "OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return NovaTechCorePlatform().transfers.verify(payload.receipt)
 
     @router.post("/trust/replay")
     def trust_replay(
@@ -930,6 +1045,7 @@ def build_core_platform_router() -> APIRouter:
             configured_nodes=configured_nodes,
             healthy_nodes=healthy_nodes,
         )
+        stack_readiness = build_novatech_stack_readiness()
         persistent = isinstance(CORE_PLATFORM_STORE, PostgresCorePlatformStore)
         return {
             "classification": "bounded_production_readiness",
@@ -962,6 +1078,7 @@ def build_core_platform_router() -> APIRouter:
                 "event_bus_ready": build_event_bus_status()["event_bus"]["ready"],
                 "cbdc_adapter_ready": cbdc_status()["ready_for_real_charge"],
             },
+            "stack": stack_readiness,
             "fintech": {
                 "provider_abstraction": True,
                 "authenticated_webhook_contract": True,
@@ -981,6 +1098,7 @@ def build_core_platform_router() -> APIRouter:
                     "controlled_pilot_ready": True,
                     "operator_contracts_required_for_live": True,
                 },
+                "transfer_platform_ready": stack_readiness["ready"],
                 "cbdc": cbdc_status(),
             },
             "authority_boundary": federation["authority_boundary"],

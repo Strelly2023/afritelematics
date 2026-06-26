@@ -27,6 +27,7 @@ import {
 } from "../shared/novarideUi";
 import { ProofWorkbench } from "../shared/verificationWorkbench";
 import { deriveOperatorMission } from "../shared/novarideMission";
+import { NovaPayTransferPanel } from "../shared/novapayTransfer";
 import {
   deriveHashes,
   extractNumber,
@@ -455,6 +456,19 @@ export default function App() {
             <InfoRow label="Active rides" value={formatCount(summary.activeRides, "0")} />
             <InfoRow label="Open incidents" value={formatCount(summary.guards, "0")} tone={summary.guards > 0 ? "danger" : "success"} />
           </SectionCard>
+
+          <NovaPayTransferPanel
+            role="OPERATOR"
+            userId={operatorId}
+            title="NovaPay Control"
+            subtitle="Monitor quotes, payout methods, fees, limits, and canonical transfer receipts."
+            defaultRecipientCountry="KE"
+            defaultAmount="1000.00"
+            defaultSourceCurrency="AUD"
+            defaultPayoutMethod="cash_pickup"
+            defaultUseCase="large_international"
+            mode="ops"
+          />
 
           <SectionCard title="Fleet overview" eyebrow="Status">
             {state.systemHealth ? (

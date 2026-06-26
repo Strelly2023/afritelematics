@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from afritech.core_platform.proof_receipts import verify_proof_receipt
 from afritech.core_platform.qr_proof import decode_qr_payload
@@ -24,7 +24,7 @@ def _compute_trust_level(receipt: Mapping[str, Any], verification: Mapping[str, 
 def verify_scanned_receipt(
     qr_data: str,
     *,
-    group_public_keys: list[bytes] | None = None,
+    group_public_keys: Sequence[str | bytes] | None = None,
 ) -> dict[str, Any]:
     try:
         receipt = decode_qr_payload(qr_data)

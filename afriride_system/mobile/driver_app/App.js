@@ -28,6 +28,7 @@ import {
 } from "../shared/novarideUi";
 import { ProofWorkbench } from "../shared/verificationWorkbench";
 import { deriveDriverMission } from "../shared/novarideMission";
+import { NovaPayTransferPanel } from "../shared/novapayTransfer";
 import {
   deriveHashes,
   formatCount,
@@ -649,6 +650,21 @@ export default function App() {
             <InfoRow label="Vehicle" value={currentVehicle} />
             <InfoRow label="Queue depth" value={formatCount(assignedCount, "0")} />
           </SectionCard>
+          ) : null}
+
+          {viewMode !== "diagnostics" ? (
+            <NovaPayTransferPanel
+              role="DRIVER"
+              userId={driverId}
+              title="NovaPay Receiver"
+              subtitle="Verify incoming transfer receipts and inspect the canonical payment proof."
+              defaultRecipientCountry="AU"
+              defaultAmount="75.00"
+              defaultSourceCurrency="AUD"
+              defaultPayoutMethod="bank_deposit"
+              defaultUseCase="fast_low_cost_international"
+              mode="verify"
+            />
           ) : null}
 
           {viewMode !== "diagnostics" ? (
