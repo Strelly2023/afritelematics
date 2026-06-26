@@ -1,0 +1,176 @@
+{
+  "protocol": {
+    "hash_version": "v1",
+    "signed_message_prefix": "NOVATECH"
+  },
+  "cases": [
+    {
+      "name": "simple_amount",
+      "domain": "qr_payload",
+      "payload": {
+        "amount": 10,
+        "currency": "USD"
+      },
+      "hash": "2b85598106fa11bd2f43197686ebd2ffc296166d4e74c563159ec799805554a9",
+      "signed_message": "NOVATECH::qr_payload::2b85598106fa11bd2f43197686ebd2ffc296166d4e74c563159ec799805554a9"
+    },
+    {
+      "name": "declared_domain_payload",
+      "domain": "proof_receipt",
+      "use_payload_domain": true,
+      "payload": {
+        "domain": "proof_receipt",
+        "text": "domain-bound"
+      },
+      "hash": "af4052164c013881493c7c3603c0ad27020df0e0f34c03332933fc26ed35d727",
+      "signed_message": "NOVATECH::proof_receipt::af4052164c013881493c7c3603c0ad27020df0e0f34c03332933fc26ed35d727"
+    },
+    {
+      "name": "emoji_set",
+      "domain": "signed_payload",
+      "payload": {
+        "emoji": "🔥💰🚀"
+      },
+      "hash": "558e10551304fceb434753cee5423ba9a92aecc72045fcbe5348ee8a2b1fea32",
+      "signed_message": "NOVATECH::signed_payload::558e10551304fceb434753cee5423ba9a92aecc72045fcbe5348ee8a2b1fea32"
+    },
+    {
+      "name": "nfc_text",
+      "domain": "proof_receipt",
+      "payload": {
+        "text": "é"
+      },
+      "hash": "bc93f8335971736f63b9f761a6febeb6daacfc0ac765535459fc0e7dcb1eb0e0",
+      "signed_message": "NOVATECH::proof_receipt::bc93f8335971736f63b9f761a6febeb6daacfc0ac765535459fc0e7dcb1eb0e0"
+    },
+    {
+      "name": "nfd_text",
+      "domain": "proof_receipt",
+      "payload": {
+        "text": "é"
+      },
+      "hash": "d56f1e5e9219278447474f27e3cccedba05ce58661f95ce21896e940af22243b",
+      "signed_message": "NOVATECH::proof_receipt::d56f1e5e9219278447474f27e3cccedba05ce58661f95ce21896e940af22243b"
+    },
+    {
+      "name": "large_json",
+      "domain": "consensus_root",
+      "payload": {
+        "items": [
+          {
+            "id": 0,
+            "value": "item-0"
+          },
+          {
+            "id": 1,
+            "value": "item-1"
+          },
+          {
+            "id": 2,
+            "value": "item-2"
+          },
+          {
+            "id": 3,
+            "value": "item-3"
+          },
+          {
+            "id": 4,
+            "value": "item-4"
+          },
+          {
+            "id": 5,
+            "value": "item-5"
+          },
+          {
+            "id": 6,
+            "value": "item-6"
+          },
+          {
+            "id": 7,
+            "value": "item-7"
+          },
+          {
+            "id": 8,
+            "value": "item-8"
+          },
+          {
+            "id": 9,
+            "value": "item-9"
+          },
+          {
+            "id": 10,
+            "value": "item-10"
+          },
+          {
+            "id": 11,
+            "value": "item-11"
+          },
+          {
+            "id": 12,
+            "value": "item-12"
+          },
+          {
+            "id": 13,
+            "value": "item-13"
+          },
+          {
+            "id": 14,
+            "value": "item-14"
+          },
+          {
+            "id": 15,
+            "value": "item-15"
+          },
+          {
+            "id": 16,
+            "value": "item-16"
+          },
+          {
+            "id": 17,
+            "value": "item-17"
+          },
+          {
+            "id": 18,
+            "value": "item-18"
+          },
+          {
+            "id": 19,
+            "value": "item-19"
+          },
+          {
+            "id": 20,
+            "value": "item-20"
+          },
+          {
+            "id": 21,
+            "value": "item-21"
+          },
+          {
+            "id": 22,
+            "value": "item-22"
+          },
+          {
+            "id": 23,
+            "value": "item-23"
+          },
+          {
+            "id": 24,
+            "value": "item-24"
+          }
+        ]
+      },
+      "hash": "85b4d0e65ad50a48da15f4df0e80427c97c696ca807d8a9e7bb28344eaaac546",
+      "signed_message": "NOVATECH::consensus_root::85b4d0e65ad50a48da15f4df0e80427c97c696ca807d8a9e7bb28344eaaac546"
+    },
+    {
+      "name": "binary_edge",
+      "domain": "seal",
+      "payload": {
+        "bytes": [0, 1, 2, 3, 254, 255],
+        "label": "binary-edge"
+      },
+      "hash": "4b2aaffdb9b881838c9fb8a953ef19731a457f101d759135868887e3333ccbc4",
+      "signed_message": "NOVATECH::seal::4b2aaffdb9b881838c9fb8a953ef19731a457f101d759135868887e3333ccbc4"
+    }
+  ]
+}

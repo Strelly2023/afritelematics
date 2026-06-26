@@ -1,0 +1,28 @@
+id: RULE-070
+title: Contract Distribution and Negotiation Enforcement
+status: active
+scope: afritech/platform_contracts
+rules:
+  - Governed request admission must validate the canonical request schema.
+  - Governed API responses must validate the canonical response schema.
+  - Tenant and actor context must match authenticated claims.
+  - Contract, replay, evidence, and signature versions must be negotiated explicitly.
+  - Schema publications must match canonical digests and valid signatures.
+  - Event lineage must preserve correlation and causation links.
+  - Capability dependency cycles are forbidden.
+  - Federation manifests must negotiate versions and signature algorithms.
+  - SDK artifacts and the developer portal must expose the current version vector.
+  - Architecture metrics must report contract coverage and governance completeness.
+linked_invariants:
+  - IA-NTCD-001
+  - IA-NTCD-002
+  - IA-NTCD-003
+  - IA-NTCD-004
+  - IA-NTCD-005
+  - IA-NTCD-006
+  - IA-NTCD-007
+  - IA-NTCD-008
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+  validator: afritech.ci.novatech_platform_contract_validator

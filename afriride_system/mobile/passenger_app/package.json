@@ -9,9 +9,12 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
+    "@noble/bls12-381": "^1.4.0",
     "expo": "~56.0.12",
     "expo-dev-client": "~56.0.20",
+    "ethers": "^6.13.5",
     "react": "19.2.3",
-    "react-native": "0.85.3"
+    "react-native": "0.85.3",
+    "snarkjs": "^0.7.5"
   }
 }

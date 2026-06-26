@@ -1,0 +1,38 @@
+id: BIND-047
+description: >
+  Binds the NovaTech Platform Constitution and ADR-0049 to its human standards,
+  machine contract, runtime vocabulary, JSON Schemas, CI validator, and tests.
+bindings:
+  - id: BIND-047-1
+    target: docs/governance/PLATFORM_CONSTITUTION.md
+    binding_type: CONSTITUTION
+  - id: BIND-047-2
+    target: docs/architecture/NOVATECH_PLATFORM_CONTRACT.md
+    binding_type: ARCHITECTURE_CONTRACT
+  - id: BIND-047-3
+    target: afritech/platform_contracts/platform.yaml
+    binding_type: MACHINE_CONTRACT
+  - id: BIND-047-4
+    target: afritech/platform_contracts/runtime.py
+    binding_type: RUNTIME_CONTRACT
+  - id: BIND-047-5
+    target: afritech/ci/novatech_platform_contract_validator.py
+    binding_type: CI_VALIDATOR
+  - id: BIND-047-6
+    target: afritech/tests/ci/test_novatech_platform_contract_validator.py
+    binding_type: TEST
+linked_adr:
+  - ADR-0049
+linked_rules:
+  - RULE-069
+linked_invariants:
+  - IA-NTPC-001
+  - IA-NTPC-002
+  - IA-NTPC-003
+  - IA-NTPC-004
+  - IA-NTPC-005
+  - IA-NTPC-006
+  - IA-NTPC-007
+  - IA-NTPC-008
+ci:
+  validator: afritech.ci.novatech_platform_contract_validator

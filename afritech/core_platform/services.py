@@ -21,9 +21,11 @@ from afritech.core_platform.models import (
     TrustReceipt,
 )
 from afritech.core_platform.event_bus import EventBus, build_event_bus
+from afritech.core_platform.consensus import ValidatorConsensusEngine
 from afritech.core_platform.payments.providers import provider_for
 from afritech.core_platform.settlement import SettlementRouter
 from afritech.core_platform.signing import kms_signing_status, signing_key_status
+from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
 
 
 CORE_FLOW = (
@@ -75,43 +77,30 @@ class NovaIDService:
 class NovaPowerEngine:
     """Policy engine for role, scope, tenant, ownership, and risk checks."""
 
+    def __init__(self, policy_engine: VersionedPolicyEngine | None = None) -> None:
+        self.policy_engine = policy_engine or VersionedPolicyEngine()
+
     def evaluate(self, request: AuthorityRequest, identity: Identity) -> AuthorityDecision:
-        checks: list[str] = []
-        failures: list[str] = []
-
-        if request.organization_id == identity.organization_id:
-            checks.append("tenant_aligned")
-        else:
-            failures.append("tenant_mismatch")
-
-        if not request.required_roles or set(request.required_roles).intersection(identity.roles):
-            checks.append("role_allowed")
-        else:
-            failures.append("role_missing")
-
-        if set(request.required_scopes).issubset(identity.scopes):
-            checks.append("scope_allowed")
-        else:
-            failures.append("scope_missing")
-
-        if request.resource_owner_id in {None, identity.identity_id}:
-            checks.append("ownership_valid")
-        else:
-            failures.append("ownership_mismatch")
-
-        if request.risk_score <= request.risk_score_max:
-            checks.append("risk_within_policy")
-        else:
-            failures.append("risk_above_policy")
-
-        decision = "ALLOW" if not failures else "DENY"
-        reason = "All core constraints passed" if not failures else ", ".join(failures)
-        trace_id = _stable_hash({"request": request.canonical(), "identity": identity.canonical()})[:24]
+        result = self.policy_engine.evaluate(
+            PolicyInput(
+                tenant_id=request.organization_id,
+                identity_tenant_id=identity.organization_id,
+                actor_id=identity.identity_id,
+                roles=identity.roles,
+                scopes=identity.scopes,
+                action=request.action,
+                required_roles=request.required_roles,
+                required_scopes=request.required_scopes,
+                resource_owner_id=request.resource_owner_id,
+                risk_score=request.risk_score,
+                risk_score_max=request.risk_score_max,
+            )
+        )
         return AuthorityDecision(
-            decision=decision,
-            reason=reason,
-            trace_id=trace_id,
-            checks=tuple(checks + failures),
+            decision=result.decision,
+            reason=result.reason,
+            trace_id=result.trace_id,
+            checks=result.checks,
         )
 
 
@@ -296,6 +285,7 @@ class NovaTechCorePlatform:
         self.trust = trust or NovaTrustService()
         self.intelligence = intelligence or NovaScriptService()
         self.programming = programming or NovaProgrammingService()
+        self.validator_consensus = ValidatorConsensusEngine()
 
     def execute_payment_flow(
         self,
@@ -391,7 +381,10 @@ def build_core_platform_overview() -> dict[str, object]:
         "platform": "NovaTechSol",
         "console": "Unified Trust Operating Console",
         "flow": list(CORE_FLOW),
-        "philosophy": "Identity -> Authority -> Execution -> Payment -> Proof -> Intelligence -> Evolution",
+        "philosophy": (
+            "Identity -> Authority -> Execution -> Payment -> Proof -> "
+            "Intelligence -> Evolution"
+        ),
         "modules": modules,
         "product_applications_included": False,
     }

@@ -1,0 +1,48 @@
+id: ADR-0051
+title: NovaTech Platform Operational Excellence
+status: ACCEPTED
+context:
+  - Runtime contracts require independently evolvable policy decisions.
+  - Payments, onboarding, settlement, and federation imports need checkpointed recovery.
+  - Production promotion needs measurable SLO, error-budget, rollback, and data-safety gates.
+  - External and internal developers need quickstarts, migration guidance, and compatibility evidence.
+  - Data classification, residency, retention, and deletion require runtime enforcement.
+decision: >
+  Establish a machine-readable NovaTech platform operations contract. Delegate
+  NovaPower decisions to a versioned policy evaluator, add checkpointed durable
+  workflow primitives, service objectives and error-budget decisions, governed
+  progressive rollout and feature flags, data lifecycle enforcement, developer
+  operational assets, readiness APIs, and a fail-closed CI validator.
+consequences:
+  - Policy rules evolve independently while retaining deterministic decisions and traces.
+  - Long-running operations recover from persisted checkpoints and compensate failures.
+  - Releases are blocked or rolled back by reliability, integrity, and isolation signals.
+  - Data residency and deletion become executable controls.
+  - Operational readiness is inspectable through the platform API.
+invariants:
+  - id: IA-NTOE-001
+    statement: Policy decisions must be versioned, deterministic, traceable, and fail closed.
+  - id: IA-NTOE-002
+    statement: Long-running workflows must checkpoint every transition and support compensation.
+  - id: IA-NTOE-003
+    statement: Tier-1 services must publish measurable SLO, error-budget, RTO, and RPO objectives.
+  - id: IA-NTOE-004
+    statement: Production promotion must pass ordered environment and operational gates.
+  - id: IA-NTOE-005
+    statement: Integrity, replay, schema, or tenant failures must trigger rollback.
+  - id: IA-NTOE-006
+    statement: Feature flags must be owned, scoped, expiring, and auditable.
+  - id: IA-NTOE-007
+    statement: Governed data must declare classification, residency, retention, and deletion behavior.
+  - id: IA-NTOE-008
+    statement: Developer assets must include quickstart, local validation, migration, and compatibility guidance.
+verification:
+  contract: afritech/platform_operations/operations.yaml
+  validator: afritech.ci.novatech_platform_operations_validator
+  tests:
+    - afritech/tests/platform_operations/test_operations.py
+    - afritech/tests/ci/test_novatech_platform_operations_validator.py
+rules:
+  - RULE-071
+bindings:
+  - BIND-049

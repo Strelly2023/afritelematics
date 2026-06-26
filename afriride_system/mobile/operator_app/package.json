@@ -10,9 +10,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@noble/bls12-381": "^1.4.0",
     "expo": "~51.0.0",
+    "ethers": "^6.13.5",
     "react": "18.2.0",
-    "react-native": "0.74.0"
+    "react-native": "0.74.0",
+    "snarkjs": "^0.7.5"
   },
   "devDependencies": {}
 }

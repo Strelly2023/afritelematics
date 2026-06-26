@@ -129,6 +129,7 @@ void main() {
       expect(find.text('Requests'), findsOneWidget);
       expect(find.text('Trip'), findsOneWidget);
       expect(find.text('Replay'), findsOneWidget);
+      expect(find.text('Verifier'), findsOneWidget);
       expect(find.text('Earnings'), findsOneWidget);
       expect(fakeClient.assignedRideCalls, 1);
 
@@ -154,6 +155,12 @@ void main() {
       expect(find.text('Replay Evidence'), findsWidgets);
       expect(find.text('Replay: Verified'), findsOneWidget);
       expect(find.text('Replay Hash: hash-1'), findsOneWidget);
+
+      await tester.tap(find.text('Verifier'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Verifier'), findsWidgets);
+      expect(find.text('Scan or paste a privacy QR payload'), findsOneWidget);
 
       await tester.tap(find.text('Earnings'));
       await tester.pumpAndSettle();

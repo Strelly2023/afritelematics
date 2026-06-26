@@ -1,0 +1,28 @@
+id: RULE-071
+title: NovaTech Platform Operational Excellence Enforcement
+status: active
+scope: afritech/platform_operations
+rules:
+  - NovaPower authorization must use a versioned policy contract.
+  - Policy evaluation must fail closed and emit policy hash and trace identity.
+  - Durable workflows must checkpoint transitions with optimistic concurrency.
+  - Failed workflows must enter explicit compensation.
+  - Service objectives must define availability, latency, RTO, RPO, and burn thresholds.
+  - Error-budget exhaustion must block normal release promotion.
+  - Production rollout must follow ordered environments and verified rollback gates.
+  - Integrity and tenant-isolation failures must trigger rollback.
+  - Feature flags must have owner, tenant scope, expiry, and bounded rollout.
+  - Data resources must declare classification, residency, retention, and deletion controls.
+linked_invariants:
+  - IA-NTOE-001
+  - IA-NTOE-002
+  - IA-NTOE-003
+  - IA-NTOE-004
+  - IA-NTOE-005
+  - IA-NTOE-006
+  - IA-NTOE-007
+  - IA-NTOE-008
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+  validator: afritech.ci.novatech_platform_operations_validator

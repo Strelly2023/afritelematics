@@ -6,6 +6,11 @@ decision: >
   Burundi, and DR Congo. Provider initiation remains non-settling. Only
   authenticated, replay-safe callbacks matched to an existing payment may
   produce signed settlement evidence.
+consequences:
+  - Provider initiation and confirmed settlement remain distinct states.
+  - Live providers require explicit activation, credentials, and commercial approval.
+  - Settlement callbacks become governed, replay-safe evidence-producing operations.
+  - Operator-specific behavior remains behind normalized provider contracts.
 context:
   - Kenya supports public Safaricom Daraja integration.
   - Burundi and several DR Congo operator APIs require commercial onboarding.

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novatech.example/contracts/platform.schema.json",
+  "type": "object",
+  "required": ["schema", "status", "platform", "version", "constitution", "root_contract", "operations_contract", "governing_adr", "authority_order", "capabilities", "trust_levels", "product_lifecycle", "api_lifecycle", "version_vector", "data_contracts", "developer_artifacts", "companion_standards", "required_operation_stages", "production_requirements"],
+  "properties": {
+    "schema": {"const": "novatech.platform.contract.v2"},
+    "status": {"const": "ACTIVE"},
+    "platform": {"const": "NovaTech"},
+    "version": {"$ref": "#/$defs/semver"},
+    "constitution": {"type": "string", "minLength": 1},
+    "root_contract": {"type": "string", "minLength": 1},
+    "operations_contract": {"type": "string", "minLength": 1},
+    "governing_adr": {"pattern": "^ADR-[0-9]{4}$"},
+    "authority_order": {"type": "array", "minItems": 8, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "capabilities": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "layer", "owner", "depends_on"],
+        "properties": {
+          "id": {"pattern": "^[a-z][a-z0-9_]*$"},
+          "name": {"type": "string", "minLength": 1},
+          "layer": {"type": "integer", "minimum": 0, "maximum": 7},
+          "owner": {"type": "string", "minLength": 1},
+          "depends_on": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "trust_levels": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/staged"}},
+    "product_lifecycle": {"type": "array", "minItems": 7, "items": {"$ref": "#/$defs/gatedState"}},
+    "api_lifecycle": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["state", "compatibility"],
+        "properties": {"state": {"type": "string"}, "compatibility": {"type": "string"}},
+        "additionalProperties": false
+      }
+    },
+    "version_vector": {
+      "type": "object",
+      "required": ["platform", "contract", "schema", "api", "replay", "evidence", "signature"],
+      "properties": {
+        "platform": {"$ref": "#/$defs/semver"},
+        "contract": {"$ref": "#/$defs/semver"},
+        "schema": {"$ref": "#/$defs/semver"},
+        "api": {"$ref": "#/$defs/semver"},
+        "replay": {"$ref": "#/$defs/semver"},
+        "evidence": {"$ref": "#/$defs/semver"},
+        "signature": {"$ref": "#/$defs/semver"}
+      },
+      "additionalProperties": false
+    },
+    "data_contracts": {
+      "type": "object",
+      "required": ["request", "response", "trust", "replay", "event", "signature"],
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "developer_artifacts": {
+      "type": "object",
+      "required": ["schema_publications", "capability_graph", "developer_portal", "sdk_generator", "sdk_python", "sdk_typescript", "sdk_kotlin", "sdk_swift"],
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "companion_standards": {"type": "array", "minItems": 8, "uniqueItems": true, "items": {"type": "string"}},
+    "required_operation_stages": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"type": "string"}},
+    "production_requirements": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "semver": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "staged": {
+      "type": "object",
+      "required": ["level", "id", "requires"],
+      "properties": {
+        "level": {"type": "integer", "minimum": 0, "maximum": 6},
+        "id": {"type": "string"},
+        "requires": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "gatedState": {
+      "type": "object",
+      "required": ["state", "gates"],
+      "properties": {
+        "state": {"type": "string"},
+        "gates": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

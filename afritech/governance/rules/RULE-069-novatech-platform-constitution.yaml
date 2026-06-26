@@ -1,0 +1,26 @@
+id: RULE-069
+title: NovaTech Constitutional Platform Enforcement
+status: active
+scope: global
+rules:
+  - Every platform contract must reference its governing constitutional authority.
+  - Capability dependencies must point to the same or a lower platform layer.
+  - Products may own domain workflows but may not replace platform primitives.
+  - Trust claims must not exceed the highest contiguous level supported by evidence.
+  - Governed schemas must fail closed and use independent semantic versions.
+  - Product and API lifecycle promotion requires declared gates.
+  - Production capability requires SLO, error budget, RTO, RPO, security, rollback, and ownership.
+  - Federation and AI outputs remain non-authoritative until admitted through local policy and execution.
+linked_invariants:
+  - IA-NTPC-001
+  - IA-NTPC-002
+  - IA-NTPC-003
+  - IA-NTPC-004
+  - IA-NTPC-005
+  - IA-NTPC-006
+  - IA-NTPC-007
+  - IA-NTPC-008
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+  validator: afritech.ci.novatech_platform_contract_validator

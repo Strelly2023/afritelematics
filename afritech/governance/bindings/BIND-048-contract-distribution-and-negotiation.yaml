@@ -1,0 +1,45 @@
+id: BIND-048
+description: >
+  Binds ADR-0050 and RULE-070 to runtime schema validation, version negotiation,
+  schema publication, lineage, federation compatibility, SDKs, metrics, portal,
+  and their tests.
+bindings:
+  - id: BIND-048-1
+    target: afritech/platform_contracts/registry.py
+    binding_type: RUNTIME_CONTRACT_REGISTRY
+  - id: BIND-048-2
+    target: afritech/platform_contracts/federation.py
+    binding_type: FEDERATION_COMPATIBILITY
+  - id: BIND-048-3
+    target: afritech/api/core_platform_api.py
+    binding_type: API
+  - id: BIND-048-4
+    target: afritech/platform_contracts/schema-publications.json
+    binding_type: SIGNED_SCHEMA_REGISTRY
+  - id: BIND-048-5
+    target: docs/architecture/NOVATECH_CAPABILITY_GRAPH.md
+    binding_type: GENERATED_ARCHITECTURE
+  - id: BIND-048-6
+    target: docs/portal/NOVATECH_DEVELOPER_CONTRACT_PORTAL.md
+    binding_type: DEVELOPER_PORTAL
+  - id: BIND-048-7
+    target: afritech/tests/platform_contracts/test_registry.py
+    binding_type: TEST
+  - id: BIND-048-8
+    target: afritech/platform_contracts/sdk_generator.py
+    binding_type: CODE_GENERATOR
+linked_adr:
+  - ADR-0050
+linked_rules:
+  - RULE-070
+linked_invariants:
+  - IA-NTCD-001
+  - IA-NTCD-002
+  - IA-NTCD-003
+  - IA-NTCD-004
+  - IA-NTCD-005
+  - IA-NTCD-006
+  - IA-NTCD-007
+  - IA-NTCD-008
+ci:
+  validator: afritech.ci.novatech_platform_contract_validator

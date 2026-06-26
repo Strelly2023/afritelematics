@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AuditorDashboard } from "./AuditorDashboard";
 import { connectDashboardRealtime } from "./realtime";
+import { LiveVerifierPanel } from "./LiveVerifierPanel";
 import { TrustExplorerFrontend } from "./TrustExplorer";
 
 const API_BASE_URL =
@@ -5246,6 +5247,9 @@ export default function OperatorDashboard() {
               </p>
             </article>
           </div>
+        </OperatorPanel>
+        <OperatorPanel title="Live Verifier API">
+          <LiveVerifierPanel apiBaseUrl={API_BASE_URL} />
         </OperatorPanel>
         <div className="metric-grid">
           <TrustMetric

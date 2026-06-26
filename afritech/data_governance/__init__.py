@@ -21,6 +21,15 @@ from afritech.data_governance.registry import (
     INV_DATA_001,
     validate_data_governance_registry,
 )
+from afritech.data_governance.lifecycle import (
+    DataClassification,
+    DataLifecyclePolicy,
+    DeletionDecision,
+    RetentionClass,
+    evaluate_deletion,
+    retention_deadline,
+    validate_residency,
+)
 
 __all__ = [
     "AccessMode",
@@ -36,4 +45,11 @@ __all__ = [
     "owner_for_resource",
     "resources_for_domain",
     "validate_data_governance_registry",
+    "DataClassification",
+    "DataLifecyclePolicy",
+    "DeletionDecision",
+    "RetentionClass",
+    "evaluate_deletion",
+    "retention_deadline",
+    "validate_residency",
 ]

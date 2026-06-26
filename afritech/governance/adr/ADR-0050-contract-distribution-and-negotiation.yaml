@@ -1,0 +1,47 @@
+id: ADR-0050
+title: NovaTech Contract Distribution, Negotiation, and Lineage
+status: ACCEPTED
+context:
+  - Canonical schemas exist but clients need runtime validation and version negotiation.
+  - Federation peers must prove protocol compatibility before trust exchange.
+  - Tenant continuity and event causation must be enforceable across the execution chain.
+  - Developers need signed schemas, generated SDK contracts, architecture graphs, and measurable compliance.
+decision: >
+  Add a runtime contract registry, governed request admission API, semantic
+  version negotiation, signed schema publications, tenant and event lineage
+  validators, cycle-safe capability graph generation, federation compatibility
+  manifests, architectural metrics, generated multi-language SDK contracts, and
+  a developer contract portal.
+consequences:
+  - Clients can discover and validate authoritative contracts at runtime.
+  - Unsupported contract and replay versions fail before execution.
+  - Schema authenticity can be verified through digest and signature metadata.
+  - Cross-tenant drift and broken event causation become testable failures.
+  - Federation nodes expose compatibility without gaining execution authority.
+  - Architectural maturity becomes measurable rather than pass/fail only.
+invariants:
+  - id: IA-NTCD-001
+    statement: Runtime API models and admitted payloads must validate against canonical schemas.
+  - id: IA-NTCD-002
+    statement: Unsupported version vectors must be rejected before governed execution.
+  - id: IA-NTCD-003
+    statement: Published schemas must be digest-bound, signed, and historically recorded.
+  - id: IA-NTCD-004
+    statement: Tenant identity must remain continuous through policy, execution, event, evidence, and replay.
+  - id: IA-NTCD-005
+    statement: Event causation must preserve command-to-trust-to-integration lineage.
+  - id: IA-NTCD-006
+    statement: Capability graphs must remain acyclic.
+  - id: IA-NTCD-007
+    statement: Federation compatibility must be negotiated without granting remote execution authority.
+  - id: IA-NTCD-008
+    statement: Generated SDKs and portal surfaces must expose the canonical version vector.
+verification:
+  validator: afritech.ci.novatech_platform_contract_validator
+  tests:
+    - afritech/tests/platform_contracts/test_registry.py
+    - afritech/tests/api/test_core_platform_api.py
+rules:
+  - RULE-070
+bindings:
+  - BIND-048

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novatech.example/contracts/event/1.0.0",
+  "type": "object",
+  "required": ["event_id", "event_class", "event_type", "subject", "tenant_id", "source", "occurred_at", "correlation_id", "causation_id", "schema_version", "payload"],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1},
+    "event_class": {"enum": ["DOMAIN", "TRUST", "INTEGRATION", "ANALYTICS"]},
+    "event_type": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+    "subject": {"type": "string", "minLength": 1},
+    "tenant_id": {"type": "string", "minLength": 1},
+    "source": {"type": "string", "minLength": 1},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "correlation_id": {"type": "string", "minLength": 1},
+    "causation_id": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "payload": {"type": "object"},
+    "integrity": {"type": "object"}
+  },
+  "additionalProperties": false
+}

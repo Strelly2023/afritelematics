@@ -134,6 +134,30 @@ Explorer: http://localhost:8000/trust/explorer/{trust_id}
 PDF: http://localhost:8000/trust/explorer/{trust_id}/audit.pdf
 ```
 
+## Phase 5 Architecture Reference
+
+The current codebase state for settlement routing, trust-node observability,
+event bus wiring, KMS-ready signing, and CBDC extensibility is documented in:
+
+```text
+docs/architecture/NOVAPAY_GLOBAL_ARCHITECTURE_PHASE_5.md
+```
+
+Use that document as the authoritative architecture reference for the phase 5+
+NovaPay implementation state. It reflects the current code accurately:
+
+- settlement routing and FX normalization are implemented
+- Kafka is optional and env-gated through the event bus abstraction
+- KMS signing is optional and env-gated
+- CBDC is optional and controlled by runtime configuration
+- distributed consensus and multi-region deployment remain future work
+
+For the step-by-step Kafka and AWS multi-region deployment sequence, use:
+
+```text
+docs/operations/NOVAPAY_KAFKA_MULTI_REGION_DEPLOYMENT_RUNBOOK.md
+```
+
 ## External Verification and Distribution Layer
 
 This is the final externally consumable trust interface for NovaTech. It turns

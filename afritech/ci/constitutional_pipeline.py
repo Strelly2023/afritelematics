@@ -115,6 +115,8 @@ YAML_TARGETS: tuple[str, ...] = (
     "afritech/architecture/surface_authority_registry.yaml",
     "afritech/epoch/epoch_registry.yaml",
     "afritech/governance/binding_manifest.yaml",
+    "afritech/platform_contracts/platform.yaml",
+    "afritech/platform_operations/operations.yaml",
     "afritech/simulation/continuity/index.yaml",
 )
 
@@ -224,6 +226,16 @@ PIPELINE: tuple[PipelineStep, ...] = (
     module_step(
         "novapay_mobile_money_validator",
         "afritech.ci.novapay_mobile_money_validator",
+        "STATIC",
+    ),
+    module_step(
+        "novatech_platform_contract_validator",
+        "afritech.ci.novatech_platform_contract_validator",
+        "STATIC",
+    ),
+    module_step(
+        "novatech_platform_operations_validator",
+        "afritech.ci.novatech_platform_operations_validator",
         "STATIC",
     ),
     module_step(

@@ -34,6 +34,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       # ------------------------------------------------------------
       # DEPENDENCIES
       # ------------------------------------------------------------
@@ -65,6 +70,12 @@ jobs:
       # ------------------------------------------------------------
       - name: Validate import topology
         run: python -m afritech.ci.ast_import_validator
+
+      - name: Run cryptographic hash corpus parity checks
+        run: node scripts/hash_parity_check.mjs
+
+      - name: Run cryptographic hash protocol tests
+        run: pytest -q afritech/tests/core_platform/test_hash_protocol.py
 
       - name: Validate constitutional call order
         run: python -m afritech.ci.ast_call_order_validator

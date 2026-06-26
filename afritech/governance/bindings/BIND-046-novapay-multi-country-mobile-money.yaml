@@ -40,3 +40,5 @@ linked_invariants:
   - IA-NPMM-004
   - IA-NPMM-005
   - IA-NPMM-006
+ci:
+  validator: afritech.ci.novapay_mobile_money_validator

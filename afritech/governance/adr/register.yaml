@@ -101,3 +101,15 @@ adrs:
   - id: ADR-0047
     path: afritech/governance/adr/ADR-0047-governed-evidence-operating-protocol.yaml
     status: ACCEPTED
+  - id: ADR-0048
+    path: afritech/governance/adr/ADR-0048-novapay-multi-country-mobile-money.yaml
+    status: ACCEPTED
+  - id: ADR-0049
+    path: afritech/governance/adr/ADR-0049-novatech-platform-constitution.yaml
+    status: ACCEPTED
+  - id: ADR-0050
+    path: afritech/governance/adr/ADR-0050-contract-distribution-and-negotiation.yaml
+    status: ACCEPTED
+  - id: ADR-0051
+    path: afritech/governance/adr/ADR-0051-platform-operational-excellence.yaml
+    status: ACCEPTED

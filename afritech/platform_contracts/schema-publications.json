@@ -1,0 +1,31 @@
+{
+  "registry": "NovaTech Contract Registry",
+  "publication_version": "1.0.0",
+  "published_contract_version": "2.0.0",
+  "schemas": {
+    "event": {
+      "schema_id": "https://novatech.example/contracts/event/1.0.0",
+      "sha256": "b49e4f09c083eff4a08c98f4cf288fe6eaaa20595bc34098a16422c3c86d2773"
+    },
+    "replay": {
+      "schema_id": "https://novatech.example/contracts/replay/1.0.0",
+      "sha256": "8c53bf3babd410df66ff0b14234ba157deedeff5e2b1d9b59b310a6dc4d14d4a"
+    },
+    "request": {
+      "schema_id": "https://novatech.example/contracts/request/1.0.0",
+      "sha256": "5ba5c1ad15cffb528178a6793852dfcd7aa084e8577b6c43c523721282ff65c9"
+    },
+    "response": {
+      "schema_id": "https://novatech.example/contracts/response/1.0.0",
+      "sha256": "b8a5aaac86cb3bfc4998892610cf22da6dbdd20c21fa5dce683453f660bd46e3"
+    },
+    "signature": {
+      "schema_id": "https://novatech.example/contracts/signature/1.0.0",
+      "sha256": "471340132be9fc020f4704aa798b7c9f47d3b7f38be027e6bc6e3293373c151d"
+    },
+    "trust": {
+      "schema_id": "https://novatech.example/contracts/trust/1.0.0",
+      "sha256": "a52d15250bfbe73f3f3e51813b5cf0aa64f364fe1b8e265ea745e24bd7832c6f"
+    }
+  }
+}

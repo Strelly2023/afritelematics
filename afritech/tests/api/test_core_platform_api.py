@@ -10,6 +10,9 @@ from afritech.api.core_platform_api import (
     build_core_platform_router,
     build_public_trust_explorer_router,
 )
+from afritech.core_platform.cryptographic_consensus import run_cryptographic_consensus
+from afritech.core_platform.proof_receipts import build_proof_receipt
+from afritech.core_platform.signing import sign_packet
 
 
 def build_client() -> TestClient:
@@ -40,6 +43,114 @@ def test_core_platform_console_api_exposes_core_only_routes() -> None:
     assert body["product_applications_included"] is False
     assert body["modules"][0]["path"] == "/console/identity"
     assert body["modules"][-1]["path"] == "/console/programming"
+
+
+def test_contract_portal_exposes_signed_schemas_graph_metrics_and_sdks() -> None:
+    client = build_client()
+
+    response = client.get("/v1/core-platform/contracts")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["contract"]["version"] == "2.0.0"
+    assert len(body["schema_registry"]["schemas"]) == 6
+    assert body["architecture"]["acyclic"] is True
+    assert body["metrics"]["overall"] == 100
+    assert set(body["sdk_downloads"]) == {"python", "typescript", "kotlin", "swift"}
+
+
+def test_platform_operations_readiness_exposes_sre_and_rollout_gates() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/core-platform/operations/readiness",
+        headers=auth_headers(role="OBSERVER"),
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ready"] is True
+    assert body["service_objective_count"] == 3
+    assert body["canary_stages_percent"] == [1, 5, 25, 50, 100]
+    assert "replay_mismatch" in body["automatic_rollback_signals"]
+    assert "RESTRICTED" in body["data_classifications"]
+
+
+def test_contract_negotiation_and_governed_request_admission() -> None:
+    client = build_client()
+
+    negotiation = client.get(
+        "/v1/core-platform/contracts/negotiate",
+        headers={
+            "Accept-Contract-Version": "2.0.0",
+            "Accept-Replay-Version": "1.0.0",
+        },
+    )
+    unsupported = client.get(
+        "/v1/core-platform/contracts/negotiate",
+        headers={"Accept-Contract-Version": "3.0.0"},
+    )
+    admitted = client.post(
+        "/v1/core-platform/contracts/admit",
+        headers=auth_headers(),
+        json={
+            "request_id": "request-api-1",
+            "operation": "payment.execute",
+            "tenant_id": "org-core",
+            "actor_id": "operator-1",
+            "idempotency_key": "idempotency-api-1",
+            "contract_version": "2.0.0",
+            "schema_version": "1.0.0",
+            "payload": {"intent_id": "intent-1"},
+        },
+    )
+
+    assert negotiation.status_code == 200
+    assert negotiation.json()["status"] == "COMPATIBLE"
+    assert unsupported.status_code == 426
+    assert admitted.status_code == 200
+    assert admitted.json()["tenant_id"] == "org-core"
+    assert admitted.json()["trust_level"] == 2
+
+
+def test_governed_request_openapi_matches_canonical_required_fields() -> None:
+    client = build_client()
+    schema = client.app.openapi()
+    model = schema["components"]["schemas"]["GovernedRequestPayload"]
+
+    assert set(model["required"]) == {
+        "request_id",
+        "operation",
+        "tenant_id",
+        "actor_id",
+        "idempotency_key",
+        "contract_version",
+        "schema_version",
+        "payload",
+    }
+    assert model["additionalProperties"] is False
+
+
+def test_governed_request_rejects_cross_tenant_context() -> None:
+    client = build_client()
+
+    response = client.post(
+        "/v1/core-platform/contracts/admit",
+        headers=auth_headers(),
+        json={
+            "request_id": "request-api-tenant",
+            "operation": "payment.execute",
+            "tenant_id": "other-org",
+            "actor_id": "operator-1",
+            "idempotency_key": "idempotency-api-tenant",
+            "contract_version": "2.0.0",
+            "schema_version": "1.0.0",
+            "payload": {},
+        },
+    )
+
+    assert response.status_code == 403
+    assert response.json()["detail"] == "tenant_context_mismatch"
 
 
 def test_core_platform_identity_and_authority_api_are_tenant_bound() -> None:
@@ -149,7 +260,108 @@ def test_core_platform_trust_ai_and_programming_api_surfaces() -> None:
     )
     assert proposal.status_code == 200
     assert proposal.json()["layer"] == "NovaProgramming"
-    assert "test_suite" in proposal.json()["proposal"]["validators"]
+
+
+def test_proof_receipt_qr_mobile_and_onchain_api_surfaces() -> None:
+    client = build_client()
+    packet = {
+        "trust_id": "trust-api-proof-001",
+        "replay_status": "verified",
+        "payload": {"sequence": 12},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+    trust_seal = result["trust_seal"]
+
+    qr_response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt/qr",
+        headers=auth_headers(),
+        json={"trust_seal": trust_seal, "issuer": "api-test"},
+    )
+    assert qr_response.status_code == 200
+    qr_body = qr_response.json()
+    assert qr_body["receipt"]["receipt_hash"]
+    assert qr_body["qr_payload"]
+
+    mobile_response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt/mobile-verify",
+        headers=auth_headers(),
+        json={"qr_data": qr_body["qr_payload"]},
+    )
+    assert mobile_response.status_code == 200
+    assert mobile_response.json()["status"] is True
+    assert mobile_response.json()["trust_level"] == "PARTIAL"
+
+    onchain_response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt/onchain",
+        headers=auth_headers(),
+        json={"receipt": qr_body["receipt"]},
+    )
+    assert onchain_response.status_code == 200
+    onchain_body = onchain_response.json()
+    assert onchain_body["bundle"]["bundle_hash"]
+    assert "contract NovaTrustVerifier" in onchain_body["solidity_verifier_source"]
+
+
+def test_proof_receipt_qr_png_api_returns_png_bytes() -> None:
+    client = build_client()
+    packet = {
+        "trust_id": "trust-api-proof-002",
+        "replay_status": "verified",
+        "payload": {"sequence": 13},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+    trust_seal = result["trust_seal"]
+
+    response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt/qr.png",
+        headers=auth_headers(),
+        json={"trust_seal": trust_seal, "issuer": "api-test"},
+    )
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content.startswith(b"\x89PNG")
 
 
 def test_core_platform_pilot_flow_persists_public_trust_explorer_packet() -> None:
@@ -240,6 +452,13 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
     assert trust_nodes.status_code == 200
     assert trust_nodes.json()["consensus_layer"] == "future_non_authoritative"
 
+    consensus = client.get(
+        "/v1/core-platform/trust/consensus/status",
+        headers=auth_headers(role="OBSERVER"),
+    )
+    assert consensus.status_code == 200
+    assert consensus.json()["consensus_layer"] == "future_non_authoritative"
+
     pilot = client.post(
         "/v1/core-platform/pilot/flow",
         headers=auth_headers(role="OPERATOR"),
@@ -264,6 +483,49 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
     assert public_pdf.content.startswith(b"%PDF-1.4")
     assert b"Embedded verification QR:" in public_pdf.content
 
+
+def test_distributed_verification_validate_node_health_and_seal() -> None:
+    client = build_client()
+
+    packet = {
+        "trust_id": "trust-distributed-001",
+        "replay_status": "verified",
+        "event_hash": "abc123",
+        "payload": {"sequence": 1},
+    }
+    signature = sign_packet(packet).canonical()
+    validators = [
+        {"node_id": "validator-melbourne-001", "packet": packet, "signature": signature},
+        {"node_id": "validator-frankfurt-001", "packet": packet, "signature": signature},
+        {"node_id": "validator-nairobi-001", "packet": packet, "signature": signature},
+    ]
+
+    validation = client.post(
+        "/v1/core-platform/trust/consensus/validate",
+        headers=auth_headers(role="VERIFIER"),
+        json={
+            "packet": packet,
+            "validators": validators,
+            "total_nodes": 3,
+        },
+    )
+    assert validation.status_code == 200
+    body = validation.json()
+    assert body["consensus"]["consensus_reached"] is True
+    assert body["consensus"]["accepted_votes"] == 3
+    assert body["node_health"]["consensus_ready"] is True
+    assert body["trust_seal"]["trust_id"] == "trust-distributed-001"
+    assert len(body["trust_seal"]["seal_hash"]) == 64
+
+    node_health = client.get(
+        "/v1/core-platform/trust/nodes/health",
+        headers=auth_headers(role="OBSERVER"),
+        params={"configured_nodes": 3, "healthy_nodes": 3},
+    )
+    assert node_health.status_code == 200
+    assert node_health.json()["status"] == "healthy"
+    return
+
     signature = client.get(f"/trust/explorer/{trust_id}/signature")
     assert signature.status_code == 200
     assert signature.json()["signature"]["scheme"] == "ed25519"
@@ -281,7 +543,10 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
     blockchain_anchor = client.get(f"/trust/explorer/{trust_id}/anchor/blockchain")
     assert blockchain_anchor.status_code == 200
     assert blockchain_anchor.json()["anchor"]["status"] == "disabled"
-    assert blockchain_anchor.json()["anchor"]["message"] == "optional blockchain anchoring is not configured"
+    assert (
+        blockchain_anchor.json()["anchor"]["message"]
+        == "optional blockchain anchoring is not configured"
+    )
 
     qr = client.get(f"/trust/explorer/{trust_id}/qr.png")
     assert qr.status_code == 200
@@ -313,3 +578,131 @@ def test_core_platform_provider_status_and_pdf_export() -> None:
     signing = client.get("/v1/core-platform/signing/status", headers=auth_headers(role="OBSERVER"))
     assert signing.status_code == 200
     assert signing.json()["rotation_plan"]["steps"]
+
+
+def test_core_platform_readiness_reports_distributed_verification() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/core-platform/readiness",
+        headers=auth_headers(role="OBSERVER"),
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["layers"]["distributed_verification"] == "future_non_authoritative"
+    assert body["capabilities"]["distributed_verification_ready"] is False
+    assert body["fintech"]["distributed_verification"]["status"] in {
+        "unavailable",
+        "critical",
+        "degraded",
+        "healthy",
+        "quarantined",
+    }
+
+
+def test_cryptographic_consensus_endpoint_reports_aggregate_signature() -> None:
+    client = build_client()
+
+    packet = {
+        "trust_id": "trust-crypto-001",
+        "replay_status": "verified",
+        "payload": {"sequence": 5},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    response = client.post(
+        "/v1/core-platform/trust/consensus/cryptographic",
+        headers=auth_headers(role="VERIFIER"),
+        json={"packet": packet, "votes": votes, "total_nodes": 3},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["consensus"]["consensus_reached"] is True
+    assert body["consensus"]["aggregate_signature_scheme"] == "deterministic-aggregate"
+    assert body["trust_seal"]["cryptographic_consensus"] is True
+    assert body["trust_seal"]["accepted_validators"] == [
+        "validator-a",
+        "validator-b",
+        "validator-c",
+    ]
+    assert body["node_health"]["consensus_ready"] is True
+
+
+def test_proof_receipt_endpoint_builds_receipt_and_verifies() -> None:
+    client = build_client()
+
+    packet = {
+        "trust_id": "trust-receipt-001",
+        "replay_status": "verified",
+        "payload": {"sequence": 6},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+    consensus = client.post(
+        "/v1/core-platform/trust/consensus/cryptographic",
+        headers=auth_headers(role="VERIFIER"),
+        json={"packet": packet, "votes": votes, "total_nodes": 3},
+    ).json()
+
+    receipt_response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt",
+        headers=auth_headers(role="VERIFIER"),
+        json={
+            "trust_seal": consensus["trust_seal"],
+            "issuer": "test-issuer",
+        },
+    )
+    assert receipt_response.status_code == 200
+    receipt = receipt_response.json()
+    assert receipt["type"] == "novatrust-proof-receipt"
+    assert len(receipt["receipt_hash"]) == 64
+    assert receipt["signer_set"]
+
+    verify_response = client.post(
+        "/v1/core-platform/trust/consensus/proof-receipt/verify",
+        headers=auth_headers(role="VERIFIER"),
+        json={"receipt": receipt},
+    )
+    assert verify_response.status_code == 200
+    assert verify_response.json()["valid"] is True

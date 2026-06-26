@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novatech.example/contracts/signature/1.0.0",
+  "type": "object",
+  "required": ["signature_version", "scheme", "key_id", "payload_hash", "signature"],
+  "properties": {
+    "signature_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "scheme": {"enum": ["ed25519", "ecdsa-p256-sha256", "rsa-pss-sha256"]},
+    "key_id": {"type": "string", "minLength": 1},
+    "payload_hash": {"type": "string", "minLength": 32},
+    "signature": {"type": "string", "minLength": 32},
+    "certificate_chain": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

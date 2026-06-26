@@ -1,0 +1,43 @@
+id: ADR-0049
+title: NovaTech Constitutional Platform Contract
+status: ACCEPTED
+context:
+  - The platform contract described strong architecture but did not provide one machine-verifiable platform capability model.
+  - Product, API, trust, federation, SRE, security, AI, and lifecycle rules need independent evolution under one constitutional authority.
+  - NovaTech requires sovereign tenant isolation and enforceable product/platform boundaries.
+decision: >
+  Ratify a NovaTech Platform Constitution, a versioned platform contract,
+  companion standards, canonical JSON Schemas, runtime contract vocabulary,
+  and a fail-closed CI validator. Treat NovaFederation and NovaAI as governed
+  platform capabilities while preserving their non-authoritative boundaries.
+invariants:
+  - id: IA-NTPC-001
+    statement: Lower platform authorities must conform to the Platform Constitution.
+  - id: IA-NTPC-002
+    statement: Capability dependencies must not create upward authority dependencies.
+  - id: IA-NTPC-003
+    statement: Products must not reimplement platform primitives.
+  - id: IA-NTPC-004
+    statement: Trust levels must be monotonic and evidence-backed.
+  - id: IA-NTPC-005
+    statement: Governed data and API contracts must be independently versioned and machine-validatable.
+  - id: IA-NTPC-006
+    statement: Tenant sovereignty must be preserved across identity, policy, data, keys, replay, and federation.
+  - id: IA-NTPC-007
+    statement: AI and federation must not acquire implicit execution authority.
+  - id: IA-NTPC-008
+    statement: Production services must declare SRE and recovery objectives.
+consequences:
+  - CI blocks missing standards, invalid schemas, lifecycle drift, version drift, and capability authority inversion.
+  - Runtime code can consume canonical trust, lifecycle, version, and capability types.
+  - Product teams inherit shared platform controls instead of rebuilding them.
+verification:
+  contract: afritech/platform_contracts/platform.yaml
+  validator: afritech.ci.novatech_platform_contract_validator
+  tests:
+    - afritech/tests/ci/test_novatech_platform_contract_validator.py
+    - afritech/tests/core_platform/test_platform_contract_runtime.py
+rules:
+  - RULE-069
+bindings:
+  - BIND-047

@@ -1,0 +1,121 @@
+schema: novatech.platform.contract.v2
+status: ACTIVE
+platform: NovaTech
+version: 2.0.0
+constitution: docs/governance/PLATFORM_CONSTITUTION.md
+root_contract: docs/architecture/NOVATECH_PLATFORM_CONTRACT.md
+operations_contract: afritech/platform_operations/operations.yaml
+governing_adr: ADR-0049
+
+authority_order:
+  - CONSTITUTION
+  - ADR
+  - CAPABILITY_CONTRACT
+  - EXECUTION_RULE
+  - GUARD
+  - CI_VALIDATOR
+  - RUNTIME_ENFORCEMENT
+  - EVIDENCE
+
+capabilities:
+  - {id: infrastructure, name: Infrastructure, layer: 0, owner: Platform Engineering, depends_on: []}
+  - {id: identity, name: NovaID, layer: 1, owner: Identity Platform, depends_on: [infrastructure]}
+  - {id: policy, name: NovaPower, layer: 2, owner: Policy Platform, depends_on: [identity]}
+  - {id: execution, name: NovaScript, layer: 3, owner: Execution Platform, depends_on: [identity, policy]}
+  - {id: payments, name: NovaPay, layer: 3, owner: Payments Platform, depends_on: [identity, policy, execution]}
+  - {id: evidence, name: NovaTrust, layer: 4, owner: Trust Platform, depends_on: [identity, policy, execution]}
+  - {id: replay, name: NovaReplay, layer: 5, owner: Verification Platform, depends_on: [evidence]}
+  - {id: federation, name: NovaFederation, layer: 6, owner: Federation Platform, depends_on: [identity, policy, evidence, replay]}
+  - {id: ai, name: NovaAI, layer: 3, owner: AI Platform, depends_on: [identity, policy, execution]}
+  - {id: products, name: NovaTech Products, layer: 7, owner: Product Engineering, depends_on: [identity, policy, execution, evidence, replay, federation]}
+
+trust_levels:
+  - {level: 0, id: UNVERIFIED, requires: []}
+  - {level: 1, id: AUTHENTICATED, requires: [identity]}
+  - {level: 2, id: POLICY_VERIFIED, requires: [identity, policy_decision]}
+  - {level: 3, id: EVIDENCE_PRODUCED, requires: [identity, policy_decision, signed_evidence]}
+  - {level: 4, id: REPLAY_VERIFIED, requires: [identity, policy_decision, signed_evidence, replay_success]}
+  - {level: 5, id: FEDERATED_VERIFIED, requires: [identity, policy_decision, signed_evidence, replay_success, federation_verification]}
+  - {level: 6, id: PUBLICLY_VERIFIABLE, requires: [identity, policy_decision, signed_evidence, replay_success, federation_verification, public_bundle]}
+
+product_lifecycle:
+  - {state: CONCEPT, gates: [owner, problem_statement]}
+  - {state: PROTOTYPE, gates: [schemas, threat_sketch, isolated_environment]}
+  - {state: PILOT, gates: [policy, evidence, replay, telemetry, runbook]}
+  - {state: PRODUCTION, gates: [security_review, slo, error_budget, rto, rpo, rollback, on_call]}
+  - {state: CERTIFIED, gates: [independent_control_review, evidence_review]}
+  - {state: FEDERATED, gates: [peer_policy, trust_roots, compatibility, isolation_tests]}
+  - {state: RETIRED, gates: [migration_complete, access_removed, evidence_retained]}
+
+api_lifecycle:
+  - {state: DRAFT, compatibility: NONE}
+  - {state: EXPERIMENTAL, compatibility: BEST_EFFORT}
+  - {state: STABLE, compatibility: BACKWARD_COMPATIBLE}
+  - {state: LTS, compatibility: BACKWARD_COMPATIBLE_SUPPORTED_WINDOW}
+  - {state: DEPRECATED, compatibility: MIGRATION_REQUIRED}
+  - {state: RETIRED, compatibility: UNAVAILABLE}
+
+version_vector:
+  platform: 2.0.0
+  contract: 2.0.0
+  schema: 1.0.0
+  api: 1.0.0
+  replay: 1.0.0
+  evidence: 1.0.0
+  signature: 1.0.0
+
+data_contracts:
+  request: afritech/platform_contracts/schemas/request.schema.json
+  response: afritech/platform_contracts/schemas/response.schema.json
+  trust: afritech/platform_contracts/schemas/trust.schema.json
+  replay: afritech/platform_contracts/schemas/replay.schema.json
+  event: afritech/platform_contracts/schemas/event.schema.json
+  signature: afritech/platform_contracts/schemas/signature.schema.json
+
+developer_artifacts:
+  schema_publications: afritech/platform_contracts/schema-publications.json
+  capability_graph: docs/architecture/NOVATECH_CAPABILITY_GRAPH.md
+  developer_portal: docs/portal/NOVATECH_DEVELOPER_CONTRACT_PORTAL.md
+  sdk_generator: afritech/platform_contracts/sdk_generator.py
+  sdk_python: docs/sdk/generated/novatech_contracts.py
+  sdk_typescript: docs/sdk/generated/novatech-contracts.ts
+  sdk_kotlin: docs/sdk/generated/NovaTechContracts.kt
+  sdk_swift: docs/sdk/generated/NovaTechContracts.swift
+
+companion_standards:
+  - docs/standards/API_CONTRACT_STANDARD.md
+  - docs/standards/TRUST_PROTOCOL_SPECIFICATION.md
+  - docs/standards/PRODUCT_ARCHITECTURE_STANDARD.md
+  - docs/standards/SECURITY_OPERATIONS_STANDARD.md
+  - docs/standards/FEDERATION_PROTOCOL.md
+  - docs/standards/OBSERVABILITY_STANDARD.md
+  - docs/standards/PLATFORM_RELEASE_POLICY.md
+  - docs/standards/AI_GOVERNANCE_STANDARD.md
+  - docs/standards/DATA_EVENT_CONTRACT_STANDARD.md
+  - docs/operations/NOVATECH_PLATFORM_OPERATIONS_STANDARD.md
+
+required_operation_stages:
+  - ADMISSION
+  - IDENTITY
+  - POLICY
+  - SCHEMA_VALIDATION
+  - IDEMPOTENCY
+  - EXECUTION
+  - DOMAIN_EVENT
+  - EVIDENCE
+  - REPLAY
+  - PROJECTION
+
+production_requirements:
+  - owner
+  - sli
+  - slo
+  - error_budget
+  - rto
+  - rpo
+  - threat_model
+  - incident_response
+  - key_rotation
+  - backup_restore_test
+  - rollback
+  - on_call

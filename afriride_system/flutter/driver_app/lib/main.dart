@@ -7,6 +7,7 @@ import 'screens/earnings_screen.dart';
 import 'screens/replay_screen.dart';
 import 'screens/ride_requests_screen.dart';
 import 'screens/trip_lifecycle_screen.dart';
+import 'screens/verifier_screen.dart';
 
 /// AfriRide Driver App
 ///
@@ -141,6 +142,7 @@ class _DriverHomeShellState extends State<DriverHomeShell> {
           rideId: _selectedRide!.rideId,
           apiClient: widget.apiClient,
         ),
+      const VerifierScreen(),
       EarningsScreen(
         driverId: widget.driverId,
         apiClient: widget.apiClient,
@@ -170,6 +172,11 @@ class _DriverHomeShellState extends State<DriverHomeShell> {
             icon: Icon(Icons.verified_outlined),
             selectedIcon: Icon(Icons.verified),
             label: 'Replay',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.qr_code_scanner_outlined),
+            selectedIcon: Icon(Icons.qr_code_scanner),
+            label: 'Verifier',
           ),
           NavigationDestination(
             icon: Icon(Icons.payments_outlined),

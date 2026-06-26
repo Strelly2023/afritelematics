@@ -170,6 +170,8 @@ def build_trust_node_network_status(
     configured = configured_nodes if configured_nodes is not None else int(os.environ.get("NOVATRUST_FEDERATION_NODES", "1"))
     healthy = healthy_nodes if healthy_nodes is not None else int(os.environ.get("NOVATRUST_FEDERATION_HEALTHY_NODES", "1"))
     validator_quorum = max(2, configured // 2 + 1) if configured > 0 else 1
+    from afritech.platform_contracts.federation import local_federation_manifest
+
     return {
         "view": "novatrust_trust_node_network_status",
         "configured_nodes": configured,
@@ -181,6 +183,7 @@ def build_trust_node_network_status(
         "consensus_layer": "future_non_authoritative",
         "event_bus_backend": os.environ.get("NOVAPAY_EVENT_BUS_BACKEND", "in_memory"),
         "event_bus_brokers_configured": bool(os.environ.get("NOVAPAY_EVENT_BUS_KAFKA_BROKERS", "")),
+        "compatibility_manifest": local_federation_manifest().canonical(),
         "authority_boundary": (
             "Federation and consensus observations cannot authorize payments, "
             "settlement, policy overrides, or runtime mutation."

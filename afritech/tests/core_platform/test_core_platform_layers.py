@@ -19,6 +19,33 @@ from afritech.core_platform.audit_export import render_audit_pdf
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.anchoring import anchor_packet, build_optional_blockchain_anchor
 from afritech.core_platform.cbdc import cbdc_status
+from afritech.core_platform.consensus import (
+    ValidatorConsensusEngine,
+    ValidatorConsensusConflictError,
+    build_validator_consensus_status,
+)
+from afritech.core_platform.distributed_verification import (
+    build_trust_seal,
+    build_validator_node_health,
+    validate_distributed_consensus,
+)
+from afritech.core_platform import cryptographic_consensus as cryptographic_consensus_module
+from afritech.core_platform.cryptographic_consensus import (
+    build_cryptographic_consensus_status,
+    run_cryptographic_consensus,
+)
+from afritech.core_platform.proof_receipts import (
+    build_proof_receipt,
+    verify_proof_receipt,
+)
+from afritech.core_platform import qr_proof as qr_proof_module
+from afritech.core_platform.qr_proof import build_qr_artifact, decode_qr_payload
+from afritech.core_platform.mobile_verifier import verify_scanned_receipt
+from afritech.core_platform.smart_contract_verification import (
+    build_onchain_verification_bundle,
+    solidity_verifier_source,
+)
+from afritech.core_platform import threshold_bls as threshold_bls_module
 from afritech.core_platform.event_bus import build_event_bus_status
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan, list_migrations
@@ -28,6 +55,13 @@ from afritech.core_platform.settlement import SettlementRouter, build_settlement
 from afritech.core_platform.signing import sign_packet, verify_packet_signature
 from afritech.core_platform.signing import build_key_rotation_plan, signing_key_status
 from afritech.core_platform.trust_node import build_trust_node_network_status
+
+
+@pytest.fixture(autouse=True)
+def _reset_cryptographic_slashing_engine() -> None:
+    from afritech.distributed.trust.reputation_store import ReputationStore
+
+    cryptographic_consensus_module.SLASHING_ENGINE.store = ReputationStore()
 
 
 def test_core_platform_overview_is_product_app_free() -> None:
@@ -435,6 +469,7 @@ def test_core_platform_settlement_event_bus_trust_node_and_cbdc_status() -> None
     event_bus = build_event_bus_status()
     trust_nodes = build_trust_node_network_status(configured_nodes=3, healthy_nodes=3)
     cbdc = cbdc_status()
+    consensus = build_validator_consensus_status(configured_nodes=3, healthy_nodes=3)
 
     assert settlement["available"] is True
     assert settlement["cross_border_supported"] is True
@@ -442,3 +477,759 @@ def test_core_platform_settlement_event_bus_trust_node_and_cbdc_status() -> None
     assert trust_nodes["distributed_validation_ready"] is True
     assert trust_nodes["consensus_layer"] == "future_non_authoritative"
     assert cbdc["available"] is True
+    assert consensus["multi_node_consensus_ready"] is False
+    assert consensus["consensus_layer"] == "future_non_authoritative"
+
+
+def test_validator_consensus_engine_requires_matching_validator_votes() -> None:
+    engine = ValidatorConsensusEngine(
+        trusted_public_keys={
+            "validator-a": "R1//12616KShUeqYnTEa8B/ebDSIA2F8/6tDzal0vW8=",
+            "validator-b": "R1//12616KShUeqYnTEa8B/ebDSIA2F8/6tDzal0vW8=",
+            "validator-c": "R1//12616KShUeqYnTEa8B/ebDSIA2F8/6tDzal0vW8=",
+        }
+    )
+    packet = {
+        "trust": {
+            "trust_id": "trust-consensus-001",
+            "replay_status": "verified",
+        },
+        "payment": {"payment_id": "pay-consensus-001"},
+        "event_hash": "abc123",
+    }
+    signature = sign_packet(packet).canonical()
+    envelopes = [
+        {"node_id": "validator-a", "packet": packet, "signature": signature},
+        {"node_id": "validator-b", "packet": packet, "signature": signature},
+        {"node_id": "validator-c", "packet": packet, "signature": signature},
+    ]
+
+    certificate = engine.decide(envelopes, total_nodes=3)
+
+    assert certificate.consensus_reached is True
+    assert certificate.accepted_votes == 3
+    assert certificate.quorum == 2
+    assert certificate.trust_id == "trust-consensus-001"
+
+
+def test_validator_consensus_engine_rejects_conflicting_packets() -> None:
+    engine = ValidatorConsensusEngine()
+    packet_a = {
+        "trust_id": "trust-consensus-002",
+        "replay_status": "verified",
+        "payload": "A",
+    }
+    packet_b = {
+        "trust_id": "trust-consensus-002",
+        "replay_status": "verified",
+        "payload": "B",
+    }
+    signature_a = sign_packet(packet_a).canonical()
+    signature_b = sign_packet(packet_b).canonical()
+
+    with pytest.raises(ValidatorConsensusConflictError):
+        engine.decide(
+            [
+                {"node_id": "validator-a", "packet": packet_a, "signature": signature_a},
+                {"node_id": "validator-b", "packet": packet_b, "signature": signature_b},
+                {"node_id": "validator-c", "packet": packet_a, "signature": signature_a},
+            ],
+            total_nodes=3,
+        )
+
+
+def test_distributed_verification_builds_health_and_seal() -> None:
+    packet = {
+        "trust_id": "trust-consensus-003",
+        "replay_status": "verified",
+        "payload": "distributed",
+    }
+    signature = sign_packet(packet).canonical()
+    validators = [
+        {"node_id": "validator-a", "packet": packet, "signature": signature},
+        {"node_id": "validator-b", "packet": packet, "signature": signature},
+        {"node_id": "validator-c", "packet": packet, "signature": signature},
+    ]
+
+    result = validate_distributed_consensus(
+        packet=packet,
+        validators=validators,
+        total_nodes=3,
+    )
+
+    assert result["consensus"]["consensus_reached"] is True
+    assert result["node_health"]["status"] == "healthy"
+    assert result["trust_seal"]["trust_id"] == "trust-consensus-003"
+    assert len(result["trust_seal"]["seal_hash"]) == 64
+
+    degraded = build_validator_node_health(
+        configured_nodes=3,
+        healthy_nodes=2,
+        quorum=2,
+        disagreeing_nodes=["validator-z"],
+        quarantined_nodes=["validator-z"],
+    )
+    assert degraded["status"] == "quarantined"
+    assert degraded["consensus_ready"] is False
+
+    seal = build_trust_seal(
+        certificate=result["consensus"],
+        node_health=result["node_health"],
+    )
+    assert seal["trust_id"] == "trust-consensus-003"
+    assert seal["node_health_status"] == "healthy"
+
+
+def test_cryptographic_consensus_builds_aggregate_seal_and_slashing() -> None:
+    packet = {
+        "trust_id": "trust-consensus-004",
+        "replay_status": "verified",
+        "payload": {"sequence": 4},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+
+    assert result["consensus"]["consensus_reached"] is True
+    assert result["consensus"]["aggregate_signature_scheme"] == "deterministic-aggregate"
+    assert result["trust_seal"]["cryptographic_consensus"] is True
+    assert result["node_health"]["consensus_ready"] is True
+    assert len(result["trust_seal"]["seal_hash"]) == 64
+    assert build_cryptographic_consensus_status(
+        configured_nodes=3,
+        healthy_nodes=3,
+    )["cryptographic_consensus_ready"] is True
+
+
+def test_cryptographic_consensus_rejects_packet_hash_mismatch_and_slashes_node() -> None:
+    packet = {
+        "trust_id": "trust-consensus-005",
+        "replay_status": "verified",
+        "payload": {"sequence": 5},
+    }
+    other_packet = {
+        "trust_id": "trust-consensus-005",
+        "replay_status": "verified",
+        "payload": {"sequence": 999},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": other_packet,
+            "signature": sign_packet(other_packet).canonical(),
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+
+    assert result["consensus"]["consensus_reached"] is True
+    assert any(vote["reason"] == "hash_mismatch" for vote in result["consensus"]["votes"])
+    assert any(entry["status"] == "quarantined" for entry in result["slashing"])
+
+
+def test_cryptographic_consensus_deduplicates_validator_votes_and_exposes_vote_set() -> None:
+    packet = {
+        "trust_id": "trust-consensus-006",
+        "replay_status": "verified",
+        "payload": {"sequence": 6},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+
+    assert result["consensus"]["consensus_reached"] is True
+    assert result["trust_seal"]["accepted_validators"] == ["validator-a", "validator-b"]
+    assert result["trust_seal"]["rejected_validators"] == []
+    assert result["trust_seal"]["total_votes_raw"] == 3
+    assert result["trust_seal"]["total_votes_effective"] == 2
+    assert len(result["trust_seal"]["violations_hash"]) == 64
+    assert len(result["trust_seal"]["consensus_root"]) == 64
+    assert len(result["trust_seal"]["validator_root"]) == 64
+    assert result["trust_seal"]["seal_hash"] == cryptographic_consensus_module._hash(
+        cryptographic_consensus_module._canonicalize_seal(result["trust_seal"]),
+        domain="seal",
+    )
+    assert result["consensus"]["node_ids"] == ["validator-a", "validator-b"]
+
+
+def test_cryptographic_consensus_preserves_double_sign_evidence_before_deduplication() -> None:
+    packet = {
+        "trust_id": "trust-consensus-007",
+        "replay_status": "verified",
+        "payload": {"sequence": 7},
+    }
+    alternate_packet = {
+        "trust_id": "trust-consensus-007",
+        "replay_status": "verified",
+        "payload": {"sequence": 700},
+    }
+    signature = sign_packet(packet).canonical()
+    alternate_signature = sign_packet(alternate_packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-a",
+            "packet": alternate_packet,
+            "signature": alternate_signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+
+    assert result["consensus"]["consensus_reached"] is True
+    assert any(violation["type"] == "double_sign" for violation in result["violations"])
+    assert result["trust_seal"]["total_votes_raw"] == 3
+    assert result["trust_seal"]["total_votes_effective"] == 2
+    assert len(result["trust_seal"]["violations_hash"]) == 64
+    assert any(
+        entry["node_id"] == "validator-a" and entry["status"] == "quarantined"
+        for entry in result["slashing"]
+    )
+
+
+def test_cryptographic_consensus_seal_hash_is_order_invariant_for_validator_lists() -> None:
+    packet = {
+        "trust_id": "trust-consensus-008",
+        "replay_status": "verified",
+        "payload": {"sequence": 8},
+    }
+    signature = sign_packet(packet).canonical()
+    votes_forward = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+    votes_reverse = list(reversed(votes_forward))
+
+    forward = run_cryptographic_consensus(packet, votes_forward, total_nodes=3)
+    reverse = run_cryptographic_consensus(packet, votes_reverse, total_nodes=3)
+
+    assert forward["trust_seal"]["seal_hash"] == reverse["trust_seal"]["seal_hash"]
+
+
+def test_cryptographic_consensus_canonicalization_preserves_list_order() -> None:
+    seal_one = {
+        "seal_hash": "ignored",
+        "seal_id": "ignored",
+        "ordered": [{"id": "a"}, {"id": "b"}],
+    }
+    seal_two = {
+        "seal_hash": "ignored",
+        "seal_id": "ignored",
+        "ordered": [{"id": "b"}, {"id": "a"}],
+    }
+
+    canonical_one = cryptographic_consensus_module._canonicalize_seal(seal_one)
+    canonical_two = cryptographic_consensus_module._canonicalize_seal(seal_two)
+
+    assert canonical_one["ordered"] == [{"id": "a"}, {"id": "b"}]
+    assert canonical_two["ordered"] == [{"id": "b"}, {"id": "a"}]
+    assert canonical_one != canonical_two
+
+
+def test_proof_receipt_builds_and_verifies_from_trust_seal() -> None:
+    packet = {
+        "trust_id": "trust-consensus-009",
+        "replay_status": "verified",
+        "payload": {"sequence": 9},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+    receipt = build_proof_receipt(result["trust_seal"], issuer="test-issuer")
+    verification = verify_proof_receipt(receipt)
+
+    assert receipt["receipt_id"].startswith("receipt-")
+    assert len(receipt["receipt_hash"]) == 64
+    assert receipt["signer_set"] == result["trust_seal"]["signer_set"]
+    assert verification["valid"] is True
+    assert verification["reason"] == "receipt_verified"
+
+
+def test_bls_verify_aggregate_uses_fast_aggregate_verify(monkeypatch) -> None:
+    calls: list[tuple[str, object]] = []
+
+    class _FakeBls:
+        @staticmethod
+        def FastAggregateVerify(public_keys, message, signature):
+            calls.append(("fast", (list(public_keys), message, signature)))
+            return True
+
+        @staticmethod
+        def AggregateVerify(*_args, **_kwargs):
+            calls.append(("aggregate", None))
+            return False
+
+    monkeypatch.setattr(threshold_bls_module, "_bls", _FakeBls())
+
+    assert (
+        threshold_bls_module.bls_verify_aggregate(
+            [b"pk-1", b"pk-2"],
+            "consensus-root",
+            b"signature",
+        )
+        is True
+    )
+    assert calls and calls[0][0] == "fast"
+    assert all(call[0] != "aggregate" for call in calls)
+
+
+def test_proof_receipt_rejects_empty_signer_set_for_bls_scheme() -> None:
+    receipt = build_proof_receipt(
+        {
+            "seal_id": "seal-001",
+            "seal_hash": "a" * 64,
+            "trust_id": "trust-empty-signer-set",
+            "packet_hash": "b" * 64,
+            "consensus_root": "c" * 64,
+            "validator_root": "d" * 64,
+            "aggregate_signature": "e" * 128,
+            "aggregate_signature_scheme": "bls-threshold",
+            "signature_threshold": 1,
+            "accepted_validators": ["validator-a"],
+            "rejected_validators": [],
+            "violations_hash": "f" * 64,
+            "cryptographic_consensus": True,
+            "total_votes_raw": 1,
+            "total_votes_effective": 1,
+            "node_health_hash": "1" * 64,
+            "node_health_status": "healthy",
+            "signer_set": [],
+            "signer_pop_proofs": [],
+        },
+        issuer="test",
+        issued_at="2026-06-26T00:00:00+00:00",
+    )
+
+    verification = verify_proof_receipt(receipt)
+
+    assert verification["valid"] is False
+    assert verification["reason"] == "empty_signer_set"
+
+
+def test_qr_mobile_and_onchain_proof_exports_round_trip() -> None:
+    packet = {
+        "trust_id": "trust-consensus-010",
+        "replay_status": "verified",
+        "payload": {"sequence": 10},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+    receipt = build_proof_receipt(result["trust_seal"], issuer="test-issuer")
+
+    qr_artifact = build_qr_artifact(receipt)
+    decoded = decode_qr_payload(qr_artifact["qr_payload"])
+    mobile = verify_scanned_receipt(qr_artifact["qr_payload"])
+    onchain = build_onchain_verification_bundle(receipt)
+    verifier_source = solidity_verifier_source()
+
+    assert decoded["receipt_hash"] == receipt["receipt_hash"]
+    assert mobile["status"] is True
+    assert mobile["trust_level"] == "PARTIAL"
+    assert mobile["verification"]["valid"] is True
+    assert onchain["receipt_hash"] == receipt["receipt_hash"]
+    assert onchain["signer_set_hash"]
+    assert onchain["bundle_hash"]
+    assert "contract NovaTrustVerifier" in verifier_source
+
+
+def test_qr_payload_rejects_tampering_and_size_abuse(monkeypatch) -> None:
+    packet = {
+        "trust_id": "trust-consensus-011",
+        "replay_status": "verified",
+        "payload": {"sequence": 11},
+    }
+    signature = sign_packet(packet).canonical()
+    votes = [
+        {
+            "node_id": "validator-a",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-b",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+        {
+            "node_id": "validator-c",
+            "packet": packet,
+            "signature": signature,
+            "replay_status": "verified",
+        },
+    ]
+
+    result = run_cryptographic_consensus(packet, votes, total_nodes=3)
+    receipt = build_proof_receipt(result["trust_seal"], issuer="test-issuer")
+    artifact = build_qr_artifact(receipt)
+
+    decoded = decode_qr_payload(artifact["qr_payload"])
+    assert decoded["receipt_hash"] == receipt["receipt_hash"]
+
+    import base64
+    import json
+    import zlib
+
+    compressed = base64.urlsafe_b64decode(artifact["qr_payload"].encode("utf-8"))
+    wrapper = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    wrapper["receipt"]["issuer"] = "tampered-issuer"
+    tampered_payload = base64.urlsafe_b64encode(
+        zlib.compress(json.dumps(wrapper, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8"), level=9)
+    ).decode("utf-8")
+
+    with pytest.raises(ValueError, match="qr_integrity_failure"):
+        decode_qr_payload(tampered_payload)
+
+    invalid_timestamp_wrapper = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    invalid_timestamp_wrapper["receipt"]["issued_at"] = "not-a-real-date"
+    invalid_timestamp_wrapper["qr_hash"] = qr_proof_module._qr_hash(invalid_timestamp_wrapper)
+    invalid_timestamp_payload = base64.urlsafe_b64encode(
+        zlib.compress(json.dumps(invalid_timestamp_wrapper, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8"), level=9)
+    ).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_invalid_timestamp"):
+        decode_qr_payload(invalid_timestamp_payload)
+
+    wrapper_missing_ts = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    del wrapper_missing_ts["receipt"]["issued_at"]
+    wrapper_missing_ts["qr_hash"] = qr_proof_module._qr_hash(wrapper_missing_ts)
+    missing_timestamp_payload = base64.urlsafe_b64encode(
+        zlib.compress(json.dumps(wrapper_missing_ts, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8"), level=9)
+    ).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_missing_issued_at"):
+        decode_qr_payload(missing_timestamp_payload)
+
+    tampered_missing_timestamp = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    del tampered_missing_timestamp["receipt"]["issued_at"]
+    with pytest.raises(ValueError, match="qr_integrity_failure"):
+        decode_qr_payload(
+            base64.urlsafe_b64encode(
+                zlib.compress(
+                    json.dumps(
+                        tampered_missing_timestamp,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        default=str,
+                    ).encode("utf-8"),
+                    level=9,
+                    )
+                ).decode("utf-8")
+        )
+
+    extended_wrapper = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    extended_wrapper["network_id"] = "mainnet"
+    extended_wrapper["qr_hash"] = qr_proof_module._qr_hash(
+        {k: v for k, v in extended_wrapper.items() if k != "qr_hash"}
+    )
+    extended_payload = base64.urlsafe_b64encode(
+        zlib.compress(
+            json.dumps(
+                extended_wrapper,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8"),
+            level=9,
+        )
+    ).decode("utf-8")
+    extended_decoded = decode_qr_payload(extended_payload)
+    assert extended_decoded["receipt_hash"] == receipt["receipt_hash"]
+
+    invalid_hash_wrapper = json.loads(zlib.decompress(compressed).decode("utf-8"))
+    invalid_hash_wrapper["qr_hash"] = None
+    invalid_hash_payload = base64.urlsafe_b64encode(
+        zlib.compress(
+            json.dumps(
+                invalid_hash_wrapper,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8"),
+            level=9,
+        )
+    ).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_invalid_hash"):
+        decode_qr_payload(invalid_hash_payload)
+
+    with pytest.raises(ValueError, match="qr_invalid_base64"):
+        decode_qr_payload("%%%%%%%INVALID%%%%%%%")
+
+    invalid_compression_payload = base64.b64encode(b"not-zlib-data").decode("ascii")
+    with pytest.raises(ValueError, match="qr_invalid_compression"):
+        decode_qr_payload(invalid_compression_payload)
+
+    invalid_utf8_payload = base64.urlsafe_b64encode(
+        zlib.compress(b"\xff\xfe\xfd", level=9)
+    ).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_invalid_encoding"):
+        decode_qr_payload(invalid_utf8_payload)
+
+    invalid_json_payload = base64.urlsafe_b64encode(
+        zlib.compress(b"not-json", level=9)
+    ).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_invalid_json"):
+        decode_qr_payload(invalid_json_payload)
+
+    truncated_compressed = base64.b64decode(
+        artifact["qr_payload"].encode("utf-8"),
+        altchars=b"-_",
+        validate=True,
+    )[:-5]
+    truncated_payload = base64.urlsafe_b64encode(truncated_compressed).decode("utf-8")
+    with pytest.raises(ValueError, match="qr_truncated_compression"):
+        decode_qr_payload(truncated_payload)
+
+    exact_limit_payload = artifact["qr_payload"]
+    exact_limit_raw = zlib.decompress(
+        base64.b64decode(exact_limit_payload.encode("utf-8"), altchars=b"-_", validate=True)
+    )
+    original_max_qr_decompressed_bytes = qr_proof_module.MAX_QR_DECOMPRESSED_BYTES
+    monkeypatch.setattr(
+        qr_proof_module,
+        "MAX_QR_DECOMPRESSED_BYTES",
+        len(exact_limit_raw),
+    )
+    decoded_exact_limit = decode_qr_payload(exact_limit_payload)
+    assert decoded_exact_limit["receipt_hash"] == receipt["receipt_hash"]
+
+    monkeypatch.setattr(
+        qr_proof_module,
+        "MAX_QR_DECOMPRESSED_BYTES",
+        max(1, len(exact_limit_raw) - 1),
+    )
+    with pytest.raises(ValueError, match="qr_decompressed_too_large"):
+        decode_qr_payload(exact_limit_payload)
+
+    monkeypatch.setattr(
+        qr_proof_module,
+        "MAX_QR_DECOMPRESSED_BYTES",
+        original_max_qr_decompressed_bytes,
+    )
+
+    original_max_qr_payload_bytes = qr_proof_module.MAX_QR_PAYLOAD_BYTES
+    monkeypatch.setattr(qr_proof_module, "MAX_QR_PAYLOAD_BYTES", 1)
+    with pytest.raises(ValueError, match="qr_payload_too_large"):
+        decode_qr_payload(artifact["qr_payload"])
+
+    monkeypatch.setattr(
+        qr_proof_module,
+        "MAX_QR_PAYLOAD_BYTES",
+        original_max_qr_payload_bytes,
+    )
+    monkeypatch.setattr(qr_proof_module, "MAX_QR_AGE_SECONDS", -1)
+    with pytest.raises(ValueError, match="qr_expired"):
+        decode_qr_payload(artifact["qr_payload"])
+
+
+def test_mobile_verifier_hides_receipt_on_failed_verification(monkeypatch) -> None:
+    receipt = {
+        "type": "novatrust-qr-proof",
+        "version": "1.0",
+        "receipt": {
+            "receipt_hash": "x" * 64,
+        },
+        "qr_hash": "y" * 64,
+    }
+
+    monkeypatch.setattr(
+        "afritech.core_platform.mobile_verifier.decode_qr_payload",
+        lambda _data: receipt["receipt"],
+    )
+    monkeypatch.setattr(
+        "afritech.core_platform.mobile_verifier.verify_proof_receipt",
+        lambda *_args, **_kwargs: {"valid": False, "reason": "bad_signature"},
+    )
+
+    result = verify_scanned_receipt("payload")
+
+    assert result["status"] is False
+    assert result["receipt"] is None
+
+
+def test_mobile_verifier_returns_safe_error_for_invalid_qr_payload(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "afritech.core_platform.mobile_verifier.decode_qr_payload",
+        lambda _data: (_ for _ in ()).throw(ValueError("qr_invalid_timestamp")),
+    )
+
+    result = verify_scanned_receipt("payload")
+
+    assert result["status"] is False
+    assert result["reason"] == "qr_invalid_timestamp"
+    assert result["trust_level"] == "UNTRUSTED"
+    assert result["receipt"] is None
+    assert result["verification"]["valid"] is False
+
+
+def test_bls_receipt_verification_rejects_mismatched_group_public_keys(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        "afritech.core_platform.proof_receipts.BLS_AVAILABLE",
+        True,
+    )
+    monkeypatch.setattr(
+        "afritech.core_platform.proof_receipts.bls_pop_verify",
+        lambda _public_key, _proof: True,
+    )
+    monkeypatch.setattr(
+        "afritech.core_platform.proof_receipts.bls_verify_aggregate",
+        lambda _public_keys, _message, _signature: True,
+    )
+
+    receipt = build_proof_receipt(
+        {
+            "seal_id": "seal-bls-001",
+            "seal_hash": "a" * 64,
+            "trust_id": "trust-bls-001",
+            "packet_hash": "b" * 64,
+            "consensus_root": "c" * 64,
+            "validator_root": "d" * 64,
+            "aggregate_signature": "e" * 128,
+            "aggregate_signature_scheme": "bls-threshold",
+            "signature_threshold": 1,
+            "accepted_validators": ["validator-a"],
+            "rejected_validators": [],
+            "violations_hash": "f" * 64,
+            "cryptographic_consensus": True,
+            "total_votes_raw": 1,
+            "total_votes_effective": 1,
+            "node_health_hash": "1" * 64,
+            "node_health_status": "healthy",
+            "signer_set": ["00" * 48],
+            "signer_pop_proofs": ["11" * 48],
+        },
+        issuer="test",
+        issued_at="2026-06-26T00:00:00+00:00",
+    )
+
+    verification = verify_proof_receipt(
+        receipt,
+        group_public_keys=[bytes.fromhex("22" * 48)],
+    )
+
+    assert verification["valid"] is False
+    assert verification["reason"] == "signer_set_mismatch"

@@ -146,9 +146,41 @@ resource "aws_iam_role" "task_execution" {
   })
 }
 
+resource "aws_iam_role" "task" {
+  name = "${var.name}-task"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "task_execution" {
   role       = aws_iam_role.task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role_policy" "task_kms" {
+  name = "${var.name}-task-kms"
+  role = aws_iam_role.task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Sign",
+          "kms:GetPublicKey",
+          "kms:DescribeKey"
+        ]
+        Resource = aws_kms_key.novatrust_signing.arn
+      }
+    ]
+  })
 }
 
 resource "aws_ecs_task_definition" "api" {
@@ -158,6 +190,7 @@ resource "aws_ecs_task_definition" "api" {
   cpu                      = 512
   memory                   = 1024
   execution_role_arn       = aws_iam_role.task_execution.arn
+  task_role_arn             = aws_iam_role.task.arn
 
   container_definitions = jsonencode([
     {
@@ -167,8 +200,25 @@ resource "aws_ecs_task_definition" "api" {
       portMappings = [{ containerPort = 8000, hostPort = 8000 }]
       environment = [
         { name = "STRIPE_LIVE_MODE", value = "true" },
+        { name = "NOVAPAY_EVENT_BUS_BACKEND", value = var.event_bus_backend },
+        { name = "NOVAPAY_EVENT_BUS_KAFKA_BROKERS", value = var.event_bus_kafka_brokers },
+        { name = "NOVAPAY_REGION", value = var.novapay_region },
+        { name = "NOVATRUST_SIGNING_PROVIDER", value = var.novatrust_signing_provider },
+        {
+          name  = "NOVATRUST_KMS_SIGNING_ENABLED"
+          value = tostring(var.novatrust_kms_signing_enabled)
+        },
+        {
+          name  = "NOVATRUST_KMS_SIGNING_ALGORITHM"
+          value = var.novatrust_kms_signing_algorithm
+        },
         { name = "NOVATRUST_KMS_KEY_ID", value = aws_kms_key.novatrust_signing.key_id },
         { name = "NOVATRUST_KEY_ROTATION_ENABLED", value = "true" },
+        {
+          name  = "NOVAPAY_CBDC_LIVE_ENABLED"
+          value = tostring(var.novapay_cbdc_live_enabled)
+        },
+        { name = "NOVAPAY_CBDC_NETWORK", value = var.novapay_cbdc_network },
         {
           name  = "DATABASE_URL"
           value = "postgresql://novatech:${var.database_password}@${aws_db_instance.postgres.address}:5432/novatech"

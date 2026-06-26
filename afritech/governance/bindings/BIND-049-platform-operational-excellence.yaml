@@ -1,0 +1,28 @@
+id: BIND-049
+description: >
+  Binds ADR-0051 and RULE-071 to the operations contract, policy service,
+  workflow orchestration, SRE objectives, rollout controls, feature flags,
+  data lifecycle, developer assets, API readiness, validator, and tests.
+bindings:
+  - {id: BIND-049-1, target: afritech/platform_operations/operations.yaml, binding_type: MACHINE_CONTRACT}
+  - {id: BIND-049-2, target: afritech/platform_operations/policy.py, binding_type: POLICY_ENGINE}
+  - {id: BIND-049-3, target: afritech/platform_operations/workflow.py, binding_type: WORKFLOW_ENGINE}
+  - {id: BIND-049-4, target: afritech/platform_operations/reliability.py, binding_type: SRE_CONTROL}
+  - {id: BIND-049-5, target: afritech/platform_operations/rollout.py, binding_type: ROLLOUT_CONTROL}
+  - {id: BIND-049-6, target: afritech/data_governance/lifecycle.py, binding_type: DATA_LIFECYCLE}
+  - {id: BIND-049-7, target: afritech/ci/novatech_platform_operations_validator.py, binding_type: CI_VALIDATOR}
+  - {id: BIND-049-8, target: afritech/tests/platform_operations/test_operations.py, binding_type: TEST}
+  - {id: BIND-049-9, target: docs/operations/NOVATECH_PLATFORM_OPERATIONS_STANDARD.md, binding_type: OPERATIONS_STANDARD}
+linked_adr: [ADR-0051]
+linked_rules: [RULE-071]
+linked_invariants:
+  - IA-NTOE-001
+  - IA-NTOE-002
+  - IA-NTOE-003
+  - IA-NTOE-004
+  - IA-NTOE-005
+  - IA-NTOE-006
+  - IA-NTOE-007
+  - IA-NTOE-008
+ci:
+  validator: afritech.ci.novatech_platform_operations_validator

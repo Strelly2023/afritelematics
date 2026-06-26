@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from decimal import Decimal
+import hashlib
 from html import escape
 import json
 import os
 from typing import Any, Callable, Mapping, cast
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Query
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
@@ -21,6 +22,26 @@ from afritech.core_platform import (
     build_core_platform_overview,
 )
 from afritech.core_platform.cbdc import cbdc_status
+from afritech.core_platform.consensus import build_validator_consensus_status
+from afritech.core_platform.cryptographic_consensus import (
+    build_cryptographic_consensus_status,
+    run_cryptographic_consensus,
+)
+from afritech.core_platform.mobile_verifier import verify_scanned_receipt
+from afritech.core_platform.qr_proof import build_qr_artifact, build_qr_png
+from afritech.core_platform.proof_receipts import (
+    build_proof_receipt,
+    verify_proof_receipt,
+)
+from afritech.core_platform.smart_contract_verification import (
+    build_onchain_verification_bundle,
+    solidity_verifier_source,
+)
+from afritech.core_platform.distributed_verification import (
+    build_trust_seal,
+    build_validator_node_health,
+    validate_distributed_consensus,
+)
 from afritech.core_platform.anchoring import anchor_packet, build_optional_blockchain_anchor
 from afritech.core_platform.audit_export import render_audit_pdf
 from afritech.core_platform.auditor_dashboard import build_auditor_dashboard
@@ -39,7 +60,6 @@ from afritech.core_platform.qr import render_qr_png
 from afritech.core_platform.signing import (
     AuditSignature,
     build_key_rotation_plan,
-    kms_signing_status,
     sign_packet,
     signing_key_ready,
     signing_key_status,
@@ -53,6 +73,20 @@ from afritech.core_platform.trust_node import (
 )
 from afritech.fintech.webhook_security import verify_webhook
 from afritech.fintech.webhooks import normalize_payment_webhook
+from afritech.platform_contracts.federation import local_federation_manifest
+from afritech.platform_contracts.registry import (
+    ContractRegistryError,
+    architecture_metrics,
+    capability_graph,
+    load_platform_contract,
+    load_schema,
+    negotiate_headers,
+    schema_publication,
+    schema_registry_manifest,
+    current_version_vector,
+    validate_contract_payload,
+)
+from afritech.platform_operations.registry import operations_readiness
 
 
 def _build_store() -> InMemoryCorePlatformStore | PostgresCorePlatformStore:
@@ -99,6 +133,75 @@ class TrustReplayPayload(BaseModel):
     packet: dict[str, Any]
 
 
+class DistributedValidatorEnvelopePayload(BaseModel):
+    node_id: str
+    packet: dict[str, Any]
+    signature: dict[str, str]
+    replay_status: str | None = None
+    protocol_version: str = "novatrust-validator-v1"
+    observed_at: str | None = None
+
+
+class DistributedConsensusValidationPayload(BaseModel):
+    packet: dict[str, Any]
+    validators: list[DistributedValidatorEnvelopePayload]
+    total_nodes: int | None = None
+    trusted_public_keys: dict[str, str] = Field(default_factory=dict)
+
+
+class CryptographicConsensusVotePayload(BaseModel):
+    node_id: str
+    packet: dict[str, Any]
+    signature: dict[str, str]
+    replay_status: str | None = None
+    public_key_id: str | None = None
+
+
+class CryptographicConsensusPayload(BaseModel):
+    packet: dict[str, Any]
+    votes: list[CryptographicConsensusVotePayload]
+    total_nodes: int | None = None
+    trusted_public_keys: dict[str, str] = Field(default_factory=dict)
+
+
+class TrustSealPayload(BaseModel):
+    certificate: dict[str, Any]
+    node_health: dict[str, Any] | None = None
+
+
+class ProofReceiptPayload(BaseModel):
+    trust_seal: dict[str, Any]
+    issuer: str = "novatrust-proof-service"
+    issued_at: str | None = None
+
+
+class ProofReceiptVerifyPayload(BaseModel):
+    receipt: dict[str, Any]
+    group_public_keys: list[str] = Field(default_factory=list)
+
+
+class ProofReceiptQrPayload(BaseModel):
+    trust_seal: dict[str, Any]
+    issuer: str = "novatrust-proof-service"
+    issued_at: str | None = None
+
+
+class ProofReceiptMobileVerifyPayload(BaseModel):
+    qr_data: str
+
+
+class ProofReceiptOnchainPayload(BaseModel):
+    receipt: dict[str, Any]
+
+
+class NodeHealthPayload(BaseModel):
+    configured_nodes: int = 1
+    healthy_nodes: int = 1
+    quorum: int | None = None
+    disagreeing_nodes: list[str] = Field(default_factory=list)
+    quarantined_nodes: list[str] = Field(default_factory=list)
+
+
 class ExplainPayload(BaseModel):
     subject: str
 
@@ -120,6 +223,26 @@ class PilotFlowPayload(BaseModel):
 
 class AuditorDashboardPayload(BaseModel):
     identifiers: list[str] = Field(default_factory=list)
+
+
+class ContractValidationPayload(BaseModel):
+    schema_name: str
+    payload: dict[str, Any]
+
+
+class GovernedRequestPayload(BaseModel):
+    request_id: str = Field(min_length=1)
+    operation: str = Field(pattern=r"^[a-z][a-z0-9_.-]+$")
+    tenant_id: str = Field(min_length=1)
+    actor_id: str = Field(min_length=1)
+    idempotency_key: str = Field(min_length=8, max_length=255)
+    contract_version: str = Field(pattern=r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    schema_version: str = Field(pattern=r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    correlation_id: str | None = Field(default=None, min_length=1)
+    payload: dict[str, Any]
+
+    class Config:
+        extra = "forbid"
 
 
 def _identity_from_claims(claims: JWTClaims) -> Any:
@@ -242,6 +365,142 @@ def _lookup_packet(identifier: str) -> dict[str, Any] | None:
 
 def build_core_platform_router() -> APIRouter:
     router = APIRouter(prefix="/v1/core-platform", tags=["core-platform"])
+
+    @router.get("/contracts")
+    def contract_browser() -> dict[str, Any]:
+        contract = load_platform_contract()
+        return {
+            "view": "novatech_contract_browser",
+            "contract": contract,
+            "schema_registry": schema_registry_manifest(),
+            "architecture": capability_graph(),
+            "metrics": architecture_metrics(),
+            "sdk_downloads": {
+                "python": "/docs/sdk/generated/novatech_contracts.py",
+                "typescript": "/docs/sdk/generated/novatech-contracts.ts",
+                "kotlin": "/docs/sdk/generated/NovaTechContracts.kt",
+                "swift": "/docs/sdk/generated/NovaTechContracts.swift",
+            },
+            "execution_authority": False,
+        }
+
+    @router.get("/contracts/schemas/{schema_name}")
+    def contract_schema(schema_name: str) -> dict[str, Any]:
+        try:
+            return {
+                "schema": load_schema(schema_name),
+                "publication": schema_publication(schema_name),
+            }
+        except ContractRegistryError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @router.post("/contracts/validate")
+    def validate_contract(
+        payload: ContractValidationPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        try:
+            validate_contract_payload(payload.schema_name, payload.payload)
+        except ContractRegistryError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        return {
+            "valid": True,
+            "schema_name": payload.schema_name,
+            "publication": schema_publication(payload.schema_name),
+        }
+
+    @router.post("/contracts/admit")
+    def admit_governed_request(
+        payload: GovernedRequestPayload,
+        claims: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        request_payload = (
+            payload.model_dump(exclude_none=True)
+            if hasattr(payload, "model_dump")
+            else payload.dict(exclude_none=True)
+        )
+        try:
+            validate_contract_payload("request", request_payload)
+        except ContractRegistryError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        if payload.tenant_id != claims.organization_id:
+            raise HTTPException(status_code=403, detail="tenant_context_mismatch")
+        if payload.actor_id != claims.sub:
+            raise HTTPException(status_code=403, detail="actor_context_mismatch")
+        vector = current_version_vector()
+        contract_result = negotiate_headers(
+            {"accept-contract-version": payload.contract_version}
+        )
+        if contract_result["status"] != "COMPATIBLE":
+            raise HTTPException(status_code=426, detail=contract_result)
+        operation_id = "op_" + hashlib.sha256(
+            json.dumps(request_payload, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()[:24]
+        response = {
+            "request_id": payload.request_id,
+            "operation_id": operation_id,
+            "status": "ACCEPTED",
+            "tenant_id": claims.organization_id,
+            "trust_level": 2,
+            "version_vector": vector.canonical(),
+            "data": {
+                "operation": payload.operation,
+                "admitted": True,
+                "execution_authority": False,
+            },
+            "links": {
+                "contract": "/v1/core-platform/contracts",
+                "schema": "/v1/core-platform/contracts/schemas/request",
+            },
+        }
+        validate_contract_payload("response", response)
+        return response
+
+    @router.get("/contracts/negotiate")
+    def negotiate_contracts(
+        accept_contract_version: str | None = Header(
+            default=None, alias="Accept-Contract-Version"
+        ),
+        accept_replay_version: str | None = Header(
+            default=None, alias="Accept-Replay-Version"
+        ),
+        accept_evidence_version: str | None = Header(
+            default=None, alias="Accept-Evidence-Version"
+        ),
+        accept_signature_version: str | None = Header(
+            default=None, alias="Accept-Signature-Version"
+        ),
+    ) -> dict[str, Any]:
+        try:
+            result = negotiate_headers(
+                {
+                    "accept-contract-version": accept_contract_version,
+                    "accept-replay-version": accept_replay_version,
+                    "accept-evidence-version": accept_evidence_version,
+                    "accept-signature-version": accept_signature_version,
+                }
+            )
+        except ContractRegistryError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        if result["status"] != "COMPATIBLE":
+            raise HTTPException(status_code=426, detail=result)
+        return result
+
+    @router.get("/federation/manifest")
+    def federation_manifest() -> dict[str, Any]:
+        return local_federation_manifest().canonical()
+
+    @router.get("/operations/readiness")
+    def platform_operations_readiness(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return operations_readiness()
 
     @router.get("/console")
     def console(
@@ -484,6 +743,158 @@ def build_core_platform_router() -> APIRouter:
     ) -> dict[str, Any]:
         return build_trust_node_network_status()
 
+    @router.get("/trust/consensus/status")
+    def trust_consensus_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_validator_consensus_status()
+
+    @router.get("/trust/consensus/cryptographic/status")
+    def trust_cryptographic_consensus_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_cryptographic_consensus_status()
+
+    @router.get("/trust/nodes/health")
+    def trust_nodes_health(
+        configured_nodes: int = 1,
+        healthy_nodes: int = 1,
+        quorum: int | None = None,
+        disagreeing_nodes: list[str] | None = Query(default=None),
+        quarantined_nodes: list[str] | None = Query(default=None),
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_validator_node_health(
+            configured_nodes=configured_nodes,
+            healthy_nodes=healthy_nodes,
+            quorum=quorum,
+            disagreeing_nodes=disagreeing_nodes,
+            quarantined_nodes=quarantined_nodes,
+        )
+
+    @router.post("/trust/consensus/validate")
+    def trust_consensus_validate(
+        payload: DistributedConsensusValidationPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return validate_distributed_consensus(
+            packet=payload.packet,
+            validators=[validator.model_dump() for validator in payload.validators],
+            total_nodes=payload.total_nodes,
+            trusted_public_keys=payload.trusted_public_keys or None,
+        )
+
+    @router.post("/trust/consensus/cryptographic")
+    @router.post("/trust/consensus/bls")
+    def trust_cryptographic_consensus(
+        payload: CryptographicConsensusPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return run_cryptographic_consensus(
+            payload.packet,
+            [vote.model_dump() for vote in payload.votes],
+            total_nodes=payload.total_nodes,
+            trusted_public_keys=payload.trusted_public_keys or None,
+        )
+
+    @router.post("/trust/seal")
+    def trust_seal(
+        payload: TrustSealPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_trust_seal(
+            certificate=payload.certificate,
+            node_health=payload.node_health,
+        )
+
+    @router.post("/trust/consensus/proof-receipt")
+    def trust_proof_receipt(
+        payload: ProofReceiptPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_proof_receipt(
+            payload.trust_seal,
+            issuer=payload.issuer,
+            issued_at=payload.issued_at,
+        )
+
+    @router.post("/trust/consensus/proof-receipt/qr")
+    def trust_proof_receipt_qr(
+        payload: ProofReceiptQrPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        receipt = build_proof_receipt(
+            payload.trust_seal,
+            issuer=payload.issuer,
+            issued_at=payload.issued_at,
+        )
+        artifact = build_qr_artifact(receipt)
+        return {"receipt": receipt, **artifact}
+
+    @router.post("/trust/consensus/proof-receipt/qr.png")
+    def trust_proof_receipt_qr_png(
+        payload: ProofReceiptQrPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> Response:
+        receipt = build_proof_receipt(
+            payload.trust_seal,
+            issuer=payload.issuer,
+            issued_at=payload.issued_at,
+        )
+        return Response(build_qr_png(receipt), media_type="image/png")
+
+    @router.post("/trust/consensus/proof-receipt/mobile-verify")
+    def trust_proof_receipt_mobile_verify(
+        payload: ProofReceiptMobileVerifyPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return verify_scanned_receipt(payload.qr_data)
+
+    @router.post("/trust/consensus/proof-receipt/verify")
+    def trust_proof_receipt_verify(
+        payload: ProofReceiptVerifyPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return verify_proof_receipt(
+            payload.receipt,
+            group_public_keys=payload.group_public_keys,
+        )
+
+    @router.post("/trust/consensus/proof-receipt/onchain")
+    def trust_proof_receipt_onchain(
+        payload: ProofReceiptOnchainPayload,
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        bundle = build_onchain_verification_bundle(payload.receipt)
+        return {
+            "bundle": bundle,
+            "solidity_verifier_source": solidity_verifier_source(),
+        }
+
     @router.get("/payments/mobile-money/catalog")
     def mobile_money_status(
         _: JWTClaims = Depends(
@@ -506,6 +917,19 @@ def build_core_platform_router() -> APIRouter:
             configured_nodes=configured_nodes,
             healthy_nodes=healthy_nodes,
         )
+        consensus = build_validator_consensus_status(
+            configured_nodes=configured_nodes,
+            healthy_nodes=healthy_nodes,
+        )
+        distributed = build_validator_node_health(
+            configured_nodes=configured_nodes,
+            healthy_nodes=healthy_nodes,
+            quorum=consensus["validator_quorum"],
+        )
+        cryptographic = build_cryptographic_consensus_status(
+            configured_nodes=configured_nodes,
+            healthy_nodes=healthy_nodes,
+        )
         persistent = isinstance(CORE_PLATFORM_STORE, PostgresCorePlatformStore)
         return {
             "classification": "bounded_production_readiness",
@@ -518,7 +942,11 @@ def build_core_platform_router() -> APIRouter:
                 "replay": "ready",
                 "import": build_trust_node_network_status()["import_layer"],
                 "federation": federation["federation_layer"],
-                "consensus": "future_non_authoritative",
+                "consensus": consensus["consensus_layer"],
+                "distributed_verification": (
+                    "ready" if distributed["consensus_ready"] else "future_non_authoritative"
+                ),
+                "cryptographic_consensus": cryptographic["consensus_layer"],
             },
             "capabilities": {
                 "persistent_trust_layer": persistent,
@@ -526,7 +954,9 @@ def build_core_platform_router() -> APIRouter:
                 "public_verification_active": True,
                 "auditor_mode_active": True,
                 "federation_ready": federation["federation_ready"],
-                "multi_node_consensus_ready": False,
+                "multi_node_consensus_ready": consensus["multi_node_consensus_ready"],
+                "distributed_verification_ready": distributed["consensus_ready"],
+                "cryptographic_consensus_ready": cryptographic["cryptographic_consensus_ready"],
                 "settlement_routing_ready": True,
                 "fx_engine_ready": True,
                 "event_bus_ready": build_event_bus_status()["event_bus"]["ready"],
@@ -543,6 +973,9 @@ def build_core_platform_router() -> APIRouter:
                 "settlement_router": build_settlement_status(),
                 "event_bus": build_event_bus_status(),
                 "trust_node_network": build_trust_node_network_status(),
+                "trust_consensus": consensus,
+                "distributed_verification": distributed,
+                "cryptographic_consensus": cryptographic,
                 "mobile_money": {
                     "countries": ["BI", "CD", "KE"],
                     "controlled_pilot_ready": True,

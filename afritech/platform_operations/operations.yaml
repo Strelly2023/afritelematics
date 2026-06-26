@@ -1,0 +1,127 @@
+schema: novatech.platform.operations.v1
+version: 1.0.0
+status: ACTIVE
+governing_adr: ADR-0051
+
+policy:
+  engine: NovaPower
+  policy_version: 1.0.0
+  default_effect: DENY
+  required_inputs:
+    - tenant_id
+    - actor_id
+    - roles
+    - scopes
+    - action
+    - resource_owner_id
+    - risk_score
+    - risk_score_max
+  rules:
+    - {id: tenant_alignment, order: 10, effect: DENY, check: tenant_aligned}
+    - {id: role_authorization, order: 20, effect: DENY, check: role_allowed}
+    - {id: scope_authorization, order: 30, effect: DENY, check: scope_allowed}
+    - {id: ownership_authorization, order: 40, effect: DENY, check: ownership_valid}
+    - {id: risk_threshold, order: 50, effect: DENY, check: risk_within_policy}
+
+workflow:
+  workflow_version: 1.0.0
+  terminal_states: [COMPLETED, FAILED, COMPENSATED, CANCELLED]
+  active_states: [PENDING, RUNNING, WAITING, COMPENSATING]
+  required_step_fields: [id, action, compensation, timeout_seconds, max_attempts]
+  persistence:
+    checkpoint_each_transition: true
+    optimistic_concurrency: true
+    recover_from_last_checkpoint: true
+    adapters: [sqlite, protocol_defined_external_store]
+  long_running_operations:
+    - payment
+    - onboarding
+    - settlement
+    - federation_import
+
+service_objectives:
+  - service: core-platform-api
+    tier: 1
+    owner: Platform Operations
+    availability_target: 0.9995
+    latency_p95_ms: 300
+    window_days: 30
+    rto_minutes: 30
+    rpo_minutes: 5
+    fast_burn_threshold: 14.4
+    slow_burn_threshold: 2.0
+  - service: novatrust-verification
+    tier: 1
+    owner: Trust Platform
+    availability_target: 0.9999
+    latency_p95_ms: 500
+    window_days: 30
+    rto_minutes: 15
+    rpo_minutes: 0
+    fast_burn_threshold: 14.4
+    slow_burn_threshold: 2.0
+  - service: novapay-execution
+    tier: 1
+    owner: Payments Platform
+    availability_target: 0.9995
+    latency_p95_ms: 1000
+    window_days: 30
+    rto_minutes: 30
+    rpo_minutes: 0
+    fast_burn_threshold: 14.4
+    slow_burn_threshold: 2.0
+
+rollout:
+  environments: [development, integration, staging, production]
+  strategies: [canary, blue_green]
+  production_requires:
+    - approved_change
+    - contract_validation
+    - security_review
+    - error_budget_available
+    - rollback_verified
+    - observability_ready
+    - data_migration_safe
+  canary_stages_percent: [1, 5, 25, 50, 100]
+  automatic_rollback_on:
+    - slo_burn_rate_exceeded
+    - replay_mismatch
+    - signature_failure
+    - tenant_isolation_violation
+    - schema_error_rate_exceeded
+  feature_flags:
+    owner_required: true
+    expiry_required: true
+    tenant_scope_required: true
+    audit_required: true
+    permanent_flags_forbidden: true
+
+data_governance:
+  classifications: [PUBLIC, INTERNAL, CONFIDENTIAL, RESTRICTED]
+  residency_regions: [AU, EU, AF, US]
+  retention_classes:
+    TRANSIENT: 1
+    OPERATIONAL: 90
+    AUDIT: 2555
+    LEGAL_HOLD: null
+  deletion:
+    approval_required_for: [AUDIT, LEGAL_HOLD]
+    tombstone_required: true
+    evidence_required: true
+  schema_evolution:
+    compatibility_required: true
+    destructive_change_requires_major_version: true
+  resources:
+    - {id: identity_profile, classification: RESTRICTED, residency: tenant_selected, retention: OPERATIONAL}
+    - {id: payment_evidence, classification: RESTRICTED, residency: tenant_selected, retention: AUDIT}
+    - {id: trust_packet, classification: CONFIDENTIAL, residency: replicated_allowed, retention: AUDIT}
+    - {id: platform_telemetry, classification: INTERNAL, residency: regional, retention: OPERATIONAL}
+
+developer_experience:
+  required_assets:
+    - interactive_api_explorer
+    - quickstart_application
+    - local_contract_validator
+    - migration_guides
+    - compatibility_matrix
+    - sdk_generation

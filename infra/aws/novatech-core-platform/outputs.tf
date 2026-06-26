@@ -9,3 +9,7 @@ output "postgres_endpoint" {
 output "novatrust_kms_key_id" {
   value = aws_kms_key.novatrust_signing.key_id
 }
+
+output "region_label" {
+  value = var.novapay_region
+}
