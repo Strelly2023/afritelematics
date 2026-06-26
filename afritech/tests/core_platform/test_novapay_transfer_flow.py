@@ -5,6 +5,8 @@ from fastapi.testclient import TestClient
 
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.core_platform_api import build_core_platform_router
+from afritech.core_platform.cryptographic_consensus import _hash
+from afritech.core_platform.hash_domains import HASH_DOMAINS
 
 
 def _client() -> TestClient:
@@ -121,3 +123,35 @@ def test_novapay_transfer_execute_rejects_provider_override() -> None:
     )
     assert execute.status_code == 400
     assert execute.json()["detail"] == "transfer_provider_mismatch"
+
+
+def test_novapay_transfer_rejects_invalid_route_hint_provider() -> None:
+    client = _client()
+    quote = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=_headers(),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": "100.00",
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+        },
+    ).json()["quote"]
+
+    tampered = dict(quote)
+    tampered["route_hint"] = "fake_provider_xyz"
+    tampered["quote_hash"] = _hash(
+        {key: value for key, value in tampered.items() if key != "quote_hash"},
+        domain=HASH_DOMAINS["TRANSFER_QUOTE"],
+    )
+
+    execute = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=_headers(),
+        json={"quote": tampered},
+    )
+    assert execute.status_code == 400
+    assert execute.json()["detail"] == "invalid_transfer_provider"

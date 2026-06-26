@@ -151,7 +151,7 @@ def _payout_profile(method: str) -> dict[str, Any]:
             "bank_deposit": False,
             "wallet": True,
             "eta": "instant",
-            "route_hint": "wallet",
+            "route_hint": "payid",
         },
         "domestic_transfer": {
             "label": "Domestic transfer",
@@ -221,14 +221,10 @@ def _transfer_rails() -> dict[str, Any]:
 
 def _normalize_transfer_provider(value: Any) -> str:
     normalized = str(value or "").strip().lower().replace("-", "_")
-    if normalized in {"payid", "pay_id", "osko"}:
-        return "payid"
-    if normalized in {"cbdc", "central_bank_digital_currency", "digital_cash"}:
-        return "cbdc"
-    if normalized in {
+    allowed = {
+        "payid",
+        "cbdc",
         "mobile_money",
-        "mobile-money",
-        "momo",
         "mpesa_ke",
         "airtel_money_ke",
         "lumicash_bi",
@@ -236,9 +232,16 @@ def _normalize_transfer_provider(value: Any) -> str:
         "orange_money_cd",
         "airtel_money_cd",
         "mpesa_cd",
-    }:
+    }
+    if normalized in {"payid", "pay_id", "osko"}:
+        return "payid"
+    if normalized in {"cbdc", "central_bank_digital_currency", "digital_cash"}:
+        return "cbdc"
+    if normalized in {"mobile_money", "mobile-money", "momo"}:
+        return "mobile_money"
+    if normalized in allowed:
         return normalized
-    return normalized
+    raise ValueError("invalid_transfer_provider")
 
 
 @dataclass(frozen=True)
@@ -478,6 +481,7 @@ class NovaPayTransferService:
                 str(unsigned_quote.get("payout_method", "bank_deposit")),
                 str(unsigned_quote.get("route_class", "cross_border")),
             )
+        resolved_provider = _normalize_transfer_provider(resolved_provider)
         return TransferExecutionContext(
             quote=quote_payload,
             unsigned_quote=_canonicalize_seal(unsigned_quote),
