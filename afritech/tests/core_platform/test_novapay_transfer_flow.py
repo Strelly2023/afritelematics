@@ -155,3 +155,35 @@ def test_novapay_transfer_rejects_invalid_route_hint_provider() -> None:
     )
     assert execute.status_code == 400
     assert execute.json()["detail"] == "invalid_transfer_provider"
+
+
+def test_novapay_transfer_rejects_missing_route_hint() -> None:
+    client = _client()
+    quote = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=_headers(),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": "100.00",
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+        },
+    ).json()["quote"]
+
+    tampered = dict(quote)
+    tampered.pop("route_hint", None)
+    tampered["quote_hash"] = _hash(
+        {key: value for key, value in tampered.items() if key != "quote_hash"},
+        domain=HASH_DOMAINS["TRANSFER_QUOTE"],
+    )
+
+    execute = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=_headers(),
+        json={"quote": tampered},
+    )
+    assert execute.status_code == 400
+    assert execute.json()["detail"] == "missing_route_hint"

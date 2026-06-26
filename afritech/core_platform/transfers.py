@@ -475,16 +475,15 @@ class NovaPayTransferService:
         if source_amount <= Decimal("0"):
             raise ValueError("invalid_quote_source_amount")
 
+        if "route_hint" not in unsigned_quote:
+            raise ValueError("missing_route_hint")
         resolved_provider = str(unsigned_quote.get("route_hint") or "").strip().lower()
         if not resolved_provider:
-            resolved_provider = _quote_route_hint(
-                str(unsigned_quote.get("payout_method", "bank_deposit")),
-                str(unsigned_quote.get("route_class", "cross_border")),
-            )
+            raise ValueError("missing_route_hint")
         resolved_provider = _normalize_transfer_provider(resolved_provider)
         return TransferExecutionContext(
             quote=quote_payload,
-            unsigned_quote=_canonicalize_seal(unsigned_quote),
+            unsigned_quote=unsigned_quote,
             quote_hash=quote_hash,
             source_amount=source_amount,
             provider=resolved_provider,
