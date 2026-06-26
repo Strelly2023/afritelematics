@@ -219,6 +219,28 @@ def _transfer_rails() -> dict[str, Any]:
     }
 
 
+def _normalize_transfer_provider(value: Any) -> str:
+    normalized = str(value or "").strip().lower().replace("-", "_")
+    if normalized in {"payid", "pay_id", "osko"}:
+        return "payid"
+    if normalized in {"cbdc", "central_bank_digital_currency", "digital_cash"}:
+        return "cbdc"
+    if normalized in {
+        "mobile_money",
+        "mobile-money",
+        "momo",
+        "mpesa_ke",
+        "airtel_money_ke",
+        "lumicash_bi",
+        "ecocash_bi",
+        "orange_money_cd",
+        "airtel_money_cd",
+        "mpesa_cd",
+    }:
+        return normalized
+    return normalized
+
+
 @dataclass(frozen=True)
 class TransferQuote:
     quote_id: str
@@ -230,6 +252,7 @@ class TransferQuote:
     recipient_country: str
     payout_method: str
     use_case: str
+    memo: str | None
     source_amount: str
     source_currency: str
     destination_amount: str
@@ -261,6 +284,7 @@ class TransferQuote:
             "recipient_country": self.recipient_country,
             "payout_method": self.payout_method,
             "use_case": self.use_case,
+            "memo": self.memo,
             "source_amount": self.source_amount,
             "source_currency": self.source_currency,
             "destination_amount": self.destination_amount,
@@ -319,6 +343,15 @@ class TransferReceipt:
             "route_class": self.route_class,
             "corridor": self.corridor,
         }
+
+
+@dataclass(frozen=True)
+class TransferExecutionContext:
+    quote: dict[str, Any]
+    unsigned_quote: dict[str, Any]
+    quote_hash: str
+    source_amount: Decimal
+    provider: str
 
 
 def _quote_fee(
@@ -417,6 +450,63 @@ class NovaPayTransferService:
     def build_rails(self) -> dict[str, Any]:
         return _canonicalize_seal(_transfer_rails())
 
+    def validate_quote(self, quote: TransferQuote | Mapping[str, Any]) -> TransferExecutionContext:
+        quote_payload = quote.canonical() if hasattr(quote, "canonical") else _canonicalize_seal(dict(quote))
+        if not isinstance(quote_payload, Mapping) or not quote_payload:
+            raise ValueError("transfer_quote_required")
+
+        quote_hash = str(quote_payload.get("quote_hash", "")).strip()
+        if not quote_hash:
+            raise ValueError("missing_transfer_quote_hash")
+
+        unsigned_quote = dict(quote_payload)
+        unsigned_quote.pop("quote_hash", None)
+        computed_hash = _hash(unsigned_quote, domain=HASH_DOMAINS["TRANSFER_QUOTE"])
+        if computed_hash != quote_hash:
+            raise ValueError("transfer_quote_hash_mismatch")
+
+        source_amount_raw = unsigned_quote.get("source_amount")
+        if not isinstance(source_amount_raw, (str, int, float, Decimal)):
+            raise ValueError("invalid_quote_source_amount")
+        source_amount = _decimal(source_amount_raw)
+        if source_amount <= Decimal("0"):
+            raise ValueError("invalid_quote_source_amount")
+
+        resolved_provider = str(unsigned_quote.get("route_hint") or "").strip().lower()
+        if not resolved_provider:
+            resolved_provider = _quote_route_hint(
+                str(unsigned_quote.get("payout_method", "bank_deposit")),
+                str(unsigned_quote.get("route_class", "cross_border")),
+            )
+        return TransferExecutionContext(
+            quote=quote_payload,
+            unsigned_quote=_canonicalize_seal(unsigned_quote),
+            quote_hash=quote_hash,
+            source_amount=source_amount,
+            provider=resolved_provider,
+        )
+
+    def secure_execute(
+        self,
+        quote: TransferQuote | Mapping[str, Any],
+        *,
+        identity: Identity,
+        decision: AuthorityDecision,
+        provider: str | None = None,
+        live_provider: bool = False,
+    ) -> TransferReceipt:
+        context = self.validate_quote(quote)
+        if provider is not None:
+            requested_provider = _normalize_transfer_provider(provider)
+            if requested_provider != context.provider:
+                raise ValueError("transfer_provider_mismatch")
+        return self._execute_validated_quote(
+            context,
+            identity=identity,
+            decision=decision,
+            live_provider=live_provider,
+        )
+
     def quote(
         self,
         *,
@@ -473,7 +563,9 @@ class NovaPayTransferService:
             destination_currency=settlement.intent.currency,
             route_class=settlement.plan.route_class,
         )
+        quote_id = _stable_id("quote")
         quote_payload = {
+            "quote_id": quote_id,
             "transfer_id": settlement_intent.intent_id,
             "sender_id": identity.identity_id,
             "organization_id": identity.organization_id,
@@ -482,7 +574,8 @@ class NovaPayTransferService:
             "recipient_country": normalized_destination_country,
             "payout_method": normalized_method,
             "use_case": use_case,
-            "amount": str(source_amount),
+            "memo": memo,
+            "source_amount": str(source_amount.quantize(Decimal("0.01"))),
             "source_currency": normalized_source_currency,
             "destination_amount": str(destination_amount),
             "destination_currency": settlement.intent.currency,
@@ -498,11 +591,12 @@ class NovaPayTransferService:
             "cash_pickup_available": bool(payout_profile["cash_pickup"]),
             "bank_deposit_available": bool(payout_profile["bank_deposit"]),
             "global_coverage": True,
-            "memo": memo,
+            "features": self.build_features(),
+            "rails": self.build_rails(),
         }
         quote_hash = _hash(quote_payload, domain=HASH_DOMAINS["TRANSFER_QUOTE"])
         return TransferQuote(
-            quote_id=_stable_id("quote"),
+            quote_id=quote_id,
             transfer_id=settlement_intent.intent_id,
             sender_id=identity.identity_id,
             organization_id=identity.organization_id,
@@ -511,6 +605,7 @@ class NovaPayTransferService:
             recipient_country=normalized_destination_country,
             payout_method=normalized_method,
             use_case=use_case,
+            memo=memo,
             source_amount=str(source_amount.quantize(Decimal("0.01"))),
             source_currency=normalized_source_currency,
             destination_amount=str(destination_amount.quantize(Decimal("0.01"))),
@@ -532,19 +627,17 @@ class NovaPayTransferService:
             quote_hash=quote_hash,
         )
 
-    def execute(
+    def _execute_validated_quote(
         self,
-        quote: TransferQuote | Mapping[str, Any],
+        context: TransferExecutionContext,
         *,
         identity: Identity,
         decision: AuthorityDecision,
-        provider: str = "payid",
         live_provider: bool = False,
     ) -> TransferReceipt:
-        quote_payload = quote.canonical() if hasattr(quote, "canonical") else _canonicalize_seal(dict(quote))
-        quote_hash = str(quote_payload.get("quote_hash", "")).strip()
-        if not quote_hash:
-            quote_hash = _hash(quote_payload, domain=HASH_DOMAINS["TRANSFER_QUOTE"])
+        quote_payload = context.quote
+        unsigned_quote = context.unsigned_quote
+        quote_hash = context.quote_hash
 
         if not decision.allowed:
             raise PermissionError(f"transfer rejected by authority: {decision.reason}")
@@ -553,7 +646,7 @@ class NovaPayTransferService:
             intent_id=str(quote_payload.get("transfer_id") or _stable_id("transfer")),
             actor_id=identity.identity_id,
             organization_id=identity.organization_id,
-            amount=_decimal(quote_payload.get("source_amount")),
+            amount=context.source_amount,
             currency=str(quote_payload.get("source_currency") or "AUD"),
             destination=str(quote_payload.get("recipient_identifier") or ""),
             metadata={
@@ -571,7 +664,7 @@ class NovaPayTransferService:
             transfer_intent,
             identity=identity,
             decision=decision,
-            provider=provider,
+            provider=context.provider,
             live_provider=live_provider,
         )
         receipt_core = {
@@ -608,7 +701,7 @@ class NovaPayTransferService:
         }
         receipt_hash = _hash(receipt_body, domain=HASH_DOMAINS["TRANSFER_RECEIPT"])
         audit_signature = sign_packet(receipt_body).canonical()
-        verification_message = _quote_message(quote_payload)
+        verification_message = _quote_message(unsigned_quote)
         return TransferReceipt(
             transfer_id=transfer_intent.intent_id,
             quote_id=str(quote_payload.get("quote_id", "")).strip() or _stable_id("quote"),
@@ -625,6 +718,27 @@ class NovaPayTransferService:
             payout_method=str(quote_payload.get("payout_method", "bank_deposit")),
             route_class=str(quote_payload.get("route_class", "unknown")),
             corridor=str(quote_payload.get("corridor", "")),
+        )
+
+    def execute(
+        self,
+        quote: TransferQuote | Mapping[str, Any],
+        *,
+        identity: Identity,
+        decision: AuthorityDecision,
+        provider: str | None = None,
+        live_provider: bool = False,
+    ) -> TransferReceipt:
+        context = self.validate_quote(quote)
+        if provider is not None:
+            requested_provider = _normalize_transfer_provider(provider)
+            if requested_provider != context.provider:
+                raise ValueError("transfer_provider_mismatch")
+        return self._execute_validated_quote(
+            context,
+            identity=identity,
+            decision=decision,
+            live_provider=live_provider,
         )
 
     def verify(self, receipt: Mapping[str, Any]) -> dict[str, Any]:

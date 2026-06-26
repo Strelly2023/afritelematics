@@ -54,7 +54,7 @@ def test_novapay_transfer_quote_execute_and_verify() -> None:
     execute = client.post(
         "/v1/core-platform/transfers/execute",
         headers=_headers(),
-        json={"quote": quote_body, "provider": "mobile_money", "live_provider": False},
+        json={"quote": quote_body, "live_provider": False},
     )
     assert execute.status_code == 200
     receipt = execute.json()["receipt"]
@@ -70,3 +70,54 @@ def test_novapay_transfer_quote_execute_and_verify() -> None:
     assert verify.status_code == 200
     assert verify.json()["valid"] is True
     assert verify.json()["reason"] == "transfer_receipt_verified"
+
+
+def test_novapay_transfer_execute_rejects_tampered_quote() -> None:
+    client = _client()
+    quote = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=_headers(),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": "100.00",
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+        },
+    ).json()["quote"]
+    quote["quote_hash"] = "tampered"
+
+    execute = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=_headers(),
+        json={"quote": quote},
+    )
+    assert execute.status_code == 400
+    assert execute.json()["detail"] == "transfer_quote_hash_mismatch"
+
+
+def test_novapay_transfer_execute_rejects_provider_override() -> None:
+    client = _client()
+    quote = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=_headers(),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": "100.00",
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+        },
+    ).json()["quote"]
+
+    execute = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=_headers(),
+        json={"quote": quote, "provider": "mobile_money"},
+    )
+    assert execute.status_code == 400
+    assert execute.json()["detail"] == "transfer_provider_mismatch"

@@ -95,7 +95,7 @@ async function request(path, options = {}, retries = DEFAULT_RETRIES) {
     }
     return payload;
   } catch (error) {
-    if (retries > 0) {
+    if (retries > 0 && error?.name === "AbortError") {
       return request(path, options, retries - 1);
     }
     throw error;
@@ -152,9 +152,16 @@ export function executeTransfer({
   role,
   userId,
   quote,
-  provider = "payid",
+  provider,
   liveProvider = false,
 }) {
+  const body = {
+    quote,
+    live_provider: liveProvider,
+  };
+  if (provider) {
+    body.provider = provider;
+  }
   return request("/transfers/execute", {
     method: "POST",
     role,
@@ -162,11 +169,7 @@ export function executeTransfer({
     headers: {
       "Idempotency-Key": randomId("novapay-execute"),
     },
-    body: {
-      quote,
-      provider,
-      live_provider: liveProvider,
-    },
+    body,
   });
 }
 

@@ -209,7 +209,7 @@ class TransferQuotePayload(BaseModel):
 
 class TransferExecutePayload(BaseModel):
     quote: dict[str, Any]
-    provider: str = "payid"
+    provider: str | None = None
     live_provider: bool = False
 
 
@@ -700,27 +700,34 @@ def build_core_platform_router() -> APIRouter:
     ) -> dict[str, Any]:
         platform = NovaTechCorePlatform()
         identity = _identity_from_claims(claims)
-        quote = payload.quote
-        amount = Decimal(str(quote.get("source_amount", "0")))
-        decision = platform.authority.evaluate(
-            AuthorityRequest(
-                action="transfer.execute",
-                organization_id=identity.organization_id,
-                required_roles=(claims.role,),
-                required_scopes=("payments:write",),
-                resource_owner_id=identity.identity_id,
-                risk_score=Decimal("0.12") if amount <= Decimal("1000") else Decimal("0.52") if amount <= Decimal("10000") else Decimal("0.82"),
-                risk_score_max=Decimal("0.85"),
-            ),
-            identity,
-        )
-        receipt = platform.transfers.execute(
-            quote,
-            identity=identity,
-            decision=decision,
-            provider=payload.provider,
-            live_provider=payload.live_provider,
-        )
+        try:
+            execution_context = platform.transfers.validate_quote(payload.quote)
+            amount = execution_context.source_amount
+            decision = platform.authority.evaluate(
+                AuthorityRequest(
+                    action="transfer.execute",
+                    organization_id=identity.organization_id,
+                    required_roles=(claims.role,),
+                    required_scopes=("payments:write",),
+                    resource_owner_id=identity.identity_id,
+                    risk_score=Decimal("0.12")
+                    if amount <= Decimal("1000")
+                    else Decimal("0.52")
+                    if amount <= Decimal("10000")
+                    else Decimal("0.82"),
+                    risk_score_max=Decimal("0.85"),
+                ),
+                identity,
+            )
+            receipt = platform.transfers.execute(
+                execution_context.quote,
+                identity=identity,
+                decision=decision,
+                provider=payload.provider,
+                live_provider=payload.live_provider,
+            )
+        except (PermissionError, ValueError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         return {
             "view": "novapay_transfer_receipt",
             "layer": "NovaPay",
