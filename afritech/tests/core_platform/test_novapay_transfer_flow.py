@@ -10,7 +10,7 @@ from decimal import Decimal
 from afritech.core_platform.cryptographic_consensus import _hash
 from afritech.core_platform.hash_domains import HASH_DOMAINS
 from afritech.core_platform.models import Identity
-from afritech.core_platform.transfers import NovaPayTransferService, _thaw
+from afritech.core_platform.transfers import NovaPayTransferService, _freeze, _thaw
 
 
 def _client() -> TestClient:
@@ -284,3 +284,23 @@ def test_thaw_preserves_structure_determinism() -> None:
     expected.pop("quote_hash", None)
 
     assert thawed == expected
+
+
+def test_decimal_freeze_consistency() -> None:
+    frozen = _freeze({"amount": Decimal("100.00")})
+    thawed = _thaw(frozen)
+
+    assert thawed["amount"] == "100.00"
+
+
+def test_freeze_rejects_custom_objects() -> None:
+    class _CustomObject:
+        pass
+
+    try:
+        _freeze({"custom": _CustomObject()})
+        raised = False
+    except TypeError as exc:
+        raised = "non-canonical type in freeze" in str(exc)
+
+    assert raised is True

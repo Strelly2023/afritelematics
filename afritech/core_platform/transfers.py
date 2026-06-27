@@ -16,10 +16,12 @@ clients can render the same transfer truth.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, datetime, time
 from decimal import Decimal
+from enum import Enum
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Mapping
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from afritech.core_platform.cryptographic_consensus import _canonicalize_seal, _hash
 from afritech.core_platform.hash_domains import HASH_DOMAINS
@@ -72,7 +74,17 @@ def _freeze(obj: Any) -> Any:
         return tuple(_freeze(value) for value in obj)
     if isinstance(obj, set):
         return frozenset(_freeze(value) for value in obj)
-    return obj
+    if isinstance(obj, Decimal):
+        return str(obj)
+    if isinstance(obj, (datetime, date, time)):
+        return obj.isoformat()
+    if isinstance(obj, UUID):
+        return str(obj)
+    if isinstance(obj, Enum):
+        return _freeze(obj.value)
+    if isinstance(obj, (str, int, float, bool, type(None))):
+        return obj
+    raise TypeError(f"non-canonical type in freeze: {type(obj).__name__}")
 
 
 def _thaw(obj: Any) -> Any:
