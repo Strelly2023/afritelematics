@@ -222,3 +222,36 @@ def test_novapay_transfer_execution_context_is_read_only() -> None:
         raised = True
 
     assert raised is True
+
+
+def test_novapay_transfer_execution_context_nested_is_read_only() -> None:
+    service = NovaPayTransferService()
+    identity = Identity(
+        identity_id="sender-1",
+        email="sender@example.com",
+        roles=("RIDER",),
+        organization_id="org-pay",
+    )
+    quote = service.quote(
+        identity=identity,
+        recipient_name="Amina Okello",
+        recipient_identifier="+254700000001",
+        recipient_country="KE",
+        amount=Decimal("100.00"),
+        source_currency="AUD",
+        payout_method="bank_deposit",
+        use_case="transparent_pricing",
+        memo="family support",
+    )
+
+    context = service.validate_quote(quote)
+
+    assert isinstance(context.unsigned_quote["features"]["use_cases"], tuple)  # type: ignore[index]
+
+    try:
+        context.unsigned_quote["features"]["use_cases"][0]["label"] = "tampered"  # type: ignore[index]
+        raised = False
+    except TypeError:
+        raised = True
+
+    assert raised is True

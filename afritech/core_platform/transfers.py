@@ -63,6 +63,28 @@ def _normalize_method(value: str | None) -> str:
     return method
 
 
+def _freeze(obj: Any) -> Any:
+    if isinstance(obj, Mapping):
+        return MappingProxyType({key: _freeze(value) for key, value in obj.items()})
+    if isinstance(obj, list):
+        return tuple(_freeze(value) for value in obj)
+    if isinstance(obj, tuple):
+        return tuple(_freeze(value) for value in obj)
+    if isinstance(obj, set):
+        return frozenset(_freeze(value) for value in obj)
+    return obj
+
+
+def _thaw(obj: Any) -> Any:
+    if isinstance(obj, Mapping):
+        return {key: _thaw(value) for key, value in obj.items()}
+    if isinstance(obj, tuple):
+        return [_thaw(value) for value in obj]
+    if isinstance(obj, frozenset):
+        return [_thaw(value) for value in obj]
+    return obj
+
+
 def _use_case_profile(use_case: str) -> dict[str, Any]:
     normalized = str(use_case or "transparent_pricing").strip().lower().replace("-", "_")
     profiles = {
@@ -483,8 +505,8 @@ class NovaPayTransferService:
             raise ValueError("missing_route_hint")
         resolved_provider = _normalize_transfer_provider(resolved_provider)
         return TransferExecutionContext(
-            quote=MappingProxyType(dict(quote_payload)),
-            unsigned_quote=MappingProxyType(unsigned_quote),
+            quote=_freeze(dict(quote_payload)),
+            unsigned_quote=_freeze(unsigned_quote),
             quote_hash=quote_hash,
             source_amount=source_amount,
             provider=resolved_provider,
@@ -639,8 +661,8 @@ class NovaPayTransferService:
         decision: AuthorityDecision,
         live_provider: bool = False,
     ) -> TransferReceipt:
-        quote_payload = dict(context.quote)
-        unsigned_quote = dict(context.unsigned_quote)
+        quote_payload = _thaw(context.quote)
+        unsigned_quote = _thaw(context.unsigned_quote)
         quote_hash = context.quote_hash
 
         if not decision.allowed:
