@@ -116,6 +116,45 @@ def test_payment_webhook_requires_signature_and_rejects_replay(monkeypatch) -> N
     assert duplicate.json()["trust_action"] == "none"
 
 
+def test_payment_webhook_uses_provider_specific_secret(monkeypatch) -> None:
+    secret = "payid-specific-secret"
+    monkeypatch.setenv("NOVAPAY_PAYID_WEBHOOK_SECRET", secret)
+    client = _client()
+    payment_response = client.post(
+        "/v1/core-platform/payments/execute",
+        headers=_auth_headers(),
+        json={
+            "intent_id": "webhook-payment-002",
+            "amount": "25.00",
+            "destination": "merchant-2",
+            "provider": "payid",
+        },
+    )
+    payment = payment_response.json()["result"]["payment"]
+    payload = {
+        "event_id": "evt-settlement-002",
+        "provider": payment["provider"],
+        "provider_reference": payment["provider_reference"],
+        "payment_id": payment["payment_id"],
+        "status": "completed",
+        "settlement_status": "settled",
+    }
+
+    timestamp = int(time.time())
+    headers = {
+        "X-NovaPay-Timestamp": str(timestamp),
+        "X-NovaPay-Signature": sign_webhook(
+            payload,
+            timestamp=timestamp,
+            secret=secret,
+        ),
+    }
+    accepted = client.post("/webhooks/payments", headers=headers, json=payload)
+
+    assert accepted.status_code == 200
+    assert accepted.json()["signature_verified"] is True
+
+
 def test_signed_trust_import_is_verified_and_idempotent() -> None:
     store = InMemoryCorePlatformStore()
     packet = {

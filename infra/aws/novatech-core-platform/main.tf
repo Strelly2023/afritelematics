@@ -198,7 +198,7 @@ resource "aws_ecs_task_definition" "api" {
       image     = var.container_image
       essential = true
       portMappings = [{ containerPort = 8000, hostPort = 8000 }]
-      environment = [
+      environment = concat([
         { name = "STRIPE_LIVE_MODE", value = "true" },
         { name = "NOVAPAY_EVENT_BUS_BACKEND", value = var.event_bus_backend },
         { name = "NOVAPAY_EVENT_BUS_KAFKA_BROKERS", value = var.event_bus_kafka_brokers },
@@ -239,10 +239,23 @@ resource "aws_ecs_task_definition" "api" {
           name  = "DATABASE_URL"
           value = "postgresql://novatech:${var.database_password}@${aws_db_instance.postgres.address}:5432/novatech"
         }
-      ]
-      secrets = [
-        { name = "STRIPE_API_KEY", valueFrom = var.stripe_api_key_secret_arn }
-      ]
+      ], [
+        for key, value in var.novapay_env_vars : {
+          name  = key
+          value = value
+        }
+      ])
+      secrets = concat(
+        [
+          { name = "STRIPE_API_KEY", valueFrom = var.stripe_api_key_secret_arn }
+        ],
+        [
+          for key, value in var.novapay_secret_arns : {
+            name      = key
+            valueFrom = value
+          }
+        ]
+      )
       logConfiguration = {
         logDriver = "awslogs"
         options = {

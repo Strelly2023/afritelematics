@@ -130,3 +130,15 @@ variable "novapay_compliance_live_enabled" {
   description = "Enable live compliance provider checks."
   default     = false
 }
+
+variable "novapay_env_vars" {
+  type        = map(string)
+  description = "Additional NovaPay runtime environment variables."
+  default     = {}
+}
+
+variable "novapay_secret_arns" {
+  type        = map(string)
+  description = "Additional NovaPay secret ARNs keyed by environment variable name."
+  default     = {}
+}
