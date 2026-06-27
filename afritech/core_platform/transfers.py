@@ -81,7 +81,7 @@ def _thaw(obj: Any) -> Any:
     if isinstance(obj, tuple):
         return [_thaw(value) for value in obj]
     if isinstance(obj, frozenset):
-        return [_thaw(value) for value in obj]
+        return sorted((_thaw(value) for value in obj), key=repr)
     return obj
 
 
