@@ -31,6 +31,15 @@ novatrust_kms_signing_enabled
 novatrust_kms_signing_algorithm
 novapay_cbdc_live_enabled
 novapay_cbdc_network
+novapay_rollout_mode
+novapay_primary_corridor
+novapay_corridors
+novapay_settlement_mode
+novapay_mobile_money_live_enabled
+novapay_compliance_provider
+novapay_compliance_live_enabled
+novapay_env_vars
+novapay_secret_arns
 ```
 
 ## Runtime Environment
@@ -82,8 +91,18 @@ Deploy the same Terraform stack per region, then treat the region label as the
 deployment discriminator:
 
 - AU control region
+- KE settlement region
 - Burundi settlement region
 - DRC settlement region
+
+### Manifest layout
+
+Use one environment manifest per corridor region:
+
+- `infra/aws/novatech-core-platform/environments/au/terraform.tfvars.example`
+- `infra/aws/novatech-core-platform/environments/ke/terraform.tfvars.example`
+- `infra/aws/novatech-core-platform/environments/bi/terraform.tfvars.example`
+- `infra/aws/novatech-core-platform/environments/cd/terraform.tfvars.example`
 
 Recommended pilot flows:
 

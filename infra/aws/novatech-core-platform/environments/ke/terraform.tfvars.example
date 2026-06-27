@@ -1,0 +1,36 @@
+aws_region = "af-south-1"
+name = "novatech-core-ke"
+container_image = "123456789012.dkr.ecr.af-south-1.amazonaws.com/novatech-core:latest"
+vpc_id = "vpc-0123456789abcdef1"
+public_subnet_ids = ["subnet-55555555", "subnet-66666666"]
+private_subnet_ids = ["subnet-77777777", "subnet-88888888"]
+database_password = "change-me"
+stripe_api_key_secret_arn = "arn:aws:secretsmanager:af-south-1:123456789012:secret:stripe-api-key"
+event_bus_backend = "kafka"
+event_bus_kafka_brokers = "b-1.ke.novapay.kafka:9092,b-2.ke.novapay.kafka:9092"
+novapay_region = "KE"
+novatrust_signing_provider = "aws_kms"
+novatrust_kms_signing_enabled = true
+novatrust_kms_signing_algorithm = "ECDSA_SHA_256"
+novapay_cbdc_live_enabled = false
+novapay_cbdc_network = "pilot-ledger"
+novapay_rollout_mode = "canary"
+novapay_primary_corridor = "AU->KE"
+novapay_corridors = ["AU->KE", "KE->AU", "USA->KE"]
+novapay_settlement_mode = "pre_funded"
+novapay_mobile_money_live_enabled = true
+novapay_compliance_provider = "sumsub"
+novapay_compliance_live_enabled = true
+novapay_env_vars = {
+  NOVAPAY_MPESA_KE_API_BASE_URL    = "https://api.safaricom.co.ke"
+  NOVAPAY_MPESA_KE_CALLBACK_URL    = "https://api.example.com/webhooks/payments"
+  NOVAPAY_MPESA_KE_WEBHOOK_SECRET   = "set-via-secrets-manager"
+  NOVAPAY_AIRTEL_KE_COLLECTION_URL  = "https://ke.example.com/mobile-money/airtel"
+  NOVAPAY_AIRTEL_KE_CALLBACK_URL    = "https://api.example.com/webhooks/payments"
+}
+novapay_secret_arns = {
+  NOVAPAY_WEBHOOK_SECRET           = "arn:aws:secretsmanager:af-south-1:123456789012:secret:novapay-webhook-secret"
+  NOVAPAY_MPESA_KE_CONSUMER_KEY    = "arn:aws:secretsmanager:af-south-1:123456789012:secret:mpesa-ke-consumer-key"
+  NOVAPAY_MPESA_KE_CONSUMER_SECRET  = "arn:aws:secretsmanager:af-south-1:123456789012:secret:mpesa-ke-consumer-secret"
+  NOVAPAY_MPESA_KE_PASSKEY         = "arn:aws:secretsmanager:af-south-1:123456789012:secret:mpesa-ke-passkey"
+}

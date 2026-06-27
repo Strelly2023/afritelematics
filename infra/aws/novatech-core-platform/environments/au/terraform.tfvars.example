@@ -1,0 +1,33 @@
+aws_region = "ap-southeast-2"
+name = "novatech-core-au"
+container_image = "123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/novatech-core:latest"
+vpc_id = "vpc-0123456789abcdef0"
+public_subnet_ids = ["subnet-11111111", "subnet-22222222"]
+private_subnet_ids = ["subnet-33333333", "subnet-44444444"]
+database_password = "change-me"
+stripe_api_key_secret_arn = "arn:aws:secretsmanager:ap-southeast-2:123456789012:secret:stripe-api-key"
+event_bus_backend = "kafka"
+event_bus_kafka_brokers = "b-1.novapay.kafka:9092,b-2.novapay.kafka:9092"
+novapay_region = "AU"
+novatrust_signing_provider = "aws_kms"
+novatrust_kms_signing_enabled = true
+novatrust_kms_signing_algorithm = "ECDSA_SHA_256"
+novapay_cbdc_live_enabled = false
+novapay_cbdc_network = "pilot-ledger"
+novapay_rollout_mode = "canary"
+novapay_primary_corridor = "AU->KE"
+novapay_corridors = ["AU->KE", "AU->BI", "AU->CD", "USA->KE"]
+novapay_settlement_mode = "pre_funded"
+novapay_mobile_money_live_enabled = false
+novapay_compliance_provider = "sumsub"
+novapay_compliance_live_enabled = false
+novapay_env_vars = {
+  NOVAPAY_PAYID_COLLECTION_URL       = "https://payid.example.com/collections"
+  NOVAPAY_PAYID_MERCHANT_ID          = "merchant-au-123"
+  NOVAPAY_PAYID_CALLBACK_URL         = "https://api.example.com/webhooks/payments"
+  NOVAPAY_PAYID_WEBHOOK_SECRET       = "set-via-secrets-manager"
+}
+novapay_secret_arns = {
+  NOVAPAY_WEBHOOK_SECRET  = "arn:aws:secretsmanager:ap-southeast-2:123456789012:secret:novapay-webhook-secret"
+  NOVAPAY_PAYID_API_TOKEN = "arn:aws:secretsmanager:ap-southeast-2:123456789012:secret:payid-api-token"
+}
