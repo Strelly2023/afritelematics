@@ -481,6 +481,25 @@ def test_core_platform_settlement_event_bus_trust_node_and_cbdc_status() -> None
     assert consensus["consensus_layer"] == "future_non_authoritative"
 
 
+def test_core_platform_settlement_rollout_config_is_observable(monkeypatch) -> None:
+    monkeypatch.setenv("NOVAPAY_ROLLOUT_MODE", "canary")
+    monkeypatch.setenv("NOVAPAY_PRIMARY_CORRIDOR", "AU->KE")
+    monkeypatch.setenv("NOVAPAY_CORRIDORS", "AU->KE,AU->BI,AU->CD,USA->KE")
+    monkeypatch.setenv("NOVAPAY_SETTLEMENT_MODE", "pre_funded")
+    monkeypatch.setenv("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "true")
+    monkeypatch.setenv("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub")
+    monkeypatch.setenv("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "false")
+
+    settlement = build_settlement_status()
+
+    assert settlement["rollout"]["mode"] == "canary"
+    assert settlement["rollout"]["primary_corridor"] == "AU->KE"
+    assert settlement["rollout"]["corridors"] == ["AU->KE", "AU->BI", "AU->CD", "USA->KE"]
+    assert settlement["rollout"]["settlement_mode"] == "pre_funded"
+    assert settlement["rollout"]["mobile_money_live_enabled"] is True
+    assert settlement["rollout"]["compliance_provider"] == "sumsub"
+
+
 def test_validator_consensus_engine_requires_matching_validator_votes() -> None:
     engine = ValidatorConsensusEngine(
         trusted_public_keys={

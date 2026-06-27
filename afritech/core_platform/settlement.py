@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from decimal import Decimal
 import hashlib
+import os
 import re
 from typing import Any, Mapping
 
@@ -91,6 +92,28 @@ class SettlementResult:
 
     def canonical(self) -> dict[str, Any]:
         return {"plan": self.plan.canonical(), "intent": self.intent.canonical()}
+
+
+@dataclass(frozen=True)
+class SettlementRolloutConfig:
+    mode: str
+    primary_corridor: str
+    corridors: tuple[str, ...]
+    settlement_mode: str
+    mobile_money_live_enabled: bool
+    compliance_provider: str
+    compliance_live_enabled: bool
+
+    def canonical(self) -> dict[str, Any]:
+        return {
+            "mode": self.mode,
+            "primary_corridor": self.primary_corridor,
+            "corridors": list(self.corridors),
+            "settlement_mode": self.settlement_mode,
+            "mobile_money_live_enabled": self.mobile_money_live_enabled,
+            "compliance_provider": self.compliance_provider,
+            "compliance_live_enabled": self.compliance_live_enabled,
+        }
 
 
 def normalize_currency_code(value: str) -> str:
@@ -210,6 +233,7 @@ class SettlementRouter:
 
 def build_settlement_status() -> dict[str, Any]:
     fx_engine = default_fx_engine()
+    rollout = _load_rollout_config()
     return {
         "available": True,
         "fx_engine": "afripay_deterministic_fx",
@@ -225,7 +249,34 @@ def build_settlement_status() -> dict[str, Any]:
         "cross_border_supported": True,
         "fx_reference": fx_engine.lock_rate("AUD", "USD").locked_reference,
         "cbdc_ready": False,
+        "rollout": rollout.canonical(),
     }
+
+
+def _load_rollout_config() -> SettlementRolloutConfig:
+    mode = os.environ.get("NOVAPAY_ROLLOUT_MODE", "canary").strip().lower() or "canary"
+    primary_corridor = os.environ.get("NOVAPAY_PRIMARY_CORRIDOR", "AU->KE").strip() or "AU->KE"
+    corridors = tuple(
+        corridor.strip()
+        for corridor in os.environ.get(
+            "NOVAPAY_CORRIDORS",
+            "AU->KE,AU->BI,AU->CD,USA->KE",
+        ).split(",")
+        if corridor.strip()
+    )
+    settlement_mode = os.environ.get("NOVAPAY_SETTLEMENT_MODE", "pre_funded").strip().lower() or "pre_funded"
+    mobile_money_live_enabled = os.environ.get("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+    compliance_provider = os.environ.get("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub").strip().lower() or "sumsub"
+    compliance_live_enabled = os.environ.get("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "").lower() in {"1", "true", "yes"}
+    return SettlementRolloutConfig(
+        mode=mode,
+        primary_corridor=primary_corridor,
+        corridors=corridors,
+        settlement_mode=settlement_mode,
+        mobile_money_live_enabled=mobile_money_live_enabled,
+        compliance_provider=compliance_provider,
+        compliance_live_enabled=compliance_live_enabled,
+    )
 
 
 def _infer_country(intent: PaymentIntent, source_currency: str) -> str:

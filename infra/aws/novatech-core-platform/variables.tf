@@ -88,3 +88,45 @@ variable "novapay_cbdc_network" {
   description = "CBDC network label."
   default     = "pilot-ledger"
 }
+
+variable "novapay_rollout_mode" {
+  type        = string
+  description = "Rollout mode for the NovaPay deployment."
+  default     = "canary"
+}
+
+variable "novapay_primary_corridor" {
+  type        = string
+  description = "Primary live corridor label."
+  default     = "AU->KE"
+}
+
+variable "novapay_corridors" {
+  type        = list(string)
+  description = "Approved corridor labels for this deployment."
+  default     = ["AU->KE", "AU->BI", "AU->CD", "USA->KE"]
+}
+
+variable "novapay_settlement_mode" {
+  type        = string
+  description = "Settlement strategy for the corridor."
+  default     = "pre_funded"
+}
+
+variable "novapay_mobile_money_live_enabled" {
+  type        = bool
+  description = "Enable live mobile money execution."
+  default     = false
+}
+
+variable "novapay_compliance_provider" {
+  type        = string
+  description = "Compliance provider label."
+  default     = "sumsub"
+}
+
+variable "novapay_compliance_live_enabled" {
+  type        = bool
+  description = "Enable live compliance provider checks."
+  default     = false
+}

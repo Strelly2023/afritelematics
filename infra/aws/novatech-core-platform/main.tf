@@ -219,6 +219,22 @@ resource "aws_ecs_task_definition" "api" {
           value = tostring(var.novapay_cbdc_live_enabled)
         },
         { name = "NOVAPAY_CBDC_NETWORK", value = var.novapay_cbdc_network },
+        { name = "NOVAPAY_ROLLOUT_MODE", value = var.novapay_rollout_mode },
+        { name = "NOVAPAY_PRIMARY_CORRIDOR", value = var.novapay_primary_corridor },
+        {
+          name  = "NOVAPAY_CORRIDORS"
+          value = join(",", var.novapay_corridors)
+        },
+        { name = "NOVAPAY_SETTLEMENT_MODE", value = var.novapay_settlement_mode },
+        {
+          name  = "NOVAPAY_MOBILE_MONEY_LIVE_ENABLED"
+          value = tostring(var.novapay_mobile_money_live_enabled)
+        },
+        { name = "NOVAPAY_COMPLIANCE_PROVIDER", value = var.novapay_compliance_provider },
+        {
+          name  = "NOVAPAY_COMPLIANCE_LIVE_ENABLED"
+          value = tostring(var.novapay_compliance_live_enabled)
+        },
         {
           name  = "DATABASE_URL"
           value = "postgresql://novatech:${var.database_password}@${aws_db_instance.postgres.address}:5432/novatech"
