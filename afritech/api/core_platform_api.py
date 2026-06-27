@@ -51,7 +51,10 @@ from afritech.core_platform.event_bus import build_event_bus_status
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan
-from afritech.core_platform.settlement import build_settlement_status
+from afritech.core_platform.settlement import (
+    build_settlement_corridor_matrix,
+    build_settlement_status,
+)
 from afritech.core_platform.payments.mobile_money import mobile_money_catalog
 from afritech.core_platform.payments.providers import payid_status
 from afritech.core_platform.persistence import (
@@ -876,6 +879,40 @@ def build_core_platform_router() -> APIRouter:
         ),
     ) -> dict[str, Any]:
         return build_settlement_status()
+
+    @router.get("/payments/settlement/corridors/status")
+    def settlement_corridors_status(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        matrix = build_settlement_corridor_matrix()
+        return {
+            "view": "core_platform_settlement_corridor_status",
+            "corridors": matrix,
+            "primary_corridor": next(
+                (row["corridor"] for row in matrix if row["primary"]),
+                None,
+            ),
+            "failure_modes": {
+                "live_ready": [],
+                "pilot_ready": [
+                    "mobile_money_live_flag_disabled",
+                    "compliance_live_flag_disabled",
+                    "live_provider_not_authorized",
+                ],
+                "available": [
+                    "corridor_configured_but_not_live",
+                    "operator_contract_required",
+                ],
+            },
+            "rollback_criteria": [
+                "settlement_failure_spike",
+                "webhook_signature_failure",
+                "compliance_rejection_spike",
+                "reconciliation_mismatch",
+            ],
+        }
 
     @router.get("/trust/node/network/status")
     def trust_node_network_status(

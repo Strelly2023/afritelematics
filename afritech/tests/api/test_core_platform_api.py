@@ -80,6 +80,24 @@ def test_platform_operations_readiness_exposes_sre_and_rollout_gates() -> None:
     assert "RESTRICTED" in body["data_classifications"]
 
 
+def test_settlement_corridor_status_exposes_operator_drilldown() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/core-platform/payments/settlement/corridors/status",
+        headers=auth_headers(role="OBSERVER"),
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["view"] == "core_platform_settlement_corridor_status"
+    assert body["primary_corridor"]
+    assert body["corridors"]
+    assert body["corridors"][0]["corridor"]
+    assert "rollback_criteria" in body
+    assert "reconciliation_mismatch" in body["rollback_criteria"]
+
+
 def test_contract_negotiation_and_governed_request_admission() -> None:
     client = build_client()
 
