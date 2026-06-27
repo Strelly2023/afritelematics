@@ -99,6 +99,16 @@ deployment discriminator:
 
 Use one environment manifest per corridor region:
 
+- `infra/aws/novatech-core-platform/environments/au/`
+- `infra/aws/novatech-core-platform/environments/ke/`
+- `infra/aws/novatech-core-platform/environments/bi/`
+- `infra/aws/novatech-core-platform/environments/cd/`
+
+Each environment directory contains:
+
+- `main.tf` wrapper that instantiates the shared core stack
+- `outputs.tf` for deploy-time discovery
+- `terraform.tfvars.json` for corridor-specific config
 - `infra/aws/novatech-core-platform/environments/au/terraform.tfvars.example`
 - `infra/aws/novatech-core-platform/environments/ke/terraform.tfvars.example`
 - `infra/aws/novatech-core-platform/environments/bi/terraform.tfvars.example`

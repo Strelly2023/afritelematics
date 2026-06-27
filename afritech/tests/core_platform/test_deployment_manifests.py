@@ -1,23 +1,43 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 
 def test_novapay_region_manifests_exist_and_are_distinct() -> None:
     base = Path("infra/aws/novatech-core-platform/environments")
     manifests = {
-        "au": base / "au/terraform.tfvars.example",
-        "ke": base / "ke/terraform.tfvars.example",
-        "bi": base / "bi/terraform.tfvars.example",
-        "cd": base / "cd/terraform.tfvars.example",
+        "au": base / "au",
+        "ke": base / "ke",
+        "bi": base / "bi",
+        "cd": base / "cd",
     }
 
-    for region, manifest in manifests.items():
-        assert manifest.exists(), region
-        text = manifest.read_text()
-        assert f'novapay_region = "{region.upper()}"' in text
-        assert "novapay_env_vars" in text
-        assert "novapay_secret_arns" in text
+    for region, manifest_dir in manifests.items():
+        main_tf = manifest_dir / "main.tf"
+        outputs_tf = manifest_dir / "outputs.tf"
+        tfvars_json = manifest_dir / "terraform.tfvars.json"
+        tfvars_example = manifest_dir / "terraform.tfvars.example"
 
-    assert manifests["au"].read_text() != manifests["ke"].read_text()
-    assert manifests["bi"].read_text() != manifests["cd"].read_text()
+        assert main_tf.exists(), region
+        assert outputs_tf.exists(), region
+        assert tfvars_json.exists(), region
+        assert tfvars_example.exists(), region
+
+        main_text = main_tf.read_text()
+        assert 'source = "../.."' in main_text
+        assert "novapay_secret_arns" in main_text
+        assert "novapay_env_vars" in main_text
+
+        config = json.loads(tfvars_json.read_text())
+        assert config["novapay_region"] == region.upper()
+        assert config["novapay_primary_corridor"].startswith("AU->")
+        assert isinstance(config["novapay_env_vars"], dict)
+        assert isinstance(config["novapay_secret_arns"], dict)
+
+    assert (manifests["au"] / "terraform.tfvars.json").read_text() != (
+        manifests["ke"] / "terraform.tfvars.json"
+    ).read_text()
+    assert (manifests["bi"] / "terraform.tfvars.json").read_text() != (
+        manifests["cd"] / "terraform.tfvars.json"
+    ).read_text()
