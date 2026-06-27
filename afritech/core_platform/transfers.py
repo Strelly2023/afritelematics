@@ -42,6 +42,8 @@ def _stable_id(prefix: str) -> str:
 
 
 def _decimal(value: Any, fallback: str = "0") -> Decimal:
+    if isinstance(value, bool):
+        raise TypeError("non-canonical numeric type: bool")
     if isinstance(value, Decimal):
         return value
     try:
@@ -84,7 +86,7 @@ def _freeze(obj: Any) -> Any:
         return _freeze(obj.value)
     if isinstance(obj, float):
         raise TypeError("non-canonical type in freeze: float")
-    if isinstance(obj, (str, int, bool, type(None))):
+    if isinstance(obj, (str, int, type(None))):
         return obj
     raise TypeError(f"non-canonical type in freeze: {type(obj).__name__}")
 

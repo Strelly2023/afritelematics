@@ -10,7 +10,7 @@ from decimal import Decimal
 from afritech.core_platform.cryptographic_consensus import _hash
 from afritech.core_platform.hash_domains import HASH_DOMAINS
 from afritech.core_platform.models import Identity
-from afritech.core_platform.transfers import NovaPayTransferService, _freeze, _thaw
+from afritech.core_platform.transfers import NovaPayTransferService, _decimal, _freeze, _thaw
 
 
 def _client() -> TestClient:
@@ -312,5 +312,15 @@ def test_freeze_rejects_float_values() -> None:
         raised = False
     except TypeError as exc:
         raised = "non-canonical type in freeze: float" in str(exc)
+
+    assert raised is True
+
+
+def test_decimal_helper_rejects_bool_values() -> None:
+    try:
+        _decimal(True)
+        raised = False
+    except TypeError as exc:
+        raised = "non-canonical numeric type: bool" in str(exc)
 
     assert raised is True
