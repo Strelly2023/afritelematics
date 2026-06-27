@@ -16,6 +16,10 @@ from afritech.afripay.money import Money
 from afritech.afroprog_workspace.workspace import build_workspace_payload, render_projects_view
 from afritech.afriprogramming.control_plane import get_control_plane
 from afritech.novascript import get_novascript_service
+from afritech.core_platform.settlement import (
+    build_settlement_corridor_matrix,
+    build_settlement_status,
+)
 
 
 class OrganizationOnboardRequest(BaseModel):
@@ -91,6 +95,7 @@ def build_novatech_intranet_router() -> APIRouter:
                 "novatech_documentation_certification_issue": "/v1/novatech/documentation/certification/issue",
                 "novatech_core_console": "/v1/core-platform/console",
                 "novatech_core_pilot": "/v1/core-platform/pilot/flow",
+                "novapay_corridor_status": "/v1/novatech/intranet/novapay/corridors/status",
                 "novatrust_explorer": "/trust/explorer/{receipt_or_trust_id}",
                 "operations": "/v1/dashboard/gateway",
                 "public_trust": "/public/trust/dashboard",
@@ -172,6 +177,55 @@ def build_novatech_intranet_router() -> APIRouter:
                     "knowledge": payload["surfaces"]["knowledge"]["project_count"],
                     "workflows": payload["surfaces"]["workflows"]["workflow_count"],
                     "comms": payload["surfaces"]["comms"]["message_count"],
+                },
+            }
+        )
+        return payload
+
+    @router.get("/v1/novatech/intranet/novapay/corridors/status")
+    async def novapay_corridor_status(
+        claims = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        settlement = build_settlement_status()
+        corridors = build_settlement_corridor_matrix()
+        ready_corridors = [
+            row["corridor"]
+            for row in corridors
+            if row["execution_state"] == "live_ready"
+        ]
+        gated_corridors = [
+            row["corridor"]
+            for row in corridors
+            if row["execution_state"] != "live_ready"
+        ]
+        payload = {
+            "view": "novatech_novapay_corridor_status",
+            "product": "NovaPay",
+            "organization_id": organization_id,
+            "status": "ready" if ready_corridors else "gated",
+            "deployment": {
+                "settlement": settlement,
+                "corridors": corridors,
+            },
+            "primary_corridor": next(
+                (row["corridor"] for row in corridors if row["primary"]),
+                None,
+            ),
+            "ready_corridors": ready_corridors,
+            "gated_corridors": gated_corridors,
+            "read_only": True,
+            "governance_linked": True,
+        }
+        await publish_dashboard_snapshot(
+            {
+                "source": "novatech_novapay_corridor_status",
+                "organization_id": organization_id,
+                "status": payload["status"],
+                "summary": {
+                    "primary_corridor": payload["primary_corridor"],
+                    "ready_corridors": len(payload["ready_corridors"]),
+                    "gated_corridors": len(payload["gated_corridors"]),
                 },
             }
         )
@@ -782,6 +836,8 @@ def _internal_links() -> list[dict[str, str]]:
         {"label": "NovaTech Documentation Certification Issuance", "path": "/v1/novatech/documentation/certification/issue"},
         {"label": "NovaTech Core Console", "path": "/v1/core-platform/console"},
         {"label": "NovaTech Core Pilot Flow", "path": "/v1/core-platform/pilot/flow"},
+        {"label": "NovaPay Corridor Status", "path": "/v1/novatech/intranet/novapay/corridors/status"},
+        {"label": "NovaPay Live Test Readiness", "path": "/v1/core-platform/transfers/live-test/readiness"},
         {"label": "NovaTrust Explorer", "path": "/trust/explorer/{receipt_or_trust_id}"},
         {
             "label": "Controlled Execution Activation",
@@ -846,6 +902,8 @@ def _build_novatech_platform_payload(
             {"label": "Documentation Certification Issuance", "path": "/v1/novatech/documentation/certification/issue"},
             {"label": "Core Platform Console", "path": "/v1/core-platform/console"},
             {"label": "Core Platform Pilot Flow", "path": "/v1/core-platform/pilot/flow"},
+            {"label": "NovaPay Corridor Status", "path": "/v1/novatech/intranet/novapay/corridors/status"},
+            {"label": "NovaPay Live Test Readiness", "path": "/v1/core-platform/transfers/live-test/readiness"},
             {"label": "NovaTrust Explorer", "path": "/trust/explorer/{receipt_or_trust_id}"},
             {"label": "Controlled Execution", "path": "/v1/novatech/organizations/{organization_id}/execution/activation"},
             {"label": "Marketplace Onboarding", "path": "/v1/novatech/marketplace/onboarding"},
@@ -901,6 +959,7 @@ def _build_intranet_surface(
             "afriride_rbac_check": "/v1/afriride/rbac/check",
             "core_platform_console": "/v1/core-platform/console",
             "core_platform_pilot_flow": "/v1/core-platform/pilot/flow",
+            "novapay_corridor_status": "/v1/novatech/intranet/novapay/corridors/status",
             "novatrust_explorer": "/trust/explorer/{receipt_or_trust_id}",
             "controlled_execution": "/v1/novatech/organizations/{organization_id}/execution/activation",
             "marketplace_onboarding": "/v1/novatech/marketplace/onboarding",

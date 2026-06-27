@@ -118,6 +118,26 @@ allowed_occurrences:
     class: documentation_history
     reason: module docstring asserts non-partial profile semantics
 
+  - path: afritech/core_platform/mobile_verifier.py
+    class: state_vocabulary
+    reason: mobile verifier returns partial trust-level vocabulary without declaring unresolved implementation state
+
+  - path: afritech/core_platform/stateless_verifier.py
+    class: state_vocabulary
+    reason: stateless verifier returns partial trust-level vocabulary without declaring unresolved implementation state
+
+  - path: afritech/tests/api/test_core_platform_api.py
+    class: validator_policy
+    reason: tests assert partial trust-level vocabulary from mobile verification surfaces
+
+  - path: afritech/tests/cli/test_proof_receipt_cli.py
+    class: validator_policy
+    reason: tests assert partial trust-level vocabulary from proof receipt CLI verification
+
+  - path: afritech/tests/core_platform/test_core_platform_layers.py
+    class: validator_policy
+    reason: tests assert partial trust-level vocabulary from core platform verification surfaces
+
   - path: afritech/constitution/canonical/concepts/mutation_traceability.yaml
     class: state_vocabulary
     reason: concept policy references forbidden unresolved states

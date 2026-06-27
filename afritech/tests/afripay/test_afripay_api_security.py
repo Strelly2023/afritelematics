@@ -18,7 +18,7 @@ from rest_framework.test import APIRequestFactory
 
 from afritech.afripay.money import Money
 from afritech.afripay.models import PaymentRoute as DomainPaymentRoute
-from afritech.afripay.providers_sandbox import FlutterwaveSandboxProvider, MpesaSandboxProvider
+from afritech.afripay.providers_sandbox import FlutterwaveSandboxProvider, MfsAfricaProvider, MpesaSandboxProvider
 from afritech.afriprogramming.rbac import canonical_role_name
 
 
@@ -421,6 +421,50 @@ def test_mpesa_sandbox_provider_builds_real_request():
     assert calls[0][1].endswith("/oauth/v1/generate?grant_type=client_credentials")
     assert calls[1][1].endswith("/mpesa/stkpush/v1/processrequest")
     assert calls[1][3]["AccountReference"] == "route.mpesa.001"
+
+
+def test_mfs_africa_provider_builds_configurable_real_request():
+    calls: list[tuple[str, str, dict[str, str] | None, dict[str, str] | None]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.content:
+            raw = request.content.decode("utf-8")
+            body = json.loads(raw) if raw.lstrip().startswith("{") else {k: v[0] for k, v in parse_qs(raw).items()}
+        else:
+            body = {}
+        calls.append((request.method, str(request.url), dict(request.headers), body))
+        if request.url.path.endswith("/oauth/token"):
+            return httpx.Response(200, json={"access_token": "mfs-token", "expires_in": 600})
+        return httpx.Response(
+            200,
+            json={"status": "submitted", "data": {"id": "mfs.tx.001"}},
+        )
+
+    provider = MfsAfricaProvider(
+        client_id="mfs-client",
+        client_secret="mfs-secret",
+        api_base_url="https://partner.example",
+        token_url="https://partner.example/oauth/token",
+        transfer_path="/payments",
+        transport=_mock_transport(handler),
+    )
+    result = provider.send(
+        DomainPaymentRoute(
+            route_id="route.mfs.001",
+            transaction_id="tx.mfs.001",
+            provider="mfs_africa",
+            rail="mobile_money",
+            amount=Money.of("15.00", "KES"),
+            fee=Money.of("0.00", "KES"),
+        )
+    )
+
+    assert result.external_reference == "mfs.tx.001"
+    assert calls[0][0] == "POST"
+    assert calls[0][1].endswith("/oauth/token")
+    assert calls[1][1].endswith("/payments")
+    assert calls[1][2]["idempotency-key"] == "route.mfs.001"
+    assert calls[1][3]["reference"] == "route.mfs.001"
 
 
 @pytest.mark.django_db

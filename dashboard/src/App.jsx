@@ -53,6 +53,7 @@ const EMPTY_OPERATOR_STATE = {
   novatechDocumentationCompliance: null,
   novatechControlledExecutionActivation: null,
   novatechMarketplaceOnboarding: null,
+  novapayLiveTestReadiness: null,
   liveAnalytics: null,
   analyticsArchive: null,
   decisionArchive: null,
@@ -2317,6 +2318,7 @@ export default function OperatorDashboard() {
         novatechDocumentationComplianceResult,
         novatechControlledExecutionActivationResult,
         novatechMarketplaceOnboardingResult,
+        novapayLiveTestReadinessResult,
       ] = await Promise.allSettled([
         readJson("/system/health"),
         readJson("/rides/active"),
@@ -2340,6 +2342,7 @@ export default function OperatorDashboard() {
         readJson("/v1/novatech/documentation/status"),
         readJson(`/v1/novatech/organizations/${organizationId}/execution/activation`),
         readJson("/v1/novatech/marketplace/onboarding"),
+        readJson("/v1/core-platform/transfers/live-test/readiness"),
       ]);
 
       const activeRides =
@@ -2412,6 +2415,10 @@ export default function OperatorDashboard() {
         novatechMarketplaceOnboardingResult.status === "fulfilled"
           ? novatechMarketplaceOnboardingResult.value
           : state.novatechMarketplaceOnboarding;
+      const novapayLiveTestReadiness =
+        novapayLiveTestReadinessResult.status === "fulfilled"
+          ? novapayLiveTestReadinessResult.value
+          : state.novapayLiveTestReadiness;
       const liveAnalytics = buildLiveAnalyticsSnapshot({
         trustMetrics,
         replayHealth,
@@ -2470,6 +2477,7 @@ export default function OperatorDashboard() {
         novatechDocumentationCompliance,
         novatechControlledExecutionActivation,
         novatechMarketplaceOnboarding,
+        novapayLiveTestReadiness,
         liveAnalytics,
         analyticsArchive,
         decisionArchive,
@@ -2691,6 +2699,7 @@ export default function OperatorDashboard() {
   const novatechDocumentationCompliance = state.novatechDocumentationCompliance;
   const novatechControlledExecutionActivation = state.novatechControlledExecutionActivation;
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
+  const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
   const rollbackReady =
     Number(state.evidence.missing_traces || 0) === 0 &&
     Number(state.replayHealth.failures || 0) === 0;
@@ -4647,6 +4656,60 @@ export default function OperatorDashboard() {
               </div>
             ) : (
               <EmptyState label="Safe execution will appear after a tenant snapshot is available." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaPay MFS Live Test">
+            {novapayLiveTestReadiness ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novapayLiveTestReadiness.provider?.network || "MFS Africa / Onafriq"}</strong>
+                    <span>{novapayLiveTestReadiness.live_ready ? "live-ready" : "dry-run"}</span>
+                  </div>
+                  <p>
+                    Provider mode {novapayLiveTestReadiness.provider?.mode || "controlled_partner_pilot"} with{" "}
+                    {novapayLiveTestReadiness.ready_corridors?.length || 0} live-ready corridors.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Live {novapayLiveTestReadiness.provider?.live_mode_enabled ? "enabled" : "off"}
+                    </span>
+                    <span className="surface-chip">
+                      Config {novapayLiveTestReadiness.provider?.configured ? "ready" : "missing"}
+                    </span>
+                    <span className="surface-chip">
+                      Money movement {novapayLiveTestReadiness.real_money_movement_blocked ? "blocked" : "armed"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Ready corridors</strong>
+                  <div className="chip-row">
+                    {(novapayLiveTestReadiness.ready_corridors || []).length > 0 ? (
+                      novapayLiveTestReadiness.ready_corridors.map((corridor) => (
+                        <span key={corridor} className="surface-chip">
+                          {corridor}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="surface-chip">No live corridor armed</span>
+                    )}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Required live controls</strong>
+                  <div className="stack compact-stack">
+                    {(novapayLiveTestReadiness.required_live_controls || []).slice(0, 6).map((control) => (
+                      <div key={control} className="reason-chip">
+                        {control}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaPay live-test readiness will appear after the core platform API responds." />
             )}
           </OperatorPanel>
 

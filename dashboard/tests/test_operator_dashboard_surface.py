@@ -23,6 +23,7 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'readJson("/system/pilot-metrics")' in source
     assert 'readJson("/v1/ops/observability/dashboard")' in source
     assert 'readJson("/v1/ops/audit/dashboard")' in source
+    assert 'readJson("/v1/core-platform/transfers/live-test/readiness")' in source
     assert 'readPublicJson("/public/trust/dashboard")' in source
     assert 'readJson("/api/feature-registry")' in source
     assert 'readPublicJson("/public/trust-badge")' in source
@@ -138,6 +139,9 @@ def test_operator_dashboard_exposes_required_operator_panels() -> None:
         "/public/trust-badge",
         "/public/ecosystem-evolution/verify",
         "Production-ready verification features remain read-only",
+        "NovaPay MFS Live Test",
+        "MFS Africa / Onafriq",
+        "Money movement",
     ):
         assert required in source
 

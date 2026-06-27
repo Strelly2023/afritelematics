@@ -392,7 +392,9 @@ def _infer_settlement_currency(
 
 def _infer_route_hint(provider: str, settlement_country: str, settlement_currency: str) -> str:
     normalized_provider = provider.strip().lower()
-    if normalized_provider in {"payid", "stripe", "cbdc"}:
+    if normalized_provider in {"payid", "stripe", "cbdc", "mfs", "mfs_africa", "onafriq"}:
+        if normalized_provider in {"mfs", "onafriq"}:
+            return "mfs_africa"
         return normalized_provider
     if normalized_provider in {"mobile_money", "mobile-money", "momo"}:
         return DEFAULT_PROVIDER_BY_COUNTRY.get(settlement_country, "mobile_money")

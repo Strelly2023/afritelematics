@@ -80,6 +80,7 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     assert any(route["path"] == "/v1/novatech/extranet/status" for route in payload["routes"])
     assert any(route["path"] == "/v1/core-platform/console" for route in payload["routes"])
     assert any(route["path"] == "/trust/explorer/{receipt_or_trust_id}" for route in payload["routes"])
+    assert any(route["path"] == "/v1/novatech/intranet/novapay/corridors/status" for route in payload["routes"])
     assert payload["surfaces"]["knowledge"]["project_count"] >= 1
     assert payload["surfaces"]["workflows"]["read_only"] is True
     assert payload["surfaces"]["comms"]["message_count"] >= 0
@@ -90,6 +91,19 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     assert "/trust/explorer/{receipt_or_trust_id}" in extranet.json()["routes"]
     assert extranet.json()["public_verification"]["trust_explorer"] == "/trust/explorer/{receipt_or_trust_id}"
     assert extranet.json()["partner_surface"]["core_console"] == "/v1/core-platform/console"
+    assert "novapay_corridor_status" not in extranet.json()["partner_surface"]
+
+    corridors = client.get(
+        "/v1/novatech/intranet/novapay/corridors/status",
+        headers=auth_headers(role="OPERATOR"),
+    )
+    assert corridors.status_code == 200
+    corridors_payload = corridors.json()
+    assert corridors_payload["view"] == "novatech_novapay_corridor_status"
+    assert corridors_payload["deployment"]["settlement"]["available"] is True
+    assert corridors_payload["status"] in {"ready", "gated"}
+    assert corridors_payload["primary_corridor"]
+    assert corridors_payload["ready_corridors"] or corridors_payload["gated_corridors"]
 
     knowledge = client.get("/v1/novatech/intranet/knowledge", headers=auth_headers(role="OPERATOR"))
     assert knowledge.status_code == 200

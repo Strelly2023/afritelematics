@@ -78,6 +78,81 @@ def test_novapay_transfer_quote_execute_and_verify() -> None:
     assert verify.json()["reason"] == "transfer_receipt_verified"
 
 
+def test_novapay_mfs_africa_live_test_defaults_to_dry_run_and_blocks_live() -> None:
+    client = _client()
+
+    readiness = client.get(
+        "/v1/core-platform/transfers/live-test/readiness",
+        headers=_headers(role="OPERATOR", user_id="operator-1"),
+    )
+    assert readiness.status_code == 200
+    assert readiness.json()["view"] == "novapay_live_transaction_readiness"
+    assert readiness.json()["provider"]["provider"] == "mfs_africa"
+    assert readiness.json()["default_mode"] == "dry_run"
+
+    dry_run = client.post(
+        "/v1/core-platform/transfers/live-test/run",
+        headers=_headers(role="OPERATOR", user_id="operator-1"),
+        json={
+            "amount": "1.00",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+        },
+    )
+    assert dry_run.status_code == 200
+    dry_run_body = dry_run.json()
+    assert dry_run_body["status"] == "dry_run_complete"
+    assert dry_run_body["live_network_called"] is False
+    assert dry_run_body["quote"]["sender_id"] == "operator-1"
+    assert dry_run_body["quote"]["organization_id"] == "org-pay"
+    assert dry_run_body["quote"]["route_hint"] == "mfs_africa"
+    assert dry_run_body["receipt"]["payment"]["provider"] == "mfs_africa"
+    assert dry_run_body["verification"]["valid"] is True
+
+    live = client.post(
+        "/v1/core-platform/transfers/live-test/run",
+        headers=_headers(role="OPERATOR", user_id="operator-1"),
+        json={
+            "amount": "1.00",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "live": True,
+            "operator_confirmed": True,
+        },
+    )
+    assert live.status_code == 200
+    assert live.json()["status"] == "blocked"
+    assert live.json()["reason"] == "live_transaction_gate_not_satisfied"
+
+
+def test_novapay_live_test_ignores_body_identity_and_generic_live_execute_is_blocked() -> None:
+    client = _client()
+
+    dry_run = client.post(
+        "/v1/core-platform/transfers/live-test/run",
+        headers=_headers(role="OPERATOR", user_id="operator-claim", organization_id="org-claim"),
+        json={
+            "sender_id": "spoofed-sender",
+            "organization_id": "spoofed-org",
+            "amount": "1.00",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+        },
+    )
+    assert dry_run.status_code == 200
+    quote = dry_run.json()["quote"]
+    assert quote["sender_id"] == "operator-claim"
+    assert quote["organization_id"] == "org-claim"
+
+    execute = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=_headers(role="OPERATOR", user_id="operator-claim", organization_id="org-claim"),
+        json={"quote": quote, "live_provider": True},
+    )
+    assert execute.status_code == 403
+    assert execute.json()["detail"] == "live_transfer_requires_governed_live_test_endpoint"
+
+
 def test_novapay_transfer_execute_rejects_tampered_quote() -> None:
     client = _client()
     quote = client.post(

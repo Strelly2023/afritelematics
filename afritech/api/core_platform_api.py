@@ -51,6 +51,11 @@ from afritech.core_platform.event_bus import build_event_bus_status
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
 from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan
+from afritech.core_platform.live_transaction import (
+    LiveTransactionScenario,
+    build_live_transaction_readiness,
+    run_first_transaction_test,
+)
 from afritech.core_platform.settlement import (
     build_settlement_corridor_matrix,
     build_settlement_status,
@@ -238,6 +243,21 @@ class TransferExecutePayload(StrictNumericPayload):
 
 class TransferVerifyPayload(BaseModel):
     receipt: dict[str, Any]
+
+
+class LiveTransactionTestPayload(StrictNumericPayload):
+    sender_id: str = "operator-1"
+    organization_id: str = "org-nova"
+    recipient_name: str = "Amina Okello"
+    recipient_identifier: str = "+254700000001"
+    recipient_country: str = "KE"
+    amount: Decimal = Decimal("1.00")
+    source_currency: str = "AUD"
+    payout_method: str = "mfs_africa"
+    use_case: str = "fast_low_cost_international"
+    memo: str = "NovaPay governed first transaction test"
+    live: bool = False
+    operator_confirmed: bool = False
 
 
 class NodeHealthPayload(BaseModel):
@@ -576,6 +596,14 @@ def build_core_platform_router() -> APIRouter:
     def transfer_limits() -> dict[str, Any]:
         return NovaTechCorePlatform().transfers.build_limits()
 
+    @router.get("/transfers/live-test/readiness")
+    def transfer_live_test_readiness(
+        _: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return build_live_transaction_readiness()
+
     @router.get("/identity/me")
     def identity_me(
         claims: JWTClaims = Depends(
@@ -721,6 +749,11 @@ def build_core_platform_router() -> APIRouter:
             require_roles("RIDER", "DRIVER", "OPERATOR", "VERIFIER", "DEVELOPER")
         ),
     ) -> dict[str, Any]:
+        if payload.live_provider:
+            raise HTTPException(
+                status_code=403,
+                detail="live_transfer_requires_governed_live_test_endpoint",
+            )
         platform = NovaTechCorePlatform()
         identity = _identity_from_claims(claims)
         try:
@@ -766,6 +799,30 @@ def build_core_platform_router() -> APIRouter:
         ),
     ) -> dict[str, Any]:
         return NovaTechCorePlatform().transfers.verify(payload.receipt)
+
+    @router.post("/transfers/live-test/run")
+    def run_transfer_live_test(
+        payload: LiveTransactionTestPayload,
+        claims: JWTClaims = Depends(
+            require_roles("OPERATOR", "VERIFIER", "DEVELOPER")
+        ),
+    ) -> dict[str, Any]:
+        return run_first_transaction_test(
+            LiveTransactionScenario(
+                sender_id=claims.sub,
+                organization_id=claims.organization_id,
+                recipient_name=payload.recipient_name,
+                recipient_identifier=payload.recipient_identifier,
+                recipient_country=payload.recipient_country,
+                amount=payload.amount,
+                source_currency=payload.source_currency,
+                payout_method=payload.payout_method,
+                use_case=payload.use_case,
+                memo=payload.memo,
+            ),
+            live=payload.live,
+            operator_confirmed=payload.operator_confirmed,
+        )
 
     @router.post("/trust/replay")
     def trust_replay(

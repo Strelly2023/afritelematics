@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `384`
+- Startup-safe closure size: `432`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `36`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (384 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (432 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -81,7 +81,7 @@ flowchart TD
 
     Ride --> Backend["backend (28 files)"]
     Ride --> Django["django_app (99 files)"]
-    Ui --> Dashboard["src (5 files)"]
+    Ui --> Dashboard["src (6 files)"]
     Deploy --> Production["production (3 files)"]
 ```
 
@@ -99,7 +99,7 @@ flowchart TD
 - `runtime`: `79` files
 - `afriride_backend`: `28` files
 - `afriride_django`: `99` files
-- `dashboard_ui`: `5` files
+- `dashboard_ui`: `6` files
 - `deploy_production`: `3` files
 
 ## Startup Inventory
@@ -167,7 +167,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (314)
+### Other (362)
 
 - `afritech`
 - `afritech.afripay`
@@ -261,6 +261,7 @@ flowchart TD
 - `afritech.ci`
 - `afritech.ci.runtime_boundary_validator`
 - `afritech.compliance.continuous_assurance`
+- `afritech.contracts.guards_interface`
 - `afritech.core`
 - `afritech.core.engine`
 - `afritech.core.matching_engine`
@@ -275,30 +276,58 @@ flowchart TD
 - `afritech.core_platform.auditor_dashboard`
 - `afritech.core_platform.cbdc`
 - `afritech.core_platform.compliance_report`
+- `afritech.core_platform.consensus`
+- `afritech.core_platform.cross_chain_light_client`
+- `afritech.core_platform.cryptographic_consensus`
+- `afritech.core_platform.distributed_verification`
 - `afritech.core_platform.event_bus`
 - `afritech.core_platform.export_bundle`
+- `afritech.core_platform.hash_domains`
+- `afritech.core_platform.live_transaction`
 - `afritech.core_platform.migration_system`
+- `afritech.core_platform.mobile_verifier`
 - `afritech.core_platform.models`
+- `afritech.core_platform.onchain_light_verifier`
 - `afritech.core_platform.orm`
 - `afritech.core_platform.payments`
 - `afritech.core_platform.payments.contracts`
 - `afritech.core_platform.payments.mobile_money`
 - `afritech.core_platform.payments.providers`
 - `afritech.core_platform.persistence`
+- `afritech.core_platform.privacy_qr`
+- `afritech.core_platform.proof_receipts`
 - `afritech.core_platform.qr`
+- `afritech.core_platform.qr_proof`
 - `afritech.core_platform.services`
 - `afritech.core_platform.settlement`
 - `afritech.core_platform.signing`
+- `afritech.core_platform.smart_contract_verification`
+- `afritech.core_platform.stack`
+- `afritech.core_platform.stateless_verifier`
+- `afritech.core_platform.threshold_bls`
+- `afritech.core_platform.transfers`
 - `afritech.core_platform.trust_node`
+- `afritech.core_platform.zk_receipts`
 - `afritech.crypto.anchor_publication`
 - `afritech.crypto.external_anchor`
 - `afritech.crypto.merkle`
 - `afritech.crypto.multi_party_verification`
 - `afritech.crypto.public_chain_anchor`
 - `afritech.crypto.signature`
+- `afritech.distributed.consensus`
+- `afritech.distributed.consensus.quorum`
+- `afritech.distributed.node`
+- `afritech.distributed.trust`
+- `afritech.distributed.trust.reputation_store`
+- `afritech.distributed.trust.scoring`
+- `afritech.distributed.trust.slashing`
+- `afritech.distributed.trust.trust_engine`
 - `afritech.docs`
 - `afritech.docs.document_system`
 - `afritech.ecosystem_evolution`
+- `afritech.epoch`
+- `afritech.epoch.compiled.semantic_epoch`
+- `afritech.epoch.epoch_snapshot`
 - `afritech.extensions.afriprog`
 - `afritech.extensions.afriprog.ai_engine`
 - `afritech.extensions.afriprog.ai_engine.coder`
@@ -388,6 +417,7 @@ flowchart TD
 - `afritech.governance.adr_anchor`
 - `afritech.guards`
 - `afritech.guards.edge_input_guard`
+- `afritech.guards.engine`
 - `afritech.identity`
 - `afritech.identity.mobility_participant`
 - `afritech.mobility`
@@ -442,7 +472,25 @@ flowchart TD
 - `afritech.novascript.v2.tools`
 - `afritech.novascript.v2.workflow`
 - `afritech.ops_dashboard`
+- `afritech.platform_contracts`
+- `afritech.platform_contracts.federation`
+- `afritech.platform_contracts.registry`
+- `afritech.platform_contracts.runtime`
+- `afritech.platform_operations`
+- `afritech.platform_operations.feature_flags`
+- `afritech.platform_operations.policy`
+- `afritech.platform_operations.registry`
+- `afritech.platform_operations.reliability`
+- `afritech.platform_operations.rollout`
+- `afritech.platform_operations.workflow`
+- `afritech.registry.loader`
 - `afritech.registry.snapshot`
+- `afritech.runtime`
+- `afritech.runtime.admission`
+- `afritech.runtime.admission.controller`
+- `afritech.runtime.audit.ledger`
+- `afritech.runtime.kernel.execute`
+- `afritech.runtime.runtime_engine`
 - `afritech.runtime_monitoring`
 - `afritech.runtime_monitoring.anomaly_classifier`
 - `afritech.runtime_monitoring.anomaly_context_builder`

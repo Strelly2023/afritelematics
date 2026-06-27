@@ -1,4 +1,4 @@
-"""Sandbox provider adapters for Flutterwave and M-Pesa."""
+"""Sandbox and partner provider adapters for external payment rails."""
 
 from __future__ import annotations
 
@@ -266,7 +266,141 @@ class MpesaSandboxProvider(_OAuthSandboxProvider):
         )
 
 
+class MfsAfricaProvider(_OAuthSandboxProvider):
+    """Configurable MFS Africa / Onafriq mobile-money adapter.
+
+    MFS Africa rebranded as Onafriq, and commercial API contracts are commonly
+    partner-specific. The base URL and endpoint paths are therefore configured
+    by environment while the adapter enforces the invariant NovaPay owns:
+    OAuth, idempotent reference propagation, and fail-closed credentials.
+    """
+
+    def __init__(
+        self,
+        *,
+        client_id: str,
+        client_secret: str,
+        api_base_url: str | None = None,
+        token_url: str | None = None,
+        transfer_path: str | None = None,
+        verify_path: str | None = None,
+        transport: httpx.BaseTransport | None = None,
+    ) -> None:
+        base_url = api_base_url or os.environ.get("MFS_AFRICA_API_BASE_URL", "https://api.onafriq.com")
+        super().__init__(
+            name="mfs_africa",
+            rail="mobile_money",
+            client_id=client_id,
+            client_secret=client_secret,
+            token_url=token_url
+            or os.environ.get("MFS_AFRICA_TOKEN_URL")
+            or f"{base_url.rstrip('/')}/oauth/token",
+            api_base_url=base_url,
+            transport=transport,
+        )
+        self.transfer_path = transfer_path or os.environ.get("MFS_AFRICA_TRANSFER_PATH", "/v1/transfers")
+        self.verify_path = verify_path or os.environ.get("MFS_AFRICA_VERIFY_PATH", "/v1/transfers/{reference}")
+
+    def _fetch_token(self) -> dict[str, Any]:
+        with self._client() as client:
+            response = client.post(
+                self.token_url,
+                headers={"Content-Type": "application/json"},
+                json={
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "grant_type": os.environ.get("MFS_AFRICA_GRANT_TYPE", "client_credentials"),
+                },
+            )
+        response.raise_for_status()
+        payload = response.json()
+        if "access_token" not in payload:
+            raise ProviderFailure("mfs_africa token missing access_token")
+        return payload
+
+    def quote(self, amount: Money) -> ProviderQuote:
+        fee = Money.of((amount.amount * Decimal("0.009")) + Decimal("0.35"), amount.currency)
+        return ProviderQuote(
+            provider=self.name,
+            rail=self.rail,
+            amount=amount,
+            fee=fee,
+            estimated_latency_ms=1600,
+            reliability=Decimal("0.965"),
+            supports_offline_fallback=True,
+        )
+
+    def send(self, route: PaymentRoute) -> ProviderResult:
+        token = self._get_access_token()
+        payload = {
+            "reference": route.route_id,
+            "amount": str(route.amount.amount),
+            "currency": route.amount.currency,
+            "rail": route.rail,
+            "provider": self.name,
+            "metadata": {
+                "transaction_id": route.transaction_id,
+                "idempotency_key": route.route_id,
+            },
+        }
+        with self._client() as client:
+            response = client.post(
+                f"{self.api_base_url}{self.transfer_path}",
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Idempotency-Key": route.route_id,
+                },
+            )
+        response.raise_for_status()
+        raw = response.json()
+        data = raw.get("data", {}) if isinstance(raw.get("data"), dict) else {}
+        reference = str(
+            data.get("id")
+            or data.get("reference")
+            or raw.get("id")
+            or raw.get("reference")
+            or route.route_id
+        )
+        return ProviderResult(
+            provider=self.name,
+            external_reference=reference,
+            status=str(data.get("status") or raw.get("status") or "submitted"),
+            latency_ms=1600,
+            raw=raw,
+        )
+
+    def verify(self, external_reference: str) -> ProviderResult:
+        if not external_reference:
+            raise ProviderFailure("external_reference is required")
+        token = self._get_access_token()
+        path = self.verify_path.format(reference=external_reference)
+        with self._client() as client:
+            response = client.get(
+                f"{self.api_base_url}{path}",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+        response.raise_for_status()
+        raw = response.json()
+        data = raw.get("data", {}) if isinstance(raw.get("data"), dict) else {}
+        return ProviderResult(
+            provider=self.name,
+            external_reference=external_reference,
+            status=str(data.get("status") or raw.get("status") or "confirmed"),
+            latency_ms=800,
+            raw=raw,
+        )
+
+
 def sandbox_provider_set() -> tuple[PaymentProvider, ...]:
+    provider_mode = os.environ.get("AFRIPAY_SANDBOX_PROVIDER", "").strip().lower()
+    if provider_mode in {"mfs", "mfs_africa", "onafriq"}:
+        return (
+            MfsAfricaProvider(
+                client_id=os.environ.get("MFS_AFRICA_CLIENT_ID", ""),
+                client_secret=os.environ.get("MFS_AFRICA_CLIENT_SECRET", ""),
+            ),
+        )
     flutterwave = FlutterwaveSandboxProvider(
         client_id=os.environ.get("FLW_CLIENT_ID", ""),
         client_secret=os.environ.get("FLW_CLIENT_SECRET", ""),

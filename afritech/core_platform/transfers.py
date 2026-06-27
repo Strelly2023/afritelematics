@@ -21,22 +21,19 @@ from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import Any, Mapping
 from uuid import UUID, uuid4
 
 from afritech.core_platform.cryptographic_consensus import _canonicalize_seal, _hash
+from afritech.core_platform.event_bus import EventBus, build_event_bus
 from afritech.core_platform.hash_domains import HASH_DOMAINS
 from afritech.core_platform.models import AuthorityDecision, Identity, PaymentIntent, PaymentReceipt
 from afritech.core_platform.payments.mobile_money import mobile_money_catalog
-from afritech.core_platform.payments.providers import payid_status
+from afritech.core_platform.payments.providers import mfs_africa_status, payid_status, provider_for
 from afritech.core_platform.settlement import SettlementRouter, normalize_currency_code
 from afritech.core_platform.signing import AuditSignature, sign_packet, verify_packet_signature
 from afritech.core_platform.trust_node import build_trust_node_network_status
 from afritech.core_platform.cbdc import cbdc_status
-
-if TYPE_CHECKING:  # pragma: no cover
-    from afritech.core_platform.services import NovaPayService
-
 
 def _stable_id(prefix: str) -> str:
     return f"{prefix}_{uuid4().hex[:16]}"
@@ -65,6 +62,8 @@ def _normalize_method(value: str | None) -> str:
         return "domestic_transfer"
     if method in {"mobile_money", "mobilemoney", "momo"}:
         return "mobile_money"
+    if method in {"mfs", "mfs_africa", "onafriq", "onafriq_mobile_money"}:
+        return "mfs_africa"
     return method
 
 
@@ -185,6 +184,17 @@ def _payout_profile(method: str) -> dict[str, Any]:
             "eta": "minutes",
             "route_hint": "mobile_money",
         },
+        "mfs_africa": {
+            "label": "MFS Africa / Onafriq mobile money",
+            "fee_adjustment": Decimal("0.0025"),
+            "fixed_adjustment": Decimal("0.85"),
+            "limit": Decimal("10000"),
+            "cash_pickup": False,
+            "bank_deposit": False,
+            "wallet": True,
+            "eta": "minutes",
+            "route_hint": "mfs_africa",
+        },
         "wallet": {
             "label": "Wallet transfer",
             "fee_adjustment": Decimal("0.0015"),
@@ -225,6 +235,7 @@ def _transfer_features() -> dict[str, Any]:
             "bank_deposit",
             "cash_pickup",
             "mobile_money",
+            "mfs_africa",
             "wallet",
             "domestic_transfer",
         ],
@@ -248,6 +259,7 @@ def _transfer_limits() -> dict[str, Any]:
         "bank_deposit": {"default_limit": "25000", "currency": "AUD"},
         "cash_pickup": {"default_limit": "5000", "currency": "AUD"},
         "mobile_money": {"default_limit": "10000", "currency": "AUD"},
+        "mfs_africa": {"default_limit": "10000", "currency": "AUD"},
         "wallet": {"default_limit": "15000", "currency": "AUD"},
         "domestic_transfer": {"default_limit": "50000", "currency": "AUD"},
     }
@@ -256,6 +268,7 @@ def _transfer_limits() -> dict[str, Any]:
 def _transfer_rails() -> dict[str, Any]:
     return {
         "payid": payid_status(),
+        "mfs_africa": mfs_africa_status(),
         "mobile_money": mobile_money_catalog(),
         "cbdc": cbdc_status(),
         "trust_node": build_trust_node_network_status(),
@@ -275,6 +288,9 @@ def _normalize_transfer_provider(value: Any) -> str:
         "orange_money_cd",
         "airtel_money_cd",
         "mpesa_cd",
+        "mfs_africa",
+        "mfs",
+        "onafriq",
     }
     if normalized in {"payid", "pay_id", "osko"}:
         return "payid"
@@ -282,6 +298,8 @@ def _normalize_transfer_provider(value: Any) -> str:
         return "cbdc"
     if normalized in {"mobile_money", "mobile-money", "momo"}:
         return "mobile_money"
+    if normalized in {"mfs", "mfs_africa", "onafriq"}:
+        return "mfs_africa"
     if normalized in allowed:
         return normalized
     raise ValueError("invalid_transfer_provider")
@@ -447,21 +465,102 @@ def _quote_message(payload: Mapping[str, Any]) -> str:
     return f"{HASH_DOMAINS['SIGNED_PAYLOAD']}::{_hash(payload, domain=HASH_DOMAINS['TRANSFER_QUOTE'])}"
 
 
+class _DefaultTransferPaymentExecutor:
+    """Minimal payment executor used when transfers are constructed directly."""
+
+    def __init__(
+        self,
+        *,
+        settlement_router: SettlementRouter,
+        event_bus: EventBus | None = None,
+    ) -> None:
+        self.settlement_router = settlement_router
+        self.event_bus = event_bus or build_event_bus()
+
+    def execute(
+        self,
+        intent: PaymentIntent,
+        *,
+        identity: Identity,
+        decision: AuthorityDecision,
+        provider: str = "payid",
+        live_provider: bool = False,
+    ) -> PaymentReceipt:
+        if intent.actor_id != identity.identity_id:
+            raise ValueError("payment intent actor must match NovaID subject")
+        if intent.organization_id != identity.organization_id:
+            raise ValueError("payment intent tenant must match NovaID tenant")
+        if not decision.allowed:
+            raise PermissionError(f"NovaPower rejected payment: {decision.reason}")
+        if intent.amount <= Decimal("0"):
+            raise ValueError("payment amount must be positive")
+
+        settlement = self.settlement_router.plan(
+            intent,
+            provider=provider,
+            live_provider=live_provider,
+        )
+        payment_id = _stable_id("pay")
+        provider_adapter = provider_for(
+            provider,
+            live=live_provider,
+            intent=settlement.intent,
+        )
+        provider_result = provider_adapter.authorize(settlement.intent)
+        proof_hash = _hash(
+            {
+                "intent": intent.canonical(),
+                "settlement": settlement.plan.canonical(),
+                "settlement_intent": settlement.intent.canonical(),
+                "decision": decision.canonical(),
+                "provider": provider_result.provider,
+                "provider_reference": provider_result.provider_reference,
+                "provider_status": provider_result.status,
+                "payment_id": payment_id,
+                "event_bus": self.event_bus.status(),
+            },
+            domain=HASH_DOMAINS["TRANSFER_RECEIPT"],
+        )
+        self.event_bus.publish(
+            "novapay.payment.executed",
+            {
+                "intent_id": intent.intent_id,
+                "organization_id": intent.organization_id,
+                "payment_id": payment_id,
+                "provider": provider_result.provider,
+                "settlement_status": provider_result.settlement_status,
+                "corridor": settlement.plan.corridor,
+                "route_class": settlement.plan.route_class,
+            },
+        )
+        return PaymentReceipt(
+            receipt_id=_stable_id("receipt"),
+            payment_id=payment_id,
+            status=provider_result.status,
+            actor_id=identity.identity_id,
+            organization_id=identity.organization_id,
+            amount=settlement.intent.amount,
+            currency=settlement.intent.currency.upper(),
+            provider=provider_result.provider,
+            proof_hash=proof_hash,
+            provider_reference=provider_result.provider_reference,
+            settlement_status=provider_result.settlement_status,
+        )
+
+
 class NovaPayTransferService:
     """Quote, execute, and verify NovaPay transfers."""
 
     def __init__(
         self,
         *,
-        payments: "NovaPayService" | None = None,
+        payments: Any | None = None,
         settlement_router: SettlementRouter | None = None,
     ) -> None:
-        if payments is None:
-            from afritech.core_platform.services import NovaPayService
-
-            payments = NovaPayService()
-        self.payments = payments
         self.settlement_router = settlement_router or SettlementRouter()
+        if payments is None:
+            payments = _DefaultTransferPaymentExecutor(settlement_router=self.settlement_router)
+        self.payments = payments
 
     def build_features(self) -> dict[str, Any]:
         features = _transfer_features()
