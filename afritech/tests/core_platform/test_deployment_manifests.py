@@ -29,6 +29,18 @@ def test_novapay_region_manifests_exist_and_are_distinct() -> None:
         assert "novapay_secret_arns" in main_text
         assert "novapay_env_vars" in main_text
 
+        outputs_text = outputs_tf.read_text()
+        for output_name in (
+            "rollout_mode",
+            "primary_corridor",
+            "corridors",
+            "settlement_mode",
+            "mobile_money_live_enabled",
+            "compliance_provider",
+            "compliance_live_enabled",
+        ):
+            assert f'output "{output_name}"' in outputs_text
+
         config = json.loads(tfvars_json.read_text())
         assert config["novapay_region"] == region.upper()
         assert config["novapay_primary_corridor"].startswith("AU->")
