@@ -54,7 +54,11 @@ from afritech.core_platform.export_bundle import build_auditor_zip
 from afritech.core_platform.migration_system import build_migration_plan, list_migrations
 from afritech.core_platform.orm import CoreTrustPacketRecord
 from afritech.core_platform.qr import render_qr_png
-from afritech.core_platform.settlement import SettlementRouter, build_settlement_status
+from afritech.core_platform.settlement import (
+    SettlementRouter,
+    build_settlement_corridor_matrix,
+    build_settlement_status,
+)
 from afritech.core_platform.signing import sign_packet, verify_packet_signature
 from afritech.core_platform.signing import build_key_rotation_plan, signing_key_status
 from afritech.core_platform.trust_node import build_trust_node_network_status
@@ -648,6 +652,37 @@ def test_core_platform_settlement_rollout_config_is_observable(monkeypatch) -> N
     assert settlement["rollout"]["settlement_mode"] == "pre_funded"
     assert settlement["rollout"]["mobile_money_live_enabled"] is True
     assert settlement["rollout"]["compliance_provider"] == "sumsub"
+
+
+def test_core_platform_settlement_corridor_matrix_reflects_rollout(monkeypatch) -> None:
+    monkeypatch.setenv("NOVAPAY_ROLLOUT_MODE", "pilot")
+    monkeypatch.setenv("NOVAPAY_PRIMARY_CORRIDOR", "AU->BI")
+    monkeypatch.setenv("NOVAPAY_CORRIDORS", "AU->KE,AU->BI,AU->CD,USA->KE")
+    monkeypatch.setenv("NOVAPAY_SETTLEMENT_MODE", "pre_funded")
+    monkeypatch.setenv("NOVAPAY_MOBILE_MONEY_LIVE_ENABLED", "true")
+    monkeypatch.setenv("NOVAPAY_COMPLIANCE_PROVIDER", "sumsub")
+    monkeypatch.setenv("NOVAPAY_COMPLIANCE_LIVE_ENABLED", "true")
+
+    matrix = build_settlement_corridor_matrix()
+
+    assert [row["corridor"] for row in matrix] == [
+        "AU->KE",
+        "AU->BI",
+        "AU->CD",
+        "USA->KE",
+    ]
+    assert matrix[0]["provider"] == "mpesa_ke"
+    assert matrix[1]["provider"] == "lumicash_bi"
+    assert matrix[2]["provider"] == "orange_money_cd"
+    assert matrix[3]["provider"] == "mpesa_ke"
+    assert matrix[1]["primary"] is True
+    assert matrix[0]["execution_state"] == "live_ready"
+    assert matrix[3]["execution_state"] == "live_ready"
+    assert matrix[0]["mobile_money_ready"] is True
+    assert matrix[1]["mobile_money_ready"] is True
+    assert matrix[2]["mobile_money_ready"] is True
+    assert matrix[3]["settlement_country"] == "KE"
+    assert matrix[3]["settlement_currency"] == "KES"
 
 
 def test_validator_consensus_engine_requires_matching_validator_votes() -> None:

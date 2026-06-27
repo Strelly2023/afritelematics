@@ -249,8 +249,57 @@ def build_settlement_status() -> dict[str, Any]:
         "cross_border_supported": True,
         "fx_reference": fx_engine.lock_rate("AUD", "USD").locked_reference,
         "cbdc_ready": False,
+        "corridor_matrix": build_settlement_corridor_matrix(rollout),
         "rollout": rollout.canonical(),
     }
+
+
+def build_settlement_corridor_matrix(
+    rollout: SettlementRolloutConfig | None = None,
+) -> list[dict[str, Any]]:
+    rollout = rollout or _load_rollout_config()
+    rows: list[dict[str, Any]] = []
+    for corridor in rollout.corridors:
+        source_country, settlement_country = _parse_corridor(corridor)
+        settlement_currency = COUNTRY_CURRENCY_BY_REGION.get(settlement_country, "")
+        default_provider = (
+            DEFAULT_PROVIDER_BY_COUNTRY.get(settlement_country)
+            if settlement_country in DEFAULT_PROVIDER_BY_COUNTRY
+            else DOMESTIC_RAIL_BY_CURRENCY.get(settlement_currency, "payid")
+        )
+        mobile_money_ready = (
+            settlement_country in DEFAULT_PROVIDER_BY_COUNTRY
+            and rollout.mobile_money_live_enabled
+            and rollout.compliance_live_enabled
+        )
+        execution_state = (
+            "live_ready"
+            if mobile_money_ready and rollout.settlement_mode == "pre_funded"
+            else "pilot_ready"
+            if settlement_country in DEFAULT_PROVIDER_BY_COUNTRY
+            else "available"
+        )
+        rows.append(
+            {
+                "corridor": corridor,
+                "source_country": source_country,
+                "settlement_country": settlement_country,
+                "settlement_currency": settlement_currency,
+                "provider": default_provider,
+                "rail": DOMESTIC_RAIL_BY_CURRENCY.get(
+                    settlement_currency,
+                    default_provider,
+                ),
+                "primary": corridor == rollout.primary_corridor,
+                "settlement_mode": rollout.settlement_mode,
+                "mobile_money_live_enabled": rollout.mobile_money_live_enabled,
+                "compliance_provider": rollout.compliance_provider,
+                "compliance_live_enabled": rollout.compliance_live_enabled,
+                "mobile_money_ready": mobile_money_ready,
+                "execution_state": execution_state,
+            }
+        )
+    return rows
 
 
 def _load_rollout_config() -> SettlementRolloutConfig:
@@ -277,6 +326,11 @@ def _load_rollout_config() -> SettlementRolloutConfig:
         compliance_provider=compliance_provider,
         compliance_live_enabled=compliance_live_enabled,
     )
+
+
+def _parse_corridor(corridor: str) -> tuple[str, str]:
+    left, _, right = corridor.partition("->")
+    return left.strip().upper(), right.strip().upper()
 
 
 def _infer_country(intent: PaymentIntent, source_currency: str) -> str:
