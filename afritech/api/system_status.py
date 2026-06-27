@@ -6,6 +6,9 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from afritech.core_platform.settlement import build_settlement_status
+from afritech.core_platform.stack import build_novatech_stack_readiness
+
 
 def build_system_status_router() -> APIRouter:
     """Build the runtime status router."""
@@ -22,6 +25,10 @@ def build_system_status_router() -> APIRouter:
             "docs": "/docs",
             "event_ingestion": "/v1/events",
             "trace_api": "/v1/traces",
+            "deployment": {
+                "stack": build_novatech_stack_readiness(),
+                "settlement": build_settlement_status(),
+            },
         }
 
     return router
