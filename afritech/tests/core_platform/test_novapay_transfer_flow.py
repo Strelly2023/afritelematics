@@ -286,6 +286,13 @@ def test_thaw_preserves_structure_determinism() -> None:
     assert thawed == expected
 
 
+def test_thaw_frozenset_order_is_canonical() -> None:
+    frozen = _freeze({"items": {"b", "a"}})
+    thawed = _thaw(frozen)
+
+    assert thawed["items"] == ["a", "b"]
+
+
 def test_decimal_freeze_consistency() -> None:
     frozen = _freeze({"amount": Decimal("100.00")})
     thawed = _thaw(frozen)

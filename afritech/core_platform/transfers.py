@@ -15,6 +15,7 @@ clients can render the same transfer truth.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from decimal import Decimal
@@ -97,7 +98,10 @@ def _thaw(obj: Any) -> Any:
     if isinstance(obj, tuple):
         return [_thaw(value) for value in obj]
     if isinstance(obj, frozenset):
-        return sorted((_thaw(value) for value in obj), key=repr)
+        return sorted(
+            (_thaw(value) for value in obj),
+            key=lambda value: json.dumps(value, sort_keys=True, separators=(",", ":")),
+        )
     return obj
 
 
