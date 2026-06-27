@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import replace
+from dataclasses import dataclass, field, replace
 from decimal import Decimal
+from enum import Enum
 from uuid import uuid4
+from typing import Any, Mapping, Protocol
 
 from afritech.core_platform.models import (
     AuthorityDecision,
@@ -37,6 +39,48 @@ CORE_FLOW = (
     "NovaScript",
     "NovaProgramming",
 )
+
+
+class SettlementLifecycleState(str, Enum):
+    VALIDATED = "validated"
+    COMPLIANCE_PASSED = "compliance_passed"
+    PROVIDER_LOCKED = "provider_locked"
+    SETTLEMENT_SUBMITTED = "settlement_submitted"
+    SETTLED = "settled"
+    RECEIPT_ISSUED = "receipt_issued"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+@dataclass(frozen=True)
+class SettlementLifecycleEvent:
+    state: SettlementLifecycleState
+    intent_id: str
+    organization_id: str
+    provider: str | None = None
+    payment_id: str | None = None
+    route_id: str | None = None
+    corridor: str | None = None
+    settlement_status: str | None = None
+    details: Mapping[str, Any] = field(default_factory=dict)
+
+    def canonical(self) -> dict[str, Any]:
+        return {
+            "state": self.state.value,
+            "intent_id": self.intent_id,
+            "organization_id": self.organization_id,
+            "provider": self.provider,
+            "payment_id": self.payment_id,
+            "route_id": self.route_id,
+            "corridor": self.corridor,
+            "settlement_status": self.settlement_status,
+            "details": dict(self.details),
+        }
+
+
+class SettlementLifecycleHooks(Protocol):
+    def on_transition(self, event: SettlementLifecycleEvent) -> None:
+        ...
 
 
 def _stable_hash(payload: object) -> str:
@@ -113,9 +157,11 @@ class NovaPayService:
         *,
         settlement_router: SettlementRouter | None = None,
         event_bus: EventBus | None = None,
+        lifecycle_hooks: SettlementLifecycleHooks | None = None,
     ) -> None:
         self.settlement_router = settlement_router or SettlementRouter()
         self.event_bus = event_bus or build_event_bus()
+        self.lifecycle_hooks = lifecycle_hooks
 
     def execute(
         self,
@@ -141,53 +187,162 @@ class NovaPayService:
             live_provider=live_provider,
         )
         provider_intent = settlement.intent
-        provider_result = provider_for(
+        self._emit_settlement_transition(
+            SettlementLifecycleState.VALIDATED,
+            intent=intent,
+            provider=provider,
+            settlement=settlement.plan,
+        )
+        self._emit_settlement_transition(
+            SettlementLifecycleState.COMPLIANCE_PASSED,
+            intent=intent,
+            provider=provider,
+            settlement=settlement.plan,
+        )
+        self._emit_settlement_transition(
+            SettlementLifecycleState.PROVIDER_LOCKED,
+            intent=intent,
+            provider=provider,
+            settlement=settlement.plan,
+        )
+        payment_id = _new_id("pay")
+        provider_adapter = provider_for(
             provider,
             live=live_provider,
             intent=provider_intent,
-        ).authorize(provider_intent)
-        payment_id = _new_id("pay")
-        payload = {
-            "intent": intent.canonical(),
-            "settlement": settlement.plan.canonical(),
-            "settlement_intent": provider_intent.canonical(),
-            "decision": decision.canonical(),
-            "provider": provider_result.provider,
-            "provider_reference": provider_result.provider_reference,
-            "provider_status": provider_result.status,
-            "payment_id": payment_id,
-            "security": {
-                "signing": signing_key_status().canonical(),
-                "kms": kms_signing_status().canonical(),
-                "event_bus": self.event_bus.status(),
-            },
-        }
-        proof_hash = _stable_hash(payload)
-        self.event_bus.publish(
-            "novapay.payment.executed",
-            {
-                "intent_id": intent.intent_id,
-                "organization_id": intent.organization_id,
-                "payment_id": payment_id,
+        )
+        self._invoke_provider_hook(
+            provider_adapter,
+            "before_authorize",
+            intent=provider_intent,
+            settlement=settlement.plan,
+        )
+        self._emit_settlement_transition(
+            SettlementLifecycleState.SETTLEMENT_SUBMITTED,
+            intent=intent,
+            provider=provider_adapter.name,
+            settlement=settlement.plan,
+        )
+        try:
+            provider_result = provider_adapter.authorize(provider_intent)
+            self._invoke_provider_hook(
+                provider_adapter,
+                "after_authorize",
+                intent=provider_intent,
+                settlement=settlement.plan,
+                result=provider_result,
+            )
+            self._emit_settlement_transition(
+                SettlementLifecycleState.SETTLED,
+                intent=intent,
+                provider=provider_result.provider,
+                payment_id=payment_id,
+                settlement=settlement.plan,
+                settlement_status=provider_result.settlement_status,
+            )
+            payload = {
+                "intent": intent.canonical(),
+                "settlement": settlement.plan.canonical(),
+                "settlement_intent": provider_intent.canonical(),
+                "decision": decision.canonical(),
                 "provider": provider_result.provider,
-                "settlement_status": provider_result.settlement_status,
-                "corridor": settlement.plan.corridor,
-                "route_class": settlement.plan.route_class,
-            },
-        )
-        return PaymentReceipt(
-            receipt_id=_new_id("receipt"),
+                "provider_reference": provider_result.provider_reference,
+                "provider_status": provider_result.status,
+                "payment_id": payment_id,
+                "security": {
+                    "signing": signing_key_status().canonical(),
+                    "kms": kms_signing_status().canonical(),
+                    "event_bus": self.event_bus.status(),
+                },
+            }
+            proof_hash = _stable_hash(payload)
+            self.event_bus.publish(
+                "novapay.payment.executed",
+                {
+                    "intent_id": intent.intent_id,
+                    "organization_id": intent.organization_id,
+                    "payment_id": payment_id,
+                    "provider": provider_result.provider,
+                    "settlement_status": provider_result.settlement_status,
+                    "corridor": settlement.plan.corridor,
+                    "route_class": settlement.plan.route_class,
+                },
+            )
+            self._emit_settlement_transition(
+                SettlementLifecycleState.RECEIPT_ISSUED,
+                intent=intent,
+                provider=provider_result.provider,
+                payment_id=payment_id,
+                settlement=settlement.plan,
+                settlement_status=provider_result.settlement_status,
+            )
+            self._emit_settlement_transition(
+                SettlementLifecycleState.COMPLETED,
+                intent=intent,
+                provider=provider_result.provider,
+                payment_id=payment_id,
+                settlement=settlement.plan,
+                settlement_status=provider_result.settlement_status,
+            )
+            return PaymentReceipt(
+                receipt_id=_new_id("receipt"),
+                payment_id=payment_id,
+                status=provider_result.status,
+                actor_id=identity.identity_id,
+                organization_id=identity.organization_id,
+                amount=provider_intent.amount,
+                currency=provider_intent.currency.upper(),
+                provider=provider_result.provider,
+                proof_hash=proof_hash,
+                provider_reference=provider_result.provider_reference,
+                settlement_status=provider_result.settlement_status,
+            )
+        except Exception as exc:
+            self._emit_settlement_transition(
+                SettlementLifecycleState.FAILED,
+                intent=intent,
+                provider=provider_adapter.name,
+                payment_id=payment_id,
+                settlement=settlement.plan,
+                settlement_status="failed",
+                details={
+                    "error_type": exc.__class__.__name__,
+                    "error": str(exc),
+                },
+            )
+            raise
+
+    def _emit_settlement_transition(
+        self,
+        state: SettlementLifecycleState,
+        *,
+        intent: PaymentIntent,
+        settlement: SettlementPlan,
+        provider: str | None = None,
+        payment_id: str | None = None,
+        settlement_status: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        event = SettlementLifecycleEvent(
+            state=state,
+            intent_id=intent.intent_id,
+            organization_id=intent.organization_id,
+            provider=provider,
             payment_id=payment_id,
-            status=provider_result.status,
-            actor_id=identity.identity_id,
-            organization_id=identity.organization_id,
-            amount=provider_intent.amount,
-            currency=provider_intent.currency.upper(),
-            provider=provider_result.provider,
-            proof_hash=proof_hash,
-            provider_reference=provider_result.provider_reference,
-            settlement_status=provider_result.settlement_status,
+            route_id=settlement.route_id,
+            corridor=settlement.corridor,
+            settlement_status=settlement_status,
+            details=details or {},
         )
+        if self.lifecycle_hooks is not None:
+            self.lifecycle_hooks.on_transition(event)
+        self.event_bus.publish("novapay.settlement.transition", event.canonical())
+
+    @staticmethod
+    def _invoke_provider_hook(provider_adapter: Any, hook_name: str, **kwargs: Any) -> None:
+        hook = getattr(provider_adapter, hook_name, None)
+        if callable(hook):
+            hook(**kwargs)
 
 
 class NovaTrustService:

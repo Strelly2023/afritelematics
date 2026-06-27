@@ -24,6 +24,9 @@ from afritech.core_platform.services import (
     NovaScriptService,
     NovaTechCorePlatform,
     NovaTrustService,
+    SettlementLifecycleEvent,
+    SettlementLifecycleHooks,
+    SettlementLifecycleState,
     build_core_platform_overview,
 )
 from afritech.core_platform.settlement import (
@@ -117,6 +120,9 @@ __all__ = [
     "NovaScriptService",
     "NovaTechCorePlatform",
     "NovaTrustService",
+    "SettlementLifecycleEvent",
+    "SettlementLifecycleHooks",
+    "SettlementLifecycleState",
     "PaymentIntent",
     "PaymentProviderResult",
     "PaymentReceipt",

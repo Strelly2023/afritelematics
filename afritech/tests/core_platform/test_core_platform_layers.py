@@ -11,9 +11,12 @@ from afritech.core_platform import (
     InMemoryCorePlatformStore,
     NovaIDService,
     NovaTechCorePlatform,
+    NovaPayService,
+    NovaPowerEngine,
     PayIDProvider,
     PaymentIntent,
     StripeProvider,
+    SettlementLifecycleState,
 )
 from afritech.core_platform.audit_export import render_audit_pdf
 from afritech.core_platform.compliance_report import build_enterprise_audit_report
@@ -55,6 +58,7 @@ from afritech.core_platform.settlement import SettlementRouter, build_settlement
 from afritech.core_platform.signing import sign_packet, verify_packet_signature
 from afritech.core_platform.signing import build_key_rotation_plan, signing_key_status
 from afritech.core_platform.trust_node import build_trust_node_network_status
+from afritech.core_platform.payments.contracts import PaymentProviderResult
 
 
 @pytest.fixture(autouse=True)
@@ -327,6 +331,152 @@ def test_payment_provider_adapters_support_live_payid_gateway(monkeypatch) -> No
     assert requests[0].headers["idempotency-key"] == (
         "novapay:org-provider:intent-payid-live-001"
     )
+
+
+def test_novapay_service_emits_settlement_lifecycle_and_provider_hooks(monkeypatch) -> None:
+    transitions: list[str] = []
+    provider_calls: list[tuple[str, str]] = []
+
+    class RecordingHooks:
+        def on_transition(self, event) -> None:
+            transitions.append(event.state.value)
+
+    class StubProvider:
+        name = "payid"
+
+        def before_authorize(self, *, intent, settlement) -> None:
+            provider_calls.append(("before", intent.intent_id))
+
+        def after_authorize(self, *, intent, settlement, result) -> None:
+            provider_calls.append(("after", result.provider_reference))
+
+        def authorize(self, intent):
+            provider_calls.append(("authorize", intent.intent_id))
+            return PaymentProviderResult(
+                provider="payid",
+                provider_reference=f"PAYID-{intent.intent_id}",
+                status="completed",
+                settlement_status="settlement_confirmed",
+                raw={"mode": "stubbed"},
+            )
+
+    monkeypatch.setattr(
+        "afritech.core_platform.services.provider_for",
+        lambda *args, **kwargs: StubProvider(),
+    )
+
+    service = NovaPayService(lifecycle_hooks=RecordingHooks())
+    identity = NovaIDService().bind_identity(
+        identity_id="user-lifecycle",
+        email="lifecycle@novatech.local",
+        roles=("admin",),
+        organization_id="org-lifecycle",
+        scopes=("payments:write",),
+    )
+    decision = NovaPowerEngine().evaluate(
+        AuthorityRequest(
+            action="payment.execute",
+            organization_id="org-lifecycle",
+            required_roles=("admin",),
+            required_scopes=("payments:write",),
+            resource_owner_id="user-lifecycle",
+            risk_score=Decimal("0.10"),
+        ),
+        identity,
+    )
+    intent = PaymentIntent(
+        intent_id="intent-lifecycle-001",
+        actor_id="user-lifecycle",
+        organization_id="org-lifecycle",
+        amount=Decimal("15.00"),
+        currency="AUD",
+        destination="merchant-lifecycle",
+    )
+
+    receipt = service.execute(
+        intent,
+        identity=identity,
+        decision=decision,
+        provider="payid",
+        live_provider=False,
+    )
+
+    assert receipt.provider == "payid"
+    assert transitions == [
+        SettlementLifecycleState.VALIDATED.value,
+        SettlementLifecycleState.COMPLIANCE_PASSED.value,
+        SettlementLifecycleState.PROVIDER_LOCKED.value,
+        SettlementLifecycleState.SETTLEMENT_SUBMITTED.value,
+        SettlementLifecycleState.SETTLED.value,
+        SettlementLifecycleState.RECEIPT_ISSUED.value,
+        SettlementLifecycleState.COMPLETED.value,
+    ]
+    assert provider_calls == [
+        ("before", "intent-lifecycle-001"),
+        ("authorize", "intent-lifecycle-001"),
+        ("after", "PAYID-intent-lifecycle-001"),
+    ]
+
+
+def test_novapay_service_emits_failed_settlement_transition(monkeypatch) -> None:
+    transitions: list[str] = []
+
+    class RecordingHooks:
+        def on_transition(self, event) -> None:
+            transitions.append(event.state.value)
+
+    class FailingProvider:
+        name = "payid"
+
+        def before_authorize(self, *, intent, settlement) -> None:
+            return None
+
+        def authorize(self, intent):
+            raise RuntimeError("provider_outage")
+
+    monkeypatch.setattr(
+        "afritech.core_platform.services.provider_for",
+        lambda *args, **kwargs: FailingProvider(),
+    )
+
+    service = NovaPayService(lifecycle_hooks=RecordingHooks())
+    identity = NovaIDService().bind_identity(
+        identity_id="user-failure",
+        email="failure@novatech.local",
+        roles=("admin",),
+        organization_id="org-failure",
+        scopes=("payments:write",),
+    )
+    decision = NovaPowerEngine().evaluate(
+        AuthorityRequest(
+            action="payment.execute",
+            organization_id="org-failure",
+            required_roles=("admin",),
+            required_scopes=("payments:write",),
+            resource_owner_id="user-failure",
+            risk_score=Decimal("0.10"),
+        ),
+        identity,
+    )
+    intent = PaymentIntent(
+        intent_id="intent-failure-001",
+        actor_id="user-failure",
+        organization_id="org-failure",
+        amount=Decimal("15.00"),
+        currency="AUD",
+        destination="merchant-failure",
+    )
+
+    with pytest.raises(RuntimeError, match="provider_outage"):
+        service.execute(
+            intent,
+            identity=identity,
+            decision=decision,
+            provider="payid",
+            live_provider=False,
+        )
+
+    assert transitions[-1] == SettlementLifecycleState.FAILED.value
 
 
 def test_in_memory_persistence_retrieves_by_trust_and_receipt_id() -> None:
