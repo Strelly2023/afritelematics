@@ -5,6 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from afritech.architecture.config_loader import load_yaml_like
+from afritech.core_platform.settlement import (
+    build_settlement_corridor_matrix,
+    build_settlement_status,
+)
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -256,6 +260,10 @@ def build_dashboard_gateway_status() -> dict[str, object]:
             "route": "/afritech/dashboard/",
         },
         "status": "ready",
+        "deployment": {
+            "settlement": build_settlement_status(),
+            "corridor_matrix": build_settlement_corridor_matrix(),
+        },
         **_boundary_metadata(),
     }
     assert_gateway_payload(payload)

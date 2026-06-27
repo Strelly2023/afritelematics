@@ -35,6 +35,9 @@ def test_build_dashboard_gateway_status() -> None:
     assert payload["read_only"] is True
     assert payload["projection_only"] is True
     assert payload["creates_authority"] is False
+    assert payload["deployment"]["settlement"]["available"] is True
+    assert payload["deployment"]["corridor_matrix"]
+    assert payload["deployment"]["corridor_matrix"][0]["execution_state"]
 
 
 def test_assert_gateway_payload_accepts_valid_payload() -> None:
