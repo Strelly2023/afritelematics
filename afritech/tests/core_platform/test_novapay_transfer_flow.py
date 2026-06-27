@@ -304,3 +304,13 @@ def test_freeze_rejects_custom_objects() -> None:
         raised = "non-canonical type in freeze" in str(exc)
 
     assert raised is True
+
+
+def test_freeze_rejects_float_values() -> None:
+    try:
+        _freeze({"amount": 0.1 + 0.2})
+        raised = False
+    except TypeError as exc:
+        raised = "non-canonical type in freeze: float" in str(exc)
+
+    assert raised is True

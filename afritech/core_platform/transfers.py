@@ -82,7 +82,9 @@ def _freeze(obj: Any) -> Any:
         return str(obj)
     if isinstance(obj, Enum):
         return _freeze(obj.value)
-    if isinstance(obj, (str, int, float, bool, type(None))):
+    if isinstance(obj, float):
+        raise TypeError("non-canonical type in freeze: float")
+    if isinstance(obj, (str, int, bool, type(None))):
         return obj
     raise TypeError(f"non-canonical type in freeze: {type(obj).__name__}")
 
