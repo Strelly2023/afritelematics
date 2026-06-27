@@ -25,7 +25,11 @@ from afritech.core_platform.models import (
 from afritech.core_platform.event_bus import EventBus, build_event_bus
 from afritech.core_platform.consensus import ValidatorConsensusEngine
 from afritech.core_platform.payments.providers import provider_for
-from afritech.core_platform.settlement import SettlementRouter
+from afritech.core_platform.settlement import (
+    SettlementRouter,
+    build_settlement_corridor_matrix,
+    build_settlement_status,
+)
 from afritech.core_platform.signing import kms_signing_status, signing_key_status
 from afritech.core_platform.transfers import NovaPayTransferService
 from afritech.platform_operations.policy import PolicyInput, VersionedPolicyEngine
@@ -546,5 +550,9 @@ def build_core_platform_overview() -> dict[str, object]:
             "Intelligence -> Evolution"
         ),
         "modules": modules,
+        "deployment": {
+            "settlement": build_settlement_status(),
+            "corridor_matrix": build_settlement_corridor_matrix(),
+        },
         "product_applications_included": False,
     }

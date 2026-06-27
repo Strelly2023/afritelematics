@@ -43,6 +43,10 @@ def test_core_platform_console_api_exposes_core_only_routes() -> None:
     assert body["product_applications_included"] is False
     assert body["modules"][0]["path"] == "/console/identity"
     assert body["modules"][-1]["path"] == "/console/programming"
+    assert body["deployment"]["settlement"]["available"] is True
+    assert body["deployment"]["corridor_matrix"]
+    assert body["deployment"]["corridor_matrix"][0]["corridor"]
+    assert "execution_state" in body["deployment"]["corridor_matrix"][0]
 
 
 def test_contract_portal_exposes_signed_schemas_graph_metrics_and_sdks() -> None:
