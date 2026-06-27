@@ -193,6 +193,56 @@ def test_core_platform_identity_and_authority_api_are_tenant_bound() -> None:
     assert "tenant_mismatch" in denied.json()["decision"]["checks"]
 
 
+def test_transfer_api_rejects_float_amounts_at_boundary() -> None:
+    client = build_client()
+
+    response = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=auth_headers(role="RIDER"),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": 100.0,
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+            "memo": "family support",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"].startswith("Value error, float_not_allowed_at_api_boundary")
+
+
+def test_transfer_execute_rejects_nested_float_in_quote() -> None:
+    client = build_client()
+    quote = client.post(
+        "/v1/core-platform/transfers/quote",
+        headers=auth_headers(role="RIDER"),
+        json={
+            "recipient_name": "Amina Okello",
+            "recipient_identifier": "+254700000001",
+            "recipient_country": "KE",
+            "amount": "100.00",
+            "source_currency": "AUD",
+            "payout_method": "bank_deposit",
+            "use_case": "transparent_pricing",
+            "memo": "family support",
+        },
+    ).json()["quote"]
+    quote["source_amount"] = 100.0
+
+    response = client.post(
+        "/v1/core-platform/transfers/execute",
+        headers=auth_headers(role="RIDER"),
+        json={"quote": quote},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"].startswith("Value error, float_not_allowed_at_api_boundary")
+
+
 def test_core_platform_payment_api_runs_full_wiring() -> None:
     client = build_client()
 

@@ -11,7 +11,7 @@ from typing import Any, Callable, Mapping, cast
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Query
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
 from afritech.core_platform import (
@@ -101,11 +101,31 @@ def _build_store() -> InMemoryCorePlatformStore | PostgresCorePlatformStore:
 CORE_PLATFORM_STORE = _build_store()
 
 
+def _reject_float_values(value: Any, *, path: str) -> None:
+    if isinstance(value, float):
+        raise ValueError(f"float_not_allowed_at_api_boundary:{path}")
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _reject_float_values(item, path=f"{path}.{key}")
+        return
+    if isinstance(value, (list, tuple, set, frozenset)):
+        for index, item in enumerate(value):
+            _reject_float_values(item, path=f"{path}[{index}]")
+
+
+class StrictNumericPayload(BaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def _reject_float_boundary(cls, data: Any) -> Any:
+        _reject_float_values(data, path=cls.__name__)
+        return data
+
+
 def core_platform_console_payload() -> dict[str, object]:
     return build_core_platform_overview()
 
 
-class AuthorityEvaluationPayload(BaseModel):
+class AuthorityEvaluationPayload(StrictNumericPayload):
     action: str = "payment.execute"
     organization_id: str
     required_roles: list[str] = Field(default_factory=list)
@@ -116,7 +136,7 @@ class AuthorityEvaluationPayload(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
-class PaymentExecutionPayload(BaseModel):
+class PaymentExecutionPayload(StrictNumericPayload):
     intent_id: str
     amount: Decimal
     currency: str = "AUD"
@@ -196,7 +216,7 @@ class ProofReceiptOnchainPayload(BaseModel):
     receipt: dict[str, Any]
 
 
-class TransferQuotePayload(BaseModel):
+class TransferQuotePayload(StrictNumericPayload):
     recipient_name: str
     recipient_identifier: str
     recipient_country: str
@@ -207,7 +227,7 @@ class TransferQuotePayload(BaseModel):
     memo: str | None = None
 
 
-class TransferExecutePayload(BaseModel):
+class TransferExecutePayload(StrictNumericPayload):
     quote: dict[str, Any]
     provider: str | None = None
     live_provider: bool = False
@@ -235,7 +255,7 @@ class ProposalPayload(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
 
 
-class PilotFlowPayload(BaseModel):
+class PilotFlowPayload(StrictNumericPayload):
     intent_id: str = "pilot-core-payment-001"
     amount: Decimal = Decimal("25.00")
     currency: str = "AUD"
