@@ -73,7 +73,7 @@ class PartnerCertificationStore:
     ) -> PartnerCertificationRecord:
         publication = novaride_architecture_signed_publication()
         signature = publication["signature"]
-        signature_valid = verify_architecture_signature(publication["contract"], signature)
+        signature_valid = verify_architecture_signature(publication["signed_payload"], signature)
         contract_verification = verify_novaride_architecture_contract(
             publication["contract"]["requested_version"],
             publication["contract"]["schema_hash"],

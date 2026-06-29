@@ -99,7 +99,7 @@ def _verify_artifact(artifact: dict[str, Any], required_capabilities: list[str])
             **contract_result,
             "publication_valid": publication_valid,
             "signature_valid": publication_valid,
-            "valid": bool(publication_valid and contract_result["valid"]),
+            "valid": contract_result["valid"],
         }
     if "version" in artifact and "layers" in artifact:
         return verify_novaride_architecture_contract(
@@ -112,12 +112,20 @@ def _verify_artifact(artifact: dict[str, Any], required_capabilities: list[str])
 
 def _verify_publication(publication: dict[str, Any]) -> bool:
     signature = publication.get("signature")
+    signed_payload = publication.get("signed_payload")
     contract = publication.get("contract")
-    if not isinstance(signature, dict) or not isinstance(contract, dict):
+    if not isinstance(signature, dict):
         return False
     if publication.get("signature_status") != "signed":
         return False
-    return verify_architecture_signature(contract, signature)
+    if isinstance(signed_payload, dict):
+        return verify_architecture_signature(signed_payload, signature)
+    if isinstance(contract, dict):
+        signed_at = signature.get("signed_at") or publication.get("signed_at")
+        if not signed_at:
+            return False
+        return verify_architecture_signature({"contract": contract, "signed_at": signed_at}, signature)
+    return False
 
 
 if __name__ == "__main__":

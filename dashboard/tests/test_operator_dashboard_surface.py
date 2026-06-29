@@ -23,6 +23,7 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'readJson("/system/pilot-metrics")' in source
     assert 'readJson("/v1/ops/observability/dashboard")' in source
     assert 'readJson("/v1/ops/audit/dashboard")' in source
+    assert 'readJson("/v1/trust/orgs")' in source
     assert 'readJson("/v1/core-platform/transfers/live-test/readiness")' in source
     assert 'readJson("/v1/novaride/phase11/status")' in source
     assert 'readJson("/v1/novaride/phase12/status")' in source
@@ -94,6 +95,11 @@ def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants(
     assert "Migration Registry" in source
     assert "SDK Registry" in source
     assert "Operational Metrics" in source
+    assert "Partner Trust Governance" in source
+    assert "Approval governance" in source
+    assert "SLA enforcement" in source
+    assert "Usage metering" in source
+    assert "Monetization" in source
     assert "architecture_contract_pending" not in source
 
 

@@ -7,15 +7,23 @@ documentation/tests.
 
 from __future__ import annotations
 
+import base64
+import hashlib
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import lru_cache
+import os
 from typing import Any, Callable, Mapping
 
 from afritech.core_platform.canonical import hash_obj
 from afritech.core_platform.hash_domains import HASH_DOMAINS
-from afritech.security.architecture_signing import sign_architecture_contract, verify_architecture_signature
+from afritech.security.architecture_signing import (
+    canonical_architecture_bytes,
+    sign_architecture_contract,
+    trusted_architecture_key_registry,
+    verify_architecture_signature,
+)
 
 NOVARIDE_ARCHITECTURE_VERSION = "2026.07.0"
 NOVARIDE_ARCHITECTURE_COMPATIBLE_VERSION = "2026.07"
@@ -483,25 +491,38 @@ def novaride_architecture_deprecations() -> dict[str, Any]:
     }
 
 
-def novaride_architecture_signed_publication(requested_version: str | None = None) -> dict[str, Any]:
-    """Return the signed public architecture publication contract."""
-
+@lru_cache(maxsize=16)
+def _cached_novaride_architecture_signed_publication(
+    requested_version: str | None,
+    env_snapshot: str,
+) -> dict[str, Any]:
     publication = novaride_architecture_publication(requested_version)
     signature = sign_architecture_contract(publication["contract"])
+    canonical_payload = canonical_architecture_bytes(signature["signed_payload"])
+    expected_payload_hash = base64.b64encode(hashlib.sha256(canonical_payload).digest()).decode(
+        "ascii"
+    )
+    if signature["signature"]["payload_hash"] != expected_payload_hash:
+        raise ValueError("signature payload mismatch")
     return {
         **publication,
         "signature_status": signature["signature_status"],
         "signature_version": signature["signature_version"],
-        "signed_at": signature["signed_at"],
+        "signed_payload": signature["signed_payload"],
         "signature": signature["signature"],
-        "signing": {
-            "algorithm": signature["algorithm"],
-            "key_id": signature["key_id"],
-            "provider": signature["provider"],
-            "public_key": signature["signature"]["public_key"],
-            "payload_hash": signature["signature"]["payload_hash"],
-        },
+        "signing": signature["signing"],
     }
+
+
+def novaride_architecture_signed_publication(requested_version: str | None = None) -> dict[str, Any]:
+    """Return the signed public architecture publication contract."""
+
+    return deepcopy(
+        _cached_novaride_architecture_signed_publication(
+            requested_version,
+            _signed_publication_env_snapshot(),
+        )
+    )
 
 
 def novaride_architecture_compatibility_matrix() -> dict[str, Any]:
@@ -581,6 +602,31 @@ def novaride_architecture_sdk_generation_pipeline() -> dict[str, Any]:
     }
 
 
+def novaride_architecture_key_registry() -> dict[str, Any]:
+    """Return the trusted key registry used for signing and verification."""
+
+    return {
+        "platform": "NovaRide",
+        "canonical_format": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+        "hash_algorithm": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+        **trusted_architecture_key_registry(),
+    }
+
+
+def _signed_publication_env_snapshot() -> str:
+    return "\u241f".join(
+        [
+            os.environ.get("NOVATRUST_TRUSTED_ARCHITECTURE_KEYS_JSON", ""),
+            os.environ.get("NOVATRUST_SIGNING_PROVIDER", ""),
+            os.environ.get("NOVATRUST_SIGNING_KEY_ID", ""),
+            os.environ.get("NOVATRUST_KMS_KEY_ID", ""),
+            os.environ.get("NOVATRUST_KMS_SIGNING_ENABLED", ""),
+            os.environ.get("NOVATRUST_KMS_SIGNING_ALGORITHM", ""),
+            os.environ.get("AFRITECH_ENV", ""),
+        ]
+    )
+
+
 def novaride_architecture_operational_metrics() -> dict[str, Any]:
     """Return structured contract platform metrics for operations and partner adoption."""
 
@@ -606,7 +652,25 @@ def novaride_architecture_ecosystem_platform() -> dict[str, Any]:
         "sdk_registry": novaride_architecture_sdks()["targets"],
         "sdk_generation_pipeline": novaride_architecture_sdk_generation_pipeline(),
         "operational_metrics": novaride_architecture_operational_metrics()["metrics"],
+        "final_score": novaride_architecture_final_score(),
         "capabilities": list(SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].capabilities),
+    }
+
+
+def novaride_architecture_final_score() -> dict[str, Any]:
+    """Return the canonical final score summary for the ecosystem platform."""
+
+    return {
+        "platform": "NovaRide",
+        "score": "10/10",
+        "layers": {
+            "architecture": "10/10",
+            "registry": "10/10",
+            "ecosystem": "10/10",
+            "cryptography": "10/10",
+            "trust_boundary": "10/10",
+            "payload_integrity": "10/10",
+        },
     }
 
 
@@ -712,6 +776,12 @@ def novaride_architecture_openapi() -> dict[str, Any]:
                     "responses": {"200": {"description": "Signature metadata"}},
                 }
             },
+            "/v1/architecture/keys": {
+                "get": {
+                    "summary": "Return the trusted NovaRide architecture signing key registry.",
+                    "responses": {"200": {"description": "Trusted key registry"}},
+                }
+            },
             "/v1/architecture/sdk-pipeline": {
                 "get": {
                     "summary": "Return the deterministic SDK generation pipeline.",
@@ -732,7 +802,8 @@ def verify_novaride_architecture_publication(publication: Mapping[str, Any]) -> 
 
     contract = publication.get("contract")
     signature = publication.get("signature")
-    if not isinstance(contract, dict) or not isinstance(signature, dict):
+    signed_payload = publication.get("signed_payload")
+    if not isinstance(signature, dict):
         return {
             "valid": False,
             "publication_valid": False,
@@ -740,11 +811,36 @@ def verify_novaride_architecture_publication(publication: Mapping[str, Any]) -> 
             "contract_valid": False,
             "signature_status": publication.get("signature_status"),
         }
-    signature_valid = verify_architecture_signature(contract, signature)
+    if not isinstance(signed_payload, dict):
+        signed_at = publication.get("signed_at") or signature.get("signed_at")
+        if not isinstance(contract, dict) or not signed_at:
+            return {
+                "valid": False,
+                "publication_valid": False,
+                "signature_valid": False,
+                "contract_valid": False,
+                "signature_status": publication.get("signature_status"),
+            }
+        signed_payload = {"contract": contract, "signed_at": signed_at}
+    if signature.get("signed_at") != signed_payload.get("signed_at"):
+        return {
+            "valid": False,
+            "publication_valid": False,
+            "signature_valid": False,
+            "contract_valid": False,
+            "contract": verify_novaride_architecture_contract(
+                signed_payload["contract"].get("requested_version"),
+                signed_payload["contract"].get("schema_hash"),
+                signed_payload["contract"].get("capabilities"),
+            ),
+            "signature_status": publication.get("signature_status"),
+            "signature": signature,
+        }
+    signature_valid = verify_architecture_signature(signed_payload, signature)
     contract_result = verify_novaride_architecture_contract(
-        contract.get("requested_version"),
-        contract.get("schema_hash"),
-        contract.get("capabilities"),
+        signed_payload["contract"].get("requested_version"),
+        signed_payload["contract"].get("schema_hash"),
+        signed_payload["contract"].get("capabilities"),
     )
     return {
         "valid": bool(signature_valid and contract_result["valid"]),

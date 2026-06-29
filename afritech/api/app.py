@@ -29,6 +29,7 @@ from afritech.api.trace_api import build_trace_router
 from afritech.api.system_status import build_system_status_router
 from afritech.api.partner_verification_api import build_partner_verification_router
 from afritech.api.partner_registry_api import build_partner_registry_router
+from afritech.api.partner_governance_api import build_partner_governance_router
 from afritech.api.partner_certification_api import build_partner_certification_router
 from afritech.api.public_verification_api import build_public_verification_router
 from afritech.api.ops_governance_api import build_ops_governance_router
@@ -158,6 +159,9 @@ app.include_router(build_partner_verification_router(store=partner_verification_
 
 # ✅ Partner registry API
 app.include_router(build_partner_registry_router(store=partner_registry_store))
+
+# ✅ Partner trust governance API
+app.include_router(build_partner_governance_router())
 
 # ✅ Partner certification API
 app.include_router(

@@ -53,6 +53,7 @@ const EMPTY_OPERATOR_STATE = {
   novatechDocumentationCompliance: null,
   novatechControlledExecutionActivation: null,
   novatechMarketplaceOnboarding: null,
+  novatechPartnerGovernance: null,
   novapayLiveTestReadiness: null,
   novarideEcosystem: null,
   novaridePlatformArchitectureContract: null,
@@ -3337,6 +3338,7 @@ export default function OperatorDashboard() {
         novatechDocumentationComplianceResult,
         novatechControlledExecutionActivationResult,
         novatechMarketplaceOnboardingResult,
+        partnerGovernanceResult,
         novapayLiveTestReadinessResult,
         novarideEcosystemResult,
         novaridePlatformArchitectureContractResult,
@@ -3382,6 +3384,7 @@ export default function OperatorDashboard() {
         readJson("/v1/novatech/documentation/status"),
         readJson(`/v1/novatech/organizations/${organizationId}/execution/activation`),
         readJson("/v1/novatech/marketplace/onboarding"),
+        readJson("/v1/trust/orgs"),
         readJson("/v1/core-platform/transfers/live-test/readiness"),
         readJson("/v1/novaride/ecosystem"),
         readJson("/v1/novaride/platform/architecture-contract"),
@@ -3476,6 +3479,10 @@ export default function OperatorDashboard() {
         novatechMarketplaceOnboardingResult.status === "fulfilled"
           ? novatechMarketplaceOnboardingResult.value
           : state.novatechMarketplaceOnboarding;
+      const novatechPartnerGovernance =
+        partnerGovernanceResult.status === "fulfilled"
+          ? partnerGovernanceResult.value
+          : state.novatechPartnerGovernance;
       const novapayLiveTestReadiness =
         novapayLiveTestReadinessResult.status === "fulfilled"
           ? novapayLiveTestReadinessResult.value
@@ -3620,6 +3627,7 @@ export default function OperatorDashboard() {
         novatechDocumentationCompliance,
         novatechControlledExecutionActivation,
         novatechMarketplaceOnboarding,
+        novatechPartnerGovernance,
         novapayLiveTestReadiness,
         novarideEcosystem,
         novaridePlatformArchitectureContract,
@@ -3863,6 +3871,7 @@ export default function OperatorDashboard() {
   const novatechDocumentationCompliance = state.novatechDocumentationCompliance;
   const novatechControlledExecutionActivation = state.novatechControlledExecutionActivation;
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
+  const novatechPartnerGovernance = state.novatechPartnerGovernance;
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
   const novarideEcosystem = state.novarideEcosystem;
   const novarideArchitecture = novarideEcosystem?.architecture || {};
@@ -7542,6 +7551,58 @@ export default function OperatorDashboard() {
               </div>
             ) : (
               <EmptyState label="Partner onboarding strategy will appear after the marketplace surface is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Partner Trust Governance">
+            {novatechPartnerGovernance ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Partner trust registry</strong>
+                    <span>{novatechPartnerGovernance.organizations?.length || 0} organizations</span>
+                  </div>
+                  <p>
+                    Approval state, trust level, active keys, usage, and SLA enforcement are exposed
+                    from the same registry-backed control plane.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">Approval governance</span>
+                    <span className="surface-chip">SLA enforcement</span>
+                    <span className="surface-chip">Usage metering</span>
+                    <span className="surface-chip">Monetization</span>
+                  </div>
+                </article>
+                <div className="stack compact-stack">
+                  {(novatechPartnerGovernance.organizations || []).slice(0, 4).map((org) => (
+                    <article key={org.org_id} className="record-card">
+                      <div className="record-card-header">
+                        <strong>{org.organization}</strong>
+                        <span>{org.status}</span>
+                      </div>
+                      <p>
+                        {org.business_type} | {org.country} | {org.sla_plan} plan |{" "}
+                        {org.trust_level} trust
+                      </p>
+                      <div className="chip-row">
+                        <span className="surface-chip">Approval {org.approval_state}</span>
+                        <span className="surface-chip">Activation {org.activation_state}</span>
+                        <span className="surface-chip">
+                          SLA {org.sla?.state || "healthy"}
+                        </span>
+                        <span className="surface-chip">
+                          Billing AUD {Number(org.billing?.estimated_cost_aud || 0).toFixed(2)}
+                        </span>
+                        <span className="surface-chip">
+                          Keys {Array.isArray(org.keys) ? org.keys.length : 0}
+                        </span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <EmptyState label="Partner trust governance will appear after the trust registry is loaded." />
             )}
           </OperatorPanel>
         </div>

@@ -27,6 +27,7 @@ from afritech.architecture.novaride_architecture import (
     novaride_architecture_sdks,
     novaride_architecture_signed_publication,
     novaride_architecture_sdk_generation_pipeline,
+    novaride_architecture_key_registry,
     verify_novaride_architecture_publication,
     verify_novaride_architecture_contract,
 )
@@ -2182,10 +2183,14 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "requested_version": publication["contract"]["requested_version"],
             "signature_status": publication["signature_status"],
             "signature_version": publication["signature_version"],
-            "signed_at": publication["signed_at"],
+            "signed_payload": publication["signed_payload"],
             "signature": publication["signature"],
             "signing": publication["signing"],
         }
+
+    @router.get("/architecture/keys")
+    def novaride_architecture_keys_contract() -> dict[str, Any]:
+        return novaride_architecture_key_registry()
 
     @router.get("/architecture/sdk-pipeline")
     def novaride_architecture_sdk_pipeline_contract() -> dict[str, Any]:

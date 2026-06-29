@@ -157,6 +157,7 @@ def test_novaride_architecture_contract_platform_exposes_openapi_and_lifecycle_d
     assert "/v1/architecture/verify" in openapi.json()["paths"]
     assert "/v1/architecture/verify-signature" in openapi.json()["paths"]
     assert "/v1/architecture/signature" in openapi.json()["paths"]
+    assert "/v1/architecture/keys" in openapi.json()["paths"]
     assert "/v1/architecture/sdk-pipeline" in openapi.json()["paths"]
     assert "NovaRideArchitectureContract" in openapi.json()["components"]["schemas"]
 
@@ -181,6 +182,7 @@ def test_novaride_architecture_publication_surface_is_signed_and_verifiable() ->
 
     publication = client.get("/v1/architecture/publication")
     signature = client.get("/v1/architecture/signature")
+    keys = client.get("/v1/architecture/keys")
     verify_signature = client.post(
         "/v1/architecture/verify-signature",
         json={"publication": publication.json()},
@@ -191,15 +193,33 @@ def test_novaride_architecture_publication_surface_is_signed_and_verifiable() ->
     assert payload["signature_status"] == "signed"
     assert payload["signature_version"] == 1
     assert payload["signature"]["scheme"] == "ed25519"
+    assert payload["signature"]["value"]
     assert payload["signature"]["key_id"]
+    assert payload["signature"]["signed_at"] == payload["signed_payload"]["signed_at"]
     assert payload["signing"]["provider"] in {"local_ed25519", "aws_kms"}
-    assert payload["signing"]["public_key"]
+    assert payload["signing"]["algorithm"] == "ed25519"
+    assert payload["signing"]["key_id"] == payload["signature"]["key_id"]
+    assert "public_key" not in payload["signing"]
+    assert "payload_hash" not in payload["signing"]
 
     assert signature.status_code == 200
     signature_payload = signature.json()
     assert signature_payload["signature_status"] == "signed"
     assert signature_payload["signature"]["scheme"] == "ed25519"
     assert signature_payload["signature"]["key_id"] == payload["signature"]["key_id"]
+    assert signature_payload["signature"]["value"] == payload["signature"]["value"]
+    assert signature_payload["signature"]["signed_at"] == payload["signature"]["signed_at"]
+    assert signature_payload["signed_payload"] == payload["signed_payload"]
+    assert signature_payload["signed_payload"]["signed_at"] == payload["signature"]["signed_at"]
+
+    assert keys.status_code == 200
+    keys_payload = keys.json()
+    assert keys_payload["platform"] == "NovaRide"
+    assert keys_payload["active_key_id"] == payload["signature"]["key_id"]
+    assert keys_payload["trusted_keys"]
+    assert keys_payload["trusted_keys"][0]["key_id"] == payload["signature"]["key_id"]
+    assert keys_payload["trusted_keys"][0]["status"] == "active"
+    assert keys_payload["trusted_keys"][0]["active"] is True
 
     assert verify_signature.status_code == 200
     verify_payload = verify_signature.json()
@@ -294,6 +314,8 @@ def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None
     assert publication.json()["contract"]["schema_hash"] == novaride_architecture_schema_hash()
     assert publication.json()["contract"]["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
     assert publication.json()["signing"]["algorithm"] == "ed25519"
+    assert publication.json()["signature"]["value"]
+    assert publication.json()["signature"]["signed_at"] == publication.json()["signed_payload"]["signed_at"]
     assert ecosystem.status_code == 200
     assert ecosystem.json()["ecosystem_platform"]["sdk_generation_pipeline"]["steps"]
 
@@ -686,6 +708,18 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert payload["ecosystem_platform"]["operational_metrics"]["2026.07.0.architecture_requests_total"] == {
         "value": 0,
         "unit": "requests",
+    }
+    assert payload["ecosystem_platform"]["final_score"] == {
+        "platform": "NovaRide",
+        "score": "10/10",
+        "layers": {
+            "architecture": "10/10",
+            "registry": "10/10",
+            "ecosystem": "10/10",
+            "cryptography": "10/10",
+            "trust_boundary": "10/10",
+            "payload_integrity": "10/10",
+        },
     }
     assert "sdk_registry" in payload["ecosystem_platform"]["capabilities"]
     assert "architecture_version" not in payload
