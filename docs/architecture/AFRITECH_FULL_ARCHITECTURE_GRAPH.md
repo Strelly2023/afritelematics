@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `489`
+- Startup-safe closure size: `493`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `57`
+- Direct startup imports from `afritech.api.app`: `59`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (489 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (493 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (57)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (59)"]
 ```
 
 ## Repository Architecture Inventory
@@ -188,7 +188,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (397)
+### Other (401)
 
 - `afritech`
 - `afritech.afripay`
@@ -466,6 +466,10 @@ flowchart TD
 - `afritech.identity.mobility_participant`
 - `afritech.intelligence`
 - `afritech.intelligence.mobile_projection`
+- `afritech.middleware`
+- `afritech.middleware.circuit_breaker`
+- `afritech.middleware.governance_middleware`
+- `afritech.middleware.rate_limiter`
 - `afritech.mobility`
 - `afritech.mobility.cross_border_federation`
 - `afritech.mobility.federation`
@@ -668,7 +672,9 @@ flowchart TD
 - `afritech.execution.partition.router`
 - `afritech.execution.queue.partitioned_queue`
 - `afritech.execution.worker.worker_pool`
+- `afritech.middleware.governance_middleware`
 - `afritech.partner_certification`
+- `afritech.partner_governance`
 - `afritech.partner_registry`
 - `afritech.partner_verification`
 - `afritech.standards_dependency`

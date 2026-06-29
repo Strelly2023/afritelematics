@@ -88,8 +88,10 @@ from afritech.edge.normalization.validation import validate_normalized_input
 from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
+from afritech.middleware.governance_middleware import GovernanceMiddleware
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
 from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
+from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
 from afritech.partner_verification import PartnerVerificationStore
 from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
@@ -134,6 +136,13 @@ trust_registry_store = TrustRegistryStore()
 standards_dependency_store = StandardsDependencyStore()
 partner_registry_store = PartnerRegistryStore(seed_partner_registry())
 partner_certification_store = PartnerCertificationStore(seed_partner_certification_registry())
+partner_governance_store = PartnerGovernanceStore(seed_partner_governance_registry())
+app.state.governance_store = partner_governance_store
+app.add_middleware(
+    GovernanceMiddleware,
+    store=partner_governance_store,
+    protected_paths=("/v1/trust/orgs", "/v1/partners"),
+)
 
 
 # ============================================================
@@ -161,7 +170,7 @@ app.include_router(build_partner_verification_router(store=partner_verification_
 app.include_router(build_partner_registry_router(store=partner_registry_store))
 
 # ✅ Partner trust governance API
-app.include_router(build_partner_governance_router())
+app.include_router(build_partner_governance_router(store=partner_governance_store))
 
 # ✅ Partner certification API
 app.include_router(
