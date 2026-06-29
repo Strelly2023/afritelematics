@@ -27,12 +27,29 @@ def test_novaride_api_uses_canonical_architecture_contract() -> None:
     assert not hasattr(module, "NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS")
 
 
-def test_novaride_architecture_contract_is_cached_and_semantic_versioned() -> None:
-    assert novaride_architecture_contract() is NOVARIDE_ARCHITECTURE_CONTRACT
-    assert NOVARIDE_ARCHITECTURE_CONTRACT["version"] == "2026.07.0"
-    assert NOVARIDE_ARCHITECTURE_CONTRACT["layers"]
-    assert NOVARIDE_ARCHITECTURE_CONTRACT["enterprise_operations"]
-    assert NOVARIDE_ARCHITECTURE_CONTRACT["production_readiness"]
+def test_novaride_architecture_contract_is_cached_copy_and_semantic_versioned() -> None:
+    first = novaride_architecture_contract()
+    second = novaride_architecture_contract()
+
+    assert first == NOVARIDE_ARCHITECTURE_CONTRACT
+    assert second == NOVARIDE_ARCHITECTURE_CONTRACT
+    assert first is not NOVARIDE_ARCHITECTURE_CONTRACT
+    assert first is not second
+    assert first["version"] == "2026.07.0"
+    assert first["layers"]
+    assert first["enterprise_operations"]
+    assert first["production_readiness"]
+
+
+def test_novaride_architecture_contract_mutation_does_not_leak() -> None:
+    payload = novaride_architecture_contract()
+    payload["layers"].append("hacked")
+    payload["enterprise_operations"][0]["capabilities"].append("hacked")
+
+    clean = novaride_architecture_contract()
+
+    assert "hacked" not in clean["layers"]
+    assert "hacked" not in clean["enterprise_operations"][0]["capabilities"]
 
 
 def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, monkeypatch) -> None:
@@ -371,6 +388,7 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert payload["architecture"] == canonical_architecture
     assert payload["architecture"]["version"] == "2026.07.0"
     assert payload["architecture"]["layers"]
+    assert payload["architecture"]["maturity_dimensions"]
     assert payload["architecture"]["enterprise_operations"]
     assert payload["architecture"]["production_readiness"]
     assert "architecture_version" not in payload

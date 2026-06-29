@@ -77,6 +77,12 @@ def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants(
     assert "novarideArchitecture.layers" in source
     assert "novarideArchitecture.enterprise_operations" in source
     assert "novarideArchitecture.production_readiness" in source
+    assert "Array.isArray(novarideArchitecture.layers)" in source
+    assert "Array.isArray(novarideArchitecture.operator_intervention_flow)" in source
+    assert "Array.isArray(novarideArchitecture.maturity_dimensions)" in source
+    assert "Array.isArray(novarideArchitecture.enterprise_operations)" in source
+    assert "Array.isArray(novarideArchitecture.production_readiness)" in source
+    assert "architecture_contract_pending" not in source
 
 
 def test_novatech_core_console_exposes_2026_core_layers_only() -> None:

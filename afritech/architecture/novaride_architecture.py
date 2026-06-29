@@ -7,6 +7,8 @@ documentation/tests.
 
 from __future__ import annotations
 
+from copy import deepcopy
+from functools import lru_cache
 from typing import Any
 
 NOVARIDE_ARCHITECTURE_VERSION = "2026.07.0"
@@ -181,10 +183,17 @@ def _build_novaride_architecture_contract() -> dict[str, Any]:
     }
 
 
-NOVARIDE_ARCHITECTURE_CONTRACT = _build_novaride_architecture_contract()
+@lru_cache(maxsize=1)
+def _cached_novaride_architecture_contract() -> dict[str, Any]:
+    """Build and cache the canonical contract for this process."""
+
+    return _build_novaride_architecture_contract()
+
+
+NOVARIDE_ARCHITECTURE_CONTRACT = _cached_novaride_architecture_contract()
 
 
 def novaride_architecture_contract() -> dict[str, Any]:
-    """Return the cached versioned NovaRide architecture contract."""
+    """Return an isolated copy of the cached NovaRide architecture contract."""
 
-    return NOVARIDE_ARCHITECTURE_CONTRACT
+    return deepcopy(_cached_novaride_architecture_contract())

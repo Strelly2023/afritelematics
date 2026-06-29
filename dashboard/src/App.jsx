@@ -3866,11 +3866,21 @@ export default function OperatorDashboard() {
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
   const novarideEcosystem = state.novarideEcosystem;
   const novarideArchitecture = novarideEcosystem?.architecture || {};
-  const novarideLayeredArchitecture = novarideArchitecture.layers || [];
-  const novarideOperatorInterventionFlow = novarideArchitecture.operator_intervention_flow || [];
-  const novarideMaturityDimensions = novarideArchitecture.maturity_dimensions || [];
-  const novarideEnterpriseOperationsLayer = novarideArchitecture.enterprise_operations || [];
-  const novarideProductionInfrastructureReadiness = novarideArchitecture.production_readiness || [];
+  const novarideLayeredArchitecture = Array.isArray(novarideArchitecture.layers)
+    ? novarideArchitecture.layers
+    : [];
+  const novarideOperatorInterventionFlow = Array.isArray(novarideArchitecture.operator_intervention_flow)
+    ? novarideArchitecture.operator_intervention_flow
+    : [];
+  const novarideMaturityDimensions = Array.isArray(novarideArchitecture.maturity_dimensions)
+    ? novarideArchitecture.maturity_dimensions
+    : [];
+  const novarideEnterpriseOperationsLayer = Array.isArray(novarideArchitecture.enterprise_operations)
+    ? novarideArchitecture.enterprise_operations
+    : [];
+  const novarideProductionInfrastructureReadiness = Array.isArray(novarideArchitecture.production_readiness)
+    ? novarideArchitecture.production_readiness
+    : [];
   const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
   const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
   const operatorAutonomy = state.operatorAutonomy;
@@ -6101,7 +6111,7 @@ export default function OperatorDashboard() {
               <article className="record-card">
                 <div className="record-card-header">
                   <strong>10/10 enterprise operations depth</strong>
-                  <span>{novarideEcosystem?.enterprise_operations_classification || "architecture_contract_pending"}</span>
+                  <span>{novarideEcosystem?.enterprise_operations_classification || "contract_loading"}</span>
                 </div>
                 <p>
                   App and portal surfaces now sit on an enterprise operations layer for command,
