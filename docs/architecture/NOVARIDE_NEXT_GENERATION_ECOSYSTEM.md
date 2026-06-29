@@ -219,7 +219,7 @@ Allowed fleet-owner controls:
 
 Forbidden fleet-owner actions:
 
-- override dispatch logic
+- bypass control-plane dispatch policy
 - direct payment provider access
 - bypass trust/compliance checks
 
@@ -563,7 +563,7 @@ Core modules:
 
 - Live Operations Dashboard
 - Live Map: rides + drivers
-- Manual Dispatch Override
+- Manual Dispatch Intervention Request
 - Driver Availability
 - Demand Heatmap
 - Incident Monitoring
@@ -579,7 +579,9 @@ Core workflow:
 Monitor city
 -> detect issue
 -> inspect ride/driver
--> override dispatch if needed
+-> submit intervention request
+-> policy evaluation
+-> control-plane decision
 -> escalate incident
 -> verify replay/evidence
 -> close operation log
@@ -681,6 +683,50 @@ Final enterprise classification:
 ```text
 NovaRide = Governed, evidence-backed, AI-assisted mobility control platform.
 ```
+
+## Four-Layer Governance Separation
+
+NovaRide separates interface, authority, execution, proof, and operations:
+
+```text
+Applications / Portals
+-> Control Plane
+-> Execution Services
+-> Evidence / Event Platform
+-> Enterprise Operations
+```
+
+Layer responsibilities:
+
+- Applications / Portals collect input and present outcomes.
+- Control Plane evaluates policy and makes governance decisions.
+- Execution Services perform dispatch, pricing, payment, trust, and lifecycle work.
+- Evidence / Event Platform records verifiable operational history.
+- Enterprise Operations provides monitoring, administration, analytics, and workflows.
+
+Operator authority is request based:
+
+```text
+Operator
+-> Intervention Request
+-> Policy Evaluation
+-> Control Plane Decision
+-> Execution
+-> Evidence
+```
+
+## Production Infrastructure Readiness
+
+The architecture is coherent at the platform level. Institutional deployment
+requires production infrastructure hardening across these tracks:
+
+| Track | Requirement |
+| --- | --- |
+| Distributed Consistency | Checkpoints, Merkle roots, replay, and ledger roots must remain deterministic across nodes and regions |
+| Key Management | Signing authority must move to HSM, Cloud KMS, or hardware-backed signing with rotation and audit trails |
+| Operational Resilience | Regional failover, recovery procedures, chaos testing, and disaster recovery must be validated |
+| Regulatory Readiness | Licensing, corridor configuration, AML/KYC, sanctions, and reporting must remain deployment-ready |
+| Independent Verification | External verifier artifacts must validate without internal runtime assumptions |
 
 ## 10/10 Upgrade Principle
 

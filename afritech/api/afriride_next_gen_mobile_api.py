@@ -441,6 +441,56 @@ NOVARIDE_ENTERPRISE_OPERATIONS_LAYER: tuple[dict[str, Any], ...] = (
     },
 )
 
+NOVARIDE_LAYERED_ARCHITECTURE: tuple[str, ...] = (
+    "Applications / Portals",
+    "Control Plane",
+    "Execution Services",
+    "Evidence / Event Platform",
+    "Enterprise Operations",
+)
+
+NOVARIDE_OPERATOR_INTERVENTION_FLOW: tuple[str, ...] = (
+    "Operator",
+    "Intervention Request",
+    "Policy Evaluation",
+    "Control Plane Decision",
+    "Execution",
+    "Evidence",
+)
+
+NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "distributed_consistency",
+        "name": "Distributed Consistency",
+        "purpose": "Ensure checkpoints, Merkle roots, replay, and ledger roots remain deterministic across nodes and regions.",
+        "capabilities": ("checkpoint_consistency", "merkle_root_consistency", "replay_consistency", "ledger_root_consistency"),
+    },
+    {
+        "key": "key_management",
+        "name": "Key Management",
+        "purpose": "Move signing authority into HSM, Cloud KMS, or hardware-backed signing with rotation and audit trails.",
+        "capabilities": ("hsm_signing", "cloud_kms", "key_rotation", "signing_audit"),
+    },
+    {
+        "key": "operational_resilience",
+        "name": "Operational Resilience",
+        "purpose": "Validate regional failover, recovery procedures, chaos testing, and disaster recovery operations.",
+        "capabilities": ("regional_failover", "recovery_runbooks", "chaos_testing", "dr_validation"),
+    },
+    {
+        "key": "regulatory_readiness",
+        "name": "Regulatory Readiness",
+        "purpose": "Keep licensing, corridor configuration, AML/KYC, sanctions, and reporting deployment-ready.",
+        "capabilities": ("licensing", "corridor_config", "aml_kyc", "sanctions", "reporting"),
+    },
+    {
+        "key": "independent_verification",
+        "name": "Independent Verification",
+        "purpose": "Ensure external verifier artifacts validate without internal runtime assumptions.",
+        "capabilities": ("offline_verifier", "audit_bundle", "runtime_independence", "partner_audit"),
+    },
+)
+
 NOVARIDE_API_GATEWAY_RESPONSIBILITIES: tuple[str, ...] = (
     "request_validation",
     "novaid_authentication",
@@ -543,7 +593,7 @@ NOVARIDE_OPERATOR_DASHBOARD_MODULES: tuple[dict[str, Any], ...] = (
             "zone_distribution",
             "demand_heatmap_next_phase",
         ),
-        "actions": ("manual_dispatch", "override_assignment", "trigger_rematching"),
+        "actions": ("submit_dispatch_intervention_request", "request_assignment_review", "trigger_rematching"),
         "backend_integrations": ("dispatch", "maps", "analytics"),
         "status": "partially_implemented",
     },
@@ -795,7 +845,7 @@ NOVARIDE_FLEET_ALLOWED_ACTIONS: tuple[str, ...] = (
 )
 
 NOVARIDE_FLEET_FORBIDDEN_ACTIONS: tuple[str, ...] = (
-    "override_dispatch_logic",
+    "bypass_control_plane_dispatch_policy",
     "direct_payment_provider_access",
     "bypass_trust_compliance_checks",
 )
@@ -1630,6 +1680,11 @@ def _novaride_ecosystem_payload() -> dict[str, Any]:
         "enterprise_operations_layer": [dict(capability) for capability in NOVARIDE_ENTERPRISE_OPERATIONS_LAYER],
         "enterprise_operations_score": "10/10",
         "enterprise_operations_classification": "governed_evidence_backed_ai_assisted_mobility_control_platform",
+        "layered_architecture": list(NOVARIDE_LAYERED_ARCHITECTURE),
+        "operator_intervention_flow": list(NOVARIDE_OPERATOR_INTERVENTION_FLOW),
+        "production_infrastructure_readiness": [
+            dict(capability) for capability in NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS
+        ],
         "lifecycle": list(NOVARIDE_LIFECYCLE),
         "intelligence_layer": (
             "Demand Forecasting",
@@ -2555,7 +2610,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             action=f"POST /v1/driver/rides/{ride_id}/reject",
             payload={"driver_id": driver_id},
         )
-        return _trip_payload({**ride, "status": "CANCELED"}, status_override="cancelled")
+        return _trip_payload({**ride, "status": "CANCELED"}, status_hint="cancelled")
 
     @router.post("/driver/rides/{ride_id}/arrive")
     def driver_arrive(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -2853,8 +2908,8 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     return router
 
 
-def _trip_payload(ride: dict[str, Any], *, status_override: str | None = None) -> dict[str, Any]:
-    current_status = status_override or _mobile_trip_status(str(ride["status"]))
+def _trip_payload(ride: dict[str, Any], *, status_hint: str | None = None) -> dict[str, Any]:
+    current_status = status_hint or _mobile_trip_status(str(ride["status"]))
     return {
         "ride_id": ride["ride_id"],
         "status": current_status,

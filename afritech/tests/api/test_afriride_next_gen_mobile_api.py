@@ -363,6 +363,29 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
         payload["enterprise_operations_classification"]
         == "governed_evidence_backed_ai_assisted_mobility_control_platform"
     )
+    assert payload["layered_architecture"] == [
+        "Applications / Portals",
+        "Control Plane",
+        "Execution Services",
+        "Evidence / Event Platform",
+        "Enterprise Operations",
+    ]
+    assert payload["operator_intervention_flow"] == [
+        "Operator",
+        "Intervention Request",
+        "Policy Evaluation",
+        "Control Plane Decision",
+        "Execution",
+        "Evidence",
+    ]
+    readiness_names = {capability["name"] for capability in payload["production_infrastructure_readiness"]}
+    assert readiness_names == {
+        "Distributed Consistency",
+        "Key Management",
+        "Operational Resilience",
+        "Regulatory Readiness",
+        "Independent Verification",
+    }
     assert "Demand Forecasting" in payload["intelligence_layer"]
     assert "Verification Package" in payload["trust_proof_flow"]
     assert "Control Plane decides" in payload["upgrade_principle"]

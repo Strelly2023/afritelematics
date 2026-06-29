@@ -1448,6 +1448,23 @@ const NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW = [
   "Verification Package",
 ];
 
+const NOVARIDE_LAYERED_ARCHITECTURE = [
+  "Applications / Portals",
+  "Control Plane",
+  "Execution Services",
+  "Evidence / Event Platform",
+  "Enterprise Operations",
+];
+
+const NOVARIDE_OPERATOR_INTERVENTION_FLOW = [
+  "Operator",
+  "Intervention Request",
+  "Policy Evaluation",
+  "Control Plane Decision",
+  "Execution",
+  "Evidence",
+];
+
 const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER = [
   {
     name: "Unified Command Center",
@@ -1498,6 +1515,34 @@ const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER = [
     name: "Multi-Tenant Governance",
     purpose: "Govern organizations, roles, feature flags, policies, licensing, data boundaries, and tenant isolation.",
     capabilities: ["Tenant registry", "RBAC", "Feature flags", "Policy versions", "Data residency"],
+  },
+];
+
+const NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS = [
+  {
+    name: "Distributed Consistency",
+    purpose: "Checkpoints, Merkle roots, replay, and ledger roots stay deterministic across nodes and regions.",
+    capabilities: ["Checkpoint consistency", "Merkle root consistency", "Replay consistency", "Ledger root consistency"],
+  },
+  {
+    name: "Key Management",
+    purpose: "Signing authority moves to HSM, Cloud KMS, or hardware-backed signing with rotation and audit trails.",
+    capabilities: ["HSM signing", "Cloud KMS", "Key rotation", "Signing audit"],
+  },
+  {
+    name: "Operational Resilience",
+    purpose: "Regional failover, recovery procedures, chaos testing, and disaster recovery are validated.",
+    capabilities: ["Regional failover", "Recovery runbooks", "Chaos testing", "DR validation"],
+  },
+  {
+    name: "Regulatory Readiness",
+    purpose: "Licensing, corridor configuration, AML/KYC, sanctions, and reporting remain deployment-ready.",
+    capabilities: ["Licensing", "Corridor configuration", "AML/KYC", "Sanctions", "Reporting"],
+  },
+  {
+    name: "Independent Verification",
+    purpose: "External verifier artifacts validate without internal runtime assumptions.",
+    capabilities: ["Offline verifier", "Audit bundle", "Runtime independence", "Partner audit"],
   },
 ];
 
@@ -6147,6 +6192,24 @@ export default function OperatorDashboard() {
                 </div>
               </article>
 
+              <article className="record-card">
+                <strong>Layered architecture</strong>
+                <div className="flow-line" aria-label="NovaRide layered architecture">
+                  {NOVARIDE_LAYERED_ARCHITECTURE.map((layer) => (
+                    <span key={layer}>{layer}</span>
+                  ))}
+                </div>
+              </article>
+
+              <article className="record-card">
+                <strong>Governed intervention flow</strong>
+                <div className="flow-line" aria-label="NovaRide governed intervention flow">
+                  {NOVARIDE_OPERATOR_INTERVENTION_FLOW.map((step) => (
+                    <span key={step}>{step}</span>
+                  ))}
+                </div>
+              </article>
+
               <div className="novapay-build-grid">
                 {NOVARIDE_ENTERPRISE_OPERATIONS_LAYER.map((capability) => (
                   <article key={capability.name} className="record-card novapay-build-card">
@@ -6157,6 +6220,34 @@ export default function OperatorDashboard() {
                     <div className="chip-row">
                       {capability.capabilities.map((item) => (
                         <span key={item} className="reason-chip reason-chip-success">{item}</span>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>Production infrastructure readiness</strong>
+                  <span>resilience_regulatory_external_verification</span>
+                </div>
+                <p>
+                  Architecture is separated from deployment readiness: infrastructure hardening
+                  covers distributed consistency, key management, operational resilience,
+                  regulatory readiness, and independent verification.
+                </p>
+              </article>
+
+              <div className="novapay-build-grid">
+                {NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS.map((capability) => (
+                  <article key={capability.name} className="record-card novapay-build-card">
+                    <div className="record-card-header">
+                      <strong>{capability.name}</strong>
+                      <span>{capability.purpose}</span>
+                    </div>
+                    <div className="chip-row">
+                      {capability.capabilities.map((item) => (
+                        <span key={item} className="reason-chip">{item}</span>
                       ))}
                     </div>
                   </article>
