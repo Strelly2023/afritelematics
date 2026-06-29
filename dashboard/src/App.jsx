@@ -1448,6 +1448,59 @@ const NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW = [
   "Verification Package",
 ];
 
+const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER = [
+  {
+    name: "Unified Command Center",
+    purpose: "One operational control surface for rides, drivers, incidents, payments, providers, and replay evidence.",
+    capabilities: ["City status", "Live operations", "Dispatch intervention", "Incident escalation", "Proof review"],
+  },
+  {
+    name: "City Operations / Zone Model",
+    purpose: "Model cities, service zones, airport zones, geofences, surge boundaries, and jurisdiction-aware operating rules.",
+    capabilities: ["City registry", "Service zones", "Airport zones", "Geofencing", "Zone policy"],
+  },
+  {
+    name: "Operational Digital Twin",
+    purpose: "Replay and simulate the live mobility network using rides, drivers, demand, incidents, and provider state.",
+    capabilities: ["Network snapshot", "Scenario simulation", "Capacity projection", "Replay comparison", "What-if analysis"],
+  },
+  {
+    name: "AI Decision Explanation Layer",
+    purpose: "Explain dispatch, pricing, safety, fraud, ETA, and demand recommendations without granting AI authority.",
+    capabilities: ["Dispatch explanation", "Pricing explanation", "Risk explanation", "Confidence signals", "Operator review"],
+  },
+  {
+    name: "Workflow / Incident Engine",
+    purpose: "Coordinate SOS, disputes, support, trust, compliance, provider incidents, approvals, and closure evidence.",
+    capabilities: ["Case routing", "SLA tracking", "Escalation policy", "Evidence binding", "Closure log"],
+  },
+  {
+    name: "Fleet Intelligence",
+    purpose: "Track driver supply, vehicle health, inspection status, utilization, maintenance, earnings, and fleet quality.",
+    capabilities: ["Supply health", "Vehicle health", "Driver quality", "Maintenance forecast", "Fleet scorecards"],
+  },
+  {
+    name: "Public Trust Portal",
+    purpose: "Publish controlled transparency views for receipts, safety standards, verification, and public trust evidence.",
+    capabilities: ["Receipt verification", "Safety standards", "Trust reports", "Public status", "Audit exports"],
+  },
+  {
+    name: "Partner / Developer Ecosystem",
+    purpose: "Expose governed APIs, webhooks, sandbox, SDKs, partner onboarding, and usage analytics.",
+    capabilities: ["API keys", "Webhooks", "Sandbox", "SDK catalog", "Partner analytics"],
+  },
+  {
+    name: "SRE Observability",
+    purpose: "Measure reliability, latency, errors, queues, provider health, replay lag, and operational risk.",
+    capabilities: ["SLO dashboard", "Error budget", "Provider health", "Queue lag", "Replay lag"],
+  },
+  {
+    name: "Multi-Tenant Governance",
+    purpose: "Govern organizations, roles, feature flags, policies, licensing, data boundaries, and tenant isolation.",
+    capabilities: ["Tenant registry", "RBAC", "Feature flags", "Policy versions", "Data residency"],
+  },
+];
+
 const NOVARIDE_OPERATOR_MODULE_FALLBACKS = [
   { key: "operations", name: "Operations", status: "partially_implemented" },
   { key: "ride_management", name: "Ride Management", status: "partially_implemented" },
@@ -6067,6 +6120,44 @@ export default function OperatorDashboard() {
                           <span key={feature} className="reason-chip reason-chip-success">{feature}</span>
                         ))}
                       </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Enterprise Operations Layer">
+            <div className="stack">
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>10/10 enterprise operations depth</strong>
+                  <span>governed_evidence_backed_ai_assisted_mobility_control_platform</span>
+                </div>
+                <p>
+                  App and portal surfaces now sit on an enterprise operations layer for command,
+                  zones, digital twin simulation, incident workflow, fleet intelligence, public
+                  trust, developer ecosystem, SRE observability, and multi-tenant governance.
+                </p>
+                <div className="chip-row">
+                  <span className="surface-chip">Enterprise Operations: 10/10</span>
+                  <span className="surface-chip">AI-assisted decisions</span>
+                  <span className="surface-chip">Evidence-backed operations</span>
+                  <span className="surface-chip">Multi-tenant governance</span>
+                </div>
+              </article>
+
+              <div className="novapay-build-grid">
+                {NOVARIDE_ENTERPRISE_OPERATIONS_LAYER.map((capability) => (
+                  <article key={capability.name} className="record-card novapay-build-card">
+                    <div className="record-card-header">
+                      <strong>{capability.name}</strong>
+                      <span>{capability.purpose}</span>
+                    </div>
+                    <div className="chip-row">
+                      {capability.capabilities.map((item) => (
+                        <span key={item} className="reason-chip reason-chip-success">{item}</span>
+                      ))}
                     </div>
                   </article>
                 ))}

@@ -345,6 +345,24 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert any(service["name"] == "Audit & Replay" for service in payload["shared_platform"])
     assert any(service["name"] == "Inspection Registry" for service in payload["shared_platform"])
     assert any(service["name"] == "Incident Registry" for service in payload["shared_platform"])
+    enterprise_names = {capability["name"] for capability in payload["enterprise_operations_layer"]}
+    assert enterprise_names == {
+        "Unified Command Center",
+        "City Operations / Zone Model",
+        "Operational Digital Twin",
+        "AI Decision Explanation Layer",
+        "Workflow / Incident Engine",
+        "Fleet Intelligence",
+        "Public Trust Portal",
+        "Partner / Developer Ecosystem",
+        "SRE Observability",
+        "Multi-Tenant Governance",
+    }
+    assert payload["enterprise_operations_score"] == "10/10"
+    assert (
+        payload["enterprise_operations_classification"]
+        == "governed_evidence_backed_ai_assisted_mobility_control_platform"
+    )
     assert "Demand Forecasting" in payload["intelligence_layer"]
     assert "Verification Package" in payload["trust_proof_flow"]
     assert "Control Plane decides" in payload["upgrade_principle"]

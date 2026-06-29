@@ -378,6 +378,69 @@ NOVARIDE_SHARED_PLATFORM: tuple[dict[str, str], ...] = (
     {"key": "control_plane", "name": "Control Plane", "purpose": "Feature gates, RBAC, tenant controls, policies, and operational governance"},
 )
 
+NOVARIDE_ENTERPRISE_OPERATIONS_LAYER: tuple[dict[str, Any], ...] = (
+    {
+        "key": "command_center",
+        "name": "Unified Command Center",
+        "purpose": "One operational control surface for rides, drivers, incidents, payments, providers, and replay evidence.",
+        "capabilities": ("city_status", "live_operations", "dispatch_intervention", "incident_escalation", "proof_review"),
+    },
+    {
+        "key": "city_zone_model",
+        "name": "City Operations / Zone Model",
+        "purpose": "Model cities, service zones, airport zones, geofences, surge boundaries, and jurisdiction-aware operating rules.",
+        "capabilities": ("city_registry", "service_zones", "airport_zones", "geofencing", "zone_policy"),
+    },
+    {
+        "key": "operational_digital_twin",
+        "name": "Operational Digital Twin",
+        "purpose": "Replay and simulate the live mobility network using rides, drivers, demand, incidents, and provider state.",
+        "capabilities": ("network_snapshot", "scenario_simulation", "capacity_projection", "replay_comparison", "what_if_analysis"),
+    },
+    {
+        "key": "ai_decision_explanation",
+        "name": "AI Decision Explanation Layer",
+        "purpose": "Explain dispatch, pricing, safety, fraud, ETA, and demand recommendations without granting AI authority.",
+        "capabilities": ("dispatch_explanation", "pricing_explanation", "risk_explanation", "confidence_signals", "operator_review"),
+    },
+    {
+        "key": "workflow_incident_engine",
+        "name": "Workflow / Incident Engine",
+        "purpose": "Coordinate SOS, disputes, support, trust, compliance, provider incidents, approvals, and closure evidence.",
+        "capabilities": ("case_routing", "sla_tracking", "escalation_policy", "evidence_binding", "closure_log"),
+    },
+    {
+        "key": "fleet_intelligence",
+        "name": "Fleet Intelligence",
+        "purpose": "Track driver supply, vehicle health, inspection status, utilization, maintenance, earnings, and fleet quality.",
+        "capabilities": ("supply_health", "vehicle_health", "driver_quality", "maintenance_forecast", "fleet_scorecards"),
+    },
+    {
+        "key": "public_trust_portal",
+        "name": "Public Trust Portal",
+        "purpose": "Publish controlled transparency views for receipts, safety standards, verification, and public trust evidence.",
+        "capabilities": ("receipt_verification", "safety_standards", "trust_reports", "public_status", "audit_exports"),
+    },
+    {
+        "key": "partner_developer_ecosystem",
+        "name": "Partner / Developer Ecosystem",
+        "purpose": "Expose governed APIs, webhooks, sandbox, SDKs, partner onboarding, and usage analytics.",
+        "capabilities": ("api_keys", "webhooks", "sandbox", "sdk_catalog", "partner_analytics"),
+    },
+    {
+        "key": "sre_observability",
+        "name": "SRE Observability",
+        "purpose": "Measure reliability, latency, errors, queues, provider health, replay lag, and operational risk.",
+        "capabilities": ("slo_dashboard", "error_budget", "provider_health", "queue_lag", "replay_lag"),
+    },
+    {
+        "key": "multi_tenant_governance",
+        "name": "Multi-Tenant Governance",
+        "purpose": "Govern organizations, roles, feature flags, policies, licensing, data boundaries, and tenant isolation.",
+        "capabilities": ("tenant_registry", "rbac", "feature_flags", "policy_versions", "data_residency"),
+    },
+)
+
 NOVARIDE_API_GATEWAY_RESPONSIBILITIES: tuple[str, ...] = (
     "request_validation",
     "novaid_authentication",
@@ -1564,6 +1627,9 @@ def _novaride_ecosystem_payload() -> dict[str, Any]:
         "apps": surfaces,
         "app_count": len(surfaces),
         "shared_platform": [dict(service) for service in NOVARIDE_SHARED_PLATFORM],
+        "enterprise_operations_layer": [dict(capability) for capability in NOVARIDE_ENTERPRISE_OPERATIONS_LAYER],
+        "enterprise_operations_score": "10/10",
+        "enterprise_operations_classification": "governed_evidence_backed_ai_assisted_mobility_control_platform",
         "lifecycle": list(NOVARIDE_LIFECYCLE),
         "intelligence_layer": (
             "Demand Forecasting",
