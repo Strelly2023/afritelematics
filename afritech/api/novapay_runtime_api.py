@@ -128,6 +128,22 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "corridors": runtime.build_corridors(),
         }
 
+    @router.get("/v1/policies")
+    def policies(claims: JWTClaims = Depends(readable_roles)) -> dict[str, Any]:
+        return {
+            "view": "novapay_policy_versions",
+            "organization_id": claims.organization_id,
+            "policies": runtime.build_policies(),
+        }
+
+    @router.get("/v1/regions")
+    def regions(claims: JWTClaims = Depends(readable_roles)) -> dict[str, Any]:
+        return {
+            "view": "novapay_regions",
+            "organization_id": claims.organization_id,
+            "regions": runtime.build_regions(),
+        }
+
     @router.post("/v1/funding-sources/validate")
     def validate_funding_source(
         body: FundingSourceValidateRequest,
@@ -238,6 +254,8 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "organization_id": claims.organization_id,
             "transfer_id": record.transfer.transfer_id,
             "transfer": record.transfer.canonical(),
+            "journal_entry": record.journal_entry.canonical() if record.journal_entry else None,
+            "ledger_entries": [entry.canonical() for entry in record.ledger_entries],
             "settlement": record.settlement.canonical() if record.settlement else None,
             "receipt": record.receipt.canonical() if record.receipt else None,
             "verification": runtime.verify_receipt(transfer_id),
@@ -263,6 +281,7 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "funding_source": record.funding_source.canonical(),
             "recipient": record.recipient.canonical(),
             "compliance_case": record.compliance_case.canonical(),
+            "journal_entry": record.journal_entry.canonical() if record.journal_entry else None,
             "ledger_entries": [entry.canonical() for entry in record.ledger_entries],
             "settlement": record.settlement.canonical() if record.settlement else None,
             "receipt": record.receipt.canonical() if record.receipt else None,
@@ -314,6 +333,49 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "organization_id": claims.organization_id,
             "transfer_id": transfer_id,
             "timeline": timeline,
+        }
+
+    @router.get("/v1/transfers/{transfer_id}/replay")
+    def transfer_replay(
+        transfer_id: str,
+        claims: JWTClaims = Depends(readable_roles),
+    ) -> dict[str, Any]:
+        try:
+            replay = runtime.replay_transfer(transfer_id)
+        except NovaPayTransferAdmissionError as exc:
+            raise _translate_error(exc)
+        return {
+            "view": "novapay_transfer_replay",
+            "organization_id": claims.organization_id,
+            **replay,
+        }
+
+    @router.get("/v1/transfers/{transfer_id}/audit-package")
+    def transfer_audit_package(
+        transfer_id: str,
+        claims: JWTClaims = Depends(readable_roles),
+    ) -> dict[str, Any]:
+        try:
+            package = runtime.build_audit_package(transfer_id)
+            verification = runtime.verify_audit_package(package)
+        except NovaPayTransferAdmissionError as exc:
+            raise _translate_error(exc)
+        return {
+            "view": "novapay_transfer_audit_package",
+            "organization_id": claims.organization_id,
+            "transfer_id": transfer_id,
+            "audit_package": package,
+            "verification": verification,
+        }
+
+    @router.get("/v1/treasury/snapshot")
+    def treasury_snapshot(
+        claims: JWTClaims = Depends(privileged_roles),
+    ) -> dict[str, Any]:
+        return {
+            "view": "novapay_treasury_snapshot",
+            "organization_id": claims.organization_id,
+            **runtime.build_treasury_snapshot(),
         }
 
     return router
