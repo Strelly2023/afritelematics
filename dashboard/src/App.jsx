@@ -1324,15 +1324,128 @@ const NOVAPAY_CONTROL_PLANE_GUARANTEES = [
 ];
 
 const NOVARIDE_APP_FALLBACKS = [
-  "NovaRide Passenger",
-  "NovaRide Driver",
-  "NovaRide Operator",
-  "NovaRide Fleet",
-  "NovaRide Business",
+  "NovaRide Rider App",
+  "NovaRide Driver App",
+  "NovaRide Operator App / Portal",
+  "NovaRide Inspector App / Portal",
+  "NovaRide Fleet Portal",
+  "NovaRide Merchant Portal",
+  "NovaRide Corporate Portal",
+  "NovaRide Trust & Safety Portal",
+  "NovaRide Customer Support Portal",
   "NovaRide Admin",
-  "NovaRide Inspector",
-  "NovaRide Support",
+  "NovaRide Developer Portal",
+  "NovaRide Passenger",
   "NovaRide Partner",
+];
+
+const NOVARIDE_NEXT_GEN_PLATFORM_STACK = [
+  {
+    name: "NovaRide Rider App",
+    users: "Daily commuters, families, tourists, and business travelers",
+    modules: ["Home", "Book Ride", "Live Tracking", "Trip Timeline", "Wallet", "Ride History", "Trust Center", "Replay", "Support", "Profile"],
+    features: ["Instant booking", "Scheduled rides", "Airport pickup", "Ride sharing", "Live GPS tracking", "Driver verification", "Cryptographic receipts", "Emergency assistance", "NovaPay integration"],
+  },
+  {
+    name: "NovaRide Driver App",
+    users: "Independent drivers and fleet drivers",
+    modules: ["Dashboard", "Ride Queue", "Navigation", "Trip Lifecycle", "Earnings", "Wallet", "Vehicle", "Trust Score", "Replay", "Diagnostics"],
+    features: ["Ride acceptance", "Smart dispatch", "Route optimization", "Earnings analytics", "Safety alerts", "Vehicle inspections", "Driver reputation", "Settlement through NovaPay"],
+  },
+  {
+    name: "NovaRide Operator App / Portal",
+    users: "NovaRide operations, safety, reliability, and city-control teams",
+    modules: ["Live Operations Dashboard", "Live Map: rides + drivers", "Manual Dispatch Intervention", "Driver Availability", "Demand Heatmap", "Incident Monitoring", "SOS Escalation", "Ride Replay", "Payment / Receipt Status", "Provider Health", "Operational Alerts"],
+    features: ["Monitor city", "Detect issue", "Inspect ride/driver", "Adjust governed dispatch if needed", "Escalate incident", "Verify replay/evidence", "Close operation log"],
+  },
+  {
+    name: "NovaRide Inspector App / Portal",
+    users: "Vehicle inspectors, driver verifiers, and regulatory compliance teams",
+    modules: ["Vehicle Inspection", "Driver Verification", "License / Permit Check", "Insurance Check", "Roadworthiness Checklist", "Photo Evidence Capture", "Compliance Score", "Inspection History", "Regulatory Export", "Violation / Suspension Workflow"],
+    features: ["Select driver/vehicle", "Verify documents", "Inspect vehicle", "Capture evidence", "Approve / reject / suspend", "Generate compliance proof"],
+  },
+  {
+    name: "NovaRide Fleet Portal",
+    users: "Taxi companies, corporate fleets, and logistics operators",
+    modules: ["Fleet Dashboard", "Vehicle Management", "Driver Management", "Live Tracking", "Dispatch", "Maintenance", "Fuel", "Performance", "Reporting"],
+    features: ["Fleet visibility", "Vehicle compliance", "Driver performance", "Maintenance tracking", "NovaPay payouts"],
+  },
+  {
+    name: "NovaRide Merchant Portal",
+    users: "Hotels, airports, shopping centres, hospitals, and universities",
+    modules: ["Guest Ride Booking", "Corporate Billing", "Voucher Management", "Ride Analytics", "Invoice Management", "Settlement"],
+    features: ["Book guest rides", "Issue vouchers", "Track guest journeys", "Review invoices", "Settle through NovaPay"],
+  },
+  {
+    name: "NovaRide Corporate Portal",
+    users: "Businesses, government, and NGOs",
+    modules: ["Employee Travel", "Approvals", "Cost Centres", "Budgets", "Invoices", "Travel Analytics"],
+    features: ["Approve trips", "Control budgets", "Allocate cost centres", "Review travel analytics", "Export invoices"],
+  },
+  {
+    name: "NovaRide Trust & Safety Portal",
+    users: "Safety and compliance response teams",
+    modules: ["SOS Cases", "Incident Timeline", "Replay", "Evidence Viewer", "Driver Verification", "Passenger Verification", "Risk Scoring"],
+    features: ["Review incident evidence", "Inspect replay", "Score risk", "Escalate safety action", "Export evidence"],
+  },
+  {
+    name: "NovaRide Customer Support Portal",
+    users: "Support agents and escalation teams",
+    modules: ["Customer Search", "Ride Search", "Replay", "Refunds", "Disputes", "Communications", "Receipt Verification"],
+    features: ["Search riders/drivers", "Inspect ride replay", "Verify receipts", "Handle disputes", "Request governed refunds"],
+  },
+  {
+    name: "NovaRide Administrator Portal",
+    users: "Platform administrators",
+    modules: ["Organizations", "RBAC", "Configuration", "Pricing Rules", "Geofencing", "Feature Flags", "Licensing", "Provider Configuration"],
+    features: ["Configure tenants", "Manage RBAC", "Publish pricing rules", "Control geofences", "Manage providers"],
+  },
+  {
+    name: "NovaRide Developer Portal",
+    users: "Partners, integrators, and developers",
+    modules: ["API Keys", "SDKs", "Sandbox", "Webhook Manager", "Documentation", "Usage Analytics"],
+    features: ["Create API keys", "Use sandbox", "Register webhooks", "Inspect usage", "Read API docs"],
+  },
+];
+
+const NOVARIDE_GOVERNED_BACKEND_CHAIN = [
+  "NovaID",
+  "Policy Engine",
+  "Dispatch Engine",
+  "Matching",
+  "Pricing",
+  "Trust & Safety",
+  "Inspection Registry",
+  "Incident Registry",
+  "Ride Lifecycle",
+  "NovaPay",
+  "Receipt",
+  "Replay",
+  "Audit",
+];
+
+const NOVARIDE_AI_INTELLIGENCE_LAYER = [
+  "Demand Forecasting",
+  "Driver Position Prediction",
+  "ETA Prediction",
+  "Fraud Detection",
+  "Safety Scoring",
+  "Dynamic Pricing",
+  "Traffic Intelligence",
+  "Dispatch Optimization",
+  "Operational Insights",
+];
+
+const NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW = [
+  "Ride Request",
+  "Dispatch Decision",
+  "Driver Assignment",
+  "Pickup",
+  "Trip",
+  "Payment",
+  "Receipt",
+  "Replay Timeline",
+  "Verification Package",
 ];
 
 const NOVARIDE_OPERATOR_MODULE_FALLBACKS = [
@@ -5890,6 +6003,75 @@ export default function OperatorDashboard() {
             ) : (
               <EmptyState label="NovaRide platform architecture contract will appear after the API is reachable." />
             )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Next-Generation Mobility Platform">
+            <div className="stack">
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>Governed mobility platform</strong>
+                  <span>apps_request_control_plane_decides_events_prove</span>
+                </div>
+                <p>
+                  Rider and Driver apps request and display. Operator and Inspector portals
+                  control quality and compliance. Control Plane decides. Execution Plane
+                  performs. Event Platform proves every ride.
+                </p>
+                <div className="chip-row">
+                  <span className="surface-chip">Control Plane decides</span>
+                  <span className="surface-chip">Execution Plane performs</span>
+                  <span className="surface-chip">Event Platform proves</span>
+                  {NOVARIDE_GOVERNED_BACKEND_CHAIN.map((service) => (
+                    <span key={service} className="surface-chip">{service}</span>
+                  ))}
+                </div>
+              </article>
+
+              <article className="record-card">
+                <strong>AI and intelligence layer</strong>
+                <div className="chip-row">
+                  {NOVARIDE_AI_INTELLIGENCE_LAYER.map((signal) => (
+                    <span key={signal} className="reason-chip">{signal}</span>
+                  ))}
+                </div>
+              </article>
+
+              <article className="record-card">
+                <strong>Evidence-backed ride flow</strong>
+                <div className="flow-line" aria-label="NovaRide evidence backed ride flow">
+                  {NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW.map((step) => (
+                    <span key={step}>{step}</span>
+                  ))}
+                </div>
+              </article>
+
+              <div className="novapay-build-grid">
+                {NOVARIDE_NEXT_GEN_PLATFORM_STACK.map((surface) => (
+                  <article key={surface.name} className="record-card novapay-build-card">
+                    <div className="record-card-header">
+                      <strong>{surface.name}</strong>
+                      <span>{surface.users}</span>
+                    </div>
+                    <div className="novapay-build-section">
+                      <strong>Modules</strong>
+                      <div className="chip-row">
+                        {surface.modules.map((module) => (
+                          <span key={module} className="surface-chip">{module}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="novapay-build-section">
+                      <strong>Capabilities</strong>
+                      <div className="chip-row">
+                        {surface.features.map((feature) => (
+                          <span key={feature} className="reason-chip reason-chip-success">{feature}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
           </OperatorPanel>
 
           <OperatorPanel title="NovaRide Operator Command Center">

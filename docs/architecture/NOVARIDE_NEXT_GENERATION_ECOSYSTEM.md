@@ -12,15 +12,17 @@ For the full documentation map, see:
 
 | App | Primary users | Platform | Backend role |
 | --- | --- | --- | --- |
-| NovaRide Passenger | Riders | Android, iOS, Web | `CUSTOMER` |
-| NovaRide Driver | Drivers | Android, iOS | `DRIVER` |
-| NovaRide Operator | Operations team | Web | `OPERATOR` |
-| NovaRide Fleet | Fleet owners | Web | `FLEET_OWNER` |
-| NovaRide Business | Corporate customers | Web | `CLIENT` |
-| NovaRide Admin | Platform administrators | Web | `ADMIN` |
-| NovaRide Inspector | Field inspectors | Android Tablet | `VERIFIER` |
-| NovaRide Support | Support agents | Web | `OPERATOR` |
-| NovaRide Partner | Hotels, airports, event partners | Web | `PARTNER` |
+| NovaRide Rider App | Riders | Android, iOS, Web | `CUSTOMER` |
+| NovaRide Driver App | Drivers | Android, iOS | `DRIVER` |
+| NovaRide Operator App / Portal | Operations, safety, reliability | Web | `OPERATOR` |
+| NovaRide Inspector App / Portal | Field inspectors, compliance | Android Tablet, Web | `VERIFIER` |
+| NovaRide Fleet Portal | Fleet owners | Web | `FLEET_OWNER` |
+| NovaRide Merchant Portal | Hotels, airports, venues, institutions | Web | `PARTNER` |
+| NovaRide Corporate Portal | Corporate customers, government, NGOs | Web | `CLIENT` |
+| NovaRide Trust & Safety Portal | Safety and compliance teams | Web | `OPERATOR` |
+| NovaRide Customer Support Portal | Support agents | Web | `OPERATOR` |
+| NovaRide Administrator Portal | Platform administrators | Web | `ADMIN` |
+| NovaRide Developer Portal | Partners, integrators, developers | Web | `DEVELOPER` |
 
 ## API Contract
 
@@ -519,14 +521,137 @@ Next-phase route contracts:
 All NovaRide apps share:
 
 - NovaID for identity and authentication.
+- Policy Engine for jurisdiction, role, safety, and operational policy decisions.
 - NovaPay for ride payments, wallets, refunds, driver earnings, and corporate billing.
 - Dispatch Engine for driver matching and ride lifecycle coordination.
+- Matching Engine for driver selection, queue balancing, and assignment explainability.
 - Pricing Engine for fare estimates and deterministic price explanation.
 - Maps & Routing for navigation, ETA, route display, and trip timeline.
 - Trust Engine for driver and rider verification, safety, fraud monitoring, and SOS escalation.
+- Inspection Registry for vehicle, driver, permit, insurance, roadworthiness, and evidence records.
+- Incident Registry for SOS, safety escalation, incident lifecycle, and closure evidence.
 - NovaNotify for push, SMS, email, receipts, and operational alerts.
 - Analytics Engine for utilization, cancellations, demand, revenue, and fleet reporting.
 - Audit & Replay for compliance logs, route replay, proof receipts, and verification.
+- Event Platform for ride lifecycle event stream, replay, evidence binding, and proof emission.
+- Control Plane for feature gates, RBAC, tenant controls, policies, and operational governance.
+
+## 10/10 App/Web/Portal Stack
+
+The next-generation stack is organized as one governed platform with
+role-specific interfaces:
+
+| Surface | Primary purpose |
+| --- | --- |
+| Rider App | Booking, live tracking, wallet, receipts, replay, and support |
+| Driver App | Ride queue, navigation, trip lifecycle, earnings, trust score, and diagnostics |
+| Operator App / Portal | Live control, dispatch, safety, reliability, provider health, and operational alerts |
+| Inspector App / Portal | Vehicle, driver, document, permit, insurance, and regulatory compliance |
+| Fleet Portal | Vehicle, driver, maintenance, fuel, performance, and fleet reporting |
+| Merchant Portal | Guest ride booking, vouchers, invoices, settlement, and partner analytics |
+| Corporate Portal | Employee travel, approvals, cost centres, budgets, invoices, and analytics |
+| Trust & Safety Portal | SOS cases, incident timelines, replay, evidence viewer, and risk scoring |
+| Customer Support Portal | Customer search, ride search, replay, disputes, refunds, and receipt verification |
+| Administrator Portal | Organizations, RBAC, pricing rules, geofencing, feature flags, licensing, and providers |
+| Developer Portal | API keys, SDKs, sandbox, webhooks, documentation, and usage analytics |
+
+### Operator App / Portal
+
+Purpose: live control, dispatch, safety, and reliability.
+
+Core modules:
+
+- Live Operations Dashboard
+- Live Map: rides + drivers
+- Manual Dispatch Override
+- Driver Availability
+- Demand Heatmap
+- Incident Monitoring
+- SOS Escalation
+- Ride Replay
+- Payment / Receipt Status
+- Provider Health
+- Operational Alerts
+
+Core workflow:
+
+```text
+Monitor city
+-> detect issue
+-> inspect ride/driver
+-> override dispatch if needed
+-> escalate incident
+-> verify replay/evidence
+-> close operation log
+```
+
+### Inspector App / Portal
+
+Purpose: vehicle, driver, and regulatory compliance.
+
+Core modules:
+
+- Vehicle Inspection
+- Driver Verification
+- License / Permit Check
+- Insurance Check
+- Roadworthiness Checklist
+- Photo Evidence Capture
+- Compliance Score
+- Inspection History
+- Regulatory Export
+- Violation / Suspension Workflow
+
+Core workflow:
+
+```text
+Select driver/vehicle
+-> verify documents
+-> inspect vehicle
+-> capture evidence
+-> approve / reject / suspend
+-> generate compliance proof
+```
+
+## AI And Intelligence Layer
+
+Every application connects to the shared intelligence service:
+
+- Demand Forecasting
+- Driver Position Prediction
+- ETA Prediction
+- Fraud Detection
+- Safety Scoring
+- Dynamic Pricing
+- Traffic Intelligence
+- Dispatch Optimization
+- Operational Insights
+
+## Evidence-Backed Trust Layer
+
+Every ride is reconstructed from evidence:
+
+```text
+Ride Request
+-> Dispatch Decision
+-> Driver Assignment
+-> Pickup
+-> Trip
+-> Payment
+-> Receipt
+-> Replay Timeline
+-> Verification Package
+```
+
+## 10/10 Upgrade Principle
+
+```text
+Rider/Driver apps request and display.
+Operator/Inspector portals control quality and compliance.
+Control Plane decides.
+Execution Plane performs.
+Event Platform proves.
+```
 
 ## Authority Boundary
 

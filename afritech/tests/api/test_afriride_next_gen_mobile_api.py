@@ -302,7 +302,7 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     payload = response.json()
     assert payload["view"] == "novaride_ecosystem"
     assert payload["platform"] == "NovaRide"
-    assert payload["app_count"] == 9
+    assert payload["app_count"] == 13
     assert payload["authority_boundary"]["payments"] == "NovaPay_backend_only"
     assert payload["authority_boundary"]["mobile_apps"] == "request_and_observe_only"
     assert payload["lifecycle"] == [
@@ -321,19 +321,33 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert app_names == {
         "NovaRide Passenger",
         "NovaRide Driver",
-        "NovaRide Operator",
+        "NovaRide Operator App / Portal",
         "NovaRide Fleet",
         "NovaRide Business",
+        "NovaRide Merchant Portal",
+        "NovaRide Corporate Portal",
         "NovaRide Admin",
-        "NovaRide Inspector",
+        "NovaRide Inspector App / Portal",
+        "NovaRide Trust & Safety Portal",
         "NovaRide Support",
         "NovaRide Partner",
+        "NovaRide Developer Portal",
     }
     route_families = payload["route_families"]
     assert route_families["passenger"] == "/v1/novaride/passenger"
     assert route_families["partner"] == "/v1/novaride/partner"
+    assert route_families["operator"] == "/v1/novaride/operator"
+    assert route_families["inspector"] == "/v1/novaride/inspector"
+    assert route_families["merchant"] == "/v1/novaride/merchant"
+    assert route_families["corporate"] == "/v1/novaride/corporate"
+    assert route_families["developer"] == "/v1/novaride/developer"
     assert any(service["name"] == "NovaPay" for service in payload["shared_platform"])
     assert any(service["name"] == "Audit & Replay" for service in payload["shared_platform"])
+    assert any(service["name"] == "Inspection Registry" for service in payload["shared_platform"])
+    assert any(service["name"] == "Incident Registry" for service in payload["shared_platform"])
+    assert "Demand Forecasting" in payload["intelligence_layer"]
+    assert "Verification Package" in payload["trust_proof_flow"]
+    assert "Control Plane decides" in payload["upgrade_principle"]
 
 
 def test_novaride_platform_architecture_contract_exposes_authority_boundary_and_flow() -> None:
@@ -344,7 +358,9 @@ def test_novaride_platform_architecture_contract_exposes_authority_boundary_and_
     assert response.status_code == 200
     payload = response.json()
     assert payload["view"] == "novaride_shared_platform_architecture_contract"
-    assert payload["principle"] == "Apps = Interface; Platform = Authority"
+    assert payload["principle"] == (
+        "Apps request and display; Control Plane decides; Execution Plane performs; Event Platform proves"
+    )
     app_names = {app["app"] for app in payload["layers"]["app_layer"]}
     assert app_names == {"Passenger App", "Driver App", "Operator Dashboard"}
     assert payload["layers"]["api_gateway"]["role"] == "single_entry_point"
