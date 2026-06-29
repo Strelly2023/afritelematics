@@ -1,4 +1,4 @@
-"""Workspace composition for the AfriPro dashboard."""
+"""Workspace composition for the AfriPro / NovaCodePro dashboard."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ def build_workspace_payload(
         session=session,
     )
     return {
-        "dashboard_title": "AfriPro Dashboard",
+        "dashboard_title": "AfriPro / NovaCodePro Dashboard",
         "workspace_mode": "codex_style",
         "project_explorer": build_project_explorer(project),
         "chat_panel": {

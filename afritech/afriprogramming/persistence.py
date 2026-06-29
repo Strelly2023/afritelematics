@@ -6,6 +6,7 @@ import sqlite3
 import re
 from hashlib import sha256
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -27,6 +28,10 @@ def _stable_json(payload: Any) -> str:
 
 def _hash_payload(payload: Any) -> str:
     return sha256(_stable_json(payload).encode("utf-8")).hexdigest()
+
+
+def _money_text(value: Decimal | int | str) -> str:
+    return format(Decimal(str(value)).quantize(Decimal("0.01")), ".2f")
 
 
 def _derive_signing_seed(*, organization_id: str, key_family: str, key_version: int) -> bytes:
@@ -54,6 +59,20 @@ _POSTGRES_INSERT_REPLACE_TARGETS: dict[str, tuple[str, ...]] = {
     "verification_proofs": ("proof_id",),
     "deployment_receipts": ("receipt_id",),
     "replay_records": ("replay_id",),
+    "organization_profiles": ("organization_id",),
+    "accounts": ("organization_id", "user_id"),
+    "subscriptions": ("organization_id",),
+    "catalog_features": ("feature_key",),
+    "feature_flags": ("organization_id", "feature_key"),
+    "notifications": ("notification_id",),
+    "integrations": ("organization_id", "name"),
+    "rides": ("organization_id", "ride_id"),
+    "wallets": ("organization_id", "user_id", "currency"),
+    "transactions": ("transaction_id",),
+    "driver_presence": ("organization_id", "driver_id"),
+    "dispatch_assignments": ("organization_id", "ride_id"),
+    "external_payment_authorizations": ("organization_id", "ride_id"),
+    "external_payment_captures": ("organization_id", "authorization_id"),
     "dashboard_analytics_snapshots": (
         "organization_id",
         "source",
@@ -213,6 +232,16 @@ class PlatformStore:
             organization_id TEXT PRIMARY KEY,
             organization_name TEXT NOT NULL,
             created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS organization_profiles (
+            organization_id TEXT PRIMARY KEY,
+            organization_type TEXT NOT NULL,
+            status TEXT NOT NULL,
+            default_plan TEXT NOT NULL,
+            owner_user_id TEXT,
+            owner_role TEXT,
+            onboarded_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
         );
         CREATE TABLE IF NOT EXISTS audit_events (
             event_id TEXT PRIMARY KEY,
@@ -469,6 +498,165 @@ class PlatformStore:
             estimated_amount REAL NOT NULL,
             billing_enabled INTEGER NOT NULL,
             created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS accounts (
+            account_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            role TEXT NOT NULL,
+            status TEXT NOT NULL,
+            is_primary INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, user_id)
+        );
+        CREATE TABLE IF NOT EXISTS subscriptions (
+            subscription_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            plan TEXT NOT NULL,
+            status TEXT NOT NULL,
+            billing_cycle TEXT NOT NULL,
+            seats INTEGER NOT NULL,
+            start_date TEXT NOT NULL,
+            end_date TEXT,
+            auto_renew INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id)
+        );
+        CREATE TABLE IF NOT EXISTS catalog_features (
+            feature_key TEXT PRIMARY KEY,
+            module TEXT NOT NULL,
+            description TEXT NOT NULL,
+            category TEXT NOT NULL,
+            default_enabled INTEGER NOT NULL,
+            created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS feature_flags (
+            flag_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            feature_key TEXT NOT NULL,
+            enabled INTEGER NOT NULL,
+            reason TEXT NOT NULL,
+            updated_by TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, feature_key)
+        );
+        CREATE TABLE IF NOT EXISTS notifications (
+            notification_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            recipient_id TEXT NOT NULL,
+            channel TEXT NOT NULL,
+            message TEXT NOT NULL,
+            status TEXT NOT NULL,
+            sent_at TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS integrations (
+            integration_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            type TEXT NOT NULL,
+            status TEXT NOT NULL,
+            config_json TEXT NOT NULL,
+            last_synced_at TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, name)
+        );
+        CREATE TABLE IF NOT EXISTS rides (
+            ride_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            passenger_id TEXT NOT NULL,
+            driver_id TEXT,
+            pickup_location_json TEXT NOT NULL,
+            destination_location_json TEXT NOT NULL,
+            status TEXT NOT NULL,
+            fare_estimate TEXT NOT NULL,
+            final_fare TEXT,
+            currency TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            completed_at TEXT
+        );
+        CREATE TABLE IF NOT EXISTS wallets (
+            wallet_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            currency TEXT NOT NULL,
+            balance TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, user_id, currency)
+        );
+        CREATE TABLE IF NOT EXISTS transactions (
+            transaction_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            ride_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            counterparty_user_id TEXT NOT NULL,
+            amount TEXT NOT NULL,
+            currency TEXT NOT NULL,
+            type TEXT NOT NULL,
+            status TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS driver_presence (
+            presence_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            driver_id TEXT NOT NULL,
+            status TEXT NOT NULL,
+            location_json TEXT NOT NULL,
+            last_seen TEXT NOT NULL,
+            busy_ride_id TEXT,
+            trust_score REAL NOT NULL,
+            metadata_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, driver_id)
+        );
+        CREATE TABLE IF NOT EXISTS dispatch_assignments (
+            assignment_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            ride_id TEXT NOT NULL,
+            driver_id TEXT NOT NULL,
+            status TEXT NOT NULL,
+            decision_json TEXT NOT NULL,
+            matched_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, ride_id)
+        );
+        CREATE TABLE IF NOT EXISTS external_payment_authorizations (
+            authorization_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            ride_id TEXT NOT NULL,
+            provider TEXT NOT NULL,
+            provider_reference TEXT NOT NULL,
+            amount TEXT NOT NULL,
+            currency TEXT NOT NULL,
+            status TEXT NOT NULL,
+            settlement_status TEXT NOT NULL,
+            capture_status TEXT NOT NULL,
+            raw_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(organization_id, ride_id)
+        );
+        CREATE TABLE IF NOT EXISTS external_payment_captures (
+            capture_id TEXT PRIMARY KEY,
+            organization_id TEXT NOT NULL,
+            ride_id TEXT NOT NULL,
+            authorization_id TEXT NOT NULL,
+            provider TEXT NOT NULL,
+            provider_reference TEXT NOT NULL,
+            amount TEXT NOT NULL,
+            currency TEXT NOT NULL,
+            status TEXT NOT NULL,
+            raw_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(organization_id, authorization_id)
         );
         CREATE TABLE IF NOT EXISTS rbac_role_assignments (
             assignment_id TEXT PRIMARY KEY,
@@ -6056,13 +6244,221 @@ class PlatformStore:
         }
 
     @staticmethod
-    def _row_to_organization(row: sqlite3.Row) -> dict[str, Any]:
+    def _row_to_organization_directory(row: sqlite3.Row) -> dict[str, Any]:
         return {
             "organization_id": row["organization_id"],
             "organization_name": row["organization_name"],
             "created_at": row["created_at"],
-            "status": "active",
+            "organization_type": row["organization_type"] or "business",
+            "status": row["profile_status"] or "active",
+            "default_plan": row["default_plan"] or "free",
+            "owner_user_id": row["owner_user_id"],
+            "owner_role": row["owner_role"],
+            "onboarded_at": row["onboarded_at"] or row["created_at"],
+            "updated_at": row["profile_updated_at"] or row["created_at"],
             "source": "store",
+        }
+
+    @staticmethod
+    def _row_to_organization_profile(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "organization_id": row["organization_id"],
+            "organization_type": row["organization_type"],
+            "status": row["status"],
+            "default_plan": row["default_plan"],
+            "owner_user_id": row["owner_user_id"],
+            "owner_role": row["owner_role"],
+            "onboarded_at": row["onboarded_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_account(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "account_id": row["account_id"],
+            "organization_id": row["organization_id"],
+            "user_id": row["user_id"],
+            "role": row["role"],
+            "status": row["status"],
+            "is_primary": bool(row["is_primary"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_subscription(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "subscription_id": row["subscription_id"],
+            "organization_id": row["organization_id"],
+            "plan": row["plan"],
+            "status": row["status"],
+            "billing_cycle": row["billing_cycle"],
+            "seats": int(row["seats"]),
+            "start_date": row["start_date"],
+            "end_date": row["end_date"],
+            "auto_renew": bool(row["auto_renew"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_feature(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "feature_key": row["feature_key"],
+            "module": row["module"],
+            "description": row["description"],
+            "category": row["category"],
+            "default_enabled": bool(row["default_enabled"]),
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _row_to_feature_flag(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "flag_id": row["flag_id"],
+            "organization_id": row["organization_id"],
+            "feature_key": row["feature_key"],
+            "enabled": bool(row["enabled"]),
+            "reason": row["reason"],
+            "updated_by": row["updated_by"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_notification(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "notification_id": row["notification_id"],
+            "organization_id": row["organization_id"],
+            "recipient_id": row["recipient_id"],
+            "channel": row["channel"],
+            "message": row["message"],
+            "status": row["status"],
+            "sent_at": row["sent_at"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_integration(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "integration_id": row["integration_id"],
+            "organization_id": row["organization_id"],
+            "name": row["name"],
+            "type": row["type"],
+            "status": row["status"],
+            "config": json.loads(row["config_json"]),
+            "last_synced_at": row["last_synced_at"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_ride(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "ride_id": row["ride_id"],
+            "organization_id": row["organization_id"],
+            "passenger_id": row["passenger_id"],
+            "driver_id": row["driver_id"],
+            "pickup_location": json.loads(row["pickup_location_json"]),
+            "destination_location": json.loads(row["destination_location_json"]),
+            "status": row["status"],
+            "fare_estimate": row["fare_estimate"],
+            "final_fare": row["final_fare"],
+            "currency": row["currency"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+            "completed_at": row["completed_at"],
+        }
+
+    @staticmethod
+    def _row_to_wallet(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "wallet_id": row["wallet_id"],
+            "organization_id": row["organization_id"],
+            "user_id": row["user_id"],
+            "currency": row["currency"],
+            "balance": row["balance"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_transaction(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "transaction_id": row["transaction_id"],
+            "organization_id": row["organization_id"],
+            "ride_id": row["ride_id"],
+            "user_id": row["user_id"],
+            "counterparty_user_id": row["counterparty_user_id"],
+            "amount": row["amount"],
+            "currency": row["currency"],
+            "type": row["type"],
+            "status": row["status"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _row_to_driver_presence(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "presence_id": row["presence_id"],
+            "organization_id": row["organization_id"],
+            "driver_id": row["driver_id"],
+            "status": row["status"],
+            "location": json.loads(row["location_json"]),
+            "last_seen": row["last_seen"],
+            "busy_ride_id": row["busy_ride_id"],
+            "trust_score": row["trust_score"],
+            "metadata": json.loads(row["metadata_json"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_dispatch_assignment(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "assignment_id": row["assignment_id"],
+            "organization_id": row["organization_id"],
+            "ride_id": row["ride_id"],
+            "driver_id": row["driver_id"],
+            "status": row["status"],
+            "decision": json.loads(row["decision_json"]),
+            "matched_at": row["matched_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_external_payment_authorization(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "authorization_id": row["authorization_id"],
+            "organization_id": row["organization_id"],
+            "ride_id": row["ride_id"],
+            "provider": row["provider"],
+            "provider_reference": row["provider_reference"],
+            "amount": row["amount"],
+            "currency": row["currency"],
+            "status": row["status"],
+            "settlement_status": row["settlement_status"],
+            "capture_status": row["capture_status"],
+            "raw": json.loads(row["raw_json"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+
+    @staticmethod
+    def _row_to_external_payment_capture(row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "capture_id": row["capture_id"],
+            "organization_id": row["organization_id"],
+            "ride_id": row["ride_id"],
+            "authorization_id": row["authorization_id"],
+            "provider": row["provider"],
+            "provider_reference": row["provider_reference"],
+            "amount": row["amount"],
+            "currency": row["currency"],
+            "status": row["status"],
+            "raw": json.loads(row["raw_json"]),
+            "created_at": row["created_at"],
         }
 
     @staticmethod
@@ -6103,23 +6499,1329 @@ class PlatformStore:
         organization_id: str | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        query = "SELECT * FROM organizations"
+        query = """
+            SELECT
+                organizations.organization_id,
+                organizations.organization_name,
+                organizations.created_at,
+                organization_profiles.organization_type,
+                organization_profiles.status AS profile_status,
+                organization_profiles.default_plan,
+                organization_profiles.owner_user_id,
+                organization_profiles.owner_role,
+                organization_profiles.onboarded_at,
+                organization_profiles.updated_at AS profile_updated_at
+            FROM organizations
+            LEFT JOIN organization_profiles
+                ON organization_profiles.organization_id = organizations.organization_id
+        """
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organizations.organization_id = ?")
+            params.append(organization_id)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY organizations.created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_organization_directory(row) for row in rows]
+
+    def latest_organization(self, *, organization_id: str | None = None) -> dict[str, Any] | None:
+        organizations = self.list_organizations(organization_id=organization_id, limit=1)
+        return organizations[0] if organizations else None
+
+    def upsert_organization_profile(
+        self,
+        *,
+        organization_id: str,
+        organization_type: str = "business",
+        status: str = "active",
+        default_plan: str = "free",
+        owner_user_id: str | None = None,
+        owner_role: str | None = None,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "organization_id": organization_id,
+            "organization_type": organization_type,
+            "status": status,
+            "default_plan": default_plan,
+            "owner_user_id": owner_user_id,
+            "owner_role": owner_role,
+            "onboarded_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO organization_profiles (
+                    organization_id, organization_type, status, default_plan,
+                    owner_user_id, owner_role, onboarded_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    organization_id,
+                    organization_type,
+                    status,
+                    default_plan,
+                    owner_user_id,
+                    owner_role,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def get_organization_profile(self, *, organization_id: str) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM organization_profiles WHERE organization_id = ?",
+                (organization_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_organization_profile(row)
+
+    def list_organization_profiles(
+        self,
+        *,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM organization_profiles"
+        params: list[Any] = []
+        if organization_id is not None:
+            query += " WHERE organization_id = ?"
+            params.append(organization_id)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_organization_profile(row) for row in rows]
+
+    def store_account(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        role: str,
+        status: str = "active",
+        is_primary: bool = False,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "account_id": f"acct-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "user_id": user_id,
+            "role": role,
+            "status": status,
+            "is_primary": bool(is_primary),
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO accounts (
+                    account_id, organization_id, user_id, role, status,
+                    is_primary, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["account_id"],
+                    organization_id,
+                    user_id,
+                    role,
+                    status,
+                    1 if is_primary else 0,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_accounts(
+        self,
+        *,
+        organization_id: str | None = None,
+        user_id: str | None = None,
+        role: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM accounts"
         params: list[Any] = []
         clauses: list[str] = []
         if organization_id is not None:
             clauses.append("organization_id = ?")
             params.append(organization_id)
+        if user_id is not None:
+            clauses.append("user_id = ?")
+            params.append(user_id)
+        if role is not None:
+            clauses.append("role = ?")
+            params.append(role)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_account(row) for row in rows]
+
+    def store_subscription(
+        self,
+        *,
+        organization_id: str,
+        plan: str,
+        status: str = "active",
+        billing_cycle: str = "monthly",
+        seats: int = 1,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        auto_renew: bool = True,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "subscription_id": f"sub-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "plan": plan,
+            "status": status,
+            "billing_cycle": billing_cycle,
+            "seats": int(seats),
+            "start_date": start_date or now[:10],
+            "end_date": end_date,
+            "auto_renew": bool(auto_renew),
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO subscriptions (
+                    subscription_id, organization_id, plan, status,
+                    billing_cycle, seats, start_date, end_date, auto_renew,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["subscription_id"],
+                    organization_id,
+                    plan,
+                    status,
+                    billing_cycle,
+                    record["seats"],
+                    record["start_date"],
+                    end_date,
+                    1 if auto_renew else 0,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_subscriptions(
+        self,
+        *,
+        organization_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM subscriptions"
+        params: list[Any] = []
+        if organization_id is not None:
+            query += " WHERE organization_id = ?"
+            params.append(organization_id)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_subscription(row) for row in rows]
+
+    def latest_subscription(self, *, organization_id: str | None = None) -> dict[str, Any] | None:
+        subscriptions = self.list_subscriptions(organization_id=organization_id, limit=1)
+        return subscriptions[0] if subscriptions else None
+
+    def latest_active_subscription(
+        self,
+        *,
+        organization_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        subscriptions = self.list_subscriptions(organization_id=organization_id, limit=100)
+        for subscription in subscriptions:
+            if str(subscription.get("status", "")).lower() == "active":
+                return subscription
+        return None
+
+    def store_feature_definition(
+        self,
+        *,
+        feature_key: str,
+        module: str,
+        description: str,
+        category: str = "foundation",
+        default_enabled: bool = False,
+    ) -> dict[str, Any]:
+        record = {
+            "feature_key": feature_key,
+            "module": module,
+            "description": description,
+            "category": category,
+            "default_enabled": bool(default_enabled),
+            "created_at": _now(),
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO catalog_features (
+                    feature_key, module, description, category,
+                    default_enabled, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    feature_key,
+                    module,
+                    description,
+                    category,
+                    1 if default_enabled else 0,
+                    record["created_at"],
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_features(self, *, limit: int = 100) -> list[dict[str, Any]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM catalog_features ORDER BY feature_key ASC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return [self._row_to_feature(row) for row in rows]
+
+    def ensure_phase0_catalog(self) -> list[dict[str, Any]]:
+        features = [
+            ("core", "core", "Shared platform foundation and base models", "foundation", True),
+            ("organizations", "core", "Multi-tenant organization registry", "foundation", True),
+            ("accounts", "core", "Organization account membership and role mapping", "foundation", True),
+            ("subscriptions", "billing", "Organization plan and entitlement control", "monetization", True),
+            ("catalog", "feature-control", "Feature catalog and module registry", "control", True),
+            ("feature_flags", "feature-control", "Organization-scoped feature toggles", "control", True),
+            ("audit", "governance", "Audit trail and replay evidence", "governance", True),
+            ("notifications", "messaging", "Notification outbox and delivery state", "communication", True),
+            ("integrations", "connectors", "External integration registry", "connectivity", True),
+        ]
+        for feature_key, module, description, category, enabled in features:
+            self.store_feature_definition(
+                feature_key=feature_key,
+                module=module,
+                description=description,
+                category=category,
+                default_enabled=enabled,
+            )
+        return self.list_features(limit=100)
+
+    def set_feature_flag(
+        self,
+        *,
+        organization_id: str,
+        feature_key: str,
+        enabled: bool,
+        reason: str = "platform_control",
+        updated_by: str = "system",
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "flag_id": f"flag-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "feature_key": feature_key,
+            "enabled": bool(enabled),
+            "reason": reason,
+            "updated_by": updated_by,
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO feature_flags (
+                    flag_id, organization_id, feature_key, enabled, reason,
+                    updated_by, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["flag_id"],
+                    organization_id,
+                    feature_key,
+                    1 if enabled else 0,
+                    reason,
+                    updated_by,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_feature_flags(
+        self,
+        *,
+        organization_id: str | None = None,
+        feature_key: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM feature_flags"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if feature_key is not None:
+            clauses.append("feature_key = ?")
+            params.append(feature_key)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_feature_flag(row) for row in rows]
+
+    def latest_feature_flag(
+        self,
+        *,
+        organization_id: str,
+        feature_key: str,
+    ) -> dict[str, Any] | None:
+        flags = self.list_feature_flags(
+            organization_id=organization_id,
+            feature_key=feature_key,
+            limit=1,
+        )
+        return flags[0] if flags else None
+
+    def queue_notification(
+        self,
+        *,
+        organization_id: str,
+        recipient_id: str,
+        channel: str,
+        message: str,
+        status: str = "queued",
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "notification_id": f"notif-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "recipient_id": recipient_id,
+            "channel": channel,
+            "message": message,
+            "status": status,
+            "sent_at": None,
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO notifications (
+                    notification_id, organization_id, recipient_id, channel,
+                    message, status, sent_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["notification_id"],
+                    organization_id,
+                    recipient_id,
+                    channel,
+                    message,
+                    status,
+                    None,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def mark_notification_sent(
+        self,
+        *,
+        notification_id: str,
+        organization_id: str | None = None,
+        sent_at: str | None = None,
+    ) -> dict[str, Any] | None:
+        with self._lock, self._connect() as conn:
+            if organization_id is None:
+                row = conn.execute(
+                    "SELECT * FROM notifications WHERE notification_id = ?",
+                    (notification_id,),
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    "SELECT * FROM notifications WHERE notification_id = ? AND organization_id = ?",
+                    (notification_id, organization_id),
+                ).fetchone()
+            if row is None:
+                return None
+            completed_at = sent_at or _now()
+            conn.execute(
+                """
+                UPDATE notifications
+                SET status = ?, sent_at = ?, updated_at = ?
+                WHERE notification_id = ?
+                """,
+                ("sent", completed_at, completed_at, notification_id),
+            )
+            conn.commit()
+            row = conn.execute(
+                "SELECT * FROM notifications WHERE notification_id = ?",
+                (notification_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_notification(row)
+
+    def list_notifications(
+        self,
+        *,
+        organization_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM notifications"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
         if clauses:
             query += " WHERE " + " AND ".join(clauses)
         query += " ORDER BY created_at DESC LIMIT ?"
         params.append(limit)
         with self._connect() as conn:
             rows = conn.execute(query, params).fetchall()
-        return [self._row_to_organization(row) for row in rows]
+        return [self._row_to_notification(row) for row in rows]
 
-    def latest_organization(self, *, organization_id: str | None = None) -> dict[str, Any] | None:
-        organizations = self.list_organizations(organization_id=organization_id, limit=1)
-        return organizations[0] if organizations else None
+    def register_integration(
+        self,
+        *,
+        organization_id: str,
+        name: str,
+        type: str,
+        config: dict[str, Any] | None = None,
+        status: str = "active",
+        last_synced_at: str | None = None,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "integration_id": f"int-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "name": name,
+            "type": type,
+            "status": status,
+            "config": config or {},
+            "last_synced_at": last_synced_at,
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO integrations (
+                    integration_id, organization_id, name, type, status,
+                    config_json, last_synced_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["integration_id"],
+                    organization_id,
+                    name,
+                    type,
+                    status,
+                    json.dumps(record["config"], sort_keys=True),
+                    last_synced_at,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def ensure_wallet(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        currency: str = "AUD",
+        balance: Decimal | int | str = "0.00",
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        existing = self.get_wallet(organization_id=organization_id, user_id=user_id, currency=currency)
+        if existing is not None:
+            return existing
+        record = {
+            "wallet_id": f"wallet-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "user_id": user_id,
+            "currency": currency.upper(),
+            "balance": _money_text(balance),
+            "created_at": now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO wallets (
+                    wallet_id, organization_id, user_id, currency, balance,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["wallet_id"],
+                    organization_id,
+                    user_id,
+                    record["currency"],
+                    record["balance"],
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def get_wallet(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        currency: str = "AUD",
+    ) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM wallets WHERE organization_id = ? AND user_id = ? AND currency = ?",
+                (organization_id, user_id, currency.upper()),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_wallet(row)
+
+    def list_wallets(
+        self,
+        *,
+        organization_id: str | None = None,
+        user_id: str | None = None,
+        currency: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM wallets"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if user_id is not None:
+            clauses.append("user_id = ?")
+            params.append(user_id)
+        if currency is not None:
+            clauses.append("currency = ?")
+            params.append(currency.upper())
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_wallet(row) for row in rows]
+
+    def credit_wallet(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        currency: str,
+        amount: Decimal | int | str,
+    ) -> dict[str, Any]:
+        wallet = self.ensure_wallet(organization_id=organization_id, user_id=user_id, currency=currency)
+        updated_balance = Decimal(wallet["balance"]) + Decimal(str(amount))
+        now = _now()
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE wallets
+                SET balance = ?, updated_at = ?
+                WHERE organization_id = ? AND user_id = ? AND currency = ?
+                """,
+                (
+                    _money_text(updated_balance),
+                    now,
+                    organization_id,
+                    user_id,
+                    currency.upper(),
+                ),
+            )
+            conn.commit()
+        return self.get_wallet(organization_id=organization_id, user_id=user_id, currency=currency) or wallet
+
+    def debit_wallet(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        currency: str,
+        amount: Decimal | int | str,
+    ) -> dict[str, Any]:
+        wallet = self.ensure_wallet(organization_id=organization_id, user_id=user_id, currency=currency)
+        available = Decimal(wallet["balance"])
+        delta = Decimal(str(amount))
+        if available < delta:
+            raise ValueError("insufficient wallet balance")
+        updated_balance = available - delta
+        now = _now()
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE wallets
+                SET balance = ?, updated_at = ?
+                WHERE organization_id = ? AND user_id = ? AND currency = ?
+                """,
+                (
+                    _money_text(updated_balance),
+                    now,
+                    organization_id,
+                    user_id,
+                    currency.upper(),
+                ),
+            )
+            conn.commit()
+        return self.get_wallet(organization_id=organization_id, user_id=user_id, currency=currency) or wallet
+
+    def store_ride(
+        self,
+        *,
+        ride_id: str,
+        organization_id: str,
+        passenger_id: str,
+        pickup_location: dict[str, Any],
+        destination_location: dict[str, Any],
+        fare_estimate: Decimal | int | str,
+        currency: str = "AUD",
+        driver_id: str | None = None,
+        status: str = "requested",
+        final_fare: Decimal | int | str | None = None,
+        completed_at: str | None = None,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "ride_id": ride_id,
+            "organization_id": organization_id,
+            "passenger_id": passenger_id,
+            "driver_id": driver_id,
+            "pickup_location": pickup_location,
+            "destination_location": destination_location,
+            "status": status,
+            "fare_estimate": _money_text(fare_estimate),
+            "final_fare": None if final_fare is None else _money_text(final_fare),
+            "currency": currency.upper(),
+            "created_at": now,
+            "updated_at": now,
+            "completed_at": completed_at,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO rides (
+                    ride_id, organization_id, passenger_id, driver_id,
+                    pickup_location_json, destination_location_json, status,
+                    fare_estimate, final_fare, currency, created_at, updated_at,
+                    completed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    ride_id,
+                    organization_id,
+                    passenger_id,
+                    driver_id,
+                    json.dumps(pickup_location, sort_keys=True),
+                    json.dumps(destination_location, sort_keys=True),
+                    status,
+                    record["fare_estimate"],
+                    record["final_fare"],
+                    record["currency"],
+                    now,
+                    now,
+                    completed_at,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def get_ride(self, *, ride_id: str, organization_id: str | None = None) -> dict[str, Any] | None:
+        query = "SELECT * FROM rides WHERE ride_id = ?"
+        params: list[Any] = [ride_id]
+        if organization_id is not None:
+            query += " AND organization_id = ?"
+            params.append(organization_id)
+        with self._connect() as conn:
+            row = conn.execute(query, params).fetchone()
+        if row is None:
+            return None
+        return self._row_to_ride(row)
+
+    def list_rides(
+        self,
+        *,
+        organization_id: str | None = None,
+        passenger_id: str | None = None,
+        driver_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM rides"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if passenger_id is not None:
+            clauses.append("passenger_id = ?")
+            params.append(passenger_id)
+        if driver_id is not None:
+            clauses.append("driver_id = ?")
+            params.append(driver_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_ride(row) for row in rows]
+
+    def update_ride(
+        self,
+        *,
+        ride_id: str,
+        organization_id: str,
+        status: str | None = None,
+        driver_id: str | None = None,
+        final_fare: Decimal | int | str | None = None,
+        completed_at: str | None = None,
+    ) -> dict[str, Any] | None:
+        ride = self.get_ride(ride_id=ride_id, organization_id=organization_id)
+        if ride is None:
+            return None
+        updated_status = status or ride["status"]
+        updated_driver_id = driver_id if driver_id is not None else ride["driver_id"]
+        updated_final_fare = ride["final_fare"] if final_fare is None else _money_text(final_fare)
+        updated_completed_at = completed_at if completed_at is not None else ride["completed_at"]
+        now = _now()
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE rides
+                SET status = ?, driver_id = ?, final_fare = ?, completed_at = ?, updated_at = ?
+                WHERE ride_id = ? AND organization_id = ?
+                """,
+                (
+                    updated_status,
+                    updated_driver_id,
+                    updated_final_fare,
+                    updated_completed_at,
+                    now,
+                    ride_id,
+                    organization_id,
+                ),
+            )
+            conn.commit()
+        return self.get_ride(ride_id=ride_id, organization_id=organization_id)
+
+    def store_transaction(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+        user_id: str,
+        counterparty_user_id: str,
+        amount: Decimal | int | str,
+        currency: str,
+        transaction_type: str,
+        status: str = "completed",
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "transaction_id": f"txn-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "ride_id": ride_id,
+            "user_id": user_id,
+            "counterparty_user_id": counterparty_user_id,
+            "amount": _money_text(amount),
+            "currency": currency.upper(),
+            "type": transaction_type,
+            "status": status,
+            "created_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO transactions (
+                    transaction_id, organization_id, ride_id, user_id,
+                    counterparty_user_id, amount, currency, type, status, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["transaction_id"],
+                    organization_id,
+                    ride_id,
+                    user_id,
+                    counterparty_user_id,
+                    record["amount"],
+                    record["currency"],
+                    transaction_type,
+                    status,
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_transactions(
+        self,
+        *,
+        organization_id: str | None = None,
+        ride_id: str | None = None,
+        user_id: str | None = None,
+        transaction_type: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM transactions"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if ride_id is not None:
+            clauses.append("ride_id = ?")
+            params.append(ride_id)
+        if user_id is not None:
+            clauses.append("user_id = ?")
+            params.append(user_id)
+        if transaction_type is not None:
+            clauses.append("type = ?")
+            params.append(transaction_type)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_transaction(row) for row in rows]
+
+    def store_driver_presence(
+        self,
+        *,
+        organization_id: str,
+        driver_id: str,
+        status: str,
+        location: dict[str, Any] | None = None,
+        busy_ride_id: str | None = None,
+        trust_score: Decimal | int | float = 0,
+        metadata: dict[str, Any] | None = None,
+        last_seen: str | None = None,
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        existing = self.get_driver_presence(organization_id=organization_id, driver_id=driver_id)
+        record = {
+            "presence_id": existing["presence_id"] if existing else f"presence-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "driver_id": driver_id,
+            "status": status,
+            "location": location or (existing["location"] if existing else {}),
+            "last_seen": last_seen or now,
+            "busy_ride_id": busy_ride_id if busy_ride_id is not None else (existing["busy_ride_id"] if existing else None),
+            "trust_score": round(float(trust_score), 6),
+            "metadata": metadata or (existing["metadata"] if existing else {}),
+            "created_at": existing["created_at"] if existing else now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO driver_presence (
+                    presence_id, organization_id, driver_id, status, location_json,
+                    last_seen, busy_ride_id, trust_score, metadata_json,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["presence_id"],
+                    organization_id,
+                    driver_id,
+                    status,
+                    json.dumps(record["location"], sort_keys=True),
+                    record["last_seen"],
+                    record["busy_ride_id"],
+                    record["trust_score"],
+                    json.dumps(record["metadata"], sort_keys=True),
+                    record["created_at"],
+                    record["updated_at"],
+                ),
+            )
+            conn.commit()
+        return self.get_driver_presence(organization_id=organization_id, driver_id=driver_id) or record
+
+    def get_driver_presence(
+        self,
+        *,
+        organization_id: str,
+        driver_id: str,
+    ) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM driver_presence WHERE organization_id = ? AND driver_id = ?",
+                (organization_id, driver_id),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_driver_presence(row)
+
+    def list_driver_presence(
+        self,
+        *,
+        organization_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM driver_presence"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_driver_presence(row) for row in rows]
+
+    def store_dispatch_assignment(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+        driver_id: str,
+        status: str,
+        decision: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        existing = self.get_dispatch_assignment(organization_id=organization_id, ride_id=ride_id)
+        record = {
+            "assignment_id": existing["assignment_id"] if existing else f"assign-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "ride_id": ride_id,
+            "driver_id": driver_id,
+            "status": status,
+            "decision": decision,
+            "matched_at": existing["matched_at"] if existing else now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO dispatch_assignments (
+                    assignment_id, organization_id, ride_id, driver_id, status,
+                    decision_json, matched_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["assignment_id"],
+                    organization_id,
+                    ride_id,
+                    driver_id,
+                    status,
+                    json.dumps(decision, sort_keys=True),
+                    record["matched_at"],
+                    record["updated_at"],
+                ),
+            )
+            conn.commit()
+        return self.get_dispatch_assignment(organization_id=organization_id, ride_id=ride_id) or record
+
+    def get_dispatch_assignment(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+    ) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM dispatch_assignments WHERE organization_id = ? AND ride_id = ?",
+                (organization_id, ride_id),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_dispatch_assignment(row)
+
+    def list_dispatch_assignments(
+        self,
+        *,
+        organization_id: str | None = None,
+        driver_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM dispatch_assignments"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if driver_id is not None:
+            clauses.append("driver_id = ?")
+            params.append(driver_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_dispatch_assignment(row) for row in rows]
+
+    def store_external_payment_authorization(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+        provider: str,
+        provider_reference: str,
+        amount: Decimal | int | str,
+        currency: str,
+        status: str,
+        settlement_status: str,
+        capture_status: str,
+        raw: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        existing = self.get_external_payment_authorization(organization_id=organization_id, ride_id=ride_id)
+        record = {
+            "authorization_id": existing["authorization_id"] if existing else f"auth-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "ride_id": ride_id,
+            "provider": provider,
+            "provider_reference": provider_reference,
+            "amount": _money_text(amount),
+            "currency": currency.upper(),
+            "status": status,
+            "settlement_status": settlement_status,
+            "capture_status": capture_status,
+            "raw": raw,
+            "created_at": existing["created_at"] if existing else now,
+            "updated_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO external_payment_authorizations (
+                    authorization_id, organization_id, ride_id, provider,
+                    provider_reference, amount, currency, status,
+                    settlement_status, capture_status, raw_json,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["authorization_id"],
+                    organization_id,
+                    ride_id,
+                    provider,
+                    provider_reference,
+                    record["amount"],
+                    record["currency"],
+                    status,
+                    settlement_status,
+                    capture_status,
+                    json.dumps(raw, sort_keys=True),
+                    record["created_at"],
+                    record["updated_at"],
+                ),
+            )
+            conn.commit()
+        return self.get_external_payment_authorization(organization_id=organization_id, ride_id=ride_id) or record
+
+    def get_external_payment_authorization(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+    ) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM external_payment_authorizations WHERE organization_id = ? AND ride_id = ?",
+                (organization_id, ride_id),
+            ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_external_payment_authorization(row)
+
+    def list_external_payment_authorizations(
+        self,
+        *,
+        organization_id: str | None = None,
+        ride_id: str | None = None,
+        provider: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM external_payment_authorizations"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if ride_id is not None:
+            clauses.append("ride_id = ?")
+            params.append(ride_id)
+        if provider is not None:
+            clauses.append("provider = ?")
+            params.append(provider)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_external_payment_authorization(row) for row in rows]
+
+    def store_external_payment_capture(
+        self,
+        *,
+        organization_id: str,
+        ride_id: str,
+        authorization_id: str,
+        provider: str,
+        provider_reference: str,
+        amount: Decimal | int | str,
+        currency: str,
+        status: str,
+        raw: dict[str, Any],
+    ) -> dict[str, Any]:
+        self._touch_organization(organization_id)
+        now = _now()
+        record = {
+            "capture_id": f"capture-{uuid4().hex[:12]}",
+            "organization_id": organization_id,
+            "ride_id": ride_id,
+            "authorization_id": authorization_id,
+            "provider": provider,
+            "provider_reference": provider_reference,
+            "amount": _money_text(amount),
+            "currency": currency.upper(),
+            "status": status,
+            "raw": raw,
+            "created_at": now,
+        }
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO external_payment_captures (
+                    capture_id, organization_id, ride_id, authorization_id,
+                    provider, provider_reference, amount, currency, status,
+                    raw_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["capture_id"],
+                    organization_id,
+                    ride_id,
+                    authorization_id,
+                    provider,
+                    provider_reference,
+                    record["amount"],
+                    record["currency"],
+                    status,
+                    json.dumps(raw, sort_keys=True),
+                    now,
+                ),
+            )
+            conn.commit()
+        return record
+
+    def list_external_payment_captures(
+        self,
+        *,
+        organization_id: str | None = None,
+        ride_id: str | None = None,
+        provider: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM external_payment_captures"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if ride_id is not None:
+            clauses.append("ride_id = ?")
+            params.append(ride_id)
+        if provider is not None:
+            clauses.append("provider = ?")
+            params.append(provider)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_external_payment_capture(row) for row in rows]
+
+    def list_integrations(
+        self,
+        *,
+        organization_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        query = "SELECT * FROM integrations"
+        params: list[Any] = []
+        clauses: list[str] = []
+        if organization_id is not None:
+            clauses.append("organization_id = ?")
+            params.append(organization_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
+        if clauses:
+            query += " WHERE " + " AND ".join(clauses)
+        query += " ORDER BY updated_at DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._row_to_integration(row) for row in rows]
 
     @staticmethod
     def _row_to_policy_definition(row: sqlite3.Row) -> dict[str, Any]:

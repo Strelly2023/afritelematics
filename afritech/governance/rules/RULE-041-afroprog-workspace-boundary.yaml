@@ -4,7 +4,7 @@ status: ACTIVE
 classification: DEVELOPER_WORKSPACE_NON_AUTHORITY_RULE
 
 description: >
-  Enforces that the AfriPro chat + dashboard workspace remains a codex-style
+  Enforces that the AfriPro / NovaCodePro chat + dashboard workspace remains a codex-style
   developer environment, generates Django scaffolding as proposal artifacts, and
   routes every candidate change through AfriProgramming governance.
 
@@ -23,10 +23,10 @@ linked_artifacts:
 contract:
   workspace_identity:
     required_strings:
-      - AfriPro Dashboard
+      - AfriPro / NovaCodePro Dashboard
       - codex_style
       - proposal_only
-      - Django Backend for AfriPro Chat + Dashboard
+      - Django Backend for AfriPro / NovaCodePro Chat + Dashboard
   django_generation:
     required_files:
       - poultry/apps/farm/models.py

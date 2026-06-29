@@ -34,7 +34,7 @@ def test_workspace_payload_is_codex_style_and_governance_linked() -> None:
         mode="analysis",
     )
 
-    assert payload["dashboard_title"] == "AfriPro Dashboard"
+    assert payload["dashboard_title"] == "AfriPro / NovaCodePro Dashboard"
     assert payload["workspace_mode"] == "codex_style"
     assert payload["proposal_only"] is True
     assert payload["governance_linked"] is True

@@ -1,4 +1,4 @@
-"""Guard the AfriPro codex-style workspace governance chain."""
+"""Guard the AfriPro / NovaCodePro codex-style workspace governance chain."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ UI = ROOT / "dashboard/src/App.jsx"
 
 
 class AfroProgWorkspaceGuardError(RuntimeError):
-    """Raised when the AfriPro workspace governance chain drifts."""
+    """Raised when the AfriPro / NovaCodePro workspace governance chain drifts."""
 
 
 @dataclass(frozen=True)
@@ -61,7 +61,7 @@ def validate() -> AfroProgWorkspaceGuardReport:
             raise AfroProgWorkspaceGuardError(f"ADR-0021 decision missing: {required}")
 
     for required in (
-        "AfriPro Dashboard",
+        "AfriPro / NovaCodePro Dashboard",
         '"workspace_mode": "codex_style"',
         '"proposal_only": True',
         '"governance_linked": True',
@@ -98,7 +98,7 @@ def validate() -> AfroProgWorkspaceGuardReport:
         "Project Explorer",
         "Chat / AI Assistant Panel",
         "Code Editor (Live Editing + Execution)",
-        "Django Backend for AfriPro Chat + Dashboard",
+        "Django Backend for AfriPro / NovaCodePro Chat + Dashboard",
     ):
         if required not in ui_text:
             raise AfroProgWorkspaceGuardError(f"UI surface drifted: {required}")
@@ -111,7 +111,7 @@ def validate() -> AfroProgWorkspaceGuardReport:
         governance_linked=True,
     )
     if not report.verified:
-        raise AfroProgWorkspaceGuardError("AfriPro workspace governance verification failed")
+        raise AfroProgWorkspaceGuardError("AfriPro / NovaCodePro workspace governance verification failed")
     return report
 
 

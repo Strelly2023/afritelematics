@@ -31,7 +31,7 @@ def test_django_runtime_can_render_afroprog_dashboard_template() -> None:
     template = engine.get_template("dashboard.html")
     rendered = template.render(Context({}))
 
-    assert "AfriPro Dashboard" in rendered
+    assert "AfriPro / NovaCodePro Dashboard" in rendered
     assert "Project Explorer" in rendered
     assert "Chat / AI Assistant Panel" in rendered
     assert "Code Editor" in rendered

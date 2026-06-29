@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `482`
+- Startup-safe closure size: `483`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `54`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (482 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (483 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -186,7 +186,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (393)
+### Other (394)
 
 - `afritech`
 - `afritech.afripay`
@@ -255,6 +255,7 @@ flowchart TD
 - `afritech.afriprogramming.phase7`
 - `afritech.afriprogramming.phase8`
 - `afritech.afriprogramming.phase9`
+- `afritech.afriprogramming.phase_common`
 - `afritech.afriprogramming.proposals`
 - `afritech.afriprogramming.rbac`
 - `afritech.afriprogramming.roles`

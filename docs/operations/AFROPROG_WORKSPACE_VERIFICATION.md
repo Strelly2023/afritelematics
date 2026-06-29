@@ -1,8 +1,8 @@
-# AfriPro Workspace Verification
+# AfriPro / NovaCodePro Workspace Verification
 
 ## Purpose
 
-This verification flow closes the environment gaps that can make the AfriPro
+This verification flow closes the environment gaps that can make the AfriPro / NovaCodePro
 workspace appear incomplete even when the implementation is present.
 
 The required framework dependencies already live in the repository virtual
@@ -22,8 +22,8 @@ scripts/run_afroprog_workspace_checks.sh
 
 This executes:
 
-- AfriPro workspace service tests
-- AfriPro governance guard test
+- AfriPro / NovaCodePro workspace service tests
+- AfriPro / NovaCodePro governance guard test
 - FastAPI adapter tests
 - Django runtime template smoke test
 - NovaTech gateway architecture tests

@@ -9,7 +9,7 @@ if [ ! -x "$VENV_PY" ]; then
   exit 1
 fi
 
-echo "Running AfriPro workspace Python checks with venv..."
+echo "Running AfriPro / NovaCodePro workspace Python checks with venv..."
 "$VENV_PY" -m pytest \
   afritech/tests/apps/test_afroprog_workspace.py \
   afritech/tests/apps/test_afroprog_workspace_governance.py \

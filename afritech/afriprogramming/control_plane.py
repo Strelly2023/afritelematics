@@ -67,6 +67,7 @@ from afritech.afroprog_workspace.models import (
     ProjectWorkspace,
     afroprog_seed_projects,
 )
+from afritech.extensions.afriprog.ai_engine.design_generator import DesignGenerator
 from afritech.novascript import get_novascript_service
 
 
@@ -172,11 +173,109 @@ ROLE_SURFACES: dict[str, dict[str, Any]] = {
     },
 }
 
+PHASE0_MODULES: tuple[dict[str, str], ...] = (
+    {"key": "core", "purpose": "Shared platform foundation and base models"},
+    {"key": "organizations", "purpose": "Multi-tenant organization registry"},
+    {"key": "accounts", "purpose": "User membership and RBAC bridge"},
+    {"key": "subscriptions", "purpose": "Plan and entitlement control"},
+    {"key": "catalog", "purpose": "Feature definitions and module catalog"},
+    {"key": "feature_flags", "purpose": "Scoped feature toggles"},
+    {"key": "audit", "purpose": "Audit trail and evidence ledger"},
+    {"key": "notifications", "purpose": "Notification outbox and delivery state"},
+    {"key": "integrations", "purpose": "External integration registry"},
+)
+
+PHASE0_REQUIRED_TABLES: tuple[str, ...] = (
+    "organizations",
+    "organization_profiles",
+    "accounts",
+    "subscriptions",
+    "catalog_features",
+    "feature_flags",
+    "audit_events",
+    "notifications",
+    "integrations",
+)
+
+PHASE0_REQUIRED_CONTROLS: tuple[str, ...] = (
+    "multi_tenant_registry",
+    "subscription_entitlements",
+    "feature_catalog",
+    "feature_flags",
+    "audit_logging",
+    "notification_outbox",
+    "integration_registry",
+    "backend_only_provider_access",
+)
+
+PHASE0_PLAN_RANK: dict[str, int] = {
+    "free": 0,
+    "basic": 1,
+    "pro": 2,
+    "enterprise": 3,
+}
+
+PHASE0_ENDPOINT_MINIMUM_PLANS: dict[str, str] = {
+    "organization_onboard": "free",
+    "account_create": "free",
+    "subscription_create": "free",
+    "catalog": "free",
+    "feature_flag_set": "pro",
+    "notifications": "free",
+    "notification_queue": "free",
+    "notification_send": "free",
+    "integration_register": "pro",
+    "integrations": "free",
+}
+
 _STORE = get_platform_store()
 
 
 def _now() -> str:
     return datetime.now(tz=timezone.utc).isoformat()
+
+
+def _normalize_plan_name(plan: str | None) -> str:
+    normalized = str(plan or "free").strip().lower()
+    return normalized if normalized in PHASE0_PLAN_RANK else "free"
+
+
+def _plan_rank(plan: str | None) -> int:
+    return PHASE0_PLAN_RANK[_normalize_plan_name(plan)]
+
+
+def _subscription_is_active(subscription: dict[str, Any] | None) -> bool:
+    if not subscription:
+        return False
+    return str(subscription.get("status", "")).lower() == "active"
+
+
+def _require_minimum_plan(subscription: dict[str, Any] | None, minimum_plan: str) -> None:
+    if not _subscription_is_active(subscription):
+        raise ValueError("active subscription required")
+    if _plan_rank(subscription.get("plan")) < _plan_rank(minimum_plan):
+        raise ValueError(f"{minimum_plan} subscription required")
+
+
+def _phase0_audit(
+    *,
+    organization_id: str,
+    event_type: str,
+    actor_user_id: str,
+    actor_role: str,
+    target: str,
+    status: str,
+    payload: dict[str, Any],
+) -> dict[str, Any]:
+    return _STORE.record_audit_event(
+        organization_id=organization_id,
+        event_type=event_type,
+        actor_user_id=actor_user_id,
+        actor_role=actor_role,
+        target=target,
+        status=status,
+        payload=payload,
+    )
 
 
 def _stable_hash(payload: dict[str, Any]) -> str:
@@ -408,6 +507,81 @@ def build_catalog(organization_id: str | None = None) -> dict[str, Any]:
         "read_only": True,
         "creates_authority": False,
         "governance_linked": True,
+    }
+
+
+def seed_phase0_catalog(organization_id: str | None = None) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    features = _STORE.ensure_phase0_catalog()
+    profile = _STORE.get_organization_profile(organization_id=org_id)
+    if profile is None:
+        profile = _STORE.upsert_organization_profile(
+            organization_id=org_id,
+            organization_type="internal" if org_id == DEFAULT_ORGANIZATION_ID else "business",
+            status="active",
+            default_plan="enterprise" if org_id == DEFAULT_ORGANIZATION_ID else "free",
+            owner_user_id=None,
+            owner_role=None,
+        )
+    return {
+        "organization_id": org_id,
+        "features": features,
+        "profile": profile,
+    }
+
+
+def build_phase0_status(organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    seed = seed_phase0_catalog(org_id)
+    directory = build_organization_directory(organization_id=org_id, limit=limit)
+    subscriptions = _STORE.list_subscriptions(organization_id=org_id, limit=limit)
+    latest_subscription = subscriptions[0] if subscriptions else None
+    active_subscription = _STORE.latest_active_subscription(organization_id=org_id)
+    accounts = _STORE.list_accounts(organization_id=org_id, limit=limit)
+    feature_flags = _STORE.list_feature_flags(organization_id=org_id, limit=limit)
+    integrations = _STORE.list_integrations(organization_id=org_id, limit=limit)
+    notifications = _STORE.list_notifications(organization_id=org_id, limit=limit)
+    audit_log = build_audit_log(organization_id=org_id)
+    catalog = _STORE.list_features(limit=limit)
+    billing_preview = build_billing_preview(organization_id=org_id)
+    readiness = {
+        "multi_tenant_registry": bool(directory.get("organization_count", 0)) and seed["profile"] is not None,
+        "subscription_entitlements": _subscription_is_active(active_subscription),
+        "feature_catalog": len(catalog) >= len(PHASE0_MODULES),
+        "feature_flags": len(feature_flags) > 0,
+        "audit_logging": audit_log["count"] > 0,
+        "notification_outbox": len(notifications) > 0,
+        "integration_registry": len(integrations) > 0,
+        "backend_only_provider_access": True,
+    }
+    return {
+        "view": "novaprogramming_phase0_status",
+        "phase": "0",
+        "product": "NovaRide",
+        "platform": "NovaRide Phase 0",
+        "organization_id": org_id,
+        "seed": seed,
+        "modules": PHASE0_MODULES,
+        "required_tables": PHASE0_REQUIRED_TABLES,
+        "required_controls": PHASE0_REQUIRED_CONTROLS,
+        "directory": directory,
+        "organization_profile": seed["profile"],
+        "billing": billing_preview,
+        "subscription": latest_subscription,
+        "active_subscription": active_subscription,
+        "subscriptions": subscriptions,
+        "accounts": accounts,
+        "feature_catalog": catalog,
+        "feature_flags": feature_flags,
+        "notifications": notifications,
+        "integrations": integrations,
+        "audit_log": audit_log,
+        "readiness": readiness,
+        "ready": all(readiness.values()),
+        "read_only": True,
+        "projection_only": True,
+        "governance_linked": True,
+        "creates_authority": False,
     }
 
 
@@ -1803,6 +1977,245 @@ def build_dashboard_analytics_prediction(
     }
 
 
+def _demand_city_label(location: dict[str, Any] | None, fallback: str) -> str:
+    payload = location or {}
+    label = (
+        str(payload.get("label") or payload.get("name") or payload.get("city") or fallback)
+        .strip()
+        or fallback
+    )
+    return label
+
+
+def _demand_latest_zone(organization_id: str) -> str:
+    snapshot = _STORE.latest_dashboard_analytics_snapshot(organization_id=organization_id)
+    if snapshot is not None:
+        payload = snapshot.get("payload", {})
+        if isinstance(payload, dict):
+            zone = payload.get("primary_zone") or payload.get("zone") or payload.get("demand_zone")
+            if zone:
+                return str(zone)
+    drivers = _STORE.list_driver_presence(organization_id=organization_id, limit=1)
+    if drivers:
+        location = drivers[0].get("location") or {}
+        label = str(location.get("label") or location.get("name") or "").strip()
+        if label:
+            return label
+    return "CBD"
+
+
+def _demand_latest_trust_score(organization_id: str) -> int:
+    trust = _STORE.latest_trust_score(organization_id=organization_id)
+    if trust is not None:
+        try:
+            return int(trust.get("trust_score") or 92)
+        except (TypeError, ValueError):
+            return 92
+    snapshot = _STORE.latest_dashboard_analytics_snapshot(organization_id=organization_id)
+    if snapshot is not None:
+        try:
+            return int(snapshot.get("trust_score") or 92)
+        except (TypeError, ValueError):
+            return 92
+    return 92
+
+
+def _demand_active_counts(organization_id: str) -> tuple[int, int, int]:
+    rides = _STORE.list_rides(organization_id=organization_id, limit=100)
+    active_rides = [
+        ride
+        for ride in rides
+        if str(ride.get("status", "")).lower() not in {"completed", "cancelled"}
+    ]
+    completed_rides = [
+        ride
+        for ride in rides
+        if str(ride.get("status", "")).lower() == "completed"
+    ]
+    active_drivers = [
+        driver
+        for driver in _STORE.list_driver_presence(organization_id=organization_id, limit=100)
+        if str(driver.get("status", "")).lower() in {"online", "busy"}
+    ]
+    return len(active_rides), len(completed_rides), len(active_drivers)
+
+
+def _demand_city_rows(organization_id: str, *, limit: int = 100) -> list[dict[str, Any]]:
+    fallback_zone = _demand_latest_zone(organization_id)
+    rides = _STORE.list_rides(organization_id=organization_id, limit=limit)
+    drivers = [
+        row
+        for row in _STORE.list_driver_presence(organization_id=organization_id, limit=limit)
+        if str(row.get("status", "")).lower() in {"online", "busy"}
+    ]
+    ride_buckets: dict[str, list[dict[str, Any]]] = {}
+    driver_buckets: dict[str, list[dict[str, Any]]] = {}
+    for ride in rides:
+        city = _demand_city_label(ride.get("pickup_location"), fallback_zone)
+        ride_buckets.setdefault(city, []).append(ride)
+    for driver in drivers:
+        city = _demand_city_label(driver.get("location"), fallback_zone)
+        driver_buckets.setdefault(city, []).append(driver)
+
+    city_names = sorted(set(ride_buckets) | set(driver_buckets)) or [fallback_zone]
+    latest_trust_score = _demand_latest_trust_score(organization_id)
+    rows: list[dict[str, Any]] = []
+    for city in city_names:
+        city_rides = ride_buckets.get(city, [])
+        city_drivers = driver_buckets.get(city, [])
+        active_rides = [ride for ride in city_rides if str(ride.get("status", "")).lower() not in {"completed", "cancelled"}]
+        completed_rides = [ride for ride in city_rides if str(ride.get("status", "")).lower() == "completed"]
+        demand_ratio = (len(active_rides) + 1) / max(1, len(city_drivers) + 1)
+        trust_adjustment = max(0.0, (latest_trust_score - 80) * 0.25)
+        completion_adjustment = min(8.0, len(completed_rides) * 0.35)
+        demand_index = _analytics_clamp((demand_ratio * 38.0) + trust_adjustment + completion_adjustment + 12.0)
+        demand_level = (
+            "high"
+            if demand_index >= 70
+            else "moderate"
+            if demand_index >= 42
+            else "low"
+        )
+        supply_gap = max(0, len(active_rides) - len(city_drivers))
+        if demand_level == "high" and supply_gap > 0:
+            recommendation = f"Shift supply toward {city}"
+            reasoning = "Active ride pressure exceeds available drivers."
+        elif demand_level == "moderate":
+            recommendation = f"Hold balanced supply near {city}"
+            reasoning = "The city is stable but still benefits from nearby coverage."
+        else:
+            recommendation = f"Maintain watch around {city}"
+            reasoning = "Current pressure does not justify aggressive repositioning."
+        rows.append(
+            {
+                "city": city,
+                "active_rides": len(active_rides),
+                "completed_rides": len(completed_rides),
+                "active_drivers": len(city_drivers),
+                "supply_gap": supply_gap,
+                "demand_ratio": round(demand_ratio, 6),
+                "demand_index": round(float(demand_index), 4),
+                "demand_level": demand_level,
+                "recommended_action": recommendation,
+                "reason": reasoning,
+                "trust_score": latest_trust_score,
+            }
+        )
+
+    if not rows:
+        rows.append(
+            {
+                "city": fallback_zone,
+                "active_rides": 0,
+                "completed_rides": 0,
+                "active_drivers": 0,
+                "supply_gap": 0,
+                "demand_ratio": 0.0,
+                "demand_index": 0.0,
+                "demand_level": "low",
+                "recommended_action": f"Maintain watch around {fallback_zone}",
+                "reason": "No live city pressure is currently visible.",
+                "trust_score": latest_trust_score,
+            }
+        )
+
+    return sorted(rows, key=lambda row: (row["demand_index"], row["active_rides"], row["city"]), reverse=True)
+
+
+def build_dashboard_demand_forecast(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    analytics = _build_dashboard_analytics_context(
+        organization_id=org_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    city_rows = _demand_city_rows(org_id, limit=limit)
+    active_rides, completed_rides, active_drivers = _demand_active_counts(org_id)
+    top_city = city_rows[0]
+    demand_index = float(top_city["demand_index"])
+    demand_level = str(top_city["demand_level"])
+    if demand_level == "high":
+        urgency = "shift_supply"
+    elif demand_level == "moderate":
+        urgency = "hold_supply"
+    else:
+        urgency = "monitor"
+    feature_vector = {
+        "active_rides": active_rides,
+        "completed_rides": completed_rides,
+        "active_drivers": active_drivers,
+        "trust_score": _demand_latest_trust_score(org_id),
+        "coverage_score": int(analytics["latest"]["evidence_coverage"]) if analytics["latest"] else 0,
+        "exception_pressure": int(analytics["latest"]["exception_pressure"]) if analytics["latest"] else 0,
+        "zone_count": len(city_rows),
+        "top_city_pressure": round(demand_index, 4),
+    }
+    forecast_windows = []
+    base_rides = active_rides + max(0, completed_rides // 2)
+    ratio_boost = max(0.0, demand_index / 25.0)
+    for horizon, multiplier in (("15m", 0.35), ("1h", 0.85), ("4h", 1.55)):
+        expected_rides = max(0, int(round(base_rides + (ratio_boost * multiplier) + (active_drivers * 0.25))))
+        expected_supply_gap = max(0, int(round(expected_rides - max(1, active_drivers))))
+        forecast_windows.append(
+            {
+                "horizon": horizon,
+                "expected_rides": expected_rides,
+                "expected_supply_gap": expected_supply_gap,
+                "confidence": round(min(0.95, 0.72 + (0.04 if horizon == "15m" else 0.02 if horizon == "1h" else 0.0) + min(0.1, active_drivers / 50)), 2),
+                "recommended_action": top_city["recommended_action"],
+            }
+        )
+    realtime_analytics = {
+        "view": "novatech_operator_realtime_analytics",
+        "organization_id": org_id,
+        "source": source or "all",
+        "live_state": {
+            "active_rides": active_rides,
+            "completed_rides": completed_rides,
+            "active_drivers": active_drivers,
+            "zone": top_city["city"],
+            "demand_level": demand_level,
+            "demand_index": round(demand_index, 4),
+            "supply_gap": top_city["supply_gap"],
+            "trust_score": feature_vector["trust_score"],
+        },
+        "trend": analytics["trend"],
+        "alerts": [insight["detail"] for insight in analytics["insights"][:3]],
+        "updated_at": _now(),
+        "projection_only": True,
+        "read_only": True,
+    }
+    return {
+        "view": "novatech_operator_demand_forecast",
+        "organization_id": org_id,
+        "source": source or "all",
+        "model": {
+            "name": "bounded_demand_forecast_ml",
+            "version": "1.0.0",
+            "mode": "deterministic_heuristic",
+            "projection_only": True,
+            "read_only": True,
+        },
+        "realtime_analytics": realtime_analytics,
+        "city_forecasts": city_rows,
+        "forecast_windows": forecast_windows,
+        "feature_vector": feature_vector,
+        "recommendation": {
+            "urgency": urgency,
+            "primary_city": top_city["city"],
+            "action": top_city["recommended_action"],
+            "reason": top_city["reason"],
+        },
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
 def _decision_risk_level(score: int) -> str:
     if score >= 75:
         return "critical"
@@ -2271,6 +2684,486 @@ def _execution_tier_from_action_context(
     return "assisted"
 
 
+def _safe_autonomy_thresholds(
+    *,
+    trust_health: int,
+    replay_health_score: int,
+    evidence_coverage: int,
+    exception_pressure: int,
+    alert_count: int,
+    guard_count: int,
+    decision_quality_score: int,
+    calibrated_confidence: float,
+    predicted_trust_score: int,
+    predicted_evidence_coverage: int,
+    predicted_exception_pressure: int,
+    risk_score: int,
+) -> dict[str, Any]:
+    thresholds = {
+        "trust_health": 88,
+        "replay_health_score": 92,
+        "evidence_coverage": 95,
+        "exception_pressure_max": 2,
+        "alert_count_max": 1,
+        "guard_count_max": 0,
+        "decision_quality_score": 82,
+        "calibrated_confidence": 0.8,
+        "predicted_trust_score": 90,
+        "predicted_evidence_coverage": 95,
+        "predicted_exception_pressure_max": 2,
+        "risk_score_max": 25,
+    }
+    observed = {
+        "trust_health": trust_health,
+        "replay_health_score": replay_health_score,
+        "evidence_coverage": evidence_coverage,
+        "exception_pressure": exception_pressure,
+        "alert_count": alert_count,
+        "guard_count": guard_count,
+        "decision_quality_score": decision_quality_score,
+        "calibrated_confidence": round(calibrated_confidence, 2),
+        "risk_score": risk_score,
+    }
+    predicted = {
+        "predicted_trust_score": predicted_trust_score,
+        "predicted_evidence_coverage": predicted_evidence_coverage,
+        "predicted_exception_pressure": predicted_exception_pressure,
+    }
+    checks = {
+        "trust_health": trust_health >= thresholds["trust_health"],
+        "replay_health_score": replay_health_score >= thresholds["replay_health_score"],
+        "evidence_coverage": evidence_coverage >= thresholds["evidence_coverage"],
+        "exception_pressure": exception_pressure <= thresholds["exception_pressure_max"],
+        "alert_count": alert_count <= thresholds["alert_count_max"],
+        "guard_count": guard_count <= thresholds["guard_count_max"],
+        "decision_quality_score": decision_quality_score >= thresholds["decision_quality_score"],
+        "calibrated_confidence": calibrated_confidence >= thresholds["calibrated_confidence"],
+        "predicted_trust_score": predicted_trust_score >= thresholds["predicted_trust_score"],
+        "predicted_evidence_coverage": predicted_evidence_coverage >= thresholds["predicted_evidence_coverage"],
+        "predicted_exception_pressure": predicted_exception_pressure <= thresholds["predicted_exception_pressure_max"],
+        "risk_score": risk_score <= thresholds["risk_score_max"],
+    }
+    safe_to_autorun = all(checks.values())
+    supervised_ready = (
+        trust_health >= 80
+        and replay_health_score >= 85
+        and evidence_coverage >= 90
+        and guard_count == 0
+        and risk_score <= 40
+    )
+    autonomy_mode = "fully_autonomous" if safe_to_autorun else "supervised" if supervised_ready else "advisory"
+    release_status = "enabled" if safe_to_autorun else "held"
+    if safe_to_autorun:
+        summary = "Predictive signals are inside safe thresholds. Fully autonomous execution can be enabled under audit control."
+        recommended_next_step = "Allow fully autonomous allocation and keep audit replay active."
+    elif supervised_ready:
+        summary = "Predictive signals are promising, but one or more safe thresholds are not yet satisfied."
+        recommended_next_step = "Stay in supervised mode and close the remaining evidence gap."
+    else:
+        summary = "Autonomous execution is held. Trust, replay, or evidence pressure is still outside the safe band."
+        recommended_next_step = "Keep the surface advisory-only and continue monitoring the next cycle."
+
+    return {
+        "mode": autonomy_mode,
+        "release_status": release_status,
+        "safe_to_autorun": safe_to_autorun,
+        "supervised_ready": supervised_ready,
+        "summary": summary,
+        "recommended_next_step": recommended_next_step,
+        "thresholds": thresholds,
+        "observed": observed,
+        "predicted": predicted,
+        "checks": checks,
+        "advisory_only": not safe_to_autorun,
+        "execution_authority": False,
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def _build_driver_allocation_preview(
+    *,
+    organization_id: str,
+    safe_to_autorun: bool,
+    limit: int = 24,
+) -> dict[str, Any]:
+    drivers = [
+        dict(driver)
+        for driver in _STORE.list_driver_presence(organization_id=organization_id, status="online", limit=limit)
+        if str(driver.get("status")) == "online"
+    ]
+    ranked_drivers = sorted(
+        drivers,
+        key=lambda driver: (
+            float(driver.get("trust_score", 0.0) or 0.0),
+            str(driver.get("updated_at") or ""),
+            str(driver.get("driver_id") or ""),
+        ),
+        reverse=True,
+    )
+    selected_driver = ranked_drivers[0] if ranked_drivers else None
+    allocation_mode = "autonomous" if safe_to_autorun and selected_driver else "supervised" if selected_driver else "held"
+    readiness = "ready" if safe_to_autorun and selected_driver else "held"
+    selected_driver_id = str(selected_driver.get("driver_id")) if selected_driver else None
+    selected_driver_trust_score = int(float(selected_driver.get("trust_score", 0.0) or 0.0)) if selected_driver else 0
+    target_zone = str(
+        (selected_driver or {}).get("location", {}).get("label")
+        or (selected_driver or {}).get("location", {}).get("name")
+        or "CBD"
+    )
+    predictive_positioning = {
+        "mode": "fully_autonomous" if safe_to_autorun and selected_driver else "guided" if selected_driver else "held",
+        "target_zone": target_zone,
+        "confidence": 0.93 if safe_to_autorun and selected_driver else 0.78 if selected_driver else 0.55,
+        "instruction": (
+            f"Move toward {target_zone} now"
+            if safe_to_autorun and selected_driver
+            else f"Stay near {target_zone} for guided coverage"
+            if selected_driver
+            else "Maintain current position until the system detects stronger demand"
+        ),
+        "reason": (
+            "High demand and trusted supply support autonomous positioning"
+            if safe_to_autorun and selected_driver
+            else "Demand is stable enough for guided positioning"
+            if selected_driver
+            else "Autonomous positioning is not yet justified"
+        ),
+        "projection_only": True,
+        "read_only": True,
+    }
+    candidate_drivers = [
+        {
+            "driver_id": str(driver.get("driver_id") or ""),
+            "trust_score": int(float(driver.get("trust_score", 0.0) or 0.0)),
+            "status": str(driver.get("status") or "unknown"),
+            "location": driver.get("location") or {},
+        }
+        for driver in ranked_drivers[:3]
+    ]
+    if safe_to_autorun and selected_driver:
+        reason = "Safe thresholds cleared. The system can auto-allocate the highest-trust online driver."
+    elif selected_driver:
+        reason = "A best available driver is identified, but execution remains held until the safe band clears."
+    else:
+        reason = "No online driver is available for autonomous allocation."
+    return {
+        "mode": allocation_mode,
+        "readiness": readiness,
+        "enabled": bool(safe_to_autorun and selected_driver),
+        "available_drivers": len(ranked_drivers),
+        "selected_driver_id": selected_driver_id,
+        "selected_driver_trust_score": selected_driver_trust_score,
+        "candidate_drivers": candidate_drivers,
+        "predictive_positioning": predictive_positioning,
+        "reason": reason,
+        "projection_only": True,
+        "read_only": True,
+    }
+
+
+def _build_city_automation_projection(
+    *,
+    organization_id: str,
+    safe_to_autorun: bool,
+    limit: int = 24,
+) -> dict[str, Any]:
+    drivers = [
+        dict(driver)
+        for driver in _STORE.list_driver_presence(organization_id=organization_id, status="online", limit=limit)
+        if str(driver.get("status")) == "online"
+    ]
+    active_rides = len(
+        [
+            ride
+            for ride in _STORE.list_rides(organization_id=organization_id, limit=limit)
+            if str(ride.get("status") or "").lower() not in {"completed", "cancelled"}
+        ]
+    )
+    zone_candidates: list[str] = []
+    for driver in drivers:
+        location = driver.get("location") or {}
+        label = str(location.get("label") or location.get("name") or "").strip()
+        if label and label not in zone_candidates:
+            zone_candidates.append(label)
+    snapshot = _STORE.latest_dashboard_analytics_snapshot(organization_id=organization_id)
+    payload = snapshot.get("payload", {}) if snapshot else {}
+    if not zone_candidates and isinstance(payload, dict):
+        fallback_zone = payload.get("primary_zone") or payload.get("zone") or payload.get("demand_zone")
+        if fallback_zone:
+            zone_candidates.append(str(fallback_zone))
+    if not zone_candidates:
+        zone_candidates.append("CBD")
+    trust_scores = [int(float(driver.get("trust_score", 0.0) or 0.0)) for driver in drivers]
+    average_trust = int(sum(trust_scores) / len(trust_scores)) if trust_scores else 92
+    demand_level = "high" if active_rides >= 5 and len(drivers) >= 3 else "moderate" if active_rides >= 2 else "low"
+    coverage_score = min(
+        100,
+        (len(drivers) * 18)
+        + (len(zone_candidates) * 12)
+        + (average_trust // 2)
+        + (10 if demand_level == "high" else 5 if demand_level == "moderate" else 0),
+    )
+    zero_operator_mode = bool(safe_to_autorun and len(drivers) >= 3 and coverage_score >= 75)
+    city_mode = "zero_operator" if zero_operator_mode else "city_autonomous" if safe_to_autorun and coverage_score >= 60 else "city_supervised" if drivers else "city_held"
+    recommended_zone = zone_candidates[0]
+    if zero_operator_mode:
+        instruction = f"Keep city automation active and rebalance drivers toward {recommended_zone}"
+        reason = "Safe thresholds and city coverage support zero-operator automation"
+    elif safe_to_autorun and drivers:
+        instruction = f"Autonomously rebalance supply toward {recommended_zone}"
+        reason = "Autonomy is enabled but city coverage is still below zero-operator mode"
+    elif drivers:
+        instruction = f"Maintain operator-supervised automation around {recommended_zone}"
+        reason = "Automation is available but still requires operator oversight"
+    else:
+        instruction = "Hold city automation until enough drivers come online"
+        reason = "No active city supply is available"
+    return {
+        "mode": city_mode,
+        "zero_operator_mode": zero_operator_mode,
+        "coverage_score": coverage_score,
+        "active_drivers": len(drivers),
+        "active_rides": active_rides,
+        "city_zones": zone_candidates,
+        "recommended_zone": recommended_zone,
+        "instruction": instruction,
+        "reason": reason,
+        "bounded_actions": [
+            "reposition drivers toward demand",
+            "expand coverage across verified zones",
+            "hold operator escalation until a threshold breach",
+        ],
+        "prediction": {
+            "city_zone_count": len(zone_candidates),
+            "city_trust_score": average_trust,
+            "coverage_score": coverage_score,
+            "demand_level": demand_level,
+        },
+        "projection_only": True,
+        "read_only": True,
+    }
+
+
+def _build_multi_city_orchestration_projection(
+    *,
+    organization_id: str,
+    safe_to_autorun: bool,
+    limit: int = 24,
+) -> dict[str, Any]:
+    drivers = [
+        dict(driver)
+        for driver in _STORE.list_driver_presence(organization_id=organization_id, status="online", limit=limit)
+        if str(driver.get("status")) == "online"
+    ]
+    active_rides = [
+        dict(ride)
+        for ride in _STORE.list_rides(organization_id=organization_id, limit=limit)
+        if str(ride.get("status") or "").lower() not in {"completed", "cancelled"}
+    ]
+    city_map: dict[str, dict[str, Any]] = {}
+    for driver in drivers:
+        location = driver.get("location") or {}
+        label = str(location.get("label") or location.get("name") or "CBD").strip() or "CBD"
+        city_bucket = city_map.setdefault(
+            label,
+            {
+                "city": label,
+                "drivers": 0,
+                "rides": 0,
+                "average_trust_score": 0,
+            },
+        )
+        city_bucket["drivers"] += 1
+        city_bucket["average_trust_score"] += int(float(driver.get("trust_score", 0.0) or 0.0))
+    for ride in active_rides:
+        pickup = ride.get("pickup_location") or {}
+        label = str(pickup.get("label") or pickup.get("name") or "CBD").strip() or "CBD"
+        city_bucket = city_map.setdefault(
+            label,
+            {
+                "city": label,
+                "drivers": 0,
+                "rides": 0,
+                "average_trust_score": 0,
+            },
+        )
+        city_bucket["rides"] += 1
+    cities = []
+    for city in sorted(city_map.values(), key=lambda item: (-int(item["drivers"]), item["city"])):
+        drivers_count = int(city["drivers"])
+        city["average_trust_score"] = int(city["average_trust_score"] / drivers_count) if drivers_count else 0
+        city["coverage_score"] = min(100, (drivers_count * 22) + (int(city["rides"]) * 4) + (city["average_trust_score"] // 2))
+        city["mode"] = (
+            "zero_operator"
+            if safe_to_autorun and drivers_count >= 3 and city["coverage_score"] >= 75
+            else "city_autonomous"
+            if safe_to_autorun and drivers_count >= 2
+            else "city_supervised"
+            if drivers_count > 0
+            else "city_held"
+        )
+        cities.append(city)
+    city_count = len(cities)
+    active_city_count = len([city for city in cities if city["drivers"] > 0])
+    global_coverage = min(
+        100,
+        sum(int(city["coverage_score"]) for city in cities) // city_count if city_count else 0,
+    )
+    global_trust = (
+        sum(int(city["average_trust_score"]) for city in cities) // city_count if city_count else 92
+    )
+    multi_city_mode = (
+        "global_zero_operator"
+        if safe_to_autorun and active_city_count >= 2 and global_coverage >= 75
+        else "global_autonomous"
+        if safe_to_autorun and active_city_count >= 2
+        else "global_supervised"
+        if active_city_count > 0
+        else "global_held"
+    )
+    outcome_learning = build_outcome_learning(organization_id=organization_id, limit=limit)
+    learning = outcome_learning.get("learning", {})
+    outcome_current = outcome_learning.get("current", {})
+    recommendations = list(learning.get("recommendations", []))
+    watch_items = list(learning.get("watch_items", []))
+    if multi_city_mode == "global_zero_operator":
+        instruction = "Keep multi-city orchestration active and rebalance cities toward the highest coverage zones"
+        reason = "Global coverage and trust support zero-operator orchestration"
+    elif multi_city_mode == "global_autonomous":
+        instruction = "Autonomously rebalance supply across cities"
+        reason = "Multi-city supply is healthy enough for autonomous orchestration"
+    elif multi_city_mode == "global_supervised":
+        instruction = "Hold supervised orchestration across active cities"
+        reason = "Orchestration is available but still requires oversight"
+    else:
+        instruction = "Hold orchestration until more cities come online"
+        reason = "No active multi-city supply is available"
+    return {
+        "mode": multi_city_mode,
+        "multi_city_ready": bool(active_city_count >= 2 and safe_to_autorun),
+        "city_count": city_count,
+        "active_city_count": active_city_count,
+        "active_drivers": len(drivers),
+        "active_rides": len(active_rides),
+        "city_map": cities,
+        "primary_city": cities[0]["city"] if cities else "CBD",
+        "global_coverage_score": global_coverage,
+        "global_trust_score": global_trust,
+        "instruction": instruction,
+        "reason": reason,
+        "global_learning": {
+            "band": learning.get("band", "hold"),
+            "cycle": list(learning.get("cycle", [])),
+            "recommendations": recommendations,
+            "watch_items": watch_items,
+            "outcome_band": outcome_current.get("outcome_band", "guarded"),
+            "outcome_score": int(outcome_current.get("outcome_score", 0)),
+            "measurement_summary": outcome_current.get("measurement_summary", ""),
+            "recalibration_notes": list(learning.get("recalibration_notes", [])),
+            "projection_only": True,
+            "read_only": True,
+        },
+        "prediction": {
+            "city_count": city_count,
+            "active_city_count": active_city_count,
+            "coverage_score": global_coverage,
+            "trust_score": global_trust,
+            "learning_band": learning.get("band", "hold"),
+        },
+        "bounded_actions": [
+            "rebalance drivers across verified city clusters",
+            "promote learning signals into city planning",
+            "hold operator escalation until the safety band breaks",
+        ],
+        "projection_only": True,
+        "read_only": True,
+    }
+
+
+def _build_dashboard_autonomy_context(
+    *,
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    analytics = _build_dashboard_analytics_context(
+        organization_id=org_id,
+        source=source,
+        snapshot_type="operator_dashboard",
+        limit=limit,
+    )
+    decision_context = _build_dashboard_decision_context(
+        organization_id=org_id,
+        source=source,
+        decision_type="operator_decision",
+        limit=limit,
+    )
+    action_context = _build_dashboard_action_context(
+        organization_id=org_id,
+        source=source,
+        action_type="controlled_autonomous_action",
+        limit=limit,
+    )
+    prediction = analytics["prediction"]
+    current_decision = decision_context["current"]
+    current_action = action_context["current"]
+    autonomy = _safe_autonomy_thresholds(
+        trust_health=int(current_action.get("trust_health", current_decision["signals"].get("trust_health", 0))),
+        replay_health_score=int(
+            current_action.get("replay_health_score", current_decision["signals"].get("replay_health_score", 0))
+        ),
+        evidence_coverage=int(
+            current_action.get("evidence_coverage", current_decision["signals"].get("evidence_coverage", 0))
+        ),
+        exception_pressure=int(
+            current_action.get("exception_pressure", current_decision["signals"].get("exception_pressure", 0))
+        ),
+        alert_count=int(current_action.get("alert_count", current_decision["signals"].get("alert_count", 0))),
+        guard_count=int(current_action.get("guard_count", current_decision["signals"].get("guard_count", 0))),
+        decision_quality_score=int(current_action.get("decision_quality_score", 0)),
+        calibrated_confidence=float(current_action.get("calibrated_confidence", 0.0)),
+        predicted_trust_score=int(prediction.get("predicted_trust_score", 0)),
+        predicted_evidence_coverage=int(prediction.get("predicted_evidence_coverage", 0)),
+        predicted_exception_pressure=int(prediction.get("predicted_exception_pressure", 0)),
+        risk_score=int(current_decision.get("risk_score", 0)),
+    )
+    driver_allocation = _build_driver_allocation_preview(
+        organization_id=org_id,
+        safe_to_autorun=bool(autonomy.get("safe_to_autorun", False)),
+        limit=limit,
+    )
+    city_automation = _build_city_automation_projection(
+        organization_id=org_id,
+        safe_to_autorun=bool(autonomy.get("safe_to_autorun", False)),
+        limit=limit,
+    )
+    multi_city_orchestration = _build_multi_city_orchestration_projection(
+        organization_id=org_id,
+        safe_to_autorun=bool(autonomy.get("safe_to_autorun", False)),
+        limit=limit,
+    )
+
+    return {
+        "view": "novatech_operator_autonomy",
+        "organization_id": org_id,
+        "source": source or "all",
+        "decision": current_decision,
+        "action": current_action,
+        "prediction": prediction,
+        "autonomy": autonomy,
+        "driver_allocation": driver_allocation,
+        "city_automation": city_automation,
+        "multi_city_orchestration": multi_city_orchestration,
+        "safety_gate": current_action.get("safety_gate", "hold"),
+        "execution_tier": current_action.get("execution_tier", "advisory"),
+        "execution_tier_ready": bool(current_action.get("execution_tier_ready", False)),
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
 def _build_dashboard_action_context(
     *,
     organization_id: str | None = None,
@@ -2420,6 +3313,34 @@ def _build_dashboard_action_context(
         f"Evidence-calibrated decision quality is {decision_quality_score}/100 "
         f"with a {quality_band} band, {execution_tier} execution tier, and {round(calibrated_confidence * 100)}% calibrated confidence."
     )
+    risk_prediction = dict(
+        decision_current.get("reasoning", {}).get("risk_prediction")
+        or decision_current["signals"].get("latest_risk_prediction")
+        or {}
+    )
+    predicted_trust_score = int(
+        risk_prediction.get("features", {}).get("trust_score", decision_current["signals"].get("trust_score", trust_score))
+    )
+    predicted_evidence_coverage = int(
+        risk_prediction.get("features", {}).get("evidence_coverage", evidence_coverage)
+    )
+    predicted_exception_pressure = int(
+        risk_prediction.get("features", {}).get("exception_pressure", exception_pressure)
+    )
+    autonomy = _safe_autonomy_thresholds(
+        trust_health=trust_health,
+        replay_health_score=replay_health_score,
+        evidence_coverage=evidence_coverage,
+        exception_pressure=exception_pressure,
+        alert_count=alert_count,
+        guard_count=guard_count,
+        decision_quality_score=decision_quality_score,
+        calibrated_confidence=calibrated_confidence,
+        predicted_trust_score=predicted_trust_score,
+        predicted_evidence_coverage=predicted_evidence_coverage,
+        predicted_exception_pressure=predicted_exception_pressure,
+        risk_score=int(decision_current["signals"].get("risk_score", 0)),
+    )
 
     current = {
         "action_type": action_type,
@@ -2439,6 +3360,7 @@ def _build_dashboard_action_context(
         "execution_tier_ready": execution_tier_ready,
         "execution_tier_summary": execution_tier_summary,
         "execution_tier_controls": execution_tier_controls,
+        "autonomy": autonomy,
         "decision_quality_score": decision_quality_score,
         "evidence_alignment_score": evidence_alignment_score,
         "calibrated_confidence": calibrated_confidence,
@@ -2476,10 +3398,17 @@ def _build_dashboard_action_context(
             "quality_band": quality_band,
             "execution_tier": execution_tier,
             "execution_tier_ready": execution_tier_ready,
+            "autonomy_mode": autonomy["mode"],
+            "autonomy_safe_to_autorun": autonomy["safe_to_autorun"],
+            "safe_thresholds": autonomy["thresholds"],
+            "safe_threshold_checks": autonomy["checks"],
             "action_lane": action_lane,
             "action_mode": action_mode,
             "control_signal": control_signal,
             "safety_gate": safety_gate,
+            "predicted_trust_score": predicted_trust_score,
+            "predicted_evidence_coverage": predicted_evidence_coverage,
+            "predicted_exception_pressure": predicted_exception_pressure,
         },
         "reasoning": {
             "decision": decision_current["reasoning"],
@@ -2917,6 +3846,8 @@ def build_organization_onboarding(
     legal_name: str,
     sector: str,
     trust_domain: str,
+    actor_user_id: str = "system",
+    actor_role: str = "system",
 ) -> dict[str, Any]:
     novascript = get_novascript_service()
     adoption = novascript.onboard_organization(
@@ -2924,6 +3855,36 @@ def build_organization_onboarding(
         legal_name=legal_name,
         sector=sector,
         trust_domain=trust_domain,
+    )
+    _STORE.upsert_organization_profile(
+        organization_id=organization_id,
+        organization_type="business",
+        status="active",
+        default_plan="free",
+        owner_user_id=None,
+        owner_role=None,
+    )
+    if _STORE.latest_subscription(organization_id=organization_id) is None:
+        _STORE.store_subscription(
+            organization_id=organization_id,
+            plan="free",
+            status="active",
+            billing_cycle="monthly",
+            seats=1,
+            auto_renew=True,
+        )
+    _phase0_audit(
+        organization_id=organization_id,
+        event_type="phase0.organization_onboard",
+        actor_user_id=actor_user_id,
+        actor_role=actor_role,
+        target=organization_id,
+        status="recorded",
+        payload={
+            "legal_name": legal_name,
+            "sector": sector,
+            "trust_domain": trust_domain,
+        },
     )
     return {
         "view": "novatech_organization_onboarding",
@@ -2966,7 +3927,16 @@ def build_controlled_execution_activation(
         source="afriride_operator_dashboard",
         limit=limit,
     )
+    autonomy_surface = build_dashboard_autonomy(
+        organization_id=org_id,
+        source="afriride_operator_dashboard",
+        limit=limit,
+    )
     execution = action_surface["current"]
+    autonomy = autonomy_surface["autonomy"]
+    driver_allocation = autonomy_surface.get("driver_allocation", {})
+    city_automation = autonomy_surface.get("city_automation", {})
+    multi_city_orchestration = autonomy_surface.get("multi_city_orchestration", {})
     activation_history = _STORE.list_ai_action_snapshots(
         organization_id=org_id,
         source=source,
@@ -2991,6 +3961,7 @@ def build_controlled_execution_activation(
         and billing_ready
         and bool(execution.get("execution_tier_ready", False))
         and execution.get("safety_gate") == "pass"
+        and bool(autonomy.get("safe_to_autorun", False))
     )
     activation_status = "enabled" if activation_ready and acknowledged and requested_tier == "controlled" else "held"
     activation_reason = _unique_items(
@@ -2999,6 +3970,9 @@ def build_controlled_execution_activation(
             f"billing ready: {billing_ready}",
             f"execution tier ready: {bool(execution.get('execution_tier_ready', False))}",
             f"safety gate: {execution.get('safety_gate', 'hold')}",
+            f"autonomy safe: {bool(autonomy.get('safe_to_autorun', False))}",
+            f"city zero-operator: {bool(city_automation.get('zero_operator_mode', False))}",
+            f"multi-city zero-operator: {bool(multi_city_orchestration.get('mode') == 'global_zero_operator')}",
             f"requested tier: {requested_tier}",
             f"acknowledged: {acknowledged}",
         ],
@@ -3006,6 +3980,9 @@ def build_controlled_execution_activation(
             f"tenant status: {(current_tenant or {}).get('status', 'discovered')}",
             f"billing plan: {billing_preview.get('plan', 'enterprise')}",
             f"execution tier: {execution.get('execution_tier', 'advisory')}",
+            f"autonomy mode: {autonomy.get('mode', 'advisory')}",
+            f"city mode: {city_automation.get('mode', 'city_held')}",
+            f"multi-city mode: {multi_city_orchestration.get('mode', 'global_held')}",
         ],
     )
     activation_scope = [
@@ -3040,15 +4017,22 @@ def build_controlled_execution_activation(
             "safety_gate": execution.get("safety_gate", "hold"),
             "decision_quality_score": int(execution.get("decision_quality_score", 0) or 0),
             "calibrated_confidence": float(execution.get("calibrated_confidence", 0) or 0),
+            "autonomy": autonomy,
             "activation_scope": activation_scope,
             "activation_guardrails": activation_guardrails,
             "activation_reason": activation_reason,
+            "city_automation": city_automation,
+            "multi_city_orchestration": multi_city_orchestration,
             "advisory_only": True,
             "execution_authority": False,
             "read_only": True,
             "projection_only": True,
         },
         "safe_execution": execution,
+        "autonomy": autonomy,
+        "driver_allocation": driver_allocation,
+        "city_automation": city_automation,
+        "multi_city_orchestration": multi_city_orchestration,
         "directory": directory,
         "billing": billing_preview,
         "readiness": {
@@ -3412,6 +4396,387 @@ def build_dashboard_actions_history(
         "history": actions["history"],
         "signals": actions["signals"],
         "read_only": True,
+    }
+
+
+def build_dashboard_autonomy(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    return _build_dashboard_autonomy_context(
+        organization_id=organization_id,
+        source=source,
+        limit=limit,
+    )
+
+
+def build_dashboard_city_automation(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    autonomy_context = _build_dashboard_autonomy_context(
+        organization_id=organization_id,
+        source=source,
+        limit=limit,
+    )
+    city_automation = dict(autonomy_context.get("city_automation", {}))
+    return {
+        "view": "novatech_city_automation",
+        "organization_id": autonomy_context.get("organization_id"),
+        "source": autonomy_context.get("source"),
+        "autonomy": autonomy_context.get("autonomy", {}),
+        "driver_allocation": autonomy_context.get("driver_allocation", {}),
+        "city_automation": city_automation,
+        "prediction": city_automation.get("prediction", {}),
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_dashboard_multi_city_orchestration(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    autonomy_context = _build_dashboard_autonomy_context(
+        organization_id=organization_id,
+        source=source,
+        limit=limit,
+    )
+    multi_city_orchestration = dict(autonomy_context.get("multi_city_orchestration", {}))
+    return {
+        "view": "novatech_multi_city_orchestration",
+        "organization_id": autonomy_context.get("organization_id"),
+        "source": autonomy_context.get("source"),
+        "autonomy": autonomy_context.get("autonomy", {}),
+        "city_automation": autonomy_context.get("city_automation", {}),
+        "multi_city_orchestration": multi_city_orchestration,
+        "global_learning": multi_city_orchestration.get("global_learning", {}),
+        "prediction": multi_city_orchestration.get("prediction", {}),
+        "read_only": True,
+        "projection_only": True,
+    }
+
+
+def build_dashboard_digital_twin(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    autonomy_context = _build_dashboard_autonomy_context(
+        organization_id=organization_id,
+        source=source,
+        limit=limit,
+    )
+    outcome_learning = build_outcome_learning(
+        organization_id=organization_id,
+        source=source,
+        limit=limit,
+    )
+
+    org_id = autonomy_context.get("organization_id") or organization_id or DEFAULT_ORGANIZATION_ID
+    autonomy = dict(autonomy_context.get("autonomy", {}))
+    current_action = dict(autonomy_context.get("action", {}))
+    driver_allocation = dict(autonomy_context.get("driver_allocation", {}))
+    city_automation = dict(autonomy_context.get("city_automation", {}))
+    multi_city_orchestration = dict(autonomy_context.get("multi_city_orchestration", {}))
+    current_learning = dict(outcome_learning.get("current", {}))
+    learning = dict(outcome_learning.get("learning", {}))
+    prediction = dict(autonomy_context.get("prediction", {}))
+
+    observed = dict(autonomy.get("observed", {}))
+    trust_health = int(observed.get("trust_health", current_action.get("trust_health", 0)) or 0)
+    replay_health_score = int(observed.get("replay_health_score", current_action.get("replay_health_score", 0)) or 0)
+    evidence_coverage = int(observed.get("evidence_coverage", current_action.get("evidence_coverage", 0)) or 0)
+    confidence_score = int(round(float(current_action.get("calibrated_confidence", 0.0) or 0.0) * 100))
+    city_coverage = int(city_automation.get("coverage_score", 0) or 0)
+    global_coverage = int(multi_city_orchestration.get("global_coverage_score", 0) or 0)
+    live_sync_score = min(
+        100,
+        max(
+            0,
+            (trust_health + replay_health_score + evidence_coverage + confidence_score + city_coverage + global_coverage) // 6,
+        ),
+    )
+    twin_mode = (
+        "global_closed_loop"
+        if multi_city_orchestration.get("mode") == "global_zero_operator"
+        else "city_closed_loop"
+        if city_automation.get("mode") == "zero_operator"
+        else "predictive_closed_loop"
+        if bool(autonomy.get("safe_to_autorun", False))
+        else "shadow_sync"
+    )
+    learning_mode = (
+        "learning"
+        if str(learning.get("band", "hold")) in {"excellent", "strong"}
+        else "recalibrating"
+        if str(learning.get("band", "hold")) in {"guarded", "weak"}
+        else "watching"
+    )
+    twin_health_score = min(
+        100,
+        max(
+            0,
+            (live_sync_score + int(prediction.get("predicted_trust_score", 0) or 0) + int(prediction.get("predicted_evidence_coverage", 0) or 0)) // 3,
+        ),
+    )
+    next_state = (
+        "global_zero_operator"
+        if multi_city_orchestration.get("mode") == "global_zero_operator"
+        else "city_zero_operator"
+        if city_automation.get("mode") == "zero_operator"
+        else "predictive_autonomous"
+        if bool(autonomy.get("safe_to_autorun", False))
+        else "supervised_shadow"
+    )
+    recommendation = (
+        multi_city_orchestration.get("instruction")
+        or city_automation.get("instruction")
+        or driver_allocation.get("predictive_positioning", {}).get("instruction")
+        or current_action.get("recommended_next_step")
+        or "Keep the digital twin in projection-only mode."
+    )
+    reason = (
+        multi_city_orchestration.get("reason")
+        or city_automation.get("reason")
+        or driver_allocation.get("reason")
+        or current_action.get("decision_summary")
+        or "The twin is mirroring live signals and learning from the latest outcomes."
+    )
+    self_improving_loop = {
+        "mode": learning_mode,
+        "cycle": list(learning.get("cycle", [])),
+        "band": learning.get("band", "hold"),
+        "trend": dict(learning.get("trend", {})),
+        "recommendations": list(learning.get("recommendations", [])),
+        "recalibration_notes": list(learning.get("recalibration_notes", [])),
+        "watch_items": list(learning.get("watch_items", [])),
+        "outcome_score": int(current_learning.get("outcome_score", 0) or 0),
+        "measurement_summary": current_learning.get("measurement_summary", ""),
+        "projection_only": True,
+        "read_only": True,
+    }
+    digital_twin = {
+        "mode": twin_mode,
+        "live_sync_score": live_sync_score,
+        "twin_health_score": twin_health_score,
+        "live_state": {
+            "active_drivers": int(city_automation.get("active_drivers", driver_allocation.get("available_drivers", 0)) or 0),
+            "active_rides": int(city_automation.get("active_rides", multi_city_orchestration.get("active_rides", 0)) or 0),
+            "zone": str(city_automation.get("recommended_zone") or driver_allocation.get("predictive_positioning", {}).get("target_zone") or "CBD"),
+            "demand_level": str(prediction.get("demand_level", "low")),
+            "trust_score": int(prediction.get("trust_score", multi_city_orchestration.get("global_trust_score", 0)) or 0),
+            "city_coverage_score": city_coverage,
+            "global_coverage_score": global_coverage,
+        },
+        "prediction": {
+            "next_state": next_state,
+            "confidence": round(twin_health_score / 100, 2),
+            "trust_score": int(prediction.get("predicted_trust_score", current_learning.get("trust_score", 0)) or 0),
+            "evidence_coverage": int(prediction.get("predicted_evidence_coverage", current_learning.get("evidence_coverage", 0)) or 0),
+            "exception_pressure": int(prediction.get("predicted_exception_pressure", 0) or 0),
+        },
+        "autonomy": autonomy,
+        "driver_allocation": driver_allocation,
+        "city_automation": city_automation,
+        "multi_city_orchestration": multi_city_orchestration,
+        "self_improving_loop": self_improving_loop,
+        "recommendation": recommendation,
+        "reason": reason,
+        "bounded_actions": [
+            "mirror live ride, driver, and trust signals",
+            "learn from the latest outcome band",
+            "keep execution read-only until thresholds clear",
+        ],
+        "projection_only": True,
+        "read_only": True,
+    }
+    return {
+        "view": "novatech_digital_twin",
+        "organization_id": org_id,
+        "source": autonomy_context.get("source", source or "all"),
+        "digital_twin": digital_twin,
+        "self_improving_loop": self_improving_loop,
+        "mode": twin_mode,
+        "live_sync_score": live_sync_score,
+        "twin_health_score": twin_health_score,
+        "live_state": digital_twin["live_state"],
+        "prediction": digital_twin["prediction"],
+        "autonomy": autonomy,
+        "driver_allocation": driver_allocation,
+        "city_automation": city_automation,
+        "multi_city_orchestration": multi_city_orchestration,
+        "recommendation": recommendation,
+        "reason": reason,
+        "bounded_actions": digital_twin["bounded_actions"],
+        "projection_only": True,
+        "read_only": True,
+    }
+
+
+def build_dashboard_meta_learning_redesign(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    digital_twin = build_dashboard_digital_twin(
+        organization_id=org_id,
+        source=source,
+        limit=limit,
+    )
+    outcome_learning = build_outcome_learning(
+        organization_id=org_id,
+        source=source,
+        limit=limit,
+    )
+    learning = dict(outcome_learning.get("learning", {}))
+    current_outcome = dict(outcome_learning.get("current", {}))
+    twin = dict(digital_twin.get("digital_twin", {}))
+    twin_state = dict(twin.get("live_state", {}))
+    prediction = dict(twin.get("prediction", {}))
+    design_intent = (
+        "Redesign the NovaRide architecture as a governed meta-learning system with "
+        "a real-time digital twin, self-improving control loop, bounded autonomous "
+        "execution, and proposal-only architecture evolution."
+    )
+    design_output = DesignGenerator().generate(design_intent).canonical_dict()
+    architecture = dict(design_output.get("architecture", {}))
+    review = dict(design_output.get("review", {}))
+    implementation_plan = dict(design_output.get("implementation_plan", {}))
+    meta_learning_mode = (
+        "adaptive_redesign"
+        if review.get("admitted") and current_outcome.get("outcome_band") in {"excellent", "strong"}
+        else "proposal_watch"
+        if current_outcome.get("outcome_band") == "guarded"
+        else "design_hold"
+    )
+    redesign_triggers = [
+        f"Outcome band: {current_outcome.get('outcome_band', 'unknown')}",
+        f"Learning band: {learning.get('band', 'hold')}",
+        f"Twin mode: {twin.get('mode', 'shadow_sync')}",
+        f"Trust score: {twin_state.get('trust_score', 0)}",
+        f"Prediction confidence: {prediction.get('confidence', 0)}",
+    ]
+    self_redesign_rules = [
+        "proposal_only",
+        "read_only",
+        "no_runtime_mutation",
+        "no_auto_deploy",
+        "human_review_required",
+        "guardrails_preserve_authority_boundaries",
+    ]
+    candidate_redesign = {
+        "intent": design_output.get("intent", design_intent),
+        "domain": design_output.get("domain", {}),
+        "requirements": design_output.get("requirements", {}),
+        "architecture": architecture,
+        "contracts": design_output.get("contracts", {}),
+        "implementation_plan": implementation_plan,
+        "evidence": design_output.get("evidence", {}),
+        "review": review,
+        "authority_boundary": "proposal_only",
+        "write_enabled": False,
+    }
+    architecture_change_summary = [
+        "Keep the governed control plane as the execution authority.",
+        "Add a meta-learning proposal surface that studies outcomes and twin drift.",
+        "Use the digital twin to rank redesign candidates before human review.",
+        "Preserve tenant isolation, auditability, and replay safety.",
+    ]
+    return {
+        "view": "novatech_meta_learning_redesign",
+        "organization_id": org_id,
+        "source": source or "afriride_operator_dashboard",
+        "mode": meta_learning_mode,
+        "trigger_window": {
+            "outcome_band": current_outcome.get("outcome_band", "unknown"),
+            "learning_band": learning.get("band", "hold"),
+            "twin_mode": twin.get("mode", "shadow_sync"),
+            "twin_health_score": twin.get("twin_health_score", 0),
+            "live_sync_score": twin.get("live_sync_score", 0),
+        },
+        "digital_twin": twin,
+        "outcome_learning": outcome_learning,
+        "self_redesign_rules": self_redesign_rules,
+        "redesign_triggers": redesign_triggers,
+        "candidate_redesign": candidate_redesign,
+        "architecture_change_summary": architecture_change_summary,
+        "bounded_actions": [
+            "observe architecture drift",
+            "generate a proposal-only redesign",
+            "require human approval before any implementation",
+        ],
+        "projection_only": True,
+        "read_only": True,
+    }
+
+
+def build_dashboard_business_pricing(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    from afritech.afriprogramming.phase3 import build_business_pricing_projection
+
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    projection = build_business_pricing_projection(
+        organization_id=org_id,
+        limit=limit,
+        source=source,
+    )
+    return {
+        "view": "novatech_business_pricing",
+        "organization_id": org_id,
+        "source": source or "afriride_operator_dashboard",
+        "pricing": projection.get("pricing", {}),
+        "incentives": projection.get("incentives", {}),
+        "market_signals": projection.get("market_signals", {}),
+        "market": projection.get("market", {}),
+        "decision": projection.get("decision", {}),
+        "invariant_report": projection.get("invariant_report", {}),
+        "validation_report": projection.get("validation_report", {}),
+        "readiness": projection.get("readiness", {}),
+        "ready": bool(projection.get("ready", False)),
+        "controls": projection.get("controls", {}),
+        "projection_only": True,
+        "read_only": True,
+        "governance_linked": True,
+        "creates_authority": False,
+    }
+
+
+def build_dashboard_city_profit_optimization(
+    organization_id: str | None = None,
+    source: str | None = "afriride_operator_dashboard",
+    limit: int = 24,
+) -> dict[str, Any]:
+    from afritech.afriprogramming.phase4 import build_business_budget_allocation_projection
+
+    org_id = organization_id or DEFAULT_ORGANIZATION_ID
+    projection = build_business_budget_allocation_projection(
+        organization_id=org_id,
+        limit=limit,
+        source=source,
+    )
+    return {
+        "view": "novatech_city_profit_optimization",
+        "organization_id": org_id,
+        "source": source or "afriride_operator_dashboard",
+        "phase3": projection.get("phase3", {}),
+        "budget_allocation": projection.get("budget_allocation", {}),
+        "profit_optimization": projection.get("profit_optimization", {}),
+        "city_signals": projection.get("city_signals", {}),
+        "readiness": projection.get("readiness", {}),
+        "ready": bool(projection.get("ready", False)),
+        "controls": projection.get("controls", {}),
+        "projection_only": True,
+        "read_only": True,
+        "governance_linked": True,
+        "creates_authority": False,
     }
 
 
@@ -5006,6 +6371,15 @@ class NovaProgrammingControlPlane:
     ) -> dict[str, Any]:
         return build_dashboard_analytics_prediction(organization_id=organization_id, source=source, limit=limit)
 
+    def dashboard_demand_forecast(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_demand_forecast(organization_id=organization_id, source=source, limit=limit)
+
     def dashboard_decisions(
         self,
         *,
@@ -5032,6 +6406,69 @@ class NovaProgrammingControlPlane:
         limit: int = 24,
     ) -> dict[str, Any]:
         return build_dashboard_actions(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_autonomy(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_autonomy(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_city_automation(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_city_automation(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_multi_city_orchestration(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_multi_city_orchestration(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_digital_twin(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_digital_twin(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_meta_learning_redesign(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_meta_learning_redesign(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_business_pricing(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_business_pricing(organization_id=organization_id, source=source, limit=limit)
+
+    def dashboard_city_profit_optimization(
+        self,
+        *,
+        organization_id: str | None = None,
+        source: str | None = "afriride_operator_dashboard",
+        limit: int = 24,
+    ) -> dict[str, Any]:
+        return build_dashboard_city_profit_optimization(organization_id=organization_id, source=source, limit=limit)
 
     def dashboard_actions_history(
         self,
@@ -5894,6 +7331,332 @@ class NovaProgrammingControlPlane:
     def assurance_scheduler_history(self, organization_id: str | None = None) -> dict[str, Any]:
         return build_assurance_scheduler_history(organization_id=organization_id)
 
+    def phase0_status(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        return build_phase0_status(organization_id=organization_id, limit=limit)
+
+    def phase0_organization_onboard(
+        self,
+        *,
+        organization_id: str,
+        legal_name: str,
+        sector: str,
+        trust_domain: str,
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        return build_organization_onboarding(
+            organization_id=organization_id,
+            legal_name=legal_name,
+            sector=sector,
+            trust_domain=trust_domain,
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+        )
+
+    def phase0_accounts(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        accounts = _STORE.list_accounts(organization_id=organization_id, limit=limit)
+        return {
+            "view": "novaprogramming_phase0_accounts",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(accounts),
+            "accounts": accounts,
+            "read_only": True,
+        }
+
+    def phase0_account_create(
+        self,
+        *,
+        organization_id: str,
+        user_id: str,
+        role: str,
+        status: str = "active",
+        is_primary: bool = False,
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        account = _STORE.store_account(
+            organization_id=organization_id,
+            user_id=user_id,
+            role=role,
+            status=status,
+            is_primary=is_primary,
+        )
+        _phase0_audit(
+            organization_id=organization_id,
+            event_type="phase0.account_create",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=user_id,
+            status="recorded",
+            payload={
+                "organization_id": organization_id,
+                "user_id": user_id,
+                "role": role,
+                "is_primary": is_primary,
+            },
+        )
+        return {
+            "view": "novaprogramming_phase0_account",
+            "organization_id": organization_id,
+            "account": account,
+            "read_only": False,
+        }
+
+    def phase0_subscriptions(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        subscriptions = _STORE.list_subscriptions(organization_id=organization_id, limit=limit)
+        return {
+            "view": "novaprogramming_phase0_subscriptions",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(subscriptions),
+            "subscriptions": subscriptions,
+            "read_only": True,
+        }
+
+    def phase0_subscription_create(
+        self,
+        *,
+        organization_id: str,
+        plan: str,
+        status: str = "active",
+        billing_cycle: str = "monthly",
+        seats: int = 1,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        auto_renew: bool = True,
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        subscription = _STORE.store_subscription(
+            organization_id=organization_id,
+            plan=plan,
+            status=status,
+            billing_cycle=billing_cycle,
+            seats=seats,
+            start_date=start_date,
+            end_date=end_date,
+            auto_renew=auto_renew,
+        )
+        _phase0_audit(
+            organization_id=organization_id,
+            event_type="phase0.subscription_create",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=subscription["subscription_id"],
+            status="recorded",
+            payload=subscription,
+        )
+        return {
+            "view": "novaprogramming_phase0_subscription",
+            "organization_id": organization_id,
+            "subscription": subscription,
+            "read_only": False,
+        }
+
+    def phase0_catalog(self, organization_id: str | None = None, limit: int = 100) -> dict[str, Any]:
+        seed_phase0_catalog(organization_id)
+        features = _STORE.list_features(limit=limit)
+        return {
+            "view": "novaprogramming_phase0_catalog",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(features),
+            "features": features,
+            "read_only": True,
+        }
+
+    def phase0_feature_flag_set(
+        self,
+        *,
+        organization_id: str,
+        feature_key: str,
+        enabled: bool,
+        reason: str = "platform_control",
+        updated_by: str = "system",
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        flag = _STORE.set_feature_flag(
+            organization_id=organization_id,
+            feature_key=feature_key,
+            enabled=enabled,
+            reason=reason,
+            updated_by=updated_by,
+        )
+        _phase0_audit(
+            organization_id=organization_id,
+            event_type="phase0.feature_flag_set",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=feature_key,
+            status="recorded",
+            payload=flag,
+        )
+        return {
+            "view": "novaprogramming_phase0_feature_flag",
+            "organization_id": organization_id,
+            "flag": flag,
+            "read_only": False,
+        }
+
+    def phase0_feature_flags(
+        self,
+        *,
+        organization_id: str | None = None,
+        feature_key: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        flags = _STORE.list_feature_flags(
+            organization_id=organization_id,
+            feature_key=feature_key,
+            limit=limit,
+        )
+        return {
+            "view": "novaprogramming_phase0_feature_flags",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(flags),
+            "feature_flags": flags,
+            "read_only": True,
+        }
+
+    def phase0_notification_queue(
+        self,
+        *,
+        organization_id: str,
+        recipient_id: str,
+        channel: str,
+        message: str,
+        status: str = "queued",
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        notification = _STORE.queue_notification(
+            organization_id=organization_id,
+            recipient_id=recipient_id,
+            channel=channel,
+            message=message,
+            status=status,
+        )
+        _phase0_audit(
+            organization_id=organization_id,
+            event_type="phase0.notification_queue",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=recipient_id,
+            status="recorded",
+            payload=notification,
+        )
+        return {
+            "view": "novaprogramming_phase0_notification",
+            "organization_id": organization_id,
+            "notification": notification,
+            "read_only": False,
+        }
+
+    def phase0_notification_send(
+        self,
+        *,
+        notification_id: str,
+        organization_id: str | None = None,
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        notification = _STORE.mark_notification_sent(
+            notification_id=notification_id,
+            organization_id=organization_id,
+        )
+        if notification is None:
+            raise ValueError("notification not found")
+        _phase0_audit(
+            organization_id=notification["organization_id"],
+            event_type="phase0.notification_send",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=notification_id,
+            status="recorded",
+            payload=notification,
+        )
+        return {
+            "view": "novaprogramming_phase0_notification_delivery",
+            "organization_id": notification["organization_id"],
+            "notification": notification,
+            "read_only": False,
+        }
+
+    def phase0_notifications(
+        self,
+        *,
+        organization_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        notifications = _STORE.list_notifications(
+            organization_id=organization_id,
+            status=status,
+            limit=limit,
+        )
+        return {
+            "view": "novaprogramming_phase0_notifications",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(notifications),
+            "notifications": notifications,
+            "read_only": True,
+        }
+
+    def phase0_integration_register(
+        self,
+        *,
+        organization_id: str,
+        name: str,
+        type: str,
+        config: dict[str, Any] | None = None,
+        status: str = "active",
+        last_synced_at: str | None = None,
+        actor_user_id: str = "system",
+        actor_role: str = "system",
+    ) -> dict[str, Any]:
+        integration = _STORE.register_integration(
+            organization_id=organization_id,
+            name=name,
+            type=type,
+            config=config,
+            status=status,
+            last_synced_at=last_synced_at,
+        )
+        _phase0_audit(
+            organization_id=organization_id,
+            event_type="phase0.integration_register",
+            actor_user_id=actor_user_id,
+            actor_role=actor_role,
+            target=name,
+            status="recorded",
+            payload=integration,
+        )
+        return {
+            "view": "novaprogramming_phase0_integration",
+            "organization_id": organization_id,
+            "integration": integration,
+            "read_only": False,
+        }
+
+    def phase0_integrations(
+        self,
+        *,
+        organization_id: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        integrations = _STORE.list_integrations(
+            organization_id=organization_id,
+            status=status,
+            limit=limit,
+        )
+        return {
+            "view": "novaprogramming_phase0_integrations",
+            "organization_id": organization_id or DEFAULT_ORGANIZATION_ID,
+            "count": len(integrations),
+            "integrations": integrations,
+            "read_only": True,
+        }
+
 
 __all__ = [
 
@@ -5914,16 +7677,26 @@ __all__ = [
     "build_dashboard_analytics_history",
     "build_dashboard_analytics_insights",
     "build_dashboard_analytics_prediction",
+    "build_dashboard_demand_forecast",
     "build_dashboard_decisions",
     "build_dashboard_decisions_history",
     "build_dashboard_actions",
     "build_dashboard_actions_history",
+    "build_dashboard_autonomy",
+    "build_dashboard_city_automation",
+    "build_dashboard_multi_city_orchestration",
+    "build_dashboard_digital_twin",
+    "build_dashboard_meta_learning_redesign",
+    "build_dashboard_business_pricing",
+    "build_dashboard_city_profit_optimization",
     "build_outcome_status",
     "build_outcome_registry",
     "build_outcome_learning",
     "build_outcome_scoring",
     "build_outcome_replay",
     "build_organization_onboarding",
+    "build_phase0_status",
+    "seed_phase0_catalog",
     "build_federated_trust_network",
     "build_trust_marketplace_services",
     "build_trust_marketplace",

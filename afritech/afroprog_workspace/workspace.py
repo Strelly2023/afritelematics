@@ -1,4 +1,4 @@
-"""Workspace views for the runtime-safe AfriPro package."""
+"""Workspace views for the runtime-safe AfriPro / NovaCodePro package."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def build_workspace_payload(
     session = seed_session(project)
     response = AfriProAIService().generate_code(prompt, mode=mode, project=project, session=session)
     return {
-        "dashboard_title": "AfriPro Dashboard",
+        "dashboard_title": "AfriPro / NovaCodePro Dashboard",
         "workspace_mode": "codex_style",
         "project_explorer": [{"path": item.path, "language": item.language} for item in project.files],
         "chat_panel": {"prompt": prompt, "mode": mode, "response": response.canonical_dict()},
