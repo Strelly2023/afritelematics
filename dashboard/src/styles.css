@@ -1722,6 +1722,21 @@ a {
   gap: 7px;
 }
 
+.novapay-portal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.novapay-portal-card {
+  align-content: start;
+}
+
+.novapay-portal-card p {
+  color: #526176;
+  line-height: 1.5;
+}
+
 .record-card-footer {
   border-top: 1px solid #e0e8ee;
   margin-top: 12px;
@@ -1776,6 +1791,7 @@ a {
   .git-pull-list,
   .novapay-app-grid,
   .novapay-build-grid,
+  .novapay-portal-grid,
   .roadmap-lane {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1852,6 +1868,7 @@ a {
   .git-pull-list,
   .novapay-app-grid,
   .novapay-build-grid,
+  .novapay-portal-grid,
   .roadmap-lane {
     grid-template-columns: 1fr;
   }

@@ -157,6 +157,11 @@ def test_novapay_role_based_apps_surface_is_declared() -> None:
         "No duplicated business logic in role apps",
         "NovaPay Implementation Roadmap",
         "NovaPay Priority App Build Specifications",
+        "NovaPay Merchant and Agent Web Portals",
+        "NovaPay Merchant App / Web / Portal",
+        "NovaPay Agent App / Web / Portal",
+        "merchant_web_portal",
+        "agent_web_portal",
         "NovaPay Business App / Portal / Web",
         "NovaPay Operations App / Website",
         "Home balance",
@@ -168,6 +173,26 @@ def test_novapay_role_based_apps_surface_is_declared() -> None:
         "Merchant Dashboard",
         "Receive Payment",
         "QR Display",
+        "Merchant Overview",
+        "Payment Requests",
+        "QR Checkout",
+        "Refund Console",
+        "Settlement Batches",
+        "Merchant Settings",
+        "Create QR payment request",
+        "Generate invoice",
+        "Approve refund",
+        "Daily sales root",
+        "Agent Overview",
+        "Cash In Console",
+        "Cash Out Console",
+        "Float Ledger",
+        "Shift Reconciliation",
+        "Field Audit",
+        "Open agent shift",
+        "Request float top-up",
+        "Submit shift proof",
+        "Shift reconciliation root",
         "Business Overview",
         "Bulk Payments",
         "Payroll",
@@ -184,6 +209,10 @@ def test_novapay_role_based_apps_surface_is_declared() -> None:
         "GET /v1/transfers/{id}/timeline",
         "Quote hash",
         "Replay valid badge",
+        "Receipt verifier",
+        "Settlement batch hash",
+        "KYC evidence hash",
+        "Float delta proof",
         "Closing balance proof",
         "Settlement batch",
         "Approval chain",
@@ -195,6 +224,7 @@ def test_novapay_role_based_apps_surface_is_declared() -> None:
     assert "novapay-apps-band" in styles
     assert "novapay-app-grid" in styles
     assert "novapay-build-grid" in styles
+    assert "novapay-portal-grid" in styles
     assert "roadmap-lane" in styles
 
 

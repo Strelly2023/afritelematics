@@ -1209,6 +1209,111 @@ const NOVAPAY_PRIORITY_APP_BUILDS = [
   },
 ];
 
+const NOVAPAY_PORTAL_APP_BUILDS = [
+  {
+    name: "Merchant App/Web/Portal",
+    surface: "merchant_web_portal",
+    productLabel: "NovaPay Merchant App / Web / Portal",
+    audience: "Retail groups, restaurants, shops, SMEs, finance managers, and branch operators",
+    outcome: "Give merchants one governed workspace for accepting payments, issuing refunds, settling balances, and proving daily sales.",
+    pages: [
+      "Merchant Overview",
+      "Payment Requests",
+      "QR Checkout",
+      "Transactions",
+      "Refund Console",
+      "Settlement Batches",
+      "Invoices",
+      "Disputes",
+      "Analytics",
+      "Merchant Settings",
+    ],
+    commandCenter: [
+      "Create QR payment request",
+      "Generate invoice",
+      "Approve refund",
+      "Review settlement batch",
+      "Export daily sales proof",
+      "Verify receipt",
+    ],
+    webWorkflow: [
+      "Create payment intent",
+      "Present QR or payment link",
+      "Confirm customer payment",
+      "Issue cryptographic receipt",
+      "Batch settlement",
+      "Export merchant audit report",
+    ],
+    backendBindings: [
+      "POST /v1/transfers/quote",
+      "POST /v1/transfers",
+      "GET /v1/transfers/{id}/receipt",
+      "GET /v1/transfers/{id}/verification",
+      "GET /v1/core-platform/payments/providers/status",
+      "GET /v1/treasury/snapshot",
+    ],
+    proofControls: [
+      "QR payload hash",
+      "Receipt verifier",
+      "Refund replay trace",
+      "Settlement batch hash",
+      "Daily sales root",
+    ],
+  },
+  {
+    name: "Agent App/Web/Portal",
+    surface: "agent_web_portal",
+    productLabel: "NovaPay Agent App / Web / Portal",
+    audience: "Agent network managers, cash-in agents, cash-out agents, rural liquidity supervisors, and field auditors",
+    outcome: "Give agents and supervisors a governed workspace for cash operations, float control, KYC capture, reconciliation, and proof exports.",
+    pages: [
+      "Agent Overview",
+      "Cash In Console",
+      "Cash Out Console",
+      "Customer Lookup",
+      "KYC Review",
+      "Float Ledger",
+      "Float Requests",
+      "Shift Reconciliation",
+      "Agent Settlements",
+      "Field Audit",
+    ],
+    commandCenter: [
+      "Open agent shift",
+      "Lookup customer",
+      "Capture KYC evidence",
+      "Process cash in",
+      "Process cash out",
+      "Request float top-up",
+      "Close and reconcile shift",
+    ],
+    webWorkflow: [
+      "Open shift",
+      "Verify customer identity",
+      "Validate funding source",
+      "Record cash movement",
+      "Generate receipt",
+      "Reconcile float ledger",
+      "Submit shift proof",
+    ],
+    backendBindings: [
+      "POST /v1/funding-sources/validate",
+      "POST /v1/transfers/quote",
+      "POST /v1/transfers",
+      "GET /v1/transfers/{id}/receipt",
+      "GET /v1/transfers/{id}/replay",
+      "GET /v1/treasury/snapshot",
+    ],
+    proofControls: [
+      "KYC evidence hash",
+      "Cash receipt code",
+      "Float delta proof",
+      "Closing balance proof",
+      "Shift reconciliation root",
+    ],
+  },
+];
+
 const NOVAPAY_CONTROL_PLANE_GUARANTEES = [
   "All apps are thin clients over the governed backend",
   "One Transfer aggregate",
@@ -7429,6 +7534,61 @@ export default function OperatorDashboard() {
                   <div className="chip-row">
                     {app.proofWidgets.map((widget) => (
                       <span key={widget} className="reason-chip reason-chip-success">{widget}</span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="NovaPay Merchant and Agent Web Portals">
+          <div className="novapay-portal-grid">
+            {NOVAPAY_PORTAL_APP_BUILDS.map((portal) => (
+              <article key={portal.name} className="record-card novapay-portal-card">
+                <div className="record-card-header">
+                  <strong>{portal.productLabel}</strong>
+                  <span>{portal.surface}</span>
+                </div>
+                <p>{portal.audience}</p>
+                <p>{portal.outcome}</p>
+                <div className="novapay-build-section">
+                  <strong>Portal pages</strong>
+                  <div className="chip-row">
+                    {portal.pages.map((page) => (
+                      <span key={page} className="surface-chip">{page}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Command center actions</strong>
+                  <div className="chip-row">
+                    {portal.commandCenter.map((action) => (
+                      <span key={action} className="reason-chip">{action}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Web workflow</strong>
+                  <div className="flow-line" aria-label={`${portal.name} web workflow`}>
+                    {portal.webWorkflow.map((step) => (
+                      <span key={step}>{step}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Governed backend bindings</strong>
+                  <div className="git-pull-list">
+                    {portal.backendBindings.map((binding) => (
+                      <code key={binding}>{binding}</code>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Portal proof controls</strong>
+                  <div className="chip-row">
+                    {portal.proofControls.map((control) => (
+                      <span key={control} className="reason-chip reason-chip-success">{control}</span>
                     ))}
                   </div>
                 </div>
