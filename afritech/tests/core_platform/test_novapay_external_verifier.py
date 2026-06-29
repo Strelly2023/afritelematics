@@ -84,6 +84,16 @@ def test_external_verifier_rejects_tampered_merkle_proof() -> None:
     assert result["transfer_merkle_valid"] is False
 
 
+def test_external_verifier_rejects_tampered_merkle_event_identity() -> None:
+    package = deepcopy(_audit_package())
+    package["merkle_proofs"][0]["sequence"] = 999
+
+    result = verify_audit_package(package)
+
+    assert result["valid"] is False
+    assert result["transfer_merkle_valid"] is False
+
+
 def test_external_verifier_rejects_tampered_global_ledger_root() -> None:
     package = deepcopy(_audit_package())
     package["ledger_checkpoint"]["transfer_roots"][0]["transfer_merkle_root"] = "e" * 64

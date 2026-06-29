@@ -7,9 +7,11 @@ policy, routing, ledger, settlement, and receipt as distinct runtime domains.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from decimal import Decimal
+from threading import RLock
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -1193,6 +1195,7 @@ class NovaPayRegistry:
 
 class InMemoryNovaPayRuntimeStore:
     def __init__(self) -> None:
+        self._lock = RLock()
         self.records: dict[str, RuntimeTransferRecord] = {}
         self.events: dict[str, list[TransferEvent]] = {}
         self.accounts: dict[str, Account] = {}
@@ -1203,84 +1206,97 @@ class InMemoryNovaPayRuntimeStore:
         self.outbox: list[OutboxRecord] = []
         self.snapshots: dict[str, list[TransferSnapshot]] = {}
 
+    @contextmanager
+    def read_snapshot(self) -> Any:
+        with self._lock:
+            yield
+
     def save(self, record: RuntimeTransferRecord) -> None:
-        self.records[record.transfer.transfer_id] = record
-        self.events[record.transfer.transfer_id] = list(record.events)
+        with self._lock:
+            self.records[record.transfer.transfer_id] = record
+            self.events[record.transfer.transfer_id] = list(record.events)
 
     def get(self, transfer_id: str) -> RuntimeTransferRecord | None:
-        return self.records.get(transfer_id)
+        with self._lock:
+            return self.records.get(transfer_id)
 
     def append_event(self, transfer_id: str, event: TransferEvent) -> None:
-        self.events.setdefault(transfer_id, []).append(event)
-        record = self.records.get(transfer_id)
-        if record is not None:
-            self.records[transfer_id] = RuntimeTransferRecord(
-                transfer=record.transfer,
-                admission=record.admission,
-                funding_source=record.funding_source,
-                recipient=record.recipient,
-                compliance_case=record.compliance_case,
-                journal_entry=record.journal_entry,
-                ledger_entries=record.ledger_entries,
-                settlement=record.settlement,
-                receipt=record.receipt,
-                provider_receipt=record.provider_receipt,
-                events=tuple(self.events[transfer_id]),
-            )
+        with self._lock:
+            self.events.setdefault(transfer_id, []).append(event)
+            record = self.records.get(transfer_id)
+            if record is not None:
+                self.records[transfer_id] = RuntimeTransferRecord(
+                    transfer=record.transfer,
+                    admission=record.admission,
+                    funding_source=record.funding_source,
+                    recipient=record.recipient,
+                    compliance_case=record.compliance_case,
+                    journal_entry=record.journal_entry,
+                    ledger_entries=record.ledger_entries,
+                    settlement=record.settlement,
+                    receipt=record.receipt,
+                    provider_receipt=record.provider_receipt,
+                    events=tuple(self.events[transfer_id]),
+                )
 
     def append_outbox(self, record: OutboxRecord) -> None:
-        self.outbox.append(record)
+        with self._lock:
+            self.outbox.append(record)
 
     def mark_outbox_published(self, outbox_id: str) -> None:
-        self.outbox = [
-            OutboxRecord(
-                outbox_id=record.outbox_id,
-                event_type=record.event_type,
-                aggregate_id=record.aggregate_id,
-                aggregate_version=record.aggregate_version,
-                payload_hash=record.payload_hash,
-                payload_json=record.payload_json,
-                status="published",
-                retry_count=record.retry_count,
-                created_at=record.created_at,
-                published_at=_utcnow(),
-                failed_at=record.failed_at,
-                last_error=record.last_error,
-            )
-            if record.outbox_id == outbox_id
-            else record
-            for record in self.outbox
-        ]
+        with self._lock:
+            self.outbox = [
+                OutboxRecord(
+                    outbox_id=record.outbox_id,
+                    event_type=record.event_type,
+                    aggregate_id=record.aggregate_id,
+                    aggregate_version=record.aggregate_version,
+                    payload_hash=record.payload_hash,
+                    payload_json=record.payload_json,
+                    status="published",
+                    retry_count=record.retry_count,
+                    created_at=record.created_at,
+                    published_at=_utcnow(),
+                    failed_at=record.failed_at,
+                    last_error=record.last_error,
+                )
+                if record.outbox_id == outbox_id
+                else record
+                for record in self.outbox
+            ]
 
     def mark_outbox_failed(self, outbox_id: str, error: str) -> None:
-        self.outbox = [
-            OutboxRecord(
-                outbox_id=record.outbox_id,
-                event_type=record.event_type,
-                aggregate_id=record.aggregate_id,
-                aggregate_version=record.aggregate_version,
-                payload_json=record.payload_json,
-                payload_hash=record.payload_hash,
-                status="failed",
-                retry_count=record.retry_count + 1,
-                created_at=record.created_at,
-                published_at=record.published_at,
-                failed_at=_utcnow(),
-                last_error=error,
-            )
-            if record.outbox_id == outbox_id
-            else record
-            for record in self.outbox
-        ]
+        with self._lock:
+            self.outbox = [
+                OutboxRecord(
+                    outbox_id=record.outbox_id,
+                    event_type=record.event_type,
+                    aggregate_id=record.aggregate_id,
+                    aggregate_version=record.aggregate_version,
+                    payload_json=record.payload_json,
+                    payload_hash=record.payload_hash,
+                    status="failed",
+                    retry_count=record.retry_count + 1,
+                    created_at=record.created_at,
+                    published_at=record.published_at,
+                    failed_at=_utcnow(),
+                    last_error=error,
+                )
+                if record.outbox_id == outbox_id
+                else record
+                for record in self.outbox
+            ]
 
     def save_snapshot(self, snapshot: TransferSnapshot) -> None:
-        self.snapshots.setdefault(snapshot.transfer_id, []).append(snapshot)
+        with self._lock:
+            self.snapshots.setdefault(snapshot.transfer_id, []).append(snapshot)
 
     def latest_snapshot(self, transfer_id: str) -> TransferSnapshot | None:
-        snapshots = self.snapshots.get(transfer_id) or []
-        if not snapshots:
-            return None
-        return max(snapshots, key=lambda snapshot: snapshot.version)
+        with self._lock:
+            snapshots = self.snapshots.get(transfer_id) or []
+            if not snapshots:
+                return None
+            return max(snapshots, key=lambda snapshot: snapshot.version)
 
 
 class NovaPayRuntimeEngine:
@@ -1375,6 +1391,9 @@ class NovaPayRuntimeEngine:
         return [
             {
                 "event_id": event.event_id,
+                "event_type": event.event_type,
+                "sequence": event.sequence,
+                "aggregate_version": event.aggregate_version,
                 "event_hash": event.event_hash,
                 "leaf_hash": leaves[index],
                 **_merkle_proof_from_hashes(leaves, index),
@@ -1413,33 +1432,35 @@ class NovaPayRuntimeEngine:
         }
 
     def build_ledger_checkpoint(self) -> dict[str, Any]:
-        global_root = self._global_ledger_root()
-        accounts = sorted(
-            self.build_accounts(),
-            key=lambda account: str(account["account_id"]),
-        )
-        balances_hash = hash_obj(accounts, domain=HASH_DOMAINS["LEDGER_ENTRY"])
-        previous_snapshot_hash = self._latest_checkpoint_hash()
-        checkpoint_body = {
-            "ledger_root": global_root["ledger_root"],
-            "accounts": accounts,
-            "balances_hash": balances_hash,
-            "block_height": len(self.store.outbox),
-            "previous_snapshot_hash": previous_snapshot_hash,
-        }
-        checkpoint_hash = hash_obj(checkpoint_body, domain=HASH_DOMAINS["LEDGER_CHECKPOINT"])
-        return {
-            "snapshot_id": _stable_id("ledger_snap"),
-            "ledger_root": global_root["ledger_root"],
-            "accounts": accounts,
-            "balances_hash": balances_hash,
-            "block_height": len(self.store.outbox),
-            "previous_snapshot_hash": previous_snapshot_hash,
-            "snapshot_hash": checkpoint_hash,
-            "total_transfers": global_root["total_transfers"],
-            "transfer_roots": global_root["transfer_roots"],
-            "created_at": _utcnow(),
-        }
+        with self.store.read_snapshot():
+            global_root = self._global_ledger_root()
+            accounts = sorted(
+                self.build_accounts(),
+                key=lambda account: str(account["account_id"]),
+            )
+            balances_hash = hash_obj(accounts, domain=HASH_DOMAINS["LEDGER_ENTRY"])
+            previous_snapshot_hash = self._latest_checkpoint_hash()
+            block_height = len(self.store.outbox)
+            checkpoint_body = {
+                "ledger_root": global_root["ledger_root"],
+                "accounts": accounts,
+                "balances_hash": balances_hash,
+                "block_height": block_height,
+                "previous_snapshot_hash": previous_snapshot_hash,
+            }
+            checkpoint_hash = hash_obj(checkpoint_body, domain=HASH_DOMAINS["LEDGER_CHECKPOINT"])
+            return {
+                "snapshot_id": _stable_id("ledger_snap"),
+                "ledger_root": global_root["ledger_root"],
+                "accounts": accounts,
+                "balances_hash": balances_hash,
+                "block_height": block_height,
+                "previous_snapshot_hash": previous_snapshot_hash,
+                "snapshot_hash": checkpoint_hash,
+                "total_transfers": global_root["total_transfers"],
+                "transfer_roots": global_root["transfer_roots"],
+                "created_at": _utcnow(),
+            }
 
     def _latest_checkpoint_hash(self) -> str:
         latest_snapshots = [
@@ -2701,7 +2722,17 @@ class NovaPayRuntimeEngine:
         if len(proofs) != len(events):
             return False
         for event, leaf, proof in zip(events, leaves, proofs):
-            if proof.get("event_id") != event.event_id or proof.get("leaf_hash") != leaf:
+            if proof.get("event_id") != event.event_id:
+                return False
+            if proof.get("event_type") != event.event_type:
+                return False
+            if proof.get("sequence") != event.sequence:
+                return False
+            if proof.get("aggregate_version") != event.aggregate_version:
+                return False
+            if proof.get("event_hash") != event.event_hash:
+                return False
+            if proof.get("leaf_hash") != leaf:
                 return False
             if not _verify_merkle_proof(leaf, proof, root):
                 return False

@@ -375,7 +375,17 @@ def _transfer_merkle_valid(package: Mapping[str, Any]) -> bool:
     if len(proofs) != len(events):
         return False
     for event, leaf, proof in zip(events, leaves, proofs):
-        if proof.get("event_id") != event.event_id or proof.get("leaf_hash") != leaf:
+        if proof.get("event_id") != event.event_id:
+            return False
+        if proof.get("event_type") != event.event_type:
+            return False
+        if proof.get("sequence") != event.sequence:
+            return False
+        if proof.get("aggregate_version") != event.aggregate_version:
+            return False
+        if proof.get("event_hash") != event.event_hash:
+            return False
+        if proof.get("leaf_hash") != leaf:
             return False
         if not _verify_merkle_proof(leaf, proof, root):
             return False

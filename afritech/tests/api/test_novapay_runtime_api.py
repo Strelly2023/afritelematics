@@ -182,6 +182,13 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     assert audit_package.json()["audit_package"]["ledger_checkpoint"]["snapshot_hash"]
     assert audit_package.json()["audit_package"]["reconciliation"]["status"] == "clear"
     assert len(audit_package.json()["audit_package"]["merkle_proofs"]) == len(events)
+    first_proof = audit_package.json()["audit_package"]["merkle_proofs"][0]
+    assert first_proof["event_id"] == events[0]["event_id"]
+    assert first_proof["event_type"] == events[0]["event_type"]
+    assert first_proof["sequence"] == events[0]["sequence"]
+    assert first_proof["aggregate_version"] == events[0]["aggregate_version"]
+    assert first_proof["event_hash"] == events[0]["event_hash"]
+    assert first_proof["leaf_hash"]
 
     audit_bundle = client.get(f"/v1/transfers/{transfer_id}/audit-bundle", headers=_headers(role="VERIFIER"))
     assert audit_bundle.status_code == 200
