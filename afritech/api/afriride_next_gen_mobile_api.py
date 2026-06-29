@@ -12,7 +12,22 @@ from pydantic import BaseModel, Field
 from afritech.api.auth.jwt_device_auth import JWT, require_roles
 from afritech.afriprogramming.control_plane import get_control_plane
 from afritech.afriprogramming.rbac import canonical_role_name
-from afritech.architecture.novaride_architecture import novaride_architecture_contract
+from afritech.architecture.novaride_architecture import (
+    novaride_architecture_changelog,
+    novaride_architecture_compatibility_matrix,
+    novaride_architecture_contract,
+    novaride_architecture_deprecations,
+    novaride_architecture_ecosystem_platform,
+    novaride_architecture_migrations,
+    novaride_architecture_openapi,
+    novaride_architecture_operational_metrics,
+    novaride_architecture_publication,
+    novaride_architecture_releases,
+    novaride_architecture_schema,
+    novaride_architecture_sdks,
+    novaride_architecture_signed_publication,
+    verify_novaride_architecture_contract,
+)
 
 
 def get_gateway() -> Any:
@@ -48,6 +63,12 @@ class RBACAssignmentRequest(BaseModel):
     granted_role: str = "ADMIN"
     status: str = "active"
     notes: list[str] = Field(default_factory=list)
+
+
+class ArchitectureVerificationRequest(BaseModel):
+    version: str | None = None
+    schema_hash: str | None = None
+    capabilities: list[str] = Field(default_factory=list)
 
 
 NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
@@ -1567,6 +1588,7 @@ def _novaride_ecosystem_payload() -> dict[str, Any]:
         "app_count": len(surfaces),
         "shared_platform": [dict(service) for service in NOVARIDE_SHARED_PLATFORM],
         "architecture": architecture_contract,
+        "ecosystem_platform": novaride_architecture_ecosystem_platform(),
         "enterprise_operations_score": "10/10",
         "enterprise_operations_classification": "governed_evidence_backed_ai_assisted_mobility_control_platform",
         "lifecycle": list(NOVARIDE_LIFECYCLE),
@@ -2082,6 +2104,64 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/novaride/ecosystem")
     def novaride_ecosystem() -> dict[str, Any]:
         return _novaride_ecosystem_payload()
+
+    @router.get("/architecture")
+    def novaride_architecture_public_contract(
+        x_novaride_architecture: str | None = Header(default=None, alias="X-NovaRide-Architecture"),
+    ) -> dict[str, Any]:
+        try:
+            return novaride_architecture_publication(x_novaride_architecture)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.get("/architecture/schema")
+    def novaride_architecture_json_schema() -> dict[str, Any]:
+        return novaride_architecture_schema()
+
+    @router.get("/architecture/openapi")
+    def novaride_architecture_openapi_contract() -> dict[str, Any]:
+        return novaride_architecture_openapi()
+
+    @router.get("/architecture/changelog")
+    def novaride_architecture_changelog_contract() -> dict[str, Any]:
+        return novaride_architecture_changelog()
+
+    @router.get("/architecture/deprecations")
+    def novaride_architecture_deprecations_contract() -> dict[str, Any]:
+        return novaride_architecture_deprecations()
+
+    @router.get("/architecture/releases")
+    def novaride_architecture_releases_contract() -> dict[str, Any]:
+        return novaride_architecture_releases()
+
+    @router.get("/architecture/publication")
+    def novaride_architecture_signed_publication_contract(
+        x_novaride_architecture: str | None = Header(default=None, alias="X-NovaRide-Architecture"),
+    ) -> dict[str, Any]:
+        try:
+            return novaride_architecture_signed_publication(x_novaride_architecture)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.get("/architecture/compatibility")
+    def novaride_architecture_compatibility_contract() -> dict[str, Any]:
+        return novaride_architecture_compatibility_matrix()
+
+    @router.get("/architecture/migrations")
+    def novaride_architecture_migrations_contract() -> dict[str, Any]:
+        return novaride_architecture_migrations()
+
+    @router.get("/architecture/sdks")
+    def novaride_architecture_sdk_contract() -> dict[str, Any]:
+        return novaride_architecture_sdks()
+
+    @router.get("/architecture/metrics")
+    def novaride_architecture_metrics_contract() -> dict[str, Any]:
+        return novaride_architecture_operational_metrics()
+
+    @router.post("/architecture/verify")
+    def novaride_architecture_verify_contract(request: ArchitectureVerificationRequest) -> dict[str, Any]:
+        return verify_novaride_architecture_contract(request.version, request.schema_hash, request.capabilities)
 
     @router.get("/novaride/platform/architecture-contract")
     def novaride_platform_architecture_contract() -> dict[str, Any]:

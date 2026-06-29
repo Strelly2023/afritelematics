@@ -49,6 +49,7 @@ HASH_DOMAINS = MappingProxyType(
         "ZK_QR_PAYLOAD": "zk_qr_payload",
         "ZK_QR_BUNDLE": "zk_qr_bundle",
         "ONCHAIN_BUNDLE": "onchain_bundle",
+        "ARCHITECTURE_CONTRACT": "architecture_contract",
     }
 )
 
