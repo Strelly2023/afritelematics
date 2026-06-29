@@ -1,0 +1,170 @@
+registry_id: NOVARIDE_EVENT_REGISTRY_V1
+status: ACTIVE
+classification: GOVERNED_EVENT_SCHEMA_REGISTRY
+compatibility_policy: docs/architecture/63_EVENT_COMPATIBILITY_RULES.md
+envelope_spec: docs/architecture/61_EVENT_ENVELOPE_SCHEMA.md
+system_spec: docs/architecture/60_EVENT_SCHEMA_SYSTEM.md
+topics_spec: docs/architecture/64_EVENT_TOPIC_MODEL.md
+entries:
+  - event_type: organization.created.v1
+    domain: identity
+    owner_service: org-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: organization_id
+    idempotency_strategy: organization_id+event_type
+    decision_trace_required: false
+  - event_type: organization.updated.v1
+    domain: identity
+    owner_service: org-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: organization_id
+    idempotency_strategy: organization_id+event_type
+    decision_trace_required: false
+  - event_type: account.created.v1
+    domain: identity
+    owner_service: account-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: account_id
+    idempotency_strategy: account_id+event_type
+    decision_trace_required: false
+  - event_type: ride.requested.v1
+    domain: ride
+    owner_service: ride-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: ride_id
+    idempotency_strategy: ride_id+event_type
+    decision_trace_required: true
+  - event_type: ride.matched.v1
+    domain: dispatch
+    owner_service: dispatch-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: ride_id
+    idempotency_strategy: ride_id+event_type
+    decision_trace_required: true
+  - event_type: ride.accepted.v1
+    domain: driver
+    owner_service: driver-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: ride_id
+    idempotency_strategy: ride_id+event_type
+    decision_trace_required: true
+  - event_type: trip.started.v1
+    domain: trip
+    owner_service: trip-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: trip_id
+    idempotency_strategy: trip_id+event_type
+    decision_trace_required: true
+  - event_type: trip.completed.v1
+    domain: trip
+    owner_service: trip-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: trip_id
+    idempotency_strategy: trip_id+event_type
+    decision_trace_required: true
+  - event_type: payment.authorized.v1
+    domain: payment
+    owner_service: payment-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: payment_id
+    idempotency_strategy: payment_id+event_type
+    decision_trace_required: true
+  - event_type: payment.captured.v1
+    domain: payment
+    owner_service: payment-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: payment_id
+    idempotency_strategy: payment_id+event_type
+    decision_trace_required: true
+  - event_type: wallet.debited.v1
+    domain: wallet
+    owner_service: wallet-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: wallet_id
+    idempotency_strategy: wallet_id+event_type
+    decision_trace_required: true
+  - event_type: wallet.credited.v1
+    domain: wallet
+    owner_service: wallet-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: wallet_id
+    idempotency_strategy: wallet_id+event_type
+    decision_trace_required: true
+  - event_type: policy.decision_recorded.v1
+    domain: control
+    owner_service: policy-engine
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: decision_id
+    idempotency_strategy: decision_id
+    decision_trace_required: false
+  - event_type: approval.granted.v1
+    domain: control
+    owner_service: approval-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: approval_id
+    idempotency_strategy: approval_id
+    decision_trace_required: false
+  - event_type: trust.score_updated.v1
+    domain: trust
+    owner_service: trust-engine
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: subject_id
+    idempotency_strategy: subject_id+event_type
+    decision_trace_required: false
+  - event_type: inspection.completed.v1
+    domain: compliance
+    owner_service: inspector-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: inspection_id
+    idempotency_strategy: inspection_id
+    decision_trace_required: true
+  - event_type: support.ticket_created.v1
+    domain: support
+    owner_service: support-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: ticket_id
+    idempotency_strategy: ticket_id
+    decision_trace_required: false
+  - event_type: public.verification.completed.v1
+    domain: verification
+    owner_service: verification-service
+    schema_version: 1
+    compatibility: backward
+    status: active
+    partition_key_strategy: verification_id
+    idempotency_strategy: verification_id
+    decision_trace_required: true
