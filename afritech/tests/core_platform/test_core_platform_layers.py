@@ -287,7 +287,8 @@ def test_payment_provider_adapters_support_payid_and_stripe_pilot_mode() -> None
     assert payid.provider == "payid"
     assert payid.status == "completed"
     assert payid.provider_reference.startswith("PAYID-")
-    assert payid.raw["mode"] == "controlled_pilot"
+    assert payid.raw["mode"] == "controlled_rehearsal"
+    assert payid.raw["live_network_called"] is False
 
     stripe = StripeProvider(api_key=None, live=False).authorize(intent)
     assert stripe.provider == "stripe"

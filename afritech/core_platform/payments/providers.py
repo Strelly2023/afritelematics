@@ -18,6 +18,8 @@ from afritech.core_platform.payments.contracts import (
     PaymentProviderAdapter,
     PaymentProviderResult,
 )
+from afritech.fintech.mock_provider import ControlledPayIDProvider
+from afritech.fintech.payment_provider import ProviderPaymentRequest
 
 
 class PayIDProvider:
@@ -34,19 +36,23 @@ class PayIDProvider:
 
     def authorize(self, intent: PaymentIntent) -> PaymentProviderResult:
         if not self.live:
-            reference = f"PAYID-{intent.organization_id}-{intent.intent_id}".upper()
+            result = ControlledPayIDProvider().execute_payment(
+                ProviderPaymentRequest(
+                    intent_id=intent.intent_id,
+                    actor_id=intent.actor_id,
+                    organization_id=intent.organization_id,
+                    amount=intent.amount,
+                    currency=intent.currency.upper(),
+                    destination=intent.destination,
+                    metadata=dict(intent.metadata),
+                )
+            )
             return PaymentProviderResult(
-                provider=self.name,
-                provider_reference=reference,
-                status="completed",
-                settlement_status="settlement_pending",
-                raw={
-                    "rail": "payid",
-                    "mode": "controlled_pilot",
-                    "destination": intent.destination,
-                    "amount": str(intent.amount),
-                    "currency": intent.currency.upper(),
-                },
+                provider=result.provider,
+                provider_reference=result.provider_reference,
+                status=result.status,
+                settlement_status=result.settlement_status,
+                raw=dict(result.raw),
             )
 
         collection_url = os.environ.get("NOVAPAY_PAYID_COLLECTION_URL", "").rstrip("/")

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import zipfile
 import io
+import time
 
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.core_platform_api import (
@@ -13,6 +14,7 @@ from afritech.api.core_platform_api import (
 from afritech.core_platform.cryptographic_consensus import run_cryptographic_consensus
 from afritech.core_platform.proof_receipts import build_proof_receipt
 from afritech.core_platform.signing import sign_packet
+from afritech.fintech.webhook_security import sign_webhook
 
 
 def build_client() -> TestClient:
@@ -292,6 +294,61 @@ def test_core_platform_payment_api_runs_full_wiring() -> None:
     assert result["trust"]["replay_status"] == "verified"
     assert result["explanation"]["risk_level"] == "LOW"
     assert result["proposal"]["lifecycle_state"] == "ready_for_validation"
+
+
+def test_controlled_payid_payment_accepts_normalized_provider_webhook(monkeypatch) -> None:
+    client = build_client()
+    secret = "payid-webhook-test-secret"
+    monkeypatch.setenv("NOVAPAY_PAYID_WEBHOOK_SECRET", secret)
+
+    execution = client.post(
+        "/v1/core-platform/payments/execute",
+        headers=auth_headers(),
+        json={
+            "intent_id": "intent-webhook-001",
+            "amount": "18.75",
+            "currency": "AUD",
+            "destination": "rider@example.com",
+            "provider": "payid",
+            "required_roles": ["OPERATOR"],
+            "required_scopes": ["payments:write"],
+        },
+    )
+    assert execution.status_code == 200
+    payment = execution.json()["result"]["payment"]
+
+    payload = {
+        "event_id": "payid-event-001",
+        "provider": "payid",
+        "data": {
+            "transaction_id": payment["provider_reference"],
+            "merchant_reference": payment["payment_id"],
+            "status": "completed",
+            "transaction_status": "successful",
+        },
+    }
+    timestamp = int(time.time())
+    webhook = client.post(
+        "/webhooks/payments",
+        headers={
+            "X-NovaPay-Timestamp": str(timestamp),
+            "X-NovaPay-Signature": sign_webhook(
+                payload,
+                timestamp=timestamp,
+                secret=secret,
+            ),
+        },
+        json=payload,
+    )
+
+    assert webhook.status_code == 200, webhook.text
+    body = webhook.json()
+    assert body["provider"] == "payid"
+    assert body["provider_reference"] == payment["provider_reference"]
+    assert body["payment_id"] == payment["payment_id"]
+    assert body["settlement_status"] == "settled"
+    assert body["signature_verified"] is True
+    assert body["settlement_authority"] is False
 
 
 def test_core_platform_trust_ai_and_programming_api_surfaces() -> None:
