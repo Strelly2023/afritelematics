@@ -10,32 +10,36 @@ import {
 import { useDriverFlow } from "./state/providers/useDriverFlow";
 import { useOperatorDashboard } from "./state/providers/useOperatorDashboard";
 import { usePilotEvidence } from "./state/providers/usePilotEvidence";
+import { loginPilot } from "./core/api/auth.service";
+import { ORGANIZATION_ID, TEST_MODE } from "./core/config/environment";
+import { BottomTabs } from "./ui/widgets/BottomTabs";
 import { AvailabilityScreen } from "./ui/screens/AvailabilityScreen";
 import { DiagnosticsScreen } from "./ui/screens/DiagnosticsScreen";
 import { DriverLoginScreen } from "./ui/screens/DriverLoginScreen";
 import { DriverNotificationsScreen } from "./ui/screens/DriverNotificationsScreen";
 import { DriverProfileScreen } from "./ui/screens/DriverProfileScreen";
 import { DriverTrustProfileScreen } from "./ui/screens/DriverTrustProfileScreen";
+import { DriverHomeScreen } from "./ui/screens/DriverHomeScreen";
 import { EarningsScreen } from "./ui/screens/EarningsScreen";
+import { IncomingRideModal } from "./ui/screens/IncomingRideModal";
 import { OperatorDashboardScreen } from "./ui/screens/OperatorDashboardScreen";
 import { ReplayHistoryScreen } from "./ui/screens/ReplayHistoryScreen";
 import { RideRequestsScreen } from "./ui/screens/RideRequestsScreen";
 import { TripLifecycleScreen } from "./ui/screens/TripLifecycleScreen";
 import { VehicleManagementScreen } from "./ui/screens/VehicleManagementScreen";
-import { TEST_MODE } from "./core/config/environment";
 import { colors } from "./ui/theme/colors";
 import { spacing } from "./ui/theme/spacing";
 import { ProductTabs } from "./ui/widgets/ProductTabs";
 
 const DRIVER_ID = "driver-demo-001";
-type DriverTab = "control" | "trips" | "trust" | "profile" | "alerts";
+type DriverTab = "home" | "trips" | "earnings" | "trust" | "profile";
 
 const driverTabs: Array<{ key: DriverTab; label: string }> = [
-  { key: "control", label: "Control" },
+  { key: "home", label: "Home" },
   { key: "trips", label: "Trips" },
+  { key: "earnings", label: "Earnings" },
   { key: "trust", label: "Trust" },
   { key: "profile", label: "Profile" },
-  { key: "alerts", label: "Alerts" },
 ];
 
 type ErrorUtilsLike = {
@@ -46,10 +50,12 @@ type ErrorUtilsLike = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<DriverTab>("control");
+  const [activeTab, setActiveTab] = useState<DriverTab>("home");
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("driver@novaride.test");
   const [password, setPassword] = useState("pilot");
+  const [authenticating, setAuthenticating] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const {
     acceptRequest,
     availability,
@@ -119,6 +125,14 @@ export default function App() {
           tone: "success" as const,
         }
       : null,
+    diagnostics.lastLocation
+      ? {
+          id: "gps-live",
+          title: "GPS live",
+          detail: `${diagnostics.lastLocation.latitude.toFixed(4)}, ${diagnostics.lastLocation.longitude.toFixed(4)}`,
+          tone: "info" as const,
+        }
+      : null,
   ].filter(
     (item): item is {
       id: string;
@@ -130,101 +144,127 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Text style={styles.title}>AfriRide Driver</Text>
-            <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+      <View style={styles.shell}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Text style={styles.title}>AfriRide Driver</Text>
+              <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+            </View>
+            <Text style={styles.subtitle}>Trip execution with live GPS, dispatch, and trust evidence.</Text>
+            <Text style={styles.orgLabel}>Org: {ORGANIZATION_ID}</Text>
           </View>
-          <Text style={styles.subtitle}>Trip execution with visible trust evidence.</Text>
-        </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
 
-        {!authenticated ? (
-          <DriverLoginScreen
-            email={email}
-            password={password}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onContinue={() => setAuthenticated(true)}
-          />
-        ) : (
-          <>
-            <ProductTabs
-              tabs={driverTabs}
-              activeTab={activeTab}
-              onChange={setActiveTab}
+          {!authenticated ? (
+            <DriverLoginScreen
+              email={email}
+              password={password}
+              onEmailChange={setEmail}
+              onPasswordChange={setPassword}
+              loading={authenticating}
+              onContinue={async () => {
+                setAuthenticating(true);
+                setLoginError("");
+                try {
+                  await loginPilot("driver-demo-001", "DRIVER", ORGANIZATION_ID);
+                  setAuthenticated(true);
+                } catch (authError) {
+                  if (TEST_MODE) {
+                    setAuthenticated(true);
+                  } else {
+                    setLoginError(
+                      authError instanceof Error ? authError.message : "login_failed",
+                    );
+                  }
+                } finally {
+                  setAuthenticating(false);
+                }
+              }}
             />
-            {activeTab === "control" ? (
-              <>
-                <OperatorDashboardScreen
-                  dashboard={operator.dashboard}
-                  loading={operator.loading}
-                  error={operator.error}
-                  onRefresh={operator.refreshDashboard}
-                />
-                <DiagnosticsScreen
-                  diagnostics={diagnostics}
-                  loading={loading}
-                  onStartShift={startShift}
-                />
-                <AvailabilityScreen
-                  availability={availability}
-                  loading={loading}
-                  onGoAvailable={() => updateAvailability("available")}
-                  onGoOffline={() => updateAvailability("offline")}
-                />
-              </>
-            ) : null}
-            {activeTab === "trips" ? (
-              <>
-                <RideRequestsScreen
-                  requests={requests}
-                  loading={loading}
-                  onAccept={acceptRequest}
-                  onReject={rejectRequest}
-                />
-                <TripLifecycleScreen
-                  trip={trip}
-                  loading={loading}
-                  onArrived={markArrived}
-                  onStart={startTrip}
-                  onComplete={completeTrip}
-                />
-              </>
-            ) : null}
-            {activeTab === "trust" ? (
-              <>
-                <DriverTrustProfileScreen
-                  availability={availability}
-                  earnings={earnings}
-                />
-                <EarningsScreen earnings={earnings} />
-                <ReplayHistoryScreen replayHistory={replayHistory} />
-              </>
-            ) : null}
-            {activeTab === "profile" ? (
-              <>
-                <DriverProfileScreen
-                  name="Pilot Driver"
-                  email={email}
-                  availability={availability}
-                  earnings={earnings}
-                />
-                <VehicleManagementScreen
-                  make="Toyota"
-                  model="Hybrid"
-                  plate="PILOT-001"
-                />
-              </>
-            ) : null}
-            {activeTab === "alerts" ? (
-              <DriverNotificationsScreen notifications={notifications} />
-            ) : null}
-          </>
-        )}
-      </ScrollView>
+          ) : (
+            <>
+              {activeTab === "home" ? (
+                <>
+                  <DriverHomeScreen
+                    availability={availability}
+                    earnings={earnings}
+                    diagnostics={diagnostics}
+                    loading={loading}
+                    onGoAvailable={() => updateAvailability("available")}
+                    onGoOffline={() => updateAvailability("offline")}
+                    onStartShift={startShift}
+                  />
+                </>
+              ) : null}
+              {activeTab === "trips" ? (
+                <>
+                  <RideRequestsScreen
+                    requests={requests}
+                    loading={loading}
+                    onAccept={acceptRequest}
+                    onReject={rejectRequest}
+                  />
+                  <TripLifecycleScreen
+                    trip={trip}
+                    loading={loading}
+                    onArrived={markArrived}
+                    onStart={startTrip}
+                    onComplete={completeTrip}
+                  />
+                </>
+              ) : null}
+              {activeTab === "earnings" ? <EarningsScreen earnings={earnings} /> : null}
+              {activeTab === "trust" ? (
+                <>
+                  <DriverTrustProfileScreen
+                    availability={availability}
+                    earnings={earnings}
+                  />
+                  <ReplayHistoryScreen replayHistory={replayHistory} />
+                  <DiagnosticsScreen
+                    diagnostics={diagnostics}
+                    loading={loading}
+                    onStartShift={startShift}
+                  />
+                </>
+              ) : null}
+              {activeTab === "profile" ? (
+                <>
+                  <DriverProfileScreen
+                    name="Pilot Driver"
+                    email={email}
+                    availability={availability}
+                    earnings={earnings}
+                  />
+                  <VehicleManagementScreen
+                    make="Toyota"
+                    model="Hybrid"
+                    plate="PILOT-001"
+                  />
+                  <DriverNotificationsScreen notifications={notifications} />
+                </>
+              ) : null}
+            </>
+          )}
+        </ScrollView>
+
+        {authenticated ? (
+          <View style={styles.bottomNav}>
+            <BottomTabs tabs={driverTabs} activeTab={activeTab} onChange={setActiveTab} />
+          </View>
+        ) : null}
+      </View>
+
+      <IncomingRideModal
+        visible={authenticated && !trip && requests.length > 0}
+        request={requests[0] || null}
+        onAccept={() => acceptRequest(requests[0]?.rideId || "")}
+        onDecline={() => rejectRequest(requests[0]?.rideId || "")}
+        onClose={() => undefined}
+      />
     </SafeAreaView>
   );
 }
@@ -233,6 +273,7 @@ const styles = StyleSheet.create({
   content: {
     gap: spacing.lg,
     padding: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   error: {
     color: colors.danger,
@@ -259,6 +300,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     textTransform: "uppercase",
+  },
+  orgLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  bottomNav: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    padding: spacing.md,
+  },
+  shell: {
+    flex: 1,
   },
   screen: {
     backgroundColor: colors.background,

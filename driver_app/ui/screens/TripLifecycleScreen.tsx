@@ -51,6 +51,18 @@ export function TripLifecycleScreen({
       />
       <MapPreviewCard
         routeText={routeText(trip)}
+        progressPct={
+          trip.status === "completed"
+            ? 100
+            : trip.status === "started"
+              ? 72
+              : trip.status === "arrived"
+                ? 38
+                : 16
+        }
+        statusLabel={humanTripStatus(trip.status)}
+        etaText={trip.nextInstruction || "Navigation ready"}
+        liveLabel={trip.replayVerified ? "Replay linked" : "Live shift"}
         pickupConfirmed={Boolean(trip.pickupText)}
         dropoffConfirmed={Boolean(trip.dropoffText)}
         gpsTraceAvailable={trip.status === "started" || trip.status === "completed"}

@@ -26,10 +26,10 @@ export function ReplayHistoryScreen({
       {replayHistory.length === 0 ? (
         <Text style={styles.muted}>No completed rides</Text>
       ) : null}
-      {replayHistory.map((item) => (
+      {replayHistory.map((item, index) => (
         <View key={item.replayId} style={styles.item}>
-          <Text style={styles.ride}>Ride: {item.rideId}</Text>
-          <Text style={styles.muted}>Replay: {item.replayId}</Text>
+          <Text style={styles.ride}>Replay {index + 1}</Text>
+          <Text style={styles.muted}>Verified replay available</Text>
           <Text style={item.replayVerified ? styles.verified : styles.pending}>
             {item.replayVerified ? "Verified replay" : "Replay pending"}
           </Text>

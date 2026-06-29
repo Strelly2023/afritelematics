@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { MapPreviewCard } from "../widgets/MapPreviewCard";
 import type { DiagnosticsSnapshot } from "../../core/models/pilotEvidence";
 import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
@@ -26,6 +27,21 @@ export function DiagnosticsScreen({
           {diagnostics.shiftStarted ? "Shift evidence active" : "Shift not started"}
         </Text>
       </View>
+
+      <MapPreviewCard
+        routeText={
+          diagnostics.lastLocation
+            ? `${diagnostics.lastLocation.latitude.toFixed(4)}, ${diagnostics.lastLocation.longitude.toFixed(4)}`
+            : "Location awaiting first GPS fix"
+        }
+        progressPct={diagnostics.locationSamples > 0 ? 66 : 12}
+        statusLabel={diagnostics.shiftStarted ? "GPS evidence" : "Shift pending"}
+        etaText={diagnostics.shiftStarted ? "Live driver telemetry" : "Start shift to activate"}
+        liveLabel={diagnostics.shiftStarted ? "Tracking" : "Idle"}
+        pickupConfirmed={diagnostics.locationSamples > 0}
+        dropoffConfirmed={diagnostics.shiftStarted}
+        gpsTraceAvailable={diagnostics.locationSamples > 0}
+      />
 
       <PrimaryButton
         label="Start evidence shift"

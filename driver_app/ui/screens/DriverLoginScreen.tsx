@@ -9,14 +9,16 @@ import { spacing } from "../theme/spacing";
 type DriverLoginScreenProps = {
   email: string;
   password: string;
+  loading?: boolean;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
-  onContinue: () => void;
+  onContinue: () => void | Promise<void>;
 };
 
 export function DriverLoginScreen({
   email,
   password,
+  loading,
   onEmailChange,
   onPasswordChange,
   onContinue,
@@ -46,7 +48,7 @@ export function DriverLoginScreen({
         style={styles.input}
         value={password}
       />
-      <PrimaryButton label="Continue" onPress={onContinue} />
+      <PrimaryButton label={loading ? "Signing in" : "Continue"} onPress={onContinue} disabled={loading} />
     </SurfacePanel>
   );
 }

@@ -1,6 +1,9 @@
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "https://api.afritechnology.com";
 
+export const ORGANIZATION_ID =
+  process.env.EXPO_PUBLIC_AFRIRIDE_ORGANIZATION_ID || "afritech-core";
+
 export const REQUEST_TIMEOUT_MS = 8000;
 
 export const LOCATION_SAMPLE_INTERVAL_MS = Number(

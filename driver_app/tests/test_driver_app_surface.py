@@ -192,8 +192,11 @@ def test_novaride_driver_trust_uix_primitives_are_integrated() -> None:
 
 def test_driver_product_completion_surfaces_are_wired() -> None:
     app = read("App.tsx")
+    home_source = read("ui/screens/DriverHomeScreen.tsx")
     screens = [
         "DriverLoginScreen",
+        "DriverHomeScreen",
+        "IncomingRideModal",
         "DriverProfileScreen",
         "VehicleManagementScreen",
         "DriverNotificationsScreen",
@@ -204,16 +207,21 @@ def test_driver_product_completion_surfaces_are_wired() -> None:
         assert f"function {screen}" in source
         assert screen in app
 
-    tabs = read("ui/widgets/ProductTabs.tsx")
+    tabs = read("ui/widgets/BottomTabs.tsx")
 
-    assert "ProductTabs" in app
-    assert '"control"' in app
+    assert "BottomTabs" in app
+    assert '"home"' in app
     assert '"trips"' in app
+    assert '"earnings"' in app
     assert '"trust"' in app
     assert '"profile"' in app
-    assert '"alerts"' in app
     assert "setAuthenticated(true)" in app
     assert "availability?.status" in app
+    assert "getDriverIntelligence" in home_source
+    assert "Operational intelligence" in home_source
+    assert "Predictive positioning" in home_source
+    assert "City-wide AI automation" in home_source
+    assert "Multi-city orchestration" in home_source
     assert "accessibilityRole=\"button\"" in tabs
 
 
