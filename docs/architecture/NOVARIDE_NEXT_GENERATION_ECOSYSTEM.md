@@ -656,7 +656,11 @@ Canonical source:
 
 ```text
 afritech/architecture/novaride_architecture.py
-architecture_version = 2026.07
+architecture.version = 2026.07.0
+architecture.layers = [...]
+architecture.maturity_dimensions = [...]
+architecture.enterprise_operations = [...]
+architecture.production_readiness = [...]
 ```
 
 | Capability | Purpose |

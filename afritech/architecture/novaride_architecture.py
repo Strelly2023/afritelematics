@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-NOVARIDE_ARCHITECTURE_VERSION = "2026.07"
+NOVARIDE_ARCHITECTURE_VERSION = "2026.07.0"
 
 NOVARIDE_LAYERED_ARCHITECTURE: tuple[str, ...] = (
     "Applications / Portals",
@@ -168,14 +168,23 @@ def _json_ready(value: Any) -> Any:
     return value
 
 
-def novaride_architecture_contract() -> dict[str, Any]:
-    """Return the versioned high-level NovaRide architecture contract."""
+def _build_novaride_architecture_contract() -> dict[str, Any]:
+    """Build the versioned high-level NovaRide architecture contract."""
 
     return {
-        "architecture_version": NOVARIDE_ARCHITECTURE_VERSION,
-        "layered_architecture": list(NOVARIDE_LAYERED_ARCHITECTURE),
+        "version": NOVARIDE_ARCHITECTURE_VERSION,
+        "layers": list(NOVARIDE_LAYERED_ARCHITECTURE),
         "operator_intervention_flow": list(NOVARIDE_OPERATOR_INTERVENTION_FLOW),
         "maturity_dimensions": _json_ready(NOVARIDE_MATURITY_DIMENSIONS),
-        "enterprise_operations_layer": _json_ready(NOVARIDE_ENTERPRISE_OPERATIONS_LAYER),
-        "production_infrastructure_readiness": _json_ready(NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS),
+        "enterprise_operations": _json_ready(NOVARIDE_ENTERPRISE_OPERATIONS_LAYER),
+        "production_readiness": _json_ready(NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS),
     }
+
+
+NOVARIDE_ARCHITECTURE_CONTRACT = _build_novaride_architecture_contract()
+
+
+def novaride_architecture_contract() -> dict[str, Any]:
+    """Return the cached versioned NovaRide architecture contract."""
+
+    return NOVARIDE_ARCHITECTURE_CONTRACT

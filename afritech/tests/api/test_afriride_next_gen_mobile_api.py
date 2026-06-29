@@ -7,7 +7,10 @@ from fastapi.testclient import TestClient
 from afritech.api.app import app
 from afritech.afriprogramming import control_plane
 from afritech.afriprogramming.persistence import PlatformStore
-from afritech.architecture.novaride_architecture import novaride_architecture_contract
+from afritech.architecture.novaride_architecture import (
+    NOVARIDE_ARCHITECTURE_CONTRACT,
+    novaride_architecture_contract,
+)
 
 _runtime = import_module("afriride_system.api.dependencies.runtime")
 reset_gateway = _runtime.reset_gateway
@@ -22,6 +25,14 @@ def test_novaride_api_uses_canonical_architecture_contract() -> None:
     assert not hasattr(module, "NOVARIDE_OPERATOR_INTERVENTION_FLOW")
     assert not hasattr(module, "NOVARIDE_ENTERPRISE_OPERATIONS_LAYER")
     assert not hasattr(module, "NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS")
+
+
+def test_novaride_architecture_contract_is_cached_and_semantic_versioned() -> None:
+    assert novaride_architecture_contract() is NOVARIDE_ARCHITECTURE_CONTRACT
+    assert NOVARIDE_ARCHITECTURE_CONTRACT["version"] == "2026.07.0"
+    assert NOVARIDE_ARCHITECTURE_CONTRACT["layers"]
+    assert NOVARIDE_ARCHITECTURE_CONTRACT["enterprise_operations"]
+    assert NOVARIDE_ARCHITECTURE_CONTRACT["production_readiness"]
 
 
 def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, monkeypatch) -> None:
@@ -357,20 +368,22 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert any(service["name"] == "Inspection Registry" for service in payload["shared_platform"])
     assert any(service["name"] == "Incident Registry" for service in payload["shared_platform"])
     canonical_architecture = novaride_architecture_contract()
-    assert payload["architecture_version"] == canonical_architecture["architecture_version"]
-    assert payload["enterprise_operations_layer"] == canonical_architecture["enterprise_operations_layer"]
+    assert payload["architecture"] == canonical_architecture
+    assert payload["architecture"]["version"] == "2026.07.0"
+    assert payload["architecture"]["layers"]
+    assert payload["architecture"]["enterprise_operations"]
+    assert payload["architecture"]["production_readiness"]
+    assert "architecture_version" not in payload
+    assert "enterprise_operations_layer" not in payload
     assert payload["enterprise_operations_score"] == "10/10"
     assert (
         payload["enterprise_operations_classification"]
         == "governed_evidence_backed_ai_assisted_mobility_control_platform"
     )
-    assert payload["layered_architecture"] == canonical_architecture["layered_architecture"]
-    assert payload["operator_intervention_flow"] == canonical_architecture["operator_intervention_flow"]
-    assert payload["maturity_dimensions"] == canonical_architecture["maturity_dimensions"]
-    assert (
-        payload["production_infrastructure_readiness"]
-        == canonical_architecture["production_infrastructure_readiness"]
-    )
+    assert "layered_architecture" not in payload
+    assert "operator_intervention_flow" not in payload
+    assert "maturity_dimensions" not in payload
+    assert "production_infrastructure_readiness" not in payload
     assert "Demand Forecasting" in payload["intelligence_layer"]
     assert "Verification Package" in payload["trust_proof_flow"]
     assert "Control Plane decides" in payload["upgrade_principle"]

@@ -14,3 +14,10 @@ def test_runtime_boundary_governance_chain_passes() -> None:
     assert report.graph_current is True
     assert report.workflow_enforced is True
     assert report.optimization_active is True
+
+
+def test_runtime_boundary_artifacts_are_current_before_commit() -> None:
+    report = validate(write_artifacts=False)
+
+    assert report.scan_current is True
+    assert report.graph_current is True

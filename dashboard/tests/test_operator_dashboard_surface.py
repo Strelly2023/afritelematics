@@ -73,9 +73,10 @@ def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants(
     assert "const NOVARIDE_OPERATOR_INTERVENTION_FLOW" not in source
     assert "const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER" not in source
     assert "const NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS" not in source
-    assert "novarideEcosystem?.layered_architecture" in source
-    assert "novarideEcosystem?.enterprise_operations_layer" in source
-    assert "novarideEcosystem?.production_infrastructure_readiness" in source
+    assert "novarideEcosystem?.architecture" in source
+    assert "novarideArchitecture.layers" in source
+    assert "novarideArchitecture.enterprise_operations" in source
+    assert "novarideArchitecture.production_readiness" in source
 
 
 def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
@@ -312,7 +313,7 @@ def test_operator_dashboard_exposes_required_operator_panels() -> None:
         "novarideEcosystem?.enterprise_operations_classification",
         "Enterprise Operations: 10/10",
         "Evidence-backed operations",
-        "novarideEcosystem?.architecture_version",
+        "novarideArchitecture.version",
         "novarideEnterpriseOperationsLayer",
         "novarideProductionInfrastructureReadiness",
         "novarideMaturityDimensions",

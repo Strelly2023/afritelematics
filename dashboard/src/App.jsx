@@ -3865,12 +3865,12 @@ export default function OperatorDashboard() {
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
   const novarideEcosystem = state.novarideEcosystem;
-  const novarideLayeredArchitecture = novarideEcosystem?.layered_architecture || [];
-  const novarideOperatorInterventionFlow = novarideEcosystem?.operator_intervention_flow || [];
-  const novarideMaturityDimensions = novarideEcosystem?.maturity_dimensions || [];
-  const novarideEnterpriseOperationsLayer = novarideEcosystem?.enterprise_operations_layer || [];
-  const novarideProductionInfrastructureReadiness =
-    novarideEcosystem?.production_infrastructure_readiness || [];
+  const novarideArchitecture = novarideEcosystem?.architecture || {};
+  const novarideLayeredArchitecture = novarideArchitecture.layers || [];
+  const novarideOperatorInterventionFlow = novarideArchitecture.operator_intervention_flow || [];
+  const novarideMaturityDimensions = novarideArchitecture.maturity_dimensions || [];
+  const novarideEnterpriseOperationsLayer = novarideArchitecture.enterprise_operations || [];
+  const novarideProductionInfrastructureReadiness = novarideArchitecture.production_readiness || [];
   const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
   const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
   const operatorAutonomy = state.operatorAutonomy;
@@ -6110,7 +6110,7 @@ export default function OperatorDashboard() {
                 </p>
                 <div className="chip-row">
                   <span className="surface-chip">Enterprise Operations: 10/10</span>
-                  <span className="surface-chip">Architecture version {novarideEcosystem?.architecture_version || "pending"}</span>
+                  <span className="surface-chip">Architecture version {novarideArchitecture.version || "pending"}</span>
                   <span className="surface-chip">AI-assisted decisions</span>
                   <span className="surface-chip">Evidence-backed operations</span>
                   <span className="surface-chip">Multi-tenant governance</span>
