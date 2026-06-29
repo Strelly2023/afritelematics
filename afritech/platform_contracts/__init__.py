@@ -17,6 +17,17 @@ from afritech.platform_contracts.registry import (
     schema_registry_manifest,
     validate_contract_payload,
 )
+from afritech.platform_contracts.schema_registry import (
+    CompatibilityReport,
+    EVENT_REGISTRY_ID,
+    EVENT_REGISTRY_PATH,
+    EVENT_SCHEMA_OUTPUT_DIR,
+    SchemaRegistry,
+    SchemaRegistryEntry,
+    SchemaRegistryError,
+    build_schema_catalog,
+    build_schema_registry,
+)
 
 __all__ = [
     "ApiLifecycle",
@@ -32,4 +43,13 @@ __all__ = [
     "negotiate_version",
     "schema_registry_manifest",
     "validate_contract_payload",
+    "CompatibilityReport",
+    "EVENT_REGISTRY_ID",
+    "EVENT_REGISTRY_PATH",
+    "EVENT_SCHEMA_OUTPUT_DIR",
+    "SchemaRegistry",
+    "SchemaRegistryEntry",
+    "SchemaRegistryError",
+    "build_schema_catalog",
+    "build_schema_registry",
 ]

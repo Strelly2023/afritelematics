@@ -24,7 +24,7 @@ from afritech.api.ingestion.event_ingestion import (
     build_router,
 )
 from afritech.api.realtime.dashboard_bus import dashboard_hub, publish_dashboard_event as broadcast_dashboard_event
-from afritech.api.realtime.ws_server import WebSocketHub
+from afritech.api.realtime.ride_bus import ride_hub
 from afritech.api.trace_api import build_trace_router
 from afritech.api.system_status import build_system_status_router
 from afritech.api.partner_verification_api import build_partner_verification_router
@@ -34,6 +34,21 @@ from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
+from afritech.api.phase0_api import build_phase0_router
+from afritech.api.phase1_api import build_phase1_router
+from afritech.api.phase2_api import build_phase2_router
+from afritech.api.phase3_api import build_phase3_router
+from afritech.api.phase4_api import build_phase4_router
+from afritech.api.phase5_api import build_phase5_router
+from afritech.api.phase6_api import build_phase6_router
+from afritech.api.phase7_api import build_phase7_router
+from afritech.api.phase8_api import build_phase8_router
+from afritech.api.phase9_api import build_phase9_router
+from afritech.api.phase10_api import build_phase10_router
+from afritech.api.phase11_api import build_phase11_router
+from afritech.api.phase12_api import build_phase12_router
+from afritech.api.phase13_api import build_phase13_router
+from afritech.api.mobile_intelligence_api import build_mobile_intelligence_router
 from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
@@ -44,6 +59,8 @@ from afritech.api.core_platform_api import (
     build_core_platform_router,
     build_public_trust_explorer_router,
 )
+from afritech.api.contracts.schema_registry_api import build_schema_registry_router
+from afritech.api.contracts.schema_registry_middleware import SchemaRegistryMiddleware
 from afritech.api.afriprogramming_control_api import (
     build_afriprogramming_control_router,
 )
@@ -91,6 +108,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(SchemaRegistryMiddleware)
 
 # ============================================================
 # CORE SYSTEM
@@ -107,7 +125,6 @@ def runtime_event_ingestion_secret() -> str:
 
 
 mobile_event_ingestion = EventIngestionAPI(secret=runtime_event_ingestion_secret())
-realtime_hub = WebSocketHub()
 partner_verification_store = PartnerVerificationStore()
 trust_registry_store = TrustRegistryStore()
 standards_dependency_store = StandardsDependencyStore()
@@ -167,6 +184,7 @@ app.include_router(build_afriride_next_gen_mobile_router())
 app.include_router(build_dashboard_gateway_router())
 app.include_router(build_novatech_intranet_router())
 app.include_router(build_documentation_compliance_router())
+app.include_router(build_schema_registry_router())
 
 # ✅ NovaTechSol core platform API
 app.include_router(build_core_platform_router())
@@ -174,6 +192,21 @@ app.include_router(build_public_trust_explorer_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())
+app.include_router(build_phase0_router())
+app.include_router(build_phase1_router())
+app.include_router(build_phase2_router())
+app.include_router(build_phase3_router())
+app.include_router(build_phase4_router())
+app.include_router(build_phase5_router())
+app.include_router(build_phase6_router())
+app.include_router(build_phase7_router())
+app.include_router(build_phase8_router())
+app.include_router(build_phase9_router())
+app.include_router(build_phase10_router())
+app.include_router(build_phase11_router())
+app.include_router(build_phase12_router())
+app.include_router(build_phase13_router())
+app.include_router(build_mobile_intelligence_router())
 
 # ✅ NovaScript assistant API
 app.include_router(build_novascript_router())
@@ -275,7 +308,7 @@ async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
 
     await websocket.accept()
     client = FastAPIWebSocketClient(websocket)
-    realtime_hub.subscribe(ride_id, client)
+    ride_hub.subscribe(ride_id, client)
 
     try:
         await websocket.send_json(
@@ -290,7 +323,7 @@ async def ride_projection_socket(websocket: WebSocket, ride_id: str) -> None:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        realtime_hub.unsubscribe(ride_id, client)
+        ride_hub.unsubscribe(ride_id, client)
 
 
 # ============================================================
@@ -339,7 +372,7 @@ async def publish_ride_projection(
     """Pilot-only projection publisher; does not mutate source-of-truth."""
 
     data = dict(payload.get("data", payload))
-    message = await realtime_hub.publish_state_update(ride_id, data)
+    message = await ride_hub.publish_state_update(ride_id, data)
     await broadcast_dashboard_event(
         "RIDE_PROJECTION_UPDATE",
         {

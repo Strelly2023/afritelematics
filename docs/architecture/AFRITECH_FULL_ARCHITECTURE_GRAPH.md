@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `432`
+- Startup-safe closure size: `479`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `36`
+- Direct startup imports from `afritech.api.app`: `53`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (432 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (479 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (36)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (53)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (61 files)"]
+    Core --> Api["api (79 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (17 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `61` files
+- `api`: `79` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `17` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (31)
+### Api (49)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -118,6 +118,8 @@ flowchart TD
 - `afritech.api.auth.legacy_auth`
 - `afritech.api.contracts`
 - `afritech.api.contracts.rules`
+- `afritech.api.contracts.schema_registry_api`
+- `afritech.api.contracts.schema_registry_middleware`
 - `afritech.api.contracts.validator`
 - `afritech.api.core_platform_api`
 - `afritech.api.dashboard_gateway_api`
@@ -125,14 +127,30 @@ flowchart TD
 - `afritech.api.feature_registry_api`
 - `afritech.api.ingestion`
 - `afritech.api.ingestion.event_ingestion`
+- `afritech.api.mobile_intelligence_api`
 - `afritech.api.novascript_api`
 - `afritech.api.novatech_intranet_api`
 - `afritech.api.ops_governance_api`
 - `afritech.api.partner_registry_api`
 - `afritech.api.partner_verification_api`
+- `afritech.api.phase0_api`
+- `afritech.api.phase10_api`
+- `afritech.api.phase11_api`
+- `afritech.api.phase12_api`
+- `afritech.api.phase13_api`
+- `afritech.api.phase1_api`
+- `afritech.api.phase2_api`
+- `afritech.api.phase3_api`
+- `afritech.api.phase4_api`
+- `afritech.api.phase5_api`
+- `afritech.api.phase6_api`
+- `afritech.api.phase7_api`
+- `afritech.api.phase8_api`
+- `afritech.api.phase9_api`
 - `afritech.api.public_verification_api`
 - `afritech.api.realtime`
 - `afritech.api.realtime.dashboard_bus`
+- `afritech.api.realtime.ride_bus`
 - `afritech.api.realtime.ws_server`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
@@ -167,7 +185,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (362)
+### Other (391)
 
 - `afritech`
 - `afritech.afripay`
@@ -223,6 +241,19 @@ flowchart TD
 - `afritech.afriprogramming.integration`
 - `afritech.afriprogramming.models`
 - `afritech.afriprogramming.persistence`
+- `afritech.afriprogramming.phase1`
+- `afritech.afriprogramming.phase10`
+- `afritech.afriprogramming.phase11`
+- `afritech.afriprogramming.phase12`
+- `afritech.afriprogramming.phase13`
+- `afritech.afriprogramming.phase2`
+- `afritech.afriprogramming.phase3`
+- `afritech.afriprogramming.phase4`
+- `afritech.afriprogramming.phase5`
+- `afritech.afriprogramming.phase6`
+- `afritech.afriprogramming.phase7`
+- `afritech.afriprogramming.phase8`
+- `afritech.afriprogramming.phase9`
 - `afritech.afriprogramming.proposals`
 - `afritech.afriprogramming.rbac`
 - `afritech.afriprogramming.roles`
@@ -314,6 +345,10 @@ flowchart TD
 - `afritech.crypto.multi_party_verification`
 - `afritech.crypto.public_chain_anchor`
 - `afritech.crypto.signature`
+- `afritech.dispatch`
+- `afritech.dispatch.matching`
+- `afritech.dispatch.presence`
+- `afritech.dispatch.service`
 - `afritech.distributed.consensus`
 - `afritech.distributed.consensus.quorum`
 - `afritech.distributed.node`
@@ -410,6 +445,8 @@ flowchart TD
 - `afritech.extensions.afriprog.validator_runner.command_result`
 - `afritech.features`
 - `afritech.fintech`
+- `afritech.fintech.mock_provider`
+- `afritech.fintech.payment_provider`
 - `afritech.fintech.webhook_security`
 - `afritech.fintech.webhooks`
 - `afritech.global_verification`
@@ -420,6 +457,8 @@ flowchart TD
 - `afritech.guards.engine`
 - `afritech.identity`
 - `afritech.identity.mobility_participant`
+- `afritech.intelligence`
+- `afritech.intelligence.mobile_projection`
 - `afritech.mobility`
 - `afritech.mobility.cross_border_federation`
 - `afritech.mobility.federation`
@@ -476,6 +515,7 @@ flowchart TD
 - `afritech.platform_contracts.federation`
 - `afritech.platform_contracts.registry`
 - `afritech.platform_contracts.runtime`
+- `afritech.platform_contracts.schema_registry`
 - `afritech.platform_operations`
 - `afritech.platform_operations.feature_flags`
 - `afritech.platform_operations.policy`
@@ -515,6 +555,13 @@ flowchart TD
 - `afritech.semantic_engine.parser.ir_builder`
 - `afritech.semantic_engine.proof.proof_builder`
 - `afritech.semantic_engine.satisfiability.solver`
+- `afritech.services`
+- `afritech.services.africonnecttl`
+- `afritech.services.africonnecttl.contracts`
+- `afritech.services.africonnecttl.execution`
+- `afritech.services.africonnecttl.models`
+- `afritech.services.africonnecttl.reducers`
+- `afritech.services.africonnecttl.registry`
 - `afritech.shared.types`
 - `afritech.simulation`
 - `afritech.simulation.pilot_dataset`
@@ -566,19 +613,36 @@ flowchart TD
 - `afritech.api.afroprog_workspace_api`
 - `afritech.api.architecture_proof_api`
 - `afritech.api.auth.jwt_device_auth`
+- `afritech.api.contracts.schema_registry_api`
+- `afritech.api.contracts.schema_registry_middleware`
 - `afritech.api.core_platform_api`
 - `afritech.api.dashboard_gateway_api`
 - `afritech.api.documentation_compliance_api`
 - `afritech.api.feature_registry_api`
 - `afritech.api.ingestion.event_ingestion`
+- `afritech.api.mobile_intelligence_api`
 - `afritech.api.novascript_api`
 - `afritech.api.novatech_intranet_api`
 - `afritech.api.ops_governance_api`
 - `afritech.api.partner_registry_api`
 - `afritech.api.partner_verification_api`
+- `afritech.api.phase0_api`
+- `afritech.api.phase10_api`
+- `afritech.api.phase11_api`
+- `afritech.api.phase12_api`
+- `afritech.api.phase13_api`
+- `afritech.api.phase1_api`
+- `afritech.api.phase2_api`
+- `afritech.api.phase3_api`
+- `afritech.api.phase4_api`
+- `afritech.api.phase5_api`
+- `afritech.api.phase6_api`
+- `afritech.api.phase7_api`
+- `afritech.api.phase8_api`
+- `afritech.api.phase9_api`
 - `afritech.api.public_verification_api`
 - `afritech.api.realtime.dashboard_bus`
-- `afritech.api.realtime.ws_server`
+- `afritech.api.realtime.ride_bus`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
 - `afritech.api.trust_network_api`
