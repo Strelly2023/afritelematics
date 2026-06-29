@@ -3881,6 +3881,22 @@ export default function OperatorDashboard() {
   const novarideProductionInfrastructureReadiness = Array.isArray(novarideArchitecture.production_readiness)
     ? novarideArchitecture.production_readiness
     : [];
+  const novarideEcosystemPlatform = novarideEcosystem?.ecosystem_platform || {};
+  const novarideCompatibilityMatrix = Array.isArray(novarideEcosystemPlatform.compatibility_matrix)
+    ? novarideEcosystemPlatform.compatibility_matrix
+    : [];
+  const novarideMigrationRegistry = Array.isArray(novarideEcosystemPlatform.migration_registry)
+    ? novarideEcosystemPlatform.migration_registry
+    : [];
+  const novarideSdkRegistry = Array.isArray(novarideEcosystemPlatform.sdk_registry)
+    ? novarideEcosystemPlatform.sdk_registry
+    : [];
+  const novarideOperationalMetrics =
+    novarideEcosystemPlatform.operational_metrics &&
+    typeof novarideEcosystemPlatform.operational_metrics === "object" &&
+    !Array.isArray(novarideEcosystemPlatform.operational_metrics)
+      ? Object.entries(novarideEcosystemPlatform.operational_metrics || {})
+      : [];
   const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
   const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
   const operatorAutonomy = state.operatorAutonomy;
@@ -6210,6 +6226,71 @@ export default function OperatorDashboard() {
               {novarideProductionInfrastructureReadiness.length === 0 ? (
                 <EmptyState label="NovaRide production readiness contract will appear after the ecosystem API is reachable." />
               ) : null}
+
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>NovaRide Ecosystem Platform</strong>
+                  <span>{novarideEcosystemPlatform.classification || "contract_platform_loading"}</span>
+                </div>
+                <p>
+                  Partner-facing architecture contracts now publish unsigned controlled-contract
+                  metadata, compatibility rows, migration guidance, SDK targets, and operational
+                  metrics from the same canonical registry.
+                </p>
+                <div className="chip-row">
+                  <span className="surface-chip">
+                    {novarideEcosystemPlatform.signed_publication?.signature_status || "unsigned_controlled_contract"}
+                  </span>
+                  <span className="surface-chip">
+                    schema hash {novarideEcosystemPlatform.signed_publication?.schema_hash || "pending"}
+                  </span>
+                  <span className="surface-chip">canonical.v1</span>
+                  <span className="surface-chip">sha256</span>
+                </div>
+              </article>
+
+              <div className="novapay-build-grid">
+                <article className="record-card novapay-build-card">
+                  <strong>Compatibility Matrix</strong>
+                  <div className="chip-row">
+                    {novarideCompatibilityMatrix.map((row) => (
+                      <span key={`${row.requested_version}-${row.served_version}`} className="reason-chip reason-chip-success">
+                        {row.requested_version} to {row.served_version}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card novapay-build-card">
+                  <strong>Migration Registry</strong>
+                  <div className="chip-row">
+                    {novarideMigrationRegistry.map((migration) => (
+                      <span key={`${migration.from_version}-${migration.to_version}`} className="reason-chip">
+                        {migration.from_version} to {migration.to_version}: {migration.required_action}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card novapay-build-card">
+                  <strong>SDK Registry</strong>
+                  <div className="chip-row">
+                    {novarideSdkRegistry.map((sdk) => (
+                      <span key={sdk.language} className="reason-chip reason-chip-success">
+                        {sdk.language}: {sdk.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card novapay-build-card">
+                  <strong>Operational Metrics</strong>
+                  <div className="chip-row">
+                    {novarideOperationalMetrics.map(([metric, details]) => (
+                      <span key={metric} className="reason-chip">
+                        {metric}: {details.value} {details.unit}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
             </div>
           </OperatorPanel>
 

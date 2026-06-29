@@ -8,10 +8,97 @@ documentation/tests.
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any
+from typing import Any, Callable
+
+from afritech.core_platform.canonical import hash_obj
+from afritech.core_platform.hash_domains import HASH_DOMAINS
 
 NOVARIDE_ARCHITECTURE_VERSION = "2026.07.0"
+NOVARIDE_ARCHITECTURE_COMPATIBLE_VERSION = "2026.07"
+NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS: tuple[str, ...] = (
+    NOVARIDE_ARCHITECTURE_COMPATIBLE_VERSION,
+    NOVARIDE_ARCHITECTURE_VERSION,
+)
+NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT = "canonical.v1"
+NOVARIDE_ARCHITECTURE_HASH_ALGORITHM = "sha256"
+
+
+@dataclass(frozen=True)
+class NovaRideArchitectureContractDefinition:
+    """Registry entry for one active NovaRide architecture contract version."""
+
+    version: str
+    aliases: tuple[str, ...]
+    compatibility: str
+    breaking_change: bool
+    status: str
+    released_at: str
+    supported_until: str
+    replaces: str | None
+    deprecation: dict[str, Any] | None
+    changelog: tuple[str, ...]
+    capabilities: tuple[str, ...]
+    migrations: tuple[dict[str, Any], ...]
+    sdk_targets: tuple[dict[str, Any], ...]
+    operational_metrics: dict[str, dict[str, Any]]
+    contract_builder: Callable[[], dict[str, Any]]
+    schema_builder: Callable[[], dict[str, Any]]
+
+    def contract(self) -> dict[str, Any]:
+        return deepcopy(self.contract_builder())
+
+    def schema(self) -> dict[str, Any]:
+        return deepcopy(self.schema_builder())
+
+    def schema_hash(self) -> str:
+        return hash_obj(self.schema_builder(), domain=HASH_DOMAINS["ARCHITECTURE_CONTRACT"])
+
+    def compatibility_record(self, requested_version: str) -> dict[str, Any]:
+        compatibility = "current" if requested_version == self.version else self.compatibility
+        return {
+            "served_by": self.version,
+            "compatibility": compatibility,
+            "breaking_change": self.breaking_change,
+            "status": self.status,
+            "supported_until": self.supported_until,
+            "deprecation": deepcopy(self.deprecation),
+        }
+
+    def release_record(self) -> dict[str, Any]:
+        return {
+            "version": self.version,
+            "aliases": list(self.aliases),
+            "status": self.status,
+            "released_at": self.released_at,
+            "supported_until": self.supported_until,
+            "replaces": self.replaces,
+            "deprecation": deepcopy(self.deprecation),
+            "schema_hash": self.schema_hash(),
+            "capabilities": list(self.capabilities),
+            "canonicalization": {
+                "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+                "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+            },
+        }
+
+    def changelog_record(self) -> dict[str, Any]:
+        return {
+            "version": self.version,
+            "released_at": self.released_at,
+            "changes": list(self.changelog),
+            "breaking_change": self.breaking_change,
+        }
+
+    def sdk_records(self) -> list[dict[str, Any]]:
+        return deepcopy([dict(target) for target in self.sdk_targets])
+
+    def migration_records(self) -> list[dict[str, Any]]:
+        return deepcopy([dict(migration) for migration in self.migrations])
+
+    def metric_records(self) -> dict[str, dict[str, Any]]:
+        return deepcopy(self.operational_metrics)
 
 NOVARIDE_LAYERED_ARCHITECTURE: tuple[str, ...] = (
     "Applications / Portals",
@@ -183,6 +270,54 @@ def _build_novaride_architecture_contract() -> dict[str, Any]:
     }
 
 
+def _build_novaride_architecture_schema() -> dict[str, Any]:
+    """Build the machine-readable schema for the versioned architecture contract."""
+
+    capability_object = {
+        "type": "object",
+        "required": ["key", "name", "purpose", "capabilities"],
+        "properties": {
+            "key": {"type": "string"},
+            "name": {"type": "string"},
+            "purpose": {"type": "string"},
+            "capabilities": {"type": "array", "items": {"type": "string"}},
+        },
+        "additionalProperties": False,
+    }
+    maturity_object = {
+        "type": "object",
+        "required": ["dimension", "capabilities"],
+        "properties": {
+            "dimension": {"type": "string"},
+            "capabilities": {"type": "array", "items": {"type": "string"}},
+        },
+        "additionalProperties": False,
+    }
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": f"https://schemas.novaride.local/architecture/{NOVARIDE_ARCHITECTURE_VERSION}",
+        "title": "NovaRide Architecture Contract",
+        "type": "object",
+        "required": [
+            "version",
+            "layers",
+            "operator_intervention_flow",
+            "maturity_dimensions",
+            "enterprise_operations",
+            "production_readiness",
+        ],
+        "properties": {
+            "version": {"const": NOVARIDE_ARCHITECTURE_VERSION},
+            "layers": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "operator_intervention_flow": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "maturity_dimensions": {"type": "array", "items": maturity_object, "minItems": 1},
+            "enterprise_operations": {"type": "array", "items": capability_object, "minItems": 1},
+            "production_readiness": {"type": "array", "items": capability_object, "minItems": 1},
+        },
+        "additionalProperties": False,
+    }
+
+
 @lru_cache(maxsize=1)
 def _cached_novaride_architecture_contract() -> dict[str, Any]:
     """Build and cache the canonical contract for this process."""
@@ -193,7 +328,419 @@ def _cached_novaride_architecture_contract() -> dict[str, Any]:
 NOVARIDE_ARCHITECTURE_CONTRACT = _cached_novaride_architecture_contract()
 
 
+@lru_cache(maxsize=1)
+def _cached_novaride_architecture_schema() -> dict[str, Any]:
+    """Build and cache the schema contract for this process."""
+
+    return _build_novaride_architecture_schema()
+
+
+SUPPORTED_CONTRACTS: dict[str, NovaRideArchitectureContractDefinition] = {
+    NOVARIDE_ARCHITECTURE_VERSION: NovaRideArchitectureContractDefinition(
+        version=NOVARIDE_ARCHITECTURE_VERSION,
+        aliases=(NOVARIDE_ARCHITECTURE_COMPATIBLE_VERSION,),
+        compatibility="backward_compatible",
+        breaking_change=False,
+        status="stable",
+        released_at="2026-07-01",
+        supported_until="2027-07-01",
+        replaces=None,
+        deprecation=None,
+        changelog=(
+            "Introduced canonical nested architecture contract.",
+            "Added semantic version negotiation with 2026.07 compatibility alias.",
+            "Published JSON Schema, canonical schema hash, and lifecycle metadata.",
+        ),
+        capabilities=(
+            "architecture_contract",
+            "schema_publication",
+            "openapi_publication",
+            "compatibility_matrix",
+            "migration_registry",
+            "sdk_registry",
+            "contract_verification",
+            "operational_metrics",
+        ),
+        migrations=(
+            {
+                "from_version": "2026.07",
+                "to_version": NOVARIDE_ARCHITECTURE_VERSION,
+                "type": "alias_resolution",
+                "breaking": False,
+                "required_actions": (),
+                "notes": "The compatible alias is served by the stable semantic contract.",
+            },
+        ),
+        sdk_targets=(
+            {"language": "python", "package": "novaride-contracts", "status": "planned", "source": "openapi"},
+            {"language": "typescript", "package": "@novaride/contracts", "status": "planned", "source": "openapi"},
+            {"language": "kotlin", "package": "com.novaride.contracts", "status": "planned", "source": "openapi"},
+            {"language": "swift", "package": "NovaRideContracts", "status": "planned", "source": "openapi"},
+            {"language": "go", "package": "github.com/novaride/contracts", "status": "planned", "source": "openapi"},
+        ),
+        operational_metrics={
+            "architecture_requests_total": {"value": 0, "unit": "requests"},
+            "architecture_version_usage": {"value": 0, "unit": "requests"},
+            "unsupported_contract_requests": {"value": 0, "unit": "requests"},
+            "schema_validation_failures": {"value": 0, "unit": "failures"},
+            "contract_negotiation_latency": {"value": 0, "unit": "milliseconds"},
+            "compatibility_checks_total": {"value": 0, "unit": "checks"},
+        },
+        contract_builder=_cached_novaride_architecture_contract,
+        schema_builder=_cached_novaride_architecture_schema,
+    )
+}
+
+NOVARIDE_ARCHITECTURE_REGISTRY: dict[str, NovaRideArchitectureContractDefinition] = {
+    requested_version: contract
+    for contract in SUPPORTED_CONTRACTS.values()
+    for requested_version in (*contract.aliases, contract.version)
+}
+NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS = tuple(NOVARIDE_ARCHITECTURE_REGISTRY.keys())
+
+
+def _resolve_novaride_contract_definition(
+    requested_version: str | None = None,
+) -> tuple[str, NovaRideArchitectureContractDefinition]:
+    requested_key = requested_version.strip() if requested_version and requested_version.strip() else NOVARIDE_ARCHITECTURE_VERSION
+    definition = NOVARIDE_ARCHITECTURE_REGISTRY.get(requested_key)
+    if definition is None:
+        raise ValueError(f"unsupported_novaride_architecture_version:{requested_key}")
+    return requested_key, definition
+
+
 def novaride_architecture_contract() -> dict[str, Any]:
     """Return an isolated copy of the cached NovaRide architecture contract."""
 
-    return deepcopy(_cached_novaride_architecture_contract())
+    return SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].contract()
+
+
+def novaride_architecture_schema() -> dict[str, Any]:
+    """Return an isolated copy of the NovaRide architecture JSON Schema."""
+
+    return SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].schema()
+
+
+def novaride_architecture_schema_hash() -> str:
+    """Return the canonical schema hash used by compatibility/publication surfaces."""
+
+    return SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].schema_hash()
+
+
+def novaride_architecture_compatibility() -> dict[str, Any]:
+    """Return compatibility metadata for supported architecture contract versions."""
+
+    return {
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "default_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "supported_versions": list(NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS),
+        "versions": {
+            requested_version: definition.compatibility_record(requested_version)
+            for requested_version, definition in NOVARIDE_ARCHITECTURE_REGISTRY.items()
+        },
+    }
+
+
+def novaride_architecture_releases() -> dict[str, Any]:
+    """Return lifecycle records for all active architecture contracts."""
+
+    releases = [definition.release_record() for definition in SUPPORTED_CONTRACTS.values()]
+    return {
+        "platform": "NovaRide",
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "supported_versions": list(NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS),
+        "releases": releases,
+    }
+
+
+def novaride_architecture_changelog() -> dict[str, Any]:
+    """Return the contract changelog generated from the version registry."""
+
+    return {
+        "platform": "NovaRide",
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "entries": [definition.changelog_record() for definition in SUPPORTED_CONTRACTS.values()],
+    }
+
+
+def novaride_architecture_deprecations() -> dict[str, Any]:
+    """Return deprecation status for active architecture contract versions."""
+
+    return {
+        "platform": "NovaRide",
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "deprecations": [
+            {
+                "version": definition.version,
+                "status": definition.status,
+                "supported_until": definition.supported_until,
+                "deprecation": deepcopy(definition.deprecation),
+            }
+            for definition in SUPPORTED_CONTRACTS.values()
+        ],
+    }
+
+
+def novaride_architecture_signed_publication(requested_version: str | None = None) -> dict[str, Any]:
+    """Return unsigned publication metadata until key-backed signing is integrated."""
+
+    requested_key, definition = _resolve_novaride_contract_definition(requested_version)
+    return {
+        "platform": "NovaRide",
+        "version": definition.version,
+        "requested_version": requested_key,
+        "signature_status": "unsigned_controlled_contract",
+        "schema_hash": definition.schema_hash(),
+        "canonicalization": {
+            "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+            "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+        },
+        "signing": {
+            "algorithm": None,
+            "key_id": None,
+            "reason": "real_key_backed_signing_not_integrated",
+        },
+    }
+
+
+def novaride_architecture_compatibility_matrix() -> dict[str, Any]:
+    """Return a matrix of requested versions to served contract versions."""
+
+    rows = []
+    for requested_version, definition in NOVARIDE_ARCHITECTURE_REGISTRY.items():
+        rows.append(
+            {
+                "requested_version": requested_version,
+                "served_version": definition.version,
+                "status": definition.status,
+                "compatibility": definition.compatibility_record(requested_version)["compatibility"],
+                "breaking_change": definition.breaking_change,
+                "supported_until": definition.supported_until,
+            }
+        )
+    return {
+        "platform": "NovaRide",
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "matrix": rows,
+    }
+
+
+def novaride_architecture_migrations() -> dict[str, Any]:
+    """Return migration guidance generated from the contract registry."""
+
+    return {
+        "platform": "NovaRide",
+        "current_version": NOVARIDE_ARCHITECTURE_VERSION,
+        "migrations": [
+            migration
+            for definition in SUPPORTED_CONTRACTS.values()
+            for migration in definition.migration_records()
+        ],
+    }
+
+
+def novaride_architecture_sdks() -> dict[str, Any]:
+    """Return SDK generation targets for partner integrations."""
+
+    seen: set[str] = set()
+    targets: list[dict[str, Any]] = []
+
+    for definition in SUPPORTED_CONTRACTS.values():
+        for target in definition.sdk_records():
+            key = str(target["language"])
+            if key not in seen:
+                seen.add(key)
+                targets.append(target)
+    return {
+        "platform": "NovaRide",
+        "source": "/v1/architecture/openapi",
+        "schema_hash": novaride_architecture_schema_hash(),
+        "targets": targets,
+    }
+
+
+def novaride_architecture_operational_metrics() -> dict[str, Any]:
+    """Return structured contract platform metrics for operations and partner adoption."""
+
+    metrics: dict[str, dict[str, Any]] = {}
+    for definition in SUPPORTED_CONTRACTS.values():
+        for name, value in definition.metric_records().items():
+            metrics[f"{definition.version}.{name}"] = value
+
+    return {
+        "platform": "NovaRide",
+        "metrics": metrics,
+    }
+
+
+def novaride_architecture_ecosystem_platform() -> dict[str, Any]:
+    """Return the ecosystem platform summary for dashboard and developer portal surfaces."""
+
+    return {
+        "classification": "versioned_canonical_registry_backed_verification_ready_ecosystem_platform",
+        "signed_publication": novaride_architecture_signed_publication(),
+        "compatibility_matrix": novaride_architecture_compatibility_matrix()["matrix"],
+        "migration_registry": novaride_architecture_migrations()["migrations"],
+        "sdk_registry": novaride_architecture_sdks()["targets"],
+        "operational_metrics": novaride_architecture_operational_metrics()["metrics"],
+        "capabilities": list(SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].capabilities),
+    }
+
+
+def novaride_architecture_openapi() -> dict[str, Any]:
+    """Return a minimal OpenAPI document for the public architecture contract surfaces."""
+
+    return {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "NovaRide Architecture Contract API",
+            "version": NOVARIDE_ARCHITECTURE_VERSION,
+        },
+        "paths": {
+            "/v1/architecture": {
+                "get": {
+                    "summary": "Return the version-negotiated NovaRide architecture contract.",
+                    "parameters": [
+                        {
+                            "name": "X-NovaRide-Architecture",
+                            "in": "header",
+                            "required": False,
+                            "schema": {"type": "string", "enum": list(NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS)},
+                        }
+                    ],
+                    "responses": {"200": {"description": "Architecture contract publication"}},
+                }
+            },
+            "/v1/architecture/schema": {
+                "get": {
+                    "summary": "Return the JSON Schema for the current architecture contract.",
+                    "responses": {"200": {"description": "JSON Schema document"}},
+                }
+            },
+            "/v1/architecture/verify": {
+                "post": {
+                    "summary": "Verify a client supplied architecture version and schema hash.",
+                    "responses": {"200": {"description": "Verification result"}},
+                }
+            },
+        },
+        "components": {
+            "schemas": {
+                "NovaRideArchitectureContract": novaride_architecture_schema(),
+            }
+        },
+    }
+
+
+def verify_novaride_architecture_contract(
+    version: str | None,
+    schema_hash: str | None,
+    capabilities: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, Any]:
+    """Verify a client-supplied architecture version and schema hash against the registry."""
+
+    requested_capabilities = [str(capability) for capability in (capabilities or ())]
+    try:
+        requested_key, definition = _resolve_novaride_contract_definition(version)
+    except ValueError:
+        requested_key = version.strip() if version and version.strip() else ""
+        return {
+            "valid": False,
+            "capabilities_valid": False,
+            "canonical": False,
+            "supported": False,
+            "version": requested_key,
+            "resolved_version": None,
+            "schema_hash_valid": False,
+            "expected_schema_hash": None,
+            "signature_status": "unsigned_controlled_contract",
+            "migration": None,
+            "capabilities": {
+                "requested": requested_capabilities,
+                "supported": [],
+                "missing": requested_capabilities,
+                "valid": not requested_capabilities,
+            },
+            "canonicalization": {
+                "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+                "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+            },
+        }
+
+    expected_hash = definition.schema_hash()
+    schema_hash_valid = bool(schema_hash) and schema_hash == expected_hash
+    supported_capabilities = set(definition.capabilities)
+    missing_capabilities = [
+        capability
+        for capability in requested_capabilities
+        if capability not in supported_capabilities
+    ]
+    capabilities_valid = not missing_capabilities
+    return {
+        "valid": schema_hash_valid,
+        "capabilities_valid": capabilities_valid,
+        "canonical": schema_hash_valid,
+        "supported": True,
+        "version": requested_key,
+        "resolved_version": definition.version,
+        "schema_hash_valid": schema_hash_valid,
+        "expected_schema_hash": expected_hash,
+        "signature_status": "unsigned_controlled_contract",
+        "migration": {
+            "required": requested_key != definition.version,
+            "from_version": requested_key,
+            "to_version": definition.version,
+        },
+        "capabilities": {
+            "requested": requested_capabilities,
+            "supported": list(definition.capabilities),
+            "missing": missing_capabilities,
+            "valid": capabilities_valid,
+        },
+        "canonicalization": {
+            "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+            "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+        },
+    }
+
+
+def resolve_novaride_architecture_version(requested_version: str | None = None) -> str:
+    """Resolve a requested architecture contract version to a supported semantic version."""
+
+    return _resolve_novaride_contract_definition(requested_version)[1].version
+
+
+def novaride_architecture_publication(requested_version: str | None = None) -> dict[str, Any]:
+    """Return the public, version-negotiated architecture publication contract."""
+
+    requested_key, definition = _resolve_novaride_contract_definition(requested_version)
+    compatibility = novaride_architecture_compatibility()
+    return {
+        "platform": "NovaRide",
+        "contract": {
+            "version": definition.version,
+            "requested_version": requested_key,
+            "supported_versions": compatibility["supported_versions"],
+            "compatibility": compatibility["versions"][requested_key],
+            "schema_hash": definition.schema_hash(),
+            "schema_url": "/v1/architecture/schema",
+            "canonical_format": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+            "hash_algorithm": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+            "canonicalization": {
+                "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+                "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+            },
+            "lifecycle": definition.release_record(),
+            "capabilities": list(definition.capabilities),
+        },
+        "architecture": definition.contract(),
+        "observability": {
+            "metrics": [
+                "novaride_architecture_contract_version_total",
+                "novaride_architecture_contract_unsupported_total",
+                "novaride_contract_compatibility_check_total",
+                "novaride_replay_latency_seconds",
+                "novaride_proof_generation_latency_seconds",
+            ],
+        },
+    }

@@ -9,6 +9,10 @@ from afritech.afriprogramming import control_plane
 from afritech.afriprogramming.persistence import PlatformStore
 from afritech.architecture.novaride_architecture import (
     NOVARIDE_ARCHITECTURE_CONTRACT,
+    NOVARIDE_ARCHITECTURE_REGISTRY,
+    SUPPORTED_CONTRACTS,
+    resolve_novaride_architecture_version,
+    novaride_architecture_schema_hash,
     novaride_architecture_contract,
 )
 
@@ -50,6 +54,235 @@ def test_novaride_architecture_contract_mutation_does_not_leak() -> None:
 
     assert "hacked" not in clean["layers"]
     assert "hacked" not in clean["enterprise_operations"][0]["capabilities"]
+
+
+def test_novaride_architecture_registry_resolves_current_and_alias_versions() -> None:
+    assert set(SUPPORTED_CONTRACTS) == {"2026.07.0"}
+    assert set(NOVARIDE_ARCHITECTURE_REGISTRY) == {"2026.07", "2026.07.0"}
+    assert NOVARIDE_ARCHITECTURE_REGISTRY["2026.07"] is SUPPORTED_CONTRACTS["2026.07.0"]
+    assert NOVARIDE_ARCHITECTURE_REGISTRY["2026.07.0"] is SUPPORTED_CONTRACTS["2026.07.0"]
+    assert resolve_novaride_architecture_version(None) == "2026.07.0"
+    assert resolve_novaride_architecture_version("2026.07") == "2026.07.0"
+    assert resolve_novaride_architecture_version("2026.07.0") == "2026.07.0"
+    definition = SUPPORTED_CONTRACTS["2026.07.0"]
+    assert "sdk_registry" in definition.capabilities
+    assert definition.sdk_records()[0]["language"] == "python"
+    assert definition.migration_records()[0]["from_version"] == "2026.07"
+    assert definition.metric_records()["architecture_requests_total"]["unit"] == "requests"
+
+
+def test_novaride_architecture_publication_exposes_version_schema_and_metrics() -> None:
+    client = TestClient(app)
+
+    response = client.get("/v1/architecture")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["platform"] == "NovaRide"
+    assert payload["contract"]["version"] == "2026.07.0"
+    assert payload["contract"]["requested_version"] == "2026.07.0"
+    assert payload["contract"]["supported_versions"] == ["2026.07", "2026.07.0"]
+    assert payload["contract"]["schema_hash"] == novaride_architecture_schema_hash()
+    assert payload["contract"]["schema_url"] == "/v1/architecture/schema"
+    assert payload["contract"]["canonical_format"] == "canonical.v1"
+    assert payload["contract"]["hash_algorithm"] == "sha256"
+    assert payload["contract"]["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
+    assert payload["contract"]["lifecycle"]["status"] == "stable"
+    assert payload["contract"]["lifecycle"]["supported_until"] == "2027-07-01"
+    assert payload["contract"]["lifecycle"]["deprecation"] is None
+    assert "sdk_registry" in payload["contract"]["capabilities"]
+    assert payload["architecture"] == novaride_architecture_contract()
+    assert "novaride_architecture_contract_version_total" in payload["observability"]["metrics"]
+
+
+def test_novaride_architecture_publication_accepts_compatible_version_header() -> None:
+    client = TestClient(app)
+
+    response = client.get("/v1/architecture", headers={"X-NovaRide-Architecture": " 2026.07 "})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["contract"]["requested_version"] == "2026.07"
+    assert payload["contract"]["version"] == "2026.07.0"
+    assert payload["contract"]["compatibility"]["compatibility"] == "backward_compatible"
+    assert payload["contract"]["compatibility"]["breaking_change"] is False
+
+
+def test_novaride_architecture_publication_rejects_unsupported_version_header() -> None:
+    client = TestClient(app)
+
+    response = client.get("/v1/architecture", headers={"X-NovaRide-Architecture": "2026.08"})
+
+    assert response.status_code == 400
+    error = response.json()["error"]
+    assert error["code"] == "UNSUPPORTED_NOVARIDE_ARCHITECTURE_VERSION:2026.08"
+    assert error["message"] == "unsupported_novaride_architecture_version:2026.08"
+
+
+def test_novaride_architecture_schema_is_machine_readable_contract() -> None:
+    client = TestClient(app)
+
+    response = client.get("/v1/architecture/schema")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["$schema"] == "https://json-schema.org/draft/2020-12/schema"
+    assert payload["title"] == "NovaRide Architecture Contract"
+    assert payload["properties"]["version"]["const"] == "2026.07.0"
+    assert "enterprise_operations" in payload["required"]
+    assert "production_readiness" in payload["required"]
+
+
+def test_novaride_architecture_contract_platform_exposes_openapi_and_lifecycle_docs() -> None:
+    client = TestClient(app)
+
+    openapi = client.get("/v1/architecture/openapi")
+    changelog = client.get("/v1/architecture/changelog")
+    deprecations = client.get("/v1/architecture/deprecations")
+    releases = client.get("/v1/architecture/releases")
+
+    assert openapi.status_code == 200
+    assert openapi.json()["openapi"] == "3.1.0"
+    assert "/v1/architecture/verify" in openapi.json()["paths"]
+    assert "NovaRideArchitectureContract" in openapi.json()["components"]["schemas"]
+
+    assert changelog.status_code == 200
+    assert changelog.json()["entries"][0]["version"] == "2026.07.0"
+    assert changelog.json()["entries"][0]["breaking_change"] is False
+
+    assert deprecations.status_code == 200
+    assert deprecations.json()["deprecations"][0]["status"] == "stable"
+    assert deprecations.json()["deprecations"][0]["deprecation"] is None
+
+    assert releases.status_code == 200
+    release = releases.json()["releases"][0]
+    assert release["version"] == "2026.07.0"
+    assert release["aliases"] == ["2026.07"]
+    assert release["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
+    assert release["schema_hash"] == novaride_architecture_schema_hash()
+
+
+def test_novaride_architecture_verify_accepts_valid_contract_hash() -> None:
+    client = TestClient(app)
+
+    response = client.post(
+        "/v1/architecture/verify",
+        json={
+            "version": "2026.07",
+            "schema_hash": novaride_architecture_schema_hash(),
+            "capabilities": ["sdk_registry", "compatibility_matrix"],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["valid"] is True
+    assert payload["canonical"] is True
+    assert payload["supported"] is True
+    assert payload["version"] == "2026.07"
+    assert payload["resolved_version"] == "2026.07.0"
+    assert payload["schema_hash_valid"] is True
+    assert payload["signature_status"] == "unsigned_controlled_contract"
+    assert payload["migration"] == {"required": True, "from_version": "2026.07", "to_version": "2026.07.0"}
+    assert payload["capabilities"]["valid"] is True
+    assert payload["capabilities"]["missing"] == []
+    assert payload["capabilities_valid"] is True
+    assert payload["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
+
+
+def test_novaride_architecture_verify_rejects_bad_hash_and_unsupported_version() -> None:
+    client = TestClient(app)
+
+    bad_hash = client.post(
+        "/v1/architecture/verify",
+        json={"version": "2026.07.0", "schema_hash": "bad"},
+    )
+    unsupported = client.post(
+        "/v1/architecture/verify",
+        json={"version": "2026.08.0", "schema_hash": novaride_architecture_schema_hash()},
+    )
+    missing_capability = client.post(
+        "/v1/architecture/verify",
+        json={
+            "version": "2026.07.0",
+            "schema_hash": novaride_architecture_schema_hash(),
+            "capabilities": ["global_consensus"],
+        },
+    )
+
+    assert bad_hash.status_code == 200
+    assert bad_hash.json()["valid"] is False
+    assert bad_hash.json()["supported"] is True
+    assert bad_hash.json()["schema_hash_valid"] is False
+    assert bad_hash.json()["capabilities_valid"] is True
+    assert bad_hash.json()["expected_schema_hash"] == novaride_architecture_schema_hash()
+
+    assert unsupported.status_code == 200
+    assert unsupported.json()["valid"] is False
+    assert unsupported.json()["supported"] is False
+    assert unsupported.json()["resolved_version"] is None
+    assert unsupported.json()["signature_status"] == "unsigned_controlled_contract"
+    assert unsupported.json()["capabilities_valid"] is False
+
+    assert missing_capability.status_code == 200
+    assert missing_capability.json()["valid"] is True
+    assert missing_capability.json()["canonical"] is True
+    assert missing_capability.json()["capabilities_valid"] is False
+    assert missing_capability.json()["capabilities"]["missing"] == ["global_consensus"]
+
+
+def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None:
+    client = TestClient(app)
+
+    publication = client.get("/v1/architecture/publication")
+    compatibility = client.get("/v1/architecture/compatibility")
+    migrations = client.get("/v1/architecture/migrations")
+    sdks = client.get("/v1/architecture/sdks")
+    metrics = client.get("/v1/architecture/metrics")
+
+    assert publication.status_code == 200
+    assert publication.json()["signature_status"] == "unsigned_controlled_contract"
+    assert publication.json()["schema_hash"] == novaride_architecture_schema_hash()
+    assert publication.json()["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
+    assert publication.json()["signing"]["algorithm"] is None
+
+    assert compatibility.status_code == 200
+    assert {
+        row["requested_version"]: row["served_version"]
+        for row in compatibility.json()["matrix"]
+    } == {"2026.07": "2026.07.0", "2026.07.0": "2026.07.0"}
+
+    assert migrations.status_code == 200
+    assert migrations.json()["migrations"] == [
+        {
+            "from_version": "2026.07",
+            "to_version": "2026.07.0",
+            "type": "alias_resolution",
+            "breaking": False,
+            "required_actions": [],
+            "notes": "The compatible alias is served by the stable semantic contract.",
+        }
+    ]
+
+    assert sdks.status_code == 200
+    assert {target["language"] for target in sdks.json()["targets"]} == {
+        "python",
+        "typescript",
+        "kotlin",
+        "swift",
+        "go",
+    }
+    assert sdks.json()["source"] == "/v1/architecture/openapi"
+
+    assert metrics.status_code == 200
+    assert metrics.json()["metrics"]["2026.07.0.architecture_requests_total"] == {
+        "value": 0,
+        "unit": "requests",
+    }
+    assert metrics.json()["metrics"]["2026.07.0.unsupported_contract_requests"] == {
+        "value": 0,
+        "unit": "requests",
+    }
 
 
 def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, monkeypatch) -> None:
@@ -391,6 +624,17 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert payload["architecture"]["maturity_dimensions"]
     assert payload["architecture"]["enterprise_operations"]
     assert payload["architecture"]["production_readiness"]
+    assert (
+        payload["ecosystem_platform"]["classification"]
+        == "versioned_canonical_registry_backed_verification_ready_ecosystem_platform"
+    )
+    assert payload["ecosystem_platform"]["signed_publication"]["signature_status"] == "unsigned_controlled_contract"
+    assert payload["ecosystem_platform"]["sdk_registry"]
+    assert payload["ecosystem_platform"]["operational_metrics"]["2026.07.0.architecture_requests_total"] == {
+        "value": 0,
+        "unit": "requests",
+    }
+    assert "sdk_registry" in payload["ecosystem_platform"]["capabilities"]
     assert "architecture_version" not in payload
     assert "enterprise_operations_layer" not in payload
     assert payload["enterprise_operations_score"] == "10/10"

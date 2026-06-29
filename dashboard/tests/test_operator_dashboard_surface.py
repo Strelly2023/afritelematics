@@ -82,6 +82,18 @@ def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants(
     assert "Array.isArray(novarideArchitecture.maturity_dimensions)" in source
     assert "Array.isArray(novarideArchitecture.enterprise_operations)" in source
     assert "Array.isArray(novarideArchitecture.production_readiness)" in source
+    assert "novarideEcosystem?.ecosystem_platform" in source
+    assert "Array.isArray(novarideEcosystemPlatform.compatibility_matrix)" in source
+    assert "Array.isArray(novarideEcosystemPlatform.migration_registry)" in source
+    assert "Array.isArray(novarideEcosystemPlatform.sdk_registry)" in source
+    assert "Object.entries(novarideEcosystemPlatform.operational_metrics || {})" in source
+    assert "!Array.isArray(novarideEcosystemPlatform.operational_metrics)" in source
+    assert "NovaRide Ecosystem Platform" in source
+    assert "unsigned_controlled_contract" in source
+    assert "Compatibility Matrix" in source
+    assert "Migration Registry" in source
+    assert "SDK Registry" in source
+    assert "Operational Metrics" in source
     assert "architecture_contract_pending" not in source
 
 
