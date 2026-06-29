@@ -1031,6 +1031,184 @@ const NOVAPAY_IMPLEMENTATION_ROADMAP = [
   "NovaPay Developer Portal",
 ];
 
+const NOVAPAY_PRIORITY_APP_BUILDS = [
+  {
+    name: "Consumer App",
+    surface: "consumer_mobile",
+    productLabel: "NovaPay Consumer App",
+    persona: "Individuals, families, students, migrant workers, and remittance customers",
+    promise: "Send, receive, store, pay, and prove money movement from one mobile wallet.",
+    screens: [
+      "Home balance",
+      "Send Money",
+      "Beneficiaries",
+      "Wallet",
+      "Scan QR",
+      "Activity",
+      "Receipt",
+      "Replay",
+      "Profile",
+    ],
+    workflow: [
+      "Authenticate device",
+      "Select beneficiary",
+      "Request quote",
+      "Confirm funding source",
+      "Create transfer",
+      "Show receipt",
+      "Open replay timeline",
+    ],
+    backendBindings: [
+      "POST /v1/transfers/quote",
+      "POST /v1/transfers",
+      "GET /v1/transfers/{id}/receipt",
+      "GET /v1/transfers/{id}/replay",
+      "GET /v1/transfers/{id}/audit-package",
+    ],
+    proofWidgets: ["Quote hash", "Receipt code", "Event timeline", "Device binding", "Replay valid badge"],
+  },
+  {
+    name: "Agent App",
+    surface: "agent_mobile",
+    productLabel: "NovaPay Agent App",
+    persona: "Cash-in, cash-out, and rural liquidity agents",
+    promise: "Operate cash services with float visibility, identity checks, and end-of-day reconciliation.",
+    screens: [
+      "Agent Dashboard",
+      "Cash In",
+      "Cash Out",
+      "Customer Lookup",
+      "KYC Capture",
+      "Float",
+      "Settlement",
+      "Reports",
+      "Profile",
+    ],
+    workflow: [
+      "Open shift",
+      "Lookup customer",
+      "Verify KYC",
+      "Record cash movement",
+      "Confirm receipt",
+      "Reconcile float",
+      "Close shift",
+    ],
+    backendBindings: [
+      "POST /v1/funding-sources/validate",
+      "POST /v1/transfers",
+      "GET /v1/treasury/snapshot",
+      "GET /v1/transfers/{id}/receipt",
+      "GET /v1/transfers/{id}/verification",
+    ],
+    proofWidgets: ["KYC status", "Float delta", "Cash receipt", "Settlement exposure", "Closing balance proof"],
+  },
+  {
+    name: "Merchant App",
+    surface: "merchant_mobile",
+    productLabel: "NovaPay Merchant App",
+    persona: "Retailers, restaurants, shops, SMEs, and market sellers",
+    promise: "Accept QR, wallet, and mobile money payments with refunds, settlement, and daily sales proof.",
+    screens: [
+      "Merchant Dashboard",
+      "Receive Payment",
+      "QR Display",
+      "Transactions",
+      "Refunds",
+      "Settlement",
+      "Invoices",
+      "Reports",
+      "Settings",
+    ],
+    workflow: [
+      "Create payment request",
+      "Display QR",
+      "Receive customer payment",
+      "Issue receipt",
+      "Settle merchant balance",
+      "Export daily report",
+    ],
+    backendBindings: [
+      "POST /v1/transfers/quote",
+      "POST /v1/transfers",
+      "GET /v1/transfers/{id}/verification",
+      "GET /v1/treasury/snapshot",
+      "GET /v1/core-platform/payments/providers/status",
+    ],
+    proofWidgets: ["Payment status", "QR payload hash", "Refund trace", "Settlement batch", "Sales proof"],
+  },
+  {
+    name: "Business App/Portal/Web",
+    surface: "business_web_portal",
+    productLabel: "NovaPay Business App / Portal / Web",
+    persona: "Companies, payroll teams, NGOs, enterprises, and government programs",
+    promise: "Run payroll, supplier payments, approvals, treasury controls, and audit exports from a web portal.",
+    screens: [
+      "Business Overview",
+      "Bulk Payments",
+      "Payroll",
+      "Approvals",
+      "Treasury",
+      "Suppliers",
+      "API Integration",
+      "Reports",
+      "Audit Export",
+    ],
+    workflow: [
+      "Upload payment file",
+      "Validate recipients",
+      "Apply approval policy",
+      "Reserve liquidity",
+      "Execute disbursement",
+      "Generate audit bundle",
+      "Export report",
+    ],
+    backendBindings: [
+      "GET /v1/policies",
+      "POST /v1/transfers/quote",
+      "POST /v1/transfers",
+      "GET /v1/treasury/snapshot",
+      "GET /v1/transfers/{id}/audit-package",
+    ],
+    proofWidgets: ["Approval chain", "Policy version", "Batch status", "Liquidity gate", "Audit package"],
+  },
+  {
+    name: "Operations App/Website",
+    surface: "operations_web",
+    productLabel: "NovaPay Operations App / Website",
+    persona: "NovaPay operations, treasury, support escalation, and provider monitoring teams",
+    promise: "Monitor transfers, liquidity, settlement queues, provider health, incidents, replay, and audit evidence.",
+    screens: [
+      "Operations Overview",
+      "Live Transfers",
+      "Settlement Queue",
+      "Compliance Cases",
+      "Fraud Monitor",
+      "Liquidity Dashboard",
+      "Treasury Dashboard",
+      "Provider Health",
+      "Replay Console",
+      "Incidents",
+    ],
+    workflow: [
+      "Watch live transfers",
+      "Filter exceptions",
+      "Inspect decision trace",
+      "Validate event chain",
+      "Check liquidity",
+      "Escalate incident",
+      "Export audit package",
+    ],
+    backendBindings: [
+      "GET /v1/treasury/snapshot",
+      "GET /v1/corridors",
+      "GET /v1/policies",
+      "GET /v1/transfers/{id}/timeline",
+      "GET /v1/transfers/{id}/audit-package",
+    ],
+    proofWidgets: ["Provider health", "Outbox status", "Snapshot root", "Event chain", "External verifier result"],
+  },
+];
+
 const NOVAPAY_CONTROL_PLANE_GUARANTEES = [
   "All apps are thin clients over the governed backend",
   "One Transfer aggregate",
@@ -7206,6 +7384,53 @@ export default function OperatorDashboard() {
                 </div>
                 <div className="record-card-footer">
                   <span>{app.primaryFlow}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="NovaPay Priority App Build Specifications">
+          <div className="novapay-build-grid">
+            {NOVAPAY_PRIORITY_APP_BUILDS.map((app) => (
+              <article key={app.name} className="record-card novapay-build-card">
+                <div className="record-card-header">
+                  <strong>{app.productLabel}</strong>
+                  <span>{app.surface}</span>
+                </div>
+                <p>{app.persona}</p>
+                <p>{app.promise}</p>
+                <div className="novapay-build-section">
+                  <strong>Primary screens</strong>
+                  <div className="chip-row">
+                    {app.screens.map((screen) => (
+                      <span key={screen} className="surface-chip">{screen}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Core workflow</strong>
+                  <div className="flow-line" aria-label={`${app.name} workflow`}>
+                    {app.workflow.map((step) => (
+                      <span key={step}>{step}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Governed backend bindings</strong>
+                  <div className="git-pull-list">
+                    {app.backendBindings.map((binding) => (
+                      <code key={binding}>{binding}</code>
+                    ))}
+                  </div>
+                </div>
+                <div className="novapay-build-section">
+                  <strong>Trust and proof widgets</strong>
+                  <div className="chip-row">
+                    {app.proofWidgets.map((widget) => (
+                      <span key={widget} className="reason-chip reason-chip-success">{widget}</span>
+                    ))}
+                  </div>
                 </div>
               </article>
             ))}

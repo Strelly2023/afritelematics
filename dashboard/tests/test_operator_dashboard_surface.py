@@ -156,11 +156,45 @@ def test_novapay_role_based_apps_surface_is_declared() -> None:
         "License",
         "No duplicated business logic in role apps",
         "NovaPay Implementation Roadmap",
+        "NovaPay Priority App Build Specifications",
+        "NovaPay Business App / Portal / Web",
+        "NovaPay Operations App / Website",
+        "Home balance",
+        "Send Money",
+        "Beneficiaries",
+        "Agent Dashboard",
+        "Customer Lookup",
+        "KYC Capture",
+        "Merchant Dashboard",
+        "Receive Payment",
+        "QR Display",
+        "Business Overview",
+        "Bulk Payments",
+        "Payroll",
+        "Operations Overview",
+        "Live Transfers",
+        "Settlement Queue",
+        "Provider Health",
+        "POST /v1/transfers/quote",
+        "POST /v1/transfers",
+        "GET /v1/transfers/{id}/receipt",
+        "GET /v1/transfers/{id}/replay",
+        "GET /v1/transfers/{id}/audit-package",
+        "GET /v1/treasury/snapshot",
+        "GET /v1/transfers/{id}/timeline",
+        "Quote hash",
+        "Replay valid badge",
+        "Closing balance proof",
+        "Settlement batch",
+        "Approval chain",
+        "Snapshot root",
+        "External verifier result",
     ):
         assert required in source
 
     assert "novapay-apps-band" in styles
     assert "novapay-app-grid" in styles
+    assert "novapay-build-grid" in styles
     assert "roadmap-lane" in styles
 
 

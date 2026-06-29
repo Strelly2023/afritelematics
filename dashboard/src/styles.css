@@ -1688,6 +1688,40 @@ a {
   line-height: 1.5;
 }
 
+.novapay-build-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.novapay-build-card {
+  align-content: start;
+}
+
+.novapay-build-card p {
+  color: #526176;
+  line-height: 1.5;
+}
+
+.novapay-build-section {
+  display: grid;
+  gap: 9px;
+  border-top: 1px solid #e0e8ee;
+  margin-top: 13px;
+  padding-top: 12px;
+}
+
+.novapay-build-section > strong {
+  color: #101827;
+  font-size: 0.9rem;
+}
+
+.novapay-build-section .git-pull-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+}
+
 .record-card-footer {
   border-top: 1px solid #e0e8ee;
   margin-top: 12px;
@@ -1741,6 +1775,7 @@ a {
   .monetization-grid,
   .git-pull-list,
   .novapay-app-grid,
+  .novapay-build-grid,
   .roadmap-lane {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1816,6 +1851,7 @@ a {
   .monetization-grid,
   .git-pull-list,
   .novapay-app-grid,
+  .novapay-build-grid,
   .roadmap-lane {
     grid-template-columns: 1fr;
   }
