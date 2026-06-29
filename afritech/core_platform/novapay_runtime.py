@@ -7,7 +7,7 @@ policy, routing, ledger, settlement, and receipt as distinct runtime domains.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Mapping
@@ -1696,6 +1696,7 @@ class NovaPayRuntimeEngine:
         source_country = str(payload.get("source_country") or "AU").strip().upper()
         destination_country = str(payload.get("recipient_country") or "").strip().upper()
         jurisdiction = self.registry.resolve_jurisdiction(source_country)
+        recipient_jurisdiction = self.registry.resolve_jurisdiction(destination_country)
         corridor = self.registry.resolve_corridor(source_country, destination_country)
         if not corridor.allowed:
             raise NovaPayTransferAdmissionError(f"corridor_not_allowed:{source_country}->{destination_country}")
@@ -1717,7 +1718,7 @@ class NovaPayRuntimeEngine:
             wallet_id=str(payload.get("recipient_wallet_id") or "") or None,
             bank_account_id=str(payload.get("recipient_bank_account_id") or "") or None,
             mobile_money_id=str(payload.get("recipient_mobile_money_id") or "") or None,
-            jurisdiction_id=jurisdiction.jurisdiction_id,
+            jurisdiction_id=recipient_jurisdiction.jurisdiction_id,
             verified=True,
         )
         if not recipient.name or not recipient.phone_number:
@@ -1776,11 +1777,13 @@ class NovaPayRuntimeEngine:
             recipient_country=destination_country,
             amount=amount,
             source_currency=normalize_currency_code(str(payload.get("source_currency") or "AUD")),
+            source_country=source_country,
             payout_method=payout_method,
             use_case=str(payload.get("use_case") or "transparent_pricing"),
             memo=payload.get("memo"),
             live_provider=bool(payload.get("live_provider") or False),
         ).canonical()
+        compliance_case = replace(compliance_case, transfer_id=str(quote["transfer_id"]))
         destination_amount = _decimal(quote["destination_amount"])
         self._require_liquidity_for_routing(corridor, quote["destination_currency"], destination_amount)
         route = {

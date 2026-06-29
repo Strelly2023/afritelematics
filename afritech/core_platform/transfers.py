@@ -457,6 +457,20 @@ def _quote_route_hint(payout_method: str, route_class: str) -> str:
     return str(payout_profile["route_hint"])
 
 
+def _quote_corridor(
+    *,
+    source_country: str,
+    destination_country: str,
+    source_currency: str,
+    destination_currency: str,
+) -> str:
+    source = str(source_country or "GLOBAL").strip().upper() or "GLOBAL"
+    destination = str(destination_country or "GLOBAL").strip().upper() or "GLOBAL"
+    source_ccy = normalize_currency_code(source_currency)
+    destination_ccy = normalize_currency_code(destination_currency)
+    return f"{source}->{destination}:{source_ccy}->{destination_ccy}"
+
+
 def _transfer_use_case_summary(use_case: str) -> str:
     return str(_use_case_profile(use_case)["label"])
 
@@ -660,6 +674,7 @@ class NovaPayTransferService:
         recipient_identifier: str,
         amount: Decimal,
         source_currency: str,
+        source_country: str | None = None,
         recipient_country: str,
         payout_method: str = "bank_deposit",
         use_case: str = "transparent_pricing",
@@ -668,6 +683,7 @@ class NovaPayTransferService:
     ) -> TransferQuote:
         normalized_method = _normalize_method(payout_method)
         normalized_source_currency = normalize_currency_code(source_currency)
+        normalized_source_country = str(source_country or "").strip().upper()
         normalized_destination_country = str(recipient_country or "").strip().upper()
         use_case_profile = _use_case_profile(use_case)
 
@@ -682,6 +698,7 @@ class NovaPayTransferService:
                 "recipient_name": recipient_name,
                 "recipient_identifier": recipient_identifier,
                 "recipient_country": normalized_destination_country,
+                "source_country": normalized_source_country or None,
                 "payout_method": normalized_method,
                 "use_case": use_case,
                 "memo": memo,
@@ -709,6 +726,12 @@ class NovaPayTransferService:
             route_class=settlement.plan.route_class,
         )
         quote_id = _stable_id("quote")
+        corridor = _quote_corridor(
+            source_country=normalized_source_country,
+            destination_country=normalized_destination_country,
+            source_currency=normalized_source_currency,
+            destination_currency=settlement.intent.currency,
+        )
         quote_payload = {
             "quote_id": quote_id,
             "transfer_id": settlement_intent.intent_id,
@@ -730,7 +753,7 @@ class NovaPayTransferService:
             "total_debit": str(total_debit),
             "transfer_limit": str(transfer_limit),
             "route_class": settlement.plan.route_class,
-            "corridor": settlement.plan.corridor,
+            "corridor": corridor,
             "route_hint": settlement.plan.route_hint,
             "eta": use_case_profile["eta"],
             "cash_pickup_available": bool(payout_profile["cash_pickup"]),
@@ -761,7 +784,7 @@ class NovaPayTransferService:
             total_debit=str(total_debit),
             transfer_limit=str(transfer_limit),
             route_class=settlement.plan.route_class,
-            corridor=settlement.plan.corridor,
+            corridor=corridor,
             route_hint=settlement.plan.route_hint,
             eta=use_case_profile["eta"],
             cash_pickup_available=bool(payout_profile["cash_pickup"]),

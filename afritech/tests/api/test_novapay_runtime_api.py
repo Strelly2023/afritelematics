@@ -108,6 +108,10 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     assert quote.status_code == 200
     quote_body = quote.json()
     assert quote_body["transfer"]["quote"]["quote_id"]
+    assert quote_body["transfer"]["quote"]["corridor"] == "AU->KE:AUD->KES"
+    assert quote_body["transfer"]["routing"]["corridor"] == "AU->KE:AUD->KES"
+    assert quote_body["transfer"]["recipient"]["jurisdiction_id"] == "jur_ke"
+    assert quote_body["transfer"]["compliance"]["transfer_id"] == quote_body["transfer_id"]
     assert quote_body["transfer"]["decision_trace"]["policy_id"] == "novapay.transfer.policy.v1"
     assert quote_body["transfer"]["routing"]["score"]["weights"]["liquidity"] == "0.20"
     assert quote_body["transfer"]["routing"]["region_routing"]["origin_region"] == "region_au"

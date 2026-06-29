@@ -335,7 +335,7 @@ def _parse_corridor(corridor: str) -> tuple[str, str]:
 
 def _infer_country(intent: PaymentIntent, source_currency: str) -> str:
     metadata = intent.metadata
-    for key in ("settlement_country", "country", "destination_country", "merchant_country", "payer_country"):
+    for key in ("source_country", "payer_country", "merchant_country", "country"):
         candidate = str(metadata.get(key, "")).strip()
         if candidate:
             return normalize_country(candidate)
