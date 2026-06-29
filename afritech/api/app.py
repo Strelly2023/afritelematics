@@ -29,6 +29,7 @@ from afritech.api.trace_api import build_trace_router
 from afritech.api.system_status import build_system_status_router
 from afritech.api.partner_verification_api import build_partner_verification_router
 from afritech.api.partner_registry_api import build_partner_registry_router
+from afritech.api.partner_certification_api import build_partner_certification_router
 from afritech.api.public_verification_api import build_public_verification_router
 from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
@@ -87,6 +88,7 @@ from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
+from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
 from afritech.partner_verification import PartnerVerificationStore
 from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
@@ -130,6 +132,7 @@ partner_verification_store = PartnerVerificationStore()
 trust_registry_store = TrustRegistryStore()
 standards_dependency_store = StandardsDependencyStore()
 partner_registry_store = PartnerRegistryStore(seed_partner_registry())
+partner_certification_store = PartnerCertificationStore(seed_partner_certification_registry())
 
 
 # ============================================================
@@ -155,6 +158,14 @@ app.include_router(build_partner_verification_router(store=partner_verification_
 
 # ✅ Partner registry API
 app.include_router(build_partner_registry_router(store=partner_registry_store))
+
+# ✅ Partner certification API
+app.include_router(
+    build_partner_certification_router(
+        store=partner_certification_store,
+        partner_registry_store=partner_registry_store,
+    )
+)
 
 # ✅ Trust Network API
 app.include_router(

@@ -9,11 +9,13 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 from afritech.core_platform.canonical import hash_obj
 from afritech.core_platform.hash_domains import HASH_DOMAINS
+from afritech.security.architecture_signing import sign_architecture_contract, verify_architecture_signature
 
 NOVARIDE_ARCHITECTURE_VERSION = "2026.07.0"
 NOVARIDE_ARCHITECTURE_COMPATIBLE_VERSION = "2026.07"
@@ -482,23 +484,22 @@ def novaride_architecture_deprecations() -> dict[str, Any]:
 
 
 def novaride_architecture_signed_publication(requested_version: str | None = None) -> dict[str, Any]:
-    """Return unsigned publication metadata until key-backed signing is integrated."""
+    """Return the signed public architecture publication contract."""
 
-    requested_key, definition = _resolve_novaride_contract_definition(requested_version)
+    publication = novaride_architecture_publication(requested_version)
+    signature = sign_architecture_contract(publication["contract"])
     return {
-        "platform": "NovaRide",
-        "version": definition.version,
-        "requested_version": requested_key,
-        "signature_status": "unsigned_controlled_contract",
-        "schema_hash": definition.schema_hash(),
-        "canonicalization": {
-            "algorithm": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
-            "hash": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
-        },
+        **publication,
+        "signature_status": signature["signature_status"],
+        "signature_version": signature["signature_version"],
+        "signed_at": signature["signed_at"],
+        "signature": signature["signature"],
         "signing": {
-            "algorithm": None,
-            "key_id": None,
-            "reason": "real_key_backed_signing_not_integrated",
+            "algorithm": signature["algorithm"],
+            "key_id": signature["key_id"],
+            "provider": signature["provider"],
+            "public_key": signature["signature"]["public_key"],
+            "payload_hash": signature["signature"]["payload_hash"],
         },
     }
 
@@ -551,11 +552,32 @@ def novaride_architecture_sdks() -> dict[str, Any]:
             if key not in seen:
                 seen.add(key)
                 targets.append(target)
+    targets = sorted(targets, key=lambda target: str(target["language"]))
     return {
         "platform": "NovaRide",
         "source": "/v1/architecture/openapi",
         "schema_hash": novaride_architecture_schema_hash(),
         "targets": targets,
+    }
+
+
+def novaride_architecture_sdk_generation_pipeline() -> dict[str, Any]:
+    """Return the deterministic SDK generation pipeline for ecosystem consumers."""
+
+    sdks = novaride_architecture_sdks()["targets"]
+    return {
+        "platform": "NovaRide",
+        "source": "/v1/architecture/openapi",
+        "canonical_format": NOVARIDE_ARCHITECTURE_CANONICAL_FORMAT,
+        "hash_algorithm": NOVARIDE_ARCHITECTURE_HASH_ALGORITHM,
+        "targets": sdks,
+        "steps": [
+            "Resolve the canonical architecture contract from the registry",
+            "Emit the public OpenAPI description from the canonical contract",
+            "Generate typed clients and model bindings for each target language",
+            "Publish signed SDK artifacts alongside compatibility metadata",
+            "Regenerate on every contract or schema version change",
+        ],
     }
 
 
@@ -582,6 +604,7 @@ def novaride_architecture_ecosystem_platform() -> dict[str, Any]:
         "compatibility_matrix": novaride_architecture_compatibility_matrix()["matrix"],
         "migration_registry": novaride_architecture_migrations()["migrations"],
         "sdk_registry": novaride_architecture_sdks()["targets"],
+        "sdk_generation_pipeline": novaride_architecture_sdk_generation_pipeline(),
         "operational_metrics": novaride_architecture_operational_metrics()["metrics"],
         "capabilities": list(SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].capabilities),
     }
@@ -606,6 +629,12 @@ def novaride_architecture_openapi() -> dict[str, Any]:
                             "in": "header",
                             "required": False,
                             "schema": {"type": "string", "enum": list(NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS)},
+                        },
+                        {
+                            "name": "Accept-Architecture-Version",
+                            "in": "header",
+                            "required": False,
+                            "schema": {"type": "string", "enum": list(NOVARIDE_ARCHITECTURE_SUPPORTED_VERSIONS)},
                         }
                     ],
                     "responses": {"200": {"description": "Architecture contract publication"}},
@@ -617,10 +646,76 @@ def novaride_architecture_openapi() -> dict[str, Any]:
                     "responses": {"200": {"description": "JSON Schema document"}},
                 }
             },
+            "/v1/architecture/publication": {
+                "get": {
+                    "summary": "Return the signed public architecture publication.",
+                    "responses": {"200": {"description": "Signed publication"}},
+                }
+            },
+            "/v1/architecture/compatibility": {
+                "get": {
+                    "summary": "Return the compatibility matrix for supported versions.",
+                    "responses": {"200": {"description": "Compatibility matrix"}},
+                }
+            },
+            "/v1/architecture/releases": {
+                "get": {
+                    "summary": "Return the release registry for supported versions.",
+                    "responses": {"200": {"description": "Release registry"}},
+                }
+            },
+            "/v1/architecture/changelog": {
+                "get": {
+                    "summary": "Return the versioned changelog for the architecture contract.",
+                    "responses": {"200": {"description": "Changelog"}},
+                }
+            },
+            "/v1/architecture/deprecations": {
+                "get": {
+                    "summary": "Return the deprecation state for supported versions.",
+                    "responses": {"200": {"description": "Deprecations"}},
+                }
+            },
+            "/v1/architecture/migrations": {
+                "get": {
+                    "summary": "Return the version migration registry.",
+                    "responses": {"200": {"description": "Migrations"}},
+                }
+            },
+            "/v1/architecture/metrics": {
+                "get": {
+                    "summary": "Return structured operational metrics for the architecture registry.",
+                    "responses": {"200": {"description": "Operational metrics"}},
+                }
+            },
+            "/v1/architecture/sdk-pipeline": {
+                "get": {
+                    "summary": "Return the deterministic SDK generation pipeline.",
+                    "responses": {"200": {"description": "SDK generation pipeline"}},
+                }
+            },
             "/v1/architecture/verify": {
                 "post": {
                     "summary": "Verify a client supplied architecture version and schema hash.",
                     "responses": {"200": {"description": "Verification result"}},
+                }
+            },
+            "/v1/architecture/verify-signature": {
+                "post": {
+                    "summary": "Verify a signed NovaRide architecture publication.",
+                    "responses": {"200": {"description": "Signed publication verification result"}},
+                }
+            },
+            "/v1/architecture/signature": {
+                "get": {
+                    "summary": "Return the active NovaRide architecture publication signature metadata.",
+                    "responses": {"200": {"description": "Signature metadata"}},
+                }
+            },
+            "/v1/architecture/sdk-pipeline": {
+                "get": {
+                    "summary": "Return the deterministic SDK generation pipeline.",
+                    "responses": {"200": {"description": "SDK generation pipeline"}},
                 }
             },
         },
@@ -629,6 +724,36 @@ def novaride_architecture_openapi() -> dict[str, Any]:
                 "NovaRideArchitectureContract": novaride_architecture_schema(),
             }
         },
+    }
+
+
+def verify_novaride_architecture_publication(publication: Mapping[str, Any]) -> dict[str, Any]:
+    """Verify a signed NovaRide architecture publication payload."""
+
+    contract = publication.get("contract")
+    signature = publication.get("signature")
+    if not isinstance(contract, dict) or not isinstance(signature, dict):
+        return {
+            "valid": False,
+            "publication_valid": False,
+            "signature_valid": False,
+            "contract_valid": False,
+            "signature_status": publication.get("signature_status"),
+        }
+    signature_valid = verify_architecture_signature(contract, signature)
+    contract_result = verify_novaride_architecture_contract(
+        contract.get("requested_version"),
+        contract.get("schema_hash"),
+        contract.get("capabilities"),
+    )
+    return {
+        "valid": bool(signature_valid and contract_result["valid"]),
+        "publication_valid": bool(signature_valid),
+        "signature_valid": bool(signature_valid),
+        "contract_valid": bool(contract_result["valid"]),
+        "contract": contract_result,
+        "signature_status": publication.get("signature_status"),
+        "signature": signature,
     }
 
 

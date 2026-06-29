@@ -26,6 +26,8 @@ from afritech.architecture.novaride_architecture import (
     novaride_architecture_schema,
     novaride_architecture_sdks,
     novaride_architecture_signed_publication,
+    novaride_architecture_sdk_generation_pipeline,
+    verify_novaride_architecture_publication,
     verify_novaride_architecture_contract,
 )
 
@@ -69,6 +71,10 @@ class ArchitectureVerificationRequest(BaseModel):
     version: str | None = None
     schema_hash: str | None = None
     capabilities: list[str] = Field(default_factory=list)
+
+
+class ArchitecturePublicationVerificationRequest(BaseModel):
+    publication: dict[str, Any]
 
 
 NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
@@ -2108,9 +2114,11 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/architecture")
     def novaride_architecture_public_contract(
         x_novaride_architecture: str | None = Header(default=None, alias="X-NovaRide-Architecture"),
+        accept_architecture_version: str | None = Header(default=None, alias="Accept-Architecture-Version"),
     ) -> dict[str, Any]:
         try:
-            return novaride_architecture_publication(x_novaride_architecture)
+            requested_version = x_novaride_architecture or accept_architecture_version
+            return novaride_architecture_publication(requested_version)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -2137,9 +2145,11 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/architecture/publication")
     def novaride_architecture_signed_publication_contract(
         x_novaride_architecture: str | None = Header(default=None, alias="X-NovaRide-Architecture"),
+        accept_architecture_version: str | None = Header(default=None, alias="Accept-Architecture-Version"),
     ) -> dict[str, Any]:
         try:
-            return novaride_architecture_signed_publication(x_novaride_architecture)
+            requested_version = x_novaride_architecture or accept_architecture_version
+            return novaride_architecture_signed_publication(requested_version)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -2159,9 +2169,37 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     def novaride_architecture_metrics_contract() -> dict[str, Any]:
         return novaride_architecture_operational_metrics()
 
+    @router.get("/architecture/signature")
+    def novaride_architecture_signature_contract(
+        x_novaride_architecture: str | None = Header(default=None, alias="X-NovaRide-Architecture"),
+        accept_architecture_version: str | None = Header(default=None, alias="Accept-Architecture-Version"),
+    ) -> dict[str, Any]:
+        requested_version = x_novaride_architecture or accept_architecture_version
+        publication = novaride_architecture_signed_publication(requested_version)
+        return {
+            "platform": publication["platform"],
+            "version": publication["contract"]["version"],
+            "requested_version": publication["contract"]["requested_version"],
+            "signature_status": publication["signature_status"],
+            "signature_version": publication["signature_version"],
+            "signed_at": publication["signed_at"],
+            "signature": publication["signature"],
+            "signing": publication["signing"],
+        }
+
+    @router.get("/architecture/sdk-pipeline")
+    def novaride_architecture_sdk_pipeline_contract() -> dict[str, Any]:
+        return novaride_architecture_sdk_generation_pipeline()
+
     @router.post("/architecture/verify")
     def novaride_architecture_verify_contract(request: ArchitectureVerificationRequest) -> dict[str, Any]:
         return verify_novaride_architecture_contract(request.version, request.schema_hash, request.capabilities)
+
+    @router.post("/architecture/verify-signature")
+    def novaride_architecture_verify_signature_contract(
+        request: ArchitecturePublicationVerificationRequest,
+    ) -> dict[str, Any]:
+        return verify_novaride_architecture_publication(request.publication)
 
     @router.get("/novaride/platform/architecture-contract")
     def novaride_platform_architecture_contract() -> dict[str, Any]:

@@ -108,6 +108,17 @@ def test_novaride_architecture_publication_accepts_compatible_version_header() -
     assert payload["contract"]["compatibility"]["breaking_change"] is False
 
 
+def test_novaride_architecture_publication_accepts_alternate_version_header() -> None:
+    client = TestClient(app)
+
+    response = client.get("/v1/architecture", headers={"Accept-Architecture-Version": "2026.07"})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["contract"]["requested_version"] == "2026.07"
+    assert payload["contract"]["version"] == "2026.07.0"
+
+
 def test_novaride_architecture_publication_rejects_unsupported_version_header() -> None:
     client = TestClient(app)
 
@@ -144,6 +155,9 @@ def test_novaride_architecture_contract_platform_exposes_openapi_and_lifecycle_d
     assert openapi.status_code == 200
     assert openapi.json()["openapi"] == "3.1.0"
     assert "/v1/architecture/verify" in openapi.json()["paths"]
+    assert "/v1/architecture/verify-signature" in openapi.json()["paths"]
+    assert "/v1/architecture/signature" in openapi.json()["paths"]
+    assert "/v1/architecture/sdk-pipeline" in openapi.json()["paths"]
     assert "NovaRideArchitectureContract" in openapi.json()["components"]["schemas"]
 
     assert changelog.status_code == 200
@@ -160,6 +174,39 @@ def test_novaride_architecture_contract_platform_exposes_openapi_and_lifecycle_d
     assert release["aliases"] == ["2026.07"]
     assert release["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
     assert release["schema_hash"] == novaride_architecture_schema_hash()
+
+
+def test_novaride_architecture_publication_surface_is_signed_and_verifiable() -> None:
+    client = TestClient(app)
+
+    publication = client.get("/v1/architecture/publication")
+    signature = client.get("/v1/architecture/signature")
+    verify_signature = client.post(
+        "/v1/architecture/verify-signature",
+        json={"publication": publication.json()},
+    )
+
+    assert publication.status_code == 200
+    payload = publication.json()
+    assert payload["signature_status"] == "signed"
+    assert payload["signature_version"] == 1
+    assert payload["signature"]["scheme"] == "ed25519"
+    assert payload["signature"]["key_id"]
+    assert payload["signing"]["provider"] in {"local_ed25519", "aws_kms"}
+    assert payload["signing"]["public_key"]
+
+    assert signature.status_code == 200
+    signature_payload = signature.json()
+    assert signature_payload["signature_status"] == "signed"
+    assert signature_payload["signature"]["scheme"] == "ed25519"
+    assert signature_payload["signature"]["key_id"] == payload["signature"]["key_id"]
+
+    assert verify_signature.status_code == 200
+    verify_payload = verify_signature.json()
+    assert verify_payload["valid"] is True
+    assert verify_payload["publication_valid"] is True
+    assert verify_payload["signature_valid"] is True
+    assert verify_payload["contract_valid"] is True
 
 
 def test_novaride_architecture_verify_accepts_valid_contract_hash() -> None:
@@ -239,12 +286,16 @@ def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None
     migrations = client.get("/v1/architecture/migrations")
     sdks = client.get("/v1/architecture/sdks")
     metrics = client.get("/v1/architecture/metrics")
+    ecosystem = client.get("/v1/novaride/ecosystem")
 
     assert publication.status_code == 200
-    assert publication.json()["signature_status"] == "unsigned_controlled_contract"
-    assert publication.json()["schema_hash"] == novaride_architecture_schema_hash()
-    assert publication.json()["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
-    assert publication.json()["signing"]["algorithm"] is None
+    assert publication.json()["signature_status"] == "signed"
+    assert publication.json()["signature"]["scheme"] == "ed25519"
+    assert publication.json()["contract"]["schema_hash"] == novaride_architecture_schema_hash()
+    assert publication.json()["contract"]["canonicalization"] == {"algorithm": "canonical.v1", "hash": "sha256"}
+    assert publication.json()["signing"]["algorithm"] == "ed25519"
+    assert ecosystem.status_code == 200
+    assert ecosystem.json()["ecosystem_platform"]["sdk_generation_pipeline"]["steps"]
 
     assert compatibility.status_code == 200
     assert {
@@ -628,7 +679,9 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
         payload["ecosystem_platform"]["classification"]
         == "versioned_canonical_registry_backed_verification_ready_ecosystem_platform"
     )
-    assert payload["ecosystem_platform"]["signed_publication"]["signature_status"] == "unsigned_controlled_contract"
+    assert payload["ecosystem_platform"]["signed_publication"]["signature_status"] == "signed"
+    assert payload["ecosystem_platform"]["signed_publication"]["signature"]["scheme"] == "ed25519"
+    assert payload["ecosystem_platform"]["sdk_generation_pipeline"]["steps"]
     assert payload["ecosystem_platform"]["sdk_registry"]
     assert payload["ecosystem_platform"]["operational_metrics"]["2026.07.0.architecture_requests_total"] == {
         "value": 0,

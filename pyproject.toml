@@ -43,6 +43,7 @@ afritech = "afritech.cli.main:main"
 afritech-verify = "afritech.tools.external_verifier_cli:run"
 afritech-verify-session = "afritech.tools.partner_verification_session_cli:run"
 novapay-verify = "afritech.tools.novapay_verify_cli:run"
+novaride-verify = "afritech.tools.novaride_verify_cli:run"
 novatrust-verify = "afritech.tools.novatrust_verifier_cli:run"
 
 [project.optional-dependencies]
