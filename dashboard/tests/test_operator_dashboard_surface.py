@@ -103,6 +103,67 @@ def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
     assert "/trust/auditor/dashboard?ids=" in read("src/AuditorDashboard.jsx")
 
 
+def test_novapay_role_based_apps_surface_is_declared() -> None:
+    source = read("src/App.jsx")
+    styles = read("src/styles.css")
+
+    for required in (
+        "NovaPay UI/UX Platform",
+        "Role-based apps over one governed financial runtime",
+        "NovaPay Ecosystem Control Plane",
+        "NovaPay Core Control Plane",
+        "Transfer Engine, Ledger, Event Platform, Audit & Proof remain central",
+        "NovaPay Role-Based Applications",
+        "NovaPay Consumer App",
+        "NovaPay Agent App",
+        "NovaPay Merchant App",
+        "NovaPay Business App",
+        "NovaPay Operations App",
+        "NovaPay Compliance App",
+        "NovaPay Support App",
+        "NovaPay Administration App",
+        "NovaPay Developer Portal",
+        "Multi-currency wallet",
+        "International remittance",
+        "Cash In",
+        "Cash Out",
+        "QR payments",
+        "Bulk payments",
+        "Liquidity Dashboard",
+        "AML",
+        "Sanctions",
+        "Receipt verification",
+        "License management",
+        "Webhook management",
+        "Event Explorer",
+        "Shared Platform Services",
+        "Identity Service",
+        "Transfer Service",
+        "Policy Engine",
+        "Compliance Engine",
+        "Routing Engine",
+        "FX Engine",
+        "Ledger",
+        "Settlement",
+        "Receipt",
+        "Audit",
+        "Replay",
+        "Unified Domain Model",
+        "Customer",
+        "Wallet",
+        "Funding Source",
+        "Jurisdiction",
+        "License",
+        "No duplicated business logic in role apps",
+        "NovaPay Implementation Roadmap",
+    ):
+        assert required in source
+
+    assert "novapay-apps-band" in styles
+    assert "novapay-app-grid" in styles
+    assert "roadmap-lane" in styles
+
+
 def test_operator_dashboard_exposes_required_operator_panels() -> None:
     source = read("src/App.jsx")
 

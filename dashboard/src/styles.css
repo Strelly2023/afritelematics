@@ -1644,6 +1644,80 @@ a {
   line-height: 1.5;
 }
 
+.novapay-apps-band {
+  background:
+    radial-gradient(circle at top left, rgba(30, 108, 83, 0.09), transparent 34%),
+    linear-gradient(180deg, #f3faf8 0%, #f5f7fb 100%);
+}
+
+.novapay-control-card {
+  border-color: #b9d4ca;
+  background: #ffffff;
+}
+
+.flow-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.flow-line span {
+  border: 1px solid #cddbe4;
+  border-radius: 6px;
+  background: #f7fafc;
+  color: #25354d;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.novapay-app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.novapay-app-card {
+  align-content: start;
+  min-height: 100%;
+}
+
+.novapay-app-card p {
+  color: #526176;
+  line-height: 1.5;
+}
+
+.record-card-footer {
+  border-top: 1px solid #e0e8ee;
+  margin-top: 12px;
+  padding-top: 10px;
+  color: #2f6f73;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.roadmap-lane {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.roadmap-step {
+  min-height: 92px;
+}
+
+.roadmap-step span {
+  color: #2f6f73;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.roadmap-step strong {
+  display: block;
+  margin-top: 8px;
+}
+
 @media (max-width: 1120px) {
   .hero,
   .split-layout,
@@ -1665,7 +1739,9 @@ a {
   .demo-flow-list,
   .demo-script-list,
   .monetization-grid,
-  .git-pull-list {
+  .git-pull-list,
+  .novapay-app-grid,
+  .roadmap-lane {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1738,7 +1814,9 @@ a {
   .demo-flow-list,
   .demo-script-list,
   .monetization-grid,
-  .git-pull-list {
+  .git-pull-list,
+  .novapay-app-grid,
+  .roadmap-lane {
     grid-template-columns: 1fr;
   }
 

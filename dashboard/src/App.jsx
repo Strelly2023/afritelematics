@@ -811,6 +811,235 @@ const NOVATECH_PRODUCT_LAYERS = [
   },
 ];
 
+const NOVAPAY_SHARED_SERVICES = [
+  "Identity Service",
+  "Transfer Service",
+  "Policy Engine",
+  "Compliance Engine",
+  "Routing Engine",
+  "FX Engine",
+  "Ledger",
+  "Settlement",
+  "Receipt",
+  "Audit",
+  "Replay",
+];
+
+const NOVAPAY_UNIFIED_DOMAIN_MODEL = [
+  "Customer",
+  "Wallet",
+  "Transfer",
+  "Funding Source",
+  "Jurisdiction",
+  "License",
+  "Policy",
+  "Compliance",
+  "Routing",
+  "Settlement",
+  "Ledger",
+  "Receipt",
+  "Audit",
+  "Replay",
+];
+
+const NOVAPAY_ROLE_APPS = [
+  {
+    name: "NovaPay Consumer App",
+    audience: "Individuals, families, students, migrant workers, international remittance customers",
+    navigation: ["Home", "Transfer", "Wallet", "Scan QR", "Activity", "Profile"],
+    capabilities: [
+      "Multi-currency wallet",
+      "Saved beneficiaries",
+      "Local transfer",
+      "International remittance",
+      "Phone number transfer",
+      "Wallet-to-wallet",
+      "QR transfer",
+      "Mobile money funding",
+      "Bank funding",
+      "Card funding",
+      "Cash via agent",
+      "Merchant QR",
+      "Bill payments",
+      "Airtime",
+      "Utilities",
+      "Biometrics",
+      "Device binding",
+      "Trusted devices",
+      "Transaction approvals",
+      "Cryptographic receipts",
+      "Verification codes",
+      "Replay timeline",
+    ],
+    primaryFlow: "Quote -> Transfer -> Receipt -> Replay proof",
+    surface: "consumer_mobile",
+  },
+  {
+    name: "NovaPay Agent App",
+    audience: "Cash-in agents, cash-out agents, rural agents",
+    navigation: ["Dashboard", "Cash In", "Cash Out", "Customers", "Reports", "Profile"],
+    capabilities: [
+      "Customer lookup by phone",
+      "Customer lookup by QR",
+      "Customer lookup by wallet ID",
+      "Cash In",
+      "Cash Out",
+      "Agent settlement",
+      "Float management",
+      "Opening balance",
+      "Closing balance",
+      "Cash reconciliation",
+      "Float requests",
+      "KYC capture",
+      "Document scan",
+      "Photo verification",
+    ],
+    primaryFlow: "Lookup -> KYC check -> Cash operation -> Reconciliation receipt",
+    surface: "agent_mobile",
+  },
+  {
+    name: "NovaPay Merchant App",
+    audience: "Retail, restaurants, shops, SMEs",
+    navigation: ["Dashboard", "Receive", "Transactions", "Settlement", "Reports", "Settings"],
+    capabilities: [
+      "Receive payments",
+      "QR payments",
+      "Wallet payments",
+      "Mobile money payments",
+      "Refunds",
+      "Merchant settlement",
+      "Daily sales",
+      "Settlement reports",
+      "Business analytics",
+      "Customer receipts",
+      "Invoice generation",
+    ],
+    primaryFlow: "QR request -> Customer payment -> Merchant receipt -> Settlement report",
+    surface: "merchant_mobile",
+  },
+  {
+    name: "NovaPay Business App",
+    audience: "Companies, payroll teams, NGOs, government",
+    navigation: ["Overview", "Bulk Pay", "Approvals", "Treasury", "Reports", "Integrations"],
+    capabilities: [
+      "Bulk payments",
+      "Payroll",
+      "Supplier payments",
+      "Expense management",
+      "Role-based approvals",
+      "Treasury",
+      "Reports",
+      "API integration",
+    ],
+    primaryFlow: "Upload batch -> Approval policy -> Bulk disbursement -> Audit export",
+    surface: "business_web",
+  },
+  {
+    name: "NovaPay Operations App",
+    audience: "NovaPay operations team",
+    navigation: ["Overview", "Transfers", "Compliance", "Treasury", "Providers", "Replay", "Settings"],
+    capabilities: [
+      "Live transfers",
+      "Settlement queue",
+      "Pending transactions",
+      "Compliance cases",
+      "Fraud monitoring",
+      "Liquidity Dashboard",
+      "Treasury Dashboard",
+      "Provider Health",
+      "Incident Management",
+      "Replay",
+    ],
+    primaryFlow: "Monitor queue -> Inspect transfer -> Verify replay -> Escalate incident",
+    surface: "operations_console",
+  },
+  {
+    name: "NovaPay Compliance App",
+    audience: "Compliance officers",
+    navigation: ["Cases", "AML", "Sanctions", "KYC", "Reports", "Audit"],
+    capabilities: [
+      "AML",
+      "Sanctions",
+      "KYC",
+      "Transaction monitoring",
+      "Case management",
+      "Reporting",
+      "Audit export",
+      "Suspicious activity review",
+    ],
+    primaryFlow: "Case queue -> Evidence review -> Decision trace -> Audit package",
+    surface: "compliance_console",
+  },
+  {
+    name: "NovaPay Support App",
+    audience: "Customer support",
+    navigation: ["Search", "Transfers", "Replay", "Disputes", "Refunds", "Messages"],
+    capabilities: [
+      "Customer search",
+      "Transfer replay",
+      "Receipt verification",
+      "Dispute management",
+      "Refund workflow",
+      "Communication history",
+    ],
+    primaryFlow: "Customer search -> Replay timeline -> Receipt verification -> Support outcome",
+    surface: "support_console",
+  },
+  {
+    name: "NovaPay Administration App",
+    audience: "Platform administrators",
+    navigation: ["Organizations", "Users", "Roles", "Policies", "Providers", "Licenses"],
+    capabilities: [
+      "Organizations",
+      "Users",
+      "Roles",
+      "Permissions",
+      "Policies",
+      "Feature flags",
+      "Configuration",
+      "Provider management",
+      "License management",
+    ],
+    primaryFlow: "Configure tenant -> Assign roles -> Publish policy -> Verify access",
+    surface: "admin_console",
+  },
+  {
+    name: "NovaPay Developer Portal",
+    audience: "Partners, developers, banks, fintechs",
+    navigation: ["Docs", "API Keys", "Sandbox", "Webhooks", "Events", "SDKs"],
+    capabilities: [
+      "API keys",
+      "SDKs",
+      "Documentation",
+      "Sandbox",
+      "Webhook management",
+      "Event Explorer",
+    ],
+    primaryFlow: "Read docs -> Create sandbox key -> Register webhook -> Verify event",
+    surface: "developer_portal",
+  },
+];
+
+const NOVAPAY_IMPLEMENTATION_ROADMAP = [
+  "NovaPay Consumer App",
+  "NovaPay Operations App",
+  "NovaPay Agent App",
+  "NovaPay Merchant App",
+  "NovaPay Compliance App",
+  "NovaPay Business App",
+  "NovaPay Administration App",
+  "NovaPay Developer Portal",
+];
+
+const NOVAPAY_CONTROL_PLANE_GUARANTEES = [
+  "All apps are thin clients over the governed backend",
+  "One Transfer aggregate",
+  "One Ledger truth",
+  "One Event platform",
+  "One Audit and Proof model",
+  "No duplicated business logic in role apps",
+];
+
 const NOVARIDE_APP_FALLBACKS = [
   "NovaRide Passenger",
   "NovaRide Driver",
@@ -6901,6 +7130,98 @@ export default function OperatorDashboard() {
             </div>
           </OperatorPanel>
         </div>
+      </section>
+
+      <section className="section-band novapay-apps-band" id="payments">
+        <SectionIntro
+          eyebrow="NovaPay UI/UX Platform"
+          title="Role-based apps over one governed financial runtime"
+          question="Consumer, agent, merchant, business, operations, compliance, support, administration, and developer surfaces share the same transfer engine, ledger, event platform, audit, and proof model."
+        />
+        <OperatorPanel title="NovaPay Ecosystem Control Plane">
+          <div className="stack">
+            <article className="record-card novapay-control-card">
+              <div className="record-card-header">
+                <strong>NovaPay Core Control Plane</strong>
+                <span>single governed runtime</span>
+              </div>
+              <p>
+                Transfer Engine, Ledger, Event Platform, Audit & Proof remain central. Each NovaPay
+                app is a role-specific interface over the same governed transfer lifecycle.
+              </p>
+              <div className="chip-row">
+                {NOVAPAY_CONTROL_PLANE_GUARANTEES.map((guarantee) => (
+                  <span key={guarantee} className="surface-chip">{guarantee}</span>
+                ))}
+              </div>
+            </article>
+            <div className="operator-grid dense-grid">
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>Shared Platform Services</strong>
+                  <span>{NOVAPAY_SHARED_SERVICES.length} services</span>
+                </div>
+                <div className="flow-line" aria-label="NovaPay shared platform services">
+                  {NOVAPAY_SHARED_SERVICES.map((service) => (
+                    <span key={service}>{service}</span>
+                  ))}
+                </div>
+              </article>
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>Unified Domain Model</strong>
+                  <span>{NOVAPAY_UNIFIED_DOMAIN_MODEL.length} domains</span>
+                </div>
+                <div className="flow-line" aria-label="NovaPay unified domain model">
+                  {NOVAPAY_UNIFIED_DOMAIN_MODEL.map((domain) => (
+                    <span key={domain}>{domain}</span>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="NovaPay Role-Based Applications">
+          <div className="novapay-app-grid">
+            {NOVAPAY_ROLE_APPS.map((app) => (
+              <article key={app.name} className="record-card novapay-app-card">
+                <div className="record-card-header">
+                  <strong>{app.name}</strong>
+                  <span>{app.surface}</span>
+                </div>
+                <p>{app.audience}</p>
+                <div className="chip-row" aria-label={`${app.name} navigation`}>
+                  {app.navigation.map((item) => (
+                    <span key={item} className="surface-chip">{item}</span>
+                  ))}
+                </div>
+                <div className="stack compact-stack">
+                  <strong>Expected capabilities</strong>
+                  <div className="chip-row">
+                    {app.capabilities.map((capability) => (
+                      <span key={capability} className="reason-chip">{capability}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="record-card-footer">
+                  <span>{app.primaryFlow}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="NovaPay Implementation Roadmap">
+          <div className="roadmap-lane">
+            {NOVAPAY_IMPLEMENTATION_ROADMAP.map((step, index) => (
+              <article key={step} className="record-card roadmap-step">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{step}</strong>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
       </section>
 
       <section className="section-band">
