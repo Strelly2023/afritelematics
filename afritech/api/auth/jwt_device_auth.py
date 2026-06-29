@@ -157,11 +157,18 @@ def build_auth_router(
                 )
         user_id = str(payload.get("user_id", ""))
         role = str(payload.get("role", "OPERATOR")).upper()
+        organization_id = payload.get("organization_id", payload.get("tenant_id"))
         if not user_id:
             raise HTTPException(status_code=400, detail="user_id required")
         if role not in AUTH_ROLES:
             raise HTTPException(status_code=400, detail="invalid_role")
-        return {"token": jwt.create_token(user_id, role=role)}
+        return {
+            "token": jwt.create_token(
+                user_id,
+                role=role,
+                organization_id=str(organization_id) if organization_id else None,
+            )
+        }
 
     @router.post("/devices/register")
     def register_device(payload: dict[str, Any], authorization: str = Header(default="")) -> dict[str, Any]:

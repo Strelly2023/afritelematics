@@ -76,6 +76,9 @@ def build_novatech_intranet_router() -> APIRouter:
                 "novatech_saas": "/v1/novatech/saas/status",
                 "novatech_organizations": "/v1/novatech/organizations",
                 "novatech_outcomes": "/v1/novatech/outcomes/status",
+                "novatech_meta_learning": "/v1/novatech/intranet/meta-learning",
+                "novatech_business_pricing": "/v1/novatech/intranet/business-pricing",
+                "novatech_business_optimization": "/v1/novatech/intranet/business-optimization",
                 "novatech_trust_network": "/v1/novatech/trust-network/status",
                 "novatech_marketplace": "/v1/novatech/marketplace/status",
                 "novapay_wiring": "/api/novapay/wiring",
@@ -226,6 +229,66 @@ def build_novatech_intranet_router() -> APIRouter:
                     "primary_corridor": payload["primary_corridor"],
                     "ready_corridors": len(payload["ready_corridors"]),
                     "gated_corridors": len(payload["gated_corridors"]),
+                },
+            }
+        )
+        return payload
+
+    @router.get("/v1/novatech/intranet/meta-learning")
+    async def intranet_meta_learning(
+        claims = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        payload = control_plane.dashboard_meta_learning_redesign(organization_id=organization_id)
+        await publish_dashboard_snapshot(
+            {
+                "source": "novatech_intranet_meta_learning",
+                "organization_id": organization_id,
+                "status": payload["mode"],
+                "summary": {
+                    "outcome_band": payload["trigger_window"]["outcome_band"],
+                    "learning_band": payload["trigger_window"]["learning_band"],
+                    "twin_mode": payload["trigger_window"]["twin_mode"],
+                },
+            }
+        )
+        return payload
+
+    @router.get("/v1/novatech/intranet/business-pricing")
+    async def intranet_business_pricing(
+        claims = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        payload = control_plane.dashboard_business_pricing(organization_id=organization_id)
+        await publish_dashboard_snapshot(
+            {
+                "source": "novatech_intranet_business_pricing",
+                "organization_id": organization_id,
+                "status": payload["pricing"]["pricing_posture"],
+                "summary": {
+                    "price_multiplier": payload["pricing"]["price_multiplier"],
+                    "incentive_focus": payload["incentives"]["focus"],
+                    "take_rate": payload["incentives"]["commercial_take_rate"],
+                },
+            }
+        )
+        return payload
+
+    @router.get("/v1/novatech/intranet/business-optimization")
+    async def intranet_business_optimization(
+        claims = Depends(require_roles("OPERATOR", "VERIFIER", "OBSERVER", "DEVELOPER")),
+    ) -> dict[str, Any]:
+        organization_id = claims.organization_id
+        payload = control_plane.dashboard_city_profit_optimization(organization_id=organization_id)
+        await publish_dashboard_snapshot(
+            {
+                "source": "novatech_intranet_business_optimization",
+                "organization_id": organization_id,
+                "status": payload["profit_optimization"]["mode"],
+                "summary": {
+                    "budget_pool": payload["budget_allocation"]["budget_pool"],
+                    "projected_profit": payload["profit_optimization"]["projected_profit"],
+                    "profit_uplift": payload["profit_optimization"]["profit_uplift"],
                 },
             }
         )
@@ -837,6 +900,7 @@ def _internal_links() -> list[dict[str, str]]:
         {"label": "NovaTech Core Console", "path": "/v1/core-platform/console"},
         {"label": "NovaTech Core Pilot Flow", "path": "/v1/core-platform/pilot/flow"},
         {"label": "NovaPay Corridor Status", "path": "/v1/novatech/intranet/novapay/corridors/status"},
+        {"label": "NovaTech Business Optimization", "path": "/v1/novatech/intranet/business-optimization"},
         {"label": "NovaPay Live Test Readiness", "path": "/v1/core-platform/transfers/live-test/readiness"},
         {"label": "NovaTrust Explorer", "path": "/trust/explorer/{receipt_or_trust_id}"},
         {
@@ -945,6 +1009,7 @@ def _build_intranet_surface(
             "documentation": "/v1/novatech/documentation/status",
             "documentation_registry": "/v1/novatech/documentation/registry",
             "documentation_policy": "/v1/novatech/documentation/policy",
+            "novatech_business_optimization": "/v1/novatech/intranet/business-optimization",
             "documentation_certification": "/v1/novatech/documentation/certification",
             "documentation_trust": "/v1/novatech/documentation/trust",
             "documentation_training": "/v1/novatech/documentation/training",

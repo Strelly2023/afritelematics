@@ -134,6 +134,22 @@ def test_public_verification_portal_links_anchor_dashboard() -> None:
     response = client.get("/public/verify/portal")
 
     assert response.status_code == 200
+    assert "NovaTrust Public Verification Portal" in response.text
+    assert "Verify an anchor" in response.text
+    assert "/public/verify/health" in response.text
     assert "/public/architecture/anchors/dashboard" in response.text
     assert "/public/architecture/anchors/verification" in response.text
     assert "/public/documentation/portal" in response.text
+    assert "public_lookup_is_registry_and_packet_read_only" in response.text
+
+
+def test_public_verification_health_is_ready() -> None:
+    client = build_client()
+
+    response = client.get("/public/verify/health")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "ready"
+    assert payload["classification"] == "CONTROLLED_PUBLIC_VERIFICATION"
+    assert payload["authority_boundary"] == "public_lookup_is_registry_and_packet_read_only"

@@ -71,6 +71,7 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     assert payload["surfaces"]["intranet"]["route"] == "/novatech/intranet/"
     assert payload["surfaces"]["intranet"]["dashboards"]["core_platform_console"] == "/v1/core-platform/console"
     assert payload["surfaces"]["intranet"]["dashboards"]["novatrust_explorer"] == "/trust/explorer/{receipt_or_trust_id}"
+    assert payload["surfaces"]["intranet"]["dashboards"]["novatech_business_optimization"] == "/v1/novatech/intranet/business-optimization"
     assert payload["surfaces"]["extranet"]["audiences"] == [
         "CLIENT",
         "PARTNER",
@@ -108,6 +109,20 @@ def test_novatech_platform_surfaces_expose_org_os_sections() -> None:
     knowledge = client.get("/v1/novatech/intranet/knowledge", headers=auth_headers(role="OPERATOR"))
     assert knowledge.status_code == 200
     assert knowledge.json()["workspace"]["workspace_mode"] == "codex_style"
+
+    meta_learning = client.get("/v1/novatech/intranet/meta-learning", headers=auth_headers(role="OPERATOR"))
+    assert meta_learning.status_code == 200
+    meta_learning_payload = meta_learning.json()
+    assert meta_learning_payload["view"] == "novatech_meta_learning_redesign"
+    assert meta_learning_payload["candidate_redesign"]["authority_boundary"] == "proposal_only"
+    assert meta_learning_payload["mode"] in {"adaptive_redesign", "proposal_watch", "design_hold"}
+
+    business_optimization = client.get("/v1/novatech/intranet/business-optimization", headers=auth_headers(role="OPERATOR"))
+    assert business_optimization.status_code == 200
+    business_optimization_payload = business_optimization.json()
+    assert business_optimization_payload["view"] == "novatech_city_profit_optimization"
+    assert "budget_allocation" in business_optimization_payload
+    assert "profit_optimization" in business_optimization_payload
 
     workflows = client.get("/v1/novatech/intranet/workflows", headers=auth_headers(role="OPERATOR"))
     assert workflows.status_code == 200

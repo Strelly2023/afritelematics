@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from importlib import import_module
+import sys
 from typing import Any
 
-from afritech.afriprogramming.phase_common import DEFAULT_ORGANIZATION_ID, build_audit_log, build_control_projection, get_phase_store, phase_now
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID, get_platform_store
 
 
 def get_phase_store():
+    control_plane = sys.modules.get("afritech.afriprogramming.control_plane")
+    if control_plane is not None and hasattr(control_plane, "_STORE"):
+        return control_plane._STORE
     return get_platform_store()
 
 
