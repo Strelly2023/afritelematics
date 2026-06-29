@@ -59,6 +59,9 @@ def test_external_verifier_accepts_runtime_audit_package() -> None:
     assert result["snapshot_root_valid"] is True
     assert result["snapshot_ledger_valid"] is True
     assert result["event_chain_valid"] is True
+    assert result["transfer_merkle_valid"] is True
+    assert result["ledger_checkpoint_valid"] is True
+    assert result["reconciliation_valid"] is True
 
 
 def test_external_verifier_rejects_tampered_ledger() -> None:
@@ -69,6 +72,26 @@ def test_external_verifier_rejects_tampered_ledger() -> None:
 
     assert result["valid"] is False
     assert result["ledger_hash_valid"] is False
+
+
+def test_external_verifier_rejects_tampered_merkle_proof() -> None:
+    package = deepcopy(_audit_package())
+    package["merkle_proofs"][0]["path"][0]["hash"] = "f" * 64
+
+    result = verify_audit_package(package)
+
+    assert result["valid"] is False
+    assert result["transfer_merkle_valid"] is False
+
+
+def test_external_verifier_rejects_tampered_global_ledger_root() -> None:
+    package = deepcopy(_audit_package())
+    package["ledger_checkpoint"]["transfer_roots"][0]["transfer_merkle_root"] = "e" * 64
+
+    result = verify_audit_package(package)
+
+    assert result["valid"] is False
+    assert result["ledger_checkpoint_valid"] is False
 
 
 def test_external_verifier_cli_verifies_audit_package(tmp_path: Path) -> None:
@@ -90,7 +113,10 @@ def test_external_verifier_cli_verifies_audit_package(tmp_path: Path) -> None:
     )
 
     assert completed.returncode == 0
-    assert json.loads(completed.stdout)["valid"] is True
+    result = json.loads(completed.stdout)
+    assert result["valid"] is True
+    assert result["transfer_merkle_valid"] is True
+    assert result["ledger_checkpoint_valid"] is True
 
 
 def test_external_verifier_protocol_does_not_import_runtime_engine() -> None:

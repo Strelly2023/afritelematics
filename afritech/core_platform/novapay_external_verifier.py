@@ -65,6 +65,13 @@ SOURCE_BODY_KEYS = (
     "events",
     "policy",
     "snapshot",
+    "transfer_merkle_root",
+    "transfer_root_commitment",
+    "merkle_proofs",
+    "global_ledger_root",
+    "ledger_checkpoint",
+    "reconciliation",
+    "verification_instructions",
 )
 
 
@@ -147,6 +154,18 @@ def verify_audit_package(package: Mapping[str, Any]) -> dict[str, Any]:
     except Exception:
         snapshot_root_valid = False
         snapshot_ledger_valid = False
+    try:
+        transfer_merkle_valid = _transfer_merkle_valid(package)
+    except Exception:
+        transfer_merkle_valid = False
+    try:
+        ledger_checkpoint_valid = _ledger_checkpoint_valid(package)
+    except Exception:
+        ledger_checkpoint_valid = False
+    try:
+        reconciliation_valid = _reconciliation_valid(package)
+    except Exception:
+        reconciliation_valid = False
 
     return {
         "valid": bool(
@@ -157,6 +176,9 @@ def verify_audit_package(package: Mapping[str, Any]) -> dict[str, Any]:
             and snapshot_root_valid
             and snapshot_ledger_valid
             and event_chain_valid
+            and transfer_merkle_valid
+            and ledger_checkpoint_valid
+            and reconciliation_valid
         ),
         "root_hash": root_hash,
         "protocol_valid": bool(protocol_valid),
@@ -165,6 +187,9 @@ def verify_audit_package(package: Mapping[str, Any]) -> dict[str, Any]:
         "snapshot_root_valid": bool(snapshot_root_valid),
         "snapshot_ledger_valid": bool(snapshot_ledger_valid),
         "event_chain_valid": bool(event_chain_valid),
+        "transfer_merkle_valid": bool(transfer_merkle_valid),
+        "ledger_checkpoint_valid": bool(ledger_checkpoint_valid),
+        "reconciliation_valid": bool(reconciliation_valid),
         "ledger_hash": recomputed_ledger_hash,
     }
 
@@ -302,6 +327,110 @@ def _snapshot_valid(package: Mapping[str, Any]) -> tuple[bool, bool]:
     snapshot_root_valid = snapshot.get("snapshot_root_hash") == snapshot_root_hash
     snapshot_ledger_valid = snapshot.get("ledger_hash") == package.get("ledger_hash")
     return bool(snapshot_root_valid), bool(snapshot_ledger_valid)
+
+
+def _merkle_parent(left: str, right: str) -> str:
+    return hash_obj({"left": left, "right": right}, domain=HASH_DOMAINS["MERKLE_ROOT"])
+
+
+def _merkle_root_from_hashes(hashes: list[str]) -> str:
+    if not hashes:
+        return hash_obj({"leaves": []}, domain=HASH_DOMAINS["MERKLE_ROOT"])
+    level = list(hashes)
+    while len(level) > 1:
+        next_level: list[str] = []
+        for index in range(0, len(level), 2):
+            left = level[index]
+            right = level[index + 1] if index + 1 < len(level) else left
+            next_level.append(_merkle_parent(left, right))
+        level = next_level
+    return level[0]
+
+
+def _verify_merkle_proof(leaf_hash: str, proof: Mapping[str, Any], root_hash: str) -> bool:
+    current = leaf_hash
+    for step in proof.get("path") or []:
+        sibling = str(step.get("hash"))
+        if step.get("position") == "left":
+            current = _merkle_parent(sibling, current)
+        elif step.get("position") == "right":
+            current = _merkle_parent(current, sibling)
+        else:
+            return False
+    return current == root_hash
+
+
+def _transfer_merkle_valid(package: Mapping[str, Any]) -> bool:
+    events = [ExternalTransferEvent.from_dict(event) for event in (package.get("events") or [])]
+    if not events:
+        return False
+    leaves = [hash_obj(event.canonical(), domain=HASH_DOMAINS["MERKLE_LEAF"]) for event in events]
+    root = _merkle_root_from_hashes(leaves)
+    if package.get("transfer_merkle_root") != root:
+        return False
+    commitment = package.get("transfer_root_commitment") or {}
+    if commitment.get("transfer_merkle_root") != root:
+        return False
+    proofs = package.get("merkle_proofs") or []
+    if len(proofs) != len(events):
+        return False
+    for event, leaf, proof in zip(events, leaves, proofs):
+        if proof.get("event_id") != event.event_id or proof.get("leaf_hash") != leaf:
+            return False
+        if not _verify_merkle_proof(leaf, proof, root):
+            return False
+    return True
+
+
+def _ledger_checkpoint_valid(package: Mapping[str, Any]) -> bool:
+    checkpoint = package.get("ledger_checkpoint") or {}
+    if not isinstance(checkpoint, Mapping) or not checkpoint:
+        return False
+    transfer_roots = checkpoint.get("transfer_roots") or []
+    leaf_hashes = [
+        hash_obj(root, domain=HASH_DOMAINS["MERKLE_LEAF"])
+        for root in sorted(transfer_roots, key=lambda item: str(item.get("transfer_id")))
+    ]
+    ledger_root = _merkle_root_from_hashes(leaf_hashes)
+    accounts = checkpoint.get("accounts") or []
+    balances_hash = hash_obj(accounts, domain=HASH_DOMAINS["LEDGER_ENTRY"])
+    checkpoint_body = {
+        "ledger_root": ledger_root,
+        "accounts": accounts,
+        "balances_hash": balances_hash,
+        "block_height": checkpoint.get("block_height"),
+        "previous_snapshot_hash": checkpoint.get("previous_snapshot_hash"),
+    }
+    return bool(
+        package.get("global_ledger_root") == ledger_root
+        and checkpoint.get("ledger_root") == ledger_root
+        and checkpoint.get("balances_hash") == balances_hash
+        and checkpoint.get("snapshot_hash") == hash_obj(
+            checkpoint_body,
+            domain=HASH_DOMAINS["LEDGER_CHECKPOINT"],
+        )
+    )
+
+
+def _reconciliation_valid(package: Mapping[str, Any]) -> bool:
+    report = package.get("reconciliation") or {}
+    if not isinstance(report, Mapping) or not report:
+        return False
+    report_body = {
+        "total_debit": str(_decimal(report.get("total_debit", "0"))),
+        "total_credit": str(_decimal(report.get("total_credit", "0"))),
+        "ledger_balanced": bool(report.get("ledger_balanced")),
+        "ledger_root": report.get("ledger_root"),
+        "total_transfers": report.get("total_transfers"),
+    }
+    return bool(
+        report.get("ledger_balanced") is True
+        and report.get("ledger_root") == package.get("global_ledger_root")
+        and report.get("report_hash") == hash_obj(
+            report_body,
+            domain=HASH_DOMAINS["RECONCILIATION_REPORT"],
+        )
+    )
 
 
 def _parse_timestamp(value: str) -> datetime:

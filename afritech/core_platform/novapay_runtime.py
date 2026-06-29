@@ -78,6 +78,65 @@ EVENT_SCHEMA_REGISTRY = {
     for event_type in EVENT_STATE_MAP
 }
 STATE_CHANGING_EVENTS = frozenset(EVENT_STATE_MAP)
+
+
+def _merkle_parent(left: str, right: str) -> str:
+    return hash_obj({"left": left, "right": right}, domain=HASH_DOMAINS["MERKLE_ROOT"])
+
+
+def _merkle_root_from_hashes(hashes: list[str]) -> str:
+    if not hashes:
+        return hash_obj({"leaves": []}, domain=HASH_DOMAINS["MERKLE_ROOT"])
+    level = list(hashes)
+    while len(level) > 1:
+        next_level: list[str] = []
+        for index in range(0, len(level), 2):
+            left = level[index]
+            right = level[index + 1] if index + 1 < len(level) else left
+            next_level.append(_merkle_parent(left, right))
+        level = next_level
+    return level[0]
+
+
+def _merkle_proof_from_hashes(hashes: list[str], leaf_index: int) -> dict[str, Any]:
+    if not hashes:
+        raise NovaPayTransferAdmissionError("merkle_proof_empty")
+    if leaf_index < 0 or leaf_index >= len(hashes):
+        raise NovaPayTransferAdmissionError("merkle_proof_index_out_of_range")
+    proof: list[dict[str, str]] = []
+    index = leaf_index
+    level = list(hashes)
+    while len(level) > 1:
+        sibling_index = index + 1 if index % 2 == 0 else index - 1
+        if sibling_index >= len(level):
+            sibling_index = index
+        proof.append(
+            {
+                "position": "right" if index % 2 == 0 else "left",
+                "hash": level[sibling_index],
+            }
+        )
+        next_level: list[str] = []
+        for level_index in range(0, len(level), 2):
+            left = level[level_index]
+            right = level[level_index + 1] if level_index + 1 < len(level) else left
+            next_level.append(_merkle_parent(left, right))
+        index //= 2
+        level = next_level
+    return {"leaf_index": leaf_index, "path": proof}
+
+
+def _verify_merkle_proof(leaf_hash: str, proof: Mapping[str, Any], root_hash: str) -> bool:
+    current = leaf_hash
+    for step in proof.get("path") or []:
+        sibling = str(step.get("hash"))
+        if step.get("position") == "left":
+            current = _merkle_parent(sibling, current)
+        elif step.get("position") == "right":
+            current = _merkle_parent(current, sibling)
+        else:
+            return False
+    return current == root_hash
 SNAPSHOT_INTERVAL = 100
 
 
@@ -1286,6 +1345,8 @@ class NovaPayRuntimeEngine:
         ]
 
     def build_treasury_snapshot(self) -> dict[str, Any]:
+        ledger_checkpoint = self.build_ledger_checkpoint()
+        reconciliation = self.build_reconciliation_report()
         return {
             "view": "novapay_treasury_snapshot",
             "accounts": self.build_accounts(),
@@ -1295,6 +1356,137 @@ class NovaPayRuntimeEngine:
             "journals": [journal.canonical() for journal in self.store.journals.values()],
             "outbox": self.build_outbox(),
             "snapshots": self.build_snapshots(),
+            "global_ledger_root": ledger_checkpoint["ledger_root"],
+            "ledger_checkpoint": ledger_checkpoint,
+            "reconciliation": reconciliation,
+        }
+
+    def _event_merkle_leaf(self, event: TransferEvent) -> str:
+        return hash_obj(event.canonical(), domain=HASH_DOMAINS["MERKLE_LEAF"])
+
+    def _event_merkle_leaves(self, events: tuple[TransferEvent, ...]) -> list[str]:
+        return [self._event_merkle_leaf(event) for event in events]
+
+    def _transfer_merkle_root(self, events: tuple[TransferEvent, ...]) -> str:
+        return _merkle_root_from_hashes(self._event_merkle_leaves(events))
+
+    def _transfer_merkle_proofs(self, events: tuple[TransferEvent, ...]) -> list[dict[str, Any]]:
+        leaves = self._event_merkle_leaves(events)
+        return [
+            {
+                "event_id": event.event_id,
+                "event_hash": event.event_hash,
+                "leaf_hash": leaves[index],
+                **_merkle_proof_from_hashes(leaves, index),
+            }
+            for index, event in enumerate(events)
+        ]
+
+    def _transfer_root_commitment(self, record: RuntimeTransferRecord) -> dict[str, Any]:
+        event_hashes = [event.event_hash for event in record.events]
+        transfer_merkle_root = self._transfer_merkle_root(record.events)
+        return {
+            "transfer_id": record.transfer.transfer_id,
+            "aggregate_version": record.transfer.aggregate_version,
+            "event_count": len(record.events),
+            "last_event_hash": event_hashes[-1] if event_hashes else GENESIS_HASH,
+            "event_hashes": event_hashes,
+            "transfer_merkle_root": transfer_merkle_root,
+        }
+
+    def _global_ledger_root(self) -> dict[str, Any]:
+        transfer_roots = [
+            self._transfer_root_commitment(record)
+            for record in self.store.records.values()
+            if record.events
+        ]
+        transfer_roots = sorted(transfer_roots, key=lambda item: str(item["transfer_id"]))
+        leaf_hashes = [
+            hash_obj(root, domain=HASH_DOMAINS["MERKLE_LEAF"])
+            for root in transfer_roots
+        ]
+        ledger_root = _merkle_root_from_hashes(leaf_hashes)
+        return {
+            "ledger_root": ledger_root,
+            "total_transfers": len(transfer_roots),
+            "transfer_roots": transfer_roots,
+        }
+
+    def build_ledger_checkpoint(self) -> dict[str, Any]:
+        global_root = self._global_ledger_root()
+        accounts = sorted(
+            self.build_accounts(),
+            key=lambda account: str(account["account_id"]),
+        )
+        balances_hash = hash_obj(accounts, domain=HASH_DOMAINS["LEDGER_ENTRY"])
+        previous_snapshot_hash = self._latest_checkpoint_hash()
+        checkpoint_body = {
+            "ledger_root": global_root["ledger_root"],
+            "accounts": accounts,
+            "balances_hash": balances_hash,
+            "block_height": len(self.store.outbox),
+            "previous_snapshot_hash": previous_snapshot_hash,
+        }
+        checkpoint_hash = hash_obj(checkpoint_body, domain=HASH_DOMAINS["LEDGER_CHECKPOINT"])
+        return {
+            "snapshot_id": _stable_id("ledger_snap"),
+            "ledger_root": global_root["ledger_root"],
+            "accounts": accounts,
+            "balances_hash": balances_hash,
+            "block_height": len(self.store.outbox),
+            "previous_snapshot_hash": previous_snapshot_hash,
+            "snapshot_hash": checkpoint_hash,
+            "total_transfers": global_root["total_transfers"],
+            "transfer_roots": global_root["transfer_roots"],
+            "created_at": _utcnow(),
+        }
+
+    def _latest_checkpoint_hash(self) -> str:
+        latest_snapshots = [
+            snapshot
+            for snapshots in self.store.snapshots.values()
+            for snapshot in snapshots
+        ]
+        if not latest_snapshots:
+            return GENESIS_HASH
+        latest = max(latest_snapshots, key=lambda snapshot: snapshot.created_at)
+        return latest.snapshot_root_hash
+
+    def build_reconciliation_report(self) -> dict[str, Any]:
+        ledger_lines = [
+            line
+            for journal in self.store.journals.values()
+            for line in journal.lines
+        ]
+        total_debit = sum(
+            (_decimal(line.amount) for line in ledger_lines if line.direction == "DEBIT"),
+            Decimal("0"),
+        )
+        total_credit = sum(
+            (_decimal(line.amount) for line in ledger_lines if line.direction == "CREDIT"),
+            Decimal("0"),
+        )
+        ledger_balanced = total_debit == total_credit
+        transfer_roots = self._global_ledger_root()
+        report_body = {
+            "total_debit": str(total_debit),
+            "total_credit": str(total_credit),
+            "ledger_balanced": ledger_balanced,
+            "ledger_root": transfer_roots["ledger_root"],
+            "total_transfers": transfer_roots["total_transfers"],
+        }
+        return {
+            **report_body,
+            "status": "clear" if ledger_balanced else "critical",
+            "alerts": [] if ledger_balanced else [
+                {
+                    "alert_type": "ledger_mismatch",
+                    "severity": "critical",
+                    "detected_at": _utcnow(),
+                    "proof": report_body,
+                }
+            ],
+            "report_hash": hash_obj(report_body, domain=HASH_DOMAINS["RECONCILIATION_REPORT"]),
         }
 
     def _compute_event_hash(self, event: TransferEvent) -> str:
@@ -2354,6 +2546,10 @@ class NovaPayRuntimeEngine:
         event_chain_valid = self._validate_event_chain(record.events)
         replay = self.replay_transfer(transfer_id)
         ledger_hash = self._ledger_hash(list(record.ledger_entries))
+        transfer_root = self._transfer_root_commitment(record)
+        merkle_proofs = self._transfer_merkle_proofs(record.events)
+        ledger_checkpoint = self.build_ledger_checkpoint()
+        reconciliation = self.build_reconciliation_report()
         source_body = {
             "schema": AUDIT_PACKAGE_SCHEMA,
             "canonical_format": CANONICAL_FORMAT,
@@ -2373,6 +2569,13 @@ class NovaPayRuntimeEngine:
             "snapshot": self.store.latest_snapshot(transfer_id).canonical()
             if self.store.latest_snapshot(transfer_id)
             else None,
+            "transfer_merkle_root": transfer_root["transfer_merkle_root"],
+            "transfer_root_commitment": transfer_root,
+            "merkle_proofs": merkle_proofs,
+            "global_ledger_root": ledger_checkpoint["ledger_root"],
+            "ledger_checkpoint": ledger_checkpoint,
+            "reconciliation": reconciliation,
+            "verification_instructions": "Verify protocol identifiers, audit root signature, event hash chain, per-event Merkle inclusion, ledger checkpoint root, reconciliation report, snapshot binding, and receipt signature using canonical.v1 and sha256.",
         }
         proof_body = {
             "event_chain_valid": event_chain_valid,
@@ -2411,6 +2614,13 @@ class NovaPayRuntimeEngine:
                 "events",
                 "policy",
                 "snapshot",
+                "transfer_merkle_root",
+                "transfer_root_commitment",
+                "merkle_proofs",
+                "global_ledger_root",
+                "ledger_checkpoint",
+                "reconciliation",
+                "verification_instructions",
             )
         }
         root_hash = hash_obj(source_body, domain=HASH_DOMAINS["AUDIT_PACKAGE"])
@@ -2445,6 +2655,9 @@ class NovaPayRuntimeEngine:
                 domain=HASH_DOMAINS["SNAPSHOT"],
             )
             snapshot_ledger_valid = snapshot.get("ledger_hash") == package.get("ledger_hash")
+        transfer_merkle_valid = self._verify_package_merkle(package, events)
+        ledger_checkpoint_valid = self._verify_package_ledger_checkpoint(package)
+        reconciliation_valid = self._verify_package_reconciliation(package)
         return {
             "valid": bool(
                 root_hash == package.get("root_hash")
@@ -2454,6 +2667,9 @@ class NovaPayRuntimeEngine:
                 and snapshot_root_valid
                 and snapshot_ledger_valid
                 and event_chain_valid
+                and transfer_merkle_valid
+                and ledger_checkpoint_valid
+                and reconciliation_valid
             ),
             "root_hash": root_hash,
             "protocol_valid": bool(protocol_valid),
@@ -2462,7 +2678,83 @@ class NovaPayRuntimeEngine:
             "snapshot_root_valid": bool(snapshot_root_valid),
             "snapshot_ledger_valid": bool(snapshot_ledger_valid),
             "event_chain_valid": bool(event_chain_valid),
+            "transfer_merkle_valid": bool(transfer_merkle_valid),
+            "ledger_checkpoint_valid": bool(ledger_checkpoint_valid),
+            "reconciliation_valid": bool(reconciliation_valid),
         }
+
+    def _verify_package_merkle(
+        self,
+        package: Mapping[str, Any],
+        events: tuple[TransferEvent, ...],
+    ) -> bool:
+        if not events:
+            return False
+        leaves = [hash_obj(event.canonical(), domain=HASH_DOMAINS["MERKLE_LEAF"]) for event in events]
+        root = _merkle_root_from_hashes(leaves)
+        if package.get("transfer_merkle_root") != root:
+            return False
+        commitment = package.get("transfer_root_commitment") or {}
+        if commitment.get("transfer_merkle_root") != root:
+            return False
+        proofs = package.get("merkle_proofs") or []
+        if len(proofs) != len(events):
+            return False
+        for event, leaf, proof in zip(events, leaves, proofs):
+            if proof.get("event_id") != event.event_id or proof.get("leaf_hash") != leaf:
+                return False
+            if not _verify_merkle_proof(leaf, proof, root):
+                return False
+        return True
+
+    def _verify_package_ledger_checkpoint(self, package: Mapping[str, Any]) -> bool:
+        checkpoint = package.get("ledger_checkpoint") or {}
+        if not checkpoint:
+            return False
+        transfer_roots = checkpoint.get("transfer_roots") or []
+        leaf_hashes = [
+            hash_obj(root, domain=HASH_DOMAINS["MERKLE_LEAF"])
+            for root in sorted(transfer_roots, key=lambda item: str(item.get("transfer_id")))
+        ]
+        ledger_root = _merkle_root_from_hashes(leaf_hashes)
+        accounts = checkpoint.get("accounts") or []
+        balances_hash = hash_obj(accounts, domain=HASH_DOMAINS["LEDGER_ENTRY"])
+        checkpoint_body = {
+            "ledger_root": ledger_root,
+            "accounts": accounts,
+            "balances_hash": balances_hash,
+            "block_height": checkpoint.get("block_height"),
+            "previous_snapshot_hash": checkpoint.get("previous_snapshot_hash"),
+        }
+        return bool(
+            package.get("global_ledger_root") == ledger_root
+            and checkpoint.get("ledger_root") == ledger_root
+            and checkpoint.get("balances_hash") == balances_hash
+            and checkpoint.get("snapshot_hash") == hash_obj(
+                checkpoint_body,
+                domain=HASH_DOMAINS["LEDGER_CHECKPOINT"],
+            )
+        )
+
+    def _verify_package_reconciliation(self, package: Mapping[str, Any]) -> bool:
+        report = package.get("reconciliation") or {}
+        if not report:
+            return False
+        report_body = {
+            "total_debit": str(_decimal(report.get("total_debit", "0"))),
+            "total_credit": str(_decimal(report.get("total_credit", "0"))),
+            "ledger_balanced": bool(report.get("ledger_balanced")),
+            "ledger_root": report.get("ledger_root"),
+            "total_transfers": report.get("total_transfers"),
+        }
+        return bool(
+            report.get("ledger_balanced") is True
+            and report.get("ledger_root") == package.get("global_ledger_root")
+            and report.get("report_hash") == hash_obj(
+                report_body,
+                domain=HASH_DOMAINS["RECONCILIATION_REPORT"],
+            )
+        )
 
     def _publish(self, event_type: str, record: RuntimeTransferRecord, event: TransferEvent) -> None:
         payload = {

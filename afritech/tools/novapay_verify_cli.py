@@ -47,6 +47,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"snapshot_root_valid: {result['snapshot_root_valid']}")
         print(f"snapshot_ledger_valid: {result['snapshot_ledger_valid']}")
         print(f"event_chain_valid: {result['event_chain_valid']}")
+        print(f"transfer_merkle_valid: {result['transfer_merkle_valid']}")
+        print(f"ledger_checkpoint_valid: {result['ledger_checkpoint_valid']}")
+        print(f"reconciliation_valid: {result['reconciliation_valid']}")
         if args.write_report:
             print(f"report_written: {args.write_report}")
     return 0 if result["valid"] else 1

@@ -368,6 +368,24 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "verification": verification,
         }
 
+    @router.get("/v1/transfers/{transfer_id}/audit-bundle")
+    def transfer_audit_bundle(
+        transfer_id: str,
+        claims: JWTClaims = Depends(readable_roles),
+    ) -> dict[str, Any]:
+        try:
+            package = runtime.build_audit_package(transfer_id)
+            verification = runtime.verify_audit_package(package)
+        except NovaPayTransferAdmissionError as exc:
+            raise _translate_error(exc)
+        return {
+            "view": "novapay_transfer_audit_bundle",
+            "organization_id": claims.organization_id,
+            "transfer_id": transfer_id,
+            "audit_bundle": package,
+            "verification": verification,
+        }
+
     @router.get("/v1/treasury/snapshot")
     def treasury_snapshot(
         claims: JWTClaims = Depends(privileged_roles),

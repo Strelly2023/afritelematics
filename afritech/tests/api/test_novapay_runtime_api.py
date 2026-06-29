@@ -173,7 +173,21 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     audit_package = client.get(f"/v1/transfers/{transfer_id}/audit-package", headers=_headers(role="VERIFIER"))
     assert audit_package.status_code == 200
     assert audit_package.json()["verification"]["valid"] is True
+    assert audit_package.json()["verification"]["transfer_merkle_valid"] is True
+    assert audit_package.json()["verification"]["ledger_checkpoint_valid"] is True
+    assert audit_package.json()["verification"]["reconciliation_valid"] is True
     assert audit_package.json()["audit_package"]["event_chain_valid"] is True
+    assert audit_package.json()["audit_package"]["transfer_merkle_root"]
+    assert audit_package.json()["audit_package"]["global_ledger_root"]
+    assert audit_package.json()["audit_package"]["ledger_checkpoint"]["snapshot_hash"]
+    assert audit_package.json()["audit_package"]["reconciliation"]["status"] == "clear"
+    assert len(audit_package.json()["audit_package"]["merkle_proofs"]) == len(events)
+
+    audit_bundle = client.get(f"/v1/transfers/{transfer_id}/audit-bundle", headers=_headers(role="VERIFIER"))
+    assert audit_bundle.status_code == 200
+    assert audit_bundle.json()["view"] == "novapay_transfer_audit_bundle"
+    assert audit_bundle.json()["verification"]["valid"] is True
+    assert audit_bundle.json()["audit_bundle"]["verification_instructions"]
 
     treasury = client.get("/v1/treasury/snapshot", headers=_headers(role="ADMIN"))
     assert treasury.status_code == 200
@@ -191,6 +205,9 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     snapshot = treasury.json()["snapshots"][0]
     assert snapshot["snapshot_root_hash"]
     assert snapshot["event_hash"] == events[-1]["event_hash"]
+    assert treasury.json()["global_ledger_root"]
+    assert treasury.json()["ledger_checkpoint"]["snapshot_hash"]
+    assert treasury.json()["reconciliation"]["status"] == "clear"
 
 
 def test_novapay_runtime_rejects_unsupported_transfer_type() -> None:
