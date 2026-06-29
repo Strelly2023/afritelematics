@@ -66,6 +66,18 @@ def test_operator_dashboard_is_read_only_surface() -> None:
     assert "Replay & Evidence Control" in source
 
 
+def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants() -> None:
+    source = read("src/App.jsx")
+
+    assert "const NOVARIDE_LAYERED_ARCHITECTURE" not in source
+    assert "const NOVARIDE_OPERATOR_INTERVENTION_FLOW" not in source
+    assert "const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER" not in source
+    assert "const NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS" not in source
+    assert "novarideEcosystem?.layered_architecture" in source
+    assert "novarideEcosystem?.enterprise_operations_layer" in source
+    assert "novarideEcosystem?.production_infrastructure_readiness" in source
+
+
 def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
     source = read("src/App.jsx")
 
@@ -297,37 +309,20 @@ def test_operator_dashboard_exposes_required_operator_panels() -> None:
         "Verification Package",
         "NovaRide Enterprise Operations Layer",
         "10/10 enterprise operations depth",
-        "governed_evidence_backed_ai_assisted_mobility_control_platform",
+        "novarideEcosystem?.enterprise_operations_classification",
         "Enterprise Operations: 10/10",
-        "Unified Command Center",
-        "City Operations / Zone Model",
-        "Operational Digital Twin",
-        "AI Decision Explanation Layer",
-        "Workflow / Incident Engine",
-        "Fleet Intelligence",
-        "Public Trust Portal",
-        "Partner / Developer Ecosystem",
-        "SRE Observability",
-        "Multi-Tenant Governance",
         "Evidence-backed operations",
+        "novarideEcosystem?.architecture_version",
+        "novarideEnterpriseOperationsLayer",
+        "novarideProductionInfrastructureReadiness",
+        "novarideMaturityDimensions",
         "Layered architecture",
-        "Applications / Portals",
-        "Execution Services",
-        "Evidence / Event Platform",
+        "novarideLayeredArchitecture",
         "Governed intervention flow",
-        "Intervention Request",
-        "Policy Evaluation",
-        "Control Plane Decision",
+        "novarideOperatorInterventionFlow",
+        "displayArchitectureToken",
         "Production infrastructure readiness",
         "resilience_regulatory_external_verification",
-        "Distributed Consistency",
-        "Key Management",
-        "Operational Resilience",
-        "Regulatory Readiness",
-        "Independent Verification",
-        "Cloud KMS",
-        "Regional failover",
-        "External verifier artifacts validate without internal runtime assumptions",
         "Shared services",
         "Authority boundary",
         "Ride request flow",

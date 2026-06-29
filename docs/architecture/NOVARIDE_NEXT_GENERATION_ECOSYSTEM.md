@@ -652,6 +652,13 @@ set of app surfaces; it is a governed mobility control platform with city,
 fleet, incident, reliability, trust, partner, and tenant operations modeled as
 first-class capabilities.
 
+Canonical source:
+
+```text
+afritech/architecture/novaride_architecture.py
+architecture_version = 2026.07
+```
+
 | Capability | Purpose |
 | --- | --- |
 | Unified Command Center | One operational control surface for rides, drivers, incidents, payments, providers, and replay evidence |
@@ -727,6 +734,14 @@ requires production infrastructure hardening across these tracks:
 | Operational Resilience | Regional failover, recovery procedures, chaos testing, and disaster recovery must be validated |
 | Regulatory Readiness | Licensing, corridor configuration, AML/KYC, sanctions, and reporting must remain deployment-ready |
 | Independent Verification | External verifier artifacts must validate without internal runtime assumptions |
+
+These are deliberately separate maturity dimensions:
+
+```text
+Architecture Maturity
+-> Operational Maturity
+-> Production Readiness
+```
 
 ## 10/10 Upgrade Principle
 

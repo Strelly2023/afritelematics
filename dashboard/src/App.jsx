@@ -1448,103 +1448,21 @@ const NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW = [
   "Verification Package",
 ];
 
-const NOVARIDE_LAYERED_ARCHITECTURE = [
-  "Applications / Portals",
-  "Control Plane",
-  "Execution Services",
-  "Evidence / Event Platform",
-  "Enterprise Operations",
-];
+function displayArchitectureToken(value) {
+  return String(value || "")
+    .split("_")
+    .filter(Boolean)
+    .map((part) => {
+      const upper = part.toUpperCase();
+      if (["AI", "API", "DR", "ETA", "HSM", "KMS", "RBAC", "SDK", "SLA", "SLO"].includes(upper)) {
+        return upper;
+      }
+      return `${part.charAt(0).toUpperCase()}${part.slice(1)}`;
+    })
+    .join(" ")
+    .replace("Aml Kyc", "AML/KYC");
+}
 
-const NOVARIDE_OPERATOR_INTERVENTION_FLOW = [
-  "Operator",
-  "Intervention Request",
-  "Policy Evaluation",
-  "Control Plane Decision",
-  "Execution",
-  "Evidence",
-];
-
-const NOVARIDE_ENTERPRISE_OPERATIONS_LAYER = [
-  {
-    name: "Unified Command Center",
-    purpose: "One operational control surface for rides, drivers, incidents, payments, providers, and replay evidence.",
-    capabilities: ["City status", "Live operations", "Dispatch intervention", "Incident escalation", "Proof review"],
-  },
-  {
-    name: "City Operations / Zone Model",
-    purpose: "Model cities, service zones, airport zones, geofences, surge boundaries, and jurisdiction-aware operating rules.",
-    capabilities: ["City registry", "Service zones", "Airport zones", "Geofencing", "Zone policy"],
-  },
-  {
-    name: "Operational Digital Twin",
-    purpose: "Replay and simulate the live mobility network using rides, drivers, demand, incidents, and provider state.",
-    capabilities: ["Network snapshot", "Scenario simulation", "Capacity projection", "Replay comparison", "What-if analysis"],
-  },
-  {
-    name: "AI Decision Explanation Layer",
-    purpose: "Explain dispatch, pricing, safety, fraud, ETA, and demand recommendations without granting AI authority.",
-    capabilities: ["Dispatch explanation", "Pricing explanation", "Risk explanation", "Confidence signals", "Operator review"],
-  },
-  {
-    name: "Workflow / Incident Engine",
-    purpose: "Coordinate SOS, disputes, support, trust, compliance, provider incidents, approvals, and closure evidence.",
-    capabilities: ["Case routing", "SLA tracking", "Escalation policy", "Evidence binding", "Closure log"],
-  },
-  {
-    name: "Fleet Intelligence",
-    purpose: "Track driver supply, vehicle health, inspection status, utilization, maintenance, earnings, and fleet quality.",
-    capabilities: ["Supply health", "Vehicle health", "Driver quality", "Maintenance forecast", "Fleet scorecards"],
-  },
-  {
-    name: "Public Trust Portal",
-    purpose: "Publish controlled transparency views for receipts, safety standards, verification, and public trust evidence.",
-    capabilities: ["Receipt verification", "Safety standards", "Trust reports", "Public status", "Audit exports"],
-  },
-  {
-    name: "Partner / Developer Ecosystem",
-    purpose: "Expose governed APIs, webhooks, sandbox, SDKs, partner onboarding, and usage analytics.",
-    capabilities: ["API keys", "Webhooks", "Sandbox", "SDK catalog", "Partner analytics"],
-  },
-  {
-    name: "SRE Observability",
-    purpose: "Measure reliability, latency, errors, queues, provider health, replay lag, and operational risk.",
-    capabilities: ["SLO dashboard", "Error budget", "Provider health", "Queue lag", "Replay lag"],
-  },
-  {
-    name: "Multi-Tenant Governance",
-    purpose: "Govern organizations, roles, feature flags, policies, licensing, data boundaries, and tenant isolation.",
-    capabilities: ["Tenant registry", "RBAC", "Feature flags", "Policy versions", "Data residency"],
-  },
-];
-
-const NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS = [
-  {
-    name: "Distributed Consistency",
-    purpose: "Checkpoints, Merkle roots, replay, and ledger roots stay deterministic across nodes and regions.",
-    capabilities: ["Checkpoint consistency", "Merkle root consistency", "Replay consistency", "Ledger root consistency"],
-  },
-  {
-    name: "Key Management",
-    purpose: "Signing authority moves to HSM, Cloud KMS, or hardware-backed signing with rotation and audit trails.",
-    capabilities: ["HSM signing", "Cloud KMS", "Key rotation", "Signing audit"],
-  },
-  {
-    name: "Operational Resilience",
-    purpose: "Regional failover, recovery procedures, chaos testing, and disaster recovery are validated.",
-    capabilities: ["Regional failover", "Recovery runbooks", "Chaos testing", "DR validation"],
-  },
-  {
-    name: "Regulatory Readiness",
-    purpose: "Licensing, corridor configuration, AML/KYC, sanctions, and reporting remain deployment-ready.",
-    capabilities: ["Licensing", "Corridor configuration", "AML/KYC", "Sanctions", "Reporting"],
-  },
-  {
-    name: "Independent Verification",
-    purpose: "External verifier artifacts validate without internal runtime assumptions.",
-    capabilities: ["Offline verifier", "Audit bundle", "Runtime independence", "Partner audit"],
-  },
-];
 
 const NOVARIDE_OPERATOR_MODULE_FALLBACKS = [
   { key: "operations", name: "Operations", status: "partially_implemented" },
@@ -3947,6 +3865,12 @@ export default function OperatorDashboard() {
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
   const novarideEcosystem = state.novarideEcosystem;
+  const novarideLayeredArchitecture = novarideEcosystem?.layered_architecture || [];
+  const novarideOperatorInterventionFlow = novarideEcosystem?.operator_intervention_flow || [];
+  const novarideMaturityDimensions = novarideEcosystem?.maturity_dimensions || [];
+  const novarideEnterpriseOperationsLayer = novarideEcosystem?.enterprise_operations_layer || [];
+  const novarideProductionInfrastructureReadiness =
+    novarideEcosystem?.production_infrastructure_readiness || [];
   const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
   const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
   const operatorAutonomy = state.operatorAutonomy;
@@ -6177,7 +6101,7 @@ export default function OperatorDashboard() {
               <article className="record-card">
                 <div className="record-card-header">
                   <strong>10/10 enterprise operations depth</strong>
-                  <span>governed_evidence_backed_ai_assisted_mobility_control_platform</span>
+                  <span>{novarideEcosystem?.enterprise_operations_classification || "architecture_contract_pending"}</span>
                 </div>
                 <p>
                   App and portal surfaces now sit on an enterprise operations layer for command,
@@ -6186,6 +6110,7 @@ export default function OperatorDashboard() {
                 </p>
                 <div className="chip-row">
                   <span className="surface-chip">Enterprise Operations: 10/10</span>
+                  <span className="surface-chip">Architecture version {novarideEcosystem?.architecture_version || "pending"}</span>
                   <span className="surface-chip">AI-assisted decisions</span>
                   <span className="surface-chip">Evidence-backed operations</span>
                   <span className="surface-chip">Multi-tenant governance</span>
@@ -6195,7 +6120,7 @@ export default function OperatorDashboard() {
               <article className="record-card">
                 <strong>Layered architecture</strong>
                 <div className="flow-line" aria-label="NovaRide layered architecture">
-                  {NOVARIDE_LAYERED_ARCHITECTURE.map((layer) => (
+                  {novarideLayeredArchitecture.map((layer) => (
                     <span key={layer}>{layer}</span>
                   ))}
                 </div>
@@ -6204,27 +6129,46 @@ export default function OperatorDashboard() {
               <article className="record-card">
                 <strong>Governed intervention flow</strong>
                 <div className="flow-line" aria-label="NovaRide governed intervention flow">
-                  {NOVARIDE_OPERATOR_INTERVENTION_FLOW.map((step) => (
+                  {novarideOperatorInterventionFlow.map((step) => (
                     <span key={step}>{step}</span>
                   ))}
                 </div>
               </article>
 
+              <article className="record-card">
+                <strong>Maturity dimensions</strong>
+                <div className="novapay-build-grid">
+                  {novarideMaturityDimensions.map((dimension) => (
+                    <div key={dimension.dimension} className="record-card novapay-build-card">
+                      <strong>{dimension.dimension}</strong>
+                      <div className="chip-row">
+                        {(dimension.capabilities || []).map((capability) => (
+                          <span key={capability} className="reason-chip">{capability}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
               <div className="novapay-build-grid">
-                {NOVARIDE_ENTERPRISE_OPERATIONS_LAYER.map((capability) => (
+                {novarideEnterpriseOperationsLayer.map((capability) => (
                   <article key={capability.name} className="record-card novapay-build-card">
                     <div className="record-card-header">
                       <strong>{capability.name}</strong>
                       <span>{capability.purpose}</span>
                     </div>
                     <div className="chip-row">
-                      {capability.capabilities.map((item) => (
-                        <span key={item} className="reason-chip reason-chip-success">{item}</span>
+                      {(capability.capabilities || []).map((item) => (
+                        <span key={item} className="reason-chip reason-chip-success">{displayArchitectureToken(item)}</span>
                       ))}
                     </div>
                   </article>
                 ))}
               </div>
+              {novarideEnterpriseOperationsLayer.length === 0 ? (
+                <EmptyState label="NovaRide enterprise operations contract will appear after the ecosystem API is reachable." />
+              ) : null}
 
               <article className="record-card">
                 <div className="record-card-header">
@@ -6239,20 +6183,23 @@ export default function OperatorDashboard() {
               </article>
 
               <div className="novapay-build-grid">
-                {NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS.map((capability) => (
+                {novarideProductionInfrastructureReadiness.map((capability) => (
                   <article key={capability.name} className="record-card novapay-build-card">
                     <div className="record-card-header">
                       <strong>{capability.name}</strong>
                       <span>{capability.purpose}</span>
                     </div>
                     <div className="chip-row">
-                      {capability.capabilities.map((item) => (
-                        <span key={item} className="reason-chip">{item}</span>
+                      {(capability.capabilities || []).map((item) => (
+                        <span key={item} className="reason-chip">{displayArchitectureToken(item)}</span>
                       ))}
                     </div>
                   </article>
                 ))}
               </div>
+              {novarideProductionInfrastructureReadiness.length === 0 ? (
+                <EmptyState label="NovaRide production readiness contract will appear after the ecosystem API is reachable." />
+              ) : null}
             </div>
           </OperatorPanel>
 

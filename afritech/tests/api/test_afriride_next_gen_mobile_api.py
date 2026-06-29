@@ -7,10 +7,21 @@ from fastapi.testclient import TestClient
 from afritech.api.app import app
 from afritech.afriprogramming import control_plane
 from afritech.afriprogramming.persistence import PlatformStore
+from afritech.architecture.novaride_architecture import novaride_architecture_contract
 
 _runtime = import_module("afriride_system.api.dependencies.runtime")
 reset_gateway = _runtime.reset_gateway
 reset_trace_log = _runtime.reset_trace_log
+
+
+def test_novaride_api_uses_canonical_architecture_contract() -> None:
+    module = import_module("afritech.api.afriride_next_gen_mobile_api")
+
+    assert hasattr(module, "novaride_architecture_contract")
+    assert not hasattr(module, "NOVARIDE_LAYERED_ARCHITECTURE")
+    assert not hasattr(module, "NOVARIDE_OPERATOR_INTERVENTION_FLOW")
+    assert not hasattr(module, "NOVARIDE_ENTERPRISE_OPERATIONS_LAYER")
+    assert not hasattr(module, "NOVARIDE_PRODUCTION_INFRASTRUCTURE_READINESS")
 
 
 def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, monkeypatch) -> None:
@@ -345,47 +356,21 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert any(service["name"] == "Audit & Replay" for service in payload["shared_platform"])
     assert any(service["name"] == "Inspection Registry" for service in payload["shared_platform"])
     assert any(service["name"] == "Incident Registry" for service in payload["shared_platform"])
-    enterprise_names = {capability["name"] for capability in payload["enterprise_operations_layer"]}
-    assert enterprise_names == {
-        "Unified Command Center",
-        "City Operations / Zone Model",
-        "Operational Digital Twin",
-        "AI Decision Explanation Layer",
-        "Workflow / Incident Engine",
-        "Fleet Intelligence",
-        "Public Trust Portal",
-        "Partner / Developer Ecosystem",
-        "SRE Observability",
-        "Multi-Tenant Governance",
-    }
+    canonical_architecture = novaride_architecture_contract()
+    assert payload["architecture_version"] == canonical_architecture["architecture_version"]
+    assert payload["enterprise_operations_layer"] == canonical_architecture["enterprise_operations_layer"]
     assert payload["enterprise_operations_score"] == "10/10"
     assert (
         payload["enterprise_operations_classification"]
         == "governed_evidence_backed_ai_assisted_mobility_control_platform"
     )
-    assert payload["layered_architecture"] == [
-        "Applications / Portals",
-        "Control Plane",
-        "Execution Services",
-        "Evidence / Event Platform",
-        "Enterprise Operations",
-    ]
-    assert payload["operator_intervention_flow"] == [
-        "Operator",
-        "Intervention Request",
-        "Policy Evaluation",
-        "Control Plane Decision",
-        "Execution",
-        "Evidence",
-    ]
-    readiness_names = {capability["name"] for capability in payload["production_infrastructure_readiness"]}
-    assert readiness_names == {
-        "Distributed Consistency",
-        "Key Management",
-        "Operational Resilience",
-        "Regulatory Readiness",
-        "Independent Verification",
-    }
+    assert payload["layered_architecture"] == canonical_architecture["layered_architecture"]
+    assert payload["operator_intervention_flow"] == canonical_architecture["operator_intervention_flow"]
+    assert payload["maturity_dimensions"] == canonical_architecture["maturity_dimensions"]
+    assert (
+        payload["production_infrastructure_readiness"]
+        == canonical_architecture["production_infrastructure_readiness"]
+    )
     assert "Demand Forecasting" in payload["intelligence_layer"]
     assert "Verification Package" in payload["trust_proof_flow"]
     assert "Control Plane decides" in payload["upgrade_principle"]
