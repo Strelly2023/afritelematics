@@ -3,7 +3,9 @@ export type RideStatus =
   | "confirmed"
   | "waiting_for_driver"
   | "driver_assigned"
+  | "matched"
   | "arriving"
+  | "arrived"
   | "in_progress"
   | "completed"
   | "cancelled";
@@ -69,7 +71,14 @@ export type RideReplay = {
   routeSummary?: string;
   explanationSteps: string[];
   timelineEvents?: Array<{
-    label: "REQUESTED" | "DRIVER_ACCEPTED" | "ARRIVED" | "STARTED" | "COMPLETED";
+    label:
+      | "REQUESTED"
+      | "DRIVER_ACCEPTED"
+      | "DRIVER_MATCHED"
+      | "ARRIVING"
+      | "ARRIVED"
+      | "STARTED"
+      | "COMPLETED";
     verified: boolean;
   }>;
 };

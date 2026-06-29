@@ -15,11 +15,11 @@ export function RideHistoryScreen({ history }: RideHistoryScreenProps) {
     <SurfacePanel>
       <Text style={styles.title}>Ride history</Text>
       {history.length === 0 ? <Text style={styles.muted}>No rides yet</Text> : null}
-      {history.map((ride) => (
+      {history.map((ride, index) => (
         <View key={ride.rideId} style={styles.row}>
           <View style={styles.route}>
-            <Text style={styles.ride}>{ride.rideId}</Text>
-            <Text style={styles.muted}>{ride.status}</Text>
+            <Text style={styles.ride}>Trip {index + 1}</Text>
+            <Text style={styles.muted}>{humanStatus(ride.status)}</Text>
           </View>
           <Text
             style={
@@ -82,3 +82,25 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 });
+
+function humanStatus(status: RideHistoryItem["status"]): string {
+  switch (status) {
+    case "requested":
+      return "Ride requested";
+    case "confirmed":
+    case "waiting_for_driver":
+    case "driver_assigned":
+    case "matched":
+      return "Driver matched";
+    case "arriving":
+      return "Driver arriving";
+    case "arrived":
+      return "Driver arrived";
+    case "in_progress":
+      return "Trip in progress";
+    case "completed":
+      return "Trip completed";
+    case "cancelled":
+      return "Ride cancelled";
+  }
+}

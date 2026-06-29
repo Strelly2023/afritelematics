@@ -22,7 +22,28 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
         score={trustScore}
         checks={["Driver", "GPS", "Payment", "Replay"]}
       />
-      <MapPreviewCard routeText={status.locationText || "Location pending"} />
+      <MapPreviewCard
+        routeText={status.locationText || "Location pending"}
+        progressPct={
+          status.status === "completed"
+            ? 100
+            : status.status === "in_progress"
+              ? 72
+              : status.status === "arrived"
+                ? 58
+                : status.status === "arriving"
+                  ? 44
+                  : status.status === "matched" || status.status === "driver_assigned"
+                    ? 32
+                    : 18
+        }
+        statusLabel={humanRideStatus(status.status)}
+        etaText={status.etaText || "ETA pending"}
+        liveLabel={status.driverName ? status.driverName : "Live tracking"}
+        pickupConfirmed={Boolean(status.locationText)}
+        dropoffConfirmed={status.status === "completed"}
+        gpsTraceAvailable={Boolean(status.locationText)}
+      />
       <LifecycleTimeline steps={buildRideTimeline(status.status)} />
       <VerificationStatusCard
         status={{
@@ -40,7 +61,7 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
   );
 }
 
-const rideSteps = ["Requested", "Accepted", "Arrived", "Started", "Completed", "Verified"];
+const rideSteps = ["Requested", "Matched", "Arriving", "Arrived", "Started", "Completed", "Verified"];
 
 function rideStepIndex(status: RideStatus): number {
   switch (status) {
@@ -49,11 +70,14 @@ function rideStepIndex(status: RideStatus): number {
     case "confirmed":
     case "waiting_for_driver":
     case "driver_assigned":
+    case "matched":
       return 1;
     case "arriving":
       return 2;
-    case "in_progress":
+    case "arrived":
       return 3;
+    case "in_progress":
+      return 4;
     case "completed":
       return 5;
     case "cancelled":
@@ -77,9 +101,12 @@ function humanRideStatus(status: RideStatus): string {
     case "confirmed":
     case "waiting_for_driver":
     case "driver_assigned":
+    case "matched":
       return "Driver accepted";
     case "arriving":
       return "Driver arriving";
+    case "arrived":
+      return "Driver arrived";
     case "in_progress":
       return "Trip started";
     case "completed":

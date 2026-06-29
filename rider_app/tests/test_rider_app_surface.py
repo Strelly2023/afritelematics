@@ -128,10 +128,14 @@ def test_novaride_trust_uix_primitives_are_integrated() -> None:
 
 def test_rider_product_completion_surfaces_are_wired() -> None:
     app = read("App.tsx")
+    home_source = read("ui/screens/RiderHomeScreen.tsx")
     screens = [
         "RiderLoginScreen",
+        "RiderHomeScreen",
         "RiderProfileScreen",
         "RiderNotificationsScreen",
+        "WalletScreen",
+        "ActivityScreen",
         "EvidenceScreen",
     ]
 
@@ -140,16 +144,21 @@ def test_rider_product_completion_surfaces_are_wired() -> None:
         assert f"function {screen}" in source
         assert screen in app
 
-    tabs = read("ui/widgets/ProductTabs.tsx")
+    tabs = read("ui/widgets/BottomTabs.tsx")
     evidence = read("ui/screens/EvidenceScreen.tsx")
 
-    assert "ProductTabs" in app
-    assert '"book"' in app
-    assert '"track"' in app
-    assert '"history"' in app
+    assert "BottomTabs" in app
+    assert '"home"' in app
+    assert '"trips"' in app
+    assert '"wallet"' in app
+    assert '"activity"' in app
     assert '"profile"' in app
-    assert '"alerts"' in app
     assert "setAuthenticated(true)" in app
+    assert "getPassengerIntelligence" in home_source
+    assert "System intelligence" in home_source
+    assert "Predictive positioning" in home_source
+    assert "City-wide AI automation" in home_source
+    assert "Multi-city orchestration" in home_source
     assert "ledgerReceipt?.eventCount ?? 0" in evidence
     assert "accessibilityRole=\"button\"" in tabs
 

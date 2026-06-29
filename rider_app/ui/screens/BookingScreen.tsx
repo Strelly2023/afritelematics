@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Field } from "../widgets/Field";
+import { MapPreviewCard } from "../widgets/MapPreviewCard";
 import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
@@ -34,6 +35,16 @@ export function BookingScreen({
       </View>
       <Field label="Pickup" value={pickup} onChangeText={onPickupChange} />
       <Field label="Dropoff" value={dropoff} onChangeText={onDropoffChange} />
+      <MapPreviewCard
+        routeText={`${pickup} to ${dropoff}`}
+        progressPct={12}
+        statusLabel="Quote ready"
+        etaText="Live ETA after dispatch"
+        liveLabel="Booking"
+        pickupConfirmed={Boolean(pickup)}
+        dropoffConfirmed={Boolean(dropoff)}
+        gpsTraceAvailable={false}
+      />
       <View style={styles.options}>
         <Text style={styles.option}>Economy</Text>
         <Text style={styles.option}>Premium</Text>

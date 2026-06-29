@@ -19,7 +19,7 @@ export function ReplayScreen({ replay }: ReplayScreenProps) {
   assertReplayEvidence(replay);
   const timelineEvents =
     replay.timelineEvents ||
-    (["REQUESTED", "DRIVER_ACCEPTED", "ARRIVED", "STARTED", "COMPLETED"] as const).map(
+    (["REQUESTED", "DRIVER_ACCEPTED", "DRIVER_MATCHED", "ARRIVING", "ARRIVED", "STARTED", "COMPLETED"] as const).map(
       (label) => ({ label, verified: replay.replayVerified }),
     );
 
@@ -82,6 +82,12 @@ function humanReplayLabel(label: string): string {
   switch (label) {
     case "DRIVER_ACCEPTED":
       return "Accepted";
+    case "DRIVER_MATCHED":
+      return "Matched";
+    case "ARRIVING":
+      return "Arriving";
+    case "ARRIVED":
+      return "Arrived";
     default:
       return label.charAt(0) + label.slice(1).toLowerCase();
   }

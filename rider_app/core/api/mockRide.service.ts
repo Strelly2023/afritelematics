@@ -7,6 +7,7 @@ import type {
   RideRequestResult,
   RideStatusSnapshot,
 } from "../models/ride";
+import type { PassengerIntelligenceFeed } from "../models/intelligence";
 
 const MOCK_RIDE_ID = "ride.mock.001";
 
@@ -69,6 +70,8 @@ export async function mockGetReplay(rideId: string): Promise<RideReplay> {
     timelineEvents: [
       { label: "REQUESTED", verified: true },
       { label: "DRIVER_ACCEPTED", verified: true },
+      { label: "DRIVER_MATCHED", verified: true },
+      { label: "ARRIVING", verified: true },
       { label: "ARRIVED", verified: true },
       { label: "STARTED", verified: true },
       { label: "COMPLETED", verified: true },
@@ -108,5 +111,121 @@ export async function mockGetPriceExplanation(
       { label: "Distance", amountText: "UGX 7,500" },
       { label: "Total", amountText: "UGX 12,500" },
     ],
+  };
+}
+
+export async function mockGetPassengerIntelligence(): Promise<PassengerIntelligenceFeed> {
+  return {
+    view: "novaride_mobile_passenger_intelligence",
+    organization_id: "afritech-core",
+    passenger_id: "rider.mock.001",
+    system_status: "stable",
+    safety_score: 96,
+    demand: "moderate",
+    eta_confidence: "high",
+    alerts: ["Demand is moderate", "Driver matching remains stable"],
+    trust: {
+      driver_verified: true,
+      vehicle_verified: true,
+      payment_secure: true,
+    },
+    autonomous_mode: true,
+    predictive_positioning: {
+      mode: "fully_autonomous",
+      target_zone: "CBD",
+      confidence: 0.91,
+      instruction: "Driver supply is strongest in CBD",
+      reason: "Stable demand and verified supply support predictive positioning",
+      projection_only: true,
+      read_only: true,
+    },
+    city_automation: {
+      mode: "zero_operator",
+      zero_operator_mode: true,
+      coverage_score: 84,
+      active_drivers: 12,
+      active_rides: 18,
+      city_zones: ["CBD", "Docklands", "Southbank"],
+      recommended_zone: "CBD",
+      instruction: "Keep city-wide automation active around CBD",
+      reason: "City coverage, trust, and supply support zero-operator mode",
+      prediction: {
+        city_zone_count: 3,
+        city_trust_score: 95,
+        coverage_score: 84,
+        demand_level: "high",
+      },
+      projection_only: true,
+      read_only: true,
+    },
+    multi_city_orchestration: {
+      mode: "global_zero_operator",
+      city_count: 3,
+      active_city_count: 3,
+      global_coverage_score: 87,
+      global_trust_score: 95,
+      instruction: "Keep multi-city orchestration active and optimize supply across CBD and adjacent cities",
+      reason: "Global coverage and supply are sufficient for zero-operator orchestration",
+      prediction: {
+        city_count: 3,
+        active_city_count: 3,
+        coverage_score: 87,
+        trust_score: 95,
+        demand_level: "high",
+      },
+      projection_only: true,
+      read_only: true,
+    },
+    digital_twin: {
+      mode: "global_closed_loop",
+      live_sync_score: 91,
+      twin_health_score: 93,
+      live_state: {
+        active_drivers: 12,
+        active_rides: 18,
+        zone: "CBD",
+        demand_level: "high",
+        trust_score: 97,
+        city_coverage_score: 84,
+        global_coverage_score: 87,
+      },
+      prediction: {
+        next_state: "global_zero_operator",
+        confidence: 0.93,
+        trust_score: 95,
+        evidence_coverage: 91,
+        exception_pressure: 1,
+      },
+      recommendation: "Keep multi-city orchestration active and optimize supply across CBD and adjacent cities",
+      reason: "The digital twin mirrors live supply, trust, and learning signals in projection-only mode",
+      projection_only: true,
+      read_only: true,
+    },
+    self_improving_loop: {
+      mode: "learning",
+      cycle: ["observe", "decide", "recommend", "measure_outcome", "learn", "recalibrate"],
+      band: "strong",
+      trend: {
+        count: 6,
+        first: 81,
+        latest: 93,
+        delta: 12,
+        slope: 2.4,
+        direction: "rising",
+        average: 87,
+        minimum: 81,
+        maximum: 93,
+      },
+      recommendations: ["Preserve the current control band.", "Keep the next review cycle active."],
+      recalibration_notes: ["Outcome band strong", "Learning band strong", "Calibrated confidence 93%"],
+      watch_items: ["Maintain the current observation loop."],
+      outcome_score: 93,
+      measurement_summary: "Outcome score 93/100 from trust 95, replay health 95, and evidence coverage 91%.",
+      projection_only: true,
+      read_only: true,
+    },
+    projection_only: true,
+    read_only: true,
+    created_at: "2026-06-02T09:00:00+10:00",
   };
 }

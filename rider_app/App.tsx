@@ -7,7 +7,6 @@ import {
   View,
 } from "react-native";
 
-import { BookingScreen } from "./ui/screens/BookingScreen";
 import { DriverAssignedScreen } from "./ui/screens/DriverAssignedScreen";
 import { EvidenceScreen } from "./ui/screens/EvidenceScreen";
 import { LiveTrackingScreen } from "./ui/screens/LiveTrackingScreen";
@@ -20,29 +19,37 @@ import { RiderLoginScreen } from "./ui/screens/RiderLoginScreen";
 import { RiderNotificationsScreen } from "./ui/screens/RiderNotificationsScreen";
 import { RiderProfileScreen } from "./ui/screens/RiderProfileScreen";
 import { RiderTrustPanelScreen } from "./ui/screens/RiderTrustPanelScreen";
+import { RiderHomeScreen } from "./ui/screens/RiderHomeScreen";
+import { WalletScreen } from "./ui/screens/WalletScreen";
+import { ActivityScreen } from "./ui/screens/ActivityScreen";
 import { WaitingForDriverScreen } from "./ui/screens/WaitingForDriverScreen";
 import { TEST_MODE } from "./core/config/environment";
+import { ORGANIZATION_ID } from "./core/config/environment";
+import { loginPilot } from "./core/api/auth.service";
 import { colors } from "./ui/theme/colors";
 import { spacing } from "./ui/theme/spacing";
 import { useRideFlow } from "./state/providers/useRideFlow";
 import { ProductTabs } from "./ui/widgets/ProductTabs";
+import { BottomTabs } from "./ui/widgets/BottomTabs";
 
 const RIDER_ID = "rider-demo-001";
-type RiderTab = "book" | "track" | "history" | "profile" | "alerts";
+type RiderTab = "home" | "trips" | "wallet" | "activity" | "profile";
 
 const riderTabs: Array<{ key: RiderTab; label: string }> = [
-  { key: "book", label: "Book" },
-  { key: "track", label: "Track" },
-  { key: "history", label: "History" },
+  { key: "home", label: "Home" },
+  { key: "trips", label: "Trips" },
+  { key: "wallet", label: "Wallet" },
+  { key: "activity", label: "Activity" },
   { key: "profile", label: "Profile" },
-  { key: "alerts", label: "Alerts" },
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<RiderTab>("book");
+  const [activeTab, setActiveTab] = useState<RiderTab>("home");
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("rider@novaride.test");
   const [password, setPassword] = useState("pilot");
+  const [authenticating, setAuthenticating] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [pickup, setPickup] = useState("Kampala Road");
   const [dropoff, setDropoff] = useState("Nakasero");
   const {
@@ -60,7 +67,7 @@ export default function App() {
       pickup,
       dropoff,
     });
-    setActiveTab("track");
+    setActiveTab("trips");
   }
 
   const history = requestedRide
@@ -99,8 +106,16 @@ export default function App() {
       ? {
           id: "driver-assigned",
           title: "Driver assigned",
-          detail: "Driver, route, and trust checks are visible in tracking.",
+          detail: `${statusSnapshot.driverName || "Driver"} is on the live route with ETA ${statusSnapshot.etaText || "pending"}.`,
           tone: "success" as const,
+        }
+      : null,
+    statusSnapshot?.locationText
+      ? {
+          id: "live-location",
+          title: "Live tracking active",
+          detail: statusSnapshot.locationText,
+          tone: "info" as const,
         }
       : null,
     evidence
@@ -117,89 +132,112 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Text style={styles.title}>AfriRide Rider</Text>
-            <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+      <View style={styles.shell}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Text style={styles.title}>AfriRide Rider</Text>
+              <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+            </View>
+            <Text style={styles.subtitle}>Simple booking, live tracking, and verified receipts.</Text>
+            <Text style={styles.orgLabel}>Org: {ORGANIZATION_ID}</Text>
           </View>
-          <Text style={styles.subtitle}>Simple booking with visible verification.</Text>
-        </View>
 
-        {!authenticated ? (
-          <RiderLoginScreen
-            email={email}
-            password={password}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onContinue={() => setAuthenticated(true)}
-          />
-        ) : (
-          <>
-            <ProductTabs
-              tabs={riderTabs}
-              activeTab={activeTab}
-              onChange={setActiveTab}
+          {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+
+          {!authenticated ? (
+            <RiderLoginScreen
+              email={email}
+              password={password}
+              onEmailChange={setEmail}
+              onPasswordChange={setPassword}
+              loading={authenticating}
+              onContinue={async () => {
+                setAuthenticating(true);
+                setLoginError("");
+                try {
+                  await loginPilot("rider-demo-001", "CUSTOMER", ORGANIZATION_ID);
+                  setAuthenticated(true);
+                } catch (error) {
+                  if (TEST_MODE) {
+                    setAuthenticated(true);
+                  } else {
+                    setLoginError(
+                      error instanceof Error ? error.message : "login_failed",
+                    );
+                  }
+                } finally {
+                  setAuthenticating(false);
+                }
+              }}
             />
-            {activeTab === "book" ? (
-              <>
-                <BookingScreen
-                  pickup={pickup}
-                  dropoff={dropoff}
-                  loading={loading}
-                  error={error}
-                  onPickupChange={setPickup}
-                  onDropoffChange={setDropoff}
-                  onRequestRide={handleRequestRide}
-                />
-                {requestedRide ? <RideConfirmationScreen ride={requestedRide} /> : null}
-                {requestedRide && !statusSnapshot ? <WaitingForDriverScreen /> : null}
-              </>
-            ) : null}
-            {activeTab === "track" ? (
-              <>
-                {statusSnapshot ? <DriverAssignedScreen status={statusSnapshot} /> : null}
-                {statusSnapshot ? <LiveTrackingScreen status={statusSnapshot} /> : null}
-                {requestedRide ? (
-                  <RiderTrustPanelScreen
-                    status={statusSnapshot}
-                    receipt={evidence?.receipt || null}
+          ) : (
+            <>
+              {activeTab === "home" ? (
+                <>
+                  <RiderHomeScreen
+                    pickup={pickup}
+                    dropoff={dropoff}
+                    loading={loading}
+                    onPickupChange={setPickup}
+                    onDropoffChange={setDropoff}
+                    onRequestRide={handleRequestRide}
                   />
-                ) : null}
-                <EvidenceScreen
-                  receipt={evidence?.receipt || null}
-                  replay={evidence?.replay || null}
-                  ledgerReceipt={evidence?.ledgerReceipt || null}
-                />
-                {evidence ? (
-                  <>
-                    <ReceiptScreen
-                      receipt={evidence.receipt}
-                      ledgerReceipt={evidence.ledgerReceipt}
+                  {requestedRide && !statusSnapshot ? <RideConfirmationScreen ride={requestedRide} /> : null}
+                  {requestedRide && !statusSnapshot ? <WaitingForDriverScreen /> : null}
+                </>
+              ) : null}
+              {activeTab === "trips" ? (
+                <>
+                  {statusSnapshot ? <DriverAssignedScreen status={statusSnapshot} /> : null}
+                  {statusSnapshot ? <LiveTrackingScreen status={statusSnapshot} /> : null}
+                  {requestedRide ? (
+                    <RiderTrustPanelScreen
+                      status={statusSnapshot}
+                      receipt={evidence?.receipt || null}
                     />
-                    <ReplayScreen replay={evidence.replay} />
-                    <PriceExplanationScreen explanation={evidence.priceExplanation} />
-                  </>
-                ) : null}
-              </>
-            ) : null}
-            {activeTab === "history" ? <RideHistoryScreen history={history} /> : null}
-            {activeTab === "profile" ? (
-              <RiderProfileScreen
-                name="Pilot Rider"
-                email={email}
-                trips={history.length}
-                verifiedTrips={evidence ? history.length : 0}
-                replaySuccessPct={evidence ? 100 : 0}
-                trustScore={riderTrustScore}
-              />
-            ) : null}
-            {activeTab === "alerts" ? (
-              <RiderNotificationsScreen notifications={notifications} />
-            ) : null}
-          </>
-        )}
-      </ScrollView>
+                  ) : null}
+                  <EvidenceScreen
+                    receipt={evidence?.receipt || null}
+                    replay={evidence?.replay || null}
+                    ledgerReceipt={evidence?.ledgerReceipt || null}
+                  />
+                  {evidence ? (
+                    <>
+                      <ReceiptScreen
+                        receipt={evidence.receipt}
+                        ledgerReceipt={evidence.ledgerReceipt}
+                      />
+                      <ReplayScreen replay={evidence.replay} />
+                      <PriceExplanationScreen explanation={evidence.priceExplanation} />
+                    </>
+                  ) : null}
+                </>
+              ) : null}
+              {activeTab === "wallet" ? <WalletScreen /> : null}
+              {activeTab === "activity" ? (
+                <ActivityScreen history={history} notifications={notifications} />
+              ) : null}
+              {activeTab === "profile" ? (
+                <RiderProfileScreen
+                  name="Pilot Rider"
+                  email={email}
+                  trips={history.length}
+                  verifiedTrips={evidence ? history.length : 0}
+                  replaySuccessPct={evidence ? 100 : 0}
+                  trustScore={riderTrustScore}
+                />
+              ) : null}
+            </>
+          )}
+        </ScrollView>
+
+        {authenticated ? (
+          <View style={styles.bottomNav}>
+            <BottomTabs tabs={riderTabs} activeTab={activeTab} onChange={setActiveTab} />
+          </View>
+        ) : null}
+      </View>
     </SafeAreaView>
   );
 }
@@ -208,6 +246,11 @@ const styles = StyleSheet.create({
   content: {
     gap: spacing.lg,
     padding: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  error: {
+    color: colors.danger,
+    fontWeight: "800",
   },
   header: {
     gap: spacing.xs,
@@ -230,6 +273,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     textTransform: "uppercase",
+  },
+  orgLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  bottomNav: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    padding: spacing.md,
+  },
+  shell: {
+    flex: 1,
   },
   screen: {
     backgroundColor: colors.background,

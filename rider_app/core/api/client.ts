@@ -1,4 +1,5 @@
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "../config/environment";
+import { getAuthToken } from "./session";
 import {
   buildClientEvent,
   instrumentationHeaders,
@@ -36,6 +37,7 @@ export async function apiRequest<T>(
       method,
       headers: {
         "Content-Type": "application/json",
+        ...(getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {}),
         ...instrumentationHeaders(clientEvent),
         ...(options.headers || {}),
       },

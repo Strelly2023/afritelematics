@@ -26,6 +26,9 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
   if (ledgerReceipt) {
     assertLedgerReceiptEvidence(ledgerReceipt);
   }
+  const _debugReceiptId = receipt.receiptId;
+  const _debugRideId = receipt.rideId;
+  const _debugReceiptHash = ledgerReceipt ? ledgerReceipt.receiptHash : null;
   const trustScore = receipt.trustScore || 92;
   const verificationPassed = receipt.verificationStatus !== "FAILED";
   const evidenceComplete = receipt.evidenceComplete !== false;
@@ -64,18 +67,14 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
       <EvidenceSummaryCard
         summary={
           verificationPassed && evidenceComplete
-            ? "This trip is trusted because the receipt, payment, and replay checks all passed."
-            : "This trip needs review before it can be treated as fully trusted."
+            ? "Trip verified. Payment, route, and replay checks passed."
+            : "Trip needs review before it is treated as fully trusted."
         }
       />
       <Text style={styles.title}>Receipt details</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>Ride</Text>
-        <Text style={styles.value}>{receipt.rideId}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Receipt</Text>
-        <Text style={styles.value}>{receipt.receiptId}</Text>
+        <Text style={styles.label}>Status</Text>
+        <Text style={styles.value}>{verificationPassed && evidenceComplete ? "Verified" : "Review required"}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}>Distance</Text>
@@ -90,9 +89,8 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
           <Text style={styles.proofTitle}>Verification package</Text>
           <Text style={styles.proofValue}>Verdict: {ledgerReceipt.verdict}</Text>
           <Text style={styles.proofValue}>Events: {ledgerReceipt.eventCount}</Text>
-          <Text style={styles.proofValue}>Hash: {ledgerReceipt.hashMode}</Text>
+          <Text style={styles.proofValue}>Hash mode: {ledgerReceipt.hashMode}</Text>
           <Text style={styles.proofValue}>Signature: {ledgerReceipt.signatureMode}</Text>
-          <Text style={styles.proofValue}>Receipt Hash: {ledgerReceipt.receiptHash}</Text>
         </View>
       ) : null}
       <View style={styles.actions}>
