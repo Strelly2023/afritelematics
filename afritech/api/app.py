@@ -59,6 +59,7 @@ from afritech.api.core_platform_api import (
     build_core_platform_router,
     build_public_trust_explorer_router,
 )
+from afritech.api.novapay_runtime_api import build_novapay_runtime_router
 from afritech.api.contracts.schema_registry_api import build_schema_registry_router
 from afritech.api.contracts.schema_registry_middleware import SchemaRegistryMiddleware
 from afritech.api.afriprogramming_control_api import (
@@ -189,6 +190,7 @@ app.include_router(build_schema_registry_router())
 # ✅ NovaTechSol core platform API
 app.include_router(build_core_platform_router())
 app.include_router(build_public_trust_explorer_router())
+app.include_router(build_novapay_runtime_router())
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())
