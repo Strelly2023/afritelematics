@@ -54,10 +54,31 @@ const EMPTY_OPERATOR_STATE = {
   novatechControlledExecutionActivation: null,
   novatechMarketplaceOnboarding: null,
   novapayLiveTestReadiness: null,
+  novarideEcosystem: null,
+  novaridePlatformArchitectureContract: null,
+  novarideOperatorDashboardContract: null,
+  operatorAutonomy: null,
+  novarideFleetManagerContract: null,
+  novarideBusinessPortalContract: null,
+  novarideAdminContract: null,
+  novarideInspectorAppContract: null,
+  novarideSupportContract: null,
+  novaridePhase11Status: null,
+  novaridePhase12Status: null,
+  novaridePhase13Status: null,
+  novaridePartnerPortalContract: null,
+  operatorDigitalTwin: null,
+  operatorMetaLearningRedesign: null,
+  operatorDemandForecast: null,
+  operatorStrategyEngine: null,
+  operatorBusinessPricing: null,
+  operatorCityProfitOptimization: null,
   liveAnalytics: null,
   analyticsArchive: null,
   decisionArchive: null,
   actionArchive: null,
+  operatorCityAutomation: null,
+  operatorMultiCityOrchestration: null,
 };
 
 const MAX_ANALYTICS_POINTS = 16;
@@ -110,9 +131,9 @@ const SYSTEM_LAYERS = [
   { id: "execution", name: "Execution", status: "Active", signal: "Replay-backed runtime" },
   { id: "proof", name: "Proof", status: "Consistent", signal: "Trace, hash, receipt" },
   { id: "trust", name: "Trust", status: "Verified true", signal: "Public badge + registry" },
-  { id: "intelligence", name: "Intelligence", status: "Indexed", signal: "AfriProg workspace" },
+  { id: "intelligence", name: "Intelligence", status: "Indexed", signal: "AfriPro / NovaCodePro workspace" },
   { id: "economy", name: "Economy", status: "Modeled", signal: "Gasless proof market" },
-  { id: "products", name: "Products", status: "Packaged", signal: "AfriRide, AfriPay, AfriProg" },
+  { id: "products", name: "Products", status: "Packaged", signal: "AfriRide, AfriPay, AfriPro" },
 ];
 
 const GOVERNANCE_WINDOW_STATS = [
@@ -155,7 +176,7 @@ const ECONOMY_SIGNALS = [
 const PRODUCT_SURFACES = [
   { name: "AfriRide", status: "Verified", proofCount: "842", trustLevel: "96%", usage: "Pilot corridor", focus: "Driver verification, trip integrity, payment anchoring" },
   { name: "AfriPay", status: "Ready", proofCount: "214", trustLevel: "93%", usage: "Treasury proof", focus: "Payment proof system and receipt-backed settlement" },
-  { name: "AfriProg", status: "Active", proofCount: "144", trustLevel: "91%", usage: "Governed coding", focus: "Code intelligence layer with proposal-only handoff" },
+  { name: "AfriPro / NovaCodePro", status: "Active", proofCount: "144", trustLevel: "91%", usage: "Governed coding", focus: "AI software factory roadmap with proposal-only handoff" },
 ];
 
 const MATURITY_SIGNALS = [
@@ -174,7 +195,7 @@ const DEMO_FLOW_STEPS = [
   { title: "Open System Truth", detail: "Start at the verified status layer and show health, trust, and evidence posture." },
   { title: "Run Governance Validation", detail: "Open the governance window and prove that rules, ADRs, and bindings are intact." },
   { title: "Inspect Proof", detail: "Select EVT-001, view trace, verify signature, and export the proof packet." },
-  { title: "Show Intelligence", detail: "Switch to AfriProg and demonstrate proposal-only AI assistance." },
+  { title: "Show Intelligence", detail: "Switch to AfriPro / NovaCodePro and demonstrate proposal-only AI assistance." },
   { title: "Close With Economy", detail: "Show gasless verification, cost per proof, product packaging, and maturity runway." },
 ];
 
@@ -753,10 +774,10 @@ const NOVATECH_PRODUCT_LAYERS = [
     summary: "Food delivery and logistics with payment-backed fulfillment.",
   },
   {
-    name: "AfriPro / NovaPro",
-    status: "Planned",
+    name: "AfriPro / NovaCodePro",
+    status: "Phase 0 roadmap",
     route: "/v1/novaprogramming/dashboard",
-    summary: "Professional services, task marketplace, and governed workforce flows.",
+    summary: "AI software engineering platform: SaaS foundation, thinker/builder engines, governed code generation, DevOps, testing, learning, integrations, and enterprise controls.",
   },
   {
     name: "NovaVirtualMall",
@@ -788,6 +809,219 @@ const NOVATECH_PRODUCT_LAYERS = [
     route: "#products",
     summary: "Hiring and workforce marketplace surfaces.",
   },
+];
+
+const NOVARIDE_APP_FALLBACKS = [
+  "NovaRide Passenger",
+  "NovaRide Driver",
+  "NovaRide Operator",
+  "NovaRide Fleet",
+  "NovaRide Business",
+  "NovaRide Admin",
+  "NovaRide Inspector",
+  "NovaRide Support",
+  "NovaRide Partner",
+];
+
+const NOVARIDE_OPERATOR_MODULE_FALLBACKS = [
+  { key: "operations", name: "Operations", status: "partially_implemented" },
+  { key: "ride_management", name: "Ride Management", status: "partially_implemented" },
+  { key: "driver_monitoring", name: "Driver Monitoring", status: "partially_implemented" },
+  { key: "safety_emergency", name: "Safety & Emergency", status: "contract_declared" },
+  { key: "analytics", name: "Analytics Dashboard", status: "implemented" },
+  { key: "ecosystem", name: "NovaRide Ecosystem Panel", status: "implemented" },
+  { key: "support_escalation", name: "Support & Escalation", status: "contract_declared" },
+];
+
+const NOVARIDE_OPERATOR_ALLOWED_ACTION_FALLBACKS = [
+  "manual_dispatch",
+  "ride_reassignment",
+  "monitoring",
+  "emergency_handling",
+];
+
+const NOVARIDE_OPERATOR_FORBIDDEN_ACTION_FALLBACKS = [
+  "direct_payment_execution",
+  "direct_provider_integrations",
+  "backend_rule_bypass",
+];
+
+const NOVARIDE_FLEET_MODULE_FALLBACKS = [
+  { key: "fleet_management", name: "Fleet Management", status: "partially_implemented" },
+  { key: "driver_management", name: "Driver Management", status: "partially_implemented" },
+  { key: "vehicle_management", name: "Vehicle Management", status: "contract_declared" },
+  { key: "maintenance_compliance", name: "Maintenance & Compliance", status: "contract_declared" },
+  { key: "financial_management", name: "Financial Management", status: "contract_declared" },
+  { key: "fleet_analytics", name: "Fleet Analytics", status: "partially_implemented" },
+];
+
+const NOVARIDE_FLEET_ALLOWED_ACTION_FALLBACKS = [
+  "manage_vehicles",
+  "assign_drivers",
+  "view_earnings_reports",
+  "receive_payouts_via_novapay",
+];
+
+const NOVARIDE_FLEET_FORBIDDEN_ACTION_FALLBACKS = [
+  "dispatch_logic_bypass",
+  "direct_payment_provider_access",
+  "bypass_trust_compliance_checks",
+];
+
+const NOVARIDE_BUSINESS_MODULE_FALLBACKS = [
+  { key: "corporate_travel", name: "Corporate Travel Management", status: "contract_declared" },
+  { key: "employee_management", name: "Employee Management", status: "contract_declared" },
+  { key: "approval_workflow", name: "Approval Workflow", status: "contract_declared" },
+  { key: "business_wallet_billing", name: "Business Wallet & Billing", status: "partially_implemented" },
+  { key: "department_budgets", name: "Department Budgets", status: "contract_declared" },
+  { key: "reporting_analytics", name: "Reporting & Analytics", status: "contract_declared" },
+];
+
+const NOVARIDE_BUSINESS_ALLOWED_ACTION_FALLBACKS = [
+  "book_rides",
+  "approve_reject_requests",
+  "manage_employees",
+  "view_billing_reports",
+];
+
+const NOVARIDE_BUSINESS_FORBIDDEN_ACTION_FALLBACKS = [
+  "direct_payment_execution",
+  "dispatch_logic_bypass",
+  "pricing_rule_bypass",
+];
+
+const NOVARIDE_ADMIN_MODULE_FALLBACKS = [
+  { key: "user_role_management", name: "User & Role Management", status: "partially_implemented" },
+  { key: "driver_vehicle_approval", name: "Driver & Vehicle Approval", status: "contract_declared" },
+  { key: "pricing_service_configuration", name: "Pricing & Service Configuration", status: "contract_declared" },
+  { key: "geography_service_zones", name: "Geography & Service Zones", status: "contract_declared" },
+  { key: "promotions_campaigns", name: "Promotions & Campaigns", status: "contract_declared" },
+  { key: "compliance_audit", name: "Compliance & Audit", status: "partially_implemented" },
+  { key: "system_health_monitoring", name: "System Health & Monitoring", status: "partially_implemented" },
+];
+
+const NOVARIDE_ADMIN_ALLOWED_ACTION_FALLBACKS = [
+  "configure_platform_rules",
+  "approve_participants",
+  "control_pricing_zones",
+  "monitor_compliance",
+];
+
+const NOVARIDE_ADMIN_FORBIDDEN_ACTION_FALLBACKS = [
+  "direct_ride_execution",
+  "manual_payment_processing",
+  "audit_replay_bypass",
+];
+
+const NOVARIDE_INSPECTOR_MODULE_FALLBACKS = [
+  { key: "inspection_workflow", name: "Inspection Workflow", status: "contract_declared" },
+  { key: "driver_verification", name: "Driver Verification", status: "contract_declared" },
+  { key: "vehicle_inspection", name: "Vehicle Inspection", status: "contract_declared" },
+  { key: "document_validation", name: "Document Validation", status: "contract_declared" },
+  { key: "photo_evidence_capture", name: "Photo & Evidence Capture", status: "contract_declared" },
+  { key: "inspection_reports", name: "Inspection Reports", status: "contract_declared" },
+  { key: "compliance_status", name: "Compliance Status", status: "contract_declared" },
+];
+
+const NOVARIDE_INSPECTOR_ALLOWED_ACTION_FALLBACKS = [
+  "perform_inspections",
+  "submit_reports",
+  "capture_evidence",
+  "validate_documents",
+];
+
+const NOVARIDE_INSPECTOR_FORBIDDEN_ACTION_FALLBACKS = [
+  "approve_payments",
+  "admin_decision_bypass",
+  "trust_engine_bypass",
+];
+
+const NOVARIDE_SUPPORT_MODULE_FALLBACKS = [
+  { key: "customer_ticket_management", name: "Customer Ticket Management", status: "contract_declared" },
+  { key: "ride_lookup_investigation", name: "Ride Lookup & Investigation", status: "partially_implemented" },
+  { key: "refund_dispute_handling", name: "Refund & Dispute Handling", status: "contract_declared" },
+  { key: "driver_passenger_assistance", name: "Driver & Passenger Assistance", status: "contract_declared" },
+  { key: "escalation_management", name: "Escalation Management", status: "contract_declared" },
+  { key: "audit_replay_integration", name: "Audit & Replay Integration", status: "partially_implemented" },
+];
+
+const NOVARIDE_SUPPORT_ALLOWED_ACTION_FALLBACKS = [
+  "view_ride_data",
+  "manage_tickets",
+  "request_refunds",
+  "contact_users",
+  "escalate_cases",
+];
+
+const NOVARIDE_SUPPORT_FORBIDDEN_ACTION_FALLBACKS = [
+  "novapay_bypass",
+  "pricing_rule_mutation",
+  "audit_log_bypass",
+  "direct_payment_execution",
+];
+
+const NOVARIDE_PARTNER_MODULE_FALLBACKS = [
+  { key: "ride_booking_widget", name: "Ride Booking & Widget Integration", status: "contract_declared" },
+  { key: "guest_transport_management", name: "Guest Transport Management", status: "contract_declared" },
+  { key: "bulk_ride_requests", name: "Bulk Ride Requests", status: "contract_declared" },
+  { key: "partner_reporting", name: "Partner Reporting", status: "contract_declared" },
+  { key: "billing_payments", name: "Billing & Payments", status: "contract_declared" },
+  { key: "partner_configuration", name: "Partner Configuration", status: "contract_declared" },
+];
+
+const NOVARIDE_PARTNER_ALLOWED_ACTION_FALLBACKS = [
+  "book_guest_rides",
+  "manage_bulk_transport",
+  "view_reports_billing",
+  "configure_booking_settings",
+];
+
+const NOVARIDE_PARTNER_FORBIDDEN_ACTION_FALLBACKS = [
+  "dispatch_logic_bypass",
+  "direct_payment_processing",
+  "pricing_rule_bypass",
+  "direct_driver_access",
+];
+
+const NOVARIDE_ARCHITECTURE_SERVICE_FALLBACKS = [
+  "NovaID",
+  "NovaPay",
+  "Dispatch Engine",
+  "Pricing Engine",
+  "Maps & Routing",
+  "Trust Engine",
+  "NovaNotify",
+  "Analytics Engine",
+  "Audit & Replay",
+];
+
+const NOVARIDE_ARCHITECTURE_FLOW_FALLBACKS = [
+  "passenger_app_requests_ride",
+  "api_validates_request_with_novaid",
+  "pricing_engine_estimates_fare",
+  "dispatch_engine_matches_driver",
+  "driver_app_receives_request",
+  "driver_accepts",
+  "maps_tracks_trip",
+  "trip_completes",
+  "novapay_processes_payment",
+  "audit_engine_stores_logs",
+  "analytics_updated",
+];
+
+const NOVARIDE_ARCHITECTURE_BACKEND_AUTHORITY_FALLBACKS = [
+  "dispatch_decisions",
+  "novapay_payments",
+  "pricing_calculations",
+  "fraud_detection",
+  "external_integrations",
+];
+
+const NOVARIDE_ARCHITECTURE_APP_BLOCKED_FALLBACKS = [
+  "payment_processing",
+  "pricing_mutation",
+  "dispatch_bypass",
+  "direct_provider_access",
 ];
 
 const PROTOCOL_COMPONENTS = [
@@ -895,7 +1129,7 @@ const AFRIPROG_FEATURES = [
   {
     title: "Natural Language to Code",
     detail:
-      "Operators and developers describe intent in plain language before a governed proposal is shaped for AfriProgramming review.",
+      "Operators and developers describe intent in plain language before a governed NovaCodePro proposal is shaped for AfriProgramming review.",
   },
   {
     title: "Code Autocomplete",
@@ -925,8 +1159,24 @@ const AFRIPROG_FEATURES = [
   {
     title: "API Integration",
     detail:
-      "AfriProg can prepare integration artifacts for APIs and SDKs without bypassing the governed execution path.",
+      "AfriPro / NovaCodePro can prepare integration artifacts for APIs and SDKs without bypassing the governed execution path.",
   },
+];
+
+const NOVACODEPRO_PHASES = [
+  { phase: "Phase 0", focus: "SaaS foundation", modules: "core, organizations, accounts, subscriptions, catalog, audit, feature flags, notifications, integrations" },
+  { phase: "Phase 1", focus: "AI core", modules: "prompt, context, thinker, builder, orchestrator, memory" },
+  { phase: "Phase 2", focus: "Architecture engine", modules: "patterns, diagrams, ADRs, modeling" },
+  { phase: "Phase 3", focus: "Code generation", modules: "APIs, services, schemas, tests, refactors" },
+  { phase: "Phase 4", focus: "Automation & DevOps", modules: "deployment, CI/CD, workflows, infrastructure, scheduler" },
+  { phase: "Phase 5", focus: "Testing & debugging", modules: "testing, debug, validation, simulation" },
+  { phase: "Phase 6", focus: "Monitoring & optimization", modules: "monitoring, logging, analytics, optimization, alerting" },
+  { phase: "Phase 7", focus: "Knowledge & learning", modules: "knowledge, docs, tutorials, explanations" },
+  { phase: "Phase 8", focus: "Apps layer", modules: "Studio, Dev, Architect, Automate, Learn, Operator, Admin" },
+  { phase: "Phase 9", focus: "Integration ecosystem", modules: "GitHub, GitLab, VS Code, cloud, Docker, Kubernetes, databases, APIs" },
+  { phase: "Phase 10", focus: "Governance & enterprise", modules: "RBAC, policy, compliance, security, audit, guards" },
+  { phase: "Phase 11", focus: "Autonomous builder", modules: "self-debug, upgrades, adaptive architecture" },
+  { phase: "Phase 12", focus: "NovaCodePro OS", modules: "multi-project orchestration and AI software factory operations" },
 ];
 
 const AFRIPROG_WORKSPACE_PANELS = [
@@ -1888,6 +2138,134 @@ function deriveMaturitySignals(state) {
   });
 }
 
+function deriveOperationAIDecisionState({
+  decision,
+  action,
+  liveAnalyticsSnapshot,
+  novarideOperatorDashboardContract,
+  novarideEcosystem,
+  liveNotifications,
+  activeRidesCount,
+}) {
+  const lane = decision?.decisionLane || action?.decisionLane || "observe";
+  const laneTone = decisionLaneTone(lane);
+  const priority = decision?.decisionPriority || action?.decisionPriority || "low";
+  const confidence = Number(action?.calibratedConfidence ?? decision?.confidence ?? 0);
+  const trustHealth = toNumber(
+    action?.trustHealth ?? decision?.trustHealth ?? liveAnalyticsSnapshot?.trustHealth,
+    0,
+  );
+  const replayHealth = toNumber(
+    action?.replayHealthScore ?? decision?.replayHealthScore ?? liveAnalyticsSnapshot?.replayHealthScore,
+    0,
+  );
+  const evidenceCoverage = toNumber(
+    action?.evidenceCoverage ?? decision?.evidenceCoverage ?? liveAnalyticsSnapshot?.evidenceCoverage,
+    0,
+  );
+  const exceptionPressure = toNumber(
+    action?.exceptionPressure ?? decision?.exceptionPressure ?? liveAnalyticsSnapshot?.exceptionPressure,
+    0,
+  );
+  const alertCount = toNumber(
+    action?.alertCount ?? decision?.alertCount ?? liveAnalyticsSnapshot?.alertCount,
+    0,
+  );
+  const guardCount = toNumber(
+    action?.guardCount ?? decision?.guardCount ?? liveAnalyticsSnapshot?.guardCount,
+    0,
+  );
+  const activeDrivers = toNumber(liveAnalyticsSnapshot?.onlineDrivers, 0);
+  const driverCount = toNumber(liveAnalyticsSnapshot?.driverCount, 0);
+  const completedRides = toNumber(liveAnalyticsSnapshot?.completedRides, 0);
+  const demandPressure = clampNumber(
+    Math.round(
+      activeRidesCount * 12 +
+        alertCount * 8 +
+        guardCount * 10 +
+        exceptionPressure * 4 +
+        (100 - evidenceCoverage) * 0.25 +
+        (100 - trustHealth) * 0.2 -
+        activeDrivers * 5,
+    ),
+    0,
+    100,
+  );
+
+  const demandLabel = demandPressure >= 75 ? "High" : demandPressure >= 45 ? "Moderate" : "Stable";
+  const driverSupplyLabel = `${activeDrivers} online / ${driverCount || activeDrivers || 0} known`;
+
+  let dispatchPosture = "Maintain current dispatch band";
+  if (lane === "escalate") {
+    dispatchPosture = "Freeze non-essential dispatch";
+  } else if (lane === "review") {
+    dispatchPosture = "Open operator review before widening dispatch";
+  } else if (lane === "watch") {
+    dispatchPosture = "Increase observation around dispatch pressure";
+  } else if (demandPressure >= 70 && activeDrivers > 0) {
+    dispatchPosture = "Prioritize driver supply to the busiest zone";
+  } else if (demandPressure >= 70) {
+    dispatchPosture = "Hold new dispatch until supply returns";
+  }
+
+  const operatorMove =
+    action?.controlActions?.[0] ||
+    decision?.recommendedActions?.[0] ||
+    (lane === "escalate"
+      ? "Escalate the incident, isolate the affected window, and hold non-essential changes."
+      : lane === "review"
+        ? "Review replay pressure, evidence gaps, and driver supply before widening activity."
+        : demandPressure >= 70
+          ? "Shift drivers toward the busiest corridor and keep operator watch active."
+          : "Maintain the replay-backed operating band and continue live sampling.");
+
+  const summary =
+    decision?.decisionSummary ||
+    action?.actionSummary ||
+    "The operation AI engine is waiting for the next persisted operator window.";
+
+  const watchItems = [
+    ...(decision?.watchItems || []),
+    ...(action?.watchItems || []),
+    ...(liveNotifications || []).map((notification) => notification.title),
+  ].filter(Boolean);
+
+  const moduleCount = Array.isArray(novarideOperatorDashboardContract?.modules)
+    ? novarideOperatorDashboardContract.modules.length
+    : 0;
+
+  return {
+    lane,
+    laneTone,
+    priority,
+    confidence,
+    trustHealth,
+    replayHealth,
+    evidenceCoverage,
+    exceptionPressure,
+    alertCount,
+    guardCount,
+    activeRidesCount,
+    activeDrivers,
+    driverCount,
+    completedRides,
+    demandPressure,
+    demandLabel,
+    driverSupplyLabel,
+    dispatchPosture,
+    operatorMove,
+    summary,
+    controlSignal: action?.controlSignal || decision?.decisionAction || "maintain_monitoring",
+    safetyGate: action?.safetyGate || "pass",
+    executionTier: action?.executionTier || "advisory",
+    executionTierReady: Boolean(action?.executionTierReady),
+    ecosystemApps: toNumber(novarideEcosystem?.app_count, 0),
+    moduleCount,
+    recommendedActions: (action?.controlActions || decision?.recommendedActions || []).slice(0, 4),
+    watchItems: Array.from(new Set(watchItems)).slice(0, 6),
+  };
+}
+
 function toNumber(value, fallback = 0) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -2319,6 +2697,27 @@ export default function OperatorDashboard() {
         novatechControlledExecutionActivationResult,
         novatechMarketplaceOnboardingResult,
         novapayLiveTestReadinessResult,
+        novarideEcosystemResult,
+        novaridePlatformArchitectureContractResult,
+        novarideOperatorDashboardContractResult,
+        operatorAutonomyResult,
+        novarideFleetManagerContractResult,
+        novarideBusinessPortalContractResult,
+        novarideAdminContractResult,
+        novarideInspectorAppContractResult,
+        novarideSupportContractResult,
+        novaridePhase11StatusResult,
+        novaridePhase12StatusResult,
+        novaridePhase13StatusResult,
+        novaridePartnerPortalContractResult,
+        operatorCityAutomationResult,
+        operatorMultiCityOrchestrationResult,
+        operatorDigitalTwinResult,
+        operatorMetaLearningRedesignResult,
+        operatorDemandForecastResult,
+        operatorStrategyEngineResult,
+        operatorBusinessPricingResult,
+        operatorCityProfitOptimizationResult,
       ] = await Promise.allSettled([
         readJson("/system/health"),
         readJson("/rides/active"),
@@ -2343,6 +2742,27 @@ export default function OperatorDashboard() {
         readJson(`/v1/novatech/organizations/${organizationId}/execution/activation`),
         readJson("/v1/novatech/marketplace/onboarding"),
         readJson("/v1/core-platform/transfers/live-test/readiness"),
+        readJson("/v1/novaride/ecosystem"),
+        readJson("/v1/novaride/platform/architecture-contract"),
+        readJson("/v1/novaride/operator/dashboard-contract"),
+        readJson("/v1/operator/autonomy"),
+        readJson("/v1/novaride/fleet/manager-contract"),
+        readJson("/v1/novaride/business/portal-contract"),
+        readJson("/v1/novaride/admin/contract"),
+        readJson("/v1/novaride/inspector/app-contract"),
+        readJson("/v1/novaride/support/contract"),
+        readJson("/v1/novaride/phase11/status"),
+        readJson("/v1/novaride/phase12/status"),
+        readJson("/v1/novaride/phase13/status"),
+        readJson("/v1/novaride/partner/portal-contract"),
+        readJson("/v1/operator/city-automation"),
+        readJson("/v1/operator/multi-city-orchestration"),
+        readJson("/v1/operator/digital-twin"),
+        readJson("/v1/operator/meta-learning-redesign"),
+        readJson("/v1/operator/demand-forecast"),
+        readJson("/v1/operator/strategy-engine"),
+        readJson("/v1/operator/business-pricing"),
+        readJson("/v1/operator/city-profit-optimization"),
       ]);
 
       const activeRides =
@@ -2419,6 +2839,88 @@ export default function OperatorDashboard() {
         novapayLiveTestReadinessResult.status === "fulfilled"
           ? novapayLiveTestReadinessResult.value
           : state.novapayLiveTestReadiness;
+      const novarideEcosystem =
+        novarideEcosystemResult.status === "fulfilled"
+          ? novarideEcosystemResult.value
+          : state.novarideEcosystem;
+      const novaridePlatformArchitectureContract =
+        novaridePlatformArchitectureContractResult.status === "fulfilled"
+          ? novaridePlatformArchitectureContractResult.value
+          : state.novaridePlatformArchitectureContract;
+      const novarideOperatorDashboardContract =
+        novarideOperatorDashboardContractResult.status === "fulfilled"
+          ? novarideOperatorDashboardContractResult.value
+          : state.novarideOperatorDashboardContract;
+      const operatorAutonomy =
+        operatorAutonomyResult.status === "fulfilled"
+          ? operatorAutonomyResult.value
+          : state.operatorAutonomy;
+      const operatorCityAutomation =
+        operatorCityAutomationResult.status === "fulfilled"
+          ? operatorCityAutomationResult.value
+          : state.operatorCityAutomation;
+      const operatorMultiCityOrchestration =
+        operatorMultiCityOrchestrationResult.status === "fulfilled"
+          ? operatorMultiCityOrchestrationResult.value
+          : state.operatorMultiCityOrchestration;
+      const operatorDigitalTwin =
+        operatorDigitalTwinResult.status === "fulfilled" ? operatorDigitalTwinResult.value : state.operatorDigitalTwin;
+      const operatorMetaLearningRedesign =
+        operatorMetaLearningRedesignResult.status === "fulfilled"
+          ? operatorMetaLearningRedesignResult.value
+          : state.operatorMetaLearningRedesign;
+      const operatorDemandForecast =
+        operatorDemandForecastResult.status === "fulfilled"
+          ? operatorDemandForecastResult.value
+          : state.operatorDemandForecast;
+      const operatorStrategyEngine =
+        operatorStrategyEngineResult.status === "fulfilled"
+          ? operatorStrategyEngineResult.value
+          : state.operatorStrategyEngine;
+      const operatorBusinessPricing =
+        operatorBusinessPricingResult.status === "fulfilled"
+          ? operatorBusinessPricingResult.value
+          : state.operatorBusinessPricing;
+      const operatorCityProfitOptimization =
+        operatorCityProfitOptimizationResult.status === "fulfilled"
+          ? operatorCityProfitOptimizationResult.value
+          : state.operatorCityProfitOptimization;
+      const novarideFleetManagerContract =
+        novarideFleetManagerContractResult.status === "fulfilled"
+          ? novarideFleetManagerContractResult.value
+          : state.novarideFleetManagerContract;
+      const novarideBusinessPortalContract =
+        novarideBusinessPortalContractResult.status === "fulfilled"
+          ? novarideBusinessPortalContractResult.value
+          : state.novarideBusinessPortalContract;
+      const novarideAdminContract =
+        novarideAdminContractResult.status === "fulfilled"
+          ? novarideAdminContractResult.value
+          : state.novarideAdminContract;
+      const novarideInspectorAppContract =
+        novarideInspectorAppContractResult.status === "fulfilled"
+          ? novarideInspectorAppContractResult.value
+          : state.novarideInspectorAppContract;
+      const novarideSupportContract =
+        novarideSupportContractResult.status === "fulfilled"
+          ? novarideSupportContractResult.value
+          : state.novarideSupportContract;
+      const novaridePhase11Status =
+        novaridePhase11StatusResult.status === "fulfilled"
+          ? novaridePhase11StatusResult.value
+          : state.novaridePhase11Status;
+      const novaridePhase12Status =
+        novaridePhase12StatusResult.status === "fulfilled"
+          ? novaridePhase12StatusResult.value
+          : state.novaridePhase12Status;
+      const novaridePhase13Status =
+        novaridePhase13StatusResult.status === "fulfilled"
+          ? novaridePhase13StatusResult.value
+          : state.novaridePhase13Status;
+      const novaridePartnerPortalContract =
+        novaridePartnerPortalContractResult.status === "fulfilled"
+          ? novaridePartnerPortalContractResult.value
+          : state.novaridePartnerPortalContract;
       const liveAnalytics = buildLiveAnalyticsSnapshot({
         trustMetrics,
         replayHealth,
@@ -2478,6 +2980,27 @@ export default function OperatorDashboard() {
         novatechControlledExecutionActivation,
         novatechMarketplaceOnboarding,
         novapayLiveTestReadiness,
+        novarideEcosystem,
+        novaridePlatformArchitectureContract,
+        novarideOperatorDashboardContract,
+        operatorAutonomy,
+        novarideFleetManagerContract,
+        novarideBusinessPortalContract,
+        novarideAdminContract,
+        novarideInspectorAppContract,
+        novarideSupportContract,
+        novaridePhase11Status,
+        novaridePhase12Status,
+        novaridePhase13Status,
+        novaridePartnerPortalContract,
+        operatorCityAutomation,
+        operatorMultiCityOrchestration,
+        operatorDigitalTwin,
+        operatorMetaLearningRedesign,
+        operatorDemandForecast,
+        operatorStrategyEngine,
+        operatorBusinessPricing,
+        operatorCityProfitOptimization,
         liveAnalytics,
         analyticsArchive,
         decisionArchive,
@@ -2700,6 +3223,27 @@ export default function OperatorDashboard() {
   const novatechControlledExecutionActivation = state.novatechControlledExecutionActivation;
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
+  const novarideEcosystem = state.novarideEcosystem;
+  const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
+  const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
+  const operatorAutonomy = state.operatorAutonomy;
+  const novarideFleetManagerContract = state.novarideFleetManagerContract;
+  const novarideBusinessPortalContract = state.novarideBusinessPortalContract;
+  const novarideAdminContract = state.novarideAdminContract;
+  const novarideInspectorAppContract = state.novarideInspectorAppContract;
+  const novarideSupportContract = state.novarideSupportContract;
+  const novaridePhase11Status = state.novaridePhase11Status;
+  const novaridePhase12Status = state.novaridePhase12Status;
+  const novaridePhase13Status = state.novaridePhase13Status;
+  const novaridePartnerPortalContract = state.novaridePartnerPortalContract;
+  const operatorCityAutomation = state.operatorCityAutomation;
+  const operatorMultiCityOrchestration = state.operatorMultiCityOrchestration;
+  const operatorDigitalTwin = state.operatorDigitalTwin;
+  const operatorMetaLearningRedesign = state.operatorMetaLearningRedesign;
+  const operatorDemandForecast = state.operatorDemandForecast;
+  const operatorStrategyEngine = state.operatorStrategyEngine;
+  const operatorBusinessPricing = state.operatorBusinessPricing;
+  const operatorCityProfitOptimization = state.operatorCityProfitOptimization;
   const rollbackReady =
     Number(state.evidence.missing_traces || 0) === 0 &&
     Number(state.replayHealth.failures || 0) === 0;
@@ -2742,6 +3286,27 @@ export default function OperatorDashboard() {
       liveEvents,
       persistedDecisionCurrent,
       persistedActionCurrent,
+    ],
+  );
+  const operationAIDecisionState = useMemo(
+    () =>
+      deriveOperationAIDecisionState({
+        decision: persistedDecisionCurrent,
+        action: persistedActionCurrent,
+        liveAnalyticsSnapshot,
+        novarideOperatorDashboardContract,
+        novarideEcosystem,
+        liveNotifications,
+        activeRidesCount: state.activeRides.length,
+      }),
+    [
+      persistedDecisionCurrent,
+      persistedActionCurrent,
+      liveAnalyticsSnapshot,
+      novarideOperatorDashboardContract,
+      novarideEcosystem,
+      liveNotifications,
+      state.activeRides.length,
     ],
   );
 
@@ -3536,11 +4101,11 @@ export default function OperatorDashboard() {
 
       <section className="section-band afriprog-band">
         <SectionIntro
-          eyebrow="AfriProg"
-          title="AfriProg Workspace"
-          question="How does the coding assistant accelerate delivery without becoming a truth authority?"
+          eyebrow="AfriPro / NovaCodePro"
+          title="AfriPro / NovaCodePro Workspace"
+          question="How does the AI software factory accelerate delivery without becoming a truth authority?"
         />
-        <p className="section-note">AfriProg is the productivity layer for drafting code, tests, and API integration surfaces. It is proposal-only: AfriProgramming, replay, and governance still decide what becomes real execution.</p>
+        <p className="section-note">AfriPro is the product line now positioned as NovaCodePro: a phased AI software engineering platform from SaaS foundation through NovaCodePro OS. The current workspace remains proposal-only: AfriProgramming, replay, and governance still decide what becomes real execution.</p>
         <div className="metric-grid">
           {AFRIPROG_FEATURES.slice(0, 4).map((feature) => (
             <TrustMetric
@@ -3596,6 +4161,19 @@ export default function OperatorDashboard() {
             </div>
           </OperatorPanel>
         </div>
+        <OperatorPanel title="NovaCodePro Phase Roadmap">
+          <div className="phase-grid">
+            {NOVACODEPRO_PHASES.map((phase) => (
+              <article key={phase.phase} className="record-card">
+                <div className="record-card-header">
+                  <strong>{phase.phase}</strong>
+                  <span>{phase.focus}</span>
+                </div>
+                <p>{phase.modules}</p>
+              </article>
+            ))}
+          </div>
+        </OperatorPanel>
         <OperatorPanel title="Code Editor (Live Editing + Execution)">
           <div className="stack">
             <article className="record-card afriprog-code-card">
@@ -3607,7 +4185,7 @@ export default function OperatorDashboard() {
             </article>
             <article className="record-card">
               <div className="record-card-header">
-                <strong>Django Backend for AfriPro Chat + Dashboard</strong>
+	                <strong>Django Backend for AfriPro / NovaCodePro Chat + Dashboard</strong>
                 <span>governance-linked</span>
               </div>
               <p>
@@ -3619,7 +4197,7 @@ export default function OperatorDashboard() {
           </div>
         </OperatorPanel>
         <div className="operator-grid afriprog-grid">
-          <OperatorPanel title="AfriProg Prompt Studio">
+          <OperatorPanel title="NovaCodePro Prompt Studio">
             <div className="stack">
               <article className="record-card afriprog-prompt-card">
                 <span className="surface-chip">Prompt / Instruction Panel</span>
@@ -3669,7 +4247,7 @@ export default function OperatorDashboard() {
             </div>
           </OperatorPanel>
 
-          <OperatorPanel title="AfriProg Controls">
+          <OperatorPanel title="NovaCodePro Controls">
             <div className="stack">
               {AFRIPROG_WORKSPACE_PANELS.map((panel) => (
                 <article key={panel.title} className="record-card">
@@ -3717,7 +4295,7 @@ export default function OperatorDashboard() {
                   <span>{governanceSubmission ? "submitted" : "awaiting action"}</span>
                 </div>
                 <p>
-                  AfriProg output only becomes eligible for authority review after an explicit
+	                  AfriPro / NovaCodePro output only becomes eligible for authority review after an explicit
                   proposal submission. Runtime mutation remains blocked throughout this handoff.
                 </p>
                 {governanceSubmission ? (
@@ -4297,6 +4875,43 @@ export default function OperatorDashboard() {
         </div>
       </section>
 
+      <section className="section-band analytics-band realtime-analytics-band">
+        <SectionIntro
+          eyebrow="Predictive Demand"
+          title="Real-time analytics dashboard"
+          question="This projection combines live ride pressure, driver supply, and trust posture into a bounded demand forecast for the next operating windows."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Predictive Demand ML">
+            <DemandForecastPanel demandForecast={operatorDemandForecast} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Real-time City Pressure">
+            <RealtimeAnalyticsPanel
+              demandForecast={operatorDemandForecast}
+              liveAnalyticsSnapshot={liveAnalyticsSnapshot}
+            />
+          </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band analytics-band strategy-band">
+        <SectionIntro
+          eyebrow="Phase 5"
+          title="Autonomous Strategy Engine"
+          question="The strategy engine converts demand, autonomy, pricing, and profit surfaces into a bounded city strategy plan without taking execution authority."
+        />
+        <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Autonomous Strategy Engine">
+            <StrategyEnginePanel strategyEngine={operatorStrategyEngine} />
+          </OperatorPanel>
+
+          <OperatorPanel title="Strategy Guardrails">
+            <StrategyGuardrailsPanel strategyEngine={operatorStrategyEngine} />
+          </OperatorPanel>
+        </div>
+      </section>
+
       <section className="section-band analytics-band analytics-history-band">
         <SectionIntro
           eyebrow="Persistent Intelligence"
@@ -4352,13 +4967,31 @@ export default function OperatorDashboard() {
         </div>
       </section>
 
-      <section className="section-band decision-band">
+      <section className="section-band decision-band operation-ai-band">
         <SectionIntro
-          eyebrow="AI Decision Engine"
-          title="Persistent decisioning and operator guidance"
-          question="The engine translates persisted analytics into a read-only operating lane, action, and explanation trail without taking execution authority."
+          eyebrow="Operations AI"
+          title="Operation AI Decision Dashboard"
+          question="The decision surface translates live dispatch pressure, trust, replay, and evidence into a read-only operator posture without taking execution authority."
         />
         <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Dispatch posture">
+            <OperationAIDecisionPanel
+              decision={persistedDecisionCurrent}
+              action={persistedActionCurrent}
+              liveAnalyticsSnapshot={liveAnalyticsSnapshot}
+              liveNotifications={liveNotifications}
+              novarideOperatorDashboardContract={novarideOperatorDashboardContract}
+              novarideEcosystem={novarideEcosystem}
+              operatorCityAutomation={operatorCityAutomation}
+              operatorMultiCityOrchestration={operatorMultiCityOrchestration}
+              operatorDigitalTwin={operatorDigitalTwin}
+              operatorMetaLearningRedesign={operatorMetaLearningRedesign}
+              operatorBusinessPricing={operatorBusinessPricing}
+              activeRidesCount={state.activeRides.length}
+              operationState={operationAIDecisionState}
+            />
+          </OperatorPanel>
+
           <OperatorPanel title="Current Decision">
             <DecisionSummaryPanel decision={persistedDecisionCurrent} latest={persistedDecisionLatest} />
           </OperatorPanel>
@@ -4395,10 +5028,29 @@ export default function OperatorDashboard() {
       <section className="section-band action-band">
         <SectionIntro
           eyebrow="Controlled autonomy"
-          title="Evidence-calibrated action intelligence"
-          question="The action engine converts decision quality into operator guidance, safety gates, and a persistent review trail without granting execution authority."
+          title="Predictive AI and autonomous execution thresholds"
+          question="The action engine converts decision quality into operator guidance, safety gates, and a persistent review trail while only enabling bounded autonomy when safe thresholds clear."
         />
         <div className="operator-grid analytics-grid">
+          <OperatorPanel title="Autonomy thresholds">
+            <OperationAIDecisionPanel
+              decision={persistedDecisionCurrent}
+              action={persistedActionCurrent}
+              liveAnalyticsSnapshot={liveAnalyticsSnapshot}
+              liveNotifications={liveNotifications}
+              novarideOperatorDashboardContract={novarideOperatorDashboardContract}
+              novarideEcosystem={novarideEcosystem}
+              operatorAutonomy={operatorAutonomy}
+              operatorCityAutomation={operatorCityAutomation}
+              operatorMultiCityOrchestration={operatorMultiCityOrchestration}
+              operatorDigitalTwin={operatorDigitalTwin}
+              operatorMetaLearningRedesign={operatorMetaLearningRedesign}
+              operatorBusinessPricing={operatorBusinessPricing}
+              activeRidesCount={state.activeRides.length}
+              operationState={operationAIDecisionState}
+            />
+          </OperatorPanel>
+
           <OperatorPanel title="Current Action">
             <ActionSummaryPanel action={persistedActionCurrent} latest={persistedActionLatest} />
           </OperatorPanel>
@@ -4656,6 +5308,816 @@ export default function OperatorDashboard() {
               </div>
             ) : (
               <EmptyState label="Safe execution will appear after a tenant snapshot is available." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Shared NovaRide Platform Architecture">
+            {novaridePlatformArchitectureContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novaridePlatformArchitectureContract.principle || "Apps = Interface; Platform = Authority"}</strong>
+                    <span>{novaridePlatformArchitectureContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Passenger, Driver, and Operator surfaces send requests and display data.
+                    NovaRide API validates access, then shared services own dispatch,
+                    pricing, payments, trust, notifications, analytics, and replay.
+                  </p>
+                  <div className="chip-row">
+                    {(novaridePlatformArchitectureContract.layers?.api_gateway?.responsibilities || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Shared services</strong>
+                  <div className="chip-row">
+                    {(novaridePlatformArchitectureContract.layers?.execution_layer?.services ||
+                      NOVARIDE_ARCHITECTURE_SERVICE_FALLBACKS).map((service) => (
+                      <span key={service.key || service} className="surface-chip">
+                        {service.name || service}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Authority boundary</strong>
+                    <span>{novaridePlatformArchitectureContract.authority_boundary?.payments || "NovaPay_backend_only"}</span>
+                  </div>
+                  <div className="chip-row">
+                    {(novaridePlatformArchitectureContract.authority_boundary?.backend_full_control ||
+                      NOVARIDE_ARCHITECTURE_BACKEND_AUTHORITY_FALLBACKS).map((item) => (
+                      <span key={item} className="surface-chip">
+                        Backend: {item}
+                      </span>
+                    ))}
+                    {(novaridePlatformArchitectureContract.authority_boundary?.apps_no_authority ||
+                      NOVARIDE_ARCHITECTURE_APP_BLOCKED_FALLBACKS).map((item) => (
+                      <span key={item} className="surface-chip">
+                        App blocked: {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Ride request flow</strong>
+                  <div className="chip-row">
+                    {(novaridePlatformArchitectureContract.ride_request_flow ||
+                      NOVARIDE_ARCHITECTURE_FLOW_FALLBACKS).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide platform architecture contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Operator Command Center">
+            {novarideOperatorDashboardContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Operations decision layer</strong>
+                    <span>{novarideOperatorDashboardContract.status || "controlled_pilot_ready"}</span>
+                  </div>
+                  <p>
+                    Real-time control, ride management, driver monitoring, safety,
+                    analytics, ecosystem visibility, and support escalation remain
+                    bound to backend authority.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideOperatorDashboardContract.layout?.left_navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Core modules</strong>
+                  <div className="chip-row">
+                    {(novarideOperatorDashboardContract.modules || NOVARIDE_OPERATOR_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Authority model</strong>
+                    <span>Backend enforced</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideOperatorDashboardContract.authority_model?.allowed ||
+                      NOVARIDE_OPERATOR_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideOperatorDashboardContract.authority_model?.forbidden ||
+                      NOVARIDE_OPERATOR_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide operator contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Fleet Manager">
+            {novarideFleetManagerContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideFleetManagerContract.role || "FLEET_OWNER"}</strong>
+                    <span>{novarideFleetManagerContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Fleet owners manage vehicles, drivers, compliance, finances, and reports while
+                    dispatch, payments, trust, inspection, and replay stay backend-authoritative.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideFleetManagerContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Fleet modules</strong>
+                  <div className="chip-row">
+                    {(novarideFleetManagerContract.modules || NOVARIDE_FLEET_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Fleet RBAC</strong>
+                    <span>{novarideFleetManagerContract.authority_model?.payments || "NovaPay_backend_only"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideFleetManagerContract.rbac?.allowed ||
+                      NOVARIDE_FLEET_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideFleetManagerContract.rbac?.forbidden ||
+                      NOVARIDE_FLEET_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide fleet manager contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Business Portal">
+            {novarideBusinessPortalContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideBusinessPortalContract.role || "CLIENT"}</strong>
+                    <span>{novarideBusinessPortalContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Companies manage employee travel, approvals, budgets, billing, and reports
+                    while dispatch, pricing, payments, identity, and audit remain backend-authoritative.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideBusinessPortalContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Business modules</strong>
+                  <div className="chip-row">
+                    {(novarideBusinessPortalContract.modules || NOVARIDE_BUSINESS_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Business RBAC</strong>
+                    <span>{novarideBusinessPortalContract.authority_model?.payments || "NovaPay_backend_only"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideBusinessPortalContract.rbac?.allowed ||
+                      NOVARIDE_BUSINESS_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideBusinessPortalContract.rbac?.forbidden ||
+                      NOVARIDE_BUSINESS_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide business portal contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Admin">
+            {novarideAdminContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideAdminContract.role || "ADMIN"}</strong>
+                    <span>{novarideAdminContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Platform administrators configure roles, approvals, pricing policies,
+                    service zones, campaigns, compliance, audit, and system health while rides
+                    and payments remain backend-authoritative.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideAdminContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Admin modules</strong>
+                  <div className="chip-row">
+                    {(novarideAdminContract.modules || NOVARIDE_ADMIN_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Admin governance</strong>
+                    <span>{novarideAdminContract.authority_model?.payments || "NovaPay_policy_level_only"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideAdminContract.rbac?.allowed ||
+                      NOVARIDE_ADMIN_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideAdminContract.rbac?.forbidden ||
+                      NOVARIDE_ADMIN_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide admin contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Inspector App">
+            {novarideInspectorAppContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideInspectorAppContract.role || "VERIFIER"}</strong>
+                    <span>{novarideInspectorAppContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Field inspectors verify drivers, vehicles, documents, photos, and reports.
+                    Trust Engine remains the final compliance authority and Audit Engine keeps
+                    evidence replayable.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideInspectorAppContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Inspector modules</strong>
+                  <div className="chip-row">
+                    {(novarideInspectorAppContract.modules || NOVARIDE_INSPECTOR_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Compliance authority</strong>
+                    <span>{novarideInspectorAppContract.authority_model?.compliance || "Trust_Engine_final_authority"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideInspectorAppContract.rbac?.allowed ||
+                      NOVARIDE_INSPECTOR_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideInspectorAppContract.rbac?.forbidden ||
+                      NOVARIDE_INSPECTOR_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide inspector app contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Support">
+            {novarideSupportContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideSupportContract.role || "OPERATOR"}</strong>
+                    <span>{novarideSupportContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Support agents manage tickets, ride investigations, refund requests,
+                    driver and passenger assistance, escalations, and replay-backed decisions
+                    while NovaPay executes approved refunds through the backend.
+                  </p>
+                  <div className="chip-row">
+                    {(novarideSupportContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Support modules</strong>
+                  <div className="chip-row">
+                    {(novarideSupportContract.modules || NOVARIDE_SUPPORT_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Refund authority</strong>
+                    <span>{novarideSupportContract.authority_model?.refund_execution || "NovaPay_backend_only"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideSupportContract.rbac?.allowed ||
+                      NOVARIDE_SUPPORT_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novarideSupportContract.rbac?.forbidden ||
+                      NOVARIDE_SUPPORT_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide support contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Phase 11 Compliance & Inspection">
+            {novaridePhase11Status ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Support Dashboard UI</strong>
+                    <span>{novaridePhase11Status.readiness?.regulatory_readiness_ready ? "government_review_ready" : "controlled_review"}</span>
+                  </div>
+                  <p>
+                    Auto Ticket Classification, the Auto Refund System, the Analytics Backend, and the
+                    Driver Scoring Algorithm stay projection-backed while Trust Engine and NovaPay keep
+                    the final authority.
+                  </p>
+                  <div className="chip-row">
+                    {(novaridePhase11Status.support_dashboard?.dashboard_cards || []).map((card) => (
+                      <span key={card.label} className="surface-chip">
+                        {card.label}: {card.value}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <div className="metric-grid">
+                  <KeyValue
+                    label="Inspection Workflow"
+                    value={novaridePhase11Status.compliance_workspace?.summary?.inspection_workflow_ready ? "Ready" : "Pending"}
+                    tone={novaridePhase11Status.compliance_workspace?.summary?.inspection_workflow_ready ? "success" : "warning"}
+                  />
+                  <KeyValue
+                    label="Document Verification"
+                    value={novaridePhase11Status.compliance_workspace?.summary?.document_verification_ready ? "Ready" : "Pending"}
+                    tone={novaridePhase11Status.compliance_workspace?.summary?.document_verification_ready ? "success" : "warning"}
+                  />
+                  <KeyValue
+                    label="Inspection Reports"
+                    value={novaridePhase11Status.compliance_workspace?.summary?.inspection_reports_ready ? "Ready" : "Pending"}
+                    tone={novaridePhase11Status.compliance_workspace?.summary?.inspection_reports_ready ? "success" : "warning"}
+                  />
+                  <KeyValue
+                    label="Driver Scoring Algorithm"
+                    value={novaridePhase11Status.compliance_workspace?.driver_scoring?.average_score || 0}
+                  />
+                  <KeyValue
+                    label="Fraud Detection"
+                    value={novaridePhase11Status.compliance_workspace?.fraud_detection?.risk_band || "low"}
+                    tone={
+                      novaridePhase11Status.compliance_workspace?.fraud_detection?.risk_band === "critical"
+                        ? "warning"
+                        : "success"
+                    }
+                  />
+                  <KeyValue
+                    label="Regulatory Readiness"
+                    value={novaridePhase11Status.compliance_workspace?.regulatory_readiness?.readiness_band || "watch"}
+                  />
+                </div>
+
+                <article className="record-card">
+                  <strong>Auto ticket classification</strong>
+                  <div className="chip-row">
+                    {(novaridePhase11Status.compliance_workspace?.ticket_classification?.classifications || []).map((ticket) => (
+                      <span key={ticket.ticket_id} className="surface-chip">
+                        {ticket.ticket_id}: {ticket.category} ({ticket.confidence})
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="record-card">
+                  <strong>Smart refunds</strong>
+                  <div className="chip-row">
+                    {(novaridePhase11Status.compliance_workspace?.smart_refunds?.recommendations || []).map((refund) => (
+                      <span key={refund.refund_id} className="surface-chip">
+                        {refund.refund_id}: AUD {refund.suggested_refund_amount}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="record-card">
+                  <strong>Inspection and compliance queues</strong>
+                  <div className="stack compact-stack">
+                    <div className="reason-chip">
+                      Inspection queue: {novaridePhase11Status.compliance_workspace?.inspections?.inspection_total || 0}
+                    </div>
+                    <div className="reason-chip">
+                      Verified documents: {novaridePhase11Status.compliance_workspace?.documents?.verified_count || 0}
+                    </div>
+                    <div className="reason-chip">
+                      Inspection reports: {novaridePhase11Status.compliance_workspace?.inspection_reports?.report_total || 0}
+                    </div>
+                    <div className="reason-chip">
+                      Regulatory review: {novaridePhase11Status.compliance_workspace?.regulatory_readiness?.readiness_band || "watch"}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Phase 11 compliance and inspection status will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Phase 12 Multi-City & Global Scaling">
+            {novaridePhase12Status ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Global scaling</strong>
+                    <span>{novaridePhase12Status.readiness?.multi_city_ready ? "global_ready" : novaridePhase12Status.readiness?.phase11_ready ? "global_review_ready" : "global_held"}</span>
+                  </div>
+                  <p>
+                    Auto Decision Engine, Fraud Prediction Models, and Driver Incentives Optimization remain
+                    bounded while the platform scales across cities, currencies, and locales.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Multi-City Management: {novaridePhase12Status.global_scale_workspace?.multi_city_management?.mode || "global_held"}
+                    </span>
+                    <span className="surface-chip">
+                      Geo-Fencing: {novaridePhase12Status.global_scale_workspace?.geo_fencing?.geo_fence_ready ? "ready" : "standby"}
+                    </span>
+                    <span className="surface-chip">
+                      Currency Support: {novaridePhase12Status.global_scale_workspace?.currency_support?.supported_currencies?.join(", ") || "AUD"}
+                    </span>
+                    <span className="surface-chip">
+                      Localization: {novaridePhase12Status.global_scale_workspace?.localization?.supported_languages?.join(", ") || "en"}
+                    </span>
+                  </div>
+                </article>
+
+                <div className="metric-grid">
+                  <KeyValue
+                    label="Region-Based Pricing"
+                    value={novaridePhase12Status.global_scale_workspace?.region_pricing?.region_pricing_ready ? "Ready" : "Pending"}
+                    tone={novaridePhase12Status.global_scale_workspace?.region_pricing?.region_pricing_ready ? "success" : "warning"}
+                  />
+                  <KeyValue
+                    label="Distributed Infrastructure"
+                    value={novaridePhase12Status.global_scale_workspace?.distributed_infrastructure?.deployment_mode || "single_region"}
+                  />
+                  <KeyValue
+                    label="Auto Decision Engine"
+                    value={novaridePhase12Status.global_scale_workspace?.auto_decision_engine?.decision_lane || "hold"}
+                  />
+                  <KeyValue
+                    label="Fraud Prediction"
+                    value={novaridePhase12Status.global_scale_workspace?.fraud_prediction?.risk_band || "low"}
+                  />
+                  <KeyValue
+                    label="Driver Incentives"
+                    value={novaridePhase12Status.global_scale_workspace?.driver_incentives?.incentive_focus || "balance"}
+                  />
+                  <KeyValue
+                    label="Global Scale Score"
+                    value={novaridePhase12Status.global_scale_workspace?.global_scale_score || 0}
+                  />
+                </div>
+
+                <article className="record-card">
+                  <strong>City topology</strong>
+                  <div className="chip-row">
+                    {(novaridePhase12Status.global_scale_workspace?.multi_city_management?.city_topology || []).map((city) => (
+                      <span key={city.city} className="surface-chip">
+                        {city.city}: {city.currency} · {city.language} · {city.mode}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="record-card">
+                  <strong>Global decisions</strong>
+                  <div className="stack compact-stack">
+                    <div className="reason-chip reason-chip-success">
+                      {novaridePhase12Status.global_scale_workspace?.auto_decision_engine?.decision_summary ||
+                        "The global decision engine remains review-bound."}
+                    </div>
+                    <div className="reason-chip">
+                      {novaridePhase12Status.global_scale_workspace?.fraud_prediction?.predictive_signals?.join(" • ") ||
+                        "Fraud prediction stays bounded until more cities are active."}
+                    </div>
+                    <div className="reason-chip">
+                      {novaridePhase12Status.global_scale_workspace?.global_learning?.recommendation ||
+                        "Global learning remains projection-backed."}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Phase 12 multi-city and global scaling status will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Phase 13 Global Execution & AWS">
+            {novaridePhase13Status ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Global Deployment Plan</strong>
+                    <span>
+                      {novaridePhase13Status.readiness?.global_deployment_plan_ready
+                        ? "deployment_ready"
+                        : "plan_review"}
+                    </span>
+                  </div>
+                  <p>
+                    The Real Execution Layer turns projections into controlled actions while the AWS
+                    production infra remains plan-bound, operator-gated, and replay-backed.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Controlled AI Decision Engine: {novaridePhase13Status.global_execution_workspace?.controlled_ai_decision_engine?.decision_lane || "hold"}
+                    </span>
+                    <span className="surface-chip">
+                      AWS Production Infra: {novaridePhase13Status.global_execution_workspace?.aws_production_infra?.deployment_mode || "single_region"}
+                    </span>
+                    <span className="surface-chip">
+                      Real Execution Layer: {novaridePhase13Status.global_execution_workspace?.real_execution_layer?.execution_mode || "review_only"}
+                    </span>
+                    <span className="surface-chip">
+                      AI Optimization: {novaridePhase13Status.global_execution_workspace?.ai_optimization?.optimization_mode || "bounded_balance"}
+                    </span>
+                  </div>
+                </article>
+
+                <div className="metric-grid">
+                  <KeyValue
+                    label="Auto Pricing Adjustments"
+                    value={novaridePhase13Status.global_execution_workspace?.ai_optimization?.pricing_adjustment_pct || "0.0%"}
+                  />
+                  <KeyValue
+                    label="Live Incentives Tuning"
+                    value={novaridePhase13Status.global_execution_workspace?.ai_optimization?.incentive_adjustment_pct || "0.0"}
+                  />
+                  <KeyValue
+                    label="NovaConnect Expansion"
+                    value={novaridePhase13Status.global_execution_workspace?.novaconnect_expansion?.deployment_state || "planned"}
+                  />
+                  <KeyValue
+                    label="NovaPay Expansion"
+                    value={novaridePhase13Status.global_execution_workspace?.novapay_expansion?.expansion_stage || "controlled_review"}
+                  />
+                  <KeyValue
+                    label="Execution Score"
+                    value={novaridePhase13Status.global_execution_workspace?.global_execution_score || 0}
+                  />
+                  <KeyValue
+                    label="Global Deployment"
+                    value={novaridePhase13Status.readiness?.global_deployment_plan_ready ? "Ready" : "Held"}
+                  />
+                </div>
+
+                <article className="record-card">
+                  <strong>Controlled actions</strong>
+                  <div className="chip-row">
+                    {(novaridePhase13Status.global_execution_workspace?.real_execution_layer?.controlled_actions || []).map((action) => (
+                      <span key={action} className="surface-chip">
+                        {action}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="record-card">
+                  <strong>AWS production infra</strong>
+                  <div className="chip-row">
+                    {(novaridePhase13Status.global_execution_workspace?.aws_production_infra?.networking || []).map((component) => (
+                      <span key={component} className="surface-chip">
+                        {component}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="record-card">
+                  <strong>Expansion surfaces</strong>
+                  <div className="stack compact-stack">
+                    <div className="reason-chip reason-chip-success">
+                      {novaridePhase13Status.global_execution_workspace?.novaconnect_expansion?.surface?.status || "PLANNED"}
+                    </div>
+                    <div className="reason-chip">
+                      {novaridePhase13Status.global_execution_workspace?.novaconnect_expansion?.authority_boundary || "replay_only"}
+                    </div>
+                    <div className="reason-chip">
+                      {novaridePhase13Status.global_execution_workspace?.novapay_expansion?.expansion_summary ||
+                        "NovaPay expansion remains controlled."}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Phase 13 global execution and AWS status will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Partner Portal">
+            {novaridePartnerPortalContract ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novaridePartnerPortalContract.role || "PARTNER"}</strong>
+                    <span>{novaridePartnerPortalContract.status || "controlled_pilot_contract_ready"}</span>
+                  </div>
+                  <p>
+                    Partners can book guest rides, manage bulk transport, review usage,
+                    and configure booking settings while dispatch, pricing, and billing
+                    stay governed by backend services.
+                  </p>
+                  <div className="chip-row">
+                    {(novaridePartnerPortalContract.navigation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Partner modules</strong>
+                  <div className="chip-row">
+                    {(novaridePartnerPortalContract.modules || NOVARIDE_PARTNER_MODULE_FALLBACKS).map((module) => (
+                      <span key={module.key} className="surface-chip">
+                        {module.name}: {module.status}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Partner authority</strong>
+                    <span>{novaridePartnerPortalContract.authority_model?.payments || "NovaPay_backend_only"}</span>
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novaridePartnerPortalContract.rbac?.allowed ||
+                      NOVARIDE_PARTNER_ALLOWED_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Allowed: {action}
+                      </div>
+                    ))}
+                    {(novaridePartnerPortalContract.rbac?.forbidden ||
+                      NOVARIDE_PARTNER_FORBIDDEN_ACTION_FALLBACKS).map((action) => (
+                      <div key={action} className="reason-chip">
+                        Blocked: {action}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide partner portal contract will appear after the API is reachable." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide App Ecosystem">
+            {novarideEcosystem ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideEcosystem.platform || "NovaRide"}</strong>
+                    <span>{novarideEcosystem.status || "controlled_pilot_ready"}</span>
+                  </div>
+                  <p>
+                    {novarideEcosystem.app_count || 0} dedicated apps share centralized dispatch,
+                    NovaPay, trust, analytics, notification, and replay services.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Apps {novarideEcosystem.app_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Payments {novarideEcosystem.authority_boundary?.payments || "NovaPay_backend_only"}
+                    </span>
+                    <span className="surface-chip">
+                      Mobile {novarideEcosystem.authority_boundary?.mobile_apps || "request_and_observe_only"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Application surfaces</strong>
+                  <div className="chip-row">
+                    {(novarideEcosystem.apps || NOVARIDE_APP_FALLBACKS).map((appSurface) => (
+                      <span key={appSurface.key || appSurface} className="surface-chip">
+                        {appSurface.name || appSurface}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Ride lifecycle</strong>
+                  <div className="stack compact-stack">
+                    {(novarideEcosystem.lifecycle || []).slice(0, 6).map((step) => (
+                      <div key={step} className="reason-chip">
+                        {step}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide ecosystem contract will appear after the API is reachable." />
             )}
           </OperatorPanel>
 
@@ -6331,6 +7793,226 @@ function PredictionPanel({ prediction, latest, trend }) {
   );
 }
 
+function DemandForecastPanel({ demandForecast }) {
+  if (!demandForecast) {
+    return <EmptyState label="Predictive demand ML will appear after the first live demand forecast snapshot." />;
+  }
+
+  const liveState = demandForecast.realtime_analytics?.live_state || {};
+  const cityForecasts = demandForecast.city_forecasts || [];
+  const forecastWindows = demandForecast.forecast_windows || [];
+  const recommendation = demandForecast.recommendation || {};
+  const model = demandForecast.model || {};
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>{model.name || "bounded_demand_forecast_ml"}</strong>
+          <span>{model.mode || "deterministic_heuristic"}</span>
+        </div>
+        <div className="prediction-metrics">
+          <KeyValue label="Primary city" value={recommendation.primary_city || liveState.zone || "CBD"} />
+          <KeyValue label="Demand level" value={liveState.demand_level || "low"} />
+          <KeyValue label="Demand index" value={liveState.demand_index ?? 0} tone={liveState.demand_level === "high" ? "warning" : "success"} />
+          <KeyValue label="Supply gap" value={liveState.supply_gap ?? 0} tone={liveState.supply_gap > 0 ? "warning" : "success"} />
+        </div>
+        <div className="chip-row">
+          <span className="surface-chip">{recommendation.urgency || "monitor"}</span>
+          <span className="surface-chip">{recommendation.action || "Maintain watch"}</span>
+          <span className="surface-chip">Trust {liveState.trust_score || 0}</span>
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Forecast windows</strong>
+          <span>next operating windows</span>
+        </div>
+        <div className="stack">
+          {forecastWindows.map((window) => (
+            <div key={window.horizon} className="row-between">
+              <span>{window.horizon}</span>
+              <span>
+                {window.expected_rides} rides / gap {window.expected_supply_gap}
+              </span>
+            </div>
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Top city pressure</strong>
+          <span>{cityForecasts[0]?.city || liveState.zone || "CBD"}</span>
+        </div>
+        <div className="stack">
+          {cityForecasts.slice(0, 4).map((city) => (
+            <div key={city.city} className="row-between">
+              <span>{city.city}</span>
+              <span>
+                {city.demand_level} · gap {city.supply_gap}
+              </span>
+            </div>
+          ))}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function RealtimeAnalyticsPanel({ demandForecast, liveAnalyticsSnapshot }) {
+  const liveState = demandForecast?.realtime_analytics?.live_state || {};
+  const alerts = demandForecast?.realtime_analytics?.alerts || [];
+  const snapshot = liveAnalyticsSnapshot || {};
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Live state</strong>
+          <span>{liveState.zone || "CBD"}</span>
+        </div>
+        <div className="prediction-metrics">
+          <KeyValue label="Active rides" value={liveState.active_rides ?? snapshot.activeRides ?? 0} />
+          <KeyValue label="Active drivers" value={liveState.active_drivers ?? snapshot.onlineDrivers ?? 0} />
+          <KeyValue label="Completed rides" value={liveState.completed_rides ?? snapshot.completedRides ?? 0} />
+          <KeyValue label="Demand index" value={liveState.demand_index ?? 0} tone={liveState.demand_level === "high" ? "warning" : "success"} />
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Realtime alerts</strong>
+          <span>bounded</span>
+        </div>
+        <div className="stack">
+          {(alerts.length > 0 ? alerts : ["No active alerts in the demand feed."]).map((item) => (
+            <div key={item} className="row-between">
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function StrategyEnginePanel({ strategyEngine }) {
+  if (!strategyEngine) {
+    return <EmptyState label="Phase 5 autonomous strategy will appear after the first bounded strategy snapshot." />;
+  }
+
+  const strategy = strategyEngine.strategy || {};
+  const guardrails = strategy.guardrails || {};
+  const cityPriorities = strategy.city_priorities || [];
+  const recommendation = strategy.recommendation || {};
+  const budgetAllocation = strategyEngine.budget_allocation?.budget_allocation || {};
+  const profitOptimization = strategyEngine.profit_optimization?.profit_optimization || {};
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>{strategyEngine.model?.name || "bounded_autonomous_strategy_engine"}</strong>
+          <span>{strategy.mode || "supervised"}</span>
+        </div>
+        <div className="prediction-metrics">
+          <KeyValue label="Primary city" value={strategy.primary_city || recommendation.primary_city || "CBD"} />
+          <KeyValue label="Strategy lane" value={strategy.strategy_lane || "monitor"} />
+          <KeyValue label="Priority score" value={strategy.priority_score ?? 0} tone="warning" />
+          <KeyValue label="Mode" value={strategy.mode || "supervised"} />
+        </div>
+        <div className="chip-row">
+          <span className="surface-chip">{recommendation.action || "Maintain watch"}</span>
+          <span className="surface-chip">{recommendation.next_step || "Review operator strategy plan"}</span>
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>City priorities</strong>
+          <span>{strategy.city_count || 0} cities</span>
+        </div>
+        <div className="stack">
+          {cityPriorities.slice(0, 4).map((city) => (
+            <div key={city.city} className="row-between">
+              <span>{city.city}</span>
+              <span>
+                {city.strategy_lane} · {city.demand_level} · {city.priority_score}
+              </span>
+            </div>
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Budget and profit context</strong>
+          <span>{budgetAllocation.mode || "supervised"}</span>
+        </div>
+        <div className="prediction-metrics">
+          <KeyValue label="Budget pool" value={budgetAllocation.budget_pool || "0.00"} />
+          <KeyValue label="Projected profit" value={profitOptimization.projected_profit || "0.00"} />
+          <KeyValue label="Profit uplift" value={profitOptimization.profit_uplift || "0.00"} />
+          <KeyValue label="Target margin" value={profitOptimization.target_margin ?? 0.35} />
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function StrategyGuardrailsPanel({ strategyEngine }) {
+  if (!strategyEngine) {
+    return <EmptyState label="Strategy guardrails will appear after the first operator strategy snapshot." />;
+  }
+
+  const guardrails = strategyEngine.strategy?.guardrails || {};
+  const readiness = strategyEngine.readiness || {};
+  const decisionHistory = strategyEngine.decision_history || {};
+
+  return (
+    <div className="stack">
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Guardrails</strong>
+          <span>{strategyEngine.strategy?.mode || "advisory"}</span>
+        </div>
+        <div className="stack">
+          {Object.entries(guardrails).map(([label, value]) => (
+            <div key={label} className="row-between">
+              <span>{label.replace(/_/g, " ")}</span>
+              <span>{String(value)}</span>
+            </div>
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Readiness</strong>
+          <span>bounded</span>
+        </div>
+        <div className="stack">
+          {Object.entries(readiness).map(([label, value]) => (
+            <div key={label} className="row-between">
+              <span>{label.replace(/_/g, " ")}</span>
+              <span>{String(value)}</span>
+            </div>
+          ))}
+        </div>
+      </article>
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Decision history</strong>
+          <span>{decisionHistory.updated_at || "live"}</span>
+        </div>
+        <div className="stack">
+          {(decisionHistory.decision_chain || []).map((item) => (
+            <div key={item} className="row-between">
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </article>
+    </div>
+  );
+}
+
 function AnalyticsHistoryFeed({ history, sourceBreakdown }) {
   if (!history || history.length === 0) {
     return <EmptyState label="No persistent analytics history yet. The dashboard will seed it automatically." />;
@@ -6452,6 +8134,574 @@ function DecisionSummaryPanel({ decision, latest }) {
             <div className="reason-chip reason-chip-success">
               Awaiting the first persisted decision explanation.
             </div>
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function OperationAIDecisionPanel({
+  decision,
+  action,
+  liveAnalyticsSnapshot,
+  liveNotifications,
+  novarideOperatorDashboardContract,
+  novarideEcosystem,
+  operatorAutonomy,
+  operatorCityAutomation,
+  operatorMultiCityOrchestration,
+  operatorDigitalTwin,
+  operatorMetaLearningRedesign,
+  operatorBusinessPricing,
+  activeRidesCount,
+  operationState: providedOperationState = null,
+}) {
+  const operationState =
+    providedOperationState ||
+    deriveOperationAIDecisionState({
+      decision,
+      action,
+      liveAnalyticsSnapshot,
+      novarideOperatorDashboardContract,
+      novarideEcosystem,
+      liveNotifications,
+      activeRidesCount,
+    });
+  const autonomy = operatorAutonomy?.autonomy || operatorAutonomy || action?.autonomy || {};
+  const driverAllocation =
+    operatorAutonomy?.driver_allocation ||
+    autonomy.driver_allocation ||
+    action?.driver_allocation ||
+    action?.autonomy?.driver_allocation ||
+    {};
+  const cityAutomation =
+    operatorCityAutomation?.city_automation ||
+    operatorAutonomy?.city_automation ||
+    autonomy.city_automation ||
+    action?.city_automation ||
+    {};
+  const multiCityOrchestration =
+    operatorMultiCityOrchestration?.multi_city_orchestration ||
+    operatorAutonomy?.multi_city_orchestration ||
+    action?.multi_city_orchestration ||
+    {};
+  const digitalTwin =
+    operatorDigitalTwin?.digital_twin ||
+    operatorDigitalTwin ||
+    operatorMultiCityOrchestration?.digital_twin ||
+    operatorAutonomy?.digital_twin ||
+    action?.digital_twin ||
+    {};
+  const selfImprovingLoop =
+    operatorDigitalTwin?.self_improving_loop ||
+    operatorDigitalTwin?.digital_twin?.self_improving_loop ||
+    operatorMultiCityOrchestration?.self_improving_loop ||
+    operatorAutonomy?.self_improving_loop ||
+    action?.self_improving_loop ||
+    digitalTwin.self_improving_loop ||
+    {};
+  const metaLearningRedesign =
+    operatorMetaLearningRedesign?.candidate_redesign ||
+    operatorMetaLearningRedesign?.meta_learning_redesign ||
+    operatorMetaLearningRedesign ||
+    {};
+  const metaLearningMode =
+    operatorMetaLearningRedesign?.mode ||
+    (metaLearningRedesign?.review?.admitted ? "adaptive_redesign" : "design_hold");
+  const safeThresholds = autonomy.thresholds || action?.autonomy?.thresholds || {};
+  const thresholdChecks = autonomy.checks || action?.autonomy?.checks || {};
+
+  return (
+    <div className="stack">
+      <article className={`record-card operation-ai-card decision-${operationState.lane}`}>
+        <div className="record-card-header">
+          <div>
+            <strong>{operationState.dispatchPosture}</strong>
+            <span className="decision-action-label">{operationState.controlSignal}</span>
+          </div>
+          <span>{autonomy.release_status || operationState.priority}</span>
+        </div>
+        <p>{operationState.summary}</p>
+        <div className="decision-stat-row">
+          <KeyValue label="Confidence" value={`${Math.round(operationState.confidence * 100)}%`} tone={operationState.laneTone} />
+          <KeyValue label="Trust health" value={operationState.trustHealth || 0} tone={operationState.laneTone} />
+          <KeyValue label="Replay health" value={operationState.replayHealth || 0} tone={operationState.laneTone} />
+          <KeyValue label="Evidence" value={`${operationState.evidenceCoverage || 0}%`} tone={operationState.laneTone} />
+        </div>
+        <div className="chip-row">
+          <span className="surface-chip">Dispatch pressure {operationState.demandPressure}</span>
+          <span className="surface-chip">Demand {operationState.demandLabel}</span>
+          <span className="surface-chip">Driver supply {operationState.driverSupplyLabel}</span>
+          <span className="surface-chip">Active rides {operationState.activeRidesCount || 0}</span>
+          <span className="surface-chip">
+            Autonomy {autonomy.mode || "advisory"}
+          </span>
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Operator move</strong>
+          <span>Read only</span>
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">{operationState.operatorMove}</div>
+          {(operationState.recommendedActions || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {(!operationState.recommendedActions || operationState.recommendedActions.length === 0) && (
+            <div className="reason-chip reason-chip-success">
+              Maintain the current replay-backed operating band.
+            </div>
+          )}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Safe thresholds</strong>
+          <span>{autonomy.safe_to_autorun ? "clear" : "held"}</span>
+        </div>
+        <div className="chip-row">
+          {Object.entries(safeThresholds).map(([key, value]) => (
+            <span key={key} className="surface-chip">
+              {key} {value}
+            </span>
+          ))}
+        </div>
+        <div className="stack compact-stack">
+          {Object.entries(thresholdChecks).map(([key, passed]) => (
+            <div key={key} className={`reason-chip ${passed ? "reason-chip-success" : ""}`}>
+              {passed ? "PASS" : "HOLD"}: {key}
+            </div>
+          ))}
+          {autonomy.summary && <div className="reason-chip reason-chip-success">{autonomy.summary}</div>}
+          {autonomy.recommended_next_step && <div className="reason-chip">{autonomy.recommended_next_step}</div>}
+          {(operationState.watchItems || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {(!operationState.watchItems || operationState.watchItems.length === 0) && (
+            <div className="reason-chip reason-chip-success">No active watch items</div>
+          )}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Mobility signals</strong>
+          <span>{operationState.lane}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue label="Demand" value={operationState.demandLabel} tone={operationState.laneTone} />
+          <KeyValue label="Supply" value={operationState.driverSupplyLabel} tone={operationState.laneTone} />
+          <KeyValue label="Pressure" value={operationState.demandPressure} tone={operationState.laneTone} />
+          <KeyValue label="Safety" value={Math.round(operationState.confidence * 100)} tone={operationState.laneTone} />
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Driver auto-allocation</strong>
+          <span>{driverAllocation.readiness || "held"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Selected driver"
+            value={driverAllocation.selected_driver_id || "none"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Allocation mode"
+            value={driverAllocation.mode || "supervised"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Available drivers"
+            value={driverAllocation.available_drivers || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Trust score"
+            value={driverAllocation.selected_driver_trust_score || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className={`reason-chip ${driverAllocation.enabled ? "reason-chip-success" : ""}`}>
+            {driverAllocation.reason || "Autonomous allocation remains read-only until safe thresholds clear."}
+          </div>
+          {(driverAllocation.candidate_drivers || []).map((driver) => (
+            <div key={driver.driver_id} className="reason-chip">
+              {driver.driver_id} • trust {driver.trust_score}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Predictive positioning</strong>
+          <span>{driverAllocation.predictive_positioning?.mode || autonomy.mode || "held"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Target zone"
+            value={driverAllocation.predictive_positioning?.target_zone || "CBD"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Confidence"
+            value={`${Math.round((driverAllocation.predictive_positioning?.confidence || 0) * 100)}%`}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {driverAllocation.predictive_positioning?.instruction || "Predictive positioning remains advisory."}
+          </div>
+          <div className="reason-chip">
+            {driverAllocation.predictive_positioning?.reason || "No predictive positioning recommendation yet."}
+          </div>
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>City AI Automation</strong>
+          <span>{cityAutomation.mode || "city_held"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Zero-operator"
+            value={cityAutomation.zero_operator_mode ? "enabled" : "held"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Coverage"
+            value={`${Math.round(cityAutomation.coverage_score || 0)}%`}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Active drivers"
+            value={cityAutomation.active_drivers || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Active rides"
+            value={cityAutomation.active_rides || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className={`reason-chip ${cityAutomation.zero_operator_mode ? "reason-chip-success" : ""}`}>
+            {cityAutomation.instruction || "City-wide automation remains read-only until safe thresholds clear."}
+          </div>
+          <div className="reason-chip">
+            {cityAutomation.reason || "No city automation recommendation yet."}
+          </div>
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Multi-City Orchestration</strong>
+          <span>{multiCityOrchestration.mode || "global_held"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Cities"
+            value={multiCityOrchestration.city_count || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Active cities"
+            value={multiCityOrchestration.active_city_count || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Coverage"
+            value={`${Math.round(multiCityOrchestration.global_coverage_score || 0)}%`}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Trust"
+            value={multiCityOrchestration.global_trust_score || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className={`reason-chip ${multiCityOrchestration.mode === "global_zero_operator" ? "reason-chip-success" : ""}`}>
+            {multiCityOrchestration.instruction || "Multi-city orchestration remains read-only until safe thresholds clear."}
+          </div>
+          <div className="reason-chip">
+            {multiCityOrchestration.reason || "No multi-city orchestration recommendation yet."}
+          </div>
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Real-time Digital Twin</strong>
+          <span>{digitalTwin.mode || "shadow_sync"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Live sync"
+            value={`${Math.round(digitalTwin.live_sync_score || 0)}%`}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Twin health"
+            value={`${Math.round(digitalTwin.twin_health_score || 0)}%`}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Next state"
+            value={digitalTwin.prediction?.next_state || "supervised_shadow"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Loop"
+            value={selfImprovingLoop.mode || "watching"}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className={`reason-chip ${digitalTwin.mode === "global_closed_loop" ? "reason-chip-success" : ""}`}>
+            {digitalTwin.recommendation || "The digital twin is mirroring live signals in projection-only mode."}
+          </div>
+          <div className="reason-chip">
+            {digitalTwin.reason || "Digital twin reasoning will appear after the first projection cycle."}
+          </div>
+          <div className="reason-chip reason-chip-success">
+            {digitalTwin.live_state
+              ? `Live state: ${digitalTwin.live_state.zone} • drivers ${digitalTwin.live_state.active_drivers || 0} • rides ${digitalTwin.live_state.active_rides || 0}`
+              : "Live state unavailable"}
+          </div>
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Self-improving AI loop</strong>
+          <span>{selfImprovingLoop.mode || "watching"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Outcome score"
+            value={selfImprovingLoop.outcome_score || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Band"
+            value={selfImprovingLoop.band || "hold"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Trend"
+            value={selfImprovingLoop.trend?.direction || "stable"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Cycle"
+            value={selfImprovingLoop.cycle?.length || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {selfImprovingLoop.measurement_summary || "Learning remains projection-only."}
+          </div>
+          {(selfImprovingLoop.recommendations || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {(selfImprovingLoop.recalibration_notes || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Meta-learning redesign</strong>
+          <span>{metaLearningMode}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Review"
+            value={metaLearningRedesign?.review?.admitted ? "admitted" : "held"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Authority"
+            value={metaLearningRedesign?.authority_boundary || "proposal_only"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Modules"
+            value={metaLearningRedesign?.architecture?.modules?.modules?.length || 0}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Tasks"
+            value={metaLearningRedesign?.implementation_plan?.tasks?.length || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {metaLearningRedesign?.architecture_change_summary?.join(" ") ||
+              "Meta-learning keeps redesign proposal-only and human-reviewed."}
+          </div>
+          {(operatorMetaLearningRedesign?.redesign_triggers || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {(operatorMetaLearningRedesign?.self_redesign_rules || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item.replaceAll("_", " ")}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Business layer pricing + incentives</strong>
+          <span>{operatorBusinessPricing?.pricing?.pricing_posture || "balanced"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Multiplier"
+            value={operatorBusinessPricing?.pricing?.price_multiplier || 1}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Adjusted price"
+            value={`${operatorBusinessPricing?.pricing?.adjusted_price || "0.00"} ${operatorBusinessPricing?.pricing?.currency || ""}`.trim()}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Take rate"
+            value={`${Math.round((operatorBusinessPricing?.incentives?.commercial_take_rate || 0) * 100)}%`}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Incentive focus"
+            value={operatorBusinessPricing?.incentives?.focus || "neutral"}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {operatorBusinessPricing?.pricing?.explanation ||
+              "Pricing remains deterministic and incentives remain bounded."}
+          </div>
+          <div className="reason-chip">
+            {operatorBusinessPricing?.incentives?.driver_message ||
+              "Driver incentives remain read-only until the pricing engine projects them."}
+          </div>
+          <div className="reason-chip">
+            {operatorBusinessPricing?.incentives?.rider_message ||
+              "Rider transparency will appear once the pricing projection is available."}
+          </div>
+          {(operatorBusinessPricing?.incentives?.plan || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item.replaceAll("_", " ")}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Autonomous budget allocation + profit optimization</strong>
+          <span>{operatorCityProfitOptimization?.budget_allocation?.mode || "supervised"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Budget pool"
+            value={`${operatorCityProfitOptimization?.budget_allocation?.budget_pool || "0.00"} ${operatorBusinessPricing?.pricing?.currency || ""}`.trim()}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Projected profit"
+            value={`${operatorCityProfitOptimization?.profit_optimization?.projected_profit || "0.00"} ${operatorBusinessPricing?.pricing?.currency || ""}`.trim()}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Profit uplift"
+            value={`${operatorCityProfitOptimization?.profit_optimization?.profit_uplift || "0.00"} ${operatorBusinessPricing?.pricing?.currency || ""}`.trim()}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Mode"
+            value={operatorCityProfitOptimization?.profit_optimization?.mode || "held"}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {operatorCityProfitOptimization?.profit_optimization?.focus ||
+              "Budget allocation remains read-only until the profit model is projected."}
+          </div>
+          {(operatorCityProfitOptimization?.budget_allocation?.city_allocations || []).map((item) => (
+            <div key={item.city} className="reason-chip">
+              {item.city}: {item.strategy || "maintain"} · budget {item.recommended_budget || "0.00"} · margin{" "}
+              {Math.round((item.projected_margin || 0) * 100)}%
+            </div>
+          ))}
+          {(operatorCityProfitOptimization?.profit_optimization?.optimization_actions || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item.replaceAll("_", " ")}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article className="record-card">
+        <div className="record-card-header">
+          <strong>Global Learning</strong>
+          <span>{multiCityOrchestration.global_learning?.band || "hold"}</span>
+        </div>
+        <div className="decision-stat-row">
+          <KeyValue
+            label="Outcome band"
+            value={multiCityOrchestration.global_learning?.outcome_band || "guarded"}
+            tone={operationState.laneTone}
+          />
+          <KeyValue
+            label="Outcome score"
+            value={multiCityOrchestration.global_learning?.outcome_score || 0}
+            tone={operationState.laneTone}
+          />
+        </div>
+        <div className="stack compact-stack">
+          <div className="reason-chip reason-chip-success">
+            {multiCityOrchestration.global_learning?.measurement_summary || "Global learning remains projection-only."}
+          </div>
+          {(multiCityOrchestration.global_learning?.recommendations || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {(multiCityOrchestration.global_learning?.watch_items || []).map((item) => (
+            <div key={item} className="reason-chip">
+              {item}
+            </div>
+          ))}
+          {selfImprovingLoop.measurement_summary && (
+            <div className="reason-chip reason-chip-success">{selfImprovingLoop.measurement_summary}</div>
           )}
         </div>
       </article>
