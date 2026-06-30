@@ -11,7 +11,6 @@ from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from typing import Any, Mapping
 import json
-import math
 import time
 
 from afritech.core_platform.geo_routing import adjust_sla_capacity
@@ -115,6 +114,7 @@ class AdaptiveSLAState:
     window_error_count: int = 0
     last_observed_at: float | None = None
     last_latency_ms: int | None = None
+    smoothed_latency_ms: float | None = None
     last_actual_requests_per_min: float | None = None
     last_predicted_requests_per_min: float | None = None
     adjusted_limit: int | None = None
@@ -138,6 +138,7 @@ class AdaptiveSLAState:
             },
             "predictor": self.predictor.canonical_dict(),
             "last_latency_ms": self.last_latency_ms,
+            "smoothed_latency_ms": self.smoothed_latency_ms,
             "last_actual_requests_per_min": self.last_actual_requests_per_min,
             "last_predicted_requests_per_min": self.last_predicted_requests_per_min,
             "adjusted_limit": self.adjusted_limit,
@@ -181,6 +182,8 @@ def adaptive_sla_limit(
     predicted = max(0.0, float(predicted_requests_per_min))
     trust = str(trust_level or "").strip().lower() or "sandbox"
 
+    if trust == "regulator":
+        return base, "regulatory_override"
     if trust == "sandbox":
         limit = base
         reason = "static_sandbox_sla"
@@ -251,6 +254,7 @@ class AdaptiveSLAController:
             window_error_count=_safe_int(window.get("error_count")),
             last_observed_at=window.get("last_observed_at"),
             last_latency_ms=None if payload.get("last_latency_ms") is None else _safe_int(payload.get("last_latency_ms")),
+            smoothed_latency_ms=None if payload.get("smoothed_latency_ms") is None else _safe_float(payload.get("smoothed_latency_ms")),
             last_actual_requests_per_min=payload.get("last_actual_requests_per_min"),
             last_predicted_requests_per_min=payload.get("last_predicted_requests_per_min"),
             adjusted_limit=None if payload.get("adjusted_limit") is None else _safe_int(payload.get("adjusted_limit")),
@@ -264,6 +268,15 @@ class AdaptiveSLAController:
     def _save_state(self, state: AdaptiveSLAState) -> AdaptiveSLAState:
         self.client.set(self._state_key(state.org_id), json.dumps(state.canonical_dict(), sort_keys=True, separators=(",", ":")), ex=24 * 60 * 60)
         return state
+
+    def _smoothed_latency_ms(self, state: AdaptiveSLAState, latency_ms: int | None) -> int | None:
+        if latency_ms is None:
+            return None
+        observed = max(0.0, float(latency_ms))
+        if state.smoothed_latency_ms is None:
+            return int(round(observed))
+        smoothed = 0.7 * float(state.smoothed_latency_ms) + 0.3 * observed
+        return int(round(smoothed))
 
     def snapshot(self, org_id: str) -> dict[str, Any]:
         state = self._load_state(org_id)
@@ -286,6 +299,7 @@ class AdaptiveSLAController:
                 },
                 "anomaly": False,
                 "action": "hold",
+                "smoothed_latency_ms": None,
             }
         return _present_state(state)
 
@@ -308,6 +322,7 @@ class AdaptiveSLAController:
             predictor=TrafficPredictor(),
             adjusted_limit=max(1, int(base_limit)),
         )
+        trust = str(trust_level or state.trust_level).strip().lower() or "sandbox"
         observed_hint = load_hint if load_hint is not None else state.last_actual_requests_per_min
         predicted = state.predictor.predict()
         if state.predictor.samples == 0:
@@ -316,26 +331,36 @@ class AdaptiveSLAController:
             predicted = max(predicted, float(observed_hint))
 
         anomaly = bool(state.anomaly)
-        adjusted_limit, reason = adaptive_sla_limit(
-            base_limit,
-            predicted,
-            trust_level,
-            latency_ms=latency_ms,
-            anomaly=anomaly,
-        )
-        if str(trust_level or "").strip().lower() == "sandbox":
+        smoothed_latency = self._smoothed_latency_ms(state, latency_ms)
+        if trust == "regulator" or state.predictor.samples < 3:
+            adjusted_limit = int(base_limit)
+            reason = "regulatory_override" if trust == "regulator" else "cold_start_stable_limit"
+        else:
+            adjusted_limit, reason = adaptive_sla_limit(
+                base_limit,
+                predicted,
+                trust_level,
+                latency_ms=smoothed_latency,
+                anomaly=anomaly,
+            )
+        if trust == "sandbox":
             mode = "static"
-        elif str(trust_level or "").strip().lower() in {"verified", "enterprise", "regulator"}:
+        elif trust in {"verified", "enterprise", "regulator"}:
             mode = "predictive"
         else:
             mode = "adaptive"
-        confidence = _clamp(0.45 + min(state.predictor.samples, 20) * 0.025 - (0.15 if anomaly else 0.0), 0.05, 0.99)
+        if observed_hint is None or state.predictor.samples < 3:
+            confidence = 0.05
+        else:
+            error_ratio = abs(float(predicted) - float(observed_hint)) / max(1.0, float(observed_hint))
+            confidence = _clamp(1.0 - error_ratio, 0.05, 0.99)
         recommendation = replace(
             state,
             trust_level=str(trust_level or state.trust_level),
             region=str(region or state.region).upper(),
             mode=mode,
             last_latency_ms=latency_ms,
+            smoothed_latency_ms=smoothed_latency,
             last_predicted_requests_per_min=round(float(predicted), 4),
             adjusted_limit=int(adjusted_limit),
             confidence=confidence,
@@ -385,25 +410,24 @@ class AdaptiveSLAController:
         state.predictor.adjust_learning_rate(error_ratio=error_ratio)
 
         anomaly = bool(errors) or actual_requests_per_min > predicted * 2.0
+        trust = str(trust_level or state.trust_level).strip().lower() or "sandbox"
+        smoothed_latency = self._smoothed_latency_ms(state, latency_ms)
         adjusted_limit, reason = adaptive_sla_limit(
             base_limit,
             predicted,
             trust_level,
-            latency_ms=latency_ms,
+            latency_ms=smoothed_latency,
             anomaly=anomaly,
         )
-        confidence = _clamp(
-            0.55 + min(state.predictor.samples, 20) * 0.02 - error_ratio * 0.3 - (0.15 if anomaly else 0.0),
-            0.05,
-            0.99,
-        )
-        mode = "static" if str(trust_level or "").strip().lower() == "sandbox" else "predictive"
+        confidence = _clamp(1.0 - error_ratio, 0.05, 0.99)
+        mode = "static" if trust == "sandbox" else "predictive"
         updated = replace(
             state,
             trust_level=str(trust_level or state.trust_level),
             region=str(region or state.region).upper(),
             mode=mode,
             last_latency_ms=latency_ms,
+            smoothed_latency_ms=smoothed_latency,
             last_actual_requests_per_min=round(float(actual_requests_per_min), 4),
             last_predicted_requests_per_min=round(float(predicted), 4),
             adjusted_limit=int(adjusted_limit),

@@ -72,4 +72,69 @@ def test_controller_persists_prediction_and_flags_anomaly() -> None:
     assert second["adjusted_limit"] >= 100
     assert anomaly["anomaly"] is True
     assert anomaly["action"] == "throttle"
-    assert anomaly["adjusted_limit"] <= 50
+    assert anomaly["adjusted_limit"] < 100
+
+
+def test_controller_keeps_cold_start_limits_stable() -> None:
+    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+
+    recommendation = controller.recommend(
+        "org-cold",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=180,
+    )
+
+    assert recommendation["adjusted_limit"] == 100
+    assert recommendation["policy"]["reason"] == "cold_start_stable_limit"
+    assert recommendation["prediction"]["confidence"] == 0.05
+
+
+def test_controller_regulator_override_ignores_prediction_and_latency() -> None:
+    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+
+    controller.observe(
+        "org-regulator",
+        trust_level="regulator",
+        base_limit=100,
+        region="AU",
+        latency_ms=200,
+        observed_at=1000.0,
+    )
+    recommendation = controller.recommend(
+        "org-regulator",
+        trust_level="regulator",
+        base_limit=100,
+        region="AU",
+        latency_ms=240,
+        load_hint=999.0,
+    )
+
+    assert recommendation["adjusted_limit"] == 100
+    assert recommendation["policy"]["reason"] == "regulatory_override"
+
+
+def test_controller_smooths_latency_and_reflects_error_ratio() -> None:
+    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+
+    first = controller.observe(
+        "org-latency",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=20,
+        observed_at=1000.0,
+    )
+    second = controller.observe(
+        "org-latency",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=200,
+        observed_at=1060.0,
+    )
+
+    assert first["smoothed_latency_ms"] == 20
+    assert second["smoothed_latency_ms"] < 200
+    assert 0.05 <= second["prediction"]["confidence"] <= 0.99

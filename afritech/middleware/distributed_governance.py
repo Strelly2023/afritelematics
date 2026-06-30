@@ -188,9 +188,9 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
             health_map=region_decision.get("health_map"),
             load_hint=region_decision.get("load_hint"),
         )
-        capacity = max(1, int(adaptive["adjusted_limit"]))
+        capacity = max(10, int(adaptive["adjusted_limit"]))
         if record.enforcement_state == "throttled":
-            capacity = max(1, int(capacity * self.throttled_bucket_fraction))
+            capacity = max(10, int(capacity * self.throttled_bucket_fraction))
         refill_rate = max(0.0, float(capacity) / 60.0)
         if not self.rate_limiter.allow_request(org_id, capacity=capacity, refill_rate=refill_rate):
             return JSONResponse(
@@ -233,14 +233,16 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
             errors=1 if response.status_code >= 500 else 0,
             observed_at=time(),
         )
+        effective_limit = max(10, int(observed.get("adjusted_limit") or capacity), capacity)
+        observed["adjusted_limit"] = effective_limit
         request.state.geo_routing = region_decision
-        request.state.sla_capacity = capacity
+        request.state.sla_capacity = effective_limit
         request.state.edge_latency_ms = latency_ms
         request.state.adaptive_sla = observed
         request.state.adaptive_dispatch_ms = int(round((perf_counter() - started) * 1000))
 
         response.headers["X-Adaptive-SLA-Mode"] = str(observed.get("mode") or "")
-        response.headers["X-Adaptive-SLA-Limit"] = str(observed.get("adjusted_limit") or capacity)
+        response.headers["X-Adaptive-SLA-Limit"] = str(effective_limit)
         response.headers["X-Adaptive-SLA-Anomaly"] = "true" if observed.get("anomaly") else "false"
         response.headers["X-Geo-Region"] = str(region_decision.get("region") or self.region)
 

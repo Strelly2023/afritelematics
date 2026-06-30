@@ -254,3 +254,13 @@ def test_distributed_governance_fails_over_to_secondary_region() -> None:
     assert response.status_code == 200
     assert clients["EU"].hashes
     assert clients["AU"].hashes == {}
+
+
+def test_distributed_governance_enforces_minimum_sla_floor() -> None:
+    client, _, _ = build_client(request_limit_per_min=1)
+    headers = {**auth_headers(role="OBSERVER"), "X-Org-ID": "partner-city-ops"}
+
+    response = client.get("/v1/trust/orgs/partner-city-ops", headers=headers)
+
+    assert response.status_code == 200
+    assert int(response.headers["X-Adaptive-SLA-Limit"]) >= 10
