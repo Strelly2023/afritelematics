@@ -8,6 +8,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 
 from afritech.api.auth.jwt_device_auth import require_roles
+from afritech.core_platform.adaptive_sla import AdaptiveSLAController
 from afritech.partner_governance import (
     PartnerGovernanceStore,
     build_partner_governance_record,
@@ -17,6 +18,7 @@ from afritech.partner_governance import (
 
 def build_partner_governance_router(
     store: PartnerGovernanceStore | None = None,
+    adaptive_controller: AdaptiveSLAController | None = None,
 ) -> APIRouter:
     router = APIRouter(tags=["partner-governance"])
     governance_store = store or PartnerGovernanceStore(seed_partner_governance_registry())
@@ -255,6 +257,39 @@ def build_partner_governance_router(
             "limits": record.limits,
             "sla_state": record.sla_state,
             "enforcement_state": record.enforcement_state,
+        }
+
+    @router.get("/v1/trust/orgs/{org_id}/adaptive-sla")
+    def get_organization_adaptive_sla(
+        org_id: str,
+        _: object = Depends(require_roles("OPERATOR", "VERIFIER", "PARTNER", "OBSERVER")),
+    ) -> dict[str, Any]:
+        try:
+            record = governance_store.load(org_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="organization not found") from exc
+        if adaptive_controller is None:
+            return {
+                "org_id": record.org_id,
+                "trust_level": record.trust_level,
+                "adaptive_sla": {
+                    "mode": "static",
+                    "prediction": {
+                        "predicted_requests_per_min": record.limits.get("requests_per_min") or 0,
+                        "confidence": 0.0,
+                    },
+                    "policy": {
+                        "adjusted_limit": record.limits.get("requests_per_min") or 0,
+                        "reason": "adaptive_controller_unavailable",
+                    },
+                    "anomaly": False,
+                    "action": "hold",
+                },
+            }
+        return {
+            "org_id": record.org_id,
+            "trust_level": record.trust_level,
+            "adaptive_sla": adaptive_controller.snapshot(record.org_id),
         }
 
     return router

@@ -4,17 +4,19 @@ from __future__ import annotations
 
 from typing import Any
 import os
+from time import perf_counter, time
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp
 
+from afritech.core_platform.adaptive_sla import AdaptiveSLAController
+from afritech.core_platform.geo_routing import select_region
 from afritech.middleware.multi_region_redis import (
     RegionAwareRedisBackend,
     regional_capacity,
 )
-from afritech.core_platform.geo_routing import adjust_sla_capacity, select_region
 from afritech.core_platform.geo_routing import parse_latency_map, parse_region_health
 from afritech.middleware.redis_circuit_breaker import RedisCircuitBreaker
 from afritech.middleware.redis_rate_limiter import RedisTokenBucketLimiter
@@ -35,6 +37,7 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         redis_client: Any | None = None,
         breaker_client: Any | None = None,
         redis_backend: Any | None = None,
+        adaptive_controller: AdaptiveSLAController | None = None,
         protected_paths: tuple[str, ...] | None = None,
         default_bucket_capacity: int = 1_000,
         default_bucket_refill_rate: float = 20.0,
@@ -68,6 +71,11 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         )
         self.circuit_breaker = (
             RedisCircuitBreaker(client=backend, recovery_seconds=self.recovery_seconds)
+        )
+        self.adaptive_controller = adaptive_controller or AdaptiveSLAController(
+            client=backend,
+            region=self.region,
+            default_limit=self.default_bucket_capacity,
         )
 
     def _request_region(self, request: Request) -> str:
@@ -171,7 +179,16 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         latency_ms = self._request_latency_ms(request)
         if latency_ms is None:
             latency_ms = region_decision.get("latency_ms")
-        capacity = adjust_sla_capacity(capacity, latency_ms, record.trust_level)
+        adaptive = self.adaptive_controller.recommend(
+            org_id,
+            trust_level=record.trust_level,
+            base_limit=capacity,
+            region=region_decision["region"],
+            latency_ms=latency_ms,
+            health_map=region_decision.get("health_map"),
+            load_hint=region_decision.get("load_hint"),
+        )
+        capacity = max(1, int(adaptive["adjusted_limit"]))
         if record.enforcement_state == "throttled":
             capacity = max(1, int(capacity * self.throttled_bucket_fraction))
         refill_rate = max(0.0, float(capacity) / 60.0)
@@ -186,10 +203,20 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
                 },
             )
 
+        started = perf_counter()
         try:
             response = await call_next(request)
         except Exception:
             self.circuit_breaker.record_failure(org_id, threshold=self.failure_threshold)
+            self.adaptive_controller.observe(
+                org_id,
+                trust_level=record.trust_level,
+                base_limit=capacity,
+                region=region_decision["region"],
+                latency_ms=latency_ms,
+                errors=1,
+                observed_at=time(),
+            )
             raise
 
         if response.status_code >= 500:
@@ -197,9 +224,25 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         else:
             self.circuit_breaker.reset(org_id)
 
+        observed = self.adaptive_controller.observe(
+            org_id,
+            trust_level=record.trust_level,
+            base_limit=capacity,
+            region=region_decision["region"],
+            latency_ms=latency_ms,
+            errors=1 if response.status_code >= 500 else 0,
+            observed_at=time(),
+        )
         request.state.geo_routing = region_decision
         request.state.sla_capacity = capacity
         request.state.edge_latency_ms = latency_ms
+        request.state.adaptive_sla = observed
+        request.state.adaptive_dispatch_ms = int(round((perf_counter() - started) * 1000))
+
+        response.headers["X-Adaptive-SLA-Mode"] = str(observed.get("mode") or "")
+        response.headers["X-Adaptive-SLA-Limit"] = str(observed.get("adjusted_limit") or capacity)
+        response.headers["X-Adaptive-SLA-Anomaly"] = "true" if observed.get("anomaly") else "false"
+        response.headers["X-Geo-Region"] = str(region_decision.get("region") or self.region)
 
         return response
 

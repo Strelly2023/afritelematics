@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from afritech.api.auth.jwt_device_auth import JWT
 from afritech.api.auth.jwt_device_auth import build_auth_router
 from afritech.api.partner_governance_api import build_partner_governance_router
+from afritech.core_platform.adaptive_sla import AdaptiveSLAController
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
 
 
@@ -14,12 +15,33 @@ def auth_headers(role: str = "VERIFIER", user_id: str = "verifier-1") -> dict[st
     return {"Authorization": f"Bearer {token}"}
 
 
-def build_client() -> TestClient:
+class MemoryRedis:
+    def __init__(self) -> None:
+        self.strings: dict[str, str] = {}
+
+    def set(self, key: str, value: str, ex: int | None = None) -> None:  # noqa: ARG002
+        self.strings[key] = value
+
+    def get(self, key: str):
+        return self.strings.get(key)
+
+    def delete(self, *keys: str) -> None:
+        for key in keys:
+            self.strings.pop(key, None)
+
+
+def build_client(
+    *,
+    controller: AdaptiveSLAController | None = None,
+    store: PartnerGovernanceStore | None = None,
+) -> TestClient:
     app = FastAPI()
+    store = store or PartnerGovernanceStore(seed_partner_governance_registry())
     app.include_router(build_auth_router())
     app.include_router(
         build_partner_governance_router(
-            store=PartnerGovernanceStore(seed_partner_governance_registry())
+            store=store,
+            adaptive_controller=controller,
         )
     )
     return TestClient(app)
@@ -144,6 +166,31 @@ def test_partner_governance_supports_onboarding_approval_and_sla_flow() -> None:
     assert sla.status_code == 200
     assert sla.json()["sla_plan"] == "growth"
     assert sla.json()["enforcement_state"] in {"enabled", "throttled"}
+
+
+def test_partner_governance_exposes_adaptive_sla_snapshot() -> None:
+    controller = AdaptiveSLAController(client=MemoryRedis(), region="AU", default_limit=100)
+    controller.observe(
+        "partner-city-ops",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=45,
+        observed_at=1000.0,
+    )
+    client = build_client(controller=controller)
+
+    response = client.get(
+        "/v1/trust/orgs/partner-city-ops/adaptive-sla",
+        headers=auth_headers(role="OBSERVER", user_id="observer-6"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["org_id"] == "partner-city-ops"
+    assert payload["adaptive_sla"]["mode"] == "predictive"
+    assert payload["adaptive_sla"]["adjusted_limit"] >= 100
+    assert payload["adaptive_sla"]["prediction"]["predicted_requests_per_min"] >= 0
 
 
 def test_partner_governance_rejects_unknown_organization() -> None:

@@ -88,8 +88,9 @@ from afritech.edge.normalization.validation import validate_normalized_input
 from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
+from afritech.core_platform.adaptive_sla import AdaptiveSLAController
 from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
-from afritech.middleware.multi_region_redis import parse_region_redis_urls
+from afritech.middleware.multi_region_redis import RegionAwareRedisBackend, parse_region_redis_urls
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
 from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
@@ -142,11 +143,21 @@ app.state.governance_store = partner_governance_store
 _trust_redis_region = os.environ.get("AFRITECH_TRUST_REGION") or os.environ.get("AFRITECH_REGION") or "AU"
 _trust_redis_urls = os.environ.get("AFRITECH_TRUST_REDIS_URLS")
 _trust_redis_url_map = parse_region_redis_urls(_trust_redis_urls)
+trust_redis_backend = RegionAwareRedisBackend.from_env(
+    region=_trust_redis_region,
+    region_urls=_trust_redis_url_map or None,
+)
+adaptive_sla_controller = AdaptiveSLAController(
+    client=trust_redis_backend,
+    region=_trust_redis_region,
+)
+app.state.adaptive_sla_controller = adaptive_sla_controller
 app.add_middleware(
     DistributedGovernanceMiddleware,
     store=partner_governance_store,
     region=_trust_redis_region,
-    redis_urls=_trust_redis_url_map or None,
+    redis_backend=trust_redis_backend,
+    adaptive_controller=adaptive_sla_controller,
     protected_paths=("/v1/trust/orgs", "/v1/partners"),
 )
 
@@ -176,7 +187,12 @@ app.include_router(build_partner_verification_router(store=partner_verification_
 app.include_router(build_partner_registry_router(store=partner_registry_store))
 
 # ✅ Partner trust governance API
-app.include_router(build_partner_governance_router(store=partner_governance_store))
+app.include_router(
+    build_partner_governance_router(
+        store=partner_governance_store,
+        adaptive_controller=adaptive_sla_controller,
+    )
+)
 
 # ✅ Partner certification API
 app.include_router(
