@@ -88,7 +88,7 @@ from afritech.edge.normalization.validation import validate_normalized_input
 from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
-from afritech.middleware.governance_middleware import GovernanceMiddleware
+from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
 from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
@@ -139,7 +139,7 @@ partner_certification_store = PartnerCertificationStore(seed_partner_certificati
 partner_governance_store = PartnerGovernanceStore(seed_partner_governance_registry())
 app.state.governance_store = partner_governance_store
 app.add_middleware(
-    GovernanceMiddleware,
+    DistributedGovernanceMiddleware,
     store=partner_governance_store,
     protected_paths=("/v1/trust/orgs", "/v1/partners"),
 )
