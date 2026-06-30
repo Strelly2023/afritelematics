@@ -89,6 +89,7 @@ from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
 from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
+from afritech.middleware.multi_region_redis import parse_region_redis_urls
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
 from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
@@ -138,9 +139,14 @@ partner_registry_store = PartnerRegistryStore(seed_partner_registry())
 partner_certification_store = PartnerCertificationStore(seed_partner_certification_registry())
 partner_governance_store = PartnerGovernanceStore(seed_partner_governance_registry())
 app.state.governance_store = partner_governance_store
+_trust_redis_region = os.environ.get("AFRITECH_TRUST_REGION") or os.environ.get("AFRITECH_REGION") or "AU"
+_trust_redis_urls = os.environ.get("AFRITECH_TRUST_REDIS_URLS")
+_trust_redis_url_map = parse_region_redis_urls(_trust_redis_urls)
 app.add_middleware(
     DistributedGovernanceMiddleware,
     store=partner_governance_store,
+    region=_trust_redis_region,
+    redis_urls=_trust_redis_url_map or None,
     protected_paths=("/v1/trust/orgs", "/v1/partners"),
 )
 

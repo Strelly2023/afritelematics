@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.partner_governance_api import build_partner_governance_router
 from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
+from afritech.middleware.multi_region_redis import RegionAwareRedisBackend
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
 
 
@@ -60,6 +61,40 @@ class FakeRedis:
             self.hashes.pop(key, None)
 
 
+@dataclass
+class RegionRedisClient(FakeRedis):
+    region: str = "AU"
+    available: bool = True
+
+    def _guard(self) -> None:
+        if not self.available:
+            raise ConnectionError(f"{self.region} redis unavailable")
+
+    def register_script(self, script: str):
+        self._guard()
+        return super().register_script(script)
+
+    def incr(self, key: str) -> int:
+        self._guard()
+        return super().incr(key)
+
+    def expire(self, key: str, ttl: int) -> None:  # noqa: ARG002
+        self._guard()
+        super().expire(key, ttl)
+
+    def set(self, key: str, value: str, ex: int | None = None) -> None:  # noqa: ARG002
+        self._guard()
+        super().set(key, value, ex=ex)
+
+    def get(self, key: str):
+        self._guard()
+        return super().get(key)
+
+    def delete(self, *keys: str) -> None:
+        self._guard()
+        super().delete(*keys)
+
+
 def build_client(
     *,
     shared_redis: FakeRedis | None = None,
@@ -96,6 +131,49 @@ def build_client(
 
     app.include_router(router)
     return TestClient(app), store, redis_backend
+
+
+def build_region_client(
+    *,
+    region: str = "AU",
+    region_clients: dict[str, RegionRedisClient] | None = None,
+    store: PartnerGovernanceStore | None = None,
+    request_limit_per_min: int | None = None,
+) -> tuple[TestClient, PartnerGovernanceStore, RegionAwareRedisBackend, dict[str, RegionRedisClient]]:
+    store = store or PartnerGovernanceStore(seed_partner_governance_registry())
+    if request_limit_per_min is not None:
+        current = store.load("partner-city-ops")
+        limits = dict(current.limits)
+        limits["requests_per_min"] = int(request_limit_per_min)
+        store._replace("partner-city-ops", limits=limits)
+
+    region_clients = region_clients or {
+        "AU": RegionRedisClient(region="AU", available=True),
+        "EU": RegionRedisClient(region="EU", available=True),
+        "US": RegionRedisClient(region="US", available=True),
+    }
+    backend = RegionAwareRedisBackend.from_clients(region_clients, region=region)
+    app = FastAPI()
+    app.state.governance_store = store
+    app.include_router(build_auth_router())
+    app.include_router(build_partner_governance_router(store=store))
+    app.add_middleware(
+        DistributedGovernanceMiddleware,
+        store=store,
+        redis_backend=backend,
+        region=region,
+        failure_threshold=5,
+        recovery_seconds=60,
+    )
+
+    router = APIRouter()
+
+    @router.get("/v1/trust/orgs/{org_id}/fail")
+    def fail_endpoint(org_id: str) -> JSONResponse:
+        return JSONResponse(status_code=500, content={"org_id": org_id, "status": "failed"})
+
+    app.include_router(router)
+    return TestClient(app), store, backend, region_clients
 
 
 def test_distributed_governance_requires_org_id_header() -> None:
@@ -160,3 +238,19 @@ def test_distributed_governance_opens_shared_circuit() -> None:
     assert first.status_code == 500
     assert second.status_code == 503
     assert second.json()["error"]["code"] == "CIRCUIT_OPEN"
+
+
+def test_distributed_governance_fails_over_to_secondary_region() -> None:
+    region_clients = {
+        "AU": RegionRedisClient(region="AU", available=False),
+        "EU": RegionRedisClient(region="EU", available=True),
+        "US": RegionRedisClient(region="US", available=True),
+    }
+    client, _, _, clients = build_region_client(region="AU", region_clients=region_clients, request_limit_per_min=1)
+    headers = {**auth_headers(role="OBSERVER"), "X-Org-ID": "partner-city-ops"}
+
+    response = client.get("/v1/trust/orgs/partner-city-ops", headers=headers)
+
+    assert response.status_code == 200
+    assert clients["EU"].hashes
+    assert clients["AU"].hashes == {}

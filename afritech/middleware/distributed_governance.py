@@ -10,6 +10,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp
 
+from afritech.middleware.multi_region_redis import (
+    RegionAwareRedisBackend,
+    regional_capacity,
+)
 from afritech.middleware.redis_circuit_breaker import RedisCircuitBreaker
 from afritech.middleware.redis_rate_limiter import RedisTokenBucketLimiter
 from afritech.partner_governance import PartnerGovernanceStore
@@ -24,8 +28,11 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         *,
         store: PartnerGovernanceStore,
         redis_url: str | None = None,
+        redis_urls: dict[str, str] | None = None,
+        region: str | None = None,
         redis_client: Any | None = None,
         breaker_client: Any | None = None,
+        redis_backend: Any | None = None,
         protected_paths: tuple[str, ...] | None = None,
         default_bucket_capacity: int = 1_000,
         default_bucket_refill_rate: float = 20.0,
@@ -41,19 +48,24 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         self.throttled_bucket_fraction = max(0.0, min(1.0, float(throttled_bucket_fraction)))
         self.failure_threshold = max(1, int(failure_threshold))
         self.recovery_seconds = max(1, int(recovery_seconds))
+        self.region = str(region or os.environ.get("AFRITECH_TRUST_REGION") or os.environ.get("AFRITECH_REGION") or "AU").upper()
+        self.region_weights = {"AU": 0.4, "EU": 0.3, "US": 0.3}
 
-        limiter_client = redis_client
-        breaker_backend = breaker_client if breaker_client is not None else redis_client
+        if redis_backend is not None:
+            backend = redis_backend
+        elif redis_client is not None or breaker_client is not None:
+            backend = redis_client if redis_client is not None else breaker_client
+        else:
+            backend = RegionAwareRedisBackend.from_env(
+                region=self.region,
+                region_urls=redis_urls,
+            )
 
         self.rate_limiter = (
-            RedisTokenBucketLimiter(client=limiter_client)
-            if limiter_client is not None
-            else RedisTokenBucketLimiter.from_url(redis_url or os.environ.get("REDIS_URL"))
+            RedisTokenBucketLimiter(client=backend)
         )
         self.circuit_breaker = (
-            RedisCircuitBreaker(client=breaker_backend)
-            if breaker_backend is not None
-            else RedisCircuitBreaker.from_url(redis_url or os.environ.get("REDIS_URL"), recovery_seconds=self.recovery_seconds)
+            RedisCircuitBreaker(client=backend, recovery_seconds=self.recovery_seconds)
         )
 
     async def dispatch(self, request: Request, call_next):
@@ -110,7 +122,8 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
             )
 
         capacity_value = record.limits.get("requests_per_min")
-        capacity = int(capacity_value) if capacity_value is not None else self.default_bucket_capacity
+        global_capacity = int(capacity_value) if capacity_value is not None else self.default_bucket_capacity
+        capacity = regional_capacity(global_capacity, self.region, self.region_weights)
         if record.enforcement_state == "throttled":
             capacity = max(1, int(capacity * self.throttled_bucket_fraction))
         refill_rate = max(0.0, float(capacity) / 60.0)
