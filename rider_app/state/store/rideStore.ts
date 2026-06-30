@@ -8,10 +8,10 @@ import type {
 } from "../../core/models/ride";
 
 export type RideEvidenceBundle = {
-  receipt: RideReceipt;
-  ledgerReceipt: LedgerReceiptSummary;
-  replay: RideReplay;
-  priceExplanation: PriceExplanation;
+  receipt?: RideReceipt | null;
+  ledgerReceipt?: LedgerReceiptSummary | null;
+  replay?: RideReplay | null;
+  priceExplanation?: PriceExplanation | null;
 };
 
 export type RiderAppState = {

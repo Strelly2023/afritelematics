@@ -180,6 +180,60 @@ def test_novaride_next_generation_operations_layer_is_implemented() -> None:
         assert required_class in styles
 
 
+def test_novaride_modern_ai_operator_dashboard_is_integrated() -> None:
+    source = read("src/App.jsx")
+    styles = read("src/styles.css")
+
+    for required in (
+        "Requests Queue",
+        "Incident Count",
+        "At Risk",
+        "Ride Control Panel",
+        "Reassign driver",
+        "Cancel ride",
+        "Contact driver",
+        "Track route",
+        "AI Decision Layer",
+        "Demand Prediction",
+        "Surge Recommendation",
+        "Driver Risk Scoring",
+        "Fraud Detection",
+        "Trigger Surge",
+        "Heatmap Boost",
+        "Incident Mode",
+        "Lock Zone",
+        "Unlock Zone",
+        "Realtime Architecture",
+        "/ws/map/live/",
+        "Trust, Replay & Audit",
+        "Ride playback",
+        "GPS replay",
+        "Action audit trail",
+        "RBAC & Security",
+        "Operator",
+        "Senior Operator",
+        "Compliance Officer",
+        "Operational Intelligence",
+        "Backend Modules",
+        "OperatorMetricsService",
+        "DispatchService",
+        "RealtimeGateway",
+        "AnalyticsAggregator",
+    ):
+        assert required in source
+
+    for required_class in (
+        ".ops-ai-grid",
+        ".ops-platform-grid",
+        ".ops-ai-card",
+        ".ops-ride-control",
+        ".ops-rbac-row",
+        ".ops-driver-at-risk",
+        ".legend-risk",
+    ):
+        assert required_class in styles
+
+
 def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
     source = read("src/App.jsx")
 

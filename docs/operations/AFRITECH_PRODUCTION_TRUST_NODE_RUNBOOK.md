@@ -68,6 +68,26 @@ This starts:
 - `nginx`
 - Let's Encrypt certificate issuance through `certbot` HTTP-01 challenge
 
+The `nginx` service above is the Docker Compose service
+`production-nginx-1`. Do not run `sudo systemctl restart nginx` after this
+stack is healthy. A host-level `nginx.service` will try to bind the same
+`80/tcp` and `443/tcp` ports and can fail even when the production trust node is
+serving correctly.
+
+If the host `nginx.service` was installed earlier, keep Docker Compose as the
+edge and stop the host service:
+
+```bash
+sudo systemctl stop nginx
+sudo systemctl disable nginx
+docker compose --env-file deploy/production/.env.production.trust-node \
+  -f deploy/production/docker-compose.trust-node.yml \
+  exec -T nginx nginx -t
+docker compose --env-file deploy/production/.env.production.trust-node \
+  -f deploy/production/docker-compose.trust-node.yml \
+  exec -T nginx nginx -s reload
+```
+
 ## 2. Live Anchoring
 
 Before publishing a real chain receipt:

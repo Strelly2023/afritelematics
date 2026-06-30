@@ -11,14 +11,32 @@ import { MapPreviewCard } from "../widgets/MapPreviewCard";
 import { TrustScoreCard } from "../widgets/TrustScoreCard";
 
 type ReplayScreenProps = {
-  replay: RideReplay;
+  replay?: RideReplay | null;
 };
 
 export function ReplayScreen({ replay }: ReplayScreenProps) {
+  if (!replay) {
+    return (
+      <SurfacePanel>
+        <TrustScoreCard
+          score={58}
+          checks={["Route", "Timeline", "Receipt"]}
+          title="Replay Verification"
+        />
+        <EvidenceSummaryCard summary="Replay evidence is syncing. The trip remains visible while the proof package catches up." />
+      </SurfacePanel>
+    );
+  }
+
   const replayReady = Boolean(replay?.rideId && replay.replayId);
   const replayVerified = replayReady && replay.replayVerified === true;
+  const explanationSteps = Array.isArray(replay.explanationSteps)
+    ? replay.explanationSteps
+    : [];
   const timelineEvents =
-    replay.timelineEvents ||
+    (Array.isArray(replay.timelineEvents) && replay.timelineEvents.length > 0
+      ? replay.timelineEvents
+      : null) ||
     (["REQUESTED", "DRIVER_ACCEPTED", "DRIVER_MATCHED", "ARRIVING", "ARRIVED", "STARTED", "COMPLETED"] as const).map(
       (label) => ({ label, verified: replayVerified }),
     );
@@ -59,7 +77,7 @@ export function ReplayScreen({ replay }: ReplayScreenProps) {
           <View style={styles.stepBody}>
             <Text style={styles.stepText}>{event.label}</Text>
             <Text style={styles.stepDetail}>
-              {replay.explanationSteps[index] || "Trace event verified by replay."}
+              {explanationSteps[index] || "Trace event verified by replay."}
             </Text>
           </View>
         </View>

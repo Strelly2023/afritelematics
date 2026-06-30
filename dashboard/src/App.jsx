@@ -1471,6 +1471,7 @@ const NOVARIDE_MAP_DRIVERS = [
   { id: "DRV-421", x: 78, y: 63, status: "offline" },
   { id: "DRV-502", x: 29, y: 42, status: "busy" },
   { id: "DRV-616", x: 44, y: 81, status: "available" },
+  { id: "DRV-730", x: 63, y: 72, status: "at-risk" },
 ];
 
 const NOVARIDE_ACTIVITY_FEED = [
@@ -1558,6 +1559,24 @@ const NOVARIDE_AI_ENHANCEMENTS = [
   "Driver Incentive Automation",
   "Voice Command for Operators",
   "Real-Time Profit Dashboard",
+];
+
+const NOVARIDE_OPERATOR_RBAC = [
+  { role: "Operator", scope: "Observe, broadcast, contact, track route" },
+  { role: "Senior Operator", scope: "Reassign driver, trigger surge, lock zones" },
+  { role: "Admin", scope: "Pricing, RBAC, city configuration" },
+  { role: "Compliance Officer", scope: "Audit log, replay evidence, incident review" },
+  { role: "Support Agent", scope: "Passenger contact, refund workflow, dispute intake" },
+];
+
+const NOVARIDE_OPERATOR_BACKEND_MODULES = [
+  "OperatorMetricsService",
+  "DispatchService",
+  "GeoService",
+  "RealtimeGateway",
+  "IncidentService",
+  "AlertEngine",
+  "AnalyticsAggregator",
 ];
 
 function displayArchitectureToken(value) {
@@ -3126,6 +3145,267 @@ function buildLiveAnalyticsSnapshot({
   };
 }
 
+function formatInteger(value, fallback = 0) {
+  return new Intl.NumberFormat("en-AU").format(Math.max(0, Math.round(toNumber(value, fallback))));
+}
+
+function formatCurrency(value, fallback = 0) {
+  return new Intl.NumberFormat("en-AU", {
+    style: "currency",
+    currency: "AUD",
+    maximumFractionDigits: 0,
+  }).format(Math.max(0, Math.round(toNumber(value, fallback))));
+}
+
+function percentValue(numerator, denominator, fallback = 0) {
+  const top = toNumber(numerator, 0);
+  const bottom = toNumber(denominator, 0);
+  if (bottom <= 0) {
+    return fallback;
+  }
+  return clampNumber((top / bottom) * 100, 0, 100);
+}
+
+function deriveNovaRideOperationsSurface({
+  state,
+  liveAnalyticsSnapshot,
+  analyticsTrail,
+  liveNotifications,
+  operationAIDecisionState,
+  operatorDemandForecast,
+  operatorStrategyEngine,
+  operatorBusinessPricing,
+  operatorCityProfitOptimization,
+  operatorAutonomy,
+  liveConnection,
+  liveEvents,
+}) {
+  const liveRides = Math.max(
+    state.activeRides.length,
+    toNumber(liveAnalyticsSnapshot.activeRidesCount, 0),
+    toNumber(state.systemHealth?.active_rides, 0),
+  );
+  const activeDrivers = Math.max(
+    state.drivers.filter((driver) => String(driver.status).toUpperCase() === "ONLINE").length,
+    toNumber(liveAnalyticsSnapshot.onlineDrivers, 0),
+    toNumber(liveAnalyticsSnapshot.activeDrivers, 0),
+    toNumber(state.systemHealth?.drivers_online, 0),
+    toNumber(state.trustMetrics?.active_drivers, 0),
+  );
+  const totalDrivers = Math.max(
+    state.drivers.length,
+    toNumber(liveAnalyticsSnapshot.driverCount, 0),
+    toNumber(state.systemHealth?.total_drivers, activeDrivers),
+    activeDrivers,
+  );
+  const completedRides = Math.max(
+    toNumber(liveAnalyticsSnapshot.completedRides, 0),
+    toNumber(state.pilotMetrics?.completed_rides, 0),
+    toNumber(state.pilotMetrics?.verified_rides_today, 0),
+    toNumber(state.systemHealth?.completed_rides, 0),
+  );
+  const bookingsToday = Math.max(
+    toNumber(liveAnalyticsSnapshot.totalRides, 0),
+    toNumber(state.pilotMetrics?.total_rides, 0),
+    completedRides + liveRides,
+  );
+  const trustScore = clampNumber(
+    toNumber(
+      state.trustMetrics?.fleet_trust_score ??
+        state.trustMetrics?.trust_score ??
+        liveAnalyticsSnapshot.trustScore,
+      100,
+    ),
+    0,
+    100,
+  );
+  const completionRate = percentValue(completedRides || bookingsToday - liveRides, bookingsToday, trustScore);
+  const evidenceCoverage = clampNumber(toNumber(liveAnalyticsSnapshot.evidenceCoverage, 100), 0, 100);
+  const utilization = percentValue(activeDrivers, totalDrivers, activeDrivers > 0 ? 78 : 0);
+  const estimatedRevenue = Math.max(
+    toNumber(state.pilotMetrics?.revenue_today, 0),
+    toNumber(state.pilotMetrics?.gross_booking_value, 0),
+    bookingsToday * 23,
+  );
+  const payoutEstimate = Math.round(estimatedRevenue * 0.72);
+  const pendingEstimate = Math.round(estimatedRevenue * 0.09);
+  const verifiedDrivers = Math.round(totalDrivers * (trustScore / 100));
+  const verifiedRides = Math.round(bookingsToday * (evidenceCoverage / 100));
+  const openIncidents = Math.max(
+    state.guards.length,
+    toNumber(liveAnalyticsSnapshot.alertCount, 0),
+    toNumber(liveAnalyticsSnapshot.exceptionCount, 0),
+  );
+  const requestsQueue = Math.max(
+    liveRides,
+    toNumber(state.observabilityDashboard?.queue_depth, 0),
+    toNumber(operatorDemandForecast?.forecast?.request_queue, 0),
+    Math.round(bookingsToday * 0.08),
+  );
+  const busyDrivers = Math.min(totalDrivers, Math.max(liveRides, Math.round(activeDrivers * 0.37)));
+  const availableDrivers = Math.max(0, activeDrivers - busyDrivers);
+  const offlineDrivers = Math.max(0, totalDrivers - activeDrivers);
+  const atRiskDrivers = Math.min(
+    totalDrivers,
+    Math.max(
+      openIncidents,
+      toNumber(operatorAutonomy?.driver_risk?.at_risk_drivers, 0),
+      operationAIDecisionState?.safetyGate === "hold" ? 1 : 0,
+    ),
+  );
+  const trendSeed = analyticsTrail.length > 0 ? analyticsTrail : [liveAnalyticsSnapshot];
+  const chartValues = trendSeed
+    .slice(-12)
+    .map((point, index) =>
+      clampNumber(
+        Math.round(
+          toNumber(point.totalRides, bookingsToday) +
+            toNumber(point.activeDrivers, activeDrivers) * 0.35 +
+            index * 4,
+        ),
+        12,
+        128,
+      ),
+    );
+  const normalizedChartValues =
+    chartValues.length >= 6
+      ? chartValues
+      : [...[42, 54, 49, 64, 72, 81].slice(0, 6 - chartValues.length), ...chartValues];
+
+  const dynamicActivity = state.activeRides.slice(0, 3).map((ride, index) => ({
+    time: liveAnalyticsSnapshot.timestamp || "live",
+    event: index === 0 ? "New ride accepted" : "Ride picked up",
+    actor: ride.rideId || ride.driverId || `RIDE-${index + 1}`,
+    value: ride.driverId || ride.state || "assigned",
+    tone: "success",
+  }));
+
+  return {
+    kpis: [
+      { label: "Live Rides", value: formatInteger(liveRides), trend: liveRides > 0 ? "live" : "standby", detail: "active trips now", chart: [32, 44, 38, 52, 61, 58, 72] },
+      { label: "Active Drivers", value: formatInteger(activeDrivers), trend: `${Math.round(utilization)}%`, detail: "online supply", chart: [24, 31, 36, 42, 48, 55, activeDrivers || 58] },
+      { label: "Requests Queue", value: formatInteger(requestsQueue), trend: operationAIDecisionState?.demandLabel || "Stable", detail: "dispatch intake", chart: [12, 18, 24, 20, 32, 38, requestsQueue || 34] },
+      { label: "Bookings Today", value: formatInteger(bookingsToday), trend: `${Math.round(completionRate)}%`, detail: "completed + active", chart: [28, 46, 40, 68, 82, 76, bookingsToday || 88] },
+      { label: "Revenue", value: formatCurrency(estimatedRevenue), trend: "gross", detail: "booking value", chart: [20, 34, 48, 54, 72, 86, 104] },
+      { label: "Incident Count", value: formatInteger(openIncidents), trend: operationAIDecisionState?.safetyGate || "pass", detail: "open risk signals", chart: [2, 1, 3, 2, 4, 2, openIncidents] },
+    ],
+    clusters: NOVARIDE_MAP_CLUSTERS.map((cluster, index) => ({
+      ...cluster,
+      count: Math.max(8, Math.round((liveRides || bookingsToday || cluster.count) / (index + 2))),
+    })),
+    drivers: NOVARIDE_MAP_DRIVERS.map((driver, index) => ({
+      ...driver,
+      id: state.drivers[index]?.driverId || driver.id,
+      status:
+        index < atRiskDrivers
+          ? "at-risk"
+          : index < availableDrivers
+          ? "available"
+          : index < availableDrivers + busyDrivers
+            ? "busy"
+            : "offline",
+    })),
+    activity: [...dynamicActivity, ...NOVARIDE_ACTIVITY_FEED].slice(0, 5),
+    alerts: [
+      ...liveNotifications.slice(0, 2).map((notification) => ({
+        title: notification.title,
+        detail: notification.detail,
+        severity: notification.severity === "critical" ? "critical" : "warning",
+      })),
+      ...NOVARIDE_OPERATION_ALERTS,
+    ].slice(0, 3),
+    chartValues: normalizedChartValues,
+    fleet: [
+      { label: "Available", value: formatInteger(availableDrivers), percent: `${Math.round(percentValue(availableDrivers, totalDrivers, 0))}%` },
+      { label: "Busy", value: formatInteger(busyDrivers), percent: `${Math.round(percentValue(busyDrivers, totalDrivers, 0))}%` },
+      { label: "Offline", value: formatInteger(offlineDrivers), percent: `${Math.round(percentValue(offlineDrivers, totalDrivers, 0))}%` },
+      { label: "At Risk", value: formatInteger(atRiskDrivers), percent: `${Math.round(percentValue(atRiskDrivers, totalDrivers, 0))}%` },
+      { label: "Utilization Rate", value: `${utilization.toFixed(1)}%`, percent: "citywide" },
+    ],
+    payments: [
+      { label: "Revenue", value: formatCurrency(estimatedRevenue) },
+      { label: "Payouts", value: formatCurrency(payoutEstimate) },
+      { label: "Pending", value: formatCurrency(pendingEstimate) },
+    ],
+    trustSafety: [
+      { label: "Trust Score", value: `${trustScore.toFixed(1)} / 100` },
+      { label: "Verified Drivers", value: `${formatInteger(verifiedDrivers)} / ${formatInteger(totalDrivers)}` },
+      { label: "Verified Rides", value: `${formatInteger(verifiedRides)} / ${formatInteger(bookingsToday)}` },
+      { label: "Open Incidents", value: formatInteger(openIncidents) },
+    ],
+    rideControl: {
+      rideId: state.activeRides[0]?.rideId || "ride-67231",
+      passenger: state.activeRides[0]?.riderId || "rider-demo-001",
+      driver: state.activeRides[0]?.driverId || "DRV-104",
+      route: "Kampala Road -> Nakasero",
+      eta: operationAIDecisionState?.demandPressure >= 70 ? "7 min" : "4 min",
+      distance: "3.8 km",
+      fare: formatCurrency(estimatedRevenue / Math.max(bookingsToday, 1), 23),
+      status: state.activeRides[0]?.state || "in_progress",
+    },
+    aiLayer: [
+      {
+        title: "Demand Prediction",
+        value: operatorDemandForecast?.forecast?.demand_label || operationAIDecisionState?.demandLabel || "Stable",
+        detail: operatorDemandForecast?.forecast?.instruction || operationAIDecisionState?.dispatchPosture || "Maintain current dispatch band.",
+      },
+      {
+        title: "Surge Recommendation",
+        value: operatorBusinessPricing?.pricing?.pricing_posture || "balanced",
+        detail: operatorBusinessPricing?.pricing?.explanation || "No manual surge is required in the current trust window.",
+      },
+      {
+        title: "Driver Risk Scoring",
+        value: `${formatInteger(atRiskDrivers)} at risk`,
+        detail: operationAIDecisionState?.operatorMove || "Continue monitoring driver risk against replay and incident pressure.",
+      },
+      {
+        title: "Fraud Detection",
+        value: openIncidents > 0 ? "Review" : "Clear",
+        detail: openIncidents > 0 ? "Open incidents require operator acknowledgement." : "No fraud or payment anomaly is active.",
+      },
+    ],
+    quickActions: [
+      { label: "Broadcast", detail: "Message online drivers" },
+      { label: "Incentives", detail: "driver supply plan" },
+      { label: "Heat Map", detail: "demand overlay" },
+      { label: "Reports", detail: "export audit packet" },
+      { label: "Trigger Surge", detail: operatorBusinessPricing?.pricing?.pricing_posture || "balanced" },
+      { label: "Heatmap Boost", detail: operatorDemandForecast?.forecast?.target_zone || "highest demand zone" },
+      { label: "Incident Mode", detail: operationAIDecisionState?.safetyGate || "pass" },
+      { label: "Lock Zone", detail: "senior operator" },
+      { label: "Unlock Zone", detail: "audit logged" },
+    ],
+    realtime: [
+      { label: "WebSocket", value: liveConnection || "connecting", detail: "/ws/map/live/" },
+      { label: "Map refresh", value: "<500ms", detail: "driver clusters + heatmap" },
+      { label: "KPI refresh", value: "<2s", detail: "operator metrics window" },
+      { label: "Events", value: formatInteger(liveEvents?.length || 0), detail: "ride_update / incident_reported" },
+    ],
+    trustReplay: [
+      { label: "Ride playback", value: liveAnalyticsSnapshot.replayFailures > 0 ? "Review" : "Ready" },
+      { label: "GPS replay", value: liveAnalyticsSnapshot.missingTraces > 0 ? "Partial" : "Synced" },
+      { label: "Action audit trail", value: operationAIDecisionState?.executionTier || "advisory" },
+      { label: "RBAC", value: "operator role enforced" },
+    ],
+    backendModules: NOVARIDE_OPERATOR_BACKEND_MODULES,
+    rbac: NOVARIDE_OPERATOR_RBAC,
+    analytics: {
+      completionRate,
+      utilization,
+      evidenceCoverage,
+      projectedProfit:
+        operatorCityProfitOptimization?.profit_optimization?.projected_profit ||
+        formatCurrency(Math.round(estimatedRevenue * 0.18)),
+      strategy:
+        operatorStrategyEngine?.strategy?.strategy_posture ||
+        operatorStrategyEngine?.decision?.decision_lane ||
+        operationAIDecisionState?.lane ||
+        "observe",
+    },
+  };
+}
+
 function buildOperatorNotifications({
   timestamp,
   trustScore,
@@ -4102,6 +4382,37 @@ export default function OperatorDashboard() {
       state.activeRides.length,
     ],
   );
+  const novaRideOperationsSurface = useMemo(
+    () =>
+      deriveNovaRideOperationsSurface({
+        state,
+        liveAnalyticsSnapshot,
+        analyticsTrail,
+        liveNotifications,
+        operationAIDecisionState,
+        operatorDemandForecast,
+        operatorStrategyEngine,
+        operatorBusinessPricing,
+        operatorCityProfitOptimization,
+        operatorAutonomy,
+        liveConnection,
+        liveEvents,
+      }),
+    [
+      state,
+      liveAnalyticsSnapshot,
+      analyticsTrail,
+      liveNotifications,
+      operationAIDecisionState,
+      operatorDemandForecast,
+      operatorStrategyEngine,
+      operatorBusinessPricing,
+      operatorCityProfitOptimization,
+      operatorAutonomy,
+      liveConnection,
+      liveEvents,
+    ],
+  );
 
   function submitToGovernance() {
     const submission = buildGovernanceSubmission(afriprogScenario);
@@ -4542,14 +4853,15 @@ export default function OperatorDashboard() {
         />
 
         <div className="ops-kpi-grid">
-          {NOVARIDE_OPERATIONS_KPIS.map((metric) => (
+          {novaRideOperationsSurface.kpis.map((metric) => (
             <article key={metric.label} className="ops-kpi-card">
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
-              <div>
+              <div className="ops-kpi-card-header">
+                <span>{metric.label}</span>
                 <em>{metric.trend}</em>
-                <small>{metric.detail}</small>
               </div>
+              <strong>{metric.value}</strong>
+              <MiniSparkline values={metric.chart} />
+              <small>{metric.detail}</small>
             </article>
           ))}
         </div>
@@ -4559,7 +4871,7 @@ export default function OperatorDashboard() {
             <div className="ops-map" aria-label="Sydney operations map">
               <div className="ops-map-grid" />
               <div className="ops-map-river" />
-              {NOVARIDE_MAP_CLUSTERS.map((cluster) => (
+              {novaRideOperationsSurface.clusters.map((cluster) => (
                 <div
                   key={cluster.label}
                   className="ops-map-cluster"
@@ -4570,7 +4882,7 @@ export default function OperatorDashboard() {
                   <span>{cluster.label}</span>
                 </div>
               ))}
-              {NOVARIDE_MAP_DRIVERS.map((driver) => (
+              {novaRideOperationsSurface.drivers.map((driver) => (
                 <div
                   key={driver.id}
                   className={`ops-driver-dot ops-driver-${driver.status}`}
@@ -4583,13 +4895,49 @@ export default function OperatorDashboard() {
               <span><i className="legend-available" />Available</span>
               <span><i className="legend-busy" />Busy</span>
               <span><i className="legend-offline" />Offline</span>
+              <span><i className="legend-risk" />At Risk</span>
               <span><i className="legend-cluster" />Cluster</span>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Ride Control Panel">
+            <div className="ops-ride-control">
+              <div className="ops-ride-id">
+                <span>Ride ID</span>
+                <strong>#{novaRideOperationsSurface.rideControl.rideId}</strong>
+              </div>
+              <KeyValue label="Passenger" value={novaRideOperationsSurface.rideControl.passenger} />
+              <KeyValue label="Driver" value={novaRideOperationsSurface.rideControl.driver} />
+              <KeyValue label="Pickup -> Dropoff" value={novaRideOperationsSurface.rideControl.route} />
+              <KeyValue label="ETA / Distance" value={`${novaRideOperationsSurface.rideControl.eta} / ${novaRideOperationsSurface.rideControl.distance}`} />
+              <KeyValue label="Fare" value={novaRideOperationsSurface.rideControl.fare} />
+              <div className="ops-control-actions">
+                {["Reassign driver", "Cancel ride", "Contact driver", "Track route"].map((action) => (
+                  <button key={action} type="button" className="ops-action-button ops-action-button-secondary">
+                    {action}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <div className="ops-ai-grid">
+          <OperatorPanel title="AI Decision Layer">
+            <div className="ops-ai-card-grid">
+              {novaRideOperationsSurface.aiLayer.map((item) => (
+                <article key={item.title} className="ops-ai-card">
+                  <span>{item.title}</span>
+                  <strong>{item.value}</strong>
+                  <p>{item.detail}</p>
+                </article>
+              ))}
             </div>
           </OperatorPanel>
 
           <OperatorPanel title="Live Activity Feed">
             <div className="ops-feed">
-              {NOVARIDE_ACTIVITY_FEED.map((item) => (
+              {novaRideOperationsSurface.activity.map((item) => (
                 <article key={`${item.time}-${item.actor}`} className={`ops-feed-item ops-feed-${item.tone}`}>
                   <time>{item.time}</time>
                   <div>
@@ -4606,7 +4954,7 @@ export default function OperatorDashboard() {
         <div className="ops-layout-grid">
           <OperatorPanel title="Alerts & Notifications">
             <div className="stack">
-              {NOVARIDE_OPERATION_ALERTS.map((alert) => (
+              {novaRideOperationsSurface.alerts.map((alert) => (
                 <article key={alert.title} className={`ops-alert ops-alert-${alert.severity}`}>
                   <strong>{alert.title}</strong>
                   <span>{alert.detail}</span>
@@ -4617,29 +4965,24 @@ export default function OperatorDashboard() {
 
           <OperatorPanel title="Fleet & Performance Analytics">
             <div className="ops-chart">
-              {[42, 54, 49, 64, 72, 81, 76, 88, 96, 92, 104, 118].map((height, index) => (
+              {novaRideOperationsSurface.chartValues.map((height, index) => (
                 <span key={index} style={{ height: `${height}px` }} />
               ))}
             </div>
             <div className="ops-fleet-list">
-              {NOVARIDE_FLEET_STATUS.map((status) => (
+              {novaRideOperationsSurface.fleet.map((status) => (
                 <div key={status.label}>
                   <span>{status.label}</span>
                   <strong>{status.value}</strong>
                   <em>{status.percent}</em>
                 </div>
               ))}
-              <div>
-                <span>Utilization Rate</span>
-                <strong>78.4%</strong>
-                <em>citywide</em>
-              </div>
             </div>
           </OperatorPanel>
 
           <OperatorPanel title="Payment Overview">
             <div className="ops-metric-stack">
-              {NOVARIDE_PAYMENT_OVERVIEW.map((item) => (
+              {novaRideOperationsSurface.payments.map((item) => (
                 <div key={item.label}>
                   <span>{item.label}</span>
                   <strong>{item.value}</strong>
@@ -4650,7 +4993,7 @@ export default function OperatorDashboard() {
 
           <OperatorPanel title="Trust & Safety Panel">
             <div className="ops-metric-stack">
-              {NOVARIDE_TRUST_SAFETY.map((item) => (
+              {novaRideOperationsSurface.trustSafety.map((item) => (
                 <div key={item.label}>
                   <span>{item.label}</span>
                   <strong>{item.value}</strong>
@@ -4662,13 +5005,81 @@ export default function OperatorDashboard() {
 
         <OperatorPanel title="Quick Actions">
           <div className="ops-action-row">
-            {["Broadcast", "Incentives", "Heat Map", "Reports"].map((action) => (
-              <button key={action} type="button" className="ops-action-button">
-                {action}
+            {novaRideOperationsSurface.quickActions.map((action) => (
+              <button key={action.label} type="button" className="ops-action-button">
+                <span>{action.label}</span>
+                <small>{action.detail}</small>
               </button>
             ))}
           </div>
         </OperatorPanel>
+
+        <div className="ops-platform-grid">
+          <OperatorPanel title="Realtime Architecture">
+            <div className="ops-metric-stack">
+              {novaRideOperationsSurface.realtime.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                  <em>{item.detail}</em>
+                </div>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Trust, Replay & Audit">
+            <div className="ops-metric-stack">
+              {novaRideOperationsSurface.trustReplay.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="RBAC & Security">
+            <div className="stack">
+              {novaRideOperationsSurface.rbac.map((role) => (
+                <article key={role.role} className="ops-rbac-row">
+                  <strong>{role.role}</strong>
+                  <span>{role.scope}</span>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <div className="ops-platform-grid">
+          <OperatorPanel title="Operational Intelligence">
+            <div className="ops-metric-stack">
+              <div>
+                <span>Ride Volume</span>
+                <strong>{novaRideOperationsSurface.analytics.strategy}</strong>
+              </div>
+              <div>
+                <span>Fleet Status</span>
+                <strong>{novaRideOperationsSurface.analytics.utilization.toFixed(1)}%</strong>
+              </div>
+              <div>
+                <span>Evidence Coverage</span>
+                <strong>{novaRideOperationsSurface.analytics.evidenceCoverage}%</strong>
+              </div>
+              <div>
+                <span>Profit Projection</span>
+                <strong>{novaRideOperationsSurface.analytics.projectedProfit}</strong>
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Backend Modules">
+            <div className="chip-row">
+              {novaRideOperationsSurface.backendModules.map((module) => (
+                <span key={module} className="surface-chip">{module}</span>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
 
         <div className="operator-grid">
           {NOVARIDE_OPERATION_MODULES.map((module) => (
@@ -8985,6 +9396,19 @@ function RuleCard({ rule }) {
       <strong>{rule.value}</strong>
       <p>{rule.detail}</p>
     </article>
+  );
+}
+
+function MiniSparkline({ values }) {
+  const points = Array.isArray(values) && values.length > 0 ? values : [0, 0];
+  const path = buildPolylinePath(points, 120, 34, 3);
+  const area = buildAreaPath(points, 120, 34, 3);
+
+  return (
+    <svg className="ops-kpi-sparkline" viewBox="0 0 120 34" role="img" aria-label="KPI trend">
+      <path className="ops-kpi-sparkline-area" d={area} />
+      <path className="ops-kpi-sparkline-line" d={path} />
+    </svg>
   );
 }
 

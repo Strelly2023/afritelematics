@@ -240,9 +240,9 @@ export async function getPriceExplanation(
     rideId: result.ride_id,
     priceExplanation: result.price_explanation,
     source: result.source,
-    lineItems: result.line_items?.map((item) => ({
+    lineItems: Array.isArray(result.line_items) ? result.line_items.map((item) => ({
       label: item.label,
       amountText: item.amount_text,
-    })),
+    })) : [],
   };
 }

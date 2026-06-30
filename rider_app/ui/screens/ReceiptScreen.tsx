@@ -13,11 +13,28 @@ import { TrustScoreCard } from "../widgets/TrustScoreCard";
 import { VerificationStatusCard } from "../widgets/VerificationStatusCard";
 
 type ReceiptScreenProps = {
-  receipt: RideReceipt;
-  ledgerReceipt?: LedgerReceiptSummary;
+  receipt?: RideReceipt | null;
+  ledgerReceipt?: LedgerReceiptSummary | null;
 };
 
 export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
+  if (!receipt) {
+    return (
+      <SurfacePanel>
+        <Text style={styles.title}>Receipt syncing</Text>
+        <EvidenceSummaryCard summary="Receipt evidence is still syncing from the core system." />
+        <VerificationStatusCard
+          status={{
+            receipt: false,
+            replay: false,
+            payment: false,
+            trip: false,
+          }}
+        />
+      </SurfacePanel>
+    );
+  }
+
   const _debugReceiptId = receipt.receiptId;
   const _debugRideId = receipt.rideId;
   const _debugReceiptHash = ledgerReceipt ? ledgerReceipt.receiptHash : null;

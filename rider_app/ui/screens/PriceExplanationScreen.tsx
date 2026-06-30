@@ -7,7 +7,7 @@ import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 
 type PriceExplanationScreenProps = {
-  explanation: PriceExplanation;
+  explanation?: PriceExplanation | null;
 };
 
 export function PriceExplanationScreen({
@@ -17,13 +17,16 @@ export function PriceExplanationScreen({
   const body =
     explanation?.priceExplanation ||
     "Price explanation is syncing from the core system.";
+  const lineItems = Array.isArray(explanation?.lineItems)
+    ? explanation.lineItems
+    : [];
 
   return (
     <SurfacePanel>
       <Text style={styles.title}>Price explanation</Text>
       <Text style={styles.source}>Source: {source}</Text>
       <Text style={styles.body}>{body}</Text>
-      {explanation.lineItems?.map((item) => (
+      {lineItems.map((item) => (
         <View key={item.label} style={styles.item}>
           <Text style={styles.itemLabel}>{item.label}</Text>
           <Text style={styles.amount}>{item.amountText}</Text>

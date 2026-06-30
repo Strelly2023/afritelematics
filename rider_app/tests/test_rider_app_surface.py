@@ -167,6 +167,31 @@ def test_rider_product_completion_surfaces_are_wired() -> None:
     assert "accessibilityRole=\"button\"" in tabs
 
 
+def test_rider_app_is_sync_safe_for_partial_evidence() -> None:
+    app = read("App.tsx")
+    receipt = read("ui/screens/ReceiptScreen.tsx")
+    replay = read("ui/screens/ReplayScreen.tsx")
+    price = read("ui/screens/PriceExplanationScreen.tsx")
+    home = read("ui/screens/RiderHomeScreen.tsx")
+    ride_service = read("core/api/ride.service.ts")
+    driver_service = read("core/api/driver.service.ts")
+
+    assert "RiderErrorBoundary" in app
+    assert "receipt = evidence?.receipt ?? null" in app
+    assert "receipt?.status || statusSnapshot?.status" in app
+    assert "receipt?: RideReceipt | null" in receipt
+    assert "Receipt syncing" in receipt
+    assert "replay?: RideReplay | null" in replay
+    assert "Replay evidence is syncing" in replay
+    assert "Array.isArray(replay.explanationSteps)" in replay
+    assert "explanation?: PriceExplanation | null" in price
+    assert "const lineItems = Array.isArray(explanation?.lineItems)" in price
+    assert "intelligence.trust?.driver_verified" in home
+    assert "const intelligenceAlerts = Array.isArray(intelligence?.alerts)" in home
+    assert "Array.isArray(result.line_items)" in ride_service
+    assert "const rides = Array.isArray(result.rides) ? result.rides : []" in driver_service
+
+
 def test_wallet_actions_open_add_payment_and_split_fare_flows() -> None:
     source = read("ui/screens/WalletScreen.tsx")
 

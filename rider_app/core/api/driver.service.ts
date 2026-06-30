@@ -10,7 +10,9 @@ export async function getDriverRides(driverId: string): Promise<DriverRideSummar
     `/driver/rides?driver_id=${encodeURIComponent(driverId)}`,
   );
 
-  return result.rides.map((ride) => ({
+  const rides = Array.isArray(result.rides) ? result.rides : [];
+
+  return rides.map((ride) => ({
     rideId: ride.ride_id,
     status: ride.status,
   }));

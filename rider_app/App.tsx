@@ -44,6 +44,14 @@ const riderTabs: Array<{ key: RiderTab; label: string }> = [
 ];
 
 export default function App() {
+  return (
+    <RiderErrorBoundary>
+      <RiderApp />
+    </RiderErrorBoundary>
+  );
+}
+
+function RiderApp() {
   const [activeTab, setActiveTab] = useState<RiderTab>("home");
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("rider@novaride.test");
@@ -60,6 +68,10 @@ export default function App() {
     statusSnapshot,
     submitRideRequest,
   } = useRideFlow();
+  const receipt = evidence?.receipt ?? null;
+  const replay = evidence?.replay ?? null;
+  const ledgerReceipt = evidence?.ledgerReceipt ?? null;
+  const priceExplanation = evidence?.priceExplanation ?? null;
 
   function handleRequestRide() {
     submitRideRequest({
@@ -74,19 +86,19 @@ export default function App() {
     ? [
         {
           rideId: requestedRide.rideId,
-          status: evidence?.receipt.status || statusSnapshot?.status || requestedRide.status,
+          status: receipt?.status || statusSnapshot?.status || requestedRide.status,
           trustScore:
-            evidence?.receipt.trustScore ||
+            receipt?.trustScore ||
             statusSnapshot?.trustScore ||
             requestedRide.trustScore,
           verificationStatus:
-            evidence?.receipt.verificationStatus ||
+            receipt?.verificationStatus ||
             (statusSnapshot ? "PASSED" as const : undefined),
         },
       ]
     : [];
   const riderTrustScore =
-    evidence?.receipt.trustScore || statusSnapshot?.trustScore || requestedRide?.trustScore || 92;
+    receipt?.trustScore || statusSnapshot?.trustScore || requestedRide?.trustScore || 92;
   const notifications = [
     {
       id: "rider-login",
@@ -194,22 +206,22 @@ export default function App() {
                   {requestedRide ? (
                     <RiderTrustPanelScreen
                       status={statusSnapshot}
-                      receipt={evidence?.receipt || null}
+                      receipt={receipt}
                     />
                   ) : null}
                   <EvidenceScreen
-                    receipt={evidence?.receipt || null}
-                    replay={evidence?.replay || null}
-                    ledgerReceipt={evidence?.ledgerReceipt || null}
+                    receipt={receipt}
+                    replay={replay}
+                    ledgerReceipt={ledgerReceipt}
                   />
                   {evidence ? (
                     <>
                       <ReceiptScreen
-                        receipt={evidence.receipt}
-                        ledgerReceipt={evidence.ledgerReceipt}
+                        receipt={receipt}
+                        ledgerReceipt={ledgerReceipt}
                       />
-                      <ReplayScreen replay={evidence.replay} />
-                      <PriceExplanationScreen explanation={evidence.priceExplanation} />
+                      <ReplayScreen replay={replay} />
+                      <PriceExplanationScreen explanation={priceExplanation} />
                     </>
                   ) : null}
                 </>
@@ -240,6 +252,37 @@ export default function App() {
       </View>
     </SafeAreaView>
   );
+}
+
+type RiderErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class RiderErrorBoundary extends React.Component<React.PropsWithChildren, RiderErrorBoundaryState> {
+  state: RiderErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): RiderErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <SafeAreaView style={styles.screen}>
+          <View style={styles.shell}>
+            <ScrollView contentContainerStyle={styles.content}>
+              <View style={styles.header}>
+                <Text style={styles.title}>AfriRide Rider</Text>
+                <Text style={styles.subtitle}>The rider view hit a sync issue. Reload the app to continue.</Text>
+              </View>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 const styles = StyleSheet.create({

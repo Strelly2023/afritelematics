@@ -225,7 +225,7 @@ a {
 
 .novaride-ops-band {
   background:
-    linear-gradient(180deg, #0f1724 0%, #172033 360px, #eef4f8 360px, #f5f7fb 100%);
+    linear-gradient(180deg, #0b1220 0%, #132238 420px, #e8eff4 420px, #f5f7fb 100%);
   color: #172033;
 }
 
@@ -238,20 +238,29 @@ a {
 .ops-kpi-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .ops-kpi-card {
   display: grid;
-  gap: 8px;
-  min-height: 132px;
-  border: 1px solid rgba(216, 225, 232, 0.18);
+  grid-template-rows: auto auto minmax(34px, auto) auto;
+  gap: 10px;
+  min-height: 156px;
+  border: 1px solid rgba(154, 183, 205, 0.28);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
   color: #ffffff;
   padding: 16px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
+}
+
+.ops-kpi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .ops-kpi-card span,
@@ -262,14 +271,9 @@ a {
 }
 
 .ops-kpi-card strong {
-  font-size: clamp(1.35rem, 2vw, 2.05rem);
+  overflow-wrap: anywhere;
+  font-size: clamp(1.25rem, 1.65vw, 1.9rem);
   line-height: 1;
-}
-
-.ops-kpi-card div {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .ops-kpi-card em {
@@ -277,6 +281,24 @@ a {
   font-size: 0.85rem;
   font-style: normal;
   font-weight: 900;
+  white-space: nowrap;
+}
+
+.ops-kpi-sparkline {
+  width: 100%;
+  height: 34px;
+}
+
+.ops-kpi-sparkline-area {
+  fill: rgba(101, 209, 143, 0.2);
+}
+
+.ops-kpi-sparkline-line {
+  fill: none;
+  stroke: #65d18f;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.8;
 }
 
 .ops-command-grid {
@@ -295,14 +317,15 @@ a {
 
 .ops-map {
   position: relative;
-  min-height: 430px;
+  min-height: 460px;
   overflow: hidden;
-  border: 1px solid #26394f;
+  border: 1px solid #203b56;
   border-radius: 8px;
   background:
-    radial-gradient(circle at 65% 48%, rgba(69, 169, 124, 0.2), transparent 16%),
-    radial-gradient(circle at 28% 58%, rgba(125, 97, 255, 0.18), transparent 14%),
-    linear-gradient(135deg, #111c2c, #1b2c44);
+    linear-gradient(120deg, rgba(43, 102, 143, 0.2) 0 18%, transparent 18% 100%),
+    linear-gradient(45deg, transparent 0 42%, rgba(37, 99, 107, 0.22) 42% 48%, transparent 48% 100%),
+    linear-gradient(135deg, #0d1828, #1b304a);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .ops-map-grid {
@@ -331,13 +354,13 @@ a {
   min-width: 74px;
   min-height: 74px;
   place-items: center;
-  border: 1px solid rgba(178, 157, 255, 0.85);
+  border: 1px solid rgba(158, 204, 255, 0.9);
   border-radius: 50%;
-  background: rgba(93, 74, 206, 0.82);
+  background: rgba(39, 93, 148, 0.9);
   color: #ffffff;
   padding: 8px;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 8px rgba(93, 74, 206, 0.14);
+  box-shadow: 0 0 0 8px rgba(63, 135, 196, 0.16);
 }
 
 .ops-map-cluster strong {
@@ -360,6 +383,13 @@ a {
   border: 2px solid #ffffff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ops-driver-dot:hover {
+  transform: translate(-50%, -50%) scale(1.35);
+  box-shadow: 0 0 0 9px rgba(255, 255, 255, 0.12);
 }
 
 .ops-driver-available {
@@ -372,6 +402,10 @@ a {
 
 .ops-driver-offline {
   background: #1b2433;
+}
+
+.ops-driver-at-risk {
+  background: #dc2626;
 }
 
 .ops-map-legend,
@@ -409,8 +443,99 @@ a {
   background: #1b2433;
 }
 
+.legend-risk {
+  background: #dc2626;
+}
+
 .legend-cluster {
-  background: #6c57d9;
+  background: #2775b8;
+}
+
+.ops-ai-grid,
+.ops-platform-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ops-platform-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ops-ai-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ops-ai-card,
+.ops-rbac-row,
+.ops-ride-control {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.ops-ai-card {
+  min-height: 142px;
+  padding: 14px;
+}
+
+.ops-ai-card span,
+.ops-ride-id span,
+.ops-rbac-row span,
+.ops-action-button small,
+.ops-metric-stack em {
+  color: #64748b;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.ops-ai-card strong,
+.ops-ride-id strong {
+  display: block;
+  margin-top: 8px;
+  color: #101827;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.ops-ai-card p {
+  margin: 10px 0 0;
+  color: #526176;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.ops-ride-control {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.ops-ride-id {
+  border-bottom: 1px solid #d8e1e8;
+  padding-bottom: 10px;
+}
+
+.ops-control-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.ops-rbac-row {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.ops-rbac-row strong {
+  color: #101827;
 }
 
 .ops-feed {
@@ -427,6 +552,7 @@ a {
   border-radius: 8px;
   background: #ffffff;
   padding: 12px;
+  box-shadow: 0 10px 24px rgba(24, 36, 50, 0.06);
 }
 
 .ops-feed-item time,
@@ -493,7 +619,13 @@ a {
   min-height: 132px;
   align-items: end;
   gap: 8px;
-  border-bottom: 1px solid #d1dce5;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(23, 32, 51, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 32, 51, 0.04) 1px, transparent 1px),
+    #ffffff;
+  background-size: 100% 32px, 38px 100%, auto;
   padding: 8px 0 14px;
 }
 
@@ -501,7 +633,7 @@ a {
   flex: 1;
   min-width: 8px;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #277a69, #65b58c);
+  background: linear-gradient(180deg, #2f7c9c, #65b58c);
 }
 
 .ops-fleet-list,
@@ -542,14 +674,38 @@ a {
 }
 
 .ops-action-button {
-  min-height: 42px;
+  display: inline-grid;
+  min-height: 46px;
+  align-content: center;
+  gap: 2px;
   border: 1px solid #172033;
   border-radius: 6px;
   background: #172033;
   color: #ffffff;
-  padding: 0 16px;
+  padding: 8px 16px;
   font: inherit;
   font-weight: 900;
+  text-align: left;
+}
+
+.ops-action-button span {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.ops-action-button small {
+  color: #c9d6e4;
+}
+
+.ops-action-button-secondary {
+  border-color: #c7d4df;
+  background: #ffffff;
+  color: #172033;
+}
+
+.ops-action-button-secondary span,
+.ops-action-button-secondary small {
+  color: inherit;
 }
 
 .error-banner {
@@ -2131,6 +2287,12 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .ops-ai-grid,
+  .ops-platform-grid,
+  .ops-ai-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .os-topbar,
   .trust-os-hero {
     grid-template-columns: 1fr;
@@ -2206,6 +2368,10 @@ a {
   .novapay-portal-grid,
   .ops-kpi-grid,
   .ops-command-grid,
+  .ops-ai-grid,
+  .ops-platform-grid,
+  .ops-ai-card-grid,
+  .ops-control-actions,
   .ops-layout-grid,
   .roadmap-lane {
     grid-template-columns: 1fr;

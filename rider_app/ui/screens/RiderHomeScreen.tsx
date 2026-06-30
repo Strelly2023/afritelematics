@@ -35,6 +35,9 @@ export function RiderHomeScreen({
   onRequestRide,
 }: RiderHomeScreenProps) {
   const [intelligence, setIntelligence] = useState<PassengerIntelligenceFeed | null>(null);
+  const intelligenceAlerts = Array.isArray(intelligence?.alerts)
+    ? intelligence.alerts
+    : [];
 
   useEffect(() => {
     let active = true;
@@ -138,7 +141,7 @@ export function RiderHomeScreen({
               <Text style={styles.intelMeta}>
                 Twin health: {Math.round(intelligence.digital_twin.twin_health_score)}%
               </Text>
-              <Text style={styles.intelMeta}>Next state: {intelligence.digital_twin.prediction.next_state}</Text>
+              <Text style={styles.intelMeta}>Next state: {intelligence.digital_twin.prediction?.next_state || "syncing"}</Text>
               <Text style={styles.recommendation}>{intelligence.digital_twin.recommendation}</Text>
               <Text style={styles.alert}>{intelligence.digital_twin.reason}</Text>
             </>
@@ -159,12 +162,12 @@ export function RiderHomeScreen({
             </>
           ) : null}
           <View style={styles.trustRow}>
-            <TrustPill label={intelligence.trust.driver_verified ? "Driver verified" : "Driver review"} />
-            <TrustPill label={intelligence.trust.vehicle_verified ? "Vehicle verified" : "Vehicle review"} />
-            <TrustPill label={intelligence.trust.payment_secure ? "Payment secured" : "Payment review"} />
+            <TrustPill label={intelligence.trust?.driver_verified ? "Driver verified" : "Driver review"} />
+            <TrustPill label={intelligence.trust?.vehicle_verified ? "Vehicle verified" : "Vehicle review"} />
+            <TrustPill label={intelligence.trust?.payment_secure ? "Payment secured" : "Payment review"} />
           </View>
           <View style={styles.alerts}>
-            {intelligence.alerts.map((alert) => (
+            {intelligenceAlerts.map((alert) => (
               <Text key={alert} style={styles.alert}>
                 {alert}
               </Text>
