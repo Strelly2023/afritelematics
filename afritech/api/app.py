@@ -1,8 +1,10 @@
 """FastAPI entrypoint for the deterministic MVP production pipeline."""
 
 from __future__ import annotations
+from datetime import datetime
 from importlib import import_module
 import os
+import time
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -21,6 +23,7 @@ from afritech.api.auth.jwt_device_auth import (
 )
 from afritech.api.ingestion.event_ingestion import (
     EventIngestionAPI,
+    MobileEventAuthenticator,
     build_router,
 )
 from afritech.api.realtime.dashboard_bus import dashboard_hub, publish_dashboard_event as broadcast_dashboard_event
@@ -134,6 +137,7 @@ def runtime_event_ingestion_secret() -> str:
 
 
 mobile_event_ingestion = EventIngestionAPI(secret=runtime_event_ingestion_secret())
+mobile_event_authenticator = MobileEventAuthenticator()
 partner_verification_store = PartnerVerificationStore()
 trust_registry_store = TrustRegistryStore()
 standards_dependency_store = StandardsDependencyStore()
@@ -172,6 +176,118 @@ app.add_middleware(
 
 # ✅ Core ingestion API
 app.include_router(build_router(mobile_event_ingestion))
+
+
+@app.post("/pilot/evidence")
+def pilot_evidence_compatibility(
+    payload: dict[str, Any],
+    request: Request,
+) -> dict[str, Any]:
+    """Accept driver pilot evidence and bridge it into signed event ingestion.
+
+    Mobile clients should not carry the ingestion HMAC secret. This compatibility
+    route preserves the driver diagnostics contract while the server signs the
+    canonical mobile event before passing it through `/v1/events` rules.
+    """
+    captured_at = str(payload.get("captured_at") or "")
+    timestamp = _pilot_evidence_timestamp_ms(captured_at)
+    evidence_type = str(payload.get("type") or "driver_location_event")
+    driver_id = str(
+        payload.get("driver_id")
+        or request.headers.get("X-AfriRide-Device-Id")
+        or "unknown_driver"
+    )
+    evidence_payload = dict(payload.get("payload") or {})
+    constraints = dict(payload.get("constraints") or {})
+    event_type = _pilot_evidence_event_type(evidence_type)
+    entity_id = str(
+        evidence_payload.get("ride_id")
+        or evidence_payload.get("rideId")
+        or driver_id
+    )
+    event_id = str(
+        request.headers.get("X-AfriRide-Event-Id")
+        or f"pilot-{evidence_type}-{timestamp}"
+    )
+    mobile_event = {
+        "event_id": event_id,
+        "event_type": event_type,
+        "device_id": str(
+            request.headers.get("X-AfriRide-Device-Id")
+            or evidence_payload.get("device_id")
+            or driver_id
+        ),
+        "entity_id": entity_id,
+        "timestamp": timestamp,
+        "logical_clock": timestamp,
+        "payload": _pilot_evidence_mobile_payload(
+            evidence_type=evidence_type,
+            event_type=event_type,
+            entity_id=entity_id,
+            evidence_payload=evidence_payload,
+            constraints=constraints,
+            verdict=str(payload.get("verdict") or "observed"),
+        ),
+        "signature": "0" * 64,
+    }
+    mobile_event["signature"] = mobile_event_authenticator.generate_signature(
+        mobile_event,
+        runtime_event_ingestion_secret(),
+    )
+    result = mobile_event_ingestion.ingest(
+        [mobile_event],
+        received_at_ms=int(time.time() * 1000),
+    )
+    if result["rejected"]:
+        raise HTTPException(status_code=422, detail=result["rejected"])
+    return {
+        "status": "captured",
+        "evidence_id": event_id,
+        "node_id": "fastapi_event_ingestion",
+        "proposal_id": entity_id,
+        "accepted": result["accepted"],
+    }
+
+
+def _pilot_evidence_timestamp_ms(captured_at: str) -> int:
+    if captured_at:
+        try:
+            normalized = captured_at.replace("Z", "+00:00")
+            return int(datetime.fromisoformat(normalized).timestamp() * 1000)
+        except ValueError:
+            pass
+    return int(time.time() * 1000)
+
+
+def _pilot_evidence_event_type(evidence_type: str) -> str:
+    if evidence_type == "ride_accept_latency":
+        return "DRIVER_ACCEPTED_RIDE"
+    return "DRIVER_LOCATION_UPDATE"
+
+
+def _pilot_evidence_mobile_payload(
+    *,
+    evidence_type: str,
+    event_type: str,
+    entity_id: str,
+    evidence_payload: dict[str, Any],
+    constraints: dict[str, Any],
+    verdict: str,
+) -> dict[str, Any]:
+    forbidden = {"replay_hash", "authority", "decision_authority"}
+    cleaned = {key: value for key, value in evidence_payload.items() if key not in forbidden}
+    if event_type == "DRIVER_LOCATION_UPDATE":
+        latitude = cleaned.get("latitude") or cleaned.get("lat")
+        longitude = cleaned.get("longitude") or cleaned.get("lon") or cleaned.get("lng")
+        if latitude is not None:
+            cleaned["latitude"] = str(latitude)
+        if longitude is not None:
+            cleaned["longitude"] = str(longitude)
+    cleaned["ride_id"] = str(cleaned.get("ride_id") or cleaned.get("rideId") or entity_id)
+    cleaned["evidence_type"] = evidence_type
+    cleaned["constraints"] = constraints
+    cleaned["verdict"] = verdict
+    return cleaned
 
 # ✅ Auth APIs
 app.include_router(build_pilot_auth_router())
