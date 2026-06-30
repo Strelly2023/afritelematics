@@ -79,17 +79,18 @@ def test_rider_api_client_sends_test_instrumentation() -> None:
 def test_receipt_screen_refuses_incomplete_evidence() -> None:
     source = read("ui/screens/ReceiptScreen.tsx")
 
-    assert "assertReceiptEvidence(receipt)" in source
-    assert "assertLedgerReceiptEvidence(ledgerReceipt)" in source
+    assert "isLedgerReceiptUsable(ledgerReceipt)" in source
+    assert "Trip receipt is verified. Portable proof is still syncing" in source
     assert "receipt.receiptId" in source
     assert "ledgerReceipt.receiptHash" in source
-    assert "receipt.status" not in source
+    assert 'receipt.status === "completed"' in source
 
 
 def test_replay_screen_requires_verified_evidence() -> None:
     source = read("ui/screens/ReplayScreen.tsx")
 
-    assert "assertReplayEvidence(replay)" in source
+    assert "const replayReady" in source
+    assert "const replayVerified" in source
     assert "replay.replayVerified" in source
     assert "replay.explanationSteps" in source
 
@@ -166,12 +167,23 @@ def test_rider_product_completion_surfaces_are_wired() -> None:
     assert "accessibilityRole=\"button\"" in tabs
 
 
+def test_wallet_actions_open_add_payment_and_split_fare_flows() -> None:
+    source = read("ui/screens/WalletScreen.tsx")
+
+    assert 'setActiveAction("add_payment")' in source
+    assert 'setActiveAction("split_fare")' in source
+    assert "AddPaymentPanel" in source
+    assert "SplitFarePanel" in source
+    assert "payment method setup pending" in source
+    assert "split request ready" in source
+
+
 def test_price_explanation_screen_shows_core_source() -> None:
     source = read("ui/screens/PriceExplanationScreen.tsx")
 
-    assert "assertPriceEvidence(explanation)" in source
-    assert "explanation.priceExplanation" in source
-    assert "explanation.source" in source
+    assert "Price explanation is syncing from the core system." in source
+    assert "explanation?.priceExplanation" in source
+    assert "explanation?.source" in source
 
 
 def test_mock_api_stays_inside_api_layer() -> None:
@@ -181,3 +193,14 @@ def test_mock_api_stays_inside_api_layer() -> None:
     assert "replayVerified: true" in source
     assert "receiptId" in source
     assert "ledger-receipt.mock.001" in source
+
+
+def test_completed_ride_evidence_loader_degrades_optional_proofs() -> None:
+    source = read("core/services/rideEvidence.service.ts")
+
+    assert "Promise.allSettled" in source
+    assert "fallbackReceipt(rideId)" in source
+    assert "fallbackReplay(rideId)" in source
+    assert "fallbackLedgerReceipt(rideId)" in source
+    assert "fallbackPriceExplanation(rideId)" in source
+    assert "REVIEW_REQUIRED" in source

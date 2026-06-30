@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { assertPriceEvidence } from "../../core/models/evidenceGuards";
 import type { PriceExplanation } from "../../core/models/ride";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
@@ -14,13 +13,16 @@ type PriceExplanationScreenProps = {
 export function PriceExplanationScreen({
   explanation,
 }: PriceExplanationScreenProps) {
-  assertPriceEvidence(explanation);
+  const source = explanation?.source || "core_system";
+  const body =
+    explanation?.priceExplanation ||
+    "Price explanation is syncing from the core system.";
 
   return (
     <SurfacePanel>
       <Text style={styles.title}>Price explanation</Text>
-      <Text style={styles.source}>Source: {explanation.source}</Text>
-      <Text style={styles.body}>{explanation.priceExplanation}</Text>
+      <Text style={styles.source}>Source: {source}</Text>
+      <Text style={styles.body}>{body}</Text>
       {explanation.lineItems?.map((item) => (
         <View key={item.label} style={styles.item}>
           <Text style={styles.itemLabel}>{item.label}</Text>

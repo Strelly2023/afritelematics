@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { assertReplayEvidence } from "../../core/models/evidenceGuards";
 import type { RideReplay } from "../../core/models/ride";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
@@ -16,37 +15,38 @@ type ReplayScreenProps = {
 };
 
 export function ReplayScreen({ replay }: ReplayScreenProps) {
-  assertReplayEvidence(replay);
+  const replayReady = Boolean(replay?.rideId && replay.replayId);
+  const replayVerified = replayReady && replay.replayVerified === true;
   const timelineEvents =
     replay.timelineEvents ||
     (["REQUESTED", "DRIVER_ACCEPTED", "DRIVER_MATCHED", "ARRIVING", "ARRIVED", "STARTED", "COMPLETED"] as const).map(
-      (label) => ({ label, verified: replay.replayVerified }),
+      (label) => ({ label, verified: replayVerified }),
     );
 
   return (
     <SurfacePanel>
       <TrustScoreCard
-        score={replay.replayVerified ? 96 : 58}
+        score={replayVerified ? 96 : 58}
         checks={["Route", "Timeline", "Receipt"]}
         title="Replay Verification"
       />
       <MapPreviewCard
         routeText={replay.routeSummary || "Route verification available after replay"}
-        pickupConfirmed={replay.replayVerified}
-        dropoffConfirmed={replay.replayVerified}
-        gpsTraceAvailable={replay.replayVerified}
+        pickupConfirmed={replayVerified}
+        dropoffConfirmed={replayVerified}
+        gpsTraceAvailable={replayVerified}
       />
       <LifecycleTimeline steps={buildReplayTimeline(timelineEvents)} />
       <EvidenceSummaryCard
         summary={
-          replay.replayVerified
+          replayVerified
             ? "This trip replay matches the verified route and lifecycle events."
             : "Replay is still pending and should be reviewed before final trust is confirmed."
         }
       />
       <Text style={styles.title}>Replay details</Text>
       <Text style={styles.verified}>
-        {replay.replayVerified ? "Verified replay" : "Replay pending"}
+        {replayVerified ? "Verified replay" : "Replay pending"}
       </Text>
       {replay.routeSummary ? (
         <Text style={styles.summary}>{replay.routeSummary}</Text>

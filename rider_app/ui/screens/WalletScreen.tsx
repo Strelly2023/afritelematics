@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton } from "../widgets/PrimaryButton";
@@ -6,7 +6,11 @@ import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 
+type WalletAction = "add_payment" | "split_fare" | null;
+
 export function WalletScreen() {
+  const [activeAction, setActiveAction] = useState<WalletAction>(null);
+
   return (
     <SurfacePanel>
       <Text style={styles.title}>NovaPay Wallet</Text>
@@ -23,9 +27,16 @@ export function WalletScreen() {
       </View>
 
       <View style={styles.actions}>
-        <PrimaryButton label="Add payment" onPress={() => undefined} />
-        <PrimaryButton label="Split fare" onPress={() => undefined} tone="secondary" />
+        <PrimaryButton label="Add payment" onPress={() => setActiveAction("add_payment")} />
+        <PrimaryButton
+          label="Split fare"
+          onPress={() => setActiveAction("split_fare")}
+          tone="secondary"
+        />
       </View>
+
+      {activeAction === "add_payment" ? <AddPaymentPanel /> : null}
+      {activeAction === "split_fare" ? <SplitFarePanel /> : null}
     </SurfacePanel>
   );
 }
@@ -35,6 +46,42 @@ function Method({ label, status }: { label: string; status: string }) {
     <View style={styles.method}>
       <Text style={styles.methodLabel}>{label}</Text>
       <Text style={styles.methodStatus}>{status}</Text>
+    </View>
+  );
+}
+
+function AddPaymentPanel() {
+  return (
+    <View style={styles.actionPanel}>
+      <Text style={styles.panelTitle}>Add payment method</Text>
+      <Text style={styles.panelBody}>
+        NovaPay setup is ready. Add card, mobile money, or business wallet from
+        the secure payment flow.
+      </Text>
+      <View style={styles.panelChips}>
+        <Text style={styles.panelChip}>Card</Text>
+        <Text style={styles.panelChip}>Mobile Money</Text>
+        <Text style={styles.panelChip}>Business wallet</Text>
+      </View>
+      <Text style={styles.panelStatus}>Status: payment method setup pending</Text>
+    </View>
+  );
+}
+
+function SplitFarePanel() {
+  return (
+    <View style={styles.actionPanel}>
+      <Text style={styles.panelTitle}>Split fare</Text>
+      <Text style={styles.panelBody}>
+        Share the current or next trip cost with another rider. The split is
+        held until the other rider accepts.
+      </Text>
+      <View style={styles.panelChips}>
+        <Text style={styles.panelChip}>50 / 50</Text>
+        <Text style={styles.panelChip}>Custom</Text>
+        <Text style={styles.panelChip}>Invite contact</Text>
+      </View>
+      <Text style={styles.panelStatus}>Status: split request ready</Text>
     </View>
   );
 }
@@ -85,6 +132,45 @@ const styles = StyleSheet.create({
   },
   methods: {
     gap: spacing.sm,
+  },
+  actionPanel: {
+    backgroundColor: colors.soft,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
+  panelBody: {
+    color: colors.secondary,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  panelChip: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 999,
+    borderWidth: 1,
+    color: colors.secondary,
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+  },
+  panelChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  panelStatus: {
+    color: colors.success,
+    fontSize: 13,
+    fontWeight: "900",
+  },
+  panelTitle: {
+    color: colors.ink,
+    fontSize: 16,
+    fontWeight: "900",
   },
   title: {
     color: colors.ink,

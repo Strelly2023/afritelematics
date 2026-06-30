@@ -1,10 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import {
-  assertLedgerReceiptEvidence,
-  assertReceiptEvidence,
-} from "../../core/models/evidenceGuards";
 import type { LedgerReceiptSummary, RideReceipt } from "../../core/models/ride";
 import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
@@ -22,16 +18,16 @@ type ReceiptScreenProps = {
 };
 
 export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
-  assertReceiptEvidence(receipt);
-  if (ledgerReceipt) {
-    assertLedgerReceiptEvidence(ledgerReceipt);
-  }
   const _debugReceiptId = receipt.receiptId;
   const _debugRideId = receipt.rideId;
   const _debugReceiptHash = ledgerReceipt ? ledgerReceipt.receiptHash : null;
+  const receiptComplete = Boolean(
+    receipt?.rideId && receipt.receiptId && receipt.status === "completed",
+  );
+  const ledgerValid = isLedgerReceiptUsable(ledgerReceipt);
   const trustScore = receipt.trustScore || 92;
-  const verificationPassed = receipt.verificationStatus !== "FAILED";
-  const evidenceComplete = receipt.evidenceComplete !== false;
+  const verificationPassed = receiptComplete && receipt.verificationStatus !== "FAILED";
+  const evidenceComplete = receiptComplete && receipt.evidenceComplete !== false;
   const replayMatch = receipt.replayMatch !== false;
 
   return (
@@ -66,8 +62,10 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
       />
       <EvidenceSummaryCard
         summary={
-          verificationPassed && evidenceComplete
-            ? "Trip verified. Payment, route, and replay checks passed."
+          verificationPassed && evidenceComplete && ledgerValid
+            ? "Trip verified. Payment, route, replay, and portable proof checks passed."
+            : verificationPassed && evidenceComplete
+              ? "Trip receipt is verified. Portable proof is still syncing and can be reviewed later."
             : "Trip needs review before it is treated as fully trusted."
         }
       />
@@ -87,7 +85,7 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
       {ledgerReceipt ? (
         <View style={styles.proofBox}>
           <Text style={styles.proofTitle}>Verification package</Text>
-          <Text style={styles.proofValue}>Verdict: {ledgerReceipt.verdict}</Text>
+          <Text style={styles.proofValue}>Verdict: {ledgerValid ? ledgerReceipt.verdict : "REVIEW"}</Text>
           <Text style={styles.proofValue}>Events: {ledgerReceipt.eventCount}</Text>
           <Text style={styles.proofValue}>Hash mode: {ledgerReceipt.hashMode}</Text>
           <Text style={styles.proofValue}>Signature: {ledgerReceipt.signatureMode}</Text>
@@ -103,6 +101,20 @@ export function ReceiptScreen({ receipt, ledgerReceipt }: ReceiptScreenProps) {
         />
       </View>
     </SurfacePanel>
+  );
+}
+
+function isLedgerReceiptUsable(
+  receipt: LedgerReceiptSummary | null | undefined,
+): receipt is LedgerReceiptSummary {
+  return Boolean(
+    receipt?.receiptId &&
+      receipt.receiptHash &&
+      receipt.rootHash &&
+      receipt.verdict === "VALID" &&
+      receipt.allSignaturesValid &&
+      receipt.allIdentitiesVerified &&
+      receipt.replayValid,
   );
 }
 
