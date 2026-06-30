@@ -14,13 +14,14 @@ from afritech.core_platform.canonical import hash_obj
 from afritech.core_platform.hash_domains import HASH_DOMAINS
 from afritech.core_platform.models import Identity
 from afritech.core_platform.novapay_runtime import NovaPayRuntimeEngine, NovaPayTransferAdmissionError
+from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
 
 
-def _client() -> TestClient:
+def _client(governance_store: PartnerGovernanceStore | None = None) -> TestClient:
     app = FastAPI()
     runtime = NovaPayRuntimeEngine()
     app.include_router(build_auth_router())
-    app.include_router(build_novapay_runtime_router(runtime=runtime))
+    app.include_router(build_novapay_runtime_router(runtime=runtime, governance_store=governance_store))
     return TestClient(app)
 
 
@@ -215,6 +216,35 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     assert treasury.json()["global_ledger_root"]
     assert treasury.json()["ledger_checkpoint"]["snapshot_hash"]
     assert treasury.json()["reconciliation"]["status"] == "clear"
+
+
+def test_novapay_runtime_geo_routing_prefers_low_latency_healthy_region() -> None:
+    governance_store = PartnerGovernanceStore(seed_partner_governance_registry())
+    client = _client(governance_store=governance_store)
+
+    response = client.get(
+        "/v1/geo/routing",
+        headers={
+            **_headers(role="OPERATOR", user_id="ops-1", organization_id="partner-city-ops"),
+            "CF-IPCountry": "GB",
+            "X-Region-Latency-MS": "AU:160,EU:40,US:210",
+            "X-Edge-Latency-MS": "180",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["view"] == "novapay_geo_routing"
+    assert payload["organization_id"] == "partner-city-ops"
+    assert payload["geo_routing"]["region"] == "EU"
+    assert payload["geo_routing"]["failover_region"] == "AU"
+    assert payload["geo_routing"]["geo_source"] == "country"
+    assert payload["geo_routing"]["routing_reason"] == "country_mapping"
+    assert payload["geo_routing"]["trust_level"] == "enterprise"
+    assert payload["geo_routing"]["effective_capacity"] == 210
+    assert payload["geo_routing"]["latency_ms"] == 40
+    assert payload["geo_routing"]["edge_latency_ms"] == 180
+    assert payload["geo_routing"]["sla_multiplier"] == 0.7
 
 
 def test_novapay_runtime_rejects_unsupported_transfer_type() -> None:

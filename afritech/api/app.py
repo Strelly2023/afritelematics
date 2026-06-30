@@ -220,7 +220,11 @@ app.include_router(build_schema_registry_router())
 # ✅ NovaTechSol core platform API
 app.include_router(build_core_platform_router())
 app.include_router(build_public_trust_explorer_router())
-app.include_router(build_novapay_runtime_router())
+app.include_router(
+    build_novapay_runtime_router(
+        governance_store=partner_governance_store,
+    )
+)
 
 # ✅ AfriPro workspace API
 app.include_router(build_afroprog_workspace_router())

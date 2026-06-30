@@ -14,6 +14,8 @@ from afritech.middleware.multi_region_redis import (
     RegionAwareRedisBackend,
     regional_capacity,
 )
+from afritech.core_platform.geo_routing import adjust_sla_capacity, select_region
+from afritech.core_platform.geo_routing import parse_latency_map, parse_region_health
 from afritech.middleware.redis_circuit_breaker import RedisCircuitBreaker
 from afritech.middleware.redis_rate_limiter import RedisTokenBucketLimiter
 from afritech.partner_governance import PartnerGovernanceStore
@@ -67,6 +69,37 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         self.circuit_breaker = (
             RedisCircuitBreaker(client=backend, recovery_seconds=self.recovery_seconds)
         )
+
+    def _request_region(self, request: Request) -> str:
+        for header_name in ("X-Edge-Region", "X-Target-Region", "X-Region", "X-Forwarded-Region"):
+            value = str(request.headers.get(header_name) or "").strip()
+            if value:
+                return value.upper()
+        return self.region
+
+    def _request_country(self, request: Request) -> str | None:
+        for header_name in ("CF-IPCountry", "X-Client-Country", "X-Country"):
+            value = str(request.headers.get(header_name) or "").strip()
+            if value:
+                return value.upper()
+        return None
+
+    def _request_health_map(self, request: Request) -> dict[str, str]:
+        return parse_region_health(request.headers.get("X-Region-Health"))
+
+    def _request_latency_map(self, request: Request) -> dict[str, int]:
+        return parse_latency_map(request.headers.get("X-Region-Latency-MS"))
+
+    def _request_latency_ms(self, request: Request) -> int | None:
+        for header_name in ("X-Edge-Latency-MS", "X-Client-Latency-MS"):
+            value = str(request.headers.get(header_name) or "").strip()
+            if not value:
+                continue
+            try:
+                return max(0, int(float(value)))
+            except ValueError:
+                continue
+        return None
 
     async def dispatch(self, request: Request, call_next):
         if request.method == "OPTIONS" or not any(
@@ -123,7 +156,22 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
 
         capacity_value = record.limits.get("requests_per_min")
         global_capacity = int(capacity_value) if capacity_value is not None else self.default_bucket_capacity
-        capacity = regional_capacity(global_capacity, self.region, self.region_weights)
+        request_region = self._request_region(request)
+        request_country = self._request_country(request)
+        region_decision = select_region(
+            client_country=request_country,
+            client_region=request_region,
+            preferred_region=request_region,
+            trust_level=record.trust_level,
+            health_map=self._request_health_map(request),
+            latency_map=self._request_latency_map(request),
+        )
+
+        capacity = regional_capacity(global_capacity, region_decision["region"], self.region_weights)
+        latency_ms = self._request_latency_ms(request)
+        if latency_ms is None:
+            latency_ms = region_decision.get("latency_ms")
+        capacity = adjust_sla_capacity(capacity, latency_ms, record.trust_level)
         if record.enforcement_state == "throttled":
             capacity = max(1, int(capacity * self.throttled_bucket_fraction))
         refill_rate = max(0.0, float(capacity) / 60.0)
@@ -148,6 +196,10 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
             self.circuit_breaker.record_failure(org_id, threshold=self.failure_threshold)
         else:
             self.circuit_breaker.reset(org_id)
+
+        request.state.geo_routing = region_decision
+        request.state.sla_capacity = capacity
+        request.state.edge_latency_ms = latency_ms
 
         return response
 

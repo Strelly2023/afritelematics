@@ -13,16 +13,24 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any, Mapping
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, model_validator
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
+from afritech.core_platform.geo_routing import (
+    adjust_sla_capacity,
+    parse_latency_map,
+    parse_region_health,
+    latency_multiplier,
+    select_region,
+)
 from afritech.core_platform.models import Identity
 from afritech.core_platform.novapay_runtime import (
     DEFAULT_NOVAPAY_RUNTIME,
     NovaPayRuntimeEngine,
     NovaPayTransferAdmissionError,
 )
+from afritech.middleware.multi_region_redis import regional_capacity
 
 
 class TransferQuoteRequest(BaseModel):
@@ -69,6 +77,17 @@ class FundingSourceValidateRequest(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class GeoRoutingDecisionRequest(BaseModel):
+    client_country: str | None = None
+    client_region: str | None = None
+    preferred_region: str | None = None
+    trust_level: str | None = None
+    global_limit: int = Field(default=1_000, ge=1)
+    edge_latency_ms: int | None = Field(default=None, ge=0)
+    health_map: dict[str, str] = Field(default_factory=dict)
+    latency_map: dict[str, int] = Field(default_factory=dict)
+
+
 def _identity_from_claims(claims: JWTClaims) -> Identity:
     return Identity(
         identity_id=claims.sub,
@@ -87,7 +106,71 @@ def _translate_error(exc: NovaPayTransferAdmissionError) -> HTTPException:
     return HTTPException(status_code=400, detail=str(exc))
 
 
-def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) -> APIRouter:
+def _resolve_trust_level(
+    claims: JWTClaims,
+    *,
+    governance_store: Any | None = None,
+    fallback: str | None = None,
+) -> str:
+    if governance_store is not None:
+        try:
+            return str(governance_store.load(claims.organization_id).trust_level or "sandbox")
+        except KeyError:
+            pass
+    return str(fallback or "sandbox")
+
+
+def _optional_int(value: Any, default: int | None = None) -> int | None:
+    if value is None:
+        return default
+    try:
+        return max(0, int(float(value)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _geo_routing_payload(
+    *,
+    runtime: NovaPayRuntimeEngine,
+    claims: JWTClaims,
+    trust_level: str,
+    client_country: str | None,
+    client_region: str | None,
+    preferred_region: str | None,
+    health_map: dict[str, str] | None,
+    latency_map: dict[str, int] | None,
+    global_limit: int,
+    edge_latency_ms: int | None = None,
+) -> dict[str, Any]:
+    decision = select_region(
+        client_country=client_country,
+        client_region=client_region,
+        preferred_region=preferred_region,
+        trust_level=trust_level,
+        health_map=health_map,
+        latency_map=latency_map,
+    )
+    region_capacity = regional_capacity(global_limit, decision["region"])
+    effective_latency_ms = edge_latency_ms if edge_latency_ms is not None else decision["latency_ms"]
+    region_capacity = adjust_sla_capacity(region_capacity, effective_latency_ms, trust_level)
+    decision["effective_capacity"] = region_capacity
+    decision["trust_level"] = trust_level
+    decision["selected_region_latency_ms"] = decision["latency_ms"]
+    decision["edge_latency_ms"] = effective_latency_ms
+    decision["sla_multiplier"] = latency_multiplier(effective_latency_ms, trust_level)
+    decision["regions"] = runtime.build_regions()
+    return {
+        "view": "novapay_geo_routing",
+        "organization_id": claims.organization_id,
+        "geo_routing": decision,
+    }
+
+
+def build_novapay_runtime_router(
+    runtime: NovaPayRuntimeEngine | None = None,
+    *,
+    governance_store: Any | None = None,
+) -> APIRouter:
     runtime = runtime or _runtime()
     router = APIRouter(tags=["novapay-runtime"])
 
@@ -143,6 +226,48 @@ def build_novapay_runtime_router(runtime: NovaPayRuntimeEngine | None = None) ->
             "organization_id": claims.organization_id,
             "regions": runtime.build_regions(),
         }
+
+    @router.get("/v1/geo/routing")
+    def geo_routing_from_headers(
+        request: Request,
+        claims: JWTClaims = Depends(readable_roles),
+    ) -> dict[str, Any]:
+        trust_level = _resolve_trust_level(claims, governance_store=governance_store)
+        return _geo_routing_payload(
+            runtime=runtime,
+            claims=claims,
+            trust_level=trust_level,
+            client_country=request.headers.get("CF-IPCountry") or request.headers.get("X-Client-Country"),
+            client_region=request.headers.get("X-Client-Region") or request.headers.get("X-Edge-Region"),
+            preferred_region=request.headers.get("X-Target-Region") or request.headers.get("X-Forwarded-Region"),
+            health_map=parse_region_health(request.headers.get("X-Region-Health")),
+            latency_map=parse_latency_map(request.headers.get("X-Region-Latency-MS")),
+            global_limit=_optional_int(request.headers.get("X-Geo-Global-Limit"), 1_000) or 1_000,
+            edge_latency_ms=_optional_int(request.headers.get("X-Edge-Latency-MS")),
+        )
+
+    @router.post("/v1/geo/routing")
+    def geo_routing(
+        body: GeoRoutingDecisionRequest,
+        claims: JWTClaims = Depends(readable_roles),
+    ) -> dict[str, Any]:
+        trust_level = _resolve_trust_level(
+            claims,
+            governance_store=governance_store,
+            fallback=body.trust_level,
+        )
+        return _geo_routing_payload(
+            runtime=runtime,
+            claims=claims,
+            trust_level=trust_level,
+            client_country=body.client_country,
+            client_region=body.client_region,
+            preferred_region=body.preferred_region,
+            health_map=body.health_map,
+            latency_map=body.latency_map,
+            global_limit=body.global_limit,
+            edge_latency_ms=body.edge_latency_ms,
+        )
 
     @router.post("/v1/funding-sources/validate")
     def validate_funding_source(
