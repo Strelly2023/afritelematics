@@ -96,6 +96,18 @@ from afritech.core_platform.stack import (
     build_novatech_stack,
     build_novatech_stack_readiness,
 )
+from afritech.core_platform.autonomous_ecosystem import (
+    AutonomousEcosystem,
+    DigitalTwin,
+    GovernanceProtocol,
+    ResourceMarket,
+    ResourceTrade,
+)
+from afritech.core_platform.smart_resolver import (
+    SmartResolver,
+    SmartResolverResult,
+    resolve_smart_offline_navigation,
+)
 from afritech.core_platform.transfers import (
     NovaPayTransferService,
     TransferQuote,
@@ -127,6 +139,13 @@ __all__ = [
     "PaymentProviderResult",
     "PaymentReceipt",
     "PayIDProvider",
+    "AutonomousEcosystem",
+    "DigitalTwin",
+    "GovernanceProtocol",
+    "ResourceMarket",
+    "ResourceTrade",
+    "SmartResolver",
+    "SmartResolverResult",
     "CorePlatformStore",
     "InMemoryCorePlatformStore",
     "PostgresCorePlatformStore",
@@ -180,6 +199,7 @@ __all__ = [
     "verify_stateless_privacy_qr",
     "build_novatech_stack",
     "build_novatech_stack_readiness",
+    "resolve_smart_offline_navigation",
     "build_zk_receipt",
     "build_zk_receipt_qr_bundle",
     "verify_zk_receipt",

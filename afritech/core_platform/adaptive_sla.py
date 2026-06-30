@@ -127,6 +127,12 @@ class AdaptiveSLAState:
     policy_value: float = 0.0
     policy_reason: str = "rule_based"
     policy_region: str | None = None
+    economic_market: dict[str, Any] | None = None
+    digital_twin: dict[str, Any] | None = None
+    governance: dict[str, Any] | None = None
+    explainability: dict[str, Any] | None = None
+    execution_score: float | None = None
+    learning_reward: float | None = None
     updated_at: str = field(default_factory=_utcnow)
 
     def canonical_dict(self) -> dict[str, Any]:
@@ -155,6 +161,12 @@ class AdaptiveSLAState:
             "policy_value": round(float(self.policy_value), 4),
             "policy_reason": self.policy_reason,
             "policy_region": self.policy_region,
+            "economic_market": self.economic_market,
+            "digital_twin": self.digital_twin,
+            "governance": self.governance,
+            "explainability": self.explainability,
+            "execution_score": self.execution_score,
+            "learning_reward": self.learning_reward,
             "updated_at": self.updated_at,
         }
 
@@ -181,6 +193,12 @@ def _present_state(state: AdaptiveSLAState) -> dict[str, Any]:
         "value": round(float(state.policy_value), 4),
         "reason": state.policy_reason,
         "region": state.policy_region or state.region,
+        "economy": state.economic_market or {},
+        "digital_twin": state.digital_twin or {},
+        "governance": state.governance or {},
+        "explainability": state.explainability or {},
+        "execution_score": None if state.execution_score is None else round(float(state.execution_score), 4),
+        "learning_reward": None if state.learning_reward is None else round(float(state.learning_reward), 4),
     }
     return payload
 
@@ -283,6 +301,12 @@ class AdaptiveSLAController:
             policy_value=_safe_float(payload.get("policy_value"), 0.0),
             policy_reason=str(payload.get("policy_reason") or "rule_based"),
             policy_region=None if payload.get("policy_region") is None else str(payload.get("policy_region")).upper(),
+            economic_market=None if payload.get("economic_market") is None else dict(payload.get("economic_market") or {}),
+            digital_twin=None if payload.get("digital_twin") is None else dict(payload.get("digital_twin") or {}),
+            governance=None if payload.get("governance") is None else dict(payload.get("governance") or {}),
+            explainability=None if payload.get("explainability") is None else dict(payload.get("explainability") or {}),
+            execution_score=None if payload.get("execution_score") is None else _safe_float(payload.get("execution_score")),
+            learning_reward=None if payload.get("learning_reward") is None else _safe_float(payload.get("learning_reward")),
             updated_at=str(payload.get("updated_at") or _utcnow()),
         )
 
@@ -387,6 +411,12 @@ class AdaptiveSLAController:
         policy_value = 0.0
         policy_reason = "rule_based"
         policy_region = str(region or state.region).upper()
+        economic_market: dict[str, Any] | None = state.economic_market
+        digital_twin: dict[str, Any] | None = state.digital_twin
+        governance: dict[str, Any] | None = state.governance
+        explainability: dict[str, Any] | None = state.explainability
+        execution_score: float | None = state.execution_score
+        learning_reward: float | None = state.learning_reward
         apply_autonomy = self.autonomous_control is not None and trust != "regulator" and state.predictor.samples >= 3
         if self.autonomous_control is not None:
             autonomy = self.autonomous_control.recommend(
@@ -410,6 +440,12 @@ class AdaptiveSLAController:
             policy_value = _safe_float((autonomy.get("policy") or {}).get("value"), 0.0)
             policy_reason = "autonomous_applied" if apply_autonomy else "cold_start_guardrail"
             policy_region = str((autonomy.get("routing") or {}).get("suggested_region") or policy_region).upper()
+            economic_market = dict(autonomy.get("economy") or {})
+            digital_twin = dict(autonomy.get("digital_twin") or {})
+            governance = dict(autonomy.get("governance") or {})
+            explainability = dict(autonomy.get("explainability") or {})
+            execution_score = _safe_float(autonomy.get("execution_score"), execution_score if execution_score is not None else 0.0)
+            learning_reward = _safe_float(autonomy.get("learning_reward"), learning_reward if learning_reward is not None else 0.0)
             multiplier = _safe_float(autonomy.get("limit_multiplier"), 1.0) if apply_autonomy else 1.0
             adjusted_limit = max(1, int(round(float(adjusted_limit) * multiplier)))
             if apply_autonomy and policy_action == "reroute_region" and policy_region:
@@ -431,6 +467,12 @@ class AdaptiveSLAController:
             policy_value=policy_value,
             policy_reason=policy_reason,
             policy_region=policy_region,
+            economic_market=economic_market,
+            digital_twin=digital_twin,
+            governance=governance,
+            explainability=explainability,
+            execution_score=execution_score,
+            learning_reward=learning_reward,
             updated_at=_utcnow(),
         )
         self._save_state(recommendation)
@@ -489,6 +531,12 @@ class AdaptiveSLAController:
         policy_value = state.policy_value
         policy_reason = state.policy_reason
         policy_region = state.policy_region or str(region or state.region).upper()
+        economic_market = state.economic_market
+        digital_twin = state.digital_twin
+        governance = state.governance
+        explainability = state.explainability
+        execution_score = state.execution_score
+        learning_reward = state.learning_reward
         if self.autonomous_control is not None:
             autonomous = self.autonomous_control.observe(
                 {
@@ -527,6 +575,12 @@ class AdaptiveSLAController:
             policy_value = _safe_float((autonomous.get("policy") or {}).get("value"), policy_value)
             policy_reason = f"reward:{_safe_float(autonomous.get('reward'), 0.0):.4f}"
             policy_region = str((autonomous.get("routing") or {}).get("suggested_region") or policy_region).upper()
+            economic_market = dict(autonomous.get("economy") or economic_market or {})
+            digital_twin = dict(autonomous.get("digital_twin") or digital_twin or {})
+            governance = dict(autonomous.get("governance") or governance or {})
+            explainability = dict(autonomous.get("explainability") or explainability or {})
+            execution_score = _safe_float(autonomous.get("execution_score"), execution_score if execution_score is not None else 0.0)
+            learning_reward = _safe_float(autonomous.get("learning_reward"), learning_reward if learning_reward is not None else 0.0)
         updated = replace(
             state,
             trust_level=str(trust_level or state.trust_level),
@@ -545,6 +599,12 @@ class AdaptiveSLAController:
             policy_value=policy_value,
             policy_reason=policy_reason,
             policy_region=policy_region,
+            economic_market=economic_market,
+            digital_twin=digital_twin,
+            governance=governance,
+            explainability=explainability,
+            execution_score=execution_score,
+            learning_reward=learning_reward,
             updated_at=_utcnow(),
         )
         return _present_state(self._save_state(updated))

@@ -7,6 +7,8 @@ from typing import Any, Mapping
 import hashlib
 import json
 
+from afritech.core_platform.autonomous_ecosystem import AutonomousEcosystem
+
 
 def _clamp(value: float, minimum: float, maximum: float) -> float:
     return max(minimum, min(maximum, float(value)))
@@ -112,6 +114,7 @@ class AutonomousControlPlane:
     def __init__(self, client: Any, *, key_prefix: str = "ai:autonomy") -> None:
         self.client = client
         self.key_prefix = key_prefix
+        self.ecosystem = AutonomousEcosystem()
         self.sla_agent = AutonomousPolicyAgent(
             client,
             key_prefix=f"{key_prefix}:sla",
@@ -293,16 +296,23 @@ class AutonomousControlPlane:
         evaluated = []
         for candidate in candidates:
             simulated = self.simulate(features, candidate)
+            ecosystem = self.ecosystem.evaluate(
+                features=features,
+                action_bundle=candidate,
+                base_score=simulated["reward"],
+            )
             evaluated.append(
                 {
                     "candidate": candidate,
                     "simulated": simulated["state"],
-                    "score": simulated["reward"],
+                    "score": ecosystem["score"],
+                    "ecosystem": ecosystem,
                 }
             )
 
         best = max(evaluated, key=lambda item: item["score"])
         best_candidate = best["candidate"]
+        best_ecosystem = best["ecosystem"]
         limit_multiplier = 1.0
         for action in (
             str((best_candidate.get("policy") or {}).get("action") or "maintain"),
@@ -312,6 +322,7 @@ class AutonomousControlPlane:
             limit_multiplier *= self._limit_multiplier(action)
         if str((best_candidate.get("routing") or {}).get("action") or "keep_region") == "reroute_region":
             limit_multiplier *= 0.98
+        limit_multiplier *= _safe_float(best_ecosystem.get("governance", {}).get("policy", {}).get("limit_multiplier"), 1.0)
         limit_multiplier = _clamp(limit_multiplier, 0.5, 1.2)
 
         return {
@@ -320,6 +331,12 @@ class AutonomousControlPlane:
             "cost": best_candidate["cost"],
             "risk": best_candidate["risk"],
             "limit_multiplier": round(limit_multiplier, 4),
+            "economy": best_ecosystem["market"],
+            "digital_twin": best_ecosystem["digital_twin"],
+            "governance": best_ecosystem["governance"],
+            "explainability": best_ecosystem["explainability"],
+            "execution_score": _safe_float(best_ecosystem.get("execution_score"), best["score"]),
+            "learning_reward": _safe_float(best_ecosystem.get("learning_reward"), 0.0),
             "guardrails": {
                 "min_multiplier": 0.5,
                 "max_multiplier": 1.2,
@@ -353,6 +370,12 @@ class AutonomousControlPlane:
             "cost": cost,
             "risk": risk,
             "limit_multiplier": round(multiplier, 4),
+            "economy": decision["economy"],
+            "digital_twin": decision["digital_twin"],
+            "governance": decision["governance"],
+            "explainability": decision["explainability"],
+            "execution_score": decision["execution_score"],
+            "learning_reward": decision["learning_reward"],
             "guardrails": {
                 "min_multiplier": 0.5,
                 "max_multiplier": 1.2,
@@ -383,13 +406,23 @@ class AutonomousControlPlane:
         updated_routing = self.routing_agent.update(state, str(routing.get("action") or "keep_region"), reward)
         updated_cost = self.cost_agent.update(state, str(cost.get("action") or "hold_cost"), reward)
         updated_risk = self.risk_agent.update(state, str(risk.get("action") or "hold"), reward)
+        ecosystem = self.ecosystem.evaluate(
+            features=features,
+            action_bundle=recommendation,
+            base_score=reward,
+        )
         return {
             "reward": reward,
+            "learning_reward": ecosystem["learning_reward"],
             "state": state,
             "policy": updated_policy,
             "routing": updated_routing,
             "cost": updated_cost,
             "risk": updated_risk,
+            "economy": ecosystem["market"],
+            "digital_twin": ecosystem["digital_twin"],
+            "governance": ecosystem["governance"],
+            "explainability": ecosystem["explainability"],
         }
 
 

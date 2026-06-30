@@ -25,6 +25,7 @@ from afritech.afriprogramming.phase2 import (
     request_and_dispatch_ride,
     start_trip,
 )
+from afritech.core_platform.smart_resolver import resolve_smart_offline_navigation
 
 
 class Phase2RideRequestBody(BaseModel):
@@ -55,6 +56,14 @@ class Phase2DriverOnlineBody(BaseModel):
     trust_score: float | None = None
 
 
+class Phase2SmartResolverBody(BaseModel):
+    driver_id: str | None = None
+    location: dict[str, Any] | None = None
+    connectivity: dict[str, Any] | None = None
+    route_context: dict[str, Any] | None = None
+    telemetry: dict[str, Any] | None = None
+
+
 def _require_same_organization(requested_organization_id: str | None, claims: JWTClaims) -> str:
     org_id = requested_organization_id or claims.organization_id
     if org_id != claims.organization_id:
@@ -81,6 +90,39 @@ def _ride_projection_payload(ride: dict[str, Any]) -> dict[str, Any]:
         "final_fare": ride.get("final_fare"),
         "currency": ride.get("currency"),
         "updated_at": ride.get("updated_at"),
+    }
+
+
+def _ride_route_context(ride: dict[str, Any]) -> dict[str, Any]:
+    pickup = ride.get("pickup_location") or ride.get("pickup") or {}
+    destination = ride.get("destination_location") or ride.get("destination") or {}
+    status = str(ride.get("status") or "pending").lower()
+
+    waypoints: list[dict[str, Any]] = []
+    if isinstance(pickup, dict) and pickup:
+        waypoints.append(
+            {
+                **pickup,
+                "name": pickup.get("label") or pickup.get("name") or "pickup",
+                "status": "reached" if status in {"in_progress", "completed"} else "pending",
+            }
+        )
+    if isinstance(destination, dict) and destination:
+        waypoints.append(
+            {
+                **destination,
+                "name": destination.get("label") or destination.get("name") or "destination",
+                "status": "reached" if status == "completed" else "pending",
+            }
+        )
+
+    return {
+        "ride_id": ride.get("ride_id"),
+        "driver_id": ride.get("driver_id"),
+        "status": ride.get("status"),
+        "pickup": pickup if isinstance(pickup, dict) else {},
+        "destination": destination if isinstance(destination, dict) else {},
+        "waypoints": waypoints,
     }
 
 
@@ -160,6 +202,39 @@ def build_phase2_router() -> APIRouter:
             trust_score=body.trust_score,
         )
         return {"view": "novaride_phase2_driver_location", "organization_id": org_id, **result}
+
+    @router.post("/v1/novaride/phase2/rides/{ride_id}/smart-resolver")
+    def phase2_smart_resolver(
+        ride_id: str,
+        body: Phase2SmartResolverBody,
+        claims: JWTClaims = Depends(require_roles("DRIVER", "OPERATOR", "ADMIN")),
+    ) -> dict[str, Any]:
+        org_id = _require_same_organization(None, claims)
+        _require_active_subscription(org_id)
+        ride = phase0_control_plane._STORE.get_ride(ride_id=ride_id, organization_id=org_id)
+        if ride is None:
+            raise HTTPException(status_code=404, detail="ride_not_found")
+
+        driver_id = str(body.driver_id or ride.get("driver_id") or claims.sub)
+        if claims.role == "DRIVER" and driver_id != claims.sub:
+            raise HTTPException(status_code=403, detail="driver_identity_mismatch")
+
+        resolver = resolve_smart_offline_navigation(
+            ride_id=ride_id,
+            driver_id=driver_id,
+            location=body.location or ride.get("driver_location") or ride.get("location"),
+            route_context=body.route_context or _ride_route_context(ride),
+            connectivity=body.connectivity,
+            telemetry=body.telemetry,
+        )
+        return {
+            "view": "novaride_phase2_smart_resolver",
+            "organization_id": org_id,
+            "ride_id": ride_id,
+            "driver_id": driver_id,
+            "smart_resolver": resolver,
+            "read_only": True,
+        }
 
     @router.post("/v1/novaride/phase2/rides/request")
     async def phase2_request_ride(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from afritech.core_platform.adaptive_sla import AdaptiveSLAController, TrafficPredictor, adaptive_sla_limit
+from afritech.core_platform.autonomous_control import AutonomousControlPlane
 
 
 class MemoryRedis:
@@ -138,3 +139,49 @@ def test_controller_smooths_latency_and_reflects_error_ratio() -> None:
     assert first["smoothed_latency_ms"] == 20
     assert second["smoothed_latency_ms"] < 200
     assert 0.05 <= second["prediction"]["confidence"] <= 0.99
+
+
+def test_controller_exposes_autonomous_ecosystem_context() -> None:
+    controller = AdaptiveSLAController(
+        client=MemoryRedis(),
+        region="AU",
+        default_limit=100,
+        autonomous_control=AutonomousControlPlane(client=MemoryRedis()),
+    )
+
+    controller.observe(
+        "org-ecosystem",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=35,
+        observed_at=1000.0,
+    )
+    controller.observe(
+        "org-ecosystem",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=45,
+        observed_at=1060.0,
+    )
+    controller.observe(
+        "org-ecosystem",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=50,
+        observed_at=1120.0,
+    )
+
+    recommendation = controller.recommend(
+        "org-ecosystem",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=60,
+    )
+
+    assert recommendation["autonomy"]["economy"]
+    assert recommendation["autonomy"]["digital_twin"]
+    assert recommendation["autonomy"]["governance"]

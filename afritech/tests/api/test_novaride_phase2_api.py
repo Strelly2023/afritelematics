@@ -267,3 +267,105 @@ def test_phase2_bounded_autonomous_dispatch_reports_driver_allocation(tmp_path) 
         assert "reason" in payload["driver_allocation"]
     finally:
         control_plane._STORE = original_store
+
+
+def test_phase2_smart_resolver_handles_gps_and_network_loss(tmp_path) -> None:
+    original_store = control_plane._STORE
+    control_plane._STORE = PlatformStore(tmp_path / "phase2-smart-resolver.sqlite3")
+
+    try:
+        client = TestClient(app)
+        org_id = "org-phase2-smart-resolver-001"
+
+        operator_token = _issue_token(client, role="OPERATOR", organization_id=org_id, user_id="operator-1")
+        customer_token = _issue_token(client, role="CUSTOMER", organization_id=org_id, user_id="passenger-1")
+        driver_token = _issue_token(client, role="DRIVER", organization_id=org_id, user_id="driver-1")
+        operator_headers = {"Authorization": f"Bearer {operator_token}"}
+        customer_headers = {"Authorization": f"Bearer {customer_token}"}
+        driver_headers = {"Authorization": f"Bearer {driver_token}"}
+
+        onboard = client.post(
+            "/v1/novatech/phase0/organizations/onboard",
+            headers=operator_headers,
+            json={
+                "organization_id": org_id,
+                "legal_name": "Resolver Mobility Pty Ltd",
+                "sector": "mobility",
+                "trust_domain": "novaride",
+            },
+        )
+        assert onboard.status_code == 200
+
+        passenger_wallet = client.post(
+            "/v1/novaride/phase1/wallets",
+            headers=customer_headers,
+            json={"user_id": "passenger-1", "currency": "AUD", "balance": "0.00"},
+        )
+        assert passenger_wallet.status_code == 200
+
+        driver_wallet = client.post(
+            "/v1/novaride/phase1/wallets",
+            headers=operator_headers,
+            json={"user_id": "driver-1", "currency": "AUD", "balance": "0.00"},
+        )
+        assert driver_wallet.status_code == 200
+
+        client.post(
+            "/v1/novaride/phase1/wallets/credit",
+            headers=operator_headers,
+            json={"user_id": "passenger-1", "currency": "AUD", "amount": "100.00"},
+        )
+
+        driver_online = client.post(
+            "/v1/novaride/phase2/drivers/online",
+            headers=driver_headers,
+            json={
+                "location": {"lat": -37.8136, "lng": 144.9631, "label": "Melbourne CBD"},
+                "trust_score": 91.0,
+            },
+        )
+        assert driver_online.status_code == 200
+
+        ride_request = client.post(
+            "/v1/novaride/phase2/rides/request",
+            headers=customer_headers,
+            json={
+                "pickup": {"lat": -37.8136, "lng": 144.9631, "label": "CBD"},
+                "destination": {"lat": -37.8200, "lng": 144.9500, "label": "Docklands"},
+                "fare_estimate": "30.00",
+                "currency": "AUD",
+            },
+        )
+        assert ride_request.status_code == 200
+        ride_id = ride_request.json()["ride"]["ride_id"]
+
+        resolver = client.post(
+            f"/v1/novaride/phase2/rides/{ride_id}/smart-resolver",
+            headers=driver_headers,
+            json={
+                "driver_id": "driver-1",
+                "location": {
+                    "lat": -37.8136,
+                    "lng": 144.9631,
+                    "heading_deg": 90,
+                    "speed_kph": 50,
+                    "label": "Last known fix",
+                },
+                "connectivity": {
+                    "gps": False,
+                    "network": False,
+                    "internet": False,
+                    "cached_route": True,
+                },
+                "telemetry": {"sample_age_seconds": 120},
+            },
+        )
+        assert resolver.status_code == 200
+        payload = resolver.json()
+        assert payload["view"] == "novaride_phase2_smart_resolver"
+        assert payload["smart_resolver"]["mode"] == "offline_continuity"
+        assert payload["smart_resolver"]["location"]["source"] == "dead_reckoning"
+        assert payload["smart_resolver"]["sync"]["queue_locally"] is True
+        assert payload["smart_resolver"]["safety"]["allow_trip_continue"] is True
+    finally:
+        control_plane._STORE = original_store

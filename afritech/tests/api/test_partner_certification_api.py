@@ -6,9 +6,16 @@ from afritech.api.app import app
 from afritech.api.auth.jwt_device_auth import JWT
 
 
-def auth_headers(role: str = "VERIFIER", user_id: str = "verifier-1") -> dict[str, str]:
+def auth_headers(
+    role: str = "VERIFIER",
+    user_id: str = "verifier-1",
+    org_id: str = "partner-city-ops",
+) -> dict[str, str]:
     token = JWT.create_token(user_id, role=role)
-    return {"Authorization": f"Bearer {token}"}
+    return {
+        "Authorization": f"Bearer {token}",
+        "X-Org-ID": org_id,
+    }
 
 
 def test_partner_certification_flow_verifies_contract_and_supports_registry_lookup() -> None:
@@ -55,7 +62,7 @@ def test_partner_certification_rejects_unknown_partner_lookup() -> None:
 
     response = client.get(
         "/v1/partners/unknown/certificate",
-        headers=auth_headers(role="OBSERVER", user_id="observer-3"),
+        headers=auth_headers(role="OBSERVER", user_id="observer-3", org_id="unknown"),
     )
 
     assert response.status_code == 404
@@ -67,7 +74,7 @@ def test_partner_certification_rejects_unknown_partner_certification() -> None:
     response = client.post(
         "/v1/partners/unknown/certify",
         json={"supported_versions": ["2026.07.0"]},
-        headers=auth_headers(),
+        headers=auth_headers(org_id="unknown"),
     )
 
     assert response.status_code == 404

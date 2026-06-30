@@ -87,3 +87,6 @@ def test_autonomous_control_plane_decides_via_simulation() -> None:
     assert "simulation" in decision
     assert len(decision["simulation"]["evaluated"]) >= 3
     assert decision["simulation"]["winner_score"] == max(item["score"] for item in decision["simulation"]["evaluated"])
+    assert "economy" in decision
+    assert "digital_twin" in decision
+    assert "governance" in decision
