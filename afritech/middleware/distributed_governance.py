@@ -188,6 +188,13 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
             health_map=region_decision.get("health_map"),
             load_hint=region_decision.get("load_hint"),
         )
+        autonomy = adaptive.get("autonomy") or {}
+        suggested_region = str(autonomy.get("region") or "").strip().upper()
+        if suggested_region and suggested_region in region_decision.get("healthy_regions", []) and suggested_region != region_decision["region"]:
+            region_decision["region"] = suggested_region
+            region_decision["routing_reason"] = f"autonomy:{autonomy.get('action') or 'maintain'}"
+            region_decision["geo_source"] = "autonomy"
+            capacity = regional_capacity(global_capacity, region_decision["region"], self.region_weights)
         capacity = max(10, int(adaptive["adjusted_limit"]))
         if record.enforcement_state == "throttled":
             capacity = max(10, int(capacity * self.throttled_bucket_fraction))
@@ -239,12 +246,16 @@ class DistributedGovernanceMiddleware(BaseHTTPMiddleware):
         request.state.sla_capacity = effective_limit
         request.state.edge_latency_ms = latency_ms
         request.state.adaptive_sla = observed
+        request.state.autonomy = autonomy
         request.state.adaptive_dispatch_ms = int(round((perf_counter() - started) * 1000))
 
         response.headers["X-Adaptive-SLA-Mode"] = str(observed.get("mode") or "")
         response.headers["X-Adaptive-SLA-Limit"] = str(effective_limit)
         response.headers["X-Adaptive-SLA-Anomaly"] = "true" if observed.get("anomaly") else "false"
         response.headers["X-Geo-Region"] = str(region_decision.get("region") or self.region)
+        response.headers["X-Autonomy-Action"] = str(autonomy.get("action") or "")
+        response.headers["X-Autonomy-Region"] = str(autonomy.get("region") or region_decision.get("region") or self.region)
+        response.headers["X-Autonomy-Value"] = str(autonomy.get("value") or 0.0)
 
         return response
 

@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `499`
+- Startup-safe closure size: `500`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `61`
+- Direct startup imports from `afritech.api.app`: `62`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (499 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (500 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (61)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (62)"]
 ```
 
 ## Repository Architecture Inventory
@@ -188,7 +188,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (407)
+### Other (408)
 
 - `afritech`
 - `afritech.afripay`
@@ -311,6 +311,7 @@ flowchart TD
 - `afritech.core_platform.anchoring`
 - `afritech.core_platform.audit_export`
 - `afritech.core_platform.auditor_dashboard`
+- `afritech.core_platform.autonomous_control`
 - `afritech.core_platform.canonical`
 - `afritech.core_platform.cbdc`
 - `afritech.core_platform.compliance_report`
@@ -671,6 +672,7 @@ flowchart TD
 - `afritech.api.trust_network_api`
 - `afritech.architecture.anchor_indexer`
 - `afritech.core_platform.adaptive_sla`
+- `afritech.core_platform.autonomous_control`
 - `afritech.edge.adapter.runtime_adapter`
 - `afritech.edge.adapter.validation`
 - `afritech.edge.ingestion.queue_ingestor`

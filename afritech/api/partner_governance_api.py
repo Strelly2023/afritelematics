@@ -284,6 +284,12 @@ def build_partner_governance_router(
                     },
                     "anomaly": False,
                     "action": "hold",
+                    "autonomy": {
+                        "action": "maintain",
+                        "value": 0.0,
+                        "reason": "adaptive_controller_unavailable",
+                        "region": record.country,
+                    },
                 },
             }
         return {

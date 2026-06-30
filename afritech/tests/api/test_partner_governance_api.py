@@ -7,6 +7,7 @@ from afritech.api.auth.jwt_device_auth import JWT
 from afritech.api.auth.jwt_device_auth import build_auth_router
 from afritech.api.partner_governance_api import build_partner_governance_router
 from afritech.core_platform.adaptive_sla import AdaptiveSLAController
+from afritech.core_platform.autonomous_control import AutonomousControlPlane
 from afritech.partner_governance import PartnerGovernanceStore, seed_partner_governance_registry
 
 
@@ -191,6 +192,35 @@ def test_partner_governance_exposes_adaptive_sla_snapshot() -> None:
     assert payload["adaptive_sla"]["mode"] == "predictive"
     assert payload["adaptive_sla"]["adjusted_limit"] >= 100
     assert payload["adaptive_sla"]["prediction"]["predicted_requests_per_min"] >= 0
+
+
+def test_partner_governance_exposes_autonomous_policy_snapshot() -> None:
+    redis = MemoryRedis()
+    controller = AdaptiveSLAController(
+        client=redis,
+        region="AU",
+        default_limit=100,
+        autonomous_control=AutonomousControlPlane(client=redis),
+    )
+    controller.observe(
+        "partner-city-ops",
+        trust_level="enterprise",
+        base_limit=100,
+        region="AU",
+        latency_ms=200,
+        observed_at=1000.0,
+    )
+    client = build_client(controller=controller)
+
+    response = client.get(
+        "/v1/trust/orgs/partner-city-ops/adaptive-sla",
+        headers=auth_headers(role="OBSERVER", user_id="observer-7"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["adaptive_sla"]["autonomy"]["action"] in {"maintain", "decrease_limit", "increase_limit", "hold"}
+    assert "limit_multiplier" not in payload["adaptive_sla"]["autonomy"]
 
 
 def test_partner_governance_rejects_unknown_organization() -> None:

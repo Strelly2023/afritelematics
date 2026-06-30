@@ -89,6 +89,7 @@ from afritech.execution.partition.router import get_partition
 from afritech.execution.queue.partitioned_queue import PartitionedQueue
 from afritech.execution.worker.worker_pool import WorkerPool
 from afritech.core_platform.adaptive_sla import AdaptiveSLAController
+from afritech.core_platform.autonomous_control import AutonomousControlPlane
 from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
 from afritech.middleware.multi_region_redis import RegionAwareRedisBackend, parse_region_redis_urls
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
@@ -147,11 +148,14 @@ trust_redis_backend = RegionAwareRedisBackend.from_env(
     region=_trust_redis_region,
     region_urls=_trust_redis_url_map or None,
 )
+autonomous_control_plane = AutonomousControlPlane(client=trust_redis_backend)
 adaptive_sla_controller = AdaptiveSLAController(
     client=trust_redis_backend,
     region=_trust_redis_region,
+    autonomous_control=autonomous_control_plane,
 )
 app.state.adaptive_sla_controller = adaptive_sla_controller
+app.state.autonomous_control_plane = autonomous_control_plane
 app.add_middleware(
     DistributedGovernanceMiddleware,
     store=partner_governance_store,

@@ -14,6 +14,7 @@ import json
 import time
 
 from afritech.core_platform.geo_routing import adjust_sla_capacity
+from afritech.core_platform.autonomous_control import AutonomousControlPlane
 
 
 def _utcnow() -> str:
@@ -122,6 +123,10 @@ class AdaptiveSLAState:
     anomaly: bool = False
     action: str = "hold"
     reason: str = "cold_start"
+    policy_action: str = "maintain"
+    policy_value: float = 0.0
+    policy_reason: str = "rule_based"
+    policy_region: str | None = None
     updated_at: str = field(default_factory=_utcnow)
 
     def canonical_dict(self) -> dict[str, Any]:
@@ -146,6 +151,10 @@ class AdaptiveSLAState:
             "anomaly": self.anomaly,
             "action": self.action,
             "reason": self.reason,
+            "policy_action": self.policy_action,
+            "policy_value": round(float(self.policy_value), 4),
+            "policy_reason": self.policy_reason,
+            "policy_region": self.policy_region,
             "updated_at": self.updated_at,
         }
 
@@ -166,6 +175,12 @@ def _present_state(state: AdaptiveSLAState) -> dict[str, Any]:
         "reason": state.reason,
         "action": state.action,
         "anomaly": state.anomaly,
+    }
+    payload["autonomy"] = {
+        "action": state.policy_action,
+        "value": round(float(state.policy_value), 4),
+        "reason": state.policy_reason,
+        "region": state.policy_region or state.region,
     }
     return payload
 
@@ -221,11 +236,13 @@ class AdaptiveSLAController:
         key_prefix: str = "ai:adaptive_sla",
         region: str = "AU",
         default_limit: int = 1_000,
+        autonomous_control: AutonomousControlPlane | None = None,
     ) -> None:
         self.client = client
         self.key_prefix = key_prefix
         self.region = str(region or "AU").upper()
         self.default_limit = max(1, int(default_limit))
+        self.autonomous_control = autonomous_control
 
     def _state_key(self, org_id: str) -> str:
         return f"{self.key_prefix}:{org_id}"
@@ -262,6 +279,10 @@ class AdaptiveSLAController:
             anomaly=bool(payload.get("anomaly", False)),
             action=str(payload.get("action") or "hold"),
             reason=str(payload.get("reason") or "cold_start"),
+            policy_action=str(payload.get("policy_action") or "maintain"),
+            policy_value=_safe_float(payload.get("policy_value"), 0.0),
+            policy_reason=str(payload.get("policy_reason") or "rule_based"),
+            policy_region=None if payload.get("policy_region") is None else str(payload.get("policy_region")).upper(),
             updated_at=str(payload.get("updated_at") or _utcnow()),
         )
 
@@ -300,6 +321,12 @@ class AdaptiveSLAController:
                 "anomaly": False,
                 "action": "hold",
                 "smoothed_latency_ms": None,
+                "autonomy": {
+                    "action": "maintain",
+                    "value": 0.0,
+                    "reason": "no_observations_yet",
+                    "region": self.region,
+                },
             }
         return _present_state(state)
 
@@ -332,6 +359,8 @@ class AdaptiveSLAController:
 
         anomaly = bool(state.anomaly)
         smoothed_latency = self._smoothed_latency_ms(state, latency_ms)
+        healthy_regions = [region_name for region_name in ("AU", "EU", "US") if str((health_map or {}).get(region_name, "healthy")).strip().lower() not in {"down", "degraded", "unhealthy", "disabled", "critical"}]
+        failover_region = next((region_name for region_name in healthy_regions if region_name != str(region or state.region).upper()), None)
         if trust == "regulator" or state.predictor.samples < 3:
             adjusted_limit = int(base_limit)
             reason = "regulatory_override" if trust == "regulator" else "cold_start_stable_limit"
@@ -354,6 +383,37 @@ class AdaptiveSLAController:
         else:
             error_ratio = abs(float(predicted) - float(observed_hint)) / max(1.0, float(observed_hint))
             confidence = _clamp(1.0 - error_ratio, 0.05, 0.99)
+        policy_action = "maintain"
+        policy_value = 0.0
+        policy_reason = "rule_based"
+        policy_region = str(region or state.region).upper()
+        apply_autonomy = self.autonomous_control is not None and trust != "regulator" and state.predictor.samples >= 3
+        if self.autonomous_control is not None:
+            autonomy = self.autonomous_control.recommend(
+                {
+                    "org_id": org_id,
+                    "trust_level": trust_level,
+                    "region": str(region or state.region).upper(),
+                    "failover_region": failover_region,
+                    "predicted_requests_per_min": predicted,
+                    "latency_ms": smoothed_latency,
+                    "errors": 1 if anomaly else 0,
+                    "region_load": float(adjusted_limit) / max(1.0, float(base_limit)),
+                    "sla_current": base_limit,
+                    "cost_pressure": max(0.0, float(base_limit - adjusted_limit) / max(1.0, float(base_limit))),
+                    "anomaly": anomaly,
+                    "hard_cap": max(1, int(base_limit)),
+                    "min_cap": 1,
+                }
+            )
+            policy_action = str((autonomy.get("policy") or {}).get("action") or "maintain")
+            policy_value = _safe_float((autonomy.get("policy") or {}).get("value"), 0.0)
+            policy_reason = "autonomous_applied" if apply_autonomy else "cold_start_guardrail"
+            policy_region = str((autonomy.get("routing") or {}).get("suggested_region") or policy_region).upper()
+            multiplier = _safe_float(autonomy.get("limit_multiplier"), 1.0) if apply_autonomy else 1.0
+            adjusted_limit = max(1, int(round(float(adjusted_limit) * multiplier)))
+            if apply_autonomy and policy_action == "reroute_region" and policy_region:
+                region = policy_region
         recommendation = replace(
             state,
             trust_level=str(trust_level or state.trust_level),
@@ -367,6 +427,10 @@ class AdaptiveSLAController:
             anomaly=anomaly,
             action="throttle" if anomaly or adjusted_limit < int(base_limit) else "expand" if adjusted_limit > int(base_limit) else "hold",
             reason=reason,
+            policy_action=policy_action,
+            policy_value=policy_value,
+            policy_reason=policy_reason,
+            policy_region=policy_region,
             updated_at=_utcnow(),
         )
         self._save_state(recommendation)
@@ -421,6 +485,48 @@ class AdaptiveSLAController:
         )
         confidence = _clamp(1.0 - error_ratio, 0.05, 0.99)
         mode = "static" if trust == "sandbox" else "predictive"
+        policy_action = state.policy_action
+        policy_value = state.policy_value
+        policy_reason = state.policy_reason
+        policy_region = state.policy_region or str(region or state.region).upper()
+        if self.autonomous_control is not None:
+            autonomous = self.autonomous_control.observe(
+                {
+                    "org_id": org_id,
+                    "trust_level": trust_level,
+                    "region": str(region or state.region).upper(),
+                    "failover_region": None,
+                    "predicted_requests_per_min": predicted,
+                    "latency_ms": smoothed_latency,
+                    "errors": errors,
+                    "region_load": float(adjusted_limit) / max(1.0, float(base_limit)),
+                    "sla_current": base_limit,
+                    "cost_pressure": max(0.0, float(base_limit - adjusted_limit) / max(1.0, float(base_limit))),
+                    "anomaly": anomaly,
+                    "hard_cap": max(1, int(base_limit)),
+                    "min_cap": 1,
+                },
+                {
+                    "policy": {
+                        "action": state.policy_action,
+                        "value": state.policy_value,
+                    },
+                    "routing": {
+                        "action": "reroute_region" if state.policy_region and state.policy_region != state.region else "keep_region",
+                        "suggested_region": state.policy_region or state.region,
+                    },
+                    "cost": {
+                        "action": "hold_cost",
+                    },
+                    "risk": {
+                        "action": "throttle" if anomaly else "hold",
+                    },
+                },
+            )
+            policy_action = str((autonomous.get("policy") or {}).get("action") or policy_action)
+            policy_value = _safe_float((autonomous.get("policy") or {}).get("value"), policy_value)
+            policy_reason = f"reward:{_safe_float(autonomous.get('reward'), 0.0):.4f}"
+            policy_region = str((autonomous.get("routing") or {}).get("suggested_region") or policy_region).upper()
         updated = replace(
             state,
             trust_level=str(trust_level or state.trust_level),
@@ -435,6 +541,10 @@ class AdaptiveSLAController:
             anomaly=anomaly,
             action="throttle" if anomaly or adjusted_limit < int(base_limit) else "expand" if adjusted_limit > int(base_limit) else "hold",
             reason=reason,
+            policy_action=policy_action,
+            policy_value=policy_value,
+            policy_reason=policy_reason,
+            policy_region=policy_region,
             updated_at=_utcnow(),
         )
         return _present_state(self._save_state(updated))
