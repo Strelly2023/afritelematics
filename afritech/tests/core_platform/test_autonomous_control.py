@@ -61,3 +61,29 @@ def test_autonomous_control_plane_recommends_actions_and_learns() -> None:
     assert observed["reward"] <= 1.0
     assert "policy" in observed
     assert "routing" in observed
+
+
+def test_autonomous_control_plane_decides_via_simulation() -> None:
+    plane = AutonomousControlPlane(client=MemoryRedis())
+
+    decision = plane.decide(
+        {
+            "org_id": "org-ai",
+            "trust_level": "enterprise",
+            "region": "AU",
+            "failover_region": "EU",
+            "predicted_requests_per_min": 40,
+            "latency_ms": 35,
+            "errors": 0,
+            "region_load": 0.45,
+            "sla_current": 100,
+            "cost_pressure": 0.1,
+            "anomaly": False,
+            "hard_cap": 100,
+            "min_cap": 10,
+        }
+    )
+
+    assert "simulation" in decision
+    assert len(decision["simulation"]["evaluated"]) >= 3
+    assert decision["simulation"]["winner_score"] == max(item["score"] for item in decision["simulation"]["evaluated"])

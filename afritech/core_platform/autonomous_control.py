@@ -165,7 +165,7 @@ class AutonomousControlPlane:
         reward = success_score - error_penalty - latency_penalty - cost_penalty - (0.5 if anomaly else 0.0) - 0.25 * over_provision_penalty
         return round(reward, 4)
 
-    def recommend(self, features: Mapping[str, Any]) -> dict[str, Any]:
+    def _base_proposals(self, features: Mapping[str, Any]) -> dict[str, Any]:
         latency_ms = _safe_float(features.get("latency_ms"))
         errors = _safe_float(features.get("errors"))
         predicted = _safe_float(features.get("predicted_requests_per_min"))
@@ -195,24 +195,157 @@ class AutonomousControlPlane:
         else:
             cost_fallback = "hold_cost"
 
-        sla = self.sla_agent.propose(features, fallback=sla_fallback)
-        routing = self.routing_agent.propose(features, fallback=routing_fallback)
-        cost = self.cost_agent.propose(features, fallback=cost_fallback)
-        risk = self.risk_agent.propose(features, fallback=risk_fallback)
+        return {
+            "sla_fallback": sla_fallback,
+            "routing_fallback": routing_fallback,
+            "cost_fallback": cost_fallback,
+            "risk_fallback": risk_fallback,
+        }
 
-        multiplier = 1.0
-        for action in (sla["action"], cost["action"], risk["action"]):
-            multiplier *= self._limit_multiplier(action)
-        if routing["action"] == "reroute_region":
-            multiplier *= 0.98
+    def simulate(self, features: Mapping[str, Any], action_bundle: Mapping[str, Any]) -> dict[str, Any]:
+        simulated = {
+            "latency_ms": _safe_float(features.get("latency_ms")),
+            "cost_pressure": _safe_float(features.get("cost_pressure")),
+            "region_load": _safe_float(features.get("region_load")),
+            "errors": _safe_float(features.get("errors")),
+            "sla_current": _safe_float(features.get("sla_current")),
+            "region": str(features.get("region") or "").upper(),
+            "failover_region": str(features.get("failover_region") or "").upper(),
+            "anomaly": bool(features.get("anomaly", False)),
+        }
 
-        multiplier = _clamp(multiplier, 0.5, 1.2)
+        policy_action = str((action_bundle.get("policy") or {}).get("action") or "maintain")
+        routing_action = str((action_bundle.get("routing") or {}).get("action") or "keep_region")
+        cost_action = str((action_bundle.get("cost") or {}).get("action") or "hold_cost")
+        risk_action = str((action_bundle.get("risk") or {}).get("action") or "hold")
+
+        if policy_action == "increase_limit":
+            simulated["cost_pressure"] *= 1.15
+            simulated["latency_ms"] *= 0.9
+            simulated["region_load"] *= 0.9
+        elif policy_action == "decrease_limit":
+            simulated["cost_pressure"] *= 0.92
+            simulated["latency_ms"] *= 1.1
+            simulated["region_load"] *= 1.05
+
+        if routing_action == "reroute_region":
+            simulated["latency_ms"] *= 0.75
+            simulated["region_load"] *= 0.85
+        elif routing_action == "keep_region":
+            simulated["latency_ms"] *= 1.02
+
+        if cost_action == "reduce_cost":
+            simulated["cost_pressure"] *= 0.85
+        elif cost_action == "scale_cost":
+            simulated["cost_pressure"] *= 1.1
+
+        if risk_action == "throttle":
+            simulated["errors"] *= 0.7
+            simulated["region_load"] *= 0.8
+        elif risk_action == "escalate":
+            simulated["errors"] *= 0.85
+            simulated["latency_ms"] *= 0.95
+
+        simulated_reward = self._derive_reward(features, action_bundle)
+        simulated_reward -= max(0.0, simulated["cost_pressure"] - _safe_float(features.get("cost_pressure"))) * 0.5
+        simulated_reward -= max(0.0, simulated["latency_ms"] - _safe_float(features.get("latency_ms"))) / 400.0
+        simulated_reward -= max(0.0, simulated["errors"] - _safe_float(features.get("errors"))) * 0.15
+        simulated_reward = round(simulated_reward, 4)
+        return {
+            "state": {key: round(_safe_float(value), 4) if isinstance(value, (int, float)) else value for key, value in simulated.items()},
+            "reward": simulated_reward,
+        }
+
+    def decide(self, features: Mapping[str, Any]) -> dict[str, Any]:
+        fallbacks = self._base_proposals(features)
+        base_policy = self.sla_agent.propose(features, fallback=fallbacks["sla_fallback"])
+        base_routing = self.routing_agent.propose(features, fallback=fallbacks["routing_fallback"])
+        base_cost = self.cost_agent.propose(features, fallback=fallbacks["cost_fallback"])
+        base_risk = self.risk_agent.propose(features, fallback=fallbacks["risk_fallback"])
+
+        candidates = [
+            {
+                "policy": base_policy,
+                "routing": base_routing,
+                "cost": base_cost,
+                "risk": base_risk,
+            },
+            {
+                "policy": {"action": "maintain", "value": 0.0},
+                "routing": {"action": "keep_region", "value": 0.0, "suggested_region": features.get("region")},
+                "cost": {"action": "hold_cost", "value": 0.0},
+                "risk": {"action": "hold", "value": 0.0},
+            },
+            {
+                "policy": {"action": "decrease_limit", "value": 0.0},
+                "routing": {"action": "reroute_region", "value": 0.0, "suggested_region": features.get("failover_region") or features.get("region")},
+                "cost": {"action": "reduce_cost", "value": 0.0},
+                "risk": {"action": "throttle", "value": 0.0},
+            },
+            {
+                "policy": {"action": "increase_limit", "value": 0.0},
+                "routing": {"action": "keep_region", "value": 0.0, "suggested_region": features.get("region")},
+                "cost": {"action": "scale_cost", "value": 0.0},
+                "risk": {"action": "hold", "value": 0.0},
+            },
+        ]
+
+        evaluated = []
+        for candidate in candidates:
+            simulated = self.simulate(features, candidate)
+            evaluated.append(
+                {
+                    "candidate": candidate,
+                    "simulated": simulated["state"],
+                    "score": simulated["reward"],
+                }
+            )
+
+        best = max(evaluated, key=lambda item: item["score"])
+        best_candidate = best["candidate"]
+        limit_multiplier = 1.0
+        for action in (
+            str((best_candidate.get("policy") or {}).get("action") or "maintain"),
+            str((best_candidate.get("cost") or {}).get("action") or "hold_cost"),
+            str((best_candidate.get("risk") or {}).get("action") or "hold"),
+        ):
+            limit_multiplier *= self._limit_multiplier(action)
+        if str((best_candidate.get("routing") or {}).get("action") or "keep_region") == "reroute_region":
+            limit_multiplier *= 0.98
+        limit_multiplier = _clamp(limit_multiplier, 0.5, 1.2)
+
+        return {
+            "policy": best_candidate["policy"],
+            "routing": best_candidate["routing"],
+            "cost": best_candidate["cost"],
+            "risk": best_candidate["risk"],
+            "limit_multiplier": round(limit_multiplier, 4),
+            "guardrails": {
+                "min_multiplier": 0.5,
+                "max_multiplier": 1.2,
+                "hard_cap": _safe_int(features.get("hard_cap"), 10_000),
+                "min_cap": _safe_int(features.get("min_cap"), 1),
+            },
+            "simulation": {
+                "evaluated": evaluated,
+                "winner_score": best["score"],
+                "winner_state": best["simulated"],
+            },
+        }
+
+    def recommend(self, features: Mapping[str, Any]) -> dict[str, Any]:
+        decision = self.decide(features)
+        policy = decision["policy"]
+        routing = decision["routing"]
+        cost = decision["cost"]
+        risk = decision["risk"]
+        multiplier = _safe_float(decision.get("limit_multiplier"), 1.0)
         suggested_region = str(features.get("failover_region") or features.get("region") or "").upper() or None
         if routing["action"] != "reroute_region":
             suggested_region = str(features.get("region") or "").upper() or None
 
         return {
-            "policy": sla,
+            "policy": policy,
             "routing": {
                 **routing,
                 "suggested_region": suggested_region,
@@ -226,6 +359,7 @@ class AutonomousControlPlane:
                 "hard_cap": _safe_int(features.get("hard_cap"), 10_000),
                 "min_cap": _safe_int(features.get("min_cap"), 1),
             },
+            "simulation": decision["simulation"],
         }
 
     def observe(self, features: Mapping[str, Any], recommendation: Mapping[str, Any]) -> dict[str, Any]:
