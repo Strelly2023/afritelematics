@@ -223,6 +223,335 @@ a {
     linear-gradient(180deg, #f7fbfd 0%, #f5f7fb 100%);
 }
 
+.novaride-ops-band {
+  background:
+    linear-gradient(180deg, #0f1724 0%, #172033 360px, #eef4f8 360px, #f5f7fb 100%);
+  color: #172033;
+}
+
+.novaride-ops-band .section-intro h2,
+.novaride-ops-band .section-intro .eyebrow,
+.novaride-ops-band .section-intro p {
+  color: #ffffff;
+}
+
+.ops-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ops-kpi-card {
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  border: 1px solid rgba(216, 225, 232, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  padding: 16px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+}
+
+.ops-kpi-card span,
+.ops-kpi-card small {
+  color: #b9c7d6;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ops-kpi-card strong {
+  font-size: clamp(1.35rem, 2vw, 2.05rem);
+  line-height: 1;
+}
+
+.ops-kpi-card div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ops-kpi-card em {
+  color: #65d18f;
+  font-size: 0.85rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.ops-command-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.55fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ops-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ops-map {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid #26394f;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 65% 48%, rgba(69, 169, 124, 0.2), transparent 16%),
+    radial-gradient(circle at 28% 58%, rgba(125, 97, 255, 0.18), transparent 14%),
+    linear-gradient(135deg, #111c2c, #1b2c44);
+}
+
+.ops-map-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+.ops-map-river {
+  position: absolute;
+  left: 45%;
+  top: -10%;
+  width: 18%;
+  height: 130%;
+  border-radius: 999px;
+  background: rgba(44, 124, 164, 0.22);
+  transform: rotate(18deg);
+}
+
+.ops-map-cluster {
+  position: absolute;
+  display: grid;
+  min-width: 74px;
+  min-height: 74px;
+  place-items: center;
+  border: 1px solid rgba(178, 157, 255, 0.85);
+  border-radius: 50%;
+  background: rgba(93, 74, 206, 0.82);
+  color: #ffffff;
+  padding: 8px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 8px rgba(93, 74, 206, 0.14);
+}
+
+.ops-map-cluster strong {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.ops-map-cluster span {
+  max-width: 70px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ops-driver-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ops-driver-available {
+  background: #27c26a;
+}
+
+.ops-driver-busy {
+  background: #f3c348;
+}
+
+.ops-driver-offline {
+  background: #1b2433;
+}
+
+.ops-map-legend,
+.ops-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ops-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4d5c70;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ops-map-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-available {
+  background: #27c26a;
+}
+
+.legend-busy {
+  background: #f3c348;
+}
+
+.legend-offline {
+  background: #1b2433;
+}
+
+.legend-cluster {
+  background: #6c57d9;
+}
+
+.ops-feed {
+  display: grid;
+  gap: 10px;
+}
+
+.ops-feed-item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.ops-feed-item time,
+.ops-feed-item span,
+.ops-feed-item em {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.ops-feed-item div {
+  display: grid;
+  gap: 2px;
+}
+
+.ops-feed-success {
+  border-left: 4px solid #1f9d63;
+}
+
+.ops-feed-warning {
+  border-left: 4px solid #c27b20;
+}
+
+.ops-feed-info,
+.ops-feed-neutral {
+  border-left: 4px solid #2d6fa3;
+}
+
+.ops-alert {
+  display: grid;
+  gap: 4px;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.ops-alert strong {
+  color: #101827;
+}
+
+.ops-alert span {
+  color: #4d5c70;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.ops-alert-critical {
+  border: 1px solid #e1a19b;
+  background: #fff1ee;
+}
+
+.ops-alert-warning {
+  border: 1px solid #e3c08a;
+  background: #fff8eb;
+}
+
+.ops-alert-info {
+  border: 1px solid #b7d3ee;
+  background: #eef7ff;
+}
+
+.ops-chart {
+  display: flex;
+  min-height: 132px;
+  align-items: end;
+  gap: 8px;
+  border-bottom: 1px solid #d1dce5;
+  padding: 8px 0 14px;
+}
+
+.ops-chart span {
+  flex: 1;
+  min-width: 8px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #277a69, #65b58c);
+}
+
+.ops-fleet-list,
+.ops-metric-stack {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ops-fleet-list div,
+.ops-metric-stack div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.ops-metric-stack div {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.ops-fleet-list span,
+.ops-metric-stack span {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ops-fleet-list em {
+  color: #277a69;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.ops-action-button {
+  min-height: 42px;
+  border: 1px solid #172033;
+  border-radius: 6px;
+  background: #172033;
+  color: #ffffff;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 900;
+}
+
 .error-banner {
   margin: 20px clamp(20px, 5vw, 72px) 0;
   border: 1px solid #c95b50;
@@ -1792,8 +2121,14 @@ a {
   .novapay-app-grid,
   .novapay-build-grid,
   .novapay-portal-grid,
+  .ops-kpi-grid,
+  .ops-layout-grid,
   .roadmap-lane {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ops-command-grid {
+    grid-template-columns: 1fr;
   }
 
   .os-topbar,
@@ -1869,8 +2204,15 @@ a {
   .novapay-app-grid,
   .novapay-build-grid,
   .novapay-portal-grid,
+  .ops-kpi-grid,
+  .ops-command-grid,
+  .ops-layout-grid,
   .roadmap-lane {
     grid-template-columns: 1fr;
+  }
+
+  .ops-map {
+    min-height: 320px;
   }
 
   .os-topbar {

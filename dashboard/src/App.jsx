@@ -1449,6 +1449,117 @@ const NOVARIDE_EVIDENCE_BACKED_RIDE_FLOW = [
   "Verification Package",
 ];
 
+const NOVARIDE_OPERATIONS_KPIS = [
+  { label: "Live Rides", value: "1,284", trend: "+18.5%", detail: "citywide active trips" },
+  { label: "Active Drivers", value: "2,341", trend: "+15.2%", detail: "online supply" },
+  { label: "Bookings Today", value: "3,562", trend: "+12.7%", detail: "completed + active" },
+  { label: "Revenue", value: "AUD 45,982", trend: "+20.1%", detail: "gross booking value" },
+  { label: "Completion Rate", value: "98.6%", trend: "+2.3%", detail: "ride lifecycle success" },
+];
+
+const NOVARIDE_MAP_CLUSTERS = [
+  { label: "Parramatta", count: 24, x: 22, y: 58, tone: "cluster" },
+  { label: "North Sydney", count: 18, x: 58, y: 24, tone: "cluster" },
+  { label: "Central", count: 31, x: 64, y: 52, tone: "cluster" },
+  { label: "South West", count: 16, x: 36, y: 78, tone: "cluster" },
+];
+
+const NOVARIDE_MAP_DRIVERS = [
+  { id: "DRV-104", x: 46, y: 34, status: "available" },
+  { id: "DRV-227", x: 70, y: 43, status: "busy" },
+  { id: "DRV-318", x: 51, y: 65, status: "available" },
+  { id: "DRV-421", x: 78, y: 63, status: "offline" },
+  { id: "DRV-502", x: 29, y: 42, status: "busy" },
+  { id: "DRV-616", x: 44, y: 81, status: "available" },
+];
+
+const NOVARIDE_ACTIVITY_FEED = [
+  { time: "19:42", event: "New ride accepted", actor: "DRV-104", value: "AUD 23.40", tone: "success" },
+  { time: "19:40", event: "Ride picked up", actor: "RIDE-67231", value: "AUD 18.75", tone: "info" },
+  { time: "19:38", event: "Ride completed", actor: "RIDE-67212", value: "AUD 27.60", tone: "success" },
+  { time: "19:35", event: "Driver online", actor: "DRV-616", value: "CBD", tone: "neutral" },
+  { time: "19:33", event: "Incident reported", actor: "INC-9912", value: "Review", tone: "warning" },
+];
+
+const NOVARIDE_OPERATION_ALERTS = [
+  { title: "High Demand Zone", detail: "Sydney CBD demand spike at 185%.", severity: "critical" },
+  { title: "Driver Shortage", detail: "Northern Beaches has only 12 drivers available.", severity: "warning" },
+  { title: "System Maintenance", detail: "Scheduled maintenance window 02:00-04:00 AM.", severity: "info" },
+];
+
+const NOVARIDE_FLEET_STATUS = [
+  { label: "Available", value: "1,245", percent: "53%" },
+  { label: "Busy", value: "876", percent: "37%" },
+  { label: "Offline", value: "220", percent: "9%" },
+];
+
+const NOVARIDE_PAYMENT_OVERVIEW = [
+  { label: "Revenue", value: "AUD 45,982" },
+  { label: "Payouts", value: "AUD 32,156" },
+  { label: "Pending", value: "AUD 4,821" },
+];
+
+const NOVARIDE_TRUST_SAFETY = [
+  { label: "Trust Score", value: "98.7 / 100" },
+  { label: "Verified Drivers", value: "2,156 / 2,341" },
+  { label: "Verified Rides", value: "3,512 / 3,562" },
+  { label: "Open Incidents", value: "3" },
+];
+
+const NOVARIDE_OPERATION_MODULES = [
+  {
+    name: "Operator Module",
+    focus: "Real-time dispatch and monitoring",
+    capabilities: ["Live map", "Manual dispatch intervention", "Incident monitoring", "Ride replay"],
+  },
+  {
+    name: "Admin Module",
+    focus: "Pricing, compliance, and configuration",
+    capabilities: ["Pricing rules", "Surge multiplier graph", "KYC 98%", "Vehicle compliance 96%"],
+  },
+  {
+    name: "Support Module",
+    focus: "Resolution workflow",
+    capabilities: ["Ride lookup #67231", "Issue refund", "Apply promo", "Open dispute"],
+  },
+  {
+    name: "Inspector Module",
+    focus: "Vehicle and driver verification",
+    capabilities: ["License", "Registration", "Insurance", "Roadworthiness", "Pass / fail decision"],
+  },
+];
+
+const NOVARIDE_APP_INTEGRATIONS = [
+  {
+    name: "Driver App",
+    detail: "Earnings AUD 240, 12 trips, 96% acceptance, accept / decline flow",
+  },
+  {
+    name: "Rider App",
+    detail: "Trip booking, live tracking, Economy AUD 18, Comfort AUD 25, XL AUD 35",
+  },
+  {
+    name: "Operator Portal",
+    detail: "City command, fleet health, trust evidence, incident decisions",
+  },
+];
+
+const NOVARIDE_ECOSYSTEM_APPS = [
+  { name: "NovaID", detail: "identity and verification" },
+  { name: "NovaPay", detail: "payments and settlements" },
+  { name: "NovaConnect", detail: "logistics and deliveries" },
+  { name: "NovaHealth", detail: "emergency support" },
+  { name: "NovaLearn", detail: "training and certification" },
+];
+
+const NOVARIDE_AI_ENHANCEMENTS = [
+  "AI Dispatch Insights Panel",
+  "Incident Heatmap Layer",
+  "Driver Incentive Automation",
+  "Voice Command for Operators",
+  "Real-Time Profit Dashboard",
+];
+
 function displayArchitectureToken(value) {
   return String(value || "")
     .split("_")
@@ -4421,6 +4532,198 @@ export default function OperatorDashboard() {
             </div>
           </OperatorPanel>
         </div>
+      </section>
+
+      <section className="section-band novaride-ops-band" id="novaride-operations-layer">
+        <SectionIntro
+          eyebrow="NovaRide Operations Layer"
+          title="Next-generation mobility command center"
+          question="Operator, admin, support, inspector, rider, driver, payments, trust, and ecosystem apps are composed into one high-level operations surface."
+        />
+
+        <div className="ops-kpi-grid">
+          {NOVARIDE_OPERATIONS_KPIS.map((metric) => (
+            <article key={metric.label} className="ops-kpi-card">
+              <span>{metric.label}</span>
+              <strong>{metric.value}</strong>
+              <div>
+                <em>{metric.trend}</em>
+                <small>{metric.detail}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="ops-command-grid">
+          <OperatorPanel title="Live Operations Map">
+            <div className="ops-map" aria-label="Sydney operations map">
+              <div className="ops-map-grid" />
+              <div className="ops-map-river" />
+              {NOVARIDE_MAP_CLUSTERS.map((cluster) => (
+                <div
+                  key={cluster.label}
+                  className="ops-map-cluster"
+                  style={{ left: `${cluster.x}%`, top: `${cluster.y}%` }}
+                  title={`${cluster.label}: ${cluster.count}`}
+                >
+                  <strong>{cluster.count}</strong>
+                  <span>{cluster.label}</span>
+                </div>
+              ))}
+              {NOVARIDE_MAP_DRIVERS.map((driver) => (
+                <div
+                  key={driver.id}
+                  className={`ops-driver-dot ops-driver-${driver.status}`}
+                  style={{ left: `${driver.x}%`, top: `${driver.y}%` }}
+                  title={`${driver.id}: ${driver.status}`}
+                />
+              ))}
+            </div>
+            <div className="ops-map-legend">
+              <span><i className="legend-available" />Available</span>
+              <span><i className="legend-busy" />Busy</span>
+              <span><i className="legend-offline" />Offline</span>
+              <span><i className="legend-cluster" />Cluster</span>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Live Activity Feed">
+            <div className="ops-feed">
+              {NOVARIDE_ACTIVITY_FEED.map((item) => (
+                <article key={`${item.time}-${item.actor}`} className={`ops-feed-item ops-feed-${item.tone}`}>
+                  <time>{item.time}</time>
+                  <div>
+                    <strong>{item.event}</strong>
+                    <span>{item.actor}</span>
+                  </div>
+                  <em>{item.value}</em>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <div className="ops-layout-grid">
+          <OperatorPanel title="Alerts & Notifications">
+            <div className="stack">
+              {NOVARIDE_OPERATION_ALERTS.map((alert) => (
+                <article key={alert.title} className={`ops-alert ops-alert-${alert.severity}`}>
+                  <strong>{alert.title}</strong>
+                  <span>{alert.detail}</span>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Fleet & Performance Analytics">
+            <div className="ops-chart">
+              {[42, 54, 49, 64, 72, 81, 76, 88, 96, 92, 104, 118].map((height, index) => (
+                <span key={index} style={{ height: `${height}px` }} />
+              ))}
+            </div>
+            <div className="ops-fleet-list">
+              {NOVARIDE_FLEET_STATUS.map((status) => (
+                <div key={status.label}>
+                  <span>{status.label}</span>
+                  <strong>{status.value}</strong>
+                  <em>{status.percent}</em>
+                </div>
+              ))}
+              <div>
+                <span>Utilization Rate</span>
+                <strong>78.4%</strong>
+                <em>citywide</em>
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Payment Overview">
+            <div className="ops-metric-stack">
+              {NOVARIDE_PAYMENT_OVERVIEW.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Trust & Safety Panel">
+            <div className="ops-metric-stack">
+              {NOVARIDE_TRUST_SAFETY.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <OperatorPanel title="Quick Actions">
+          <div className="ops-action-row">
+            {["Broadcast", "Incentives", "Heat Map", "Reports"].map((action) => (
+              <button key={action} type="button" className="ops-action-button">
+                {action}
+              </button>
+            ))}
+          </div>
+        </OperatorPanel>
+
+        <div className="operator-grid">
+          {NOVARIDE_OPERATION_MODULES.map((module) => (
+            <OperatorPanel key={module.name} title={module.name}>
+              <article className="record-card">
+                <div className="record-card-header">
+                  <strong>{module.focus}</strong>
+                  <span>operations</span>
+                </div>
+                <div className="chip-row">
+                  {module.capabilities.map((capability) => (
+                    <span key={capability} className="surface-chip">{capability}</span>
+                  ))}
+                </div>
+              </article>
+            </OperatorPanel>
+          ))}
+        </div>
+
+        <div className="operator-grid">
+          <OperatorPanel title="Driver + Rider Apps Integration">
+            <div className="stack">
+              {NOVARIDE_APP_INTEGRATIONS.map((app) => (
+                <article key={app.name} className="record-card">
+                  <div className="record-card-header">
+                    <strong>{app.name}</strong>
+                    <span>connected</span>
+                  </div>
+                  <p>{app.detail}</p>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Platform Ecosystem">
+            <div className="stack">
+              {NOVARIDE_ECOSYSTEM_APPS.map((app) => (
+                <article key={app.name} className="record-card">
+                  <div className="record-card-header">
+                    <strong>{app.name}</strong>
+                    <span>{app.detail}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <OperatorPanel title="High-Level Next Generation Enhancements">
+          <div className="chip-row">
+            {NOVARIDE_AI_ENHANCEMENTS.map((enhancement) => (
+              <span key={enhancement} className="surface-chip">{enhancement}</span>
+            ))}
+          </div>
+        </OperatorPanel>
       </section>
 
       <header className="hero trust-os-hero">

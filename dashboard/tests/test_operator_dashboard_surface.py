@@ -103,6 +103,83 @@ def test_operator_dashboard_uses_api_architecture_contract_not_copied_constants(
     assert "architecture_contract_pending" not in source
 
 
+def test_novaride_next_generation_operations_layer_is_implemented() -> None:
+    source = read("src/App.jsx")
+    styles = read("src/styles.css")
+
+    for required in (
+        "NovaRide Operations Layer",
+        "Next-generation mobility command center",
+        "Live Rides",
+        "Active Drivers",
+        "Bookings Today",
+        "Revenue",
+        "Completion Rate",
+        "Live Operations Map",
+        "Parramatta",
+        "North Sydney",
+        "Central",
+        "South West",
+        "Available",
+        "Busy",
+        "Offline",
+        "Live Activity Feed",
+        "New ride accepted",
+        "Ride picked up",
+        "Ride completed",
+        "Incident reported",
+        "Alerts & Notifications",
+        "High Demand Zone",
+        "Driver Shortage",
+        "System Maintenance",
+        "Fleet & Performance Analytics",
+        "Utilization Rate",
+        "Payment Overview",
+        "Payouts",
+        "Pending",
+        "Trust & Safety Panel",
+        "Verified Drivers",
+        "Verified Rides",
+        "Open Incidents",
+        "Quick Actions",
+        "Broadcast",
+        "Incentives",
+        "Heat Map",
+        "Reports",
+        "Operator Module",
+        "Admin Module",
+        "Support Module",
+        "Inspector Module",
+        "Driver + Rider Apps Integration",
+        "Platform Ecosystem",
+        "NovaID",
+        "NovaPay",
+        "NovaConnect",
+        "NovaHealth",
+        "NovaLearn",
+        "AI Dispatch Insights Panel",
+        "Incident Heatmap Layer",
+        "Driver Incentive Automation",
+        "Voice Command for Operators",
+        "Real-Time Profit Dashboard",
+    ):
+        assert required in source
+
+    for required_class in (
+        ".novaride-ops-band",
+        ".ops-kpi-grid",
+        ".ops-command-grid",
+        ".ops-map",
+        ".ops-map-cluster",
+        ".ops-driver-dot",
+        ".ops-feed-item",
+        ".ops-alert-critical",
+        ".ops-chart",
+        ".ops-action-button",
+    ):
+        assert required_class in styles
+
+
 def test_novatech_core_console_exposes_2026_core_layers_only() -> None:
     source = read("src/App.jsx")
 
