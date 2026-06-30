@@ -335,6 +335,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: spacing.sm,
   },
+  recommendation: {
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: "800",
+    lineHeight: 20,
+  },
   screen: {
     gap: spacing.md,
   },

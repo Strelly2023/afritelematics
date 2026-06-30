@@ -66,21 +66,28 @@ type LedgerReceiptResponse = {
   receipt_id: string;
   verdict: LedgerReceiptSummary["verdict"];
   receipt_hash: string;
-  ledger_proof: {
+  ledger_proof?: {
     event_count: number;
     root_hash: string;
     hash_mode: string;
   };
-  signature_validation: {
+  signature_validation?: {
     signature_mode: string;
     all_signatures_valid: boolean;
   };
-  identity_validation: {
+  identity_validation?: {
     all_verified: boolean;
   };
-  replay_proof: {
+  replay_proof?: {
     replay_valid: boolean;
   };
+  event_count?: number;
+  root_hash?: string;
+  hash_mode?: string;
+  signature_mode?: string;
+  all_signatures_valid?: boolean;
+  all_identities_verified?: boolean;
+  replay_valid?: boolean;
 };
 
 type PriceExplanationResponse = {
@@ -199,13 +206,22 @@ export async function getLedgerReceipt(
     receiptId: result.receipt_id,
     verdict: result.verdict,
     receiptHash: result.receipt_hash,
-    eventCount: result.ledger_proof.event_count,
-    rootHash: result.ledger_proof.root_hash,
-    hashMode: result.ledger_proof.hash_mode,
-    signatureMode: result.signature_validation.signature_mode,
-    allSignaturesValid: result.signature_validation.all_signatures_valid,
-    allIdentitiesVerified: result.identity_validation.all_verified,
-    replayValid: result.replay_proof.replay_valid,
+    eventCount: result.ledger_proof?.event_count ?? result.event_count ?? 0,
+    rootHash: result.ledger_proof?.root_hash ?? result.root_hash ?? "",
+    hashMode: result.ledger_proof?.hash_mode ?? result.hash_mode ?? "unknown",
+    signatureMode:
+      result.signature_validation?.signature_mode ??
+      result.signature_mode ??
+      "unknown",
+    allSignaturesValid:
+      result.signature_validation?.all_signatures_valid ??
+      result.all_signatures_valid ??
+      false,
+    allIdentitiesVerified:
+      result.identity_validation?.all_verified ??
+      result.all_identities_verified ??
+      false,
+    replayValid: result.replay_proof?.replay_valid ?? result.replay_valid ?? false,
   };
 }
 

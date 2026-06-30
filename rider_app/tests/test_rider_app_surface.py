@@ -48,6 +48,9 @@ def test_ride_service_maps_required_contract_endpoints() -> None:
     assert "/price-explanation" in source
     assert "trust_score" in source
     assert "timeline_events" in source
+    assert "result.ledger_proof?.event_count ?? result.event_count" in source
+    assert "result.signature_validation?.signature_mode" in source
+    assert "result.identity_validation?.all_verified" in source
 
 
 def test_rider_api_client_sends_test_instrumentation() -> None:
