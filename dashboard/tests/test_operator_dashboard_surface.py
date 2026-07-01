@@ -43,6 +43,16 @@ def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
     assert 'writeJson("/trust/conversation"' in source
 
 
+def test_operation_ai_panel_binds_city_profit_optimization_data() -> None:
+    source = read("src/App.jsx")
+    panel_signature = source.split("function OperationAIDecisionPanel({", 1)[1].split("}) {", 1)[0]
+
+    assert "operatorCityProfitOptimization," in panel_signature
+    assert source.count(
+        "operatorCityProfitOptimization={operatorCityProfitOptimization}"
+    ) == 2
+
+
 def test_operator_dashboard_sends_test_instrumentation_headers() -> None:
     source = read("src/App.jsx")
 

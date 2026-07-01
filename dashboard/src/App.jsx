@@ -6383,6 +6383,7 @@ export default function OperatorDashboard() {
               operatorDigitalTwin={operatorDigitalTwin}
               operatorMetaLearningRedesign={operatorMetaLearningRedesign}
               operatorBusinessPricing={operatorBusinessPricing}
+              operatorCityProfitOptimization={operatorCityProfitOptimization}
               activeRidesCount={state.activeRides.length}
               operationState={operationAIDecisionState}
             />
@@ -6442,6 +6443,7 @@ export default function OperatorDashboard() {
               operatorDigitalTwin={operatorDigitalTwin}
               operatorMetaLearningRedesign={operatorMetaLearningRedesign}
               operatorBusinessPricing={operatorBusinessPricing}
+              operatorCityProfitOptimization={operatorCityProfitOptimization}
               activeRidesCount={state.activeRides.length}
               operationState={operationAIDecisionState}
             />
@@ -10050,6 +10052,7 @@ function OperationAIDecisionPanel({
   operatorDigitalTwin,
   operatorMetaLearningRedesign,
   operatorBusinessPricing,
+  operatorCityProfitOptimization,
   activeRidesCount,
   operationState: providedOperationState = null,
 }) {
