@@ -59,6 +59,8 @@ def test_rider_api_client_sends_test_instrumentation() -> None:
     environment = read("core/config/environment.ts")
 
     assert "buildClientEvent({" in source
+    assert "readResponsePayload(response)" in source
+    assert "non_json_response status=" in source
     assert "path," in source
     assert "method," in source
     assert "payload: options.body" in source
@@ -229,3 +231,20 @@ def test_completed_ride_evidence_loader_degrades_optional_proofs() -> None:
     assert "fallbackLedgerReceipt(rideId)" in source
     assert "fallbackPriceExplanation(rideId)" in source
     assert "REVIEW_REQUIRED" in source
+
+
+def test_live_tracking_starts_on_assignment_with_eta_and_gps() -> None:
+    app = read("App.tsx")
+    flow = read("state/providers/useRideFlow.ts")
+    service = read("core/api/ride.service.ts")
+    tracking = read("ui/screens/LiveTrackingScreen.tsx")
+
+    assert "hasAssignedDriver" in app
+    assert "statusSnapshot && hasAssignedDriver" in app
+    assert "void refreshStatus()" in flow
+    assert "setTimeout(refreshStatus, POLL_INTERVAL_MS)" in flow
+    assert "driver_latitude" in service
+    assert "eta_minutes" in service
+    assert "distance_km" in service
+    assert "hasLiveCoordinates" in tracking
+    assert "Distance to pickup:" in tracking

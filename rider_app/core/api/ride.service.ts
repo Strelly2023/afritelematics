@@ -34,7 +34,13 @@ type RideStatusResponse = {
   driver_name?: string;
   vehicle_label?: string;
   eta_text?: string;
+  eta_minutes?: number;
+  distance_km?: number;
   location_text?: string;
+  driver_latitude?: number;
+  driver_longitude?: number;
+  driver_heading?: number;
+  location_updated_at?: string;
   driver_trust_score?: number;
   trust_score?: number;
 };
@@ -142,7 +148,13 @@ export async function getRideStatus(rideId: string): Promise<RideStatusSnapshot>
     driverName: result.driver_name,
     vehicleLabel: result.vehicle_label,
     etaText: result.eta_text,
+    etaMinutes: result.eta_minutes,
+    distanceKm: result.distance_km,
     locationText: result.location_text,
+    driverLatitude: result.driver_latitude,
+    driverLongitude: result.driver_longitude,
+    driverHeading: result.driver_heading,
+    locationUpdatedAt: result.location_updated_at,
     driverTrustScore: result.driver_trust_score,
     trustScore: result.trust_score,
   };

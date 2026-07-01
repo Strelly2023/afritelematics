@@ -46,6 +46,7 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     assert "trust_score" in source
     assert "replay_verified" in source
     assert "/pilot/evidence" in evidence
+    assert '"/v1/drivers/location"' in source
 
 
 def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
@@ -79,6 +80,7 @@ def test_driver_api_client_sends_test_instrumentation() -> None:
     assert "instrumentationHeaders(clientEvent)" in source
     assert "withClientEvent(options.body, clientEvent)" in source
     assert '"network_latency_event"' in source
+    assert "request_timeout after ${REQUEST_TIMEOUT_MS}ms" in source
     assert '"X-AfriRide-Device-Id"' in instrumentation
     assert '"X-AfriRide-Event-Id"' in instrumentation
     assert "client_event" in instrumentation
@@ -97,6 +99,18 @@ def test_availability_screen_only_requests_state_changes() -> None:
     assert "onGoAvailable" in source
     assert "onGoOffline" in source
     assert "Go available" in source
+
+
+def test_driver_home_enforces_shift_before_availability() -> None:
+    source = read("ui/screens/DriverHomeScreen.tsx")
+    pilot_hook = read("state/providers/usePilotEvidence.ts")
+
+    assert 'sessionLabel' in source
+    assert '"No active trip"' in source
+    assert 'disabled={loading || !diagnostics.shiftStarted || isAvailable}' in source
+    assert "Start the shift to enable GPS, telemetry, and availability." in source
+    assert "readCurrentPosition()" in pilot_hook
+    assert "captureLocationEvidence(driverId, lastPosition, position)" in pilot_hook
 
 
 def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:

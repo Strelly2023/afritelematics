@@ -32,7 +32,13 @@ export type RideStatusSnapshot = {
   driverName?: string;
   vehicleLabel?: string;
   etaText?: string;
+  etaMinutes?: number;
+  distanceKm?: number;
   locationText?: string;
+  driverLatitude?: number;
+  driverLongitude?: number;
+  driverHeading?: number;
+  locationUpdatedAt?: string;
   driverTrustScore?: number;
   trustScore?: number;
 };

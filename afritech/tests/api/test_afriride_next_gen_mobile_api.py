@@ -407,6 +407,8 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
                 "rider_id": "rider-1",
                 "pickup": "Melbourne CBD",
                 "dropoff": "Melbourne Airport",
+                "pickup_lat": -37.8201,
+                "pickup_lng": 144.9500,
                 "ride_id": "ride-next-gen-001",
                 "ride_type": "Airport",
             },
@@ -425,6 +427,23 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         )
         assert accepted.status_code == 200
         assert accepted.json()["status"] == "accepted"
+
+        location = client.post(
+            "/v1/drivers/location",
+            json={
+                "driver_id": "driver-1",
+                "lat": -37.8136,
+                "lng": 144.9631,
+                "heading": 245,
+                "timestamp": "2026-07-01T17:10:00Z",
+            },
+        )
+        assert location.status_code == 200
+        rider_tracking = client.get("/v1/rider/rides/ride-next-gen-001")
+        assert rider_tracking.status_code == 200
+        assert rider_tracking.json()["driver_latitude"] == -37.8136
+        assert rider_tracking.json()["eta_minutes"] >= 1
+        assert rider_tracking.json()["distance_km"] > 0
 
         arrived = client.post(
             "/v1/driver/rides/ride-next-gen-001/arrive",

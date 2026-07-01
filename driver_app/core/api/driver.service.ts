@@ -82,6 +82,28 @@ type ReplayHistoryResponse = {
   }>;
 };
 
+export async function updateDriverLocation(
+  driverId: string,
+  position: {
+    latitude: number;
+    longitude: number;
+    heading?: number | null;
+    timestamp: number;
+  },
+): Promise<void> {
+  if (USE_MOCK_API) return;
+  await apiRequest("/v1/drivers/location", {
+    method: "POST",
+    body: {
+      driver_id: driverId,
+      lat: position.latitude,
+      lng: position.longitude,
+      heading: position.heading ?? null,
+      timestamp: new Date(position.timestamp).toISOString(),
+    },
+  });
+}
+
 function mapAvailability(result: AvailabilityResponse): DriverAvailability {
   return {
     driverId: result.driver_id,

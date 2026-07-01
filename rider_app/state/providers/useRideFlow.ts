@@ -41,35 +41,46 @@ export function useRideFlow() {
       return undefined;
     }
 
-    const interval = setInterval(async () => {
+    let active = true;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const refreshStatus = async () => {
       try {
         const statusSnapshot = await getRideStatus(rideId);
+        if (!active) return;
 
         if (statusSnapshot.status === "completed") {
           const evidence = await loadCompletedRideEvidence(rideId);
+          if (!active) return;
           setState((current) => ({
             ...current,
             evidence,
             statusSnapshot,
             error: "",
           }));
-          return;
+        } else {
+          setState((current) => ({
+            ...current,
+            statusSnapshot,
+            error: "",
+          }));
         }
-
-        setState((current) => ({
-          ...current,
-          statusSnapshot,
-          error: "",
-        }));
       } catch (error) {
-        setState((current) => ({
-          ...current,
-          error: error instanceof Error ? error.message : "status_unavailable",
-        }));
+        if (active) {
+          setState((current) => ({
+            ...current,
+            error: error instanceof Error ? error.message : "status_unavailable",
+          }));
+        }
+      } finally {
+        if (active) timeout = setTimeout(refreshStatus, POLL_INTERVAL_MS);
       }
-    }, POLL_INTERVAL_MS);
+    };
 
-    return () => clearInterval(interval);
+    void refreshStatus();
+    return () => {
+      active = false;
+      if (timeout) clearTimeout(timeout);
+    };
   }, [state.evidence, state.requestedRide?.rideId]);
 
   return {

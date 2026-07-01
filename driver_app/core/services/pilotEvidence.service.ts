@@ -367,8 +367,9 @@ function readNavigatorLocation(): Promise<GeoPosition> {
 export async function captureLocationEvidence(
   driverId: string,
   previousPosition?: GeoPosition | null,
+  currentPosition?: GeoPosition,
 ): Promise<PilotEvidenceEvent[]> {
-  const position = await readCurrentPosition();
+  const position = currentPosition || (await readCurrentPosition());
   const accuracy = position.coords.accuracy ?? null;
   const verdict =
     typeof accuracy === "number" && accuracy > PILOT_GPS_ACCURACY_THRESHOLD_M

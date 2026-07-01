@@ -87,15 +87,21 @@ export async function apiRequest<T>(
 
     return payload as T;
   } catch (error) {
+    const requestError =
+      error instanceof Error && error.name === "AbortError"
+        ? new Error(
+            `request_timeout after ${REQUEST_TIMEOUT_MS}ms at ${API_BASE_URL}${path}`,
+          )
+        : error;
     recordNetworkLatency(
       clientEvent.actor_id,
       path,
       method,
       0,
       Date.now() - startedAt,
-      error instanceof Error ? error.message : "network_error",
+      requestError instanceof Error ? requestError.message : "network_error",
     );
-    throw error;
+    throw requestError;
   } finally {
     clearTimeout(timeout);
   }

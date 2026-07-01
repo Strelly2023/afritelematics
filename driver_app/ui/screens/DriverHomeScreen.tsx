@@ -32,6 +32,13 @@ export function DriverHomeScreen({
 }: DriverHomeScreenProps) {
   const trustScore = availability?.trustScore || earnings?.trustScore || 94;
   const trips = earnings?.rideCount || availability?.verifiedRides || 0;
+  const isAvailable = availability?.status === "available";
+  const sessionLabel = !diagnostics.shiftStarted
+    ? "SHIFT READY"
+    : isAvailable
+      ? "ACTIVE"
+      : "SHIFT STARTED";
+  const tripStateLabel = isAvailable ? "Awaiting dispatch" : "No active trip";
   const [intelligence, setIntelligence] = useState<DriverIntelligenceFeed | null>(null);
 
   useEffect(() => {
@@ -51,9 +58,15 @@ export function DriverHomeScreen({
   return (
     <View style={styles.stack}>
       <SurfacePanel>
-        <Text style={styles.online}>{availability?.status === "available" ? "ONLINE" : "OFFLINE"}</Text>
+        <Text style={isAvailable ? styles.online : styles.offline}>
+          {isAvailable ? "ONLINE" : "OFFLINE"}
+        </Text>
         <Text style={styles.title}>Driver dashboard</Text>
         <Text style={styles.subtitle}>Fast status, cleaner controls, and trust-first operations.</Text>
+        <View style={styles.sessionRow}>
+          <Tag label={sessionLabel} />
+          <Tag label={tripStateLabel} />
+        </View>
       </SurfacePanel>
 
       {intelligence ? (
@@ -189,10 +202,10 @@ export function DriverHomeScreen({
             ? `${diagnostics.lastLocation.latitude.toFixed(4)}, ${diagnostics.lastLocation.longitude.toFixed(4)}`
             : "Waiting for GPS fix"
         }
-        progressPct={diagnostics.shiftStarted ? 72 : 20}
-        statusLabel="Driver live"
+        progressPct={diagnostics.lastLocation ? 72 : diagnostics.shiftStarted ? 35 : 10}
+        statusLabel={diagnostics.shiftStarted ? "Driver telemetry" : "Driver setup"}
         etaText={availability?.updatedAt ? `Updated ${new Date(availability.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Shift ready"}
-        liveLabel={availability?.status === "available" ? "Dispatchable" : "Idle"}
+        liveLabel={isAvailable ? "Dispatchable" : diagnostics.shiftStarted ? "Shift active" : "Idle"}
         pickupConfirmed={diagnostics.locationSamples > 0}
         dropoffConfirmed={diagnostics.shiftStarted}
         gpsTraceAvailable={diagnostics.locationSamples > 0}
@@ -206,9 +219,27 @@ export function DriverHomeScreen({
           <Metric label="Rating" value="4.97" />
         </View>
         <View style={styles.actions}>
-          <PrimaryButton label="Go available" onPress={onGoAvailable} disabled={loading} />
-          <PrimaryButton label="Go offline" onPress={onGoOffline} disabled={loading} tone="danger" />
-          <PrimaryButton label="Start shift" onPress={onStartShift} disabled={loading || diagnostics.shiftStarted} />
+          <PrimaryButton
+            label={isAvailable ? "Available" : "Go available"}
+            onPress={onGoAvailable}
+            disabled={loading || !diagnostics.shiftStarted || isAvailable}
+          />
+          <PrimaryButton
+            label="Go offline"
+            onPress={onGoOffline}
+            disabled={loading || !isAvailable}
+            tone="danger"
+          />
+          <PrimaryButton
+            label={diagnostics.shiftStarted ? "Shift started" : "Start shift"}
+            onPress={onStartShift}
+            disabled={loading || diagnostics.shiftStarted}
+          />
+          {!diagnostics.shiftStarted ? (
+            <Text style={styles.actionHint}>
+              Start the shift to enable GPS, telemetry, and availability.
+            </Text>
+          ) : null}
         </View>
       </SurfacePanel>
     </View>
@@ -289,6 +320,22 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0,
     textTransform: "uppercase",
+  },
+  offline: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 1.2,
+  },
+  sessionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  actionHint: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "700",
   },
   recommendation: {
     color: colors.primary,

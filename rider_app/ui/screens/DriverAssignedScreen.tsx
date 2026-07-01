@@ -12,11 +12,18 @@ type DriverAssignedScreenProps = {
 };
 
 export function DriverAssignedScreen({ status }: DriverAssignedScreenProps) {
+  const hasLiveCoordinates =
+    typeof status.driverLatitude === "number" &&
+    typeof status.driverLongitude === "number";
   return (
     <SurfacePanel>
       <Text style={styles.title}>Driver assigned</Text>
       <MapPreviewCard
-        routeText={status.locationText || "Driver route is syncing"}
+        routeText={
+          hasLiveCoordinates
+            ? `${status.driverLatitude!.toFixed(5)}, ${status.driverLongitude!.toFixed(5)}`
+            : status.locationText || "Driver route is syncing"
+        }
         progressPct={
           status.status === "completed"
             ? 100
@@ -35,7 +42,7 @@ export function DriverAssignedScreen({ status }: DriverAssignedScreenProps) {
         liveLabel={status.driverName || "Dispatch"}
         pickupConfirmed={Boolean(status.driverName)}
         dropoffConfirmed={status.status === "completed"}
-        gpsTraceAvailable={Boolean(status.locationText)}
+        gpsTraceAvailable={hasLiveCoordinates || Boolean(status.locationText)}
       />
       <View style={styles.row}>
         <Text style={styles.label}>Driver</Text>
@@ -47,7 +54,10 @@ export function DriverAssignedScreen({ status }: DriverAssignedScreenProps) {
       </View>
       <View style={styles.row}>
         <Text style={styles.label}>ETA</Text>
-        <Text style={styles.value}>{status.etaText || "Pending"}</Text>
+        <Text style={styles.etaValue}>{status.etaText || "Pending"}</Text>
+        {typeof status.distanceKm === "number" ? (
+          <Text style={styles.label}>{status.distanceKm.toFixed(1)} km to pickup</Text>
+        ) : null}
       </View>
       <View style={styles.trustRow}>
         <Text style={styles.label}>Driver trust</Text>
@@ -62,6 +72,11 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 13,
     fontWeight: "700",
+  },
+  etaValue: {
+    color: colors.primary,
+    fontSize: 28,
+    fontWeight: "900",
   },
   row: {
     gap: spacing.xs,

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from importlib import import_module
+from math import asin, cos, radians, sin, sqrt
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Header
@@ -76,6 +77,18 @@ class ArchitectureVerificationRequest(BaseModel):
 
 class ArchitecturePublicationVerificationRequest(BaseModel):
     publication: dict[str, Any]
+
+
+class DriverLocationRequest(BaseModel):
+    driver_id: str
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    heading: float | None = Field(default=None, ge=0, lt=360)
+    timestamp: datetime
+
+
+_DRIVER_LOCATIONS: dict[str, DriverLocationRequest] = {}
+_RIDE_PICKUP_LOCATIONS: dict[str, tuple[float, float]] = {}
 
 
 NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
@@ -2408,6 +2421,15 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
                 "ride_id": ride_id,
             }
         )
+        pickup_lat = payload.get("pickup_lat")
+        pickup_lng = payload.get("pickup_lng")
+        if isinstance(pickup_lat, (int, float)) and isinstance(
+            pickup_lng, (int, float)
+        ):
+            _RIDE_PICKUP_LOCATIONS[ride["ride_id"]] = (
+                float(pickup_lat),
+                float(pickup_lng),
+            )
         _log_trace_event(
             trace_log,
             ride["ride_id"],
@@ -2551,6 +2573,15 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "trust_score": 94 if completed else 90,
             "verified_rides": completed,
             "replay_consistency_pct": 100,
+        }
+
+    @router.post("/drivers/location")
+    def update_driver_location(payload: DriverLocationRequest) -> dict[str, Any]:
+        _DRIVER_LOCATIONS[payload.driver_id] = payload
+        return {
+            "status": "accepted",
+            "driver_id": payload.driver_id,
+            "location_updated_at": payload.timestamp.isoformat(),
         }
 
     @router.post("/driver/{driver_id}/availability")
@@ -2934,13 +2965,48 @@ def _ride_snapshot_payload(ride: Any, gateway: Any) -> dict[str, Any]:
     has_driver = bool(ride.assigned_driver)
     driver_name = "Djuma O" if has_driver else None
     vehicle_label = "Toyota Pilot" if has_driver else None
+    driver_location = (
+        _DRIVER_LOCATIONS.get(str(ride.assigned_driver)) if has_driver else None
+    )
+    pickup_location = _RIDE_PICKUP_LOCATIONS.get(ride.ride_id)
+    distance_km = None
+    eta_minutes = None
+    if driver_location and pickup_location:
+        distance_km = round(
+            _distance_km(
+                driver_location.lat,
+                driver_location.lng,
+                pickup_location[0],
+                pickup_location[1],
+            ),
+            1,
+        )
+        eta_minutes = (
+            0
+            if ride_status == "DRIVER_ARRIVED"
+            else max(1, round((distance_km / 30.0) * 60))
+        )
     return {
         "ride_id": ride.ride_id,
         "status": _mobile_ride_status(ride_status),
         "driver_name": driver_name,
         "vehicle_label": vehicle_label,
-        "eta_text": "3 min" if has_driver else "Driver not assigned",
+        "eta_text": (
+            f"{eta_minutes} min"
+            if eta_minutes is not None
+            else "3 min"
+            if has_driver
+            else "Driver not assigned"
+        ),
+        "eta_minutes": eta_minutes,
+        "distance_km": distance_km,
         "location_text": "Approaching pickup" if has_driver else "Waiting for driver",
+        "driver_latitude": driver_location.lat if driver_location else None,
+        "driver_longitude": driver_location.lng if driver_location else None,
+        "driver_heading": driver_location.heading if driver_location else None,
+        "location_updated_at": (
+            driver_location.timestamp.isoformat() if driver_location else None
+        ),
         "driver_trust_score": 94 if has_driver else None,
         "trust_score": 92 if ride_status == "COMPLETED" else 91,
         "trust_summary": {
@@ -2952,6 +3018,23 @@ def _ride_snapshot_payload(ride: Any, gateway: Any) -> dict[str, Any]:
             "public_verification_url": f"/public/trust/rcpt-{ride.ride_id}" if ride_status == "COMPLETED" else None,
         },
     }
+
+
+def _distance_km(
+    start_lat: float,
+    start_lng: float,
+    end_lat: float,
+    end_lng: float,
+) -> float:
+    lat_delta = radians(end_lat - start_lat)
+    lng_delta = radians(end_lng - start_lng)
+    value = (
+        sin(lat_delta / 2) ** 2
+        + cos(radians(start_lat))
+        * cos(radians(end_lat))
+        * sin(lng_delta / 2) ** 2
+    )
+    return 6371.0 * 2 * asin(sqrt(value))
 
 
 def _require_ride(gateway, ride_id: str) -> Any:

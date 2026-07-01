@@ -99,6 +99,15 @@ function RiderApp() {
     : [];
   const riderTrustScore =
     receipt?.trustScore || statusSnapshot?.trustScore || requestedRide?.trustScore || 92;
+  const hasAssignedDriver = Boolean(
+    statusSnapshot?.driverName ||
+      statusSnapshot?.status === "driver_assigned" ||
+      statusSnapshot?.status === "matched" ||
+      statusSnapshot?.status === "arriving" ||
+      statusSnapshot?.status === "arrived" ||
+      statusSnapshot?.status === "in_progress" ||
+      statusSnapshot?.status === "completed",
+  );
   const notifications = [
     {
       id: "rider-login",
@@ -114,7 +123,7 @@ function RiderApp() {
           tone: "success" as const,
         }
       : null,
-    statusSnapshot
+    hasAssignedDriver && statusSnapshot
       ? {
           id: "driver-assigned",
           title: "Driver assigned",
@@ -195,14 +204,14 @@ function RiderApp() {
                     onDropoffChange={setDropoff}
                     onRequestRide={handleRequestRide}
                   />
-                  {requestedRide && !statusSnapshot ? <RideConfirmationScreen ride={requestedRide} /> : null}
-                  {requestedRide && !statusSnapshot ? <WaitingForDriverScreen /> : null}
+                  {requestedRide && !hasAssignedDriver ? <RideConfirmationScreen ride={requestedRide} /> : null}
+                  {requestedRide && !hasAssignedDriver ? <WaitingForDriverScreen /> : null}
                 </>
               ) : null}
               {activeTab === "trips" ? (
                 <>
-                  {statusSnapshot ? <DriverAssignedScreen status={statusSnapshot} /> : null}
-                  {statusSnapshot ? <LiveTrackingScreen status={statusSnapshot} /> : null}
+                  {statusSnapshot && hasAssignedDriver ? <DriverAssignedScreen status={statusSnapshot} /> : null}
+                  {statusSnapshot && hasAssignedDriver ? <LiveTrackingScreen status={statusSnapshot} /> : null}
                   {requestedRide ? (
                     <RiderTrustPanelScreen
                       status={statusSnapshot}

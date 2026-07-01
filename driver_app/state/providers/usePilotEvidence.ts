@@ -14,7 +14,9 @@ import {
   capturePilotEvidence,
   describePilotEvidenceError,
   extractPilotEvidenceError,
+  readCurrentPosition,
 } from "../../core/services/pilotEvidence.service";
+import { updateDriverLocation } from "../../core/api/driver.service";
 
 const initialDiagnostics: DiagnosticsSnapshot = {
   shiftStarted: false,
@@ -79,6 +81,10 @@ export function usePilotEvidence(driverId: string) {
   );
 
   const startShift = useCallback(async () => {
+    if (diagnostics.shiftStarted) {
+      return;
+    }
+
     setDiagnostics((current) => {
       if (current.shiftStarted) {
         return current;
@@ -90,14 +96,51 @@ export function usePilotEvidence(driverId: string) {
       };
     });
 
-    await capture("driver_shift_started", {
+    void capture("driver_shift_started", {
       driver_id: driverId,
       sample_intervals_ms: {
         location: LOCATION_SAMPLE_INTERVAL_MS,
         network: NETWORK_SAMPLE_INTERVAL_MS,
       },
     });
-  }, [capture, driverId]);
+
+    try {
+      const position = await readCurrentPosition();
+      const location = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      setLastPosition(position);
+      setDiagnostics((current) => ({
+        ...current,
+        locationSamples: current.locationSamples + 1,
+        lastLocation: location,
+      }));
+      void updateDriverLocation(driverId, {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        heading: position.coords.heading,
+        timestamp: position.timestamp,
+      }).catch(markFailed);
+
+      void captureLocationEvidence(driverId, lastPosition, position)
+        .then((events) => events.forEach(markSubmitted))
+        .catch(markFailed);
+    } catch (error) {
+      markFailed(error);
+      setDiagnostics((current) => ({
+        ...current,
+        gpsSignalLossEvents: current.gpsSignalLossEvents + 1,
+      }));
+    }
+  }, [
+    capture,
+    diagnostics.shiftStarted,
+    driverId,
+    lastPosition,
+    markFailed,
+    markSubmitted,
+  ]);
 
   useEffect(() => {
     if (!diagnostics.shiftStarted) {
@@ -124,7 +167,16 @@ export function usePilotEvidence(driverId: string) {
     }
 
     const id = setInterval(() => {
-      void captureLocationEvidence(driverId, lastPosition)
+      void readCurrentPosition()
+        .then((position) => {
+          void updateDriverLocation(driverId, {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            heading: position.coords.heading,
+            timestamp: position.timestamp,
+          }).catch(markFailed);
+          return captureLocationEvidence(driverId, lastPosition, position);
+        })
         .then((events) => {
           events.forEach(markSubmitted);
           const locationEvent = events.find(

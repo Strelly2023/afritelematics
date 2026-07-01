@@ -15,6 +15,9 @@ type LiveTrackingScreenProps = {
 
 export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
   const trustScore = status.trustScore || status.driverTrustScore || 92;
+  const hasLiveCoordinates =
+    typeof status.driverLatitude === "number" &&
+    typeof status.driverLongitude === "number";
 
   return (
     <SurfacePanel>
@@ -23,7 +26,11 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
         checks={["Driver", "GPS", "Payment", "Replay"]}
       />
       <MapPreviewCard
-        routeText={status.locationText || "Location pending"}
+        routeText={
+          hasLiveCoordinates
+            ? `${status.driverLatitude!.toFixed(5)}, ${status.driverLongitude!.toFixed(5)}`
+            : status.locationText || "Driver location is syncing"
+        }
         progressPct={
           status.status === "completed"
             ? 100
@@ -42,13 +49,13 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
         liveLabel={status.driverName ? status.driverName : "Live tracking"}
         pickupConfirmed={Boolean(status.locationText)}
         dropoffConfirmed={status.status === "completed"}
-        gpsTraceAvailable={Boolean(status.locationText)}
+        gpsTraceAvailable={hasLiveCoordinates || Boolean(status.locationText)}
       />
       <LifecycleTimeline steps={buildRideTimeline(status.status)} />
       <VerificationStatusCard
         status={{
           driver: Boolean(status.driverName || status.driverTrustScore),
-          gps: Boolean(status.locationText),
+          gps: hasLiveCoordinates || Boolean(status.locationText),
           payment: status.status === "completed",
           replay: status.status === "completed",
         }}
@@ -57,6 +64,14 @@ export function LiveTrackingScreen({ status }: LiveTrackingScreenProps) {
       {status.driverName ? <Text style={styles.detail}>Driver: {status.driverName}</Text> : null}
       {status.vehicleLabel ? <Text style={styles.detail}>Vehicle: {status.vehicleLabel}</Text> : null}
       {status.etaText ? <Text style={styles.detail}>ETA: {status.etaText}</Text> : null}
+      {typeof status.distanceKm === "number" ? (
+        <Text style={styles.detail}>Distance to pickup: {status.distanceKm.toFixed(1)} km</Text>
+      ) : null}
+      {status.locationUpdatedAt ? (
+        <Text style={styles.detail}>
+          GPS updated: {new Date(status.locationUpdatedAt).toLocaleTimeString()}
+        </Text>
+      ) : null}
     </SurfacePanel>
   );
 }
