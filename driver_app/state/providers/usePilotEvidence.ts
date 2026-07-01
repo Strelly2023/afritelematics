@@ -79,16 +79,24 @@ export function usePilotEvidence(driverId: string) {
   );
 
   const startShift = useCallback(async () => {
-    const event = await capture("driver_shift_started", {
+    setDiagnostics((current) => {
+      if (current.shiftStarted) {
+        return current;
+      }
+      return {
+        ...current,
+        shiftStarted: true,
+        lastError: undefined,
+      };
+    });
+
+    await capture("driver_shift_started", {
       driver_id: driverId,
       sample_intervals_ms: {
         location: LOCATION_SAMPLE_INTERVAL_MS,
         network: NETWORK_SAMPLE_INTERVAL_MS,
       },
     });
-    if (event) {
-      setDiagnostics((current) => ({ ...current, shiftStarted: true }));
-    }
   }, [capture, driverId]);
 
   useEffect(() => {
