@@ -3027,20 +3027,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
 
     @router.get("/driver/{driver_id}/availability")
     def driver_availability(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
-        driver = gateway.dispatcher.drivers.get(driver_id)
-        completed = sum(
-            1
-            for ride in gateway.dispatcher.rides.values()
-            if ride.assigned_driver == driver_id and ride.status == "COMPLETED"
-        )
-        return {
-            "driver_id": driver_id,
-            "status": "available" if driver and driver.online else "offline",
-            "updated_at": "2026-06-21T09:00:01Z",
-            "trust_score": 94 if completed else 90,
-            "verified_rides": completed,
-            "replay_consistency_pct": 100,
-        }
+        return _driver_availability_payload(driver_id, gateway)
 
     @router.post("/drivers/location")
     def update_driver_location(payload: DriverLocationRequest) -> dict[str, Any]:
@@ -3056,14 +3043,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         status = str(payload.get("status", "offline")).strip().lower()
         online = status == "available"
         gateway.driver.status({"driver_id": driver_id, "online": online})
-        return {
-            "driver_id": driver_id,
-            "status": "available" if online else "offline",
-            "updated_at": "2026-06-21T09:00:01Z",
-            "trust_score": 94,
-            "verified_rides": 152,
-            "replay_consistency_pct": 100,
-        }
+        return _driver_availability_payload(driver_id, gateway)
 
     @router.get("/driver/{driver_id}/ride-queue")
     def driver_ride_queue(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
@@ -3516,6 +3496,23 @@ def _require_completed_ride(gateway, ride_id: str) -> Any:
     if ride.status != "COMPLETED":
         raise HTTPException(status_code=400, detail="ride_not_completed")
     return ride
+
+
+def _driver_availability_payload(driver_id: str, gateway) -> dict[str, Any]:
+    driver = gateway.dispatcher.drivers.get(driver_id)
+    completed = sum(
+        1
+        for ride in gateway.dispatcher.rides.values()
+        if ride.assigned_driver == driver_id and ride.status == "COMPLETED"
+    )
+    return {
+        "driver_id": driver_id,
+        "status": "available" if driver and driver.online else "offline",
+        "updated_at": "2026-06-21T09:00:01Z",
+        "trust_score": 94 if completed else 90,
+        "verified_rides": completed,
+        "replay_consistency_pct": 100,
+    }
 
 
 def _mobile_ride_status(status: str) -> str:

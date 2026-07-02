@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   acceptRide,
   completeTrip,
+  getAvailability,
   getRideRequests,
   markArrived,
   rejectRide,
@@ -15,6 +16,8 @@ import {
   initialDriverAppState,
   type DriverAppState,
 } from "../store/driverStore";
+
+const QUEUE_POLL_INTERVAL_MS = 4000;
 
 export function useDriverFlow(driverId: string) {
   const [state, setState] = useState<DriverAppState>(initialDriverAppState);
@@ -43,6 +46,69 @@ export function useDriverFlow(driverId: string) {
       setError(error, "availability_unavailable");
     }
   }
+
+  useEffect(() => {
+    let active = true;
+
+    const hydrateAvailability = async () => {
+      try {
+        const availability = await getAvailability(driverId);
+        if (!active) return;
+        const requests =
+          availability.status === "available"
+            ? await getRideRequests(driverId)
+            : [];
+        if (!active) return;
+        setState((current) => ({
+          ...current,
+          availability,
+          requests,
+          error: "",
+        }));
+      } catch (error) {
+        if (active) setError(error, "availability_unavailable");
+      }
+    };
+
+    void hydrateAvailability();
+    return () => {
+      active = false;
+    };
+  }, [driverId]);
+
+  useEffect(() => {
+    if (state.availability?.status !== "available") {
+      return undefined;
+    }
+
+    let active = true;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    const refreshQueue = async () => {
+      try {
+        const requests = await getRideRequests(driverId);
+        if (active) {
+          setState((current) => ({
+            ...current,
+            requests,
+            error: "",
+          }));
+        }
+      } catch (error) {
+        if (active) setError(error, "ride_queue_unavailable");
+      } finally {
+        if (active) {
+          timeout = setTimeout(refreshQueue, QUEUE_POLL_INTERVAL_MS);
+        }
+      }
+    };
+
+    void refreshQueue();
+    return () => {
+      active = false;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [driverId, state.availability?.status]);
 
   async function acceptRequest(rideId: string) {
     setState((current) => ({ ...current, loading: true, error: "" }));

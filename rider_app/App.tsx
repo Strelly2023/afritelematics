@@ -210,6 +210,8 @@ function RiderApp() {
               ) : null}
               {activeTab === "trips" ? (
                 <>
+                  {requestedRide && !hasAssignedDriver ? <RideConfirmationScreen ride={requestedRide} /> : null}
+                  {requestedRide && !hasAssignedDriver ? <WaitingForDriverScreen /> : null}
                   {statusSnapshot && hasAssignedDriver ? <DriverAssignedScreen status={statusSnapshot} /> : null}
                   {statusSnapshot && hasAssignedDriver ? <LiveTrackingScreen status={statusSnapshot} /> : null}
                   {requestedRide ? (

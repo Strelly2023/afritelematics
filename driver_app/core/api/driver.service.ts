@@ -149,6 +149,20 @@ export async function setAvailability(
   return mapAvailability(result);
 }
 
+export async function getAvailability(
+  driverId: string,
+): Promise<DriverAvailability> {
+  if (USE_MOCK_API) {
+    return mockSetAvailability(driverId, "offline");
+  }
+
+  const result = await apiRequest<AvailabilityResponse>(
+    `/v1/driver/${encodeURIComponent(driverId)}/availability`,
+  );
+
+  return mapAvailability(result);
+}
+
 export async function getRideRequests(
   driverId: string,
 ): Promise<DriverRideRequest[]> {

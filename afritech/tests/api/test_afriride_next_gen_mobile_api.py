@@ -425,6 +425,9 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         )
         assert driver_online.status_code == 200
         assert driver_online.json()["status"] == "available"
+        driver_availability = client.get("/v1/driver/driver-1/availability")
+        assert driver_availability.status_code == 200
+        assert driver_availability.json() == driver_online.json()
 
         requested = client.post(
             "/v1/rider/rides",

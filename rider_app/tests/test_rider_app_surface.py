@@ -17,6 +17,15 @@ def test_booking_screen_submits_request_through_prop() -> None:
     assert "Request ride" in source
 
 
+def test_trips_tab_shows_requested_ride_while_waiting_for_driver() -> None:
+    source = read("App.tsx")
+    trips = source.split('{activeTab === "trips" ? (', 1)[1]
+
+    assert "RideConfirmationScreen" in trips
+    assert "WaitingForDriverScreen" in trips
+    assert "requestedRide && !hasAssignedDriver" in trips
+
+
 def test_rider_app_has_pilot_and_store_build_profiles() -> None:
     app = read("App.tsx")
     app_config = read("app.json")

@@ -49,6 +49,18 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     assert '"/v1/drivers/location"' in source
 
 
+def test_driver_flow_hydrates_availability_and_polls_for_new_rides() -> None:
+    source = read("state/providers/useDriverFlow.ts")
+    service = read("core/api/driver.service.ts")
+
+    assert "getAvailability" in service
+    assert "QUEUE_POLL_INTERVAL_MS" in source
+    assert "hydrateAvailability" in source
+    assert "refreshQueue" in source
+    assert "setTimeout(refreshQueue, QUEUE_POLL_INTERVAL_MS)" in source
+    assert 'state.availability?.status !== "available"' in source
+
+
 def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
     app = read("App.tsx")
     screen = read("ui/screens/OperatorDashboardScreen.tsx")
