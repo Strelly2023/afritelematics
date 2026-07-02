@@ -18,6 +18,8 @@ from typing import Any, Callable, Mapping
 
 from afritech.core_platform.canonical import hash_obj
 from afritech.core_platform.hash_domains import HASH_DOMAINS
+from afritech.architecture.novaride_app_store import novaride_app_store
+from afritech.architecture.novaride_protocol_marketplace import novaride_protocol_marketplace
 from afritech.security.architecture_signing import (
     canonical_architecture_bytes,
     sign_architecture_contract,
@@ -641,6 +643,18 @@ def novaride_architecture_operational_metrics() -> dict[str, Any]:
     }
 
 
+def novaride_architecture_protocol_marketplace() -> dict[str, Any]:
+    """Return the governed NovaRide protocol marketplace contract."""
+
+    return novaride_protocol_marketplace()
+
+
+def novaride_architecture_app_store() -> dict[str, Any]:
+    """Return the governed NovaRide app store contract."""
+
+    return novaride_app_store()
+
+
 def novaride_architecture_ecosystem_platform() -> dict[str, Any]:
     """Return the ecosystem platform summary for dashboard and developer portal surfaces."""
 
@@ -651,6 +665,8 @@ def novaride_architecture_ecosystem_platform() -> dict[str, Any]:
         "migration_registry": novaride_architecture_migrations()["migrations"],
         "sdk_registry": novaride_architecture_sdks()["targets"],
         "sdk_generation_pipeline": novaride_architecture_sdk_generation_pipeline(),
+        "app_store": novaride_architecture_app_store(),
+        "protocol_marketplace": novaride_protocol_marketplace(),
         "operational_metrics": novaride_architecture_operational_metrics()["metrics"],
         "final_score": novaride_architecture_final_score(),
         "capabilities": list(SUPPORTED_CONTRACTS[NOVARIDE_ARCHITECTURE_VERSION].capabilities),
@@ -786,6 +802,18 @@ def novaride_architecture_openapi() -> dict[str, Any]:
                 "get": {
                     "summary": "Return the deterministic SDK generation pipeline.",
                     "responses": {"200": {"description": "SDK generation pipeline"}},
+                }
+            },
+            "/v1/architecture/app-store": {
+                "get": {
+                    "summary": "Return the governed NovaRide app store catalog.",
+                    "responses": {"200": {"description": "App store catalog"}},
+                }
+            },
+            "/v1/architecture/protocol-marketplace": {
+                "get": {
+                    "summary": "Return the governed NovaRide protocol marketplace catalog.",
+                    "responses": {"200": {"description": "Protocol marketplace catalog"}},
                 }
             },
         },
