@@ -12,8 +12,10 @@ from pydantic import BaseModel, Field
 
 from afritech.api.auth.jwt_device_auth import JWT, require_roles
 from afritech.afriprogramming.control_plane import get_control_plane
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afritech.afriprogramming.rbac import canonical_role_name
 from afritech.architecture.novaride_architecture import (
+    novaride_architecture_app_store,
     novaride_architecture_changelog,
     novaride_architecture_compatibility_matrix,
     novaride_architecture_contract,
@@ -23,6 +25,7 @@ from afritech.architecture.novaride_architecture import (
     novaride_architecture_openapi,
     novaride_architecture_operational_metrics,
     novaride_architecture_publication,
+    novaride_architecture_protocol_marketplace,
     novaride_architecture_releases,
     novaride_architecture_schema,
     novaride_architecture_sdks,
@@ -31,6 +34,15 @@ from afritech.architecture.novaride_architecture import (
     novaride_architecture_key_registry,
     verify_novaride_architecture_publication,
     verify_novaride_architecture_contract,
+)
+from afritech.architecture.novaride_super_app import (
+    novaid_digital_nation_contract,
+    novaid_gen_sovereign_contract,
+    novaid_identity_contract,
+    novaride_digital_constitution_contract,
+    novaride_global_expansion_contract,
+    novaride_regulatory_alignment_contract,
+    novaride_super_app_contract,
 )
 
 
@@ -109,11 +121,16 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "schedule_ride",
             "airport_pickup",
             "multiple_stops",
+            "ride_sharing",
             "driver_tracking",
             "trip_sharing",
             "sos",
             "novapay_wallet",
             "ride_receipts",
+            "replay_verification",
+            "family_accounts",
+            "business_travel",
+            "rewards",
             "support_tickets",
         ),
     },
@@ -134,10 +151,18 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "online_offline",
             "accept_rides",
             "navigation",
+            "ai_demand_heatmaps",
+            "vehicle_inspection",
             "pickup_verification",
             "passenger_verification",
             "daily_earnings",
+            "earnings_dashboard",
             "novapay_cash_out",
+            "driver_safety",
+            "performance_coaching",
+            "trust_score",
+            "replay_evidence",
+            "digital_identity",
             "training_materials",
         ),
     },
@@ -159,6 +184,11 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "/v1/operator/demand-forecast",
             "/v1/operator/replay-exceptions",
             "/v1/operator/city-profit-optimization",
+            "/v1/architecture/compliance",
+            "/v1/architecture/remediation",
+            "/v1/architecture/learning",
+            "/v1/architecture/predictive-governance",
+            "/v1/architecture/autonomous-governance",
         ),
         "capabilities": (
             "live_ride_map",
@@ -200,10 +230,15 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "driver_assignment",
             "maintenance",
             "insurance",
+            "insurance_tracking",
             "fuel_tracking",
+            "fuel_analytics",
             "fleet_earnings",
             "driver_payouts",
             "fleet_reports",
+            "fleet_utilization",
+            "route_optimization",
+            "compliance_monitoring",
         ),
     },
     {
@@ -222,8 +257,14 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
         ),
         "capabilities": (
             "employee_bookings",
+            "corporate_travel",
+            "employee_rides",
+            "delivery_management",
+            "guest_transport",
             "approval_workflows",
             "monthly_invoicing",
+            "cost_centre_allocation",
+            "spending_limits",
             "business_wallet",
             "department_budgets",
             "travel_reports",
@@ -290,8 +331,14 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "driver_approval",
             "vehicle_approval",
             "pricing_rules",
+            "city_configuration",
+            "organization_management",
+            "identity_management",
             "service_zones",
+            "vehicle_categories",
             "promotions",
+            "taxes",
+            "notifications",
             "compliance",
             "audit_logs",
             "system_health",
@@ -323,7 +370,7 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
     },
     {
         "key": "trust_safety",
-        "name": "NovaRide Trust & Safety Portal",
+        "name": "NovaRide Trust Portal",
         "role": "OPERATOR",
         "platforms": ("Web",),
         "route_prefix": "/v1/novaride/trust-safety",
@@ -335,6 +382,13 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
         "capabilities": (
             "sos_cases",
             "incident_timeline",
+            "public_receipt_verification",
+            "replay_explorer",
+            "trust_certificates",
+            "architecture_verification",
+            "signed_contracts",
+            "system_status",
+            "audit_bundles",
             "replay",
             "evidence_viewer",
             "driver_verification",
@@ -359,7 +413,32 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "refund_requests",
             "driver_assistance",
             "passenger_assistance",
+            "voice_chat_support",
+            "complaint_resolution",
+            "receipt_verification",
             "escalation_management",
+        ),
+    },
+    {
+        "key": "finance",
+        "name": "NovaRide Finance Portal",
+        "role": "FINANCE",
+        "platforms": ("Web",),
+        "route_prefix": "/v1/novaride/finance",
+        "primary_routes": (
+            "/v1/novapay/live-test/readiness",
+            "/v1/novatech/organizations/{organization_id}/billing",
+            "/v1/core-platform/trust/explorer/{receipt_id}",
+        ),
+        "capabilities": (
+            "revenue_analytics",
+            "settlement_monitoring",
+            "treasury_dashboard",
+            "wallet_management",
+            "refund_approval",
+            "financial_reports",
+            "audit_exports",
+            "ledger_explorer",
         ),
     },
     {
@@ -390,6 +469,8 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "/v1/platform-contracts/schemas",
             "/v1/partners/registry",
             "/v1/novaride/ecosystem",
+            "/v1/novaride/appstore/apps",
+            "/v1/novaride/developer/marketplace",
         ),
         "capabilities": (
             "api_keys",
@@ -397,13 +478,55 @@ NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
             "sandbox",
             "webhook_manager",
             "documentation",
+            "openapi_explorer",
+            "sdk_downloads",
+            "partner_onboarding",
+            "appstore_catalog",
+            "appstore_install",
+            "appstore_publish",
+            "app_store_catalog",
+            "marketplace_publishing",
+            "contract_versions",
+            "architecture_signatures",
             "usage_analytics",
+            "trust_review_queue",
+        ),
+    },
+    {
+        "key": "executive",
+        "name": "NovaRide Executive Dashboard",
+        "role": "EXECUTIVE",
+        "platforms": ("Web",),
+        "route_prefix": "/v1/novaride/executive",
+        "primary_routes": (
+            "/v1/operator/analytics",
+            "/v1/operator/demand-forecast",
+            "/v1/novaride/phase12/status",
+            "/v1/novaride/phase13/status",
+        ),
+        "capabilities": (
+            "revenue",
+            "active_cities",
+            "active_drivers",
+            "passenger_growth",
+            "ride_completion",
+            "demand_forecast",
+            "fleet_utilization",
+            "trust_score",
+            "compliance_score",
+            "incident_trends",
+            "carbon_metrics",
+            "operational_health",
+            "sla_monitoring",
+            "financial_health",
         ),
     },
 )
 
 NOVARIDE_SHARED_PLATFORM: tuple[dict[str, str], ...] = (
     {"key": "novaid", "name": "NovaID", "purpose": "Authentication, identity verification, and user profiles"},
+    {"key": "novapower", "name": "NovaPower", "purpose": "Governance, orchestration, and execution control"},
+    {"key": "novaride_core", "name": "NovaRide Core", "purpose": "Booking, dispatch, pricing, routing, and ride lifecycle"},
     {"key": "policy", "name": "Policy Engine", "purpose": "Jurisdiction, role, safety, and operational policy decisions"},
     {"key": "novapay", "name": "NovaPay", "purpose": "Ride payments, wallets, refunds, driver earnings, and corporate billing"},
     {"key": "dispatch", "name": "Dispatch Engine", "purpose": "Driver matching and ride lifecycle coordination"},
@@ -416,6 +539,10 @@ NOVARIDE_SHARED_PLATFORM: tuple[dict[str, str], ...] = (
     {"key": "notifications", "name": "NovaNotify", "purpose": "Push, SMS, email, receipts, and operational alerts"},
     {"key": "analytics", "name": "Analytics Engine", "purpose": "Utilization, cancellations, demand, revenue, and fleet reporting"},
     {"key": "audit", "name": "Audit & Replay", "purpose": "Compliance logs, route replay, proof receipts, and verification"},
+    {"key": "novatrust", "name": "NovaTrust", "purpose": "Cryptographic receipts, replay verification, audit trails, and proof services"},
+    {"key": "novaai", "name": "NovaAI", "purpose": "Demand prediction, anomaly detection, recommendations, and operational insights"},
+    {"key": "novadata", "name": "NovaData", "purpose": "Analytics, reporting, and business intelligence"},
+    {"key": "novacloud", "name": "NovaCloud", "purpose": "Deployment, observability, scaling, and infrastructure"},
     {"key": "events", "name": "Event Platform", "purpose": "Ride lifecycle event stream, replay, evidence binding, and proof emission"},
     {"key": "control_plane", "name": "Control Plane", "purpose": "Feature gates, RBAC, tenant controls, policies, and operational governance"},
 )
@@ -429,22 +556,70 @@ NOVARIDE_API_GATEWAY_RESPONSIBILITIES: tuple[str, ...] = (
 
 NOVARIDE_APP_LAYER_CONTRACT: tuple[dict[str, Any], ...] = (
     {
-        "app": "Passenger App",
+        "app": "NovaRide Passenger",
         "role": "CUSTOMER",
         "interface_responsibility": "ride_booking_and_trip_experience",
         "example_route": "/v1/rider/rides",
     },
     {
-        "app": "Driver App",
+        "app": "NovaRide Driver",
         "role": "DRIVER",
         "interface_responsibility": "trip_execution_and_earnings",
         "example_route": "/v1/driver/rides/{ride_id}/accept",
     },
     {
-        "app": "Operator Dashboard",
+        "app": "NovaRide Operator Portal",
         "role": "OPERATOR",
         "interface_responsibility": "control_monitoring_and_escalation",
         "example_route": "/v1/operator/actions",
+    },
+    {
+        "app": "NovaRide Fleet",
+        "role": "FLEET_OWNER",
+        "interface_responsibility": "fleet_utilization_compliance_and_earnings",
+        "example_route": "/v1/afriride/fleet/summary",
+    },
+    {
+        "app": "NovaRide Business",
+        "role": "CLIENT",
+        "interface_responsibility": "corporate_transport_billing_and_limits",
+        "example_route": "/v1/novaride/business/portal-contract",
+    },
+    {
+        "app": "NovaRide Admin",
+        "role": "ADMIN",
+        "interface_responsibility": "organization_roles_city_pricing_and_system_settings",
+        "example_route": "/v1/novaride/admin/contract",
+    },
+    {
+        "app": "NovaRide Inspector",
+        "role": "VERIFIER",
+        "interface_responsibility": "field_compliance_driver_vehicle_and_photo_evidence",
+        "example_route": "/v1/novaride/inspector/app-contract",
+    },
+    {
+        "app": "NovaRide Support",
+        "role": "OPERATOR",
+        "interface_responsibility": "tickets_refunds_complaints_receipts_and_replay",
+        "example_route": "/v1/novaride/support/contract",
+    },
+    {
+        "app": "NovaRide Finance",
+        "role": "FINANCE",
+        "interface_responsibility": "settlement_treasury_refunds_and_ledger_explorer",
+        "example_route": "/v1/novaride/finance",
+    },
+    {
+        "app": "NovaRide Developer Portal",
+        "role": "DEVELOPER",
+        "interface_responsibility": "api_docs_sdk_webhooks_sandbox_and_keys",
+        "example_route": "/v1/novaride/developer",
+    },
+    {
+        "app": "NovaRide Executive Dashboard",
+        "role": "EXECUTIVE",
+        "interface_responsibility": "revenue_growth_trust_compliance_sla_and_city_health",
+        "example_route": "/v1/novaride/executive",
     },
 )
 
@@ -486,7 +661,106 @@ NOVARIDE_CROSS_APP_SERVICE_MATRIX: tuple[dict[str, Any], ...] = (
     {"app": "Admin", "services": ("RBAC", "Pricing", "Audit")},
     {"app": "Inspector", "services": ("Trust", "Audit")},
     {"app": "Support", "services": ("Replay", "NovaPay")},
+    {"app": "Finance", "services": ("NovaPay", "Ledger", "Audit")},
+    {"app": "Trust Portal", "services": ("NovaTrust", "Replay", "Certificates")},
+    {"app": "Developer", "services": ("OpenAPI", "SDKs", "Webhooks")},
+    {"app": "Executive", "services": ("NovaData", "NovaAI", "SLA")},
     {"app": "Partner", "services": ("Dispatch", "Billing")},
+)
+
+NOVARIDE_UNIFIED_UI_FRAMEWORK: dict[str, Any] = {
+    "name": "NovaRide Unified UI Framework",
+    "version": "2026.07.next",
+    "status": "contract_ready",
+    "principles": (
+        "role_based_workspaces",
+        "shared_design_tokens",
+        "native_mobile_shells",
+        "web_portal_shells",
+        "replay_first_evidence_components",
+        "accessibility_first_controls",
+        "offline_resilient_mobile_states",
+    ),
+    "shared_components": (
+        "IdentityHeader",
+        "TrustBadge",
+        "ReplayTimeline",
+        "NovaPayReceiptPanel",
+        "IncidentDrawer",
+        "EvidenceAttachmentGrid",
+        "AgentRecommendationPanel",
+        "SlaHealthStrip",
+        "CitySwitcher",
+    ),
+    "tokens": {
+        "density": "enterprise_compact",
+        "radius": "8px_max",
+        "motion": "reduced_motion_safe",
+        "color_mode": "accessible_light_dark",
+    },
+    "authority_boundary": "ui_renders_contracts_and_recommendations_only",
+}
+
+NOVARIDE_NATIVE_APP_ACTIVATION: tuple[dict[str, Any], ...] = (
+    {
+        "surface": "passenger",
+        "shell": "Expo React Native",
+        "targets": ("Android", "iOS", "Web"),
+        "status": "next_generation_active",
+        "required_modules": ("booking", "tracking", "novapay_wallet", "receipt_replay", "support"),
+    },
+    {
+        "surface": "driver",
+        "shell": "Expo React Native",
+        "targets": ("Android", "iOS"),
+        "status": "next_generation_active",
+        "required_modules": ("availability", "ride_queue", "navigation", "inspection", "earnings", "replay_evidence"),
+    },
+    {
+        "surface": "inspector",
+        "shell": "tablet_web_hybrid",
+        "targets": ("Android Tablet", "Web"),
+        "status": "contract_ready",
+        "required_modules": ("vehicle_inspections", "driver_verification", "photo_evidence", "certificate_management"),
+    },
+)
+
+NOVARIDE_AGENTIC_AI_MODULES: tuple[dict[str, Any], ...] = (
+    {
+        "key": "demand_orchestration_agent",
+        "name": "Demand Orchestration Agent",
+        "scope": "predict demand, recommend driver positioning, and explain forecast confidence",
+        "surfaces": ("operator", "driver", "executive"),
+        "authority": "recommendation_only",
+    },
+    {
+        "key": "incident_triage_agent",
+        "name": "Incident Triage Agent",
+        "scope": "summarize incidents, propose escalation path, and bind replay evidence",
+        "surfaces": ("operator", "support", "trust_safety"),
+        "authority": "human_approval_required",
+    },
+    {
+        "key": "fleet_optimization_agent",
+        "name": "Fleet Optimization Agent",
+        "scope": "recommend utilization, maintenance, and route optimization actions",
+        "surfaces": ("fleet", "operator", "executive"),
+        "authority": "proposal_only",
+    },
+    {
+        "key": "finance_assurance_agent",
+        "name": "Finance Assurance Agent",
+        "scope": "flag settlement anomalies, refund risk, and ledger reconciliation gaps",
+        "surfaces": ("finance", "admin", "executive"),
+        "authority": "review_required",
+    },
+    {
+        "key": "developer_integration_agent",
+        "name": "Developer Integration Agent",
+        "scope": "assist partners with API contracts, webhooks, SDKs, and sandbox diagnostics",
+        "surfaces": ("developer", "partner"),
+        "authority": "documentation_and_diagnostics_only",
+    },
 )
 
 NOVARIDE_ARCHITECTURE_OUTCOMES: tuple[str, ...] = (
@@ -1607,7 +1881,18 @@ def _novaride_ecosystem_payload() -> dict[str, Any]:
         "apps": surfaces,
         "app_count": len(surfaces),
         "shared_platform": [dict(service) for service in NOVARIDE_SHARED_PLATFORM],
+        "unified_ui_framework": dict(NOVARIDE_UNIFIED_UI_FRAMEWORK),
+        "native_app_activation": [dict(app) for app in NOVARIDE_NATIVE_APP_ACTIVATION],
+        "agentic_ai_modules": [dict(module) for module in NOVARIDE_AGENTIC_AI_MODULES],
         "architecture": architecture_contract,
+        "application_architecture": {
+            "app_layer": [dict(app) for app in NOVARIDE_APP_LAYER_CONTRACT],
+            "cross_app_service_matrix": [
+                {"app": row["app"], "services": list(row["services"])}
+                for row in NOVARIDE_CROSS_APP_SERVICE_MATRIX
+            ],
+            "authority_boundary": "apps_request_and_render_backend_contracts_only",
+        },
         "ecosystem_platform": novaride_architecture_ecosystem_platform(),
         "enterprise_operations_score": "10/10",
         "enterprise_operations_classification": "governed_evidence_backed_ai_assisted_mobility_control_platform",
@@ -2118,6 +2403,134 @@ def _novaride_partner_portal_contract() -> dict[str, Any]:
     }
 
 
+def _novaride_protocol_marketplace_payload() -> dict[str, Any]:
+    marketplace = novaride_architecture_protocol_marketplace()
+    return {
+        "view": "novaride_developer_marketplace",
+        "status": marketplace.get("status", "governed_beta"),
+        "platform": marketplace.get("platform", "NovaRide"),
+        "marketplace": {
+            **marketplace,
+            "catalog": list(marketplace.get("catalog", ())),
+            "storefronts": list(marketplace.get("storefronts", ())),
+            "publishing_pipeline": list(marketplace.get("publishing_pipeline", ())),
+        },
+    }
+
+
+def _novaride_app_store_payload() -> dict[str, Any]:
+    app_store = novaride_architecture_app_store()
+    return {
+        "view": "novaride_app_store",
+        "status": app_store.get("status", "governed_beta"),
+        "platform": app_store.get("platform", "NovaRide"),
+        "app_store": {
+            **app_store,
+            "apps": list(app_store.get("apps", ())),
+            "categories": list(app_store.get("categories", ())),
+            "publishing_pipeline": list(app_store.get("publishing_pipeline", ())),
+        },
+    }
+
+
+def _novaride_super_app_payload() -> dict[str, Any]:
+    super_app = novaride_super_app_contract()
+    return {
+        "view": "novaride_super_app",
+        "status": super_app.get("status", "contract_ready"),
+        "platform": super_app.get("platform", "NovaRide"),
+        "super_app": {
+            **super_app,
+            "modules": list(super_app.get("modules", ())),
+            "ecosystem_loop": list(super_app.get("ecosystem_loop", ())),
+        },
+    }
+
+
+def _novaid_payload() -> dict[str, Any]:
+    identity = novaid_identity_contract()
+    return {
+        "view": "novaid_global_identity",
+        "status": identity.get("status", "standard_ready"),
+        "platform": identity.get("platform", "NovaRide"),
+        "identity": {
+            **identity,
+            "capabilities": list(identity.get("capabilities", ())),
+            "use_cases": list(identity.get("use_cases", ())),
+        },
+    }
+
+
+def _novaid_gen_sovereign_payload() -> dict[str, Any]:
+    contract = novaid_gen_sovereign_contract()
+    return {
+        "view": "novaid_gen_sovereign",
+        "status": contract.get("status", "architecture_contract_ready"),
+        "platform": contract.get("platform", "NovaRide"),
+        "gen_sovereign": {
+            **contract,
+            "core_layers": list(contract.get("core_layers", ())),
+            "capabilities": list(contract.get("capabilities", ())),
+        },
+    }
+
+
+def _novaid_digital_nation_payload() -> dict[str, Any]:
+    contract = novaid_digital_nation_contract()
+    return {
+        "view": "novaid_digital_nation",
+        "status": contract.get("status", "architecture_contract_ready"),
+        "platform": contract.get("platform", "NovaRide"),
+        "digital_nation": {
+            **contract,
+            "core_layers": list(contract.get("core_layers", ())),
+            "what_this_is": list(contract.get("what_this_is", ())),
+            "what_this_is_not": list(contract.get("what_this_is_not", ())),
+            "capabilities": list(contract.get("capabilities", ())),
+        },
+    }
+
+
+def _novaride_digital_constitution_payload() -> dict[str, Any]:
+    contract = novaride_digital_constitution_contract()
+    return {
+        "view": "novaride_digital_constitution",
+        "status": contract.get("status", "architecture_contract_ready"),
+        "platform": contract.get("platform", "NovaRide"),
+        "constitution": {
+            **contract,
+            "articles": list(contract.get("articles", ())),
+            "amendment_process": list(contract.get("amendment_process", ())),
+        },
+    }
+
+
+def _novaride_regulatory_alignment_payload() -> dict[str, Any]:
+    contract = novaride_regulatory_alignment_contract()
+    return {
+        "view": "novaride_regulatory_alignment",
+        "status": contract.get("status", "architecture_contract_ready"),
+        "platform": contract.get("platform", "NovaRide"),
+        "regulatory_alignment": {
+            **contract,
+            "alignment_model": list(contract.get("alignment_model", ())),
+        },
+    }
+
+
+def _novaride_global_expansion_payload() -> dict[str, Any]:
+    contract = novaride_global_expansion_contract()
+    return {
+        "view": "novaride_global_expansion",
+        "status": contract.get("status", "strategy_contract_ready"),
+        "platform": contract.get("platform", "NovaRide"),
+        "expansion": {
+            **contract,
+            "phases": list(contract.get("phases", ())),
+        },
+    }
+
+
 def build_afriride_next_gen_mobile_router() -> APIRouter:
     router = APIRouter(prefix="/v1", tags=["afriride-next-gen-mobile"])
 
@@ -2209,6 +2622,10 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     def novaride_architecture_sdk_pipeline_contract() -> dict[str, Any]:
         return novaride_architecture_sdk_generation_pipeline()
 
+    @router.get("/architecture/protocol-marketplace")
+    def novaride_architecture_protocol_marketplace_contract() -> dict[str, Any]:
+        return novaride_architecture_protocol_marketplace()
+
     @router.post("/architecture/verify")
     def novaride_architecture_verify_contract(request: ArchitectureVerificationRequest) -> dict[str, Any]:
         return verify_novaride_architecture_contract(request.version, request.schema_hash, request.capabilities)
@@ -2262,6 +2679,56 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/novaride/partner/portal-contract")
     def novaride_partner_portal_contract() -> dict[str, Any]:
         return _novaride_partner_portal_contract()
+
+    @router.get("/novaride/developer/marketplace")
+    def novaride_developer_marketplace() -> dict[str, Any]:
+        return _novaride_protocol_marketplace_payload()
+
+    @router.get("/novaride/appstore/apps")
+    def novaride_app_store_apps() -> dict[str, Any]:
+        return _novaride_app_store_payload()
+
+    @router.get("/novaride/super-app")
+    def novaride_super_app() -> dict[str, Any]:
+        return _novaride_super_app_payload()
+
+    @router.get("/novaride/novaid")
+    def novaride_novaid() -> dict[str, Any]:
+        return _novaid_payload()
+
+    @router.get("/novaride/novaid/gen-sovereign")
+    def novaride_novaid_gen_sovereign() -> dict[str, Any]:
+        return _novaid_gen_sovereign_payload()
+
+    @router.get("/novaride/novaid/digital-nation")
+    def novaride_novaid_digital_nation() -> dict[str, Any]:
+        return _novaid_digital_nation_payload()
+
+    @router.get("/novaride/constitution")
+    def novaride_digital_constitution() -> dict[str, Any]:
+        return _novaride_digital_constitution_payload()
+
+    @router.get("/novaride/regulatory-alignment")
+    def novaride_regulatory_alignment() -> dict[str, Any]:
+        return _novaride_regulatory_alignment_payload()
+
+    @router.get("/novaride/global-expansion")
+    def novaride_global_expansion() -> dict[str, Any]:
+        return _novaride_global_expansion_payload()
+
+    @router.post("/novaride/appstore/install")
+    def novaride_app_store_install(payload: dict[str, Any]) -> dict[str, Any]:
+        from afritech.architecture.novaride_app_store import novaride_app_store_install_plan
+
+        manifest = payload.get("manifest") if isinstance(payload, dict) and "manifest" in payload else payload
+        return novaride_app_store_install_plan(manifest)
+
+    @router.post("/novaride/appstore/publish")
+    def novaride_app_store_publish(payload: dict[str, Any]) -> dict[str, Any]:
+        from afritech.architecture.novaride_app_store import novaride_app_store_publish_plan
+
+        manifest = payload.get("manifest") if isinstance(payload, dict) and "manifest" in payload else payload
+        return novaride_app_store_publish_plan(manifest)
 
     @router.post("/mobile/auth/session")
     def create_mobile_session(payload: dict[str, Any]) -> dict[str, Any]:
@@ -2849,7 +3316,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     ) -> dict[str, Any]:
         from afritech.afriprogramming.phase5 import build_autonomous_strategy_projection
 
-        org_id = organization_id or phase0_control_plane.DEFAULT_ORGANIZATION_ID
+        org_id = organization_id or DEFAULT_ORGANIZATION_ID
         return build_autonomous_strategy_projection(organization_id=org_id, source=source, limit=limit)
 
     @router.get("/operator/decisions")

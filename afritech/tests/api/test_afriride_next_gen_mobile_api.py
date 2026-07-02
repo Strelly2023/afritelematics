@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from afritech.api.app import app
 from afritech.afriprogramming import control_plane
-from afritech.afriprogramming.persistence import PlatformStore
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID, PlatformStore
 from afritech.architecture.novaride_architecture import (
     NOVARIDE_ARCHITECTURE_CONTRACT,
     NOVARIDE_ARCHITECTURE_REGISTRY,
@@ -159,6 +159,7 @@ def test_novaride_architecture_contract_platform_exposes_openapi_and_lifecycle_d
     assert "/v1/architecture/signature" in openapi.json()["paths"]
     assert "/v1/architecture/keys" in openapi.json()["paths"]
     assert "/v1/architecture/sdk-pipeline" in openapi.json()["paths"]
+    assert "/v1/architecture/protocol-marketplace" in openapi.json()["paths"]
     assert "NovaRideArchitectureContract" in openapi.json()["components"]["schemas"]
 
     assert changelog.status_code == 200
@@ -307,6 +308,9 @@ def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None
     sdks = client.get("/v1/architecture/sdks")
     metrics = client.get("/v1/architecture/metrics")
     ecosystem = client.get("/v1/novaride/ecosystem")
+    app_store = client.get("/v1/novaride/appstore/apps")
+    architecture_marketplace = client.get("/v1/architecture/protocol-marketplace")
+    marketplace = client.get("/v1/novaride/developer/marketplace")
 
     assert publication.status_code == 200
     assert publication.json()["signature_status"] == "signed"
@@ -318,6 +322,24 @@ def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None
     assert publication.json()["signature"]["signed_at"] == publication.json()["signed_payload"]["signed_at"]
     assert ecosystem.status_code == 200
     assert ecosystem.json()["ecosystem_platform"]["sdk_generation_pipeline"]["steps"]
+    assert ecosystem.json()["ecosystem_platform"]["app_store"]["status"] == "governed_beta"
+    assert ecosystem.json()["ecosystem_platform"]["protocol_marketplace"]["status"] == "governed_beta"
+
+    assert app_store.status_code == 200
+    app_store_payload = app_store.json()
+    assert app_store_payload["view"] == "novaride_app_store"
+    assert app_store_payload["app_store"]["apps"][0]["name"] == "QuickDelivery"
+    assert app_store_payload["app_store"]["developer_flow"][0] == "sign_up"
+
+    assert architecture_marketplace.status_code == 200
+    assert architecture_marketplace.json()["classification"] == "governed_protocol_marketplace_catalog"
+    assert architecture_marketplace.json()["storefronts"][0]["name"] == "NovaRide App Store"
+
+    assert marketplace.status_code == 200
+    marketplace_payload = marketplace.json()
+    assert marketplace_payload["view"] == "novaride_developer_marketplace"
+    assert marketplace_payload["marketplace"]["storefronts"][0]["name"] == "NovaRide App Store"
+    assert marketplace_payload["marketplace"]["developer_program"]["trust_review"] == "required"
 
     assert compatibility.status_code == 200
     assert {
@@ -346,6 +368,9 @@ def test_novaride_architecture_ecosystem_platform_publication_surfaces() -> None
         "go",
     }
     assert sdks.json()["source"] == "/v1/architecture/openapi"
+
+    assert app_store.status_code == 200
+    assert app_store.json()["app_store"]["monetization"]["token_payment"] == "NVT_supported"
 
     assert metrics.status_code == 200
     assert metrics.json()["metrics"]["2026.07.0.architecture_requests_total"] == {
@@ -666,7 +691,7 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     payload = response.json()
     assert payload["view"] == "novaride_ecosystem"
     assert payload["platform"] == "NovaRide"
-    assert payload["app_count"] == 13
+    assert payload["app_count"] == 15
     assert payload["authority_boundary"]["payments"] == "NovaPay_backend_only"
     assert payload["authority_boundary"]["mobile_apps"] == "request_and_observe_only"
     assert payload["lifecycle"] == [
@@ -692,10 +717,12 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
         "NovaRide Corporate Portal",
         "NovaRide Admin",
         "NovaRide Inspector App / Portal",
-        "NovaRide Trust & Safety Portal",
+        "NovaRide Trust Portal",
         "NovaRide Support",
+        "NovaRide Finance Portal",
         "NovaRide Partner",
         "NovaRide Developer Portal",
+        "NovaRide Executive Dashboard",
     }
     route_families = payload["route_families"]
     assert route_families["passenger"] == "/v1/novaride/passenger"
@@ -704,11 +731,32 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert route_families["inspector"] == "/v1/novaride/inspector"
     assert route_families["merchant"] == "/v1/novaride/merchant"
     assert route_families["corporate"] == "/v1/novaride/corporate"
+    assert route_families["finance"] == "/v1/novaride/finance"
     assert route_families["developer"] == "/v1/novaride/developer"
+    assert route_families["executive"] == "/v1/novaride/executive"
+    assert any(service["name"] == "NovaID" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaPower" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaRide Core" for service in payload["shared_platform"])
     assert any(service["name"] == "NovaPay" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaTrust" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaAI" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaData" for service in payload["shared_platform"])
+    assert any(service["name"] == "NovaCloud" for service in payload["shared_platform"])
     assert any(service["name"] == "Audit & Replay" for service in payload["shared_platform"])
     assert any(service["name"] == "Inspection Registry" for service in payload["shared_platform"])
     assert any(service["name"] == "Incident Registry" for service in payload["shared_platform"])
+    assert payload["unified_ui_framework"]["name"] == "NovaRide Unified UI Framework"
+    assert payload["unified_ui_framework"]["authority_boundary"] == "ui_renders_contracts_and_recommendations_only"
+    assert "ReplayTimeline" in payload["unified_ui_framework"]["shared_components"]
+    assert "AgentRecommendationPanel" in payload["unified_ui_framework"]["shared_components"]
+    native_surfaces = {app["surface"]: app for app in payload["native_app_activation"]}
+    assert native_surfaces["passenger"]["status"] == "next_generation_active"
+    assert native_surfaces["driver"]["status"] == "next_generation_active"
+    assert "inspection" in native_surfaces["driver"]["required_modules"]
+    agentic_modules = {module["key"]: module for module in payload["agentic_ai_modules"]}
+    assert agentic_modules["demand_orchestration_agent"]["authority"] == "recommendation_only"
+    assert agentic_modules["incident_triage_agent"]["authority"] == "human_approval_required"
+    assert agentic_modules["finance_assurance_agent"]["authority"] == "review_required"
     canonical_architecture = novaride_architecture_contract()
     assert payload["architecture"] == canonical_architecture
     assert payload["architecture"]["version"] == "2026.07.0"
@@ -716,6 +764,13 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert payload["architecture"]["maturity_dimensions"]
     assert payload["architecture"]["enterprise_operations"]
     assert payload["architecture"]["production_readiness"]
+    architecture_apps = {app["app"] for app in payload["application_architecture"]["app_layer"]}
+    assert "NovaRide Finance" in architecture_apps
+    assert "NovaRide Executive Dashboard" in architecture_apps
+    assert (
+        payload["application_architecture"]["authority_boundary"]
+        == "apps_request_and_render_backend_contracts_only"
+    )
     assert (
         payload["ecosystem_platform"]["classification"]
         == "versioned_canonical_registry_backed_verification_ready_ecosystem_platform"
@@ -723,6 +778,7 @@ def test_novaride_ecosystem_exposes_next_generation_app_family() -> None:
     assert payload["ecosystem_platform"]["signed_publication"]["signature_status"] == "signed"
     assert payload["ecosystem_platform"]["signed_publication"]["signature"]["scheme"] == "ed25519"
     assert payload["ecosystem_platform"]["sdk_generation_pipeline"]["steps"]
+    assert payload["ecosystem_platform"]["protocol_marketplace"]["catalog"]
     assert payload["ecosystem_platform"]["sdk_registry"]
     assert payload["ecosystem_platform"]["operational_metrics"]["2026.07.0.architecture_requests_total"] == {
         "value": 0,
@@ -769,7 +825,14 @@ def test_novaride_platform_architecture_contract_exposes_authority_boundary_and_
         "Apps request and display; Control Plane decides; Execution Plane performs; Event Platform proves"
     )
     app_names = {app["app"] for app in payload["layers"]["app_layer"]}
-    assert app_names == {"Passenger App", "Driver App", "Operator Dashboard"}
+    assert {
+        "NovaRide Passenger",
+        "NovaRide Driver",
+        "NovaRide Operator Portal",
+        "NovaRide Finance",
+        "NovaRide Developer Portal",
+        "NovaRide Executive Dashboard",
+    } <= app_names
     assert payload["layers"]["api_gateway"]["role"] == "single_entry_point"
     assert payload["layers"]["api_gateway"]["responsibilities"] == [
         "request_validation",
@@ -780,7 +843,13 @@ def test_novaride_platform_architecture_contract_exposes_authority_boundary_and_
     service_names = {service["name"] for service in payload["layers"]["execution_layer"]["services"]}
     assert {
         "NovaID",
+        "NovaPower",
+        "NovaRide Core",
         "NovaPay",
+        "NovaTrust",
+        "NovaAI",
+        "NovaData",
+        "NovaCloud",
         "Dispatch Engine",
         "Pricing Engine",
         "Maps & Routing",
@@ -892,6 +961,27 @@ def test_novaride_operator_dashboard_contract_exposes_modules_and_authority() ->
     assert "/v1/operator/demand-forecast" in payload["api_alignment"]["implemented"]
     assert "/v1/operator/strategy-engine" in payload["api_alignment"]["implemented"]
     assert "/v1/operator/city-profit-optimization" in payload["api_alignment"]["implemented"]
+
+
+def test_operator_strategy_engine_uses_default_organization(monkeypatch) -> None:
+    phase5 = import_module("afritech.afriprogramming.phase5")
+    captured: dict[str, object] = {}
+
+    def build_projection(**kwargs):
+        captured.update(kwargs)
+        return {"status": "ok"}
+
+    monkeypatch.setattr(phase5, "build_autonomous_strategy_projection", build_projection)
+
+    response = TestClient(app).get("/v1/operator/strategy-engine")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+    assert captured == {
+        "organization_id": DEFAULT_ORGANIZATION_ID,
+        "source": "afriride_operator_dashboard",
+        "limit": 24,
+    }
 
 
 def test_novaride_fleet_manager_contract_exposes_modules_rbac_and_payment_boundary() -> None:
