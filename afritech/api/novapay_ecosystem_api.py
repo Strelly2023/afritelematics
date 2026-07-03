@@ -1,0 +1,326 @@
+"""NovaPay ecosystem API surfaces."""
+
+from __future__ import annotations
+
+from decimal import Decimal
+import os
+from pathlib import Path
+from typing import Any
+
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, Field, model_validator
+
+from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
+from afritech.novapay import NovaPayEcosystem, NovaPayRepository
+
+
+def _service() -> NovaPayEcosystem:
+    db_path = Path(os.environ.get("NOVAPAY_DB_PATH", ":memory:"))
+    return NovaPayEcosystem(NovaPayRepository(db_path))
+
+
+class StrictPayload(BaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def _reject_float_boundary(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            for value in data.values():
+                if isinstance(value, float):
+                    raise ValueError("float_not_allowed")
+        return data
+
+
+class WalletCreateRequest(StrictPayload):
+    owner_id: str
+    organization_id: str
+    currency: str = "AUD"
+    owner_type: str = "consumer"
+    initial_balance: Decimal = Decimal("0")
+    kyc_status: str = "pending"
+    display_name: str | None = None
+
+
+class TransferRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    sender_wallet_id: str
+    receiver_wallet_id: str
+    amount: Decimal
+    currency: str = "AUD"
+    transfer_type: str = "transfer"
+    idempotency_key: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class QrPaymentRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    payer_wallet_id: str
+    merchant_wallet_id: str
+    amount: Decimal
+    currency: str = "AUD"
+    qr_code: str
+    idempotency_key: str
+
+
+class RefundRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    source_wallet_id: str
+    destination_wallet_id: str
+    amount: Decimal
+    currency: str = "AUD"
+    reason: str = "customer_request"
+    idempotency_key: str
+
+
+class DisputeRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    transaction_id: str
+    reason: str
+    idempotency_key: str
+
+
+class PayoutRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    source_wallet_id: str
+    destination_reference: str
+    amount: Decimal
+    currency: str = "AUD"
+    scheduled_for: str | None = None
+    idempotency_key: str
+
+
+class PayrollLineItem(StrictPayload):
+    recipient_wallet_id: str
+    amount: Decimal
+    note: str | None = None
+
+
+class PayrollRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    source_wallet_id: str
+    currency: str = "AUD"
+    payroll: list[PayrollLineItem]
+    idempotency_key: str
+
+
+class AgentCashRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    wallet_id: str
+    amount: Decimal
+    currency: str = "AUD"
+    direction: str = Field(pattern="^(in|out)$")
+    idempotency_key: str
+
+
+class DeveloperAppRequest(StrictPayload):
+    organization_id: str
+    developer_id: str
+    app_name: str
+    webhook_url: str
+
+
+class ComplianceHoldRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    subject_id: str
+    reason: str
+
+
+class IdentityRequest(StrictPayload):
+    identity_id: str
+    identity_type: str
+    organization_id: str
+    email: str | None = None
+    display_name: str | None = None
+    kyc_status: str = "pending"
+    mfa_ready: bool = False
+    roles: list[str] = Field(default_factory=list)
+
+
+def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> APIRouter:
+    ecosystem = service or _service()
+    router = APIRouter(prefix="/v1/novapay", tags=["novapay"])
+
+    readable = require_roles(
+        "CUSTOMER",
+        "CLIENT",
+        "PARTNER",
+        "SUPPLIER",
+        "DISPATCHER",
+        "OPERATOR",
+        "ADMIN",
+        "DEVELOPER",
+        "VERIFIER",
+        "OBSERVER",
+        "INVESTOR",
+        "FLEET_OWNER",
+    )
+    internal = require_roles("OPERATOR", "ADMIN")
+    developer = require_roles("DEVELOPER", "OPERATOR", "ADMIN")
+    trust_roles = require_roles("VERIFIER", "OBSERVER", "OPERATOR", "ADMIN")
+    finance_roles = require_roles("OPERATOR", "ADMIN", "INVESTOR")
+
+    @router.post("/identities")
+    def identities(payload: IdentityRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.register_identity(**payload.model_dump())
+
+    @router.post("/wallets")
+    def create_wallet(payload: WalletCreateRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.create_wallet(
+            owner_id=payload.owner_id,
+            organization_id=payload.organization_id,
+            currency=payload.currency,
+            owner_type=payload.owner_type,
+            initial_balance=payload.initial_balance,
+            kyc_status=payload.kyc_status,
+            metadata={"display_name": payload.display_name, "requested_by": claims.sub},
+        )
+
+    @router.get("/wallets/{wallet_id}")
+    def wallet(wallet_id: str, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.wallet(wallet_id) or {"wallet_id": wallet_id, "status": "not_found"}
+
+    @router.post("/transfers")
+    def transfer(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.transfer_money(**payload.model_dump())
+
+    @router.post("/qr")
+    def qr(payload: QrPaymentRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.qr_payment(**payload.model_dump())
+
+    @router.post("/merchants")
+    def merchant_payment(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        data = payload.model_dump()
+        return ecosystem.merchant_payment(**data)
+
+    @router.post("/bills")
+    def bill_payment(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        data = payload.model_dump()
+        return ecosystem.bill_payment(**data)
+
+    @router.post("/remittances")
+    def remittance(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        data = payload.model_dump()
+        return ecosystem.remittance(**data)
+
+    @router.post("/cards")
+    def card(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        data = payload.model_dump()
+        return ecosystem.card_payment(**data)
+
+    @router.post("/payouts")
+    def payouts(payload: PayoutRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.payout(**payload.model_dump())
+
+    @router.post("/operations/payroll")
+    def payroll(payload: PayrollRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.business_payroll(
+            organization_id=payload.organization_id,
+            actor_id=payload.actor_id,
+            actor_role=payload.actor_role,
+            source_wallet_id=payload.source_wallet_id,
+            recipients=[item.model_dump() for item in payload.payroll],
+            currency=payload.currency,
+            idempotency_key=payload.idempotency_key,
+        )
+
+    @router.post("/settlements")
+    def settlement(payload: DisputeRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.settle(
+            organization_id=payload.organization_id,
+            transaction_id=payload.transaction_id,
+            actor_id=payload.actor_id,
+            actor_role=payload.actor_role,
+        )
+
+    @router.post("/reconciliation")
+    def reconciliation(payload: dict[str, Any], claims: JWTClaims = Depends(finance_roles)) -> dict[str, Any]:
+        return ecosystem.reconcile(
+            organization_id=str(payload["organization_id"]),
+            batch_name=str(payload.get("batch_name", "daily")),
+            actor_id=claims.sub,
+            actor_role=claims.role,
+        )
+
+    @router.post("/refunds")
+    def refunds(payload: RefundRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.refund(**payload.model_dump())
+
+    @router.post("/disputes")
+    def disputes(payload: DisputeRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.dispute(**payload.model_dump())
+
+    @router.post("/agent/cash")
+    def agent_cash(payload: AgentCashRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_cash_movement(**payload.model_dump())
+
+    @router.get("/receipts/{receipt_id}")
+    def receipts(receipt_id: str, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.verify_receipt(receipt_id)
+
+    @router.get("/trust/explorer/{receipt_id}")
+    def trust_explorer(receipt_id: str, claims: JWTClaims = Depends(trust_roles)) -> dict[str, Any]:
+        return ecosystem.trust_explorer(receipt_id)
+
+    @router.post("/developer/apps")
+    def developer_apps(payload: DeveloperAppRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return ecosystem.developer_app_lifecycle(**payload.model_dump())
+
+    @router.post("/developer/webhooks")
+    def developer_webhooks(payload: DeveloperAppRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return ecosystem.developer_app_lifecycle(**payload.model_dump())
+
+    @router.post("/compliance/holds")
+    def compliance_holds(payload: ComplianceHoldRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.compliance_hold(**payload.model_dump())
+
+    @router.get("/finance")
+    def finance(claims: JWTClaims = Depends(finance_roles)) -> dict[str, Any]:
+        return ecosystem.finance_report(organization_id=claims.organization_id)
+
+    @router.get("/operations")
+    def operations(claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.operations_dashboard(organization_id=claims.organization_id)
+
+    @router.get("/developer")
+    def developer_portal(claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return {
+            "view": "novapay_developer_portal",
+            "apps": ecosystem.repository.list("novapay_developer_apps", organization_id=claims.organization_id),
+            "webhooks": ecosystem.repository.list("novapay_webhooks", organization_id=claims.organization_id),
+        }
+
+    @router.get("/trust")
+    def trust_portal(claims: JWTClaims = Depends(trust_roles)) -> dict[str, Any]:
+        return {
+            "view": "novapay_trust_portal",
+            "recent_receipts": ecosystem.repository.list("novapay_receipts", organization_id=claims.organization_id),
+            "recent_audit_events": ecosystem.repository.list("novapay_audit_events", organization_id=claims.organization_id),
+        }
+
+    @router.get("/portals")
+    def portals(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_portals",
+            "portals": ecosystem.portals(),
+            "role_permissions": ecosystem.role_permissions(),
+        }
+
+    @router.get("/ai/insights")
+    def insights(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.ai_insights(organization_id=claims.organization_id)
+
+    return router
