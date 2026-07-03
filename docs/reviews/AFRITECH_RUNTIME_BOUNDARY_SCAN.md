@@ -1,8 +1,8 @@
 # AfriTech Runtime Boundary Scan
 
 - Startup module: `afritech.api.app`
-- Scanned modules: `5254`
-- Startup-path modules discovered: `502`
+- Scanned modules: `5322`
+- Startup-path modules discovered: `509`
 - Declared Django-bound modules discovered: `248`
 - Violations: `0`
 

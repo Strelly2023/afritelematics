@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `502`
+- Startup-safe closure size: `509`
 - Django-bound modules declared in repo: `248`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `62`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (502 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (509 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -188,7 +188,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (410)
+### Other (417)
 
 - `afritech`
 - `afritech.afripay`
@@ -198,10 +198,12 @@ flowchart TD
 - `afritech.afripay.certification_fraud`
 - `afritech.afripay.compliance`
 - `afritech.afripay.config`
+- `afritech.afripay.dao_economy`
 - `afritech.afripay.events`
 - `afritech.afripay.exceptions`
 - `afritech.afripay.external_packages`
 - `afritech.afripay.fx`
+- `afritech.afripay.global_treasury_ai`
 - `afritech.afripay.guards`
 - `afritech.afripay.intelligence`
 - `afritech.afripay.ledger`
@@ -216,6 +218,7 @@ flowchart TD
 - `afritech.afripay.reconciliation`
 - `afritech.afripay.routing`
 - `afritech.afripay.treasury`
+- `afritech.afripay.treasury_ai`
 - `afritech.afriprogramming`
 - `afritech.afriprogramming.assurance`
 - `afritech.afriprogramming.assurance.assurance_engine`
@@ -284,12 +287,16 @@ flowchart TD
 - `afritech.architecture.config_loader`
 - `afritech.architecture.full_architecture_graph`
 - `afritech.architecture.integrity_proof`
+- `afritech.architecture.novaride_app_store`
 - `afritech.architecture.novaride_architecture`
+- `afritech.architecture.novaride_protocol_marketplace`
+- `afritech.architecture.novaride_super_app`
 - `afritech.audit.merkle`
 - `afritech.chain`
 - `afritech.chain.anchor_publisher`
 - `afritech.chain.contracts`
 - `afritech.chain.contracts.architecture_anchor_abi`
+- `afritech.chain.contracts.architecture_anchor_v2_abi`
 - `afritech.chain.contracts.contract_client`
 - `afritech.chain.contracts.deployment_config`
 - `afritech.chain.sepolia_client`
