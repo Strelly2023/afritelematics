@@ -1,0 +1,137 @@
+docs_path: docs/architecture/NOVARIDE_NEXT_GENERATION_ECOSYSTEM.md
+api_source_path: afritech/api/afriride_next_gen_mobile_api.py
+dashboard_source_path: dashboard/src/App.jsx
+workflow_path: .github/workflows/architecture.yml
+openapi_baseline_path: ""
+openapi_current_path: ""
+
+required_sections:
+  - "## Architecture Invariants"
+  - "## Runtime Guarantees"
+  - "## Authority Model"
+  - "## System Truth Model"
+  - "## Security"
+  - "## Public APIs"
+  - "## Contract Integrity"
+  - "## Version Policy"
+  - "## Verification"
+  - "## Documentation Governance"
+  - "### Digital Twin Simulation"
+  - "### Predictive Governance"
+  - "### Multi-Agent Governance"
+  - "### Autonomous Multi-Agent Governance"
+  - "### Crisis Simulation"
+  - "### Economic Optimization"
+  - "### Self-Refactoring Architecture"
+
+required_fragments:
+  - "User interfaces SHALL NOT execute business authority."
+  - "Execution authority SHALL remain with NovaPower"
+  - "All security controls SHALL be centrally enforced through NovaPower policies."
+  - "All API behavior SHALL be derived from versioned contracts."
+  - "Clients MUST NOT rely on undocumented behavior."
+  - "Violations of these rules SHALL be treated as architecture defects."
+  - "The digital twin SHALL simulate changes without executing them."
+  - "Predictive governance SHALL remain advisory and simulation only."
+  - "Preventive actions SHALL NOT mutate production state automatically."
+  - "The autonomous multi-agent layer SHALL evaluate policy, security, trust, finance, operations, and AI safety through specialized agents."
+  - "The crisis simulation layer SHALL model outages, overload, AI drift, replay mismatches, and payment failures."
+  - "The economic optimization layer SHALL balance cost, performance, growth, and reliability."
+  - "The self-refactoring layer SHALL suggest architectural improvements based on governed insights."
+
+forbidden_patterns:
+  - "docker compose"
+  - "git status"
+  - "Traceback"
+  - "implementation transcript"
+
+api_endpoints:
+  - "/v1/novaride/ecosystem"
+  - "/v1/novaride/platform/architecture-contract"
+  - "/v1/novaride/operator/dashboard-contract"
+  - "/v1/novaride/fleet/manager-contract"
+  - "/v1/novaride/business/portal-contract"
+  - "/v1/novaride/admin/contract"
+  - "/v1/novaride/inspector/app-contract"
+  - "/v1/novaride/support/contract"
+  - "/v1/novaride/partner/portal-contract"
+  - "/v1/architecture/compliance"
+  - "/v1/architecture/remediation"
+  - "/v1/architecture/learning"
+  - "/v1/architecture/predictive-governance"
+  - "/v1/architecture/autonomous-governance"
+
+required_tests:
+  - "test_novaride_ecosystem_exposes_next_generation_app_family"
+  - "test_novaride_platform_architecture_contract_exposes_authority_boundary_and_flow"
+  - "test_operator_dashboard_uses_api_architecture_contract_not_copied_constants"
+  - "test_novaride_next_generation_ecosystem_is_architecture_reference_not_transcript"
+  - "test_predictive_governance_payload_and_metrics_are_available"
+  - "test_architecture_predictive_governance_endpoint_exposes_digital_twin"
+  - "test_architecture_predictive_governance_prometheus_metrics_endpoint"
+  - "test_autonomous_governance_payload_and_metrics_are_available"
+  - "test_architecture_autonomous_governance_endpoint_exposes_multi_agent_crisis_and_economic_layers"
+  - "test_architecture_autonomous_governance_prometheus_metrics_endpoint"
+
+ui_source_roots:
+  - dashboard/src
+  - rider_app
+  - driver_app
+  - afriride_system/mobile
+
+forbidden_ui_endpoint_fragments:
+  - "stripe.com"
+  - "/payment/execute"
+  - "/payments/execute"
+  - "/settlement/execute"
+  - "/trust/mutate"
+  - "/dispatch/override"
+
+ast_source_roots:
+  - afritech/api
+  - afritech/architecture
+  - afriride_system/backend
+
+python_ast_source_roots:
+  - afritech/api
+  - afritech/architecture
+  - afriride_system/backend
+
+forbidden_python_call_names:
+  - direct_db_write
+  - send_money
+  - bypass_novapower
+  - mutate_trust_record
+
+typescript_ast_source_roots:
+  - dashboard/src
+  - rider_app
+  - driver_app
+  - afriride_system/mobile
+
+forbidden_typescript_patterns:
+  - "directPayment("
+  - "executePayment("
+  - "fetch('/payments')"
+  - "fetch(\"/payments\")"
+
+solidity_ast_source_roots:
+  - afritech/contracts
+
+forbidden_solidity_patterns:
+  - selfdestruct
+  - tx.origin
+
+anchor_v2_contract_path: afritech/contracts/ArchitectureAnchorV2.sol
+anchor_v2_abi_path: afritech/chain/contracts/architecture_anchor_v2_abi.py
+anchor_v2_client_path: afritech/chain/contracts/contract_client.py
+blockchain_live_verification: disabled
+
+replay_source_roots:
+  - afritech/api/afriride_next_gen_mobile_api.py
+  - afritech/architecture/novaride_architecture.py
+
+required_replay_fragments:
+  - replay_verified
+  - replay_health
+  - replay_required

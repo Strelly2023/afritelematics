@@ -116,4 +116,4 @@ def test_ride_tracking_websocket_returns_authenticated_subscriber_context() -> N
     assert message["status"] == "connected"
     assert message["mode"] == "observation_only"
     assert message["subscriber"] == "rider-1"
-    assert message["role"] == "RIDER"
+    assert message["role"] == "CUSTOMER"

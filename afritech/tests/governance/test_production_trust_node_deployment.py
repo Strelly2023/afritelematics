@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 COMPOSE = ROOT / "deploy/production/docker-compose.trust-node.yml"
+STAGING_COMPOSE = ROOT / "deploy/staging/docker-compose.staging.yml"
 NGINX = ROOT / "deploy/production/nginx/trust-node.conf.template"
 ENV_EXAMPLE = ROOT / "deploy/production/.env.production.trust-node.example"
 RUNBOOK = ROOT / "docs/operations/AFRITECH_PRODUCTION_TRUST_NODE_RUNBOOK.md"
@@ -31,8 +32,24 @@ def test_trust_node_compose_defines_nginx_certbot_api_and_dashboard() -> None:
         "certbot_certs",
         "afritech_anchor_index",
         ".env.production.trust-node",
+        "AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3",
+        "AFRITECH_RUNTIME_ENVIRONMENT: production",
+        "AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3",
+        '127.0.0.1:8000:8000',
     ):
         assert item in text
+
+
+def test_staging_cannot_claim_production_backend_ports() -> None:
+    text = STAGING_COMPOSE.read_text(encoding="utf-8")
+
+    assert "127.0.0.1:${AFRITECH_STAGING_API_PORT:-18000}:8000" in text
+    assert "127.0.0.1:${AFRITECH_STAGING_DASHBOARD_PORT:-14173}:4173" in text
+    assert "http://127.0.0.1:18000" in text
+    assert "AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3" in text
+    assert "AFRITECH_RUNTIME_ENVIRONMENT: staging" in text
+    assert "AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/staging.sqlite3" in text
+    assert '"8000:8000"' not in text
 
 
 def test_nginx_routes_public_verification_api_dashboard_and_websockets() -> None:
@@ -46,8 +63,11 @@ def test_nginx_routes_public_verification_api_dashboard_and_websockets() -> None
         "location /api/",
         "location /v1/",
         "location /ws/",
-        "proxy_pass http://afritech-dashboard:4173",
-        "proxy_pass http://afritech-api:8000",
+        "resolver 127.0.0.11 valid=10s ipv6=off",
+        "set $afritech_api afritech-api:8000",
+        "set $afritech_dashboard afritech-dashboard:4173",
+        "proxy_pass http://$afritech_dashboard",
+        "proxy_pass http://$afritech_api",
     ):
         assert item in text
 
@@ -105,6 +125,9 @@ def test_trust_node_scripts_cover_setup_anchoring_access_and_dashboard() -> None
     assert "launch_trust_dashboard.sh" in go_live
     assert "DNS resolution failed" in go_live
     assert "LIVE TRUST NODE READY" in go_live
+    assert "assert_production_api_port_available" in setup
+    assert "docker ps --filter publish=8000" in setup
+    assert "port 8000 is owned by a non-production backend" in setup
 
 
 def test_production_probe_checks_level12_15_16_public_surfaces() -> None:
@@ -132,6 +155,10 @@ def test_trust_node_runbook_preserves_authority_boundary() -> None:
         "./scripts/enable_live_anchoring.sh sepolia",
         "./scripts/open_ecosystem_access.sh",
         "./scripts/launch_trust_dashboard.sh",
+        "Healthcheck Optimization",
+        "docker inspect --format='{{json .State.Health}}' production-afritech-api-1",
+        'test: ["CMD", "curl", "-fsS", "--max-time", "10", "http://127.0.0.1:8000/health"]',
+        "start_period: 30s",
         "public ledger anchors prove publication only",
         "Dashboard observes trust surfaces only",
         "does not create runtime truth or production authorization",

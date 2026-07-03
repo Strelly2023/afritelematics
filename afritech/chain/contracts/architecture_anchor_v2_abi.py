@@ -1,0 +1,96 @@
+# afritech/chain/contracts/architecture_anchor_v2_abi.py
+
+ARCHITECTURE_ANCHOR_V2_ABI = [
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {"indexed": True, "internalType": "bytes32", "name": "anchorId", "type": "bytes32"},
+            {"indexed": True, "internalType": "bytes32", "name": "proofHash", "type": "bytes32"},
+            {"indexed": True, "internalType": "address", "name": "publisher", "type": "address"},
+            {"indexed": False, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+            {"indexed": False, "internalType": "bytes32", "name": "context", "type": "bytes32"},
+        ],
+        "name": "ProofAnchored",
+        "type": "event",
+    },
+    {"inputs": [], "name": "AnchorAlreadyExists", "type": "error"},
+    {"inputs": [], "name": "AnchorNotFound", "type": "error"},
+    {"inputs": [], "name": "Unauthorized", "type": "error"},
+    {"inputs": [], "name": "DuplicateProof", "type": "error"},
+    {"inputs": [], "name": "ArrayLengthMismatch", "type": "error"},
+    {"inputs": [], "name": "EmptyBatch", "type": "error"},
+    {"inputs": [], "name": "ZeroAnchorId", "type": "error"},
+    {"inputs": [], "name": "ZeroProofHash", "type": "error"},
+    {
+        "inputs": [
+            {"internalType": "bytes32[]", "name": "anchorIds", "type": "bytes32[]"},
+            {"internalType": "bytes32[]", "name": "proofHashes", "type": "bytes32[]"},
+            {"internalType": "bytes32[]", "name": "contexts", "type": "bytes32[]"},
+            {"internalType": "bool", "name": "enforceUniqueProof", "type": "bool"},
+        ],
+        "name": "anchorBatch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "anchorId", "type": "bytes32"},
+            {"internalType": "bytes32", "name": "proofHash", "type": "bytes32"},
+            {"internalType": "bytes32", "name": "context", "type": "bytes32"},
+            {"internalType": "bool", "name": "enforceUniqueProof", "type": "bool"},
+        ],
+        "name": "anchorProof",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "anchorId", "type": "bytes32"}],
+        "name": "anchorExists",
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "anchorId", "type": "bytes32"}],
+        "name": "getAnchor",
+        "outputs": [
+            {"internalType": "bytes32", "name": "proofHash", "type": "bytes32"},
+            {"internalType": "address", "name": "publisher", "type": "address"},
+            {"internalType": "uint256", "name": "timestamp", "type": "uint256"},
+            {"internalType": "bytes32", "name": "context", "type": "bytes32"},
+        ],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [{"internalType": "bytes32", "name": "proofHash", "type": "bytes32"}],
+        "name": "proofHashUsed",
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"internalType": "bytes32", "name": "anchorId", "type": "bytes32"},
+            {"internalType": "bytes32", "name": "expectedProofHash", "type": "bytes32"},
+        ],
+        "name": "verifyAnchor",
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+        "stateMutability": "view",
+        "type": "function",
+    },
+]

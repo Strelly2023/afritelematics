@@ -7,6 +7,8 @@ from afriride_system.backend.repositories.idempotency_repository import (
     IdempotencyRepository,
 )
 from afriride_system.backend.repositories.ride_repository import RideRepository
+from afriride_system.backend.repositories.push_outbox_repository import PushOutboxRepository
+from afriride_system.backend.repositories.fleet_operations_repository import FleetOperationsRepository
 from afriride_system.backend.repositories.trace_repository import TraceRepository
 
 __all__ = [
@@ -15,5 +17,7 @@ __all__ = [
     "IdempotencyRepository",
     "PersistedIdempotencyRecord",
     "RideRepository",
+    "PushOutboxRepository",
+    "FleetOperationsRepository",
     "TraceRepository",
 ]

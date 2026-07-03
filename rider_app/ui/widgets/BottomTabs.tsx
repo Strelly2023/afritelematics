@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
@@ -15,16 +15,22 @@ export function BottomTabs<T extends string>({
   activeTab,
   onChange,
 }: BottomTabsProps<T>) {
+  const expanded = useWindowDimensions().width >= 840;
   return (
-    <View style={styles.bar}>
+    <View
+      accessibilityRole="tablist"
+      style={[styles.bar, expanded ? styles.rail : null]}
+    >
       {tabs.map((tab) => {
         const active = tab.key === activeTab;
         return (
           <Pressable
-            accessibilityRole="button"
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
+            accessibilityLabel={`${tab.label} tab`}
             key={tab.key}
             onPress={() => onChange(tab.key)}
-            style={[styles.tab, active ? styles.activeTab : null]}
+            style={[styles.tab, expanded ? styles.railTab : null, active ? styles.activeTab : null]}
           >
             <Text style={[styles.label, active ? styles.activeLabel : null]}>
               {tab.label}
@@ -54,6 +60,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "900",
   },
+  rail: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  railTab: {
+    flex: 0,
+    width: "100%",
+  },
   tab: {
     alignItems: "center",
     backgroundColor: colors.panel,
@@ -62,7 +76,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     justifyContent: "center",
-    minHeight: 44,
+    minHeight: 48,
     paddingHorizontal: spacing.sm,
   },
 });

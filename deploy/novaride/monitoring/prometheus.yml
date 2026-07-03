@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/rules/architecture_compliance_rules.yml
+
+scrape_configs:
+  - job_name: novaride-architecture-compliance
+    metrics_path: /metrics/architecture/compliance
+    scheme: http
+    static_configs:
+      - targets:
+          - afritech-api:8000
+  - job_name: novaride-architecture-learning
+    metrics_path: /metrics/architecture/learning
+    scheme: http
+    static_configs:
+      - targets:
+          - afritech-api:8000
+  - job_name: novaride-architecture-predictive-governance
+    metrics_path: /metrics/architecture/predictive-governance
+    scheme: http
+    static_configs:
+      - targets:
+          - afritech-api:8000

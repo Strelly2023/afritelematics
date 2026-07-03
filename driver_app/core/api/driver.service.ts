@@ -128,6 +128,18 @@ function mapTrip(result: TripResponse): TripSnapshot {
   };
 }
 
+export function mapRealtimeTrip(data: Record<string, unknown>): TripSnapshot | null {
+  const status = data.status;
+  const rideId = data.ride_id;
+  if (
+    typeof rideId !== "string" ||
+    !["accepted", "arrived", "started", "completed", "cancelled"].includes(String(status))
+  ) {
+    return null;
+  }
+  return mapTrip(data as unknown as TripResponse);
+}
+
 export async function setAvailability(
   driverId: string,
   status: AvailabilityStatus,

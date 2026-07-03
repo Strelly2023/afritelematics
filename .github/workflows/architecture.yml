@@ -77,6 +77,26 @@ jobs:
       - name: Run cryptographic hash protocol tests
         run: pytest -q afritech/tests/core_platform/test_hash_protocol.py
 
+      - name: Run NovaRide architecture compliance validator
+        run: python -m architecture_validator.cli --format json --output compliance_report.json
+
+      - name: Upload NovaRide architecture compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: novaride-architecture-compliance-report
+          path: compliance_report.json
+
+      - name: Generate NovaRide autonomous remediation plan
+        if: always()
+        run: python -m architecture_validator.remediation.cli --output architecture_remediation_report.json
+
+      - name: Upload NovaRide autonomous remediation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: novaride-architecture-remediation-report
+          path: architecture_remediation_report.json
+
       - name: Validate constitutional call order
         run: python -m afritech.ci.ast_call_order_validator
 

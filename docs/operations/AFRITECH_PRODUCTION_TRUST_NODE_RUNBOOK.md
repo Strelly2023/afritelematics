@@ -119,7 +119,58 @@ wallet, contract, and deployment-block settings are complete.
 The live anchor proves public publication of the exported trust artifact. It
 does not create runtime truth or production authorization.
 
-## 3. Open Ecosystem Access
+## 3. ArchitectureAnchor V2 Rollout
+
+Keep `ArchitectureAnchor.sol` deployed and readable during the full migration.
+V2 is a separate contract used for bytes32 anchor IDs, context tagging, and
+batch anchoring:
+
+```text
+afritech/contracts/ArchitectureAnchor.sol    # V1, live compatibility contract
+afritech/contracts/ArchitectureAnchorV2.sol  # V2, opt-in scale contract
+```
+
+Configure both addresses during the parallel phase:
+
+```bash
+AFRITECH_CHAIN_CONTRACT_ADDRESS=0x...      # V1
+AFRITECH_CHAIN_CONTRACT_ADDRESS_V2=0x...   # V2
+AFRITECH_CHAIN_ANCHOR_VERSION=v1           # default until V2 acceptance
+AFRITECH_CHAIN_V2_MAX_BATCH_SIZE=50
+AFRITECH_CHAIN_V2_ENFORCE_UNIQUE_PROOF=true
+```
+
+Rollout phases:
+
+```text
+Phase 1: V1 only
+Phase 2: V1 reads + V2 test writes in staging
+Phase 3: V2 default writes with V1 still indexed
+Phase 4: V1 read-only archival compatibility
+```
+
+The event subscriber indexes both events when both addresses are configured:
+
+```text
+ProofAnchored(string,bytes32,address,uint256)            # V1
+ProofAnchored(bytes32,bytes32,address,uint256,bytes32)   # V2
+```
+
+For web-scale anchoring, enqueue proof items and flush bounded V2 batches. Keep
+batch size conservative until gas telemetry proves headroom:
+
+```python
+from afritech.chain.anchor_batch_queue import DEFAULT_ANCHOR_BATCH_QUEUE
+
+DEFAULT_ANCHOR_BATCH_QUEUE.enqueue("ride-001", proof_hash, "RIDE")
+DEFAULT_ANCHOR_BATCH_QUEUE.flush(profile_name="sepolia")
+```
+
+If a batch fails, the in-process queue requeues the drained batch at the front.
+Production workers should record failed anchor IDs, retry the batch, then fall
+back to single-anchor publication only for the failing item set.
+
+## 4. Open Ecosystem Access
 
 After the node is reachable:
 
@@ -149,7 +200,7 @@ docs/partners/AFRITECH_LIVE_ECOSYSTEM_ONBOARDING.md
 docs/partners/AFRITECH_EXTERNAL_VERIFIER_CLI_PACKAGE.md
 ```
 
-## 4. Launch Dashboard
+## 5. Launch Dashboard
 
 Launch or refresh the operator trust dashboard:
 
@@ -164,6 +215,53 @@ Dashboard entrypoints:
 /public/feature-registry/portal
 /public/global-verification/portal
 /public/ecosystem-evolution/portal
+```
+
+## 6. Healthcheck Optimization
+
+If Docker marks `production-afritech-api-1` unhealthy while HTTPS routes are
+still returning successful responses, inspect the container health log before
+rebuilding:
+
+```bash
+docker compose -f deploy/production/docker-compose.trust-node.yml ps
+docker compose -f deploy/production/docker-compose.trust-node.yml logs --tail=200 afritech-api
+docker inspect --format='{{json .State.Health}}' production-afritech-api-1
+```
+
+The production trust-node compose file intentionally uses one Uvicorn worker on
+small EC2 hosts:
+
+```yaml
+--workers
+- "1"
+```
+
+This keeps startup overhead and worker churn aligned with the available CPU and
+memory. Increase the worker count only after confirming the host has enough
+headroom under production load.
+
+The API healthcheck uses the same lightweight HTTP readiness path as external
+monitoring, with a timeout that absorbs cold-start scheduling latency:
+
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-fsS", "--max-time", "10", "http://127.0.0.1:8000/health"]
+  interval: 15s
+  timeout: 12s
+  retries: 5
+  start_period: 30s
+```
+
+This avoids false-negative Docker health failures when the app is serving
+requests but a probe lands during startup or temporary CPU contention. Verify
+both the internal container readiness path and the public edge route:
+
+```bash
+docker compose -f deploy/production/docker-compose.trust-node.yml \
+  exec -T afritech-api curl -fsS http://127.0.0.1:8000/health
+curl -fsS https://api.trust.afritech.example/health
+curl -fsS https://trust.afritech.example/public/ecosystem-evolution/verify
 ```
 
 ## Required Verification

@@ -11,7 +11,18 @@ import { useDriverFlow } from "./state/providers/useDriverFlow";
 import { useOperatorDashboard } from "./state/providers/useOperatorDashboard";
 import { usePilotEvidence } from "./state/providers/usePilotEvidence";
 import { loginPilot } from "./core/api/auth.service";
-import { ORGANIZATION_ID, TEST_MODE } from "./core/config/environment";
+import {
+  clearSession,
+  requireBiometricUnlock,
+  restoreSession,
+} from "./core/api/session";
+import {
+  APP_LOCALE,
+  ORGANIZATION_ID,
+  REGION_ID,
+  TEST_MODE,
+} from "./core/config/environment";
+import { apiRequest } from "./core/api/client";
 import { BottomTabs } from "./ui/widgets/BottomTabs";
 import { AvailabilityScreen } from "./ui/screens/AvailabilityScreen";
 import { DiagnosticsScreen } from "./ui/screens/DiagnosticsScreen";
@@ -30,6 +41,15 @@ import { VehicleManagementScreen } from "./ui/screens/VehicleManagementScreen";
 import { colors } from "./ui/theme/colors";
 import { spacing } from "./ui/theme/spacing";
 import { ProductTabs } from "./ui/widgets/ProductTabs";
+import { DriverNavigationMap } from "./ui/widgets/DriverNavigationMap";
+import { useDriverMobility } from "./state/providers/useDriverMobility";
+import {
+  AdaptiveScaffold,
+  AnimatedEntrance,
+  SkeletonBlock,
+  SyncBanner,
+} from "../afriride_system/mobile/shared/mobileExcellence";
+import { useGlobalRuntime } from "../afriride_system/mobile/shared/globalRuntime";
 
 const DRIVER_ID = "driver-demo-001";
 type DriverTab = "home" | "trips" | "earnings" | "trust" | "profile";
@@ -56,6 +76,19 @@ export default function App() {
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const globalRuntime = useGlobalRuntime(
+    apiRequest,
+    ORGANIZATION_ID,
+    REGION_ID,
+    APP_LOCALE || undefined,
+  );
+  const localizedDriverTabs: Array<{ key: DriverTab; label: string }> = [
+    { key: "home", label: globalRuntime.t("nav.home") },
+    { key: "trips", label: globalRuntime.t("nav.trips") },
+    { key: "earnings", label: globalRuntime.t("nav.earnings") },
+    { key: "trust", label: globalRuntime.t("nav.trust") },
+    { key: "profile", label: globalRuntime.t("nav.profile") },
+  ];
   const {
     acceptRequest,
     availability,
@@ -73,6 +106,27 @@ export default function App() {
   } = useDriverFlow(DRIVER_ID);
   const operator = useOperatorDashboard();
   const { capture, diagnostics, startShift } = usePilotEvidence(DRIVER_ID);
+  const mobility = useDriverMobility(
+    DRIVER_ID,
+    authenticated,
+    diagnostics.shiftStarted,
+  );
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const restored = await restoreSession();
+      if (!restored.token || !active) return;
+      const unlock = TEST_MODE
+        ? { success: true }
+        : await requireBiometricUnlock("Unlock AfriRide Driver");
+      if (active && unlock.success) setAuthenticated(true);
+      else if (!unlock.success) await clearSession();
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const errorUtils = (globalThis as { ErrorUtils?: ErrorUtilsLike }).ErrorUtils;
@@ -144,19 +198,40 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.shell}>
+      <AdaptiveScaffold
+        testID="driver-adaptive-scaffold"
+        brandColor={globalRuntime.brand.primary_color}
+        navigation={
+          authenticated ? (
+            <View style={styles.bottomNav}>
+              <BottomTabs tabs={localizedDriverTabs} activeTab={activeTab} onChange={setActiveTab} />
+            </View>
+          ) : undefined
+        }
+      >
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.header}>
             <View style={styles.headerTop}>
-              <Text style={styles.title}>AfriRide Driver</Text>
-              <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+              <Text style={styles.title}>
+                {globalRuntime.brand.name} {globalRuntime.t("app.driver")}
+              </Text>
+              <Text style={styles.modePill}>
+                {globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")}
+              </Text>
             </View>
             <Text style={styles.subtitle}>Trip execution with live GPS, dispatch, and trust evidence.</Text>
-            <Text style={styles.orgLabel}>Org: {ORGANIZATION_ID}</Text>
+            <Text style={styles.orgLabel}>
+              {globalRuntime.region.region_id} · {globalRuntime.region.currency} · {globalRuntime.locale}
+            </Text>
           </View>
+          <SyncBanner
+            online={mobility.health?.networkConnected !== false}
+            pending={mobility.health?.pendingSync || 0}
+          />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+          {authenticating ? <SkeletonBlock height={132} /> : null}
 
           {!authenticated ? (
             <DriverLoginScreen
@@ -185,7 +260,7 @@ export default function App() {
               }}
             />
           ) : (
-            <>
+            <AnimatedEntrance>
               {activeTab === "home" ? (
                 <>
                   <DriverHomeScreen
@@ -194,13 +269,27 @@ export default function App() {
                     diagnostics={diagnostics}
                     loading={loading}
                     onGoAvailable={() => updateAvailability("available")}
-                    onGoOffline={() => updateAvailability("offline")}
+                    onGoOffline={async () => {
+                      await updateAvailability("offline");
+                      await mobility.stop();
+                    }}
                     onStartShift={startShift}
                   />
                 </>
               ) : null}
               {activeTab === "trips" ? (
                 <>
+                  <DriverNavigationMap
+                    location={
+                      mobility.location
+                        ? {
+                            latitude: mobility.location.coords.latitude,
+                            longitude: mobility.location.coords.longitude,
+                          }
+                        : diagnostics.lastLocation
+                    }
+                    destination={trip?.status === "started" ? trip.dropoffText : trip?.pickupText}
+                  />
                   <RideRequestsScreen
                     requests={requests}
                     loading={loading}
@@ -247,16 +336,10 @@ export default function App() {
                   <DriverNotificationsScreen notifications={notifications} />
                 </>
               ) : null}
-            </>
+            </AnimatedEntrance>
           )}
         </ScrollView>
-
-        {authenticated ? (
-          <View style={styles.bottomNav}>
-            <BottomTabs tabs={driverTabs} activeTab={activeTab} onChange={setActiveTab} />
-          </View>
-        ) : null}
-      </View>
+      </AdaptiveScaffold>
 
       <IncomingRideModal
         visible={authenticated && !trip && requests.length > 0}

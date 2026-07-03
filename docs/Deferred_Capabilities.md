@@ -8,6 +8,22 @@ You are now explicitly introducing **epoch‑based capability gating**, which is
 
 ***
 
+## Runtime Reconciliation — 2026-07-04
+
+This document governs proof-admissibility epochs; it is not a current runtime
+inventory. The repository now contains bounded Android Play Integrity, replay
+protection, trace/replay, and attestation adapter implementations. Cross-platform
+strict attestation, globally shared security state, and full proof-admissibility
+remain incomplete. Therefore references below to capabilities being
+“structurally non-existent” apply to the governed admissibility universe described
+by this document, not to every runtime adapter in the repository.
+
+For the current implementation classification, see:
+
+`docs/reviews/AFRITECH_IMPLEMENTATION_DOCUMENTATION_AUDIT_2026_07_04.md`.
+
+***
+
 ## ✅ Governance Rule (Active Now)
 
 ```text

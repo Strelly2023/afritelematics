@@ -134,10 +134,11 @@ def _bind_authenticated_identity(request: Request, envelope: dict[str, Any]) -> 
     bound = dict(envelope)
     bound["actor_id"] = claims.sub
     bound["actor_type"] = {
+        "CUSTOMER": "rider",
         "RIDER": "rider",
         "DRIVER": "driver",
         "OPERATOR": "operator",
-    }[claims.role]
+    }.get(claims.role, claims.role.lower())
     return bound
 
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   acceptRide,
@@ -6,6 +7,7 @@ import {
   getAvailability,
   getRideRequests,
   markArrived,
+  mapRealtimeTrip,
   rejectRide,
   setAvailability,
   startTrip,
@@ -16,11 +18,20 @@ import {
   initialDriverAppState,
   type DriverAppState,
 } from "../store/driverStore";
+import { API_BASE_URL, USE_MOCK_API } from "../../core/config/environment";
+import { getAuthToken } from "../../core/api/session";
+import {
+  AfriRideRealtimeClient,
+  type RealtimeConnectionState,
+} from "../../../afriride_system/mobile/shared/realtimeClient";
+import { queueDriverOperation } from "../../core/services/mobility.service";
 
 const QUEUE_POLL_INTERVAL_MS = 4000;
 
 export function useDriverFlow(driverId: string) {
   const [state, setState] = useState<DriverAppState>(initialDriverAppState);
+  const [realtimeState, setRealtimeState] =
+    useState<RealtimeConnectionState>("idle");
 
   function setError(error: unknown, fallback: string) {
     setState((current) => ({
@@ -31,7 +42,17 @@ export function useDriverFlow(driverId: string) {
   }
 
   async function updateAvailability(status: AvailabilityStatus) {
-    setState((current) => ({ ...current, loading: true, error: "" }));
+    const previous = state.availability;
+    setState((current) => ({
+      ...current,
+      availability: {
+        ...(current.availability || { driverId }),
+        status,
+        updatedAt: new Date().toISOString(),
+      },
+      loading: true,
+      error: "",
+    }));
 
     try {
       const availability = await setAvailability(driverId, status);
@@ -43,7 +64,15 @@ export function useDriverFlow(driverId: string) {
         loading: false,
       }));
     } catch (error) {
-      setError(error, "availability_unavailable");
+      await queueDriverOperation(`/v1/driver/${encodeURIComponent(driverId)}/availability`, {
+        status,
+      });
+      setState((current) => ({
+        ...current,
+        availability: current.availability || previous,
+        loading: false,
+        error: "Availability saved and will sync automatically.",
+      }));
     }
   }
 
@@ -110,8 +139,48 @@ export function useDriverFlow(driverId: string) {
     };
   }, [driverId, state.availability?.status]);
 
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token || USE_MOCK_API || state.availability?.status !== "available") {
+      return undefined;
+    }
+    const client = new AfriRideRealtimeClient({
+      apiBaseUrl: API_BASE_URL,
+      actorId: driverId,
+      token,
+      rideId: state.trip?.rideId,
+      storage: AsyncStorage,
+      onState: setRealtimeState,
+      onEvent: (event) => {
+        if (event.type === "DISPATCH_REQUESTED") {
+          void getRideRequests(driverId).then((requests) => {
+            setState((current) => ({ ...current, requests, error: "" }));
+          });
+        }
+        if (event.type === "RIDE_STATE_UPDATED") {
+          const trip = mapRealtimeTrip(event.data);
+          if (trip) {
+            setState((current) => ({
+              ...current,
+              trip: trip.status === "completed" ? null : trip,
+              requests: current.requests.filter((item) => item.rideId !== trip.rideId),
+            }));
+          }
+        }
+      },
+    });
+    void client.start();
+    return () => client.stop();
+  }, [driverId, state.availability?.status, state.trip?.rideId]);
+
   async function acceptRequest(rideId: string) {
-    setState((current) => ({ ...current, loading: true, error: "" }));
+    const acceptedRequest = state.requests.find((request) => request.rideId === rideId);
+    setState((current) => ({
+      ...current,
+      requests: current.requests.filter((request) => request.rideId !== rideId),
+      loading: true,
+      error: "",
+    }));
 
     try {
       const trip = await acceptRide(rideId, driverId);
@@ -122,7 +191,12 @@ export function useDriverFlow(driverId: string) {
         loading: false,
       }));
     } catch (error) {
-      setError(error, "accept_unavailable");
+      setState((current) => ({
+        ...current,
+        requests: acceptedRequest ? [acceptedRequest, ...current.requests] : current.requests,
+        loading: false,
+        error: error instanceof Error ? error.message : "accept_unavailable",
+      }));
     }
   }
 
@@ -179,6 +253,7 @@ export function useDriverFlow(driverId: string) {
 
   return {
     ...state,
+    realtimeState,
     acceptRequest,
     rejectRequest,
     updateAvailability,

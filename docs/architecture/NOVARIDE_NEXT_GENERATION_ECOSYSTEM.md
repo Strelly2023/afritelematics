@@ -1,794 +1,1174 @@
 # NovaRide Next Generation Ecosystem
 
-This document defines the high-level NovaRide application family and the shared
-backend services used by every participant. It is a controlled-pilot product
-contract; it does not replace the existing AfriRide execution spine.
+Version: 2026.07
+Status: Architecture Reference
+Classification: Contract-driven mobility platform architecture
+
+This document defines the long-term NovaRide ecosystem structure. It separates
+architecture from implementation notes and verification output. Runtime logs,
+terminal transcripts, and release-specific debugging notes belong in runbooks,
+change records, or verification reports.
 
 For the full documentation map, see:
 
 - `docs/architecture/NOVARIDE_DOCUMENTATION_TREE.md`
 
-## Application Family
+## Executive Summary
 
-| App | Primary users | Platform | Backend role |
+NovaRide is a contract-driven mobility platform built on the NovaTech platform.
+Every application consumes shared platform services while maintaining clear
+authority boundaries between UI, APIs, business logic, payments, governance,
+trust, replay, and infrastructure.
+
+Platform goals:
+
+- multi-city operations
+- enterprise scalability
+- contract-first APIs
+- replay-verifiable execution
+- cryptographically verifiable trust
+- partner ecosystem readiness
+- AI-assisted operations with bounded authority
+
+## Architecture Invariants
+
+These invariants define the permanent architecture of NovaRide. They are
+normative requirements.
+
+1. User interfaces SHALL NOT execute business authority.
+2. APIs SHALL validate and route requests only.
+3. NovaPower SHALL evaluate policy before execution.
+4. NovaRide Core SHALL own ride lifecycle state.
+5. NovaPay SHALL own payment execution.
+6. NovaTrust SHALL own trust verification.
+7. Replay SHALL remain the authoritative operational evidence.
+8. AI SHALL provide recommendations only unless explicitly authorized.
+9. Every authoritative action SHALL produce audit evidence.
+10. Every public contract SHALL be versioned.
+
+## Runtime Guarantees
+
+NovaRide guarantees within supported versions:
+
+- deterministic request handling
+- replayable execution
+- cryptographic verification
+- tenant isolation
+- versioned contracts
+- auditable operations
+- backward compatibility within supported versions
+
+## Application Ecosystem
+
+NovaRide applications are organized around the people who operate or consume
+the platform. This keeps the architecture stable as new services, cities, and
+partner roles are added.
+
+### Customer Applications
+
+`NovaRide Passenger` is the product-facing name for the existing Rider App
+surface. It maps to the current `rider_app` implementation and `/v1/rider/*`
+routes.
+
+| Application | Platforms | Primary Users | Backend Role |
 | --- | --- | --- | --- |
-| NovaRide Rider App | Riders | Android, iOS, Web | `CUSTOMER` |
-| NovaRide Driver App | Drivers | Android, iOS | `DRIVER` |
-| NovaRide Operator App / Portal | Operations, safety, reliability | Web | `OPERATOR` |
-| NovaRide Inspector App / Portal | Field inspectors, compliance | Android Tablet, Web | `VERIFIER` |
-| NovaRide Fleet Portal | Fleet owners | Web | `FLEET_OWNER` |
-| NovaRide Merchant Portal | Hotels, airports, venues, institutions | Web | `PARTNER` |
-| NovaRide Corporate Portal | Corporate customers, government, NGOs | Web | `CLIENT` |
-| NovaRide Trust & Safety Portal | Safety and compliance teams | Web | `OPERATOR` |
-| NovaRide Customer Support Portal | Support agents | Web | `OPERATOR` |
-| NovaRide Administrator Portal | Platform administrators | Web | `ADMIN` |
-| NovaRide Developer Portal | Partners, integrators, developers | Web | `DEVELOPER` |
+| NovaRide Passenger / Rider App | Android, iOS, Web | Customers, riders, families, business travelers | `CUSTOMER` |
+| NovaRide Driver | Android, iOS | Drivers | `DRIVER` |
 
-## API Contract
+### Business Applications
 
-The ecosystem contract is exposed through:
+| Application | Primary Users | Backend Role |
+| --- | --- | --- |
+| NovaRide Fleet | Fleet owners | `FLEET_OWNER` |
+| NovaRide Business | Corporate customers and staff transport teams | `CLIENT` |
+| NovaRide Merchant | Hotels, airports, retail, venues | `PARTNER` |
+| NovaRide Corporate | Enterprises, NGOs, government accounts | `CLIENT` |
 
-- `GET /v1/novaride/ecosystem`
-- `GET /v1/novaride/platform/architecture-contract`
-- `GET /v1/novaride/{surface_key}/workspace`
-- `GET /v1/novaride/operator/dashboard-contract`
-- `GET /v1/novaride/fleet/manager-contract`
-- `GET /v1/novaride/business/portal-contract`
-- `GET /v1/novaride/admin/contract`
-- `GET /v1/novaride/inspector/app-contract`
-- `GET /v1/novaride/support/contract`
-- `GET /v1/novaride/partner/portal-contract`
+### Operational Applications
 
-The workspace endpoint maps each app to existing governed AfriRide/NovaTech
-routes instead of granting direct provider access.
+| Application | Primary Users | Backend Role |
+| --- | --- | --- |
+| NovaRide Operator Portal | Operations team | `OPERATOR` |
+| NovaRide Inspector | Compliance and field verification officers | `VERIFIER` |
+| NovaRide Support Center | Customer and driver support teams | `OPERATOR` |
+| NovaRide Trust Portal | Trust, audit, public verification, safety review | `OPERATOR` |
 
-## Shared Platform Architecture
+### Administrative Applications
 
-The shared NovaRide architecture contract defines the boundary between app
-interfaces, the NovaRide API gateway, and the backend execution platform.
+| Application | Primary Users | Backend Role |
+| --- | --- | --- |
+| NovaRide Administration | Platform administrators | `ADMIN` |
+| NovaRide Finance | Finance, treasury, settlement, audit | `FINANCE` |
+| NovaRide Executive Dashboard | Executives and city leadership | `EXECUTIVE` |
+| NovaRide Developer Portal | Partners, developers, integrators | `DEVELOPER` |
 
-High-level structure:
+### NovaRide App Store and Developer Marketplace
+
+The NovaRide Developer Portal publishes the governed protocol marketplace and
+app store surfaces for the wider ecosystem. It is the protocol-facing entry
+point for SDK distribution, sample apps, partner integrations, and trust-aware
+listings.
+
+The NovaRide App Store is the governed consumer distribution surface for
+published mobility, logistics, business, AI, and finance applications. All
+publish actions remain policy-gated and trust-reviewed.
+
+| Marketplace Surface | Primary Users | Governing Role |
+| --- | --- | --- |
+| NovaRide App Store | Customers, drivers, operators, partners | `DEVELOPER` |
+| NovaRide Developer Marketplace | Developers, integrators, startups | `DEVELOPER` |
+| NovaRide Trust Marketplace | Auditors, regulators, enterprise verifiers | `OPERATOR` |
+| NovaRide Partner Marketplace | Fleet owners, venues, logistics partners | `PARTNER` |
+
+Publishing remains read-only until sandbox, trust, compatibility, and policy
+reviews are complete.
+
+### NovaRide Super App and NovaID Global Identity
+
+NovaRide Super App is the unified product shell for mobility, delivery,
+wallet, finance, app store, identity, governance, and AI assistant surfaces.
+It is an interface layer only. Execution authority remains with NovaRide Core,
+NovaPay, NovaID, NovaPower, NovaTrust, DAO policy, and Replay.
+
+NovaID is the global identity layer behind `Login with NovaID`. It owns
+identity, authentication, reputation, wallet linkage, device identity, privacy
+controls, and governance identity. Partner and first-party apps consume NovaID
+claims but do not become identity authorities.
+
+| Super App Surface | Backend Authority |
+| --- | --- |
+| Mobility | NovaRide Core |
+| Delivery | NovaRide Core |
+| Wallet / NovaPay | NovaPay |
+| Finance | NovaPay |
+| App Store | NovaPower and NovaTrust |
+| Identity / NovaID | NovaID |
+| AI Assistant / NovaAI | Advisory only |
+
+The Super App loop is:
 
 ```text
-              NovaRide Apps
-                    |
-   Passenger App   Driver App   Operator Dashboard
-                    |
-               NovaRide API
-                    |
-           Shared NovaRide Platform
+Users
+  -> use Super App
+  -> generate mobility, delivery, app, and wallet activity
+  -> pay with NovaPay and earn NVT
+  -> build NovaID reputation
+  -> participate in DAO governance
+  -> strengthen the developer ecosystem
+```
+
+The canonical API surfaces are:
+
+- `/v1/novaride/super-app`
+- `/v1/novaride/novaid`
+
+### NovaID Gen-Sovereign Infrastructure
+
+NovaID Gen-Sovereign is the architecture contract for sovereign identity,
+crypto-financial infrastructure, DAO governance, AI-assisted decision support,
+and cross-platform federation. It is not a claim that NovaRide has live
+government authority, live CBDC authority, or live financial clearing authority.
+Those capabilities remain credential, policy, compliance, audit, and deployment
+gated.
+
+The Gen-Sovereign layers are:
+
+| Layer | Responsibility | Authority |
+| --- | --- | --- |
+| NovaID SSI | DID documents, user-owned identity, verifiable credentials | NovaID |
+| NovaToken / Crypto Layer | NVT, stablecoins, CBDC adapters, treasury plans | NovaPay policy gates |
+| NovaDAO | Token, reputation, and activity-weighted voting | DAO policy gates |
+| NovaTrust | Credential, payment, replay, and on-chain audit verification | NovaTrust |
+| NovaAI | Proposal analysis, manipulation detection, outcome simulation | Advisory only |
+| Open Protocol Ecosystem | Federated apps, banks, governments, and protocols | Federation policy gates |
+
+Government credential integration follows this model:
+
+```text
+Government issues credential
+  -> issuer signature verified
+  -> linked to NovaID
+  -> used through policy-gated federation
+```
+
+Federation surfaces:
+
+- `/v1/federation/identity`
+- `/v1/federation/payments`
+- `/v1/federation/trust`
+
+Canonical contract surface:
+
+- `/v1/novaride/novaid/gen-sovereign`
+
+### NovaID Gen-Sovereign++ Digital Nation
+
+NovaID Gen-Sovereign++ adds a Digital Citizenship and NovaID Passport
+contract. It models NovaRide as a digital nation ecosystem with platform
+citizenship, economic participation, DAO governance, and cross-platform access.
+It does not create government-issued citizenship, a legal passport, immigration
+authority, or a state sovereignty claim.
+
+The digital nation layers are:
+
+| Layer | Responsibility | Authority |
+| --- | --- | --- |
+| NovaID Digital Citizenship | Platform citizenship, wallet linkage, reputation, activity, governance eligibility | NovaID policy gates |
+| NovaPassport | Cross-platform access, service eligibility, credential storage, platform mobility access | NovaTrust credential gates |
+| NovaToken Economy | Rewards, contribution incentives, staking, treasury participation, governance weight | NovaDAO policy gates |
+| NovaPay Financial System | Wallets, payments, settlement proofs, economic identity | NovaPay compliance gates |
+| Global Protocol Layer | Federation with apps, financial networks, and credential issuers | Federation policy gates |
+
+The canonical NovaCitizen profile is:
+
+```json
+{
+  "nova_id": "did:nova:00087423",
+  "citizenship_status": "verified",
+  "wallet": "0xABC123",
+  "trust_score": 94,
+  "reputation": "high",
+  "roles": ["rider", "developer"],
+  "governance_power": 2450
+}
+```
+
+NovaPassport is a platform access passport, not a legal travel document:
+
+```json
+{
+  "passport_id": "NVP-992384",
+  "holder": "did:nova:00087423",
+  "credentials": ["KYC_verified", "licensed_driver", "trusted_user"],
+  "validity": "global",
+  "signature": "cryptographic_proof"
+}
+```
+
+Governance power remains policy-gated and combines tokens, trust score, and
+activity:
+
+```text
+tokens * 0.5 + trust_score * 0.3 + activity * 0.2
+```
+
+Canonical contract surface:
+
+- `/v1/novaride/novaid/digital-nation`
+
+### NovaRide Digital Constitution
+
+The NovaRide Digital Constitution adds a platform governance framework for
+rights, authority, enforcement, trust verification, dispute resolution, and
+amendments. It is a platform governance contract, not statutory law, regulator
+approval, or a substitute for real-world legal compliance.
+
+Core statement:
+
+```text
+NovaRide shall operate as a governed digital system in which identity is
+sovereign, authority is bounded, rules are enforceable, actions are auditable,
+and governance is participatory.
+```
+
+Foundational articles:
+
+| Article | Scope | Rule |
+| --- | --- | --- |
+| I | Sovereign Identity | NovaID is self-sovereign, cryptographically verifiable, user-owned, portable |
+| II | Digital Citizenship | NovaCitizens receive rights and responsibilities inside the platform |
+| III | Rights of Users | Identity, finance, governance, transparency, and verifiable records are guaranteed |
+
+Authority structure:
+
+| Authority | Role |
+| --- | --- |
+| NovaPower | Execution authority |
+| NovaRide Core | Operational truth |
+| NovaPay | Financial authority |
+| NovaTrust | Verification authority |
+| DAO | Governance authority |
+
+Fundamental rule:
+
+```text
+Execution authority shall remain with NovaPower and authorized subsystems only.
+```
+
+AI is advisory only. It may recommend, analyze, and detect fraud; it may not
+directly vote, supersede governance, execute authority, execute payments, modify
+trust evidence, or make irreversible decisions.
+
+Replay remains the digital audit record:
+
+```text
+Transaction dispute
+  -> replay verification
+  -> AI review
+  -> DAO vote
+  -> decision enforced
+```
+
+Amendments follow:
+
+```text
+proposal submitted
+  -> AI impact analysis
+  -> public review
+  -> DAO vote
+  -> enactment via contract update
+```
+
+Canonical contract surface:
+
+- `/v1/novaride/constitution`
+
+### NovaRide Regulatory Alignment
+
+The regulatory alignment layer maps the NovaRide Digital Constitution to
+real-world legal and regulatory controls. It is a control mapping and
+deployment-readiness contract, not legal advice, legal certification, or
+regulatory approval.
+
+Core principle:
+
+```text
+NovaRide shall operate within applicable legal frameworks while preserving its
+constitutional invariants and autonomy.
+```
+
+Alignment model:
+
+| Domain | NovaRide layer | Real-world equivalent | Control family |
+| --- | --- | --- | --- |
+| Identity | NovaID | National ID / eID | KYC, AML, eKYC, DID, selective disclosure |
+| Finance | NovaPay | Banking / payments law | Auditability, anti-fraud controls, monitoring, traceable settlement |
+| Token | NovaToken | Securities / digital assets | Jurisdictional classification and transfer restrictions |
+| Governance | DAO | Corporate + cooperative governance | Transparent voting, legal wrapper readiness, enforceable contracts |
+| Trust | NovaTrust | Audit / compliance systems | Replay evidence, cryptographic proof, audit readiness |
+
+Jurisdiction-aware compliance follows:
+
+```text
+user location
+  -> region detected
+  -> applicable rules enforced
+  -> system adapts
+```
+
+Regulatory operating boundaries:
+
+- Identity verification is required for high-risk financial or governance actions.
+- NovaPay actions must be auditable, monitored, and traceable.
+- NovaToken classification must be evaluated per jurisdiction.
+- Privacy controls must support explicit consent, data protection, portability,
+  selective disclosure, and off-chain sensitive storage.
+- DAO decisions must map to enforceable contracts and may require a legal
+  wrapper such as a foundation, association, or jurisdiction-specific entity.
+- AI decisions must be explainable and may not execute high-risk actions
+  autonomously.
+- Liability is attributed by the layer of control and authority: protocol,
+  application developer, user, or DAO.
+
+Canonical contract surface:
+
+- `/v1/novaride/regulatory-alignment`
+
+### NovaRide Global Regulatory Expansion
+
+The global expansion layer is rollout planning, not country launch authorization or
+legal approval. It describes how NovaRide sequences markets, adapts to local
+rules, and scales from a global core.
+
+Core principle:
+
+```text
+Global standard architecture
++ local regulatory adaptation
+= scalable deployment
+```
+
+Expansion model:
+
+1. Global core platform
+2. Regional compliance layer
+3. Country-specific adaptation
+4. Local market deployment
+
+Rollout phases:
+
+| Phase | Markets | Purpose |
+| --- | --- | --- |
+| 0 | Global core | NovaID, NovaPay, NovaTrust, and DAO foundation |
+| 1 | Australia, UK, Singapore, UAE | Regulatory-ready markets with clearer fintech and digital ID pathways |
+| 2 | Kenya, Rwanda, Nigeria, India | High-growth, mobile-first markets |
+| 3 | EU, USA | Complex regulatory markets requiring deeper licensing and controls |
+
+Country entry playbook:
+
+- Map financial regulators, identity requirements, transport rules, and data protection laws.
+- Establish a local entity, compliance officer, and partner contracts.
+- Integrate with banks, PSPs, mobile money, KYC providers, and fleet operators.
+
+NovaID deployment:
+
+- Basic ID: email, phone, and platform access.
+- Verified ID: KYC and document verification.
+- Trusted ID: government credential integration.
+
+NovaPay deployment:
+
+- Partner-based launch with Stripe, Adyen, mobile money, and banks.
+- Licensed expansion later through payment and e-money approvals.
+- Multi-currency rollout from fiat to stablecoins and then on-chain treasury.
+
+Token strategy:
+
+- Treat NovaToken per jurisdiction.
+- Use utility-only, full token, or on-chain economy modes depending on regulation.
+
+DAO structure:
+
+- On-chain DAO for governance.
+- Legal wrapper through a foundation or association where required.
+- Local operations entity for market execution.
+
+Cross-border architecture:
+
+- Detect the user region.
+- Load the applicable rules.
+- Enforce the jurisdiction-aware policy set.
+
+AI alignment:
+
+- Explainability, transparency, and audit logs are required.
+- AI may recommend and analyze, but it does not execute high-risk financial actions autonomously.
+
+Go-to-market and risk management:
+
+- Launch pilot cities first, then expand by region.
+- Use partner models for regulatory rejection risk, licensed partners for financial compliance, regional storage for privacy, and staged rollout for token scrutiny.
+
+Canonical contract surface:
+
+- `/v1/novaride/global-expansion`
+
+### NovaRide Global Execution Blueprint
+
+The execution blueprint turns the rollout strategy into a concrete launch plan
+for Melbourne, Burundi, DRC, and East Africa. It is an operating plan, not a
+launch authorization or legal approval.
+
+3-hub deployment model:
+
+1. Melbourne: regulatory base, funding hub, and technical headquarters.
+2. Burundi: controlled low-cost pilot.
+3. DRC: scale opportunity market.
+4. East Africa: Kenya, Rwanda, and Uganda expansion corridor.
+
+Phase sequence:
+
+| Phase | Market | Objective |
+| --- | --- | --- |
+| 1 | Melbourne | Compliance and pilot |
+| 2 | Burundi | Controlled launch |
+| 3 | DRC | Scaled deployment |
+| 4 | East Africa | Regional expansion |
+
+Melbourne pilot:
+
+- Register an Australian `Pty Ltd` entity for the global HQ.
+- Use a payment partner instead of direct custody in the first launch.
+- Start with airport transfers or courier logistics.
+- Onboard 10 to 20 drivers, invite 200 to 500 users, and iterate from live data.
+- Target 1,000+ rides per month, payment reliability above 99 percent, and user retention above 30 percent.
+
+Burundi launch:
+
+- Run a local partner or entity with a local operations manager.
+- Use basic KYC, mobile money, and a partner-first structure.
+- Launch ride-hailing, delivery, and mobile-money payments with a small driver cohort.
+
+DRC launch:
+
+- Use a partner-led model with local operator execution.
+- Prioritize motorbike taxis, delivery, logistics, and business transport.
+- Expand city by city after a pilot city proves unit economics.
+
+East Africa expansion:
+
+- Use Kenya as the fintech and mobile-money anchor.
+- Integrate M-Pesa for the Kenya rollout.
+- Use Rwanda for NovaID and governance pilots.
+- Expand to Uganda after the corridor is proven.
+
+Universal templates:
+
+- Entity: local company or partner.
+- Compliance: KYC, payment partner, privacy laws, and local licensing.
+- Contracts: driver agreements, partner agreements, and API or SDK terms.
+- NovaID: phone login, verified KYC, trust and reputation, then passport-level identity.
+- NovaPay: payment partners, internal wallet, multi-currency, then token layer later.
+- Team: founder in Australia, remote tech team, local operations manager, and regional compliance advisor.
+- First 90 days: register the Australian entity, build the production-ready app, secure a payment partner, launch the Melbourne pilot, begin Burundi setup, launch the Burundi pilot, and prepare DRC entry.
+
+Canonical execution surface:
+
+- `/v1/novaride/global-expansion`
+
+## Shared Platform Services
+
+Every application consumes common platform capabilities rather than
+implementing business logic independently.
+
+| Service | Responsibility |
+| --- | --- |
+| NovaID | Identity, authentication, access control, device identity |
+| NovaPower | Governance, orchestration, policy evaluation, execution control |
+| NovaRide Core | Booking, dispatch, pricing, routing, ride lifecycle |
+| NovaPay | Wallets, payments, refunds, settlements, financial ledgers |
+| NovaTrust | Cryptographic receipts, replay verification, audit trails, proof services |
+| NovaAI | Demand prediction, anomaly detection, recommendations, operational insights |
+| NovaData | Analytics, reporting, business intelligence |
+| NovaCloud | Deployment, observability, scaling, infrastructure |
+
+Supporting platform engines:
+
+- Dispatch Engine
+- Pricing Engine
+- Maps and Routing
+- Inspection Registry
+- Incident Registry
+- NovaNotify
+- Event Platform
+- Audit and Replay
+- Control Plane
+
+## Architecture Layers
+
+```text
+Applications
+    |
+Unified UI Framework
+    |
+API Gateway
+    |
+NovaPower
+    |
+Ride Services
+Payment Services
+Trust Services
+AI Services
+    |
+Event Platform
+    |
+PostgreSQL
+Evidence Store
+Replay Store
 ```
 
 Architecture principle:
 
 ```text
-Apps = Interface
-Platform = Authority
+Applications = interface
+Platform = authority
+Event Platform = evidence
+NovaTrust = verification
 ```
 
-App layer responsibilities:
+## Authority Model
 
-- Passenger App requests rides and displays trip state.
-- Driver App receives assigned trips and displays execution state.
-- Operator Dashboard monitors, escalates, and reviews evidence.
-- Apps send requests and display data; they do not execute core authority.
+Each layer has a clearly bounded responsibility.
 
-NovaRide API gateway responsibilities:
+| Layer | Responsibility |
+| --- | --- |
+| UI | Display contracts, collect user input, render evidence and recommendations |
+| API Gateway | Validate requests, authenticate, enforce RBAC, route to backend services |
+| NovaPower | Policy evaluation, orchestration, controlled execution decisions |
+| NovaRide Core | Ride execution, lifecycle state, dispatch coordination |
+| NovaPay | Financial execution, settlement, refunds, ledger records |
+| NovaTrust | Cryptographic verification, proof anchoring, trust evidence |
+| Replay | Evidence reconstruction and verification |
 
-- request validation
-- NovaID authentication
-- RBAC enforcement
-- backend service routing
+### Authority Matrix
 
-Shared platform services:
+| Domain | Authority | Other Subsystems |
+| --- | --- | --- |
+| Identity | NovaID | Read-only consumers |
+| Ride lifecycle | NovaRide Core | Read-only consumers |
+| Payments | NovaPay | Read-only consumers |
+| Trust | NovaTrust | Read-only consumers |
+| Policy | NovaPower | Read-only consumers |
+| Replay | Replay Engine | Read-only consumers |
+| Analytics | NovaData | Derived-only consumers |
+| AI | NovaAI | Recommendation-only consumers |
 
-- NovaID for identity, authentication, roles, and access control.
-- NovaPay for ride payments, driver earnings, refunds, wallets, corporate billing, and partner billing.
-- Dispatch Engine for ride matching, assignment, and ride state transitions.
-- Pricing Engine for fare calculation, surge rules, promotions, and pricing explanation.
-- Maps & Routing for GPS tracking, ETA, navigation, and trip path recording.
-- Trust Engine for safety, compliance, verification, fraud detection, and SOS handling.
-- NovaNotify for push, SMS, email receipts, and operational alerts.
-- Analytics Engine for ride data, revenue tracking, demand forecasting, and reporting.
-- Audit & Replay for logs, trip replay, compliance evidence, and decision traceability.
+## System Truth Model
 
-Backend authority controls:
+NovaRide defines a hierarchical truth system:
 
-- dispatch decisions
-- NovaPay payments
-- pricing calculations
-- fraud detection
-- external integrations
+1. NovaRide Core owns operational truth for rides.
+2. NovaPay owns financial truth.
+3. NovaTrust owns cryptographic truth.
+4. Replay Engine owns evidence truth.
+5. NovaData owns derived analytical truth.
 
-App-forbidden authority:
+Only authoritative systems may mutate their domain. All other systems are
+read-only or derived.
 
-- payment processing
+Forbidden application authority:
+
+- direct payment execution
 - pricing mutation
 - dispatch bypass
 - direct provider access
+- settlement mutation
+- proof or replay authority
 
-Ride request flow:
+## Unified UI Framework
 
-```text
-Passenger app requests ride
--> API validates request with NovaID
--> Pricing Engine estimates fare
--> Dispatch Engine matches driver
--> Driver app receives request
--> Driver accepts
--> Maps tracks trip
--> Trip completes
--> NovaPay processes payment
--> Audit Engine stores logs
--> Analytics updated
-```
+All role applications use the NovaRide Unified UI Framework. The framework
+provides shared design tokens, mobile-first layouts, compact enterprise density,
+native mobile shells, web portal shells, accessibility-safe controls, and
+replay-first evidence components.
 
-Cross-app service matrix:
+Shared components:
 
-| App | Services |
-| --- | --- |
-| Passenger | Pricing, Dispatch, NovaPay |
-| Driver | Dispatch, Maps, Earnings |
-| Operator | Analytics, Dispatch, Audit |
-| Fleet | Analytics, NovaPay |
-| Business | NovaPay, Analytics |
-| Admin | RBAC, Pricing, Audit |
-| Inspector | Trust, Audit |
-| Support | Replay, NovaPay |
-| Partner | Dispatch, Billing |
+- IdentityHeader
+- TrustBadge
+- ReplayTimeline
+- ReceiptPanel
+- NovaPayReceiptPanel
+- PaymentSummary
+- IncidentDrawer
+- EvidenceAttachmentGrid
+- AgentRecommendationPanel
+- SLAHealthStrip
+- CitySwitcher
 
-## Operator Dashboard
+Design principles:
 
-The NovaRide Operator Dashboard is the controlled-pilot command center for the
-mobility platform. It is the human and system decision layer above backend
-authority, not a bypass around backend authority.
+- accessibility first
+- mobile-first responsive layouts
+- shared design tokens
+- dark and light mode
+- offline resilience
+- compact enterprise scanning
+- no hidden authority in UI components
 
-Implemented contract modules:
+The UI framework renders backend contracts and AI recommendations only. It does
+not grant dispatch, payment, settlement, pricing, provider, or proof authority.
 
-- Operations
-- Ride Management
-- Driver Monitoring
-- Safety & Emergency
-- Analytics Dashboard
-- NovaRide Ecosystem Panel
-- Support & Escalation
+## Agentic AI
 
-The dashboard contract exposes:
+NovaAI modules are described by authority, not only by functionality. Agent
+outputs are advisory unless a backend policy explicitly promotes them into a
+controlled execution proposal.
 
-- module purpose, features, actions, backend integrations, and status
-- left navigation structure
-- main and side-panel layout zones
-- allowed operator controls
-- forbidden bypass actions
-- existing API alignment
-- next-phase advanced capabilities
+| Agent | Responsibility | Authority |
+| --- | --- | --- |
+| Demand Agent | Forecast demand and recommend driver positioning | Recommendation only |
+| Dispatch Agent | Optimize assignment proposals and explain tradeoffs | Recommendation only |
+| Incident Agent | Analyze incidents and bind replay evidence | Human approval required |
+| Fleet Agent | Recommend utilization, maintenance, and route changes | Proposal only |
+| Finance Agent | Analyze settlements, refunds, and ledger anomalies | Review required |
+| Developer Agent | Diagnose API contracts, webhooks, SDKs, sandbox issues | Documentation only |
 
-Allowed operator controls:
+AI authority boundary:
 
-- manual dispatch
-- ride reassignment
-- monitoring
-- emergency handling
+- no autonomous payment execution
+- no autonomous dispatch override
+- no autonomous account suspension
+- no autonomous proof mutation
+- no hidden model-only truth source
 
-Forbidden operator actions:
+### AI Operational Rules
 
-- direct payment execution
-- direct provider integrations
-- backend rule bypass
+AI modules SHALL:
 
-Authority ownership remains:
+- explain recommendations
+- expose confidence
+- identify evidence sources
+- emit audit records
 
-| Function | Owner |
-| --- | --- |
-| Dispatch | Backend |
-| Payments | NovaPay |
-| Fraud detection | Trust Engine |
-| Replay | Audit Engine |
+AI modules SHALL NOT:
 
-## Fleet Manager
-
-The NovaRide Fleet Manager is the controlled-pilot business control surface for
-fleet owners and taxi/logistics operators. It is bound to the `FLEET_OWNER` RBAC
-role.
-
-Implemented contract modules:
-
-- Fleet Management
-- Driver Management
-- Vehicle Management
-- Maintenance & Compliance
-- Financial Management
-- Fleet Analytics
-
-The Fleet Manager contract exposes:
-
-- module purpose, features, actions, backend integrations, and status
-- navigation structure
-- RBAC allowed and forbidden controls
-- backend authority model
-- workflow sequence
-- implemented and next-phase API route alignment
-- ecosystem integrations with Driver, Operator, Inspector, Business, and NovaPay
-
-Allowed fleet-owner controls:
-
-- manage vehicles
+- execute payments
+- change prices
+- approve refunds
 - assign drivers
-- view earnings and reports
-- receive payouts through NovaPay
+- suspend accounts
+- modify trust evidence
 
-Forbidden fleet-owner actions:
+Execution authority SHALL remain with NovaPower and the designated
+authoritative service such as NovaRide Core, NovaPay, or NovaTrust.
 
-- bypass control-plane dispatch policy
-- direct payment provider access
-- bypass trust/compliance checks
+## Security
 
-Existing route alignment:
+Security in NovaRide is enforced as a multi-layer architecture with explicit
+authority boundaries.
 
-- `/v1/afriride/fleet/summary`
-- `/v1/afriride/fleet/drivers`
-- `/v1/novaride/fleet/workspace`
+### Security Principles
 
-Next-phase route contracts:
+- All access MUST be authenticated.
+- All requests MUST be authorized.
+- All operations MUST be auditable.
+- All sensitive actions MUST be replay-verifiable.
+- No client application has direct authority over core services.
+- All security controls SHALL be centrally enforced through NovaPower policies.
 
-- `/v1/fleet/vehicles`
-- `/v1/fleet/maintenance`
-- `/v1/fleet/earnings`
-- `/v1/fleet/payouts`
-- `/v1/fleet/analytics`
+### Core Security Controls
 
-## Business Portal
+- JWT authentication through NovaID
+- organization isolation and multi-tenant enforcement
+- RBAC
+- device identity binding
+- Ed25519 signature verification
+- replay validation for critical operations
+- audit trail logging
+- architecture signature verification
 
-The NovaRide Business Portal is the controlled-pilot corporate travel surface
-for companies, organizations, and government agencies. It is bound to the
-`CLIENT` RBAC role with `Admin`, `Manager`, and `Employee` sub-roles.
+### Trust Enforcement
 
-Implemented contract modules:
+- All receipts MUST be verifiable through NovaTrust.
+- All execution MUST produce replayable evidence.
+- All critical actions MUST be traceable to identity.
+- Blockchain anchoring MAY be used for proof immutability where required by trust or compliance policies.
 
-- Corporate Travel Management
-- Employee Management
-- Approval Workflow
-- Business Wallet & Billing
-- Department Budgets
-- Reporting & Analytics
+### Access Restrictions
 
-The Business Portal contract exposes:
+Applications MUST NOT:
 
-- module purpose, features, actions, backend integrations, and status
-- navigation structure for dashboard, employees, bookings, approvals, finance, budgets, and reports
-- role and sub-role definitions
-- RBAC allowed and forbidden controls
-- backend authority ownership for dispatch, payments, identity, approvals, pricing, and audit
-- workflow sequence from company onboarding through invoicing and reporting
-- implemented and next-phase API route alignment
-- ecosystem integrations with Passenger, Operator, Fleet, NovaPay, and NovaID
+- access providers directly, including drivers, payment providers, or trust services
+- bypass API gateway validation
+- mutate financial or trust records directly
 
-Allowed business controls:
+All access MUST flow through NovaPower-controlled services.
 
-- book rides
-- approve or reject ride requests
-- manage employees
-- view billing and reports
+## Public APIs
 
-Forbidden business actions:
+NovaRide exposes a contract-driven API system. All APIs are versioned,
+documented, and backward-compatible within supported versions.
 
-- direct payment execution
-- dispatch logic bypass
-- pricing rule bypass
-
-Existing route alignment:
-
-- `/v1/novatech/organizations/{organization_id}/platform`
-- `/v1/novatech/organizations/{organization_id}/billing`
-- `/v1/novaride/business/workspace`
-
-Next-phase route contracts:
-
-- `/v1/business/employees`
-- `/v1/business/approvals`
-- `/v1/business/bookings`
-- `/v1/business/budgets`
-- `/v1/business/reports`
-
-## Admin
-
-The NovaRide Admin is the controlled-pilot governance, control, and
-configuration surface for platform administrators, compliance officers, and
-system operators. It defines how NovaRide behaves; it does not execute rides or
-manually process payments.
-
-Implemented contract modules:
-
-- User & Role Management
-- Driver & Vehicle Approval
-- Pricing & Service Configuration
-- Geography & Service Zones
-- Promotions & Campaigns
-- Compliance & Audit
-- System Health & Monitoring
-
-The Admin contract exposes:
-
-- module purpose, features, actions, backend integrations, and status
-- navigation structure for dashboard, users, approvals, pricing, zones, promotions, audit, and system health
-- ADMIN RBAC plus managed role catalog
-- allowed and forbidden governance controls
-- backend authority ownership for payments, dispatch, trust, logs, pricing, and identity
-- workflow sequence from driver approval through pricing, service zones, health monitoring, and rule adjustment
-- implemented and next-phase API route alignment
-- ecosystem integrations with Passenger, Driver, Operator, Fleet, Business, and NovaPay
-
-Allowed admin controls:
-
-- configure platform rules
-- approve participants
-- control pricing and zones
-- monitor compliance
-
-Forbidden admin actions:
-
-- direct ride execution
-- manual payment processing
-- audit/replay bypass
-
-Existing route alignment:
-
-- `/v1/afriride/rbac/catalog`
-- `/v1/afriride/rbac/assignments`
-- `/v1/novatech/saas/status`
-- `/v1/ops/audit/dashboard`
-- `/v1/novaride/admin/workspace`
-
-Next-phase route contracts:
-
-- `/v1/admin/users`
-- `/v1/admin/drivers/approvals`
-- `/v1/admin/vehicles/approvals`
-- `/v1/admin/pricing`
-- `/v1/admin/zones`
-- `/v1/admin/promotions`
-- `/v1/admin/system-health`
-
-## Inspector App
-
-The NovaRide Inspector App is the controlled-pilot physical-world validation
-surface for field inspectors and compliance officers. It is bound to the
-`VERIFIER` RBAC role and feeds evidence to Trust and Audit; it does not make the
-final compliance authority decision.
-
-Implemented contract modules:
-
-- Inspection Workflow
-- Driver Verification
-- Vehicle Inspection
-- Document Validation
-- Photo & Evidence Capture
-- Inspection Reports
-- Compliance Status
-
-The Inspector contract exposes:
-
-- structured inspection workflow and navigation
-- driver, vehicle, document, photo, evidence, report, and compliance modules
-- compliant, pending, and non-compliant status types
-- VERIFIER RBAC allowed and forbidden controls
-- Trust Engine final authority for compliance
-- Audit Engine replay requirement for evidence
-- implemented and next-phase API route alignment
-- ecosystem integrations with Driver, Fleet, Admin, Operator, and Trust Engine
-
-Allowed inspector controls:
-
-- perform inspections
-- submit reports
-- capture evidence
-- validate documents
-
-Forbidden inspector actions:
-
-- approve payments
-- bypass admin decisions
-- bypass Trust Engine
-
-Existing route alignment:
-
-- `/v1/operator/public-verification/status`
-- `/v1/core-platform/trust/explorer/{receipt_id}`
-- `/v1/novaride/inspector/workspace`
-
-Next-phase route contracts:
-
-- `/v1/inspector/inspections`
-- `/v1/inspector/reports`
-- `/v1/inspector/upload`
-- `/v1/inspector/compliance-status`
-
-## Support
-
-The NovaRide Support system is the controlled-pilot problem-resolution layer for
-customer support agents, operations teams, and escalation specialists. It is
-mapped to the `OPERATOR` role and resolves ride, refund, dispute, driver, and
-passenger issues through replay-backed evidence.
-
-Implemented contract modules:
-
-- Customer Ticket Management
-- Ride Lookup & Investigation
-- Refund & Dispute Handling
-- Driver & Passenger Assistance
-- Escalation Management
-- Audit & Replay Integration
-
-The Support contract exposes:
-
-- ticket, ride lookup, refund, assistance, escalation, and replay modules
-- open, in-progress, resolved, and closed ticket statuses
-- level 1, level 2, and level 3 escalation levels
-- OPERATOR RBAC allowed and forbidden controls
-- NovaPay backend-only refund execution
-- Pricing Engine fare validation
-- Audit Engine replay requirement for evidence
-- implemented and next-phase API route alignment
-- ecosystem integrations with Passenger, Driver, Operator, NovaPay, Audit, and Trust
-
-Allowed support controls:
-
-- view ride data
-- manage tickets
-- request refunds
-- contact users
-- escalate cases
-
-Forbidden support actions:
-
-- bypass NovaPay
-- mutate pricing rules
-- bypass audit logs
-- directly execute payments
-
-Existing route alignment:
-
-- `/v1/rider/rides/{ride_id}`
-- `/v1/rider/rides/{ride_id}/receipt`
-- `/v1/operator/replay-exceptions`
-- `/v1/novaride/support/workspace`
-
-Next-phase route contracts:
-
-- `/v1/support/tickets`
-- `/v1/support/refunds`
-- `/v1/support/escalations`
-- `/v1/support/ride-lookup`
-
-## Partner Portal
-
-The NovaRide Partner Portal is the controlled-pilot B2B and B2B2C integration
-surface for hotels, airports, event organizers, corporations, and travel
-agencies. It lets external organizations book rides for guests, manage bulk
-transport, track usage, and review billing without direct control over dispatch,
-pricing, payments, or drivers.
-
-Implemented contract modules:
-
-- Ride Booking & Widget Integration
-- Guest Transport Management
-- Bulk Ride Requests
-- Partner Reporting
-- Billing & Payments
-- Partner Configuration
-
-The Partner contract exposes:
-
-- partner types for airports, hotels, events, corporations, and travel agencies
-- booking widget, guest transport, bulk request, reporting, billing, and configuration modules
-- PARTNER RBAC allowed and forbidden controls
-- Dispatch Engine authority for ride execution
-- NovaPay backend-only billing and payment execution
-- Pricing Engine contract reference requirements
-- implemented and next-phase API route alignment
-- ecosystem integrations with Passenger, Driver, Operator, Fleet, NovaPay, and Analytics
-
-Allowed partner controls:
-
-- book guest rides
-- manage bulk transport
-- view reports and billing
-- configure booking settings
-
-Forbidden partner actions:
-
-- dispatch logic bypass
-- direct payment processing
-- pricing rule bypass
-- direct driver access
-
-Existing route alignment:
-
-- `/v1/partners/registry`
-- `/v1/partner/verify`
-- `/v1/novaride/partner/workspace`
-
-Next-phase route contracts:
-
-- `/v1/partner/bookings`
-- `/v1/partner/bulk-requests`
-- `/v1/partner/reports`
-- `/v1/partner/billing`
-- `/v1/partner/guests`
-
-## Shared Platform
-
-All NovaRide apps share:
-
-- NovaID for identity and authentication.
-- Policy Engine for jurisdiction, role, safety, and operational policy decisions.
-- NovaPay for ride payments, wallets, refunds, driver earnings, and corporate billing.
-- Dispatch Engine for driver matching and ride lifecycle coordination.
-- Matching Engine for driver selection, queue balancing, and assignment explainability.
-- Pricing Engine for fare estimates and deterministic price explanation.
-- Maps & Routing for navigation, ETA, route display, and trip timeline.
-- Trust Engine for driver and rider verification, safety, fraud monitoring, and SOS escalation.
-- Inspection Registry for vehicle, driver, permit, insurance, roadworthiness, and evidence records.
-- Incident Registry for SOS, safety escalation, incident lifecycle, and closure evidence.
-- NovaNotify for push, SMS, email, receipts, and operational alerts.
-- Analytics Engine for utilization, cancellations, demand, revenue, and fleet reporting.
-- Audit & Replay for compliance logs, route replay, proof receipts, and verification.
-- Event Platform for ride lifecycle event stream, replay, evidence binding, and proof emission.
-- Control Plane for feature gates, RBAC, tenant controls, policies, and operational governance.
-
-## 10/10 App/Web/Portal Stack
-
-The next-generation stack is organized as one governed platform with
-role-specific interfaces:
-
-| Surface | Primary purpose |
-| --- | --- |
-| Rider App | Booking, live tracking, wallet, receipts, replay, and support |
-| Driver App | Ride queue, navigation, trip lifecycle, earnings, trust score, and diagnostics |
-| Operator App / Portal | Live control, dispatch, safety, reliability, provider health, and operational alerts |
-| Inspector App / Portal | Vehicle, driver, document, permit, insurance, and regulatory compliance |
-| Fleet Portal | Vehicle, driver, maintenance, fuel, performance, and fleet reporting |
-| Merchant Portal | Guest ride booking, vouchers, invoices, settlement, and partner analytics |
-| Corporate Portal | Employee travel, approvals, cost centres, budgets, invoices, and analytics |
-| Trust & Safety Portal | SOS cases, incident timelines, replay, evidence viewer, and risk scoring |
-| Customer Support Portal | Customer search, ride search, replay, disputes, refunds, and receipt verification |
-| Administrator Portal | Organizations, RBAC, pricing rules, geofencing, feature flags, licensing, and providers |
-| Developer Portal | API keys, SDKs, sandbox, webhooks, documentation, and usage analytics |
-
-### Operator App / Portal
-
-Purpose: live control, dispatch, safety, and reliability.
-
-Core modules:
-
-- Live Operations Dashboard
-- Live Map: rides + drivers
-- Manual Dispatch Intervention Request
-- Driver Availability
-- Demand Heatmap
-- Incident Monitoring
-- SOS Escalation
-- Ride Replay
-- Payment / Receipt Status
-- Provider Health
-- Operational Alerts
-
-Core workflow:
+### Core Architecture Endpoints
 
 ```text
-Monitor city
--> detect issue
--> inspect ride/driver
--> submit intervention request
--> policy evaluation
--> control-plane decision
--> escalate incident
--> verify replay/evidence
--> close operation log
+/v1/novaride/ecosystem
+/v1/novaride/platform/architecture-contract
+/v1/novaride/{surface_key}/workspace
 ```
 
-### Inspector App / Portal
-
-Purpose: vehicle, driver, and regulatory compliance.
-
-Core modules:
-
-- Vehicle Inspection
-- Driver Verification
-- License / Permit Check
-- Insurance Check
-- Roadworthiness Checklist
-- Photo Evidence Capture
-- Compliance Score
-- Inspection History
-- Regulatory Export
-- Violation / Suspension Workflow
-
-Core workflow:
+### Architecture And Governance Endpoints
 
 ```text
-Select driver/vehicle
--> verify documents
--> inspect vehicle
--> capture evidence
--> approve / reject / suspend
--> generate compliance proof
+/v1/architecture/signature
+/v1/architecture/schema
+/v1/architecture/openapi
+/v1/architecture/releases
+/v1/architecture/compatibility
+/v1/architecture/migrations
+/v1/architecture/compliance
+/v1/architecture/remediation
+/v1/architecture/learning
+/v1/architecture/predictive-governance
+/v1/architecture/autonomous-governance
 ```
 
-## AI And Intelligence Layer
-
-Every application connects to the shared intelligence service:
-
-- Demand Forecasting
-- Driver Position Prediction
-- ETA Prediction
-- Fraud Detection
-- Safety Scoring
-- Dynamic Pricing
-- Traffic Intelligence
-- Dispatch Optimization
-- Operational Insights
-
-## Evidence-Backed Trust Layer
-
-Every ride is reconstructed from evidence:
+### Role-Based Contract Endpoints
 
 ```text
-Ride Request
--> Dispatch Decision
--> Driver Assignment
--> Pickup
--> Trip
--> Payment
--> Receipt
--> Replay Timeline
--> Verification Package
+/v1/novaride/operator/dashboard-contract
+/v1/novaride/fleet/manager-contract
+/v1/novaride/business/portal-contract
+/v1/novaride/admin/contract
+/v1/novaride/inspector/app-contract
+/v1/novaride/support/contract
+/v1/novaride/partner/portal-contract
 ```
 
-## Enterprise Operations Layer
+### API Guarantees
 
-The final 10/10 maturity layer is operational depth. NovaRide is not only a
-set of app surfaces; it is a governed mobility control platform with city,
-fleet, incident, reliability, trust, partner, and tenant operations modeled as
-first-class capabilities.
+All public APIs SHALL:
 
-Canonical source:
+- be versioned
+- expose OpenAPI contracts
+- enforce RBAC and tenant isolation
+- produce audit logs for critical actions
+- support replay validation where required
 
-```text
-afritech/architecture/novaride_architecture.py
-architecture.version = 2026.07.0
-architecture.layers = [...]
-architecture.maturity_dimensions = [...]
-architecture.enterprise_operations = [...]
-architecture.production_readiness = [...]
+Breaking changes MUST follow the Version Policy.
+
+### Contract Enforcement
+
+All API behavior SHALL be derived from versioned contracts.
+
+Clients MUST NOT rely on undocumented behavior.
+
+Any response shape, field, or workflow not defined in the contract is
+considered non-authoritative.
+
+## Contract Integrity
+
+All system behavior is defined by explicit contracts.
+
+### Requirements
+
+- Contracts MUST be versioned.
+- Contracts MUST be test-validated.
+- Contracts MUST be documented.
+- Contracts MUST be backward-compatible within supported versions.
+
+### Enforcement
+
+- API tests enforce contract shape.
+- Dashboard tests enforce surface visibility.
+- Governance tests enforce documentation alignment.
+
+## Version Policy
+
+Each architecture version defines:
+
+- API contract
+- authority model
+- supported capabilities
+- compatibility status
+- migration guidance
+
+Minor versions are additive only. Major versions may introduce breaking
+changes. Deprecated versions remain supported until the published support date.
+
+## Production Readiness
+
+The following components are validated against production requirements.
+
+Production systems SHALL preserve invariant guarantees under load, failure, and
+recovery scenarios.
+
+| Area | Status | Guarantee |
+| --- | --- | --- |
+| API | Production | Contract-driven, versioned, RBAC enforced |
+| Dashboard | Production | Real-time, role-based, audit-aware |
+| Mobile Apps | Pilot | Controlled rollout, validated flows |
+| Payments (NovaPay) | Production | Auditable, reconciled, settlement-safe |
+| Replay | Production | Full execution traceability |
+| Trust (NovaTrust) | Production | Cryptographic verification |
+| Architecture Contracts | Production | Versioned, test-enforced |
+| SDK Registry | Production | Stable integration surface |
+
+### Production Definition
+
+A component is considered Production only if:
+
+- contract is versioned and stable
+- authority boundaries are enforced
+- audit and replay are supported
+- backward compatibility is maintained
+
+Status definitions:
+
+- `Production`: contract-backed and validated for production deployment paths.
+- `Pilot`: implemented or activated for controlled pilot use.
+- `Planned`: declared architecture surface without production authority.
+
+## Verification
+
+Verification ensures that the architecture specification is correctly
+implemented. Verification results are documented separately from architecture
+design; this section is the stable verification map, not a transcript.
+
+### Verification Categories
+
+- API contract validation
+- dashboard surface validation
+- mobile application validation
+- replay validation
+- trust verification
+- compatibility validation
+- documentation consistency validation
+
+### Verification Scope
+
+Verification MUST cover:
+
+- contract correctness
+- authority enforcement
+- security compliance
+- replay integrity
+- backward compatibility
+
+### Verification Requirements
+
+Each release MUST:
+
+- pass all contract tests
+- preserve authority boundaries
+- maintain replay compatibility
+- maintain trust verification integrity
+- update documentation and tests together
+
+### Compliance Validator
+
+The architecture compliance validator is the canonical automated check for this
+specification.
+
+Required command:
+
+```bash
+python -m architecture_validator.cli
 ```
 
-| Capability | Purpose |
-| --- | --- |
-| Unified Command Center | One operational control surface for rides, drivers, incidents, payments, providers, and replay evidence |
-| City Operations / Zone Model | Model cities, service zones, airport zones, geofences, surge boundaries, and jurisdiction-aware operating rules |
-| Operational Digital Twin | Replay and simulate the live mobility network using rides, drivers, demand, incidents, and provider state |
-| AI Decision Explanation Layer | Explain dispatch, pricing, safety, fraud, ETA, and demand recommendations without granting AI authority |
-| Workflow / Incident Engine | Coordinate SOS, disputes, support, trust, compliance, provider incidents, approvals, and closure evidence |
-| Fleet Intelligence | Track driver supply, vehicle health, inspection status, utilization, maintenance, earnings, and fleet quality |
-| Public Trust Portal | Publish controlled transparency views for receipts, safety standards, verification, and public trust evidence |
-| Partner / Developer Ecosystem | Expose governed APIs, webhooks, sandbox, SDKs, partner onboarding, and usage analytics |
-| SRE Observability | Measure reliability, latency, errors, queues, provider health, replay lag, and operational risk |
-| Multi-Tenant Governance | Govern organizations, roles, feature flags, policies, licensing, data boundaries, and tenant isolation |
+The validator SHALL verify architecture invariants, public API contracts,
+OpenAPI breaking changes, AST-level authority violations, security
+requirements, AI governance, replay integrity, documentation governance, UI
+authority boundaries, and CI/test alignment.
 
-```text
-Unified Command Center
--> City Operations / Zone Model
--> Operational Digital Twin
--> AI Decision Explanation Layer
--> Workflow / Incident Engine
--> Fleet Intelligence
--> Public Trust Portal
--> Partner / Developer Ecosystem
--> SRE Observability
--> Multi-Tenant Governance
-```
+CI SHALL publish the validator JSON output as `compliance_report.json`.
 
-Final enterprise classification:
+### Closed-Loop Governance Engine
 
-```text
-NovaRide = Governed, evidence-backed, AI-assisted mobility control platform.
-```
+NovaRide operates architecture governance as a closed-loop control system:
 
-## Four-Layer Governance Separation
+1. The architecture specification defines invariants, contracts, authority, and
+   verification requirements.
+2. The validator engine checks documentation, API contracts, security, AI,
+   replay, trust, and test alignment.
+3. The AST layer scans Python, TypeScript, and Solidity for authority or safety
+   violations.
+4. The semantic OpenAPI diff detects removed endpoints, removed methods,
+   removed schemas, removed fields, and incompatible type changes.
+5. The blockchain verification layer validates ArchitectureAnchorV2 contract,
+   ABI, and client verification hooks before live proof verification is enabled.
+6. CI blocks violations and publishes `compliance_report.json`.
+7. The operator dashboard exposes the architecture compliance score, rule
+   status, report source, and violation details.
+8. The metrics stack exposes Prometheus gauges and Grafana panels for
+   compliance score, failed rule trend, semantic OpenAPI failures, and per-rule
+   pass status.
+9. The autonomous remediation layer generates bounded auto-fix plans, records
+   governed remediation artifacts, and requires human approval for high-risk
+   source, API, contract, trust, or replay changes.
+10. The continuous learning layer records approved remediation outcomes,
+    builds a bounded knowledge graph, and emits optimization suggestions
+    without claiming execution authority.
 
-NovaRide separates interface, authority, execution, proof, and operations:
+### Autonomous Remediation Rules
 
-```text
-Applications / Portals
--> Control Plane
--> Execution Services
--> Evidence / Event Platform
--> Enterprise Operations
-```
+The remediation agent SHALL:
 
-Layer responsibilities:
+- diagnose failed validator rules
+- classify the root cause
+- generate a proposed fix
+- identify risk level
+- require human approval for high-risk changes
+- re-run validation after any authorized remediation action
 
-- Applications / Portals collect input and present outcomes.
-- Control Plane evaluates policy and makes governance decisions.
-- Execution Services perform dispatch, pricing, payment, trust, and lifecycle work.
-- Evidence / Event Platform records verifiable operational history.
-- Enterprise Operations provides monitoring, administration, analytics, and workflows.
+The remediation agent SHALL NOT:
 
-Operator authority is request based:
+- merge pull requests
+- mutate production data
+- bypass NovaPower
+- apply high-risk code, API, contract, trust, or replay changes without approval
+- override validator failures
 
-```text
-Operator
--> Intervention Request
--> Policy Evaluation
--> Control Plane Decision
--> Execution
--> Evidence
-```
+### Continuous Learning Rules
 
-## Production Infrastructure Readiness
+The learning layer SHALL:
 
-The architecture is coherent at the platform level. Institutional deployment
-requires production infrastructure hardening across these tracks:
+- record governed remediation outcomes after authorized application
+- maintain a durable memory of issue, fix, and success relationships
+- summarize fix performance by issue
+- emit optimization suggestions from observed patterns
+- expose read-only learning metrics and dashboard surfaces
 
-| Track | Requirement |
-| --- | --- |
-| Distributed Consistency | Checkpoints, Merkle roots, replay, and ledger roots must remain deterministic across nodes and regions |
-| Key Management | Signing authority must move to HSM, Cloud KMS, or hardware-backed signing with rotation and audit trails |
-| Operational Resilience | Regional failover, recovery procedures, chaos testing, and disaster recovery must be validated |
-| Regulatory Readiness | Licensing, corridor configuration, AML/KYC, sanctions, and reporting must remain deployment-ready |
-| Independent Verification | External verifier artifacts must validate without internal runtime assumptions |
+The learning layer SHALL NOT:
 
-These are deliberately separate maturity dimensions:
+- execute fixes directly
+- mutate production state without remediation approval
+- replace validator authority
+- infer execution permission from successful learning outcomes
 
-```text
-Architecture Maturity
--> Operational Maturity
--> Production Readiness
-```
+### Digital Twin Simulation
 
-## 10/10 Upgrade Principle
+The digital twin SHALL simulate changes without executing them.
 
-```text
-Rider/Driver apps request and display.
-Operator/Inspector portals control quality and compliance.
-Control Plane decides.
-Execution Plane performs.
-Event Platform proves.
-```
+The digital twin SHALL:
 
-## Authority Boundary
+- mirror the authoritative system state for simulation only
+- load compliance, remediation, and learning signals into a virtual state
+- simulate proposed changes without applying them to production
+- expose scenario projections, twin health, and mirrored components
 
-Mobile apps request and observe. They do not directly call payment networks,
-maps providers, settlement providers, or notification providers for
-authority-sensitive actions.
+The digital twin SHALL NOT:
 
-The backend owns:
+- execute production mutations
+- bypass NovaPower
+- claim runtime authority over live services
+- replace the authoritative system of record
 
-- dispatch authority
-- payment and settlement authority through NovaPay
-- trust and safety evaluation
-- replay and audit evidence
-- external provider integration
+### Predictive Governance
 
-## Ride Lifecycle
+Predictive governance SHALL remain advisory and simulation only.
 
-```text
-passenger_requests_ride
-nearest_driver_matched
-driver_accepts
-driver_arrives
-passenger_pickup
-trip_in_progress
-destination_reached
-payment_via_novapay
-driver_settlement
-ratings_and_feedback
-```
+Predictive governance SHALL:
 
-## Implementation Notes
+- simulate future changes before deployment
+- identify contract, replay, authority, and security risks
+- recommend preventive actions such as deployment blocks or human approval
+- expose predictive risk scores and digital twin health metrics
 
-The controlled-pilot router now exposes the NovaRide ecosystem contract from
-`afritech.api.afriride_next_gen_mobile_api`. The operator dashboard consumes the
-same contract so the product family is visible next to operational readiness,
-NovaPay live-test status, replay health, and audit evidence.
+Predictive governance SHALL NOT:
+
+- auto-apply high-risk changes
+- override NovaPower policy
+- mutate production state automatically
+- prevent deployment without a documented risk rationale
+- treat simulation outcomes as execution authority
+
+Preventive actions SHALL NOT mutate production state automatically.
+
+### Autonomous Multi-Agent Governance
+
+Autonomous Multi-Agent Governance remains simulation only and has no
+execution authority.
+
+### Multi-Agent Governance
+
+The autonomous multi-agent layer SHALL evaluate policy, security, trust,
+finance, operations, and AI safety through specialized agents.
+The autonomous multi-agent layer SHALL evaluate policy, security, trust, finance, operations, and AI safety through specialized agents.
+
+The autonomous multi-agent layer SHALL:
+
+- evaluate policy, security, trust, finance, operations, and AI safety through
+  specialized agents
+- aggregate findings without granting execution authority
+- preserve authoritative control in NovaPower, NovaRide Core, NovaPay, and
+  NovaTrust
+- surface risk findings to the operator dashboard and metrics stack
+
+The autonomous multi-agent layer SHALL NOT:
+
+- execute production mutations
+- bypass policy, trust, replay, or payment authority
+- override validator or remediation authority
+- convert findings into execution without governed approval
+
+### Crisis Simulation
+
+The crisis simulation layer SHALL model outages, overload, AI drift, replay
+mismatches, and payment failures.
+The crisis simulation layer SHALL model outages, overload, AI drift, replay mismatches, and payment failures.
+
+The crisis simulation layer SHALL:
+
+- model outages, overload, AI drift, replay mismatches, and payment failures
+- include black swan scenarios for stress testing
+- report impacts and intervention requirements
+- remain simulation only
+
+The crisis simulation layer SHALL NOT:
+
+- mutate production state
+- suppress admissible crisis scenarios
+- claim execution authority
+- replace human intervention for critical scenarios
+
+### Economic Optimization
+
+The economic optimization layer SHALL balance cost, performance, growth, and
+reliability.
+The economic optimization layer SHALL balance cost, performance, growth, and reliability.
+
+The economic optimization layer SHALL:
+
+- balance cost, performance, growth, and reliability
+- emit advisory actions only
+- surface cost efficiency and redundancy recommendations
+
+The economic optimization layer SHALL NOT:
+
+- auto-scale production based on simulated outcomes alone
+- bypass policy or finance authority
+- mutate financial records directly
+
+### Self-Refactoring Architecture
+
+The self-refactoring layer SHALL suggest architectural improvements based on
+governed insights.
+The self-refactoring layer SHALL suggest architectural improvements based on governed insights.
+
+The self-refactoring layer SHALL:
+
+- suggest architectural improvements based on governed insights
+- preserve the validator and documentation as the source of truth
+- require validation, verification, and backtesting before any approved change
+
+The self-refactoring layer SHALL NOT:
+
+- rewrite production architecture automatically
+- bypass review for high-risk structural changes
+- alter runtime authority boundaries
+
+### Verification Principle
+
+A change is complete only if:
+
+1. Implementation is correct.
+2. Tests pass.
+3. Documentation reflects the change.
+4. Architecture invariants remain intact.
+
+## Architecture Compliance Checklist
+
+- [ ] Authority boundaries preserved
+- [ ] Contracts versioned and validated
+- [ ] Public APIs documented and enforced
+- [ ] Replay compatibility maintained
+- [ ] Trust verification integrity preserved
+- [ ] AI authority unchanged
+- [ ] Security policies enforced through NovaPower
+- [ ] Learning memory recorded only after authorized remediation
+- [ ] Documentation updated
+- [ ] Tests updated
+- [ ] Migration documented
+
+## Related Architecture Decisions
+
+- ADR-001 - Authority Model
+- ADR-002 - Replay Engine
+- ADR-003 - Contract Versioning
+- ADR-004 - Trust Verification
+- ADR-005 - AI Governance
+- ADR-006 - Unified UI Framework
+
+## Documentation Governance
+
+This document is the canonical NovaRide architecture specification.
+
+It SHALL contain:
+
+- architecture
+- contracts
+- authority
+- interfaces
+- invariants
+
+It SHALL NOT contain:
+
+- deployment logs
+- temporary debugging
+- terminal sessions
+- incident timelines
+- build output
+
+Operational procedures belong in runbooks. Historical events belong in reports.
+Violations of these rules SHALL be treated as architecture defects.
+
+## Maintenance Rules
+
+- Keep this document architecture-focused.
+- Do not paste terminal logs, deployment transcripts, or debug output here.
+- Put operational procedures in `docs/operations/`.
+- Put release-specific verification evidence in reports or runbooks.
+- Keep `NovaRide Passenger` and `Rider App` aligned as one customer app surface.
+- Update `/v1/novaride/ecosystem` tests when changing the application family.

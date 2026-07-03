@@ -13,13 +13,32 @@
       "web"
     ],
     "android": {
-      "package": "com.ostrinov23.afririderapp"
+      "package": "com.ostrinov23.afririderapp",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.ostrinov23.afririderapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during pilot rides to set pickup points, show trip progress, and support replay-governed safety evidence."
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSPinnedDomains": {
+            "api.afritechnology.com": {
+              "NSIncludesSubdomains": true,
+              "NSPinnedCAIdentities": [
+                {
+                  "SPKI-SHA256-BASE64": "brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4="
+                }
+              ]
+            }
+          }
+        },
+        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during rides to set pickup points, show trip progress, and support safety evidence.",
+        "NSUserNotificationUsageDescription": "AfriRide sends time-sensitive trip and safety updates."
       }
     },
     "extra": {
@@ -29,6 +48,9 @@
         "projectId": "e36e1093-11c0-4606-b2fb-846e982c9b24"
       }
     },
-    "owner": "ostrinov23"
+    "owner": "ostrinov23",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

@@ -6,8 +6,15 @@ services:
     restart: unless-stopped
     env_file:
       - .env.staging
+    environment:
+      AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3
+      AFRITECH_RUNTIME_ENVIRONMENT: staging
+      AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/staging.sqlite3
+      AFRITECH_AGENT_MINIMUM_CONFIDENCE: "0.70"
+    volumes:
+      - afritech_staging_state:/var/lib/afritech
     ports:
-      - "8000:8000"
+      - "127.0.0.1:${AFRITECH_STAGING_API_PORT:-18000}:8000"
     command:
       - uvicorn
       - afritech.api.app:app
@@ -26,13 +33,16 @@ services:
       context: ../..
       dockerfile: deploy/staging/Dockerfile.dashboard
       args:
-        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-http://127.0.0.1:8000}
+        VITE_AFRIRIDE_API_URL: ${VITE_AFRIRIDE_API_URL:-http://127.0.0.1:18000}
         VITE_AFRIRIDE_APP_VERSION: ${VITE_AFRIRIDE_APP_VERSION:-staging-1}
     restart: unless-stopped
     env_file:
       - .env.staging
     ports:
-      - "4173:4173"
+      - "127.0.0.1:${AFRITECH_STAGING_DASHBOARD_PORT:-14173}:4173"
     depends_on:
       afritech-api:
         condition: service_healthy
+
+volumes:
+  afritech_staging_state:

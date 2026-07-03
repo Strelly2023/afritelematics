@@ -7,7 +7,7 @@ from importlib import import_module
 from math import asin, cos, radians, sin, sqrt
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, Field
 
 from afritech.api.auth.jwt_device_auth import JWT, require_roles
@@ -44,6 +44,8 @@ from afritech.architecture.novaride_super_app import (
     novaride_regulatory_alignment_contract,
     novaride_super_app_contract,
 )
+from afritech.mobility.realtime_hub import mobility_hub
+from afritech.workers.mobile_push_worker import ExpoPushProvider, MobilePushWorker
 
 
 def get_gateway() -> Any:
@@ -96,7 +98,21 @@ class DriverLocationRequest(BaseModel):
     lat: float = Field(ge=-90, le=90)
     lng: float = Field(ge=-180, le=180)
     heading: float | None = Field(default=None, ge=0, lt=360)
+    speed_mps: float | None = Field(default=None, ge=0)
+    accuracy_m: float | None = Field(default=None, ge=0)
+    battery_level: float | None = Field(default=None, ge=0, le=100)
+    device_trusted: bool = True
+    is_mocked: bool = False
+    route_deviation_m: float | None = Field(default=None, ge=0)
+    stationary_seconds: int = Field(default=0, ge=0)
     timestamp: datetime
+
+
+class MobilePushRegistrationRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=128)
+    role: str = Field(pattern="^(rider|driver)$")
+    token: str = Field(min_length=16, max_length=4096)
+    platform: str = Field(pattern="^(ios|android)$")
 
 
 _DRIVER_LOCATIONS: dict[str, DriverLocationRequest] = {}
@@ -2912,7 +2928,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         )
         total = _fare_total(pickup, dropoff, ride_type)
         status = _mobile_ride_status(str(ride["status"]))
-        return {
+        response = {
             "ride_id": ride["ride_id"],
             "status": status,
             "quoted_total": total,
@@ -2921,6 +2937,12 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "trust_score": 91,
             "ride_type": ride_type,
         }
+        mobility_hub.publish(
+            "DISPATCH_REQUESTED",
+            targets={f"actor:{rider_id}", "role:driver", f"ride:{ride['ride_id']}"},
+            data=response,
+        )
+        return response
 
     @router.get("/rider/rides/history")
     def rider_history(gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -3030,12 +3052,112 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return _driver_availability_payload(driver_id, gateway)
 
     @router.post("/drivers/location")
-    def update_driver_location(payload: DriverLocationRequest) -> dict[str, Any]:
+    def update_driver_location(payload: DriverLocationRequest, gateway=Depends(get_gateway)) -> dict[str, Any]:
+        from afritech.mobility.fleet_twin import TrustSafetyEngine
+
         _DRIVER_LOCATIONS[payload.driver_id] = payload
-        return {
+        previous = gateway.fleet_operations_repository.telemetry_for(payload.driver_id)
+        telemetry = {
+            "driver_id": payload.driver_id,
+            "latitude": payload.lat,
+            "longitude": payload.lng,
+            "heading": payload.heading,
+            "speed_mps": payload.speed_mps,
+            "accuracy_m": payload.accuracy_m,
+            "battery_level": payload.battery_level,
+            "device_trusted": payload.device_trusted,
+            "is_mocked": payload.is_mocked,
+            "route_deviation_m": payload.route_deviation_m,
+            "stationary_seconds": payload.stationary_seconds,
+            "captured_at": payload.timestamp.isoformat(),
+        }
+        gateway.fleet_operations_repository.upsert_telemetry(telemetry)
+        safety_signals = TrustSafetyEngine().evaluate(telemetry, previous)
+        incidents = []
+        for signal in safety_signals:
+            incident = gateway.fleet_operations_repository.create_incident(
+                idempotency_key=(
+                    f"{payload.driver_id}:{signal['type']}:"
+                    f"{payload.timestamp.replace(second=0, microsecond=0).isoformat()}"
+                ),
+                incident_type=signal["type"],
+                severity=signal["severity"],
+                workflow=signal["workflow"],
+                evidence={**signal["evidence"], "telemetry": telemetry},
+                driver_id=payload.driver_id,
+            )
+            incidents.append(incident)
+            mobility_hub.publish(
+                "SAFETY_INCIDENT_CREATED",
+                targets={f"actor:{payload.driver_id}", "role:operator", "role:dispatcher"},
+                partition="operations:safety",
+                data=incident,
+            )
+        response = {
             "status": "accepted",
             "driver_id": payload.driver_id,
             "location_updated_at": payload.timestamp.isoformat(),
+            "safety_signal_count": len(safety_signals),
+            "incident_ids": [incident["incident_id"] for incident in incidents],
+        }
+        base_location = {
+            **response,
+            "latitude": payload.lat,
+            "longitude": payload.lng,
+            "heading": payload.heading,
+        }
+        published_to_ride = False
+        for ride in gateway.dispatcher.rides.values():
+            if getattr(ride, "assigned_driver", None) == payload.driver_id:
+                pickup = _RIDE_PICKUP_LOCATIONS.get(ride.ride_id)
+                distance_km = (
+                    _distance_km(payload.lat, payload.lng, pickup[0], pickup[1])
+                    if pickup
+                    else None
+                )
+                eta_minutes = (
+                    max(1, round((distance_km / 24.0) * 60))
+                    if distance_km is not None
+                    else None
+                )
+                mobility_hub.publish(
+                    "DRIVER_LOCATION_UPDATED",
+                    targets={
+                        f"ride:{ride.ride_id}",
+                        f"actor:{ride.passenger_id}",
+                        f"actor:{payload.driver_id}",
+                        "role:dispatcher",
+                    },
+                    data={
+                        **base_location,
+                        "ride_id": ride.ride_id,
+                        "distance_km": distance_km,
+                        "eta_minutes": eta_minutes,
+                        "eta_text": f"{eta_minutes} min" if eta_minutes else None,
+                    },
+                )
+                published_to_ride = True
+        mobility_hub.heartbeat(payload.driver_id)
+        if not published_to_ride:
+            mobility_hub.publish(
+                "DRIVER_LOCATION_UPDATED",
+                targets={f"actor:{payload.driver_id}", "role:dispatcher"},
+                data=base_location,
+            )
+        return response
+
+    @router.post("/mobile/devices/push")
+    def register_mobile_push(payload: MobilePushRegistrationRequest, gateway=Depends(get_gateway)) -> dict[str, Any]:
+        """Upsert a device token; provider delivery remains server-side only."""
+        gateway.push_outbox_repository.register_device(
+            payload.actor_id, payload.platform, payload.token, payload.role
+        )
+        return {
+            "status": "registered",
+            "actor_id": payload.actor_id,
+            "platform": payload.platform,
+            "provider": "apns" if payload.platform == "ios" else "fcm",
+            "registered_at": datetime.now(UTC).isoformat(),
         }
 
     @router.post("/driver/{driver_id}/availability")
@@ -3043,28 +3165,40 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         status = str(payload.get("status", "offline")).strip().lower()
         online = status == "available"
         gateway.driver.status({"driver_id": driver_id, "online": online})
-        return _driver_availability_payload(driver_id, gateway)
+        response = _driver_availability_payload(driver_id, gateway)
+        mobility_hub.publish(
+            "DRIVER_PRESENCE_UPDATED",
+            targets={f"actor:{driver_id}", "role:dispatcher"},
+            data=response,
+        )
+        return response
 
     @router.get("/driver/{driver_id}/ride-queue")
     def driver_ride_queue(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
-        rides = gateway.driver.requests(driver_id)
+        driver = gateway.dispatcher.drivers.get(driver_id)
+        rides = gateway.dispatcher.ride_repository.requested()
         items = [
             {
-                "ride_id": ride["ride_id"],
-                "pickup_text": ride["pickup"],
-                "dropoff_text": ride["destination"],
-                "rider_name": ride.get("passenger_id", "Rider"),
+                "ride_id": ride.ride_id,
+                "pickup_text": ride.pickup,
+                "dropoff_text": ride.destination,
+                "rider_name": ride.passenger_id or "Rider",
                 "rider_trust_score": 91,
                 "status": "pending",
-                "quoted_total_text": _fare_total(ride["pickup"], ride["destination"], "Economy"),
+                "quoted_total_text": _fare_total(ride.pickup, ride.destination, "Economy"),
                 "eta_text": "15 min",
             }
             for ride in rides
         ]
-        return {"items": items}
+        return {
+            "driver_id": driver_id,
+            "driver_status": "available" if driver and driver.online else "offline",
+            "requested_count": len(items),
+            "items": items,
+        }
 
     @router.post("/driver/rides/{ride_id}/accept")
-    def driver_accept(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_accept(ride_id: str, payload: dict[str, Any], background_tasks: BackgroundTasks, gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
         driver_id = str(payload.get("driver_id", ""))
         ride = gateway.driver.accept({"driver_id": driver_id, "ride_id": ride_id})
         _log_trace_event(
@@ -3076,7 +3210,30 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             action=f"POST /v1/driver/rides/{ride_id}/accept",
             payload={"driver_id": driver_id},
         )
-        return _trip_payload(ride)
+        response = _trip_payload(ride)
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={
+                f"actor:{driver_id}",
+                f"actor:{ride['passenger_id']}",
+                f"ride:{ride_id}",
+                "role:dispatcher",
+            },
+            data=response,
+        )
+        mobility_hub.publish(
+            "SERVER_PUSH_EVENT",
+            targets={f"actor:{ride['passenger_id']}"},
+            data={"category": "driver_assigned", **response},
+        )
+        background_tasks.add_task(
+            MobilePushWorker(
+                gateway.push_outbox_repository,
+                ExpoPushProvider(gateway.push_outbox_repository),
+            ).run_once,
+            limit=20,
+        )
+        return response
 
     @router.post("/driver/rides/{ride_id}/reject")
     def driver_reject(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -3095,7 +3252,13 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             action=f"POST /v1/driver/rides/{ride_id}/reject",
             payload={"driver_id": driver_id},
         )
-        return _trip_payload({**ride, "status": "CANCELED"}, status_hint="cancelled")
+        response = _trip_payload({**ride, "status": "CANCELED"}, status_hint="cancelled")
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={f"actor:{driver_id}", f"actor:{ride['passenger_id']}", f"ride:{ride_id}"},
+            data=response,
+        )
+        return response
 
     @router.post("/driver/rides/{ride_id}/arrive")
     def driver_arrive(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -3110,7 +3273,13 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             action=f"POST /v1/driver/rides/{ride_id}/arrive",
             payload={"driver_id": driver_id},
         )
-        return _trip_payload(ride)
+        response = _trip_payload(ride)
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={f"actor:{driver_id}", f"actor:{ride['passenger_id']}", f"ride:{ride_id}"},
+            data=response,
+        )
+        return response
 
     @router.post("/driver/rides/{ride_id}/start")
     def driver_start(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -3125,7 +3294,13 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             action=f"POST /v1/driver/rides/{ride_id}/start",
             payload={"driver_id": driver_id},
         )
-        return _trip_payload(ride)
+        response = _trip_payload(ride)
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={f"actor:{driver_id}", f"actor:{ride['passenger_id']}", f"ride:{ride_id}"},
+            data=response,
+        )
+        return response
 
     @router.post("/driver/rides/{ride_id}/complete")
     def driver_complete(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
@@ -3142,15 +3317,17 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         )
         events = proof_events_for_ride(trace_log, gateway.dispatcher.rides[ride_id])
         _ = _receipt_engine().derive(ride_id, events)
-        return _trip_payload(ride)
+        response = _trip_payload(ride)
+        mobility_hub.publish(
+            "RIDE_STATE_UPDATED",
+            targets={f"actor:{driver_id}", f"actor:{ride['passenger_id']}", f"ride:{ride_id}"},
+            data=response,
+        )
+        return response
 
     @router.get("/driver/{driver_id}/earnings")
     def driver_earnings(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
-        completed = [
-            ride
-            for ride in gateway.dispatcher.rides.values()
-            if ride.assigned_driver == driver_id and ride.status == "COMPLETED"
-        ]
+        completed = gateway.dispatcher.ride_repository.completed_for_driver(driver_id)
         total = float(len(completed) * 10)
         return {
             "driver_id": driver_id,
@@ -3500,11 +3677,7 @@ def _require_completed_ride(gateway, ride_id: str) -> Any:
 
 def _driver_availability_payload(driver_id: str, gateway) -> dict[str, Any]:
     driver = gateway.dispatcher.drivers.get(driver_id)
-    completed = sum(
-        1
-        for ride in gateway.dispatcher.rides.values()
-        if ride.assigned_driver == driver_id and ride.status == "COMPLETED"
-    )
+    completed = gateway.dispatcher.ride_repository.completed_count_for_driver(driver_id)
     return {
         "driver_id": driver_id,
         "status": "available" if driver and driver.online else "offline",
@@ -3549,7 +3722,7 @@ def _fare_total(pickup: str, dropoff: str, ride_type: str) -> str:
 
 
 def _driver_trust_trend(gateway) -> list[dict[str, Any]]:
-    completed_count = sum(1 for ride in gateway.dispatcher.rides.values() if ride.status == "COMPLETED")
+    completed_count = gateway.dispatcher.ride_repository.completed_count()
     base = max(90, 90 + min(completed_count, 6))
     return [
         {"label": "Mon", "score": max(90, base - 3)},

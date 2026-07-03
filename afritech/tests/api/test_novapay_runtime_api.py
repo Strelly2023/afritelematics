@@ -217,6 +217,48 @@ def test_novapay_runtime_admission_and_execution_flow() -> None:
     assert treasury.json()["ledger_checkpoint"]["snapshot_hash"]
     assert treasury.json()["reconciliation"]["status"] == "clear"
 
+    treasury_intelligence = client.get("/v1/treasury/intelligence", headers=_headers(role="ADMIN"))
+    assert treasury_intelligence.status_code == 200
+    treasury_ai = treasury_intelligence.json()["treasury_intelligence"]
+    assert treasury_ai["classification"] == "NOVAPAY_TREASURY_AI_REPORT"
+    assert treasury_ai["authority_boundary"] == "advisory_only_and_policy_gated"
+    assert treasury_ai["risk_level"] in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+    assert treasury_ai["decision"]["action"] in {
+        "increase_liquidity",
+        "rebalance_treasury",
+        "invest_growth",
+        "maintain_buffer",
+    }
+    assert treasury_ai["coverage_ratio"]
+    assert treasury_ai["cash_balance"]
+    assert treasury_ai["recommendations"]
+    assert treasury_ai["stress_tests"]
+    assert treasury_ai["provider_snapshot"]
+
+    global_treasury_intelligence = client.get(
+        "/v1/treasury/global-intelligence",
+        headers=_headers(role="ADMIN"),
+    )
+    assert global_treasury_intelligence.status_code == 200
+    global_treasury = global_treasury_intelligence.json()["treasury_intelligence"]
+    assert global_treasury["classification"] == "NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_REPORT"
+    assert global_treasury["authority_boundary"] == "advisory_only_and_policy_gated"
+    assert global_treasury["core"]["classification"] == "NOVAPAY_TREASURY_AI_REPORT"
+    assert global_treasury["multi_currency"]["currency_distribution"]
+    assert global_treasury["onchain"]["anchor_batch_plan"]
+    assert global_treasury["metrics"]["currency_count"] >= 1
+
+    dao_economy = client.get("/v1/economy/protocol", headers=_headers(role="ADMIN"))
+    assert dao_economy.status_code == 200
+    economy = dao_economy.json()["economy_intelligence"]
+    assert economy["classification"] == "NOVARIDE_DAO_TOKEN_ECONOMY_REPORT"
+    assert economy["authority_boundary"] == "advisory_only_and_policy_gated"
+    assert economy["token_economy"]["symbol"] == "NVT"
+    assert economy["governance"]["voting_model"] == "token_weighted_proposal_governance"
+    assert economy["governance"]["proposal_queue"]
+    assert economy["onchain"]["proposal_batch_plan"]
+    assert economy["metrics"]["token_supply"] == "10000000.00"
+
 
 def test_novapay_runtime_geo_routing_prefers_low_latency_healthy_region() -> None:
     governance_store = PartnerGovernanceStore(seed_partner_governance_registry())

@@ -104,6 +104,30 @@ if [[ "$NO_CACHE" -eq 1 ]]; then
   BUILD_ARGS+=(--no-cache)
 fi
 
+assert_production_api_port_available() {
+  local container_name
+  local compose_project
+  local compose_service
+  local conflicts=()
+
+  while IFS= read -r container_name; do
+    [[ -n "$container_name" ]] || continue
+    compose_project="$(docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container_name" 2>/dev/null || true)"
+    compose_service="$(docker inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "$container_name" 2>/dev/null || true)"
+
+    if [[ "$compose_project" == "$PROJECT_NAME" && "$compose_service" == "afritech-api" ]]; then
+      continue
+    fi
+    conflicts+=("$container_name")
+  done < <(docker ps --filter publish=8000 --format '{{.Names}}')
+
+  if [[ "${#conflicts[@]}" -gt 0 ]]; then
+    echo "port 8000 is owned by a non-production backend: ${conflicts[*]}" >&2
+    echo "stop that Compose stack before deploying production; staging now uses 127.0.0.1:18000" >&2
+    exit 1
+  fi
+}
+
 ensure_compose_volume() {
   local volume_name="$1"
 
@@ -198,6 +222,7 @@ repair_active_cert() {
 }
 
 CERT_VOLUME="${PROJECT_NAME}_certbot_certs"
+assert_production_api_port_available
 ensure_compose_volume "$CERT_VOLUME"
 
 if [[ "$REPAIR_CERT" -eq 1 ]]; then

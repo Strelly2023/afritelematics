@@ -9,6 +9,7 @@ import {
 
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { useMobileExcellence } from "../../../afriride_system/mobile/shared/mobileExcellence";
 
 type PrimaryButtonProps = {
   label: string;
@@ -25,14 +26,18 @@ export function PrimaryButton({
   tone = "primary",
   style,
 }: PrimaryButtonProps) {
+  const { theme } = useMobileExcellence();
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled: Boolean(disabled) }}
+      accessibilityLabel={label}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
         tone === "danger" ? styles.danger : styles.primary,
+        tone === "primary" ? { backgroundColor: theme.primary } : null,
         disabled ? styles.disabled : null,
         pressed ? styles.pressed : null,
         style,
@@ -46,7 +51,7 @@ export function PrimaryButton({
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 20,
     justifyContent: "center",
     minHeight: 48,
     paddingHorizontal: spacing.lg,

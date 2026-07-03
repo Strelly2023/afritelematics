@@ -136,4 +136,59 @@ CREATE TABLE IF NOT EXISTS receipt_records (
     issued_at TIMESTAMPTZ NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS mobile_push_outbox (
+    outbox_id TEXT PRIMARY KEY,
+    idempotency_key TEXT NOT NULL UNIQUE,
+    actor_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    payload_json JSONB NOT NULL,
+    status TEXT NOT NULL,
+    delivery_attempt INTEGER NOT NULL DEFAULT 0,
+    next_attempt_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    delivered_at TIMESTAMPTZ,
+    last_error TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_mobile_push_outbox_pending
+    ON mobile_push_outbox(status, next_attempt_at);
+
+CREATE TABLE IF NOT EXISTS mobile_push_devices (
+    actor_id TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    token TEXT NOT NULL,
+    role TEXT NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY(actor_id, platform)
+);
+
+CREATE TABLE IF NOT EXISTS driver_telemetry (
+    driver_id TEXT PRIMARY KEY,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    heading DOUBLE PRECISION,
+    speed_mps DOUBLE PRECISION,
+    accuracy_m DOUBLE PRECISION,
+    battery_level DOUBLE PRECISION,
+    device_trusted INTEGER NOT NULL,
+    is_mocked INTEGER NOT NULL,
+    route_deviation_m DOUBLE PRECISION,
+    stationary_seconds INTEGER NOT NULL,
+    captured_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS safety_incidents (
+    incident_id TEXT PRIMARY KEY,
+    idempotency_key TEXT NOT NULL UNIQUE,
+    incident_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    status TEXT NOT NULL,
+    driver_id TEXT,
+    rider_id TEXT,
+    ride_id TEXT,
+    workflow TEXT NOT NULL,
+    evidence_json JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
 COMMIT;

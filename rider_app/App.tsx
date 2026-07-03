@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -23,14 +23,33 @@ import { RiderHomeScreen } from "./ui/screens/RiderHomeScreen";
 import { WalletScreen } from "./ui/screens/WalletScreen";
 import { ActivityScreen } from "./ui/screens/ActivityScreen";
 import { WaitingForDriverScreen } from "./ui/screens/WaitingForDriverScreen";
-import { TEST_MODE } from "./core/config/environment";
-import { ORGANIZATION_ID } from "./core/config/environment";
+import {
+  APP_LOCALE,
+  ORGANIZATION_ID,
+  REGION_ID,
+  TEST_MODE,
+} from "./core/config/environment";
 import { loginPilot } from "./core/api/auth.service";
+import { apiRequest } from "./core/api/client";
+import {
+  clearSession,
+  requireBiometricUnlock,
+  restoreSession,
+} from "./core/api/session";
 import { colors } from "./ui/theme/colors";
 import { spacing } from "./ui/theme/spacing";
 import { useRideFlow } from "./state/providers/useRideFlow";
 import { ProductTabs } from "./ui/widgets/ProductTabs";
 import { BottomTabs } from "./ui/widgets/BottomTabs";
+import { InteractiveRideMap } from "./ui/widgets/InteractiveRideMap";
+import { useRiderMobility } from "./state/providers/useRiderMobility";
+import {
+  AdaptiveScaffold,
+  AnimatedEntrance,
+  SkeletonBlock,
+  SyncBanner,
+} from "../afriride_system/mobile/shared/mobileExcellence";
+import { useGlobalRuntime } from "../afriride_system/mobile/shared/globalRuntime";
 
 const RIDER_ID = "rider-demo-001";
 type RiderTab = "home" | "trips" | "wallet" | "activity" | "profile";
@@ -58,6 +77,20 @@ function RiderApp() {
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const globalRuntime = useGlobalRuntime(
+    apiRequest,
+    ORGANIZATION_ID,
+    REGION_ID,
+    APP_LOCALE || undefined,
+  );
+  const localizedRiderTabs: Array<{ key: RiderTab; label: string }> = [
+    { key: "home", label: globalRuntime.t("nav.home") },
+    { key: "trips", label: globalRuntime.t("nav.trips") },
+    { key: "wallet", label: globalRuntime.t("nav.wallet") },
+    { key: "activity", label: globalRuntime.t("nav.activity") },
+    { key: "profile", label: globalRuntime.t("nav.profile") },
+  ];
+  const mobility = useRiderMobility(RIDER_ID, authenticated);
   const [pickup, setPickup] = useState("Kampala Road");
   const [dropoff, setDropoff] = useState("Nakasero");
   const {
@@ -72,6 +105,22 @@ function RiderApp() {
   const replay = evidence?.replay ?? null;
   const ledgerReceipt = evidence?.ledgerReceipt ?? null;
   const priceExplanation = evidence?.priceExplanation ?? null;
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const restored = await restoreSession();
+      if (!restored.token || !active) return;
+      const unlock = TEST_MODE
+        ? { success: true }
+        : await requireBiometricUnlock("Unlock AfriRide Rider");
+      if (active && unlock.success) setAuthenticated(true);
+      else if (!unlock.success) await clearSession();
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleRequestRide() {
     submitRideRequest({
@@ -153,18 +202,39 @@ function RiderApp() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.shell}>
+      <AdaptiveScaffold
+        testID="rider-adaptive-scaffold"
+        brandColor={globalRuntime.brand.primary_color}
+        navigation={
+          authenticated ? (
+            <View style={styles.bottomNav}>
+              <BottomTabs tabs={localizedRiderTabs} activeTab={activeTab} onChange={setActiveTab} />
+            </View>
+          ) : undefined
+        }
+      >
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.header}>
             <View style={styles.headerTop}>
-              <Text style={styles.title}>AfriRide Rider</Text>
-              <Text style={styles.modePill}>{TEST_MODE ? "Pilot" : "Live"}</Text>
+              <Text style={styles.title}>
+                {globalRuntime.brand.name} {globalRuntime.t("app.rider")}
+              </Text>
+              <Text style={styles.modePill}>
+                {globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")}
+              </Text>
             </View>
             <Text style={styles.subtitle}>Simple booking, live tracking, and verified receipts.</Text>
-            <Text style={styles.orgLabel}>Org: {ORGANIZATION_ID}</Text>
+            <Text style={styles.orgLabel}>
+              {globalRuntime.region.region_id} · {globalRuntime.region.currency} · {globalRuntime.locale}
+            </Text>
           </View>
+          <SyncBanner
+            online={mobility.health?.networkConnected !== false}
+            pending={mobility.health?.pendingSync || 0}
+          />
 
           {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+          {authenticating ? <SkeletonBlock height={132} /> : null}
 
           {!authenticated ? (
             <RiderLoginScreen
@@ -193,9 +263,21 @@ function RiderApp() {
               }}
             />
           ) : (
-            <>
+            <AnimatedEntrance>
               {activeTab === "home" ? (
                 <>
+                  <InteractiveRideMap
+                    rider={mobility.location}
+                    driver={
+                      statusSnapshot?.driverLatitude != null &&
+                      statusSnapshot?.driverLongitude != null
+                        ? {
+                            latitude: statusSnapshot.driverLatitude,
+                            longitude: statusSnapshot.driverLongitude,
+                          }
+                        : null
+                    }
+                  />
                   <RiderHomeScreen
                     pickup={pickup}
                     dropoff={dropoff}
@@ -251,16 +333,10 @@ function RiderApp() {
                   trustScore={riderTrustScore}
                 />
               ) : null}
-            </>
+            </AnimatedEntrance>
           )}
         </ScrollView>
-
-        {authenticated ? (
-          <View style={styles.bottomNav}>
-            <BottomTabs tabs={riderTabs} activeTab={activeTab} onChange={setActiveTab} />
-          </View>
-        ) : null}
-      </View>
+      </AdaptiveScaffold>
     </SafeAreaView>
   );
 }

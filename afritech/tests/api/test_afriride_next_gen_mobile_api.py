@@ -429,6 +429,21 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         assert driver_availability.status_code == 200
         assert driver_availability.json() == driver_online.json()
 
+        driver_offline = client.post(
+            "/v1/driver/driver-1/availability",
+            json={"status": "offline"},
+        )
+        assert driver_offline.status_code == 200
+        assert driver_offline.json()["status"] == "offline"
+        assert client.get("/v1/driver/driver-1/availability").json()["status"] == "offline"
+
+        driver_back_online = client.post(
+            "/v1/driver/driver-1/availability",
+            json={"status": "available"},
+        )
+        assert driver_back_online.status_code == 200
+        assert driver_back_online.json()["status"] == "available"
+
         requested = client.post(
             "/v1/rider/rides",
             json={
@@ -447,6 +462,9 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         queue = client.get("/v1/driver/driver-1/ride-queue")
         assert queue.status_code == 200
+        assert queue.json()["driver_id"] == "driver-1"
+        assert queue.json()["driver_status"] == "available"
+        assert queue.json()["requested_count"] == 1
         assert queue.json()["items"][0]["ride_id"] == "ride-next-gen-001"
 
         accepted = client.post(

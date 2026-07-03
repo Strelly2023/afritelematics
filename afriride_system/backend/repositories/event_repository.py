@@ -15,6 +15,9 @@ class EventRepository:
 
     def append(self, ride_id: str, event_type: str, payload: dict[str, Any]) -> None:
         with self.storage.connect() as connection:
+            self.append_on(connection, ride_id, event_type, payload)
+
+    def append_on(self, connection, ride_id: str, event_type: str, payload: dict[str, Any]) -> None:
             connection.execute(
                 """
                 INSERT INTO ride_events (ride_id, event_type, created_at, payload_json)

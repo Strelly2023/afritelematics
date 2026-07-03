@@ -43,13 +43,22 @@ from afritech.afripay.public_validation import (
     validate_public_proof_file,
     verify_signed_evidence,
 )
+from afritech.afripay.global_treasury_ai import GlobalTreasuryAI, default_global_treasury_ai
+from afritech.afripay.dao_economy import DAOEconomyAI, default_dao_economy_ai
 from afritech.afripay.treasury import TreasuryEngine
+from afritech.afripay.treasury_ai import TreasuryAI, default_treasury_ai
 
 __all__ = [
     "AfriPayService",
     "Money",
     "PaymentOrchestrator",
     "TreasuryEngine",
+    "TreasuryAI",
+    "default_treasury_ai",
+    "GlobalTreasuryAI",
+    "default_global_treasury_ai",
+    "DAOEconomyAI",
+    "default_dao_economy_ai",
     "NovaPayCertificationEvidence",
     "NovaPayFraudAssessment",
     "NovaPayFraudCertificationEngine",

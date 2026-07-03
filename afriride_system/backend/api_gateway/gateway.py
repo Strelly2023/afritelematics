@@ -10,6 +10,8 @@ from afriride_system.backend.repositories import (
     EventRepository,
     IdempotencyRepository,
     RideRepository,
+    PushOutboxRepository,
+    FleetOperationsRepository,
 )
 from afriride_system.backend.storage import AfriRideStorage, DEFAULT_DB_PATH
 from afriride_system.backend.command_api.command_dispatcher_adapter import (
@@ -25,6 +27,8 @@ from afriride_system.integration.websocket_gateway.event_bridge import EventBrid
 class AfriRideGateway:
     storage: AfriRideStorage
     idempotency_repository: IdempotencyRepository
+    push_outbox_repository: PushOutboxRepository
+    fleet_operations_repository: FleetOperationsRepository
     event_bridge: EventBridge
     dispatcher: AfriRideCommandDispatcher
     passenger: PassengerRoutes
@@ -45,16 +49,21 @@ def build_gateway(
     ride_repository = RideRepository(storage)
     event_repository = EventRepository(storage)
     idempotency_repository = IdempotencyRepository(storage)
+    push_outbox_repository = PushOutboxRepository(storage)
+    fleet_operations_repository = FleetOperationsRepository(storage)
     event_bridge = EventBridge()
     dispatcher = AfriRideCommandDispatcher(
         event_bridge=event_bridge,
         driver_repository=driver_repository,
         ride_repository=ride_repository,
         event_repository=event_repository,
+        push_outbox_repository=push_outbox_repository,
     )
     return AfriRideGateway(
         storage=storage,
         idempotency_repository=idempotency_repository,
+        push_outbox_repository=push_outbox_repository,
+        fleet_operations_repository=fleet_operations_repository,
         event_bridge=event_bridge,
         dispatcher=dispatcher,
         passenger=PassengerRoutes(dispatcher),

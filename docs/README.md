@@ -73,6 +73,7 @@ See:
 
 - `docs/reviews/AFRITECH_DOCUMENTATION_AUTHORITY_AUDIT.md`
 - `docs/reviews/AFRITECH_CANONICAL_CONFLICT_SWEEP.md`
+- `docs/reviews/AFRITECH_IMPLEMENTATION_DOCUMENTATION_AUDIT_2026_07_04.md`
 - `afritech/governance/document_registry.yaml`
 
 for the current documentation duplication, overlap, and consolidation plan.

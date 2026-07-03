@@ -1,11 +1,16 @@
-# afritech/chain/anchor_publisher.py
+"""High-level blockchain anchor publisher with V1/V2 rollout support."""
 
+import os
 from typing import Dict, Any
 
 from afritech.chain.types import ChainReceipt
 
 # ✅ Primary (ELITE+) → smart contract anchoring
-from afritech.chain.contracts.contract_client import anchor_proof_on_chain
+from afritech.chain.contracts.contract_client import (
+    anchor_batch_v2_on_chain,
+    anchor_proof_on_chain,
+    anchor_proof_v2_on_chain,
+)
 
 # ✅ Optional fallback (legacy raw tx mode)
 from afritech.chain.sepolia_client import send_proof_hash
@@ -25,6 +30,8 @@ SEPOLIA_EXPLORER_BASE = "https://sepolia.etherscan.io/tx/"
 def publish_anchor(
     proof_hash: str,
     *,
+    anchor_id: str | None = None,
+    context: str = "ARCHITECTURE",
     profile_name: str | None = None,
     require_live: bool = False,
 ) -> ChainReceipt:
@@ -44,20 +51,35 @@ def publish_anchor(
     - ✅ Always returns a ChainReceipt
     """
 
-    anchor_id = f"arch-{proof_hash[:12]}"
+    anchor_id = anchor_id or f"arch-{proof_hash[:12]}"
+    anchor_version = os.getenv("AFRITECH_CHAIN_ANCHOR_VERSION", "v1").lower()
 
     # =========================
     # ✅ 1. SMART CONTRACT (PRIMARY)
     # =========================
     try:
-        result: Dict[str, Any] = anchor_proof_on_chain(
-            anchor_id=anchor_id,
-            proof_hash=proof_hash,
-            profile_name=profile_name,
-        )
+        if anchor_version == "v2":
+            result: Dict[str, Any] = anchor_proof_v2_on_chain(
+                anchor_id=anchor_id,
+                proof_hash=proof_hash,
+                context=context,
+                enforce_unique_proof=os.getenv(
+                    "AFRITECH_CHAIN_V2_ENFORCE_UNIQUE_PROOF",
+                    "true",
+                ).lower()
+                == "true",
+                profile_name=profile_name,
+            )
+        else:
+            result = anchor_proof_on_chain(
+                anchor_id=anchor_id,
+                proof_hash=proof_hash,
+                profile_name=profile_name,
+            )
 
         if result.get("status") == "live":
             tx_hash = result["tx_hash"]
+            method = str(result.get("method") or "anchorProof")
 
             return ChainReceipt(
                 tx_hash=tx_hash,
@@ -70,10 +92,13 @@ def publish_anchor(
                 proof_hash=proof_hash,
                 authority="smart_contract",
                 contract_address=result.get("contract_address"),
-                method="anchorProof",
+                method=method,
                 source="anchor_publisher.contract",
                 meta={
                     "event": result.get("event"),
+                    "anchor_id": anchor_id,
+                    "context": result.get("context") or context,
+                    "anchor_version": anchor_version,
                 },
             )
         contract_failure_reason = str(result.get("error") or result.get("status") or "contract_publish_not_live")
@@ -130,8 +155,74 @@ def publish_anchor(
             "contract_failure": contract_failure_reason,
             "raw_tx_failure": raw_failure_reason,
             "note": "Live blockchain unavailable; deterministic fallback used",
+            "anchor_id": anchor_id,
+            "context": context,
+            "anchor_version": anchor_version,
         },
     )
+
+
+def publish_anchor_batch_v2(
+    anchors: list[dict[str, str]],
+    *,
+    profile_name: str | None = None,
+    require_live: bool = False,
+) -> ChainReceipt:
+    """Publish a V2 batch and fall back deterministically when live chain is off."""
+
+    proof_fingerprint = "|".join(item["proof_hash"][:12] for item in anchors)
+    try:
+        result = anchor_batch_v2_on_chain(
+            anchors,
+            enforce_unique_proof=os.getenv(
+                "AFRITECH_CHAIN_V2_ENFORCE_UNIQUE_PROOF",
+                "true",
+            ).lower()
+            == "true",
+            profile_name=profile_name,
+        )
+        tx_hash = result["tx_hash"]
+        return ChainReceipt(
+            tx_hash=tx_hash,
+            block_number=result.get("block_number"),
+            network=str(result.get("network", "sepolia")),
+            explorer_url=str(result.get("explorer_url") or f"{SEPOLIA_EXPLORER_BASE}{tx_hash.removeprefix('0x')}"),
+            status="live",
+            chain_id=int(result.get("chain_id", 11155111)),
+            chain_name=str(result.get("chain_name", "Ethereum Sepolia")),
+            proof_hash=proof_fingerprint,
+            authority="smart_contract",
+            contract_address=result.get("contract_address"),
+            method="anchorBatchV2",
+            source="anchor_publisher.contract_batch_v2",
+            meta={
+                "batch_size": result.get("batch_size"),
+                "anchors": result.get("anchors"),
+                "anchor_version": "v2",
+            },
+        )
+    except Exception as exc:
+        if require_live:
+            raise RuntimeError(f"Smart contract batch publication failed: {exc}") from exc
+        return ChainReceipt(
+            tx_hash=f"fallback-batch-{abs(hash(proof_fingerprint))}",
+            block_number=None,
+            network="papc-testnet",
+            explorer_url=None,
+            status="runtime_safe_fallback",
+            chain_id=None,
+            chain_name="PAPC Testnet",
+            proof_hash=proof_fingerprint,
+            authority="runtime_safe_fallback",
+            source="anchor_publisher.fallback_batch_v2",
+            method="anchorBatchV2",
+            meta={
+                "batch_size": len(anchors),
+                "anchors": anchors,
+                "contract_failure": str(exc),
+                "anchor_version": "v2",
+            },
+        )
 
 
 # =========================

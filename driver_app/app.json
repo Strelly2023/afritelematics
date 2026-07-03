@@ -23,16 +23,43 @@
       "package": "com.ostrinov23.afriridedrivertest",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED"
       ]
     },
     "ios": {
       "bundleIdentifier": "com.ostrinov23.afriridedrivertest",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during pilot shifts to capture GPS evidence for controlled validation."
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSPinnedDomains": {
+            "api.afritechnology.com": {
+              "NSIncludesSubdomains": true,
+              "NSPinnedCAIdentities": [
+                {
+                  "SPKI-SHA256-BASE64": "brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4="
+                }
+              ]
+            }
+          }
+        },
+        "NSLocationWhenInUseUsageDescription": "AfriRide uses location for dispatch, pickup and navigation while you drive.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "AfriRide continues location tracking during an active shift for dispatch, rider safety and trip evidence.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
-    "owner": "ostrinov23"
+    "owner": "ostrinov23",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

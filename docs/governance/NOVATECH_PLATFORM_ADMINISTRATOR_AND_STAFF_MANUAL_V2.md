@@ -7864,7 +7864,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -8872,7 +8872,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -9994,7 +9994,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -11011,7 +11011,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -12086,7 +12086,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -13034,7 +13034,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -17477,7 +17477,7 @@ Execution plan for moving the authoritative AfriRide production spine from archi
 This plan applies only to the production spine declared in:
 
 - [`AFRIRIDE_PRODUCTION_SPINE.md`](../architecture/AFRIRIDE_PRODUCTION_SPINE.md)
-- [`AFRIRIDE_PILOT_READINESS.md`](./AFRIRIDE_PILOT_READINESS.md)
+- [`AFRIRIDE_PILOT_READINESS.md`](../pilot/AFRIRIDE_PILOT_READINESS.md)
 
 ## Objective
 
@@ -17517,7 +17517,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 
@@ -44804,7 +44804,7 @@ This document does not claim:
 
 ## MVP Plan
 
-See [AfriRide GA Elite MVP](AfriRide_GA_Elite_MVP.md).
+See [AfriRide GA Elite MVP](../vision/AfriRide_GA_Elite_MVP.md).
 
         ---
 
@@ -45120,7 +45120,7 @@ the primary bounded operational proof ecosystem
 
 For a stacked platform view across AfriCloud, AfriID, AfriPay, and the mobility/delivery surfaces, see:
 
-- [AfriTech Gen-3 Platform Architecture](AfriTech_Gen3_Platform_Architecture.md)
+- [AfriTech Gen-3 Platform Architecture](../vision/AfriTech_Gen3_Platform_Architecture.md)
 
 ## 7.4 Logistics Infrastructure - AfriConnect
 
@@ -45983,7 +45983,7 @@ Future domains may include:
 
 For the stacked Gen-3 platform view across AfriCloud, AfriID, AfriPay, and the mobility/delivery surfaces, see:
 
-- [AfriTech Gen-3 Platform Architecture](AfriTech_Gen3_Platform_Architecture.md)
+- [AfriTech Gen-3 Platform Architecture](../vision/AfriTech_Gen3_Platform_Architecture.md)
 
 These names describe roadmap surfaces, not validated proof domains.
 
@@ -46006,7 +46006,7 @@ Driver App    -> command stream
 
 The applications must remain adapters. Coordination truth remains in the AfriTech runtime and the AfriRide continuity model.
 
-See [AfriRide Two-App System](AfriRide_Two_App_System.md).
+See [AfriRide Two-App System](../vision/AfriRide_Two_App_System.md).
 
 ## Vision Boundary
 

@@ -1,0 +1,60 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    deploy:
+      replicas: 2
+    environment:
+      AFRIRIDE_DATABASE_URL: postgresql://novaride:${POSTGRES_PASSWORD}@postgres:5432/novaride
+      AFRIRIDE_REALTIME_BACKEND: redis
+      AFRIRIDE_REDIS_URL: redis://redis:6379/0
+      AFRIRIDE_PUSH_DELIVERY_ENABLED: "true"
+    command: ["uvicorn", "afriride_system.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  push-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    environment:
+      AFRIRIDE_DATABASE_URL: postgresql://novaride:${POSTGRES_PASSWORD}@postgres:5432/novaride
+      AFRIRIDE_PUSH_DELIVERY_ENABLED: "true"
+      AFRIRIDE_PUSH_WORKER_INTERVAL_SECONDS: "5"
+    command: ["python", "-m", "afriride_system.workers.mobile_push_worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes:
+      - realtime_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: novaride
+      POSTGRES_USER: novaride
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - realtime_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novaride"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  realtime_redis:
+  realtime_postgres:

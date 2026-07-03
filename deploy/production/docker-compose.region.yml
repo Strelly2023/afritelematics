@@ -1,0 +1,13 @@
+# Overlay one copy per regional cell:
+# docker compose -f docker-compose.production.yml -f docker-compose.region.yml up -d
+services:
+  afritech-api:
+    environment:
+      AFRIRIDE_DEFAULT_REGION: ${AFRIRIDE_DEFAULT_REGION:?regional cell id required}
+      AFRIRIDE_REGION_CELL: ${AFRIRIDE_REGION_CELL:?regional cell name required}
+      AFRIRIDE_DATA_RESIDENCY: ${AFRIRIDE_DATA_RESIDENCY:?data residency required}
+      AFRIRIDE_TENANT_CONFIG_JSON: ${AFRIRIDE_TENANT_CONFIG_JSON:-{}}
+    labels:
+      afriride.region: ${AFRIRIDE_DEFAULT_REGION}
+      afriride.cell: ${AFRIRIDE_REGION_CELL}
+      afriride.data-residency: ${AFRIRIDE_DATA_RESIDENCY}

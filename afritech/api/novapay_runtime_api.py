@@ -521,6 +521,36 @@ def build_novapay_runtime_router(
             **runtime.build_treasury_snapshot(),
         }
 
+    @router.get("/v1/treasury/intelligence")
+    def treasury_intelligence(
+        claims: JWTClaims = Depends(privileged_roles),
+    ) -> dict[str, Any]:
+        return {
+            "view": "novapay_treasury_intelligence",
+            "organization_id": claims.organization_id,
+            **runtime.build_treasury_intelligence(),
+        }
+
+    @router.get("/v1/treasury/global-intelligence")
+    def treasury_global_intelligence(
+        claims: JWTClaims = Depends(privileged_roles),
+    ) -> dict[str, Any]:
+        return {
+            "view": "novapay_global_treasury_intelligence",
+            "organization_id": claims.organization_id,
+            **runtime.build_global_treasury_intelligence(),
+        }
+
+    @router.get("/v1/economy/protocol")
+    def economy_protocol(
+        claims: JWTClaims = Depends(privileged_roles),
+    ) -> dict[str, Any]:
+        return {
+            "view": "novaride_dao_economy_intelligence",
+            "organization_id": claims.organization_id,
+            **runtime.build_dao_economy_intelligence(),
+        }
+
     return router
 
 

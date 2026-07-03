@@ -22,6 +22,9 @@ from afritech.core_platform.models import AuthorityDecision, Identity
 from afritech.core_platform.signing import sign_packet, verify_packet_signature
 from afritech.core_platform.settlement import normalize_currency_code
 from afritech.core_platform.transfers import NovaPayTransferService, _decimal, _hash, _normalize_method
+from afritech.afripay.treasury_ai import TreasuryAI, default_treasury_ai
+from afritech.afripay.global_treasury_ai import GlobalTreasuryAI, default_global_treasury_ai
+from afritech.afripay.dao_economy import DAOEconomyAI, default_dao_economy_ai
 
 
 def _stable_id(prefix: str) -> str:
@@ -1375,6 +1378,45 @@ class NovaPayRuntimeEngine:
             "global_ledger_root": ledger_checkpoint["ledger_root"],
             "ledger_checkpoint": ledger_checkpoint,
             "reconciliation": reconciliation,
+        }
+
+    def build_treasury_intelligence(
+        self,
+        treasury_ai: TreasuryAI | None = None,
+    ) -> dict[str, Any]:
+        ai = treasury_ai or default_treasury_ai()
+        snapshot = self.build_treasury_snapshot()
+        intelligence = ai.evaluate(snapshot)
+        return {
+            "view": "novapay_treasury_intelligence",
+            "treasury_snapshot": snapshot,
+            "treasury_intelligence": intelligence,
+        }
+
+    def build_global_treasury_intelligence(
+        self,
+        treasury_ai: GlobalTreasuryAI | None = None,
+    ) -> dict[str, Any]:
+        ai = treasury_ai or default_global_treasury_ai()
+        snapshot = self.build_treasury_snapshot()
+        intelligence = ai.evaluate(snapshot)
+        return {
+            "view": "novapay_global_treasury_intelligence",
+            "treasury_snapshot": snapshot,
+            "treasury_intelligence": intelligence,
+        }
+
+    def build_dao_economy_intelligence(
+        self,
+        dao_ai: DAOEconomyAI | None = None,
+    ) -> dict[str, Any]:
+        ai = dao_ai or default_dao_economy_ai()
+        snapshot = self.build_treasury_snapshot()
+        intelligence = ai.evaluate(snapshot)
+        return {
+            "view": "novaride_dao_economy_intelligence",
+            "treasury_snapshot": snapshot,
+            "economy_intelligence": intelligence,
         }
 
     def _event_merkle_leaf(self, event: TransferEvent) -> str:

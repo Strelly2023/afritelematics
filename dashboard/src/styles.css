@@ -1599,6 +1599,115 @@ a {
   text-decoration: none;
 }
 
+.compliance-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.compliance-score-card {
+  display: flex;
+  min-height: 96px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #cbd8e2;
+  border-radius: 8px;
+  background: #f6faf8;
+  padding: 16px;
+}
+
+.compliance-score-card strong {
+  display: block;
+  color: #172033;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.compliance-score-card span {
+  color: #52657a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.compliance-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compliance-summary-grid article {
+  min-height: 74px;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.compliance-summary-grid strong {
+  display: block;
+  color: #172033;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.compliance-summary-grid span {
+  color: #637286;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.compliance-rule-list {
+  display: grid;
+  gap: 8px;
+}
+
+.compliance-rule-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.compliance-rule-row strong {
+  display: block;
+  color: #172033;
+}
+
+.compliance-rule-row span {
+  color: #637286;
+  font-size: 0.82rem;
+}
+
+.compliance-status {
+  display: inline-flex;
+  min-width: 58px;
+  justify-content: center;
+  border: 1px solid #c7d4df;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.compliance-status.pass {
+  border-color: #9ccfc0;
+  color: #1c735b;
+  background: #effaf5;
+}
+
+.compliance-status.fail {
+  border-color: #e4b47a;
+  color: #8c5317;
+  background: #fff8ed;
+}
+
 .row-between {
   display: flex;
   align-items: center;
@@ -2289,7 +2398,8 @@ a {
 
   .ops-ai-grid,
   .ops-platform-grid,
-  .ops-ai-card-grid {
+  .ops-ai-card-grid,
+  .compliance-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2371,6 +2481,7 @@ a {
   .ops-ai-grid,
   .ops-platform-grid,
   .ops-ai-card-grid,
+  .compliance-summary-grid,
   .ops-control-actions,
   .ops-layout-grid,
   .roadmap-lane {
@@ -2408,9 +2519,15 @@ a {
   .proposal-header,
   .event-row,
   .record-card-header,
+  .compliance-score-card,
+  .compliance-rule-row,
   .afriprog-action-row {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .compliance-rule-row {
+    grid-template-columns: 1fr;
   }
 
   .proposal-header > strong {

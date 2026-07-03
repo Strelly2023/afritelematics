@@ -1,5 +1,9 @@
-import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "../config/environment";
+import { API_BASE_URL, REQUEST_TIMEOUT_MS, TEST_MODE } from "../config/environment";
 import { getAuthToken } from "./session";
+import {
+  assertSecureTransport,
+  requestSecurityHeaders,
+} from "../../../afriride_system/mobile/shared/secureSession";
 import {
   buildClientEvent,
   instrumentationHeaders,
@@ -54,6 +58,7 @@ export async function apiRequest<T>(
     payload: options.body,
   });
   const startedAt = Date.now();
+  assertSecureTransport(API_BASE_URL, TEST_MODE);
 
   try {
     const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -61,6 +66,7 @@ export async function apiRequest<T>(
       headers: {
         "Content-Type": "application/json",
         ...(getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {}),
+        ...requestSecurityHeaders(method),
         ...instrumentationHeaders(clientEvent),
         ...(options.headers || {}),
       },

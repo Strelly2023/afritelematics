@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import zlib
+from datetime import UTC, datetime
 
 from afritech.core_platform.cross_chain_light_client import (
     LightClientState,
@@ -18,6 +19,8 @@ from afritech.core_platform.privacy_qr import (
 from afritech.core_platform.proof_receipts import build_proof_receipt
 from afritech.core_platform.stateless_verifier import verify_stateless_privacy_qr
 from afritech.core_platform.zk_receipts import build_zk_receipt, verify_zk_receipt
+
+CURRENT_TEST_TIME = datetime.now(UTC).replace(microsecond=0).isoformat()
 
 
 def _trust_seal() -> dict[str, object]:
@@ -48,7 +51,7 @@ def _build_receipt() -> dict[str, object]:
     return build_proof_receipt(
         _trust_seal(),
         issuer="demo-issuer",
-        issued_at="2026-06-26T00:00:00+00:00",
+        issued_at=CURRENT_TEST_TIME,
     )
 
 
@@ -60,7 +63,7 @@ def _light_client_state() -> LightClientState:
         validator_set_hash="5" * 64,
         block_hash="6" * 64,
         trusted_height=12_345_600,
-        timestamp="2026-06-26T00:00:00+00:00",
+        timestamp=CURRENT_TEST_TIME,
     )
 
 

@@ -6,6 +6,11 @@ services:
     restart: unless-stopped
     env_file:
       - .env.production.trust-node
+    environment:
+      AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3
+      AFRITECH_RUNTIME_ENVIRONMENT: production
+      AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3
+      AFRITECH_AGENT_MINIMUM_CONFIDENCE: "0.85"
     volumes:
       - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
       - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
@@ -13,6 +18,8 @@ services:
       - afritech_anchor_index:/var/lib/afritech
     expose:
       - "8000"
+    ports:
+      - "127.0.0.1:8000:8000"
     command:
       - uvicorn
       - afritech.api.app:app
@@ -21,13 +28,14 @@ services:
       - --port
       - "8000"
       - --workers
-      - "2"
+      - "1"
       - --proxy-headers
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health').read()"]
+      test: ["CMD", "curl", "-fsS", "--max-time", "10", "http://127.0.0.1:8000/health"]
       interval: 15s
-      timeout: 5s
+      timeout: 12s
       retries: 5
+      start_period: 30s
 
   afritech-dashboard:
     build:

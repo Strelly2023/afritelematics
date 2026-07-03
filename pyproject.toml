@@ -46,6 +46,8 @@ afritech-verify-session = "afritech.tools.partner_verification_session_cli:run"
 novapay-verify = "afritech.tools.novapay_verify_cli:run"
 novaride-verify = "afritech.tools.novaride_verify_cli:run"
 novatrust-verify = "afritech.tools.novatrust_verifier_cli:run"
+architecture-validate = "architecture_validator.cli:main"
+architecture-self-heal = "architecture_validator.remediation.cli:main"
 
 [project.optional-dependencies]
 dev = [
@@ -65,7 +67,8 @@ where = ["."]
 include = [
     "afritech*",
     "ecosystems*",
-    "afriride_system*"
+    "afriride_system*",
+    "architecture_validator*"
 ]
 
 

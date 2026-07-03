@@ -40,6 +40,10 @@ class DBResult:
         rows = self._cursor.fetchall()
         return tuple(_row_to_dict(self._cursor, row) for row in rows)
 
+    @property
+    def rowcount(self) -> int:
+        return int(self._cursor.rowcount)
+
 
 class DBConnection:
     def __init__(self, raw_connection, backend: str) -> None:
@@ -93,6 +97,16 @@ class AfriRideStorage:
                 DELETE FROM replay_snapshots;
                 DELETE FROM evidence_records;
                 DELETE FROM receipt_records;
+                DELETE FROM mobile_push_outbox;
+                DELETE FROM mobile_push_devices;
+                DELETE FROM safety_incidents;
+                DELETE FROM driver_telemetry;
+                DELETE FROM payment_disputes;
+                DELETE FROM payment_payouts;
+                DELETE FROM payment_transactions;
+                DELETE FROM payment_ledger;
+                DELETE FROM payment_wallets;
+                DELETE FROM payment_promotions;
                 """
             )
 
@@ -240,6 +254,89 @@ def _sqlite_schema() -> str:
             receipt_hash TEXT NOT NULL UNIQUE,
             issued_at TEXT NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS mobile_push_outbox (
+            outbox_id TEXT PRIMARY KEY,
+            idempotency_key TEXT NOT NULL UNIQUE,
+            actor_id TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            status TEXT NOT NULL,
+            delivery_attempt INTEGER NOT NULL DEFAULT 0,
+            next_attempt_at TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            delivered_at TEXT,
+            last_error TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_mobile_push_outbox_pending
+            ON mobile_push_outbox(status, next_attempt_at);
+        CREATE TABLE IF NOT EXISTS mobile_push_devices (
+            actor_id TEXT NOT NULL,
+            platform TEXT NOT NULL,
+            token TEXT NOT NULL,
+            role TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY(actor_id, platform)
+        );
+        CREATE TABLE IF NOT EXISTS driver_telemetry (
+            driver_id TEXT PRIMARY KEY,
+            latitude REAL NOT NULL,
+            longitude REAL NOT NULL,
+            heading REAL,
+            speed_mps REAL,
+            accuracy_m REAL,
+            battery_level REAL,
+            device_trusted INTEGER NOT NULL,
+            is_mocked INTEGER NOT NULL,
+            route_deviation_m REAL,
+            stationary_seconds INTEGER NOT NULL,
+            captured_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS safety_incidents (
+            incident_id TEXT PRIMARY KEY,
+            idempotency_key TEXT NOT NULL UNIQUE,
+            incident_type TEXT NOT NULL,
+            severity TEXT NOT NULL,
+            status TEXT NOT NULL,
+            driver_id TEXT,
+            rider_id TEXT,
+            ride_id TEXT,
+            workflow TEXT NOT NULL,
+            evidence_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS payment_wallets (
+            wallet_id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, owner_type TEXT NOT NULL,
+            currency TEXT NOT NULL, created_at TEXT NOT NULL,
+            UNIQUE(owner_id, owner_type, currency)
+        );
+        CREATE TABLE IF NOT EXISTS payment_ledger (
+            entry_id TEXT PRIMARY KEY, wallet_id TEXT NOT NULL, amount_minor INTEGER NOT NULL,
+            entry_type TEXT NOT NULL, reference TEXT NOT NULL, created_at TEXT NOT NULL,
+            UNIQUE(wallet_id, reference, entry_type)
+        );
+        CREATE TABLE IF NOT EXISTS payment_transactions (
+            transaction_id TEXT PRIMARY KEY, idempotency_key TEXT NOT NULL UNIQUE,
+            ride_id TEXT, payer_id TEXT NOT NULL, amount_minor INTEGER NOT NULL,
+            currency TEXT NOT NULL, method TEXT NOT NULL, provider TEXT NOT NULL,
+            provider_reference TEXT, status TEXT NOT NULL, split_json TEXT NOT NULL,
+            promotion_code TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS payment_promotions (
+            code TEXT PRIMARY KEY, credit_minor INTEGER NOT NULL, currency TEXT NOT NULL,
+            remaining_uses INTEGER NOT NULL, active INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS payment_payouts (
+            payout_id TEXT PRIMARY KEY, driver_id TEXT NOT NULL, amount_minor INTEGER NOT NULL,
+            currency TEXT NOT NULL, scheduled_for TEXT NOT NULL, status TEXT NOT NULL,
+            provider_reference TEXT, created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS payment_disputes (
+            dispute_id TEXT PRIMARY KEY, transaction_id TEXT NOT NULL,
+            opened_by TEXT NOT NULL, reason TEXT NOT NULL, status TEXT NOT NULL,
+            resolution TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        );
     """
 
 
@@ -253,6 +350,74 @@ def _apply_runtime_migrations(connection: DBConnection, backend: str) -> None:
             "ALTER TABLE evidence_records ADD COLUMN IF NOT EXISTS authority_hash TEXT",
             "ALTER TABLE receipt_records ADD COLUMN IF NOT EXISTS authority_hash TEXT",
             "ALTER TABLE receipt_records ADD COLUMN IF NOT EXISTS execution_fingerprint TEXT",
+            """CREATE TABLE IF NOT EXISTS mobile_push_outbox (
+                outbox_id TEXT PRIMARY KEY,
+                idempotency_key TEXT NOT NULL UNIQUE,
+                actor_id TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                payload_json TEXT NOT NULL,
+                status TEXT NOT NULL,
+                delivery_attempt INTEGER NOT NULL DEFAULT 0,
+                next_attempt_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                delivered_at TEXT,
+                last_error TEXT
+            )""",
+            "CREATE INDEX IF NOT EXISTS idx_mobile_push_outbox_pending ON mobile_push_outbox(status, next_attempt_at)",
+            """CREATE TABLE IF NOT EXISTS mobile_push_devices (
+                actor_id TEXT NOT NULL,
+                platform TEXT NOT NULL,
+                token TEXT NOT NULL,
+                role TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                PRIMARY KEY(actor_id, platform)
+            )""",
+            """CREATE TABLE IF NOT EXISTS driver_telemetry (
+                driver_id TEXT PRIMARY KEY, latitude DOUBLE PRECISION NOT NULL,
+                longitude DOUBLE PRECISION NOT NULL, heading DOUBLE PRECISION,
+                speed_mps DOUBLE PRECISION, accuracy_m DOUBLE PRECISION,
+                battery_level DOUBLE PRECISION, device_trusted INTEGER NOT NULL,
+                is_mocked INTEGER NOT NULL, route_deviation_m DOUBLE PRECISION,
+                stationary_seconds INTEGER NOT NULL, captured_at TIMESTAMPTZ NOT NULL
+            )""",
+            """CREATE TABLE IF NOT EXISTS safety_incidents (
+                incident_id TEXT PRIMARY KEY, idempotency_key TEXT NOT NULL UNIQUE,
+                incident_type TEXT NOT NULL, severity TEXT NOT NULL, status TEXT NOT NULL,
+                driver_id TEXT, rider_id TEXT, ride_id TEXT, workflow TEXT NOT NULL,
+                evidence_json JSONB NOT NULL, created_at TIMESTAMPTZ NOT NULL,
+                updated_at TIMESTAMPTZ NOT NULL
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_wallets (
+                wallet_id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, owner_type TEXT NOT NULL,
+                currency TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL,
+                UNIQUE(owner_id, owner_type, currency)
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_ledger (
+                entry_id TEXT PRIMARY KEY, wallet_id TEXT NOT NULL, amount_minor BIGINT NOT NULL,
+                entry_type TEXT NOT NULL, reference TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL,
+                UNIQUE(wallet_id, reference, entry_type)
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_transactions (
+                transaction_id TEXT PRIMARY KEY, idempotency_key TEXT NOT NULL UNIQUE,
+                ride_id TEXT, payer_id TEXT NOT NULL, amount_minor BIGINT NOT NULL,
+                currency TEXT NOT NULL, method TEXT NOT NULL, provider TEXT NOT NULL,
+                provider_reference TEXT, status TEXT NOT NULL, split_json JSONB NOT NULL,
+                promotion_code TEXT, created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_promotions (
+                code TEXT PRIMARY KEY, credit_minor BIGINT NOT NULL, currency TEXT NOT NULL,
+                remaining_uses INTEGER NOT NULL, active INTEGER NOT NULL
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_payouts (
+                payout_id TEXT PRIMARY KEY, driver_id TEXT NOT NULL, amount_minor BIGINT NOT NULL,
+                currency TEXT NOT NULL, scheduled_for TIMESTAMPTZ NOT NULL, status TEXT NOT NULL,
+                provider_reference TEXT, created_at TIMESTAMPTZ NOT NULL
+            )""",
+            """CREATE TABLE IF NOT EXISTS payment_disputes (
+                dispute_id TEXT PRIMARY KEY, transaction_id TEXT NOT NULL, opened_by TEXT NOT NULL,
+                reason TEXT NOT NULL, status TEXT NOT NULL, resolution TEXT,
+                created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL
+            )""",
         )
     )
     for statement in statements:

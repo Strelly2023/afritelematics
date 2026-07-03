@@ -53,22 +53,20 @@ def test_rider_mobile_surface_exposes_real_execution_controls() -> None:
     for label in (
         "Login",
         "Register",
-        "Home",
-        "Request Ride",
-        "Ride Tracking",
-        "Ride History",
+        "Book a ride",
+        "Trip journey",
+        "Recent rides",
+        "Track ride",
         "Receipt",
-        "Replay Viewer",
-        "Evidence Viewer",
-        "Profile",
-        "Settings",
-        "Track rides",
-        "View receipts",
-        "View replay/evidence",
-        "Manage profile",
+        "Receipt and evidence",
+        "Load receipt",
+        "Load replay",
+        "Load evidence",
+        "Account and diagnostics",
+        "Save profile",
     ):
         assert label in source
-    assert "Real execution surface over rider trust endpoints." in source
+    assert "Replay, receipt, and evidence resolve to a single canonical projection." in source
 
 
 def test_driver_mobile_surface_exposes_real_execution_controls() -> None:
@@ -87,26 +85,28 @@ def test_driver_mobile_surface_exposes_real_execution_controls() -> None:
     assert "completeTrip({" in source
     for label in (
       "Login",
-      "Available Rides",
-      "Assigned Ride",
-      "Trip Lifecycle",
-      "Earnings",
-      "Replay",
+      "Dispatch",
+      "Live trip",
+      "Ride queue",
+      "Journey",
+      "Wallet",
+      "Evidence and diagnostics",
       "Receipt",
       "Profile",
       "Go online",
       "Go offline",
-      "View earnings",
-      "View receipts",
-      "View replay",
-      "Manage profile",
+      "Refresh queue",
+      "Load earnings",
+      "Load receipt",
+      "Load replay",
+      "Save profile",
       "Accept",
       "Arrive",
       "Start",
       "Complete",
     ):
         assert label in source
-    assert "Real execution surface over driver trust endpoints." in source
+    assert "Replay, receipt, and trip state resolve to the same canonical snapshot." in source
 
 
 def test_operator_mobile_surface_exposes_real_execution_controls() -> None:
@@ -121,12 +121,16 @@ def test_operator_mobile_surface_exposes_real_execution_controls() -> None:
     assert "getPilotMetrics({" in source
     assert "setDriverStatus({" in source
     for label in (
-        "Login",
-        "Dispatch",
-        "Active Rides",
+        "Control room",
+        "Fleet overview",
+        "Active rides",
         "Drivers",
-        "Replay Health",
-        "Evidence",
-        "Operations",
+        "Fleet proof mode",
+        "Fleet heatmap",
+        "Evidence, replay, and incidents",
+        "Refresh fleet",
+        "Refresh state",
+        "Set driver online",
+        "Set offline",
     ):
         assert label in source

@@ -14,6 +14,9 @@ class RideRepository:
 
     def save(self, ride: RideSession) -> None:
         with self.storage.connect() as connection:
+            self.save_on(connection, ride)
+
+    def save_on(self, connection, ride: RideSession) -> None:
             connection.execute(
                 """
                 INSERT INTO rides (
@@ -76,6 +79,56 @@ class RideRepository:
                 """
             ).fetchall()
         return tuple(self._from_row(row) for row in rows)
+
+    def requested(self) -> tuple[RideSession, ...]:
+        with self.storage.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT ride_id, passenger_id, pickup, destination, status,
+                       assigned_driver, trace_hash, state_hash, events_json
+                FROM rides
+                WHERE status = 'REQUESTED'
+                ORDER BY ride_id
+                """
+            ).fetchall()
+        return tuple(self._from_row(row) for row in rows)
+
+    def completed_for_driver(self, driver_id: str) -> tuple[RideSession, ...]:
+        with self.storage.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT ride_id, passenger_id, pickup, destination, status,
+                       assigned_driver, trace_hash, state_hash, events_json
+                FROM rides
+                WHERE assigned_driver = ? AND status = 'COMPLETED'
+                ORDER BY ride_id
+                """,
+                (driver_id,),
+            ).fetchall()
+        return tuple(self._from_row(row) for row in rows)
+
+    def completed_count_for_driver(self, driver_id: str) -> int:
+        with self.storage.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT COUNT(*) AS completed_count
+                FROM rides
+                WHERE assigned_driver = ? AND status = 'COMPLETED'
+                """,
+                (driver_id,),
+            ).fetchone()
+        return int(row["completed_count"] if row is not None else 0)
+
+    def completed_count(self) -> int:
+        with self.storage.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT COUNT(*) AS completed_count
+                FROM rides
+                WHERE status = 'COMPLETED'
+                """
+            ).fetchone()
+        return int(row["completed_count"] if row is not None else 0)
 
     def _from_row(self, row) -> RideSession:
         return RideSession(

@@ -55,8 +55,25 @@ const EMPTY_OPERATOR_STATE = {
   novatechMarketplaceOnboarding: null,
   novatechPartnerGovernance: null,
   novapayLiveTestReadiness: null,
+  novapayTreasuryIntelligence: null,
+  novapayGlobalTreasuryIntelligence: null,
+  novarideDaoEconomy: null,
+  novarideAppStore: null,
+  novarideProtocolMarketplace: null,
+  novarideSuperApp: null,
+  novaidIdentity: null,
+  novaidGenSovereign: null,
+  novaidDigitalNation: null,
+  novarideDigitalConstitution: null,
+  novarideRegulatoryAlignment: null,
+  novarideGlobalExpansion: null,
   novarideEcosystem: null,
   novaridePlatformArchitectureContract: null,
+  architectureCompliance: null,
+  architectureRemediation: null,
+  architectureLearning: null,
+  architecturePredictive: null,
+  architectureAutonomous: null,
   novarideOperatorDashboardContract: null,
   operatorAutonomy: null,
   novarideFleetManagerContract: null,
@@ -83,6 +100,912 @@ const EMPTY_OPERATOR_STATE = {
 };
 
 const MAX_ANALYTICS_POINTS = 16;
+
+const ARCHITECTURE_COMPLIANCE_FALLBACK = {
+  classification: "NOVARIDE_ARCHITECTURE_COMPLIANCE_REPORT",
+  status: "pending",
+  score: 0,
+  mode: "dashboard_fallback",
+  rules_total: 5,
+  rules_passed: 0,
+  rules_failed: 5,
+  report: [
+    { name: "Architecture Invariants", passed: false, issues: ["Waiting for validator report"] },
+    { name: "Multi-Language AST Validation", passed: false, issues: ["Waiting for validator report"] },
+    { name: "Semantic OpenAPI Diff", passed: false, issues: ["Waiting for validator report"] },
+    { name: "Blockchain Proof Verification", passed: false, issues: ["Waiting for validator report"] },
+    { name: "Replay Integrity", passed: false, issues: ["Waiting for validator report"] },
+  ],
+  capabilities: [
+    "multi_language_ast_validation",
+    "semantic_openapi_diff",
+    "architecture_anchor_v2_verification",
+    "replay_integrity",
+    "ci_report_artifact",
+  ],
+};
+
+const ARCHITECTURE_REMEDIATION_FALLBACK = {
+  classification: "NOVARIDE_AUTONOMOUS_REMEDIATION_REPORT",
+  mode: "plan",
+  initial_passed: false,
+  final_passed: false,
+  fixes_total: 0,
+  manual_review_required: 0,
+  fixes: [],
+  executions: [],
+  source: "dashboard_fallback",
+};
+
+const ARCHITECTURE_LEARNING_FALLBACK = {
+  classification: "NOVARIDE_CONTINUOUS_LEARNING_REPORT",
+  mode: "plan",
+  source: "dashboard_fallback",
+  risk_profile: {
+    risk: "unknown",
+    score: 0,
+    total: 0,
+    success: 0,
+    fail: 0,
+  },
+  patterns: {},
+  knowledge_graph: {},
+  optimizer_suggestions: [],
+  learning_memory_path: "architecture_learning_memory.json",
+  remediation: ARCHITECTURE_REMEDIATION_FALLBACK,
+};
+
+const ARCHITECTURE_PREDICTIVE_FALLBACK = {
+  classification: "NOVARIDE_PREDICTIVE_GOVERNANCE_REPORT",
+  mode: "configured_control",
+  source: "dashboard_fallback",
+  authority_boundary: "predictive_governance_is_advisory_and_simulation_only",
+  digital_twin: {
+    state: {},
+    scenario_count: 0,
+    twin_health_score: 0,
+    mirrored_components: [],
+  },
+  scenarios: [],
+  predictions: [],
+  preventive_actions: [],
+  predicted_risks: 0,
+  prevented_violations: 0,
+  risk_score: 0,
+  metrics: {
+    predicted_risks: 0,
+    prevented_violations: 0,
+    scenario_count: 0,
+    twin_health_score: 0,
+  },
+  compliance: ARCHITECTURE_COMPLIANCE_FALLBACK,
+  remediation: ARCHITECTURE_REMEDIATION_FALLBACK,
+  learning: ARCHITECTURE_LEARNING_FALLBACK,
+};
+
+const ARCHITECTURE_AUTONOMOUS_FALLBACK = {
+  classification: "NOVARIDE_AUTONOMOUS_MULTI_AGENT_GOVERNANCE_REPORT",
+  mode: "configured_control",
+  source: "dashboard_fallback",
+  authority_boundary: "multi_agent_governance_is_advisory_and_simulation_only",
+  digital_twin: ARCHITECTURE_PREDICTIVE_FALLBACK.digital_twin,
+  multi_agent: {
+    findings: [],
+    agent_count: 0,
+    severity_breakdown: {
+      critical: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+    },
+  },
+  crisis: [],
+  crisis_summary: {
+    max_risk_score: 0,
+    critical_scenarios: [],
+    scenario_count: 0,
+    black_swan: {
+      event: "GLOBAL_PAYMENT_FAILURE",
+      impact: "CRITICAL",
+      requires: "manual_intervention",
+      authority_boundary: "simulation_only",
+    },
+  },
+  economic_optimization: {
+    action: "hold",
+    decision: { action: "hold", method: "monitor", reason: "Metrics remain within tolerance." },
+    actions: [],
+    cost_efficiency: 100,
+    authority_boundary: "advisory_only",
+  },
+  refactor_suggestions: [],
+  metrics: {
+    predicted_risks: 0,
+    prevented_violations: 0,
+    multi_agent_findings: 0,
+    critical_crisis_scenarios: 0,
+    economic_efficiency: 100,
+    refactor_suggestions_total: 0,
+    twin_health_score: 0,
+  },
+  predictive: ARCHITECTURE_PREDICTIVE_FALLBACK,
+};
+
+const NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK = {
+  classification: "NOVAPAY_TREASURY_AI_REPORT",
+  authority_boundary: "advisory_only_and_policy_gated",
+  risk_level: "LOW",
+  cash_balance: "0.00",
+  reserved_balance: "0.00",
+  settlement_obligations: "0.00",
+  prefunding_gap: "0.00",
+  coverage_ratio: "99.99",
+  settlement_pressure: "0.00",
+  reserve_headroom: "0.00",
+  decision: {
+    action: "maintain_buffer",
+    method: "keep_current_treasury_policy",
+    reason: "Treasury intelligence is unavailable.",
+    priority: "low",
+  },
+  recommendations: [],
+  stress_tests: [],
+  provider_snapshot: [],
+};
+
+const NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK = {
+  classification: "NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_REPORT",
+  authority_boundary: "advisory_only_and_policy_gated",
+  core: NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK,
+  multi_currency: {
+    base_currency: "USD",
+    currency_totals: {},
+    currency_distribution: [],
+    fx_exposure: "0.00",
+    stablecoin_ratio: "0.00",
+    stablecoin_target: {
+      currency: "STABLE_RESERVE_USD",
+      amount: "0.00",
+      strategy: "reserve_to_stablecoin",
+    },
+    hedge_actions: ["hold_position"],
+    action: "hold_position",
+  },
+  onchain: {
+    batch_strategy: "anchorBatchV2",
+    verification_mode: "advisory_only",
+    snapshot_root: "",
+    anchor_batch_plan: [],
+    batch_size: 0,
+    onchain_coverage: "0.00",
+    ledger_anchor_context: "TREASURY_SNAPSHOT",
+  },
+  recommendations: [],
+  metrics: {
+    currency_count: 0,
+    fx_exposure: "0.00",
+    stablecoin_ratio: "0.00",
+    onchain_coverage: "0.00",
+    anchor_count: 0,
+  },
+};
+
+const NOVARIDE_DAO_ECONOMY_FALLBACK = {
+  classification: "NOVARIDE_DAO_TOKEN_ECONOMY_REPORT",
+  authority_boundary: "advisory_only_and_policy_gated",
+  token_economy: {
+    symbol: "NVT",
+    name: "NovaToken",
+    utility: ["governance", "rewards", "incentives", "ecosystem staking"],
+    total_supply: "10000000.00",
+    circulating_supply: "6000000.00",
+    staked_supply: "1800000.00",
+    community_pool: "1200000.00",
+    rewards_distributed: "1200000.00",
+    treasury_allocation: "0.00",
+    driver_incentive_pool: "0.00",
+    rider_reward_pool: "0.00",
+    partner_incentive_pool: "0.00",
+    governance_reserve: "0.00",
+    reward_actions: ["hold_reward_policy"],
+  },
+  governance: {
+    active_proposals: 0,
+    total_votes: 0,
+    participation_rate: "0.00",
+    governance_score: "0.00",
+    voting_model: "token_weighted_proposal_governance",
+    proposal_queue: [],
+  },
+  treasury: {
+    treasury_balance: "0.00",
+    treasury_reserve: "0.00",
+    allocatable_budget: "0.00",
+    allocation_plan: [],
+  },
+  onchain: {
+    authority_boundary: "advisory_only_and_policy_gated",
+    proposal_batch_plan: [],
+    treasury_batch_plan: [],
+    batch_size: 0,
+    verification_mode: "advisory_only",
+  },
+  metrics: {
+    token_supply: "10000000.00",
+    circulating_supply: "6000000.00",
+    active_proposals: 0,
+    governance_score: "0.00",
+    participation_rate: "0.00",
+    treasury_balance: "0.00",
+  },
+  recommendations: [],
+};
+
+const NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK = {
+  view: "novaride_developer_marketplace",
+  status: "governed_beta",
+  platform: "NovaRide",
+  marketplace: {
+    platform: "NovaRide",
+    protocol_version: "2026.07.0",
+    classification: "governed_protocol_marketplace_catalog",
+    status: "governed_beta",
+    storefronts: [
+      {
+        key: "app_store",
+        name: "NovaRide App Store",
+        audience: "customers, drivers, operators, partners",
+        status: "catalog_ready",
+        purpose: "Publish governed NovaRide experiences and partner-built apps.",
+        listing_types: ["first_party_app", "partner_app", "trusted_integration"],
+      },
+      {
+        key: "developer_marketplace",
+        name: "NovaRide Developer Marketplace",
+        audience: "developers, integrators, startups",
+        status: "sandbox_ready",
+        purpose: "Publish SDKs, webhooks, sample apps, and integration packages.",
+        listing_types: ["sdk", "webhook", "sample_app", "integration"],
+      },
+    ],
+    catalog: [],
+    publishing_pipeline: [],
+    developer_program: {
+      api_keys: true,
+      sandbox: "required",
+      webhooks: true,
+      documentation: true,
+      sdk_registry: true,
+      trust_review: "required",
+      compatibility_review: "required",
+      usage_analytics: true,
+    },
+    governance: {
+      authority: "NovaPower",
+      verification: "NovaTrust",
+      execution: "backend_only",
+      policy_gates: [
+        "authentication",
+        "rbac",
+        "signature_verification",
+        "replay_validation",
+        "compatibility_check",
+      ],
+    },
+    economics: {
+      revenue_share_model: "policy_gated",
+      listing_fee: "optional",
+      developer_rewards: "usage_based",
+      treasury_split: ["developer", "platform", "reserve"],
+    },
+    metrics: {
+      storefront_count: 1,
+      catalog_count: 0,
+      publishing_step_count: 0,
+    },
+  },
+};
+
+const NOVARIDE_APP_STORE_FALLBACK = {
+  view: "novaride_app_store",
+  status: "governed_beta",
+  platform: "NovaRide",
+  app_store: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "governed_app_store_catalog",
+    status: "governed_beta",
+    categories: [
+      { key: "mobility", name: "Mobility", examples: ["ride apps", "taxi services", "dispatch extensions"] },
+    ],
+    apps: [],
+    publishing_pipeline: [],
+    developer_flow: [
+      "sign_up",
+      "get_api_key",
+      "build_app",
+      "test_in_sandbox",
+      "publish_to_app_store",
+      "earn_revenue",
+    ],
+    governance: {
+      authority: "NovaPower",
+      verification: "NovaTrust",
+      execution: "backend_only",
+      policy_gates: [
+        "authentication",
+        "rbac",
+        "security_scan",
+        "contract_validation",
+        "sandbox_test",
+        "policy_approval",
+      ],
+    },
+    monetization: {
+      revenue_streams: ["app_sales", "subscriptions", "transaction_fee", "api_usage", "token_economy"],
+      revenue_split: { developer: "70%", platform: "30%" },
+      token_payment: "NVT_supported",
+    },
+    metrics: {
+      app_count: 0,
+      developer_count: 0,
+      city_count: 0,
+      new_apps_per_week: 0,
+      user_installs_growth: "0%",
+    },
+  },
+};
+
+const NOVARIDE_SUPER_APP_FALLBACK = {
+  view: "novaride_super_app",
+  status: "contract_ready",
+  platform: "NovaRide",
+  super_app: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "global_super_app_operating_system_contract",
+    status: "contract_ready",
+    purpose: "Global digital operating system for mobility, finance, identity, apps, and governance.",
+    authority_boundary: "super_app_is_interface_only_backend_services_keep_authority",
+    modules: [
+      { key: "mobility", name: "Mobility", route: "/super-app/mobility", authority: "NovaRide Core", capabilities: ["book_ride", "schedule_ride", "driver_verification"] },
+      { key: "delivery", name: "Delivery", route: "/super-app/delivery", authority: "NovaRide Core", capabilities: ["parcel_delivery", "proof_tracking", "courier_identity"] },
+      { key: "wallet", name: "Wallet / NovaPay", route: "/super-app/wallet", authority: "NovaPay", capabilities: ["multi_currency_wallet", "send_money", "token_balance"] },
+      { key: "finance", name: "Finance", route: "/super-app/finance", authority: "NovaPay", capabilities: ["loans", "treasury_access", "staking"] },
+      { key: "app_store", name: "App Store", route: "/super-app/app-store", authority: "NovaPower", capabilities: ["install_app", "launch_partner_app", "permission_review"] },
+      { key: "identity", name: "Identity / NovaID", route: "/super-app/identity", authority: "NovaID", capabilities: ["login_with_novaid", "privacy_controls", "device_security"] },
+      { key: "ai_assistant", name: "AI Assistant / NovaAI", route: "/super-app/assistant", authority: "advisory_only", capabilities: ["ride_recommendations", "spending_insights", "governance_prompts"] },
+    ],
+    profile: {
+      novaid: "NOVA-84729",
+      wallet_balance_usd: 850,
+      token_balance: "2,400 NVT",
+      trust_score: "92%",
+      activity: { rides: 120, deliveries: 15 },
+    },
+    wallet: {
+      balances: { USD: "500.00", KES: "20000.00", USDC: "200.00", NVT: "1500.00" },
+      authority: "NovaPay",
+    },
+    governance: {
+      can_vote: true,
+      active_proposals: 42,
+      staking: "NVT_supported",
+      authority: "DAO_policy_gated",
+    },
+    ai_assistant: {
+      authority_boundary: "NovaAI_recommendations_are_advisory_only",
+      recommendations: ["Take a ride now: high demand nearby", "Earn extra today as driver", "Vote on proposal #42"],
+    },
+    ecosystem_loop: ["users", "super_app_activity", "payments_and_tokens", "treasury", "dao_governance", "platform_evolution", "developer_build", "ecosystem_growth"],
+    metrics: {
+      users: "2.5M",
+      apps: 7200,
+      transactions_per_day: "$5M",
+      token_circulation: "growing",
+    },
+  },
+};
+
+const NOVAID_IDENTITY_FALLBACK = {
+  view: "novaid_global_identity",
+  status: "standard_ready",
+  platform: "NovaRide",
+  identity: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "global_identity_layer_contract",
+    status: "standard_ready",
+    positioning: "Login with NovaID",
+    authority_boundary: "NovaID_owns_identity_authentication_reputation_device_and_governance_identity",
+    capabilities: [
+      { key: "identity", name: "Universal identity", capability: "Cross-app account identity with DID-ready identifiers." },
+      { key: "authentication", name: "Secure authentication", capability: "Login with NovaID for NovaRide and partner applications." },
+      { key: "reputation", name: "Reputation", capability: "Trust score, ride history, delivery activity, and verification state." },
+      { key: "wallet_linkage", name: "Wallet linkage", capability: "NovaPay wallet binding for financial identity and settlements." },
+      { key: "device_identity", name: "Device identity", capability: "Device binding, session risk checks, and replay-aware security." },
+      { key: "governance", name: "Governance rights", capability: "DAO voting, proposal participation, and token-weighted access." },
+    ],
+    verification: {
+      cryptographic_verification: true,
+      onchain_proofs: true,
+      cross_app_identity: true,
+      privacy_control: true,
+      replay_auditing: true,
+    },
+    sample_profile: {
+      id: "NOVA-84729",
+      did: "did:nova:84729",
+      wallet: "novapay_wallet_84729",
+      trust_score: 92,
+      reputation: ["120_rides", "15_deliveries", "wallet_verified"],
+    },
+    login_button: {
+      label: "Login with NovaID",
+      contract: "novaride.identity.login.v1",
+      policy_gates: ["credential_verification", "device_binding", "privacy_consent", "replay_receipt"],
+    },
+    use_cases: ["login_across_apps", "driver_verification", "payments_identity", "governance_voting", "reputation_scoring"],
+    metrics: {
+      identity_profiles: 2500000,
+      wallet_link_rate: "92%",
+      verified_devices: 1800000,
+      cross_app_sessions: 7200,
+    },
+  },
+};
+
+const NOVAID_GEN_SOVEREIGN_FALLBACK = {
+  view: "novaid_gen_sovereign",
+  status: "architecture_contract_ready",
+  platform: "NovaRide",
+  gen_sovereign: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "novaid_gen_sovereign_infrastructure_contract",
+    status: "architecture_contract_ready",
+    positioning: "Sovereign digital identity and global crypto-financial infrastructure",
+    authority_boundary: "gen_sovereign_is_architecture_and_policy_gated_infrastructure_not_live_state_authority",
+    core_layers: [
+      { key: "sovereign_identity", name: "NovaID SSI", role: "Self-sovereign identity, DID documents, and verifiable credentials.", authority: "NovaID" },
+      { key: "crypto_finance", name: "NovaToken / Crypto Layer", role: "NVT, stablecoin support, CBDC adapters, and on-chain treasury plans.", authority: "NovaPay_policy_gated" },
+      { key: "governance", name: "NovaDAO", role: "Token, reputation, and activity-weighted proposal governance.", authority: "DAO_policy_gated" },
+      { key: "verification", name: "NovaTrust", role: "Credential, payment, replay, and on-chain audit verification.", authority: "NovaTrust" },
+      { key: "decision_intelligence", name: "NovaAI", role: "Proposal analysis, manipulation detection, and outcome simulation.", authority: "advisory_only" },
+      { key: "federation", name: "Open Protocol Ecosystem", role: "Federated identity, payments, trust, app, bank, and government integrations.", authority: "federation_policy_gated" },
+    ],
+    identity: {
+      model: "self_sovereign_identity",
+      did_method: "did:nova",
+      credential_standard: "verifiable_credentials",
+      sample_did_document: { id: "did:nova:847392", publicKey: "0xABC...", credentials: ["KYC_verified", "Driver_licensed"] },
+      auth_flow: ["user_signs_with_private_key", "network_verifies_signature", "policy_checks_credentials", "access_granted_with_replay_receipt"],
+    },
+    government_integration: {
+      status: "credential_adapter_contract",
+      credential_types: ["national_id_verification", "driver_license", "tax_identity", "public_transport_access"],
+      authority_boundary: "governments_remain_credential_issuers_novaid_verifies_and_binds_claims",
+    },
+    crypto_finance: {
+      components: ["NovaToken_NVT", "stablecoins", "optional_CBDC_adapters", "onchain_treasury_contracts"],
+      payment_stack: ["wallet", "crypto_or_fiat", "novapay", "settlement", "onchain_verification"],
+      metrics: { token_circulation: "50M NVT", daily_transactions: "$20M", treasury: "$10M" },
+    },
+    federation: {
+      apis: [
+        { path: "/v1/federation/identity", purpose: "Verify DID, credential, and identity assertions across trusted peers." },
+        { path: "/v1/federation/payments", purpose: "Route fiat, stablecoin, token, CBDC, and settlement proofs through NovaPay." },
+        { path: "/v1/federation/trust", purpose: "Exchange NovaTrust verification packets, receipts, and replay anchors." },
+      ],
+    },
+    ai_governance: {
+      model: "tokens_reputation_activity_weighted",
+      formula: { tokens: 0.5, reputation: 0.3, activity: 0.2 },
+      sample_analysis: { proposal: "Expand to Kigali", roi: "24%", risk: "LOW", recommendation: "APPROVE" },
+      authority_boundary: "NovaAI_recommends_only_DAO_and_policy_execute",
+    },
+    dashboard: {
+      identity: { novaids: "10M+", verified: "95%", active: "growing" },
+      economy: { token_circulation: "50M NVT", daily_transactions: "$20M", treasury: "$10M" },
+      governance: { proposals: 120, participation: "70%", ai_assisted_decisions: true },
+    },
+    capabilities: ["sovereign_identity", "global_crypto_finance", "dao_governance", "ai_assisted_decisions", "cross_platform_federation", "token_economy", "open_protocol", "super_app"],
+  },
+};
+
+const NOVAID_DIGITAL_NATION_FALLBACK = {
+  view: "novaid_digital_nation",
+  status: "architecture_contract_ready",
+  platform: "NovaRide",
+  digital_nation: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "novaid_gen_sovereign_plus_plus_digital_nation_contract",
+    status: "architecture_contract_ready",
+    positioning: "Digital Citizenship + NovaID Passport System",
+    authority_boundary: "digital_nation_is_platform_citizenship_not_legal_nationality_or_immigration_authority",
+    what_this_is: ["platform_level_citizenship", "digital_identity_system", "economic_ecosystem", "governance_participation_layer"],
+    what_this_is_not: ["government_issued_citizenship", "legal_passport", "immigration_authority", "state_sovereignty_claim"],
+    core_layers: [
+      { key: "digital_citizenship", name: "NovaID Digital Citizenship", role: "Platform citizenship, wallet linkage, reputation, activity, and governance eligibility.", authority: "NovaID_policy_gated" },
+      { key: "novapassport", name: "NovaPassport", role: "Cross-platform access, service eligibility, trusted credential storage, and mobility access.", authority: "NovaTrust_credential_gated" },
+      { key: "token_economy", name: "NovaToken Economy", role: "Rewards, contribution incentives, staking, treasury participation, and governance weight.", authority: "NovaDAO_policy_gated" },
+      { key: "financial_system", name: "NovaPay Financial System", role: "Wallets, payments, settlement proofs, and economic identity.", authority: "NovaPay_compliance_gated" },
+      { key: "global_protocol", name: "Global Protocol Layer", role: "Federation with apps, financial networks, and credential issuers.", authority: "federation_policy_gated" },
+    ],
+    citizenship: {
+      name: "NovaCitizens",
+      purpose: "Digital citizens with identity, wallet, reputation, activity, and governance rights.",
+      profile: {
+        nova_id: "did:nova:00087423",
+        citizenship_status: "verified",
+        wallet: "0xABC123",
+        trust_score: 94,
+        reputation: "high",
+        roles: ["rider", "developer"],
+        governance_power: 2450,
+      },
+      tiers: [
+        { tier: "Basic", access: "Identity + wallet" },
+        { tier: "Verified", access: "Full platform access" },
+        { tier: "Trusted", access: "Governance power" },
+        { tier: "Elite", access: "Ecosystem influence" },
+      ],
+    },
+    passport: {
+      name: "NovaPassport",
+      authority_boundary: "novapassport_is_platform_access_not_a_legal_travel_document",
+      sample: {
+        passport_id: "NVP-992384",
+        holder: "did:nova:00087423",
+        credentials: ["KYC_verified", "licensed_driver", "trusted_user"],
+        validity: "global",
+        signature: "cryptographic_proof",
+      },
+      capabilities: ["cross_platform_access", "cross_border_identity_verification", "service_eligibility", "trusted_credential_storage", "platform_level_mobility_rights"],
+    },
+    ssi: {
+      model: "self_sovereign_identity",
+      auth_flow: ["user_signs_challenge", "public_key_verifies_signature", "policy_checks_credentials", "access_granted_with_replay_receipt"],
+    },
+    governance: {
+      formula: { tokens: 0.5, trust_score: 0.3, activity: 0.2 },
+      proposal_types: ["economic_policy", "app_store_rules", "treasury_allocation", "platform_upgrades"],
+      dashboard: { active_voters: "2.5M", participation: "72%", ai_assisted_decisions: true },
+    },
+    ai_governance: {
+      sample_analysis: { proposal: "Increase driver incentives", impact: "Positive", cost: "Moderate", recommendation: "APPROVE" },
+      authority_boundary: "NovaAI_recommends_only_citizens_and_DAO_execute",
+    },
+    dashboard: {
+      identity: { novacitizens: "12M", verified: "95%", trusted: "60%" },
+      economy: { token_supply: "100M NVT", daily_transactions: "$25M", treasury: "$15M" },
+      governance: { active_voters: "2.5M", participation: "72%", ai_assisted_decisions: true },
+    },
+    capabilities: ["digital_citizenship", "passport_system", "global_identity_layer", "token_economy", "dao_governance", "ai_assisted_decisions", "cross_platform_federation", "financial_infrastructure"],
+  },
+};
+
+const NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK = {
+  view: "novaride_digital_constitution",
+  status: "architecture_contract_ready",
+  platform: "NovaRide",
+  constitution: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "novaride_digital_constitution_governance_contract",
+    status: "architecture_contract_ready",
+    positioning: "Digital Constitution + Legal Governance Framework",
+    authority_boundary: "digital_constitution_is_platform_governance_not_statutory_law_or_regulator_substitute",
+    core_statement:
+      "NovaRide shall operate as a governed digital system in which identity is sovereign, authority is bounded, rules are enforceable, actions are auditable, and governance is participatory.",
+    articles: [
+      { article: "I", title: "Sovereign Identity", principle: "All participants possess a NovaID representing citizenship, access, economy, and governance." },
+      { article: "II", title: "Digital Citizenship", principle: "A NovaCitizen is any NovaID holder with verified participation in the ecosystem." },
+      { article: "III", title: "Rights of Users", principle: "Every NovaCitizen receives identity, finance, governance, transparency, and record rights." },
+    ],
+    authority_structure: {
+      fundamental_rule: "execution_authority_shall_remain_with_NovaPower_and_authorized_subsystems_only",
+      authorities: [
+        { authority: "NovaPower", role: "Execution authority" },
+        { authority: "NovaRide Core", role: "Operational truth" },
+        { authority: "NovaPay", role: "Financial authority" },
+        { authority: "NovaTrust", role: "Verification authority" },
+        { authority: "DAO", role: "Governance authority" },
+      ],
+    },
+    governance: {
+      legislative_layer: "NovaDAO",
+      powers: ["change_protocol_rules", "define_economic_policies", "approve_treasury_allocations", "govern_ecosystem_evolution"],
+      voting_model: ["token_holdings", "trust_score", "participation_level"],
+      ai_role: {
+        shall_provide: ["recommendations", "predictive_analysis", "fraud_detection"],
+        shall_not: ["directly_vote", "supersede_governance", "execute_authority"],
+      },
+    },
+    economic_constitution: {
+      principles: ["economy_shall_be_token_driven", "value_creation_shall_be_rewarded", "treasury_shall_be_governed_transparently", "financial_actions_shall_be_auditable"],
+      treasury_rules: ["funds_shall_be_verifiable", "allocations_shall_require_governance_approval", "transactions_shall_be_replayable"],
+    },
+    trust_verification_law: {
+      truth_model: ["replay_shall_be_source_of_operational_truth", "novatrust_shall_validate_all_critical_actions", "cryptographic_proof_shall_be_required_for_verification"],
+      legal_equivalent: "replay_is_digital_audit_record",
+    },
+    contract_law: {
+      rule: "all_system_behavior_shall_be_governed_by_contracts",
+      types: ["api_contracts", "smart_contracts", "governance_rules", "identity_credentials"],
+      enforcement: ["contracts_shall_be_versioned", "contracts_shall_be_test_validated", "violations_shall_be_rejected_automatically"],
+    },
+    ai_governance_law: {
+      required_behavior: ["explain_decisions", "provide_confidence_scores", "identify_data_sources", "record_audit_logs"],
+      restrictions: ["execute_payments", "modify_trust_evidence", "supersede_authority_systems", "make_irreversible_decisions"],
+    },
+    federation_law: {
+      rules: ["external_systems_shall_integrate_via_contracts", "identity_shall_remain_novaid_based", "trust_verification_shall_be_required", "cross_platform_operations_shall_be_auditable"],
+    },
+    dispute_resolution: {
+      mechanisms: ["automated_validation", "ai_analysis", "dao_arbitration"],
+      example_flow: ["transaction_dispute", "replay_verification", "ai_review", "dao_vote", "decision_enforced"],
+    },
+    compliance_enforcement: {
+      rule: "violations_are_architecture_defects_and_system_violations",
+      layers: ["validator_engine", "ci_compliance_system", "governance_ai", "dao_enforcement"],
+    },
+    amendment_process: ["proposal_submitted", "ai_impact_analysis", "public_review", "dao_vote", "enactment_via_contract_update"],
+    guarantees: {
+      identity_sovereignty: true,
+      governance_participation: true,
+      financial_transparency: true,
+      security_enforcement: true,
+      contract_integrity: true,
+      ai_safety: true,
+      trust_verification: true,
+    },
+  },
+};
+
+const NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK = {
+  view: "novaride_regulatory_alignment",
+  status: "architecture_contract_ready",
+  platform: "NovaRide",
+  regulatory_alignment: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "novaride_regulatory_alignment_contract",
+    status: "architecture_contract_ready",
+    positioning: "Regulatory-Aligned Digital Infrastructure Layer",
+    authority_boundary: "regulatory_alignment_is_control_mapping_not_legal_advice_certification_or_regulatory_approval",
+    core_principle:
+      "NovaRide shall operate within applicable legal frameworks while preserving its constitutional invariants and autonomy.",
+    alignment_model: [
+      { domain: "Identity", novaride_layer: "NovaID", real_world_equivalent: "National ID / eID", control: "KYC, AML, eKYC, DID, selective disclosure" },
+      { domain: "Finance", novaride_layer: "NovaPay", real_world_equivalent: "Banking / payments law", control: "auditability, anti-fraud controls, monitoring, traceable settlement" },
+      { domain: "Token", novaride_layer: "NovaToken", real_world_equivalent: "Securities / digital assets", control: "jurisdictional classification and transfer restrictions" },
+      { domain: "Governance", novaride_layer: "DAO", real_world_equivalent: "Corporate + cooperative governance", control: "transparent voting, legal wrapper readiness, enforceable contract mapping" },
+      { domain: "Trust", novaride_layer: "NovaTrust", real_world_equivalent: "Audit / compliance systems", control: "replay evidence, cryptographic proof, audit readiness" },
+    ],
+    identity_compliance: {
+      aligns_with: ["KYC", "AML", "eKYC", "W3C_DID", "government_document_verification"],
+      rule: "identity_verification_required_for_high_risk_financial_or_governance_actions",
+    },
+    payments_regulation: {
+      requirements: ["transactions_shall_be_auditable", "suspicious_activity_shall_be_flagged", "cross_border_payments_shall_be_compliant", "settlement_systems_shall_be_traceable"],
+      treasury_rule: "treasury_operations_shall_comply_with_financial_risk_and_audit_standards",
+    },
+    token_regulation: {
+      classification_model: [
+        { type: "utility_token", treatment: "platform_usage" },
+        { type: "governance_token", treatment: "DAO_participation" },
+        { type: "payment_token", treatment: "financial_rules_apply" },
+      ],
+      rule: "novatoken_shall_comply_with_applicable_digital_asset_regulations_per_jurisdiction",
+    },
+    privacy_law: {
+      aligns_with: ["GDPR", "Privacy_Act_AU", "global_data_protection_standards"],
+      principles: ["data_shall_be_user_controlled", "consent_shall_be_explicit", "sensitive_data_shall_be_protected", "data_portability_shall_be_supported"],
+      implementation: ["zero_knowledge_proofs_where_needed", "offchain_sensitive_storage", "permission_based_data_sharing"],
+    },
+    governance_legalization: {
+      recognition_model: "digital_cooperative_or_governance_body",
+      optional_structures: ["registered_DAO_entity", "foundation", "association"],
+    },
+    cross_border_framework: {
+      rule: "novaride_shall_implement_jurisdiction_aware_compliance_layers",
+      flow: ["user_location", "region_detected", "applicable_rules_enforced", "system_adapts"],
+      regions: [
+        { region: "EU", active_rule: "GDPR enforced" },
+        { region: "US", active_rule: "financial reporting" },
+        { region: "Africa", active_rule: "mobile money integration" },
+      ],
+    },
+    liability_model: {
+      rule: "liability_attributed_by_layer_of_control_and_authority",
+      responsibilities: [
+        { component: "NovaRide Protocol", responsibility: "Infrastructure" },
+        { component: "App developers", responsibility: "Application behavior" },
+        { component: "Users", responsibility: "Actions" },
+        { component: "DAO", responsibility: "Governance decisions" },
+      ],
+    },
+    ai_regulation_compliance: {
+      rules: ["ai_decisions_shall_be_explainable", "ai_shall_not_execute_high_risk_actions_autonomously", "human_or_governance_review_shall_exist"],
+    },
+    compliance_engine: {
+      model: "jurisdiction_aware_policy_enforcement",
+      flow: ["load_regulations_for_region", "evaluate_action_against_rules", "block_non_compliant_action", "approve_compliant_action_with_replay_evidence"],
+    },
+    dashboard: {
+      regulatory_status: { identity: "mapped", finance: "mapped", crypto: "mapped", privacy: "mapped" },
+      jurisdictions: { EU: "GDPR active", US: "financial rules active", Africa: "mobile money integration" },
+      risk_monitor: { fraud_risk: "LOW", compliance_risk: "LOW", audit_readiness: "HIGH" },
+    },
+    properties: {
+      legal_compliance: "control_mapped",
+      identity_recognition: "integration_ready",
+      financial_regulation_alignment: "policy_gated",
+      cross_border_operation: "jurisdiction_aware",
+      governance_legality: "legal_wrapper_ready",
+      ai_safety_compliance: "human_or_governance_review_required",
+    },
+  },
+};
+
+const NOVARIDE_GLOBAL_EXPANSION_FALLBACK = {
+  view: "novaride_global_expansion",
+  status: "strategy_contract_ready",
+  platform: "NovaRide",
+  expansion: {
+    platform: "NovaRide",
+    version: "2026.07.0",
+    classification: "novaride_global_regulatory_expansion_strategy_contract",
+    status: "strategy_contract_ready",
+    positioning: "Global Regulatory Expansion Strategy",
+    authority_boundary: "expansion_strategy_is_rollout_planning_not_country_launch_authorization_or_legal_approval",
+    objective: "globally_compliant_identity_mobility_fintech_protocol",
+    core_principle: "Global standard architecture plus local regulatory adaptation equals scalable deployment.",
+    expansion_model: ["Global Core Platform", "Regional Compliance Layer", "Country-Specific Adaptation", "Local Market Deployment"],
+    phases: [
+      { phase: "0", name: "Foundation", status: "done", markets: ["Global core platform"], note: "NovaID, NovaPay, NovaTrust, and DAO." },
+      { phase: "1", name: "Regulatory ready markets", status: "target", markets: ["Australia", "UK", "Singapore", "UAE"], note: "Clear fintech regulations and stable legal systems." },
+      { phase: "2", name: "High growth markets", status: "target", markets: ["Kenya", "Rwanda", "Nigeria", "India"], note: "Mobile-first economies with strong mobility and payments demand." },
+      { phase: "3", name: "Complex regulations", status: "target", markets: ["EU", "USA"], note: "Strict compliance and licensing requirements." },
+    ],
+    country_entry_playbook: {
+      regulatory_mapping: ["identify_financial_regulators", "identify_identity_requirements", "identify_transport_rules", "identify_data_protection_laws"],
+      legal_structure: ["local_entity", "compliance_officer", "partner_contracts"],
+      partnership_model: ["integrate_with_local_banks", "integrate_with_psps_and_mobile_money", "integrate_with_gov_id_or_kyc_providers", "integrate_with_fleet_operators"],
+      integration_strategy: "replace_nothing_integrate_with_existing_systems",
+    },
+    novaid_deployment: {
+      basic_id: ["email_and_phone", "platform_access"],
+      verified_id: ["KYC", "document_verification"],
+      trusted_id: ["government_credential_integration"],
+      government_integration_path: ["start_with_KYC_providers", "integrate_gov_APIs", "become_trusted_identity_layer"],
+    },
+    novapay_deployment: {
+      partner_based: ["Stripe", "Adyen", "mobile_money", "banks"],
+      licensed_later: ["payment_institution_license", "e_money_license", "crypto_compliance"],
+      multi_currency_rollout: ["fiat_only", "stablecoins", "full_on_chain_treasury"],
+    },
+    token_strategy: {
+      rule: "token_must_not_be_treated_as_a_security_without_jurisdiction_review",
+      launch_model: [
+        { region: "strict_regulation", strategy: "utility_only" },
+        { region: "flexible_regulation", strategy: "full_token_model" },
+        { region: "DeFi_friendly", strategy: "on_chain_economy" },
+      ],
+    },
+    dao_structure: {
+      model: ["on_chain_DAO", "legal_wrapper_foundation_or_association", "local_operations_entity"],
+      why_it_matters: ["legal_enforceability", "liability_protection", "regulatory_clarity"],
+    },
+    cross_border_architecture: {
+      compliance_engine: ["detect_user_location", "load_rules_for_region", "enforce_rules"],
+      region_examples: [
+        { region: "EU", feature: "GDPR mode" },
+        { region: "US", feature: "reporting mode" },
+        { region: "Africa", feature: "mobile money" },
+      ],
+    },
+    ai_alignment: {
+      requirements: ["explainability", "transparency", "audit_logs", "no_autonomous_financial_execution"],
+      implementation: "all_ai_decisions_logged_auditable_explainable",
+    },
+    go_to_market: {
+      entry_model: ["launch_pilot_city", "partner_with_local_operators", "acquire_early_users", "expand_region"],
+      growth_strategy: ["incentives_token_plus_fiat", "driver_onboarding", "developer_ecosystem", "app_store_expansion"],
+    },
+    risk_management: {
+      top_risks: [
+        { risk: "Regulatory rejection", mitigation: "Partner model" },
+        { risk: "Financial compliance", mitigation: "Licensed partners" },
+        { risk: "Data privacy", mitigation: "Regional storage" },
+        { risk: "Token scrutiny", mitigation: "Staged rollout" },
+      ],
+    },
+    dashboard: {
+      expansion_status: { Australia: "Live", Kenya: "Live", India: "Pilot", EU: "Preparation" },
+      compliance_status: { identity: "OK", finance: "OK", privacy: "OK", token: "Restricted" },
+      financial: { transactions_per_day: "$1.5M", revenue: "Growing", cost: "Controlled" },
+    },
+    execution_blueprint: {
+      hub_model: [
+        { hub: "Melbourne", role: "regulatory_base_and_funding_hq" },
+        { hub: "Burundi", role: "controlled_low_cost_pilot" },
+        { hub: "DRC", role: "scale_opportunity_market" },
+        { hub: "East Africa", role: "expansion_corridor_kenya_rwanda_uganda" },
+      ],
+      phase_sequence: [
+        { phase: "1", market: "Melbourne", objective: "compliance_and_pilot" },
+        { phase: "2", market: "Burundi", objective: "controlled_launch" },
+        { phase: "3", market: "DRC", objective: "scaled_deployment" },
+        { phase: "4", market: "East Africa", objective: "regional_expansion" },
+      ],
+      melbourne_pilot: {
+        legal_setup: ["Pty Ltd", "global_hq"],
+        compliance_checklist: ["KYC_provider", "Privacy_Act", "payment_partner", "licensed_drivers_or_fleets"],
+        target: ["airport_transfers", "courier_logistics"],
+        pilot_flow: [
+          "launch_small_fleet",
+          "onboard_10_to_20_drivers",
+          "invite_200_to_500_users",
+          "test_ride_payment_loop",
+          "collect_data",
+          "iterate",
+        ],
+        success_metrics: [
+          "1000_plus_rides_per_month",
+          "payment_reliability_above_99_percent",
+          "user_retention_above_30_percent",
+        ],
+      },
+      burundi_launch: {
+        structure: ["local_partner_or_entity", "ops_manager"],
+        compliance: ["basic_KYC", "mobile_money", "partner_first"],
+        services: ["ride_hailing", "delivery", "mobile_money_payments"],
+        pilot_size: ["10_to_30_drivers", "200_to_1000_users"],
+      },
+      drc_launch: {
+        structure: ["partner_led", "local_operator_execution"],
+        compliance: ["progressive_KYC", "mobile_money_first", "partnership_adaptation"],
+        priorities: ["motorbike_taxis", "delivery_and_logistics", "business_transport"],
+        scale_plan: ["pilot_city", "city_expansion", "regional_hubs", "national_coverage"],
+      },
+      east_africa_expansion: {
+        markets: ["Kenya", "Rwanda", "Uganda"],
+        kenya: ["M_Pesa_integration", "fintech_plus_delivery_plus_rides"],
+        rwanda: ["government_friendly", "NovaID_plus_governance_pilots"],
+      },
+      legal_entity_template: {
+        step_1: "register_local_company_or_partner",
+        step_2: ["identity_KYC", "payment_partner", "privacy_laws", "local_licensing"],
+        step_3: ["driver_agreements", "partner_agreements", "API_SDK_terms"],
+      },
+      novaid_rollout: [
+        "phone_based_login",
+        "verified_KYC",
+        "trust_and_reputation",
+        "passport_level_system",
+      ],
+      novapay_rollout: ["payment_partners", "internal_wallet", "multi_currency", "token_layer_later"],
+      team_structure: {
+        founder: "Australia",
+        tech_team: "remote",
+        ops_manager: "each_country",
+        compliance_advisor: "per_region",
+      },
+      ninety_day_plan: [
+        "register_AU_entity",
+        "build_production_ready_app",
+        "secure_payment_partner",
+        "launch_Melbourne_pilot",
+        "begin_Burundi_setup",
+        "launch_Burundi_pilot",
+        "prepare_DRC_entry",
+      ],
+    },
+  },
+};
 
 const PROPOSALS = [
   {
@@ -1325,19 +2248,21 @@ const NOVAPAY_CONTROL_PLANE_GUARANTEES = [
 ];
 
 const NOVARIDE_APP_FALLBACKS = [
-  "NovaRide Rider App",
-  "NovaRide Driver App",
+  "NovaRide Passenger",
+  "NovaRide Driver",
   "NovaRide Operator App / Portal",
-  "NovaRide Inspector App / Portal",
-  "NovaRide Fleet Portal",
+  "NovaRide Fleet",
+  "NovaRide Business",
   "NovaRide Merchant Portal",
   "NovaRide Corporate Portal",
-  "NovaRide Trust & Safety Portal",
-  "NovaRide Customer Support Portal",
   "NovaRide Admin",
-  "NovaRide Developer Portal",
-  "NovaRide Passenger",
+  "NovaRide Inspector App / Portal",
+  "NovaRide Trust Portal",
+  "NovaRide Support",
+  "NovaRide Finance Portal",
   "NovaRide Partner",
+  "NovaRide Developer Portal",
+  "NovaRide Executive Dashboard",
 ];
 
 const NOVARIDE_NEXT_GEN_PLATFORM_STACK = [
@@ -2190,6 +3115,1165 @@ function clientHeaders() {
     "X-AfriRide-Event-Id": eventId,
     "X-AfriRide-Client-Timestamp": new Date().toISOString(),
     "X-AfriRide-Test-Mode": String(TEST_MODE),
+  };
+}
+
+function normalizeComplianceReport(report) {
+  if (!report || typeof report !== "object") {
+    return ARCHITECTURE_COMPLIANCE_FALLBACK;
+  }
+  const rows = Array.isArray(report.report) ? report.report : [];
+  const total = Number(report.rules_total ?? rows.length);
+  const passed = Number(
+    report.rules_passed ?? rows.filter((item) => item?.passed === true).length,
+  );
+  const score =
+    Number.isFinite(Number(report.score)) && Number(report.score) >= 0
+      ? Number(report.score)
+      : total > 0
+        ? Math.round((passed / total) * 100)
+        : 0;
+
+  return {
+    ...ARCHITECTURE_COMPLIANCE_FALLBACK,
+    ...report,
+    score,
+    rules_total: total,
+    rules_passed: passed,
+    rules_failed: Number(report.rules_failed ?? Math.max(0, total - passed)),
+    report: rows,
+    capabilities: Array.isArray(report.capabilities)
+      ? report.capabilities
+      : ARCHITECTURE_COMPLIANCE_FALLBACK.capabilities,
+  };
+}
+
+function normalizeRemediationReport(report) {
+  if (!report || typeof report !== "object") {
+    return ARCHITECTURE_REMEDIATION_FALLBACK;
+  }
+  return {
+    ...ARCHITECTURE_REMEDIATION_FALLBACK,
+    ...report,
+    fixes: Array.isArray(report.fixes) ? report.fixes : [],
+    executions: Array.isArray(report.executions) ? report.executions : [],
+  };
+}
+
+function normalizeLearningReport(report) {
+  if (!report || typeof report !== "object") {
+    return ARCHITECTURE_LEARNING_FALLBACK;
+  }
+  return {
+    ...ARCHITECTURE_LEARNING_FALLBACK,
+    ...report,
+    risk_profile:
+      report.risk_profile && typeof report.risk_profile === "object"
+        ? {
+            ...ARCHITECTURE_LEARNING_FALLBACK.risk_profile,
+            ...report.risk_profile,
+          }
+        : ARCHITECTURE_LEARNING_FALLBACK.risk_profile,
+    patterns:
+      report.patterns && typeof report.patterns === "object" && !Array.isArray(report.patterns)
+        ? report.patterns
+        : ARCHITECTURE_LEARNING_FALLBACK.patterns,
+    knowledge_graph:
+      report.knowledge_graph &&
+      typeof report.knowledge_graph === "object" &&
+      !Array.isArray(report.knowledge_graph)
+        ? report.knowledge_graph
+        : ARCHITECTURE_LEARNING_FALLBACK.knowledge_graph,
+    optimizer_suggestions: Array.isArray(report.optimizer_suggestions)
+      ? report.optimizer_suggestions
+      : ARCHITECTURE_LEARNING_FALLBACK.optimizer_suggestions,
+    remediation:
+      report.remediation && typeof report.remediation === "object"
+        ? normalizeRemediationReport(report.remediation)
+      : ARCHITECTURE_LEARNING_FALLBACK.remediation,
+  };
+}
+
+function normalizePredictiveReport(report) {
+  if (!report || typeof report !== "object") {
+    return ARCHITECTURE_PREDICTIVE_FALLBACK;
+  }
+  return {
+    ...ARCHITECTURE_PREDICTIVE_FALLBACK,
+    ...report,
+    digital_twin:
+      report.digital_twin && typeof report.digital_twin === "object"
+        ? {
+            ...ARCHITECTURE_PREDICTIVE_FALLBACK.digital_twin,
+            ...report.digital_twin,
+          }
+        : ARCHITECTURE_PREDICTIVE_FALLBACK.digital_twin,
+    scenarios: Array.isArray(report.scenarios) ? report.scenarios : ARCHITECTURE_PREDICTIVE_FALLBACK.scenarios,
+    predictions: Array.isArray(report.predictions)
+      ? report.predictions
+      : ARCHITECTURE_PREDICTIVE_FALLBACK.predictions,
+    preventive_actions: Array.isArray(report.preventive_actions)
+      ? report.preventive_actions
+      : ARCHITECTURE_PREDICTIVE_FALLBACK.preventive_actions,
+    metrics:
+      report.metrics && typeof report.metrics === "object"
+        ? {
+            ...ARCHITECTURE_PREDICTIVE_FALLBACK.metrics,
+            ...report.metrics,
+          }
+        : ARCHITECTURE_PREDICTIVE_FALLBACK.metrics,
+    compliance:
+      report.compliance && typeof report.compliance === "object"
+        ? report.compliance
+        : ARCHITECTURE_PREDICTIVE_FALLBACK.compliance,
+    remediation:
+      report.remediation && typeof report.remediation === "object"
+        ? normalizeRemediationReport(report.remediation)
+        : ARCHITECTURE_PREDICTIVE_FALLBACK.remediation,
+    learning:
+      report.learning && typeof report.learning === "object"
+        ? normalizeLearningReport(report.learning)
+        : ARCHITECTURE_PREDICTIVE_FALLBACK.learning,
+  };
+}
+
+function normalizeAutonomousReport(report) {
+  if (!report || typeof report !== "object") {
+    return ARCHITECTURE_AUTONOMOUS_FALLBACK;
+  }
+  return {
+    ...ARCHITECTURE_AUTONOMOUS_FALLBACK,
+    ...report,
+    digital_twin:
+      report.digital_twin && typeof report.digital_twin === "object"
+        ? {
+            ...ARCHITECTURE_AUTONOMOUS_FALLBACK.digital_twin,
+            ...report.digital_twin,
+          }
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.digital_twin,
+    multi_agent:
+      report.multi_agent && typeof report.multi_agent === "object"
+        ? {
+            ...ARCHITECTURE_AUTONOMOUS_FALLBACK.multi_agent,
+            ...report.multi_agent,
+            severity_breakdown:
+              report.multi_agent.severity_breakdown &&
+              typeof report.multi_agent.severity_breakdown === "object"
+                ? {
+                    ...ARCHITECTURE_AUTONOMOUS_FALLBACK.multi_agent.severity_breakdown,
+                    ...report.multi_agent.severity_breakdown,
+                  }
+                : ARCHITECTURE_AUTONOMOUS_FALLBACK.multi_agent.severity_breakdown,
+            findings: Array.isArray(report.multi_agent.findings)
+              ? report.multi_agent.findings
+              : ARCHITECTURE_AUTONOMOUS_FALLBACK.multi_agent.findings,
+          }
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.multi_agent,
+    crisis: Array.isArray(report.crisis) ? report.crisis : ARCHITECTURE_AUTONOMOUS_FALLBACK.crisis,
+    crisis_summary:
+      report.crisis_summary && typeof report.crisis_summary === "object"
+        ? {
+            ...ARCHITECTURE_AUTONOMOUS_FALLBACK.crisis_summary,
+            ...report.crisis_summary,
+            critical_scenarios: Array.isArray(report.crisis_summary.critical_scenarios)
+              ? report.crisis_summary.critical_scenarios
+              : ARCHITECTURE_AUTONOMOUS_FALLBACK.crisis_summary.critical_scenarios,
+          }
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.crisis_summary,
+    economic_optimization:
+      report.economic_optimization && typeof report.economic_optimization === "object"
+        ? {
+            ...ARCHITECTURE_AUTONOMOUS_FALLBACK.economic_optimization,
+            ...report.economic_optimization,
+            actions: Array.isArray(report.economic_optimization.actions)
+              ? report.economic_optimization.actions
+              : ARCHITECTURE_AUTONOMOUS_FALLBACK.economic_optimization.actions,
+          }
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.economic_optimization,
+    refactor_suggestions: Array.isArray(report.refactor_suggestions)
+      ? report.refactor_suggestions
+      : ARCHITECTURE_AUTONOMOUS_FALLBACK.refactor_suggestions,
+    metrics:
+      report.metrics && typeof report.metrics === "object"
+        ? {
+            ...ARCHITECTURE_AUTONOMOUS_FALLBACK.metrics,
+            ...report.metrics,
+          }
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.metrics,
+    predictive:
+      report.predictive && typeof report.predictive === "object"
+        ? normalizePredictiveReport(report.predictive)
+        : ARCHITECTURE_AUTONOMOUS_FALLBACK.predictive,
+  };
+}
+
+function normalizeTreasuryIntelligence(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.treasury_intelligence || payload.treasuryIntelligence || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK;
+  }
+
+  return {
+    ...NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK,
+    ...report,
+    decision:
+      report.decision && typeof report.decision === "object"
+        ? {
+            ...NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK.decision,
+            ...report.decision,
+          }
+        : NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK.decision,
+    recommendations: Array.isArray(report.recommendations)
+      ? report.recommendations
+      : NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK.recommendations,
+    stress_tests: Array.isArray(report.stress_tests)
+      ? report.stress_tests
+      : NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK.stress_tests,
+    provider_snapshot: Array.isArray(report.provider_snapshot)
+      ? report.provider_snapshot
+      : NOVAPAY_TREASURY_INTELLIGENCE_FALLBACK.provider_snapshot,
+  };
+}
+
+function normalizeGlobalTreasuryIntelligence(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.treasury_intelligence || payload.treasuryIntelligence || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK;
+  }
+
+  const core = normalizeTreasuryIntelligence(report.core);
+  const multiCurrency =
+    report.multi_currency && typeof report.multi_currency === "object"
+      ? {
+          ...NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.multi_currency,
+          ...report.multi_currency,
+          currency_distribution: Array.isArray(report.multi_currency.currency_distribution)
+            ? report.multi_currency.currency_distribution
+            : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.multi_currency.currency_distribution,
+          hedge_actions: Array.isArray(report.multi_currency.hedge_actions)
+            ? report.multi_currency.hedge_actions
+            : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.multi_currency.hedge_actions,
+        }
+      : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.multi_currency;
+  const onchain =
+    report.onchain && typeof report.onchain === "object"
+      ? {
+          ...NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.onchain,
+          ...report.onchain,
+          anchor_batch_plan: Array.isArray(report.onchain.anchor_batch_plan)
+            ? report.onchain.anchor_batch_plan
+            : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.onchain.anchor_batch_plan,
+        }
+      : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.onchain;
+
+  return {
+    ...NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK,
+    ...report,
+    core,
+    multi_currency: multiCurrency,
+    onchain,
+    recommendations: Array.isArray(report.recommendations)
+      ? report.recommendations
+      : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.recommendations,
+    metrics:
+      report.metrics && typeof report.metrics === "object"
+        ? {
+            ...NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.metrics,
+            ...report.metrics,
+          }
+        : NOVAPAY_GLOBAL_TREASURY_INTELLIGENCE_FALLBACK.metrics,
+  };
+}
+
+function normalizeDaoEconomy(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.economy_intelligence || payload.economyIntelligence || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_DAO_ECONOMY_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_DAO_ECONOMY_FALLBACK,
+    ...report,
+    token_economy:
+      report.token_economy && typeof report.token_economy === "object"
+        ? {
+            ...NOVARIDE_DAO_ECONOMY_FALLBACK.token_economy,
+            ...report.token_economy,
+            utility: Array.isArray(report.token_economy.utility)
+              ? report.token_economy.utility
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.token_economy.utility,
+            reward_actions: Array.isArray(report.token_economy.reward_actions)
+              ? report.token_economy.reward_actions
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.token_economy.reward_actions,
+          }
+        : NOVARIDE_DAO_ECONOMY_FALLBACK.token_economy,
+    governance:
+      report.governance && typeof report.governance === "object"
+        ? {
+            ...NOVARIDE_DAO_ECONOMY_FALLBACK.governance,
+            ...report.governance,
+            proposal_queue: Array.isArray(report.governance.proposal_queue)
+              ? report.governance.proposal_queue
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.governance.proposal_queue,
+          }
+        : NOVARIDE_DAO_ECONOMY_FALLBACK.governance,
+    treasury:
+      report.treasury && typeof report.treasury === "object"
+        ? {
+            ...NOVARIDE_DAO_ECONOMY_FALLBACK.treasury,
+            ...report.treasury,
+            allocation_plan: Array.isArray(report.treasury.allocation_plan)
+              ? report.treasury.allocation_plan
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.treasury.allocation_plan,
+          }
+        : NOVARIDE_DAO_ECONOMY_FALLBACK.treasury,
+    onchain:
+      report.onchain && typeof report.onchain === "object"
+        ? {
+            ...NOVARIDE_DAO_ECONOMY_FALLBACK.onchain,
+            ...report.onchain,
+            proposal_batch_plan: Array.isArray(report.onchain.proposal_batch_plan)
+              ? report.onchain.proposal_batch_plan
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.onchain.proposal_batch_plan,
+            treasury_batch_plan: Array.isArray(report.onchain.treasury_batch_plan)
+              ? report.onchain.treasury_batch_plan
+              : NOVARIDE_DAO_ECONOMY_FALLBACK.onchain.treasury_batch_plan,
+          }
+        : NOVARIDE_DAO_ECONOMY_FALLBACK.onchain,
+    metrics:
+      report.metrics && typeof report.metrics === "object"
+        ? {
+            ...NOVARIDE_DAO_ECONOMY_FALLBACK.metrics,
+            ...report.metrics,
+          }
+        : NOVARIDE_DAO_ECONOMY_FALLBACK.metrics,
+    recommendations: Array.isArray(report.recommendations)
+      ? report.recommendations
+      : NOVARIDE_DAO_ECONOMY_FALLBACK.recommendations,
+  };
+}
+
+function normalizeProtocolMarketplace(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.marketplace || payload.protocol_marketplace || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK,
+    ...report,
+    marketplace: {
+      ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace,
+      ...report,
+      storefronts: Array.isArray(report.storefronts)
+        ? report.storefronts
+        : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.storefronts,
+      catalog: Array.isArray(report.catalog)
+        ? report.catalog
+        : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.catalog,
+      publishing_pipeline: Array.isArray(report.publishing_pipeline)
+        ? report.publishing_pipeline
+        : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.publishing_pipeline,
+      developer_program:
+        report.developer_program && typeof report.developer_program === "object"
+          ? {
+              ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.developer_program,
+              ...report.developer_program,
+            }
+          : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.developer_program,
+      governance:
+        report.governance && typeof report.governance === "object"
+          ? {
+              ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.governance,
+              ...report.governance,
+              policy_gates: Array.isArray(report.governance.policy_gates)
+                ? report.governance.policy_gates
+                : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.governance.policy_gates,
+            }
+          : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.governance,
+      economics:
+        report.economics && typeof report.economics === "object"
+          ? {
+              ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.economics,
+              ...report.economics,
+              treasury_split: Array.isArray(report.economics.treasury_split)
+                ? report.economics.treasury_split
+                : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.economics.treasury_split,
+            }
+          : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.economics,
+      metrics:
+        report.metrics && typeof report.metrics === "object"
+          ? {
+              ...NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.metrics,
+              ...report.metrics,
+            }
+          : NOVARIDE_PROTOCOL_MARKETPLACE_FALLBACK.marketplace.metrics,
+    },
+  };
+}
+
+function normalizeAppStore(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.app_store || payload.appStore || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_APP_STORE_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_APP_STORE_FALLBACK,
+    ...report,
+    app_store: {
+      ...NOVARIDE_APP_STORE_FALLBACK.app_store,
+      ...report,
+      categories: Array.isArray(report.categories)
+        ? report.categories
+        : NOVARIDE_APP_STORE_FALLBACK.app_store.categories,
+      apps: Array.isArray(report.apps) ? report.apps : NOVARIDE_APP_STORE_FALLBACK.app_store.apps,
+      publishing_pipeline: Array.isArray(report.publishing_pipeline)
+        ? report.publishing_pipeline
+        : NOVARIDE_APP_STORE_FALLBACK.app_store.publishing_pipeline,
+      developer_flow: Array.isArray(report.developer_flow)
+        ? report.developer_flow
+        : NOVARIDE_APP_STORE_FALLBACK.app_store.developer_flow,
+      governance:
+        report.governance && typeof report.governance === "object"
+          ? {
+              ...NOVARIDE_APP_STORE_FALLBACK.app_store.governance,
+              ...report.governance,
+              policy_gates: Array.isArray(report.governance.policy_gates)
+                ? report.governance.policy_gates
+                : NOVARIDE_APP_STORE_FALLBACK.app_store.governance.policy_gates,
+            }
+          : NOVARIDE_APP_STORE_FALLBACK.app_store.governance,
+      monetization:
+        report.monetization && typeof report.monetization === "object"
+          ? {
+              ...NOVARIDE_APP_STORE_FALLBACK.app_store.monetization,
+              ...report.monetization,
+              revenue_streams: Array.isArray(report.monetization.revenue_streams)
+                ? report.monetization.revenue_streams
+                : NOVARIDE_APP_STORE_FALLBACK.app_store.monetization.revenue_streams,
+            }
+          : NOVARIDE_APP_STORE_FALLBACK.app_store.monetization,
+      metrics:
+        report.metrics && typeof report.metrics === "object"
+          ? {
+              ...NOVARIDE_APP_STORE_FALLBACK.app_store.metrics,
+              ...report.metrics,
+            }
+          : NOVARIDE_APP_STORE_FALLBACK.app_store.metrics,
+    },
+  };
+}
+
+function normalizeSuperApp(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.super_app || payload.superApp || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_SUPER_APP_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_SUPER_APP_FALLBACK,
+    ...report,
+    super_app: {
+      ...NOVARIDE_SUPER_APP_FALLBACK.super_app,
+      ...report,
+      modules: Array.isArray(report.modules)
+        ? report.modules
+        : NOVARIDE_SUPER_APP_FALLBACK.super_app.modules,
+      ecosystem_loop: Array.isArray(report.ecosystem_loop)
+        ? report.ecosystem_loop
+        : NOVARIDE_SUPER_APP_FALLBACK.super_app.ecosystem_loop,
+      profile:
+        report.profile && typeof report.profile === "object"
+          ? {
+              ...NOVARIDE_SUPER_APP_FALLBACK.super_app.profile,
+              ...report.profile,
+            }
+          : NOVARIDE_SUPER_APP_FALLBACK.super_app.profile,
+      wallet:
+        report.wallet && typeof report.wallet === "object"
+          ? {
+              ...NOVARIDE_SUPER_APP_FALLBACK.super_app.wallet,
+              ...report.wallet,
+              balances:
+                report.wallet.balances && typeof report.wallet.balances === "object"
+                  ? report.wallet.balances
+                  : NOVARIDE_SUPER_APP_FALLBACK.super_app.wallet.balances,
+            }
+          : NOVARIDE_SUPER_APP_FALLBACK.super_app.wallet,
+      governance:
+        report.governance && typeof report.governance === "object"
+          ? {
+              ...NOVARIDE_SUPER_APP_FALLBACK.super_app.governance,
+              ...report.governance,
+            }
+          : NOVARIDE_SUPER_APP_FALLBACK.super_app.governance,
+      ai_assistant:
+        report.ai_assistant && typeof report.ai_assistant === "object"
+          ? {
+              ...NOVARIDE_SUPER_APP_FALLBACK.super_app.ai_assistant,
+              ...report.ai_assistant,
+              recommendations: Array.isArray(report.ai_assistant.recommendations)
+                ? report.ai_assistant.recommendations
+                : NOVARIDE_SUPER_APP_FALLBACK.super_app.ai_assistant.recommendations,
+            }
+          : NOVARIDE_SUPER_APP_FALLBACK.super_app.ai_assistant,
+      metrics:
+        report.metrics && typeof report.metrics === "object"
+          ? {
+              ...NOVARIDE_SUPER_APP_FALLBACK.super_app.metrics,
+              ...report.metrics,
+            }
+          : NOVARIDE_SUPER_APP_FALLBACK.super_app.metrics,
+    },
+  };
+}
+
+function normalizeNovaID(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.identity || payload.novaid || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVAID_IDENTITY_FALLBACK;
+  }
+
+  return {
+    ...NOVAID_IDENTITY_FALLBACK,
+    ...report,
+    identity: {
+      ...NOVAID_IDENTITY_FALLBACK.identity,
+      ...report,
+      capabilities: Array.isArray(report.capabilities)
+        ? report.capabilities
+        : NOVAID_IDENTITY_FALLBACK.identity.capabilities,
+      use_cases: Array.isArray(report.use_cases)
+        ? report.use_cases
+        : NOVAID_IDENTITY_FALLBACK.identity.use_cases,
+      verification:
+        report.verification && typeof report.verification === "object"
+          ? {
+              ...NOVAID_IDENTITY_FALLBACK.identity.verification,
+              ...report.verification,
+            }
+          : NOVAID_IDENTITY_FALLBACK.identity.verification,
+      sample_profile:
+        report.sample_profile && typeof report.sample_profile === "object"
+          ? {
+              ...NOVAID_IDENTITY_FALLBACK.identity.sample_profile,
+              ...report.sample_profile,
+              reputation: Array.isArray(report.sample_profile.reputation)
+                ? report.sample_profile.reputation
+                : NOVAID_IDENTITY_FALLBACK.identity.sample_profile.reputation,
+            }
+          : NOVAID_IDENTITY_FALLBACK.identity.sample_profile,
+      login_button:
+        report.login_button && typeof report.login_button === "object"
+          ? {
+              ...NOVAID_IDENTITY_FALLBACK.identity.login_button,
+              ...report.login_button,
+              policy_gates: Array.isArray(report.login_button.policy_gates)
+                ? report.login_button.policy_gates
+                : NOVAID_IDENTITY_FALLBACK.identity.login_button.policy_gates,
+            }
+          : NOVAID_IDENTITY_FALLBACK.identity.login_button,
+      metrics:
+        report.metrics && typeof report.metrics === "object"
+          ? {
+              ...NOVAID_IDENTITY_FALLBACK.identity.metrics,
+              ...report.metrics,
+            }
+          : NOVAID_IDENTITY_FALLBACK.identity.metrics,
+    },
+  };
+}
+
+function normalizeGenSovereign(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.gen_sovereign || payload.genSovereign || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVAID_GEN_SOVEREIGN_FALLBACK;
+  }
+
+  return {
+    ...NOVAID_GEN_SOVEREIGN_FALLBACK,
+    ...report,
+    gen_sovereign: {
+      ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign,
+      ...report,
+      core_layers: Array.isArray(report.core_layers)
+        ? report.core_layers
+        : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.core_layers,
+      capabilities: Array.isArray(report.capabilities)
+        ? report.capabilities
+        : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.capabilities,
+      identity:
+        report.identity && typeof report.identity === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.identity,
+              ...report.identity,
+              auth_flow: Array.isArray(report.identity.auth_flow)
+                ? report.identity.auth_flow
+                : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.identity.auth_flow,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.identity,
+      government_integration:
+        report.government_integration && typeof report.government_integration === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.government_integration,
+              ...report.government_integration,
+              credential_types: Array.isArray(report.government_integration.credential_types)
+                ? report.government_integration.credential_types
+                : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.government_integration.credential_types,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.government_integration,
+      crypto_finance:
+        report.crypto_finance && typeof report.crypto_finance === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.crypto_finance,
+              ...report.crypto_finance,
+              components: Array.isArray(report.crypto_finance.components)
+                ? report.crypto_finance.components
+                : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.crypto_finance.components,
+              payment_stack: Array.isArray(report.crypto_finance.payment_stack)
+                ? report.crypto_finance.payment_stack
+                : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.crypto_finance.payment_stack,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.crypto_finance,
+      federation:
+        report.federation && typeof report.federation === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.federation,
+              ...report.federation,
+              apis: Array.isArray(report.federation.apis)
+                ? report.federation.apis
+                : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.federation.apis,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.federation,
+      ai_governance:
+        report.ai_governance && typeof report.ai_governance === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.ai_governance,
+              ...report.ai_governance,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.ai_governance,
+      dashboard:
+        report.dashboard && typeof report.dashboard === "object"
+          ? {
+              ...NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.dashboard,
+              ...report.dashboard,
+            }
+          : NOVAID_GEN_SOVEREIGN_FALLBACK.gen_sovereign.dashboard,
+    },
+  };
+}
+
+function normalizeDigitalNation(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.digital_nation || payload.digitalNation || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVAID_DIGITAL_NATION_FALLBACK;
+  }
+
+  return {
+    ...NOVAID_DIGITAL_NATION_FALLBACK,
+    ...report,
+    digital_nation: {
+      ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation,
+      ...report,
+      what_this_is: Array.isArray(report.what_this_is)
+        ? report.what_this_is
+        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.what_this_is,
+      what_this_is_not: Array.isArray(report.what_this_is_not)
+        ? report.what_this_is_not
+        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.what_this_is_not,
+      core_layers: Array.isArray(report.core_layers)
+        ? report.core_layers
+        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.core_layers,
+      capabilities: Array.isArray(report.capabilities)
+        ? report.capabilities
+        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.capabilities,
+      citizenship:
+        report.citizenship && typeof report.citizenship === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship,
+              ...report.citizenship,
+              profile:
+                report.citizenship.profile && typeof report.citizenship.profile === "object"
+                  ? {
+                      ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship.profile,
+                      ...report.citizenship.profile,
+                      roles: Array.isArray(report.citizenship.profile.roles)
+                        ? report.citizenship.profile.roles
+                        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship.profile.roles,
+                    }
+                  : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship.profile,
+              tiers: Array.isArray(report.citizenship.tiers)
+                ? report.citizenship.tiers
+                : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship.tiers,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.citizenship,
+      passport:
+        report.passport && typeof report.passport === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport,
+              ...report.passport,
+              sample:
+                report.passport.sample && typeof report.passport.sample === "object"
+                  ? {
+                      ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport.sample,
+                      ...report.passport.sample,
+                      credentials: Array.isArray(report.passport.sample.credentials)
+                        ? report.passport.sample.credentials
+                        : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport.sample.credentials,
+                    }
+                  : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport.sample,
+              capabilities: Array.isArray(report.passport.capabilities)
+                ? report.passport.capabilities
+                : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport.capabilities,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.passport,
+      ssi:
+        report.ssi && typeof report.ssi === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.ssi,
+              ...report.ssi,
+              auth_flow: Array.isArray(report.ssi.auth_flow)
+                ? report.ssi.auth_flow
+                : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.ssi.auth_flow,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.ssi,
+      governance:
+        report.governance && typeof report.governance === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.governance,
+              ...report.governance,
+              proposal_types: Array.isArray(report.governance.proposal_types)
+                ? report.governance.proposal_types
+                : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.governance.proposal_types,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.governance,
+      ai_governance:
+        report.ai_governance && typeof report.ai_governance === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.ai_governance,
+              ...report.ai_governance,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.ai_governance,
+      dashboard:
+        report.dashboard && typeof report.dashboard === "object"
+          ? {
+              ...NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.dashboard,
+              ...report.dashboard,
+            }
+          : NOVAID_DIGITAL_NATION_FALLBACK.digital_nation.dashboard,
+    },
+  };
+}
+
+function normalizeDigitalConstitution(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.constitution || payload.digitalConstitution || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK,
+    ...report,
+    constitution: {
+      ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution,
+      ...report,
+      articles: Array.isArray(report.articles)
+        ? report.articles
+        : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.articles,
+      amendment_process: Array.isArray(report.amendment_process)
+        ? report.amendment_process
+        : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.amendment_process,
+      authority_structure:
+        report.authority_structure && typeof report.authority_structure === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.authority_structure,
+              ...report.authority_structure,
+              authorities: Array.isArray(report.authority_structure.authorities)
+                ? report.authority_structure.authorities
+                : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.authority_structure.authorities,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.authority_structure,
+      governance:
+        report.governance && typeof report.governance === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.governance,
+              ...report.governance,
+              powers: Array.isArray(report.governance.powers)
+                ? report.governance.powers
+                : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.governance.powers,
+              voting_model: Array.isArray(report.governance.voting_model)
+                ? report.governance.voting_model
+                : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.governance.voting_model,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.governance,
+      economic_constitution:
+        report.economic_constitution && typeof report.economic_constitution === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.economic_constitution,
+              ...report.economic_constitution,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.economic_constitution,
+      trust_verification_law:
+        report.trust_verification_law && typeof report.trust_verification_law === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.trust_verification_law,
+              ...report.trust_verification_law,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.trust_verification_law,
+      contract_law:
+        report.contract_law && typeof report.contract_law === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.contract_law,
+              ...report.contract_law,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.contract_law,
+      ai_governance_law:
+        report.ai_governance_law && typeof report.ai_governance_law === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.ai_governance_law,
+              ...report.ai_governance_law,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.ai_governance_law,
+      dispute_resolution:
+        report.dispute_resolution && typeof report.dispute_resolution === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.dispute_resolution,
+              ...report.dispute_resolution,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.dispute_resolution,
+      compliance_enforcement:
+        report.compliance_enforcement && typeof report.compliance_enforcement === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.compliance_enforcement,
+              ...report.compliance_enforcement,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.compliance_enforcement,
+      guarantees:
+        report.guarantees && typeof report.guarantees === "object"
+          ? {
+              ...NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.guarantees,
+              ...report.guarantees,
+            }
+          : NOVARIDE_DIGITAL_CONSTITUTION_FALLBACK.constitution.guarantees,
+    },
+  };
+}
+
+function normalizeRegulatoryAlignment(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.regulatory_alignment || payload.regulatoryAlignment || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK,
+    ...report,
+    regulatory_alignment: {
+      ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment,
+      ...report,
+      alignment_model: Array.isArray(report.alignment_model)
+        ? report.alignment_model
+        : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.alignment_model,
+      identity_compliance:
+        report.identity_compliance && typeof report.identity_compliance === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.identity_compliance,
+              ...report.identity_compliance,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.identity_compliance,
+      payments_regulation:
+        report.payments_regulation && typeof report.payments_regulation === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.payments_regulation,
+              ...report.payments_regulation,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.payments_regulation,
+      token_regulation:
+        report.token_regulation && typeof report.token_regulation === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.token_regulation,
+              ...report.token_regulation,
+              classification_model: Array.isArray(report.token_regulation.classification_model)
+                ? report.token_regulation.classification_model
+                : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.token_regulation.classification_model,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.token_regulation,
+      privacy_law:
+        report.privacy_law && typeof report.privacy_law === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.privacy_law,
+              ...report.privacy_law,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.privacy_law,
+      cross_border_framework:
+        report.cross_border_framework && typeof report.cross_border_framework === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.cross_border_framework,
+              ...report.cross_border_framework,
+              regions: Array.isArray(report.cross_border_framework.regions)
+                ? report.cross_border_framework.regions
+                : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.cross_border_framework.regions,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.cross_border_framework,
+      liability_model:
+        report.liability_model && typeof report.liability_model === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.liability_model,
+              ...report.liability_model,
+              responsibilities: Array.isArray(report.liability_model.responsibilities)
+                ? report.liability_model.responsibilities
+                : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.liability_model.responsibilities,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.liability_model,
+      ai_regulation_compliance:
+        report.ai_regulation_compliance && typeof report.ai_regulation_compliance === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.ai_regulation_compliance,
+              ...report.ai_regulation_compliance,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.ai_regulation_compliance,
+      compliance_engine:
+        report.compliance_engine && typeof report.compliance_engine === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.compliance_engine,
+              ...report.compliance_engine,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.compliance_engine,
+      dashboard:
+        report.dashboard && typeof report.dashboard === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.dashboard,
+              ...report.dashboard,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.dashboard,
+      properties:
+        report.properties && typeof report.properties === "object"
+          ? {
+              ...NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.properties,
+              ...report.properties,
+            }
+          : NOVARIDE_REGULATORY_ALIGNMENT_FALLBACK.regulatory_alignment.properties,
+    },
+  };
+}
+
+function normalizeGlobalExpansion(payload) {
+  const report =
+    payload && typeof payload === "object"
+      ? payload.expansion || payload.globalExpansion || payload
+      : null;
+
+  if (!report || typeof report !== "object") {
+    return NOVARIDE_GLOBAL_EXPANSION_FALLBACK;
+  }
+
+  return {
+    ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK,
+    ...report,
+    expansion: {
+      ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion,
+      ...report,
+      expansion_model: Array.isArray(report.expansion_model)
+        ? report.expansion_model
+        : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.expansion_model,
+      phases: Array.isArray(report.phases)
+        ? report.phases
+        : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.phases,
+      country_entry_playbook:
+        report.country_entry_playbook && typeof report.country_entry_playbook === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.country_entry_playbook,
+              ...report.country_entry_playbook,
+              regulatory_mapping: Array.isArray(report.country_entry_playbook.regulatory_mapping)
+                ? report.country_entry_playbook.regulatory_mapping
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.country_entry_playbook.regulatory_mapping,
+              legal_structure: Array.isArray(report.country_entry_playbook.legal_structure)
+                ? report.country_entry_playbook.legal_structure
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.country_entry_playbook.legal_structure,
+              partnership_model: Array.isArray(report.country_entry_playbook.partnership_model)
+                ? report.country_entry_playbook.partnership_model
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.country_entry_playbook.partnership_model,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.country_entry_playbook,
+      novaid_deployment:
+        report.novaid_deployment && typeof report.novaid_deployment === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment,
+              ...report.novaid_deployment,
+              basic_id: Array.isArray(report.novaid_deployment.basic_id)
+                ? report.novaid_deployment.basic_id
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment.basic_id,
+              verified_id: Array.isArray(report.novaid_deployment.verified_id)
+                ? report.novaid_deployment.verified_id
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment.verified_id,
+              trusted_id: Array.isArray(report.novaid_deployment.trusted_id)
+                ? report.novaid_deployment.trusted_id
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment.trusted_id,
+              government_integration_path: Array.isArray(report.novaid_deployment.government_integration_path)
+                ? report.novaid_deployment.government_integration_path
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment.government_integration_path,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novaid_deployment,
+      novapay_deployment:
+        report.novapay_deployment && typeof report.novapay_deployment === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novapay_deployment,
+              ...report.novapay_deployment,
+              partner_based: Array.isArray(report.novapay_deployment.partner_based)
+                ? report.novapay_deployment.partner_based
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novapay_deployment.partner_based,
+              licensed_later: Array.isArray(report.novapay_deployment.licensed_later)
+                ? report.novapay_deployment.licensed_later
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novapay_deployment.licensed_later,
+              multi_currency_rollout: Array.isArray(report.novapay_deployment.multi_currency_rollout)
+                ? report.novapay_deployment.multi_currency_rollout
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novapay_deployment.multi_currency_rollout,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.novapay_deployment,
+      token_strategy:
+        report.token_strategy && typeof report.token_strategy === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.token_strategy,
+              ...report.token_strategy,
+              launch_model: Array.isArray(report.token_strategy.launch_model)
+                ? report.token_strategy.launch_model
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.token_strategy.launch_model,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.token_strategy,
+      dao_structure:
+        report.dao_structure && typeof report.dao_structure === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dao_structure,
+              ...report.dao_structure,
+              model: Array.isArray(report.dao_structure.model)
+                ? report.dao_structure.model
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dao_structure.model,
+              why_it_matters: Array.isArray(report.dao_structure.why_it_matters)
+                ? report.dao_structure.why_it_matters
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dao_structure.why_it_matters,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dao_structure,
+      cross_border_architecture:
+        report.cross_border_architecture && typeof report.cross_border_architecture === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.cross_border_architecture,
+              ...report.cross_border_architecture,
+              compliance_engine: Array.isArray(report.cross_border_architecture.compliance_engine)
+                ? report.cross_border_architecture.compliance_engine
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.cross_border_architecture.compliance_engine,
+              region_examples: Array.isArray(report.cross_border_architecture.region_examples)
+                ? report.cross_border_architecture.region_examples
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.cross_border_architecture.region_examples,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.cross_border_architecture,
+      ai_alignment:
+        report.ai_alignment && typeof report.ai_alignment === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.ai_alignment,
+              ...report.ai_alignment,
+              requirements: Array.isArray(report.ai_alignment.requirements)
+                ? report.ai_alignment.requirements
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.ai_alignment.requirements,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.ai_alignment,
+      go_to_market:
+        report.go_to_market && typeof report.go_to_market === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.go_to_market,
+              ...report.go_to_market,
+              entry_model: Array.isArray(report.go_to_market.entry_model)
+                ? report.go_to_market.entry_model
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.go_to_market.entry_model,
+              growth_strategy: Array.isArray(report.go_to_market.growth_strategy)
+                ? report.go_to_market.growth_strategy
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.go_to_market.growth_strategy,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.go_to_market,
+      risk_management:
+        report.risk_management && typeof report.risk_management === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.risk_management,
+              ...report.risk_management,
+              top_risks: Array.isArray(report.risk_management.top_risks)
+                ? report.risk_management.top_risks
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.risk_management.top_risks,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.risk_management,
+      dashboard:
+        report.dashboard && typeof report.dashboard === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dashboard,
+              ...report.dashboard,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.dashboard,
+      execution_blueprint:
+        report.execution_blueprint && typeof report.execution_blueprint === "object"
+          ? {
+              ...NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint,
+              ...report.execution_blueprint,
+              hub_model: Array.isArray(report.execution_blueprint.hub_model)
+                ? report.execution_blueprint.hub_model
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint.hub_model,
+              phase_sequence: Array.isArray(report.execution_blueprint.phase_sequence)
+                ? report.execution_blueprint.phase_sequence
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint.phase_sequence,
+              ninety_day_plan: Array.isArray(report.execution_blueprint.ninety_day_plan)
+                ? report.execution_blueprint.ninety_day_plan
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint.ninety_day_plan,
+              novaid_rollout: Array.isArray(report.execution_blueprint.novaid_rollout)
+                ? report.execution_blueprint.novaid_rollout
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint.novaid_rollout,
+              novapay_rollout: Array.isArray(report.execution_blueprint.novapay_rollout)
+                ? report.execution_blueprint.novapay_rollout
+                : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint.novapay_rollout,
+            }
+          : NOVARIDE_GLOBAL_EXPANSION_FALLBACK.expansion.execution_blueprint,
+    },
   };
 }
 
@@ -3731,8 +5815,26 @@ export default function OperatorDashboard() {
         novatechMarketplaceOnboardingResult,
         partnerGovernanceResult,
         novapayLiveTestReadinessResult,
+        treasuryIntelligenceResult,
+        globalTreasuryIntelligenceResult,
+        daoEconomyResult,
+        appStoreResult,
+        protocolMarketplaceResult,
+        superAppResult,
+        novaidIdentityResult,
+        novaidGenSovereignResult,
+        novaidDigitalNationResult,
+        novarideDigitalConstitutionResult,
+        novarideRegulatoryAlignmentResult,
+        novarideGlobalExpansionResult,
+        architectureProtocolMarketplaceResult,
         novarideEcosystemResult,
         novaridePlatformArchitectureContractResult,
+        architectureComplianceResult,
+        architectureRemediationResult,
+        architectureLearningResult,
+        architecturePredictiveResult,
+        architectureAutonomousResult,
         novarideOperatorDashboardContractResult,
         operatorAutonomyResult,
         novarideFleetManagerContractResult,
@@ -3777,8 +5879,26 @@ export default function OperatorDashboard() {
         readJson("/v1/novatech/marketplace/onboarding"),
         readJson("/v1/trust/orgs"),
         readJson("/v1/core-platform/transfers/live-test/readiness"),
+        readJson("/v1/treasury/intelligence"),
+        readJson("/v1/treasury/global-intelligence"),
+        readJson("/v1/economy/protocol"),
+        readJson("/v1/novaride/appstore/apps"),
+        readJson("/v1/novaride/developer/marketplace"),
+        readJson("/v1/novaride/super-app"),
+        readJson("/v1/novaride/novaid"),
+        readJson("/v1/novaride/novaid/gen-sovereign"),
+        readJson("/v1/novaride/novaid/digital-nation"),
+        readJson("/v1/novaride/constitution"),
+        readJson("/v1/novaride/regulatory-alignment"),
+        readJson("/v1/novaride/global-expansion"),
+        readJson("/v1/architecture/protocol-marketplace"),
         readJson("/v1/novaride/ecosystem"),
         readJson("/v1/novaride/platform/architecture-contract"),
+        readJson("/v1/architecture/compliance"),
+        readJson("/v1/architecture/remediation"),
+        readJson("/v1/architecture/learning"),
+        readJson("/v1/architecture/predictive-governance"),
+        readJson("/v1/architecture/autonomous-governance"),
         readJson("/v1/novaride/operator/dashboard-contract"),
         readJson("/v1/operator/autonomy"),
         readJson("/v1/novaride/fleet/manager-contract"),
@@ -3878,6 +5998,56 @@ export default function OperatorDashboard() {
         novapayLiveTestReadinessResult.status === "fulfilled"
           ? novapayLiveTestReadinessResult.value
           : state.novapayLiveTestReadiness;
+      const novapayTreasuryIntelligence =
+        treasuryIntelligenceResult.status === "fulfilled"
+          ? normalizeTreasuryIntelligence(treasuryIntelligenceResult.value)
+          : normalizeTreasuryIntelligence(state.novapayTreasuryIntelligence);
+      const novapayGlobalTreasuryIntelligence =
+        globalTreasuryIntelligenceResult.status === "fulfilled"
+          ? normalizeGlobalTreasuryIntelligence(globalTreasuryIntelligenceResult.value)
+          : normalizeGlobalTreasuryIntelligence(state.novapayGlobalTreasuryIntelligence);
+      const novarideDaoEconomy =
+        daoEconomyResult.status === "fulfilled"
+          ? normalizeDaoEconomy(daoEconomyResult.value)
+          : normalizeDaoEconomy(state.novarideDaoEconomy);
+      const novarideAppStore =
+        appStoreResult.status === "fulfilled"
+          ? normalizeAppStore(appStoreResult.value)
+          : normalizeAppStore(state.novarideAppStore);
+      const novarideProtocolMarketplace =
+        protocolMarketplaceResult.status === "fulfilled"
+          ? normalizeProtocolMarketplace(protocolMarketplaceResult.value)
+          : architectureProtocolMarketplaceResult.status === "fulfilled"
+            ? normalizeProtocolMarketplace(architectureProtocolMarketplaceResult.value)
+          : normalizeProtocolMarketplace(state.novarideProtocolMarketplace);
+      const novarideSuperApp =
+        superAppResult.status === "fulfilled"
+          ? normalizeSuperApp(superAppResult.value)
+          : normalizeSuperApp(state.novarideSuperApp);
+      const novaidIdentity =
+        novaidIdentityResult.status === "fulfilled"
+          ? normalizeNovaID(novaidIdentityResult.value)
+          : normalizeNovaID(state.novaidIdentity);
+      const novaidGenSovereign =
+        novaidGenSovereignResult.status === "fulfilled"
+          ? normalizeGenSovereign(novaidGenSovereignResult.value)
+          : normalizeGenSovereign(state.novaidGenSovereign);
+      const novaidDigitalNation =
+        novaidDigitalNationResult.status === "fulfilled"
+          ? normalizeDigitalNation(novaidDigitalNationResult.value)
+          : normalizeDigitalNation(state.novaidDigitalNation);
+      const novarideDigitalConstitution =
+        novarideDigitalConstitutionResult.status === "fulfilled"
+          ? normalizeDigitalConstitution(novarideDigitalConstitutionResult.value)
+          : normalizeDigitalConstitution(state.novarideDigitalConstitution);
+      const novarideRegulatoryAlignment =
+        novarideRegulatoryAlignmentResult.status === "fulfilled"
+          ? normalizeRegulatoryAlignment(novarideRegulatoryAlignmentResult.value)
+          : normalizeRegulatoryAlignment(state.novarideRegulatoryAlignment);
+      const novarideGlobalExpansion =
+        novarideGlobalExpansionResult.status === "fulfilled"
+          ? normalizeGlobalExpansion(novarideGlobalExpansionResult.value)
+          : normalizeGlobalExpansion(state.novarideGlobalExpansion);
       const novarideEcosystem =
         novarideEcosystemResult.status === "fulfilled"
           ? novarideEcosystemResult.value
@@ -3886,6 +6056,26 @@ export default function OperatorDashboard() {
         novaridePlatformArchitectureContractResult.status === "fulfilled"
           ? novaridePlatformArchitectureContractResult.value
           : state.novaridePlatformArchitectureContract;
+      const architectureCompliance =
+        architectureComplianceResult.status === "fulfilled"
+          ? normalizeComplianceReport(architectureComplianceResult.value)
+          : normalizeComplianceReport(state.architectureCompliance);
+      const architectureRemediation =
+        architectureRemediationResult.status === "fulfilled"
+          ? normalizeRemediationReport(architectureRemediationResult.value)
+          : normalizeRemediationReport(state.architectureRemediation);
+      const architectureLearning =
+        architectureLearningResult.status === "fulfilled"
+          ? normalizeLearningReport(architectureLearningResult.value)
+          : normalizeLearningReport(state.architectureLearning);
+      const architecturePredictive =
+        architecturePredictiveResult.status === "fulfilled"
+          ? normalizePredictiveReport(architecturePredictiveResult.value)
+          : normalizePredictiveReport(state.architecturePredictive);
+      const architectureAutonomous =
+        architectureAutonomousResult.status === "fulfilled"
+          ? normalizeAutonomousReport(architectureAutonomousResult.value)
+          : normalizeAutonomousReport(state.architectureAutonomous);
       const novarideOperatorDashboardContract =
         novarideOperatorDashboardContractResult.status === "fulfilled"
           ? novarideOperatorDashboardContractResult.value
@@ -4020,8 +6210,25 @@ export default function OperatorDashboard() {
         novatechMarketplaceOnboarding,
         novatechPartnerGovernance,
         novapayLiveTestReadiness,
+        novapayTreasuryIntelligence,
+        novapayGlobalTreasuryIntelligence,
+        novarideDaoEconomy,
+        novarideAppStore,
+        novarideProtocolMarketplace,
+        novarideSuperApp,
+        novaidIdentity,
+        novaidGenSovereign,
+        novaidDigitalNation,
+        novarideDigitalConstitution,
+        novarideRegulatoryAlignment,
+        novarideGlobalExpansion,
         novarideEcosystem,
         novaridePlatformArchitectureContract,
+        architectureCompliance,
+        architectureRemediation,
+        architectureLearning,
+        architecturePredictive,
+        architectureAutonomous,
         novarideOperatorDashboardContract,
         operatorAutonomy,
         novarideFleetManagerContract,
@@ -4264,6 +6471,20 @@ export default function OperatorDashboard() {
   const novatechMarketplaceOnboarding = state.novatechMarketplaceOnboarding;
   const novatechPartnerGovernance = state.novatechPartnerGovernance;
   const novapayLiveTestReadiness = state.novapayLiveTestReadiness;
+  const novapayTreasuryIntelligence = normalizeTreasuryIntelligence(state.novapayTreasuryIntelligence);
+  const novapayGlobalTreasuryIntelligence = normalizeGlobalTreasuryIntelligence(
+    state.novapayGlobalTreasuryIntelligence,
+  );
+  const novarideDaoEconomy = normalizeDaoEconomy(state.novarideDaoEconomy);
+  const novarideAppStore = normalizeAppStore(state.novarideAppStore);
+  const novarideProtocolMarketplace = normalizeProtocolMarketplace(state.novarideProtocolMarketplace);
+  const novarideSuperApp = normalizeSuperApp(state.novarideSuperApp);
+  const novaidIdentity = normalizeNovaID(state.novaidIdentity);
+  const novaidGenSovereign = normalizeGenSovereign(state.novaidGenSovereign);
+  const novaidDigitalNation = normalizeDigitalNation(state.novaidDigitalNation);
+  const novarideDigitalConstitution = normalizeDigitalConstitution(state.novarideDigitalConstitution);
+  const novarideRegulatoryAlignment = normalizeRegulatoryAlignment(state.novarideRegulatoryAlignment);
+  const novarideGlobalExpansion = normalizeGlobalExpansion(state.novarideGlobalExpansion);
   const novarideEcosystem = state.novarideEcosystem;
   const novarideArchitecture = novarideEcosystem?.architecture || {};
   const novarideLayeredArchitecture = Array.isArray(novarideArchitecture.layers)
@@ -4298,6 +6519,11 @@ export default function OperatorDashboard() {
       ? Object.entries(novarideEcosystemPlatform.operational_metrics || {})
       : [];
   const novaridePlatformArchitectureContract = state.novaridePlatformArchitectureContract;
+  const architectureCompliance = normalizeComplianceReport(state.architectureCompliance);
+  const architectureRemediation = normalizeRemediationReport(state.architectureRemediation);
+  const architectureLearning = normalizeLearningReport(state.architectureLearning);
+  const architecturePredictive = normalizePredictiveReport(state.architecturePredictive);
+  const architectureAutonomous = normalizeAutonomousReport(state.architectureAutonomous);
   const novarideOperatorDashboardContract = state.novarideOperatorDashboardContract;
   const operatorAutonomy = state.operatorAutonomy;
   const novarideFleetManagerContract = state.novarideFleetManagerContract;
@@ -5252,6 +7478,64 @@ export default function OperatorDashboard() {
           question="Investors can see transaction friction, proof cost, anchor volume, and revenue readiness directly in the interface."
         />
         <EconomyLayer signals={liveEconomySignals} />
+        <OperatorPanel title="DAO Token Economy">
+          <div className="compliance-panel">
+            <article className="compliance-score-card">
+              <div>
+                <strong>{novarideDaoEconomy.token_economy.symbol}</strong>
+                <span>{novarideDaoEconomy.token_economy.name}</span>
+              </div>
+              <span className="compliance-status pass">
+                Governance score {novarideDaoEconomy.governance.governance_score}%
+              </span>
+            </article>
+            <div className="compliance-summary-grid">
+              <article>
+                <strong>{novarideDaoEconomy.token_economy.total_supply}</strong>
+                <span>Total supply</span>
+              </article>
+              <article>
+                <strong>{novarideDaoEconomy.token_economy.circulating_supply}</strong>
+                <span>Circulating</span>
+              </article>
+              <article>
+                <strong>{novarideDaoEconomy.governance.active_proposals}</strong>
+                <span>Active proposals</span>
+              </article>
+              <article>
+                <strong>{novarideDaoEconomy.governance.participation_rate}%</strong>
+                <span>Participation</span>
+              </article>
+            </div>
+            <div className="chip-row">
+              {(novarideDaoEconomy.token_economy.utility || []).map((utility) => (
+                <span key={utility} className="surface-chip">
+                  {utility}
+                </span>
+              ))}
+            </div>
+            <div className="chip-row">
+              {(novarideDaoEconomy.token_economy.reward_actions || []).map((action) => (
+                <span key={action} className="reason-chip">
+                  {action}
+                </span>
+              ))}
+            </div>
+            <div className="compliance-rule-list">
+              {(novarideDaoEconomy.governance.proposal_queue || []).slice(0, 4).map((proposal) => (
+                <article key={proposal.proposal_id} className="compliance-rule-row">
+                  <div>
+                    <strong>{proposal.title}</strong>
+                    <span>
+                      {proposal.category} · {proposal.status} · {proposal.treasury_request}
+                    </span>
+                  </div>
+                  <span className="compliance-status pass">{proposal.votes_for}</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </OperatorPanel>
       </section>
 
       <section id="products" className="section-band">
@@ -6778,6 +9062,347 @@ export default function OperatorDashboard() {
             )}
           </OperatorPanel>
 
+          <OperatorPanel title="Architecture Compliance">
+            <div className="compliance-panel">
+              <article className="compliance-score-card">
+                <div>
+                  <strong>{architectureCompliance.score}%</strong>
+                  <span>Compliance score</span>
+                </div>
+                <span className={`compliance-status ${architectureCompliance.status === "pass" ? "pass" : "fail"}`}>
+                  {architectureCompliance.status || "pending"}
+                </span>
+              </article>
+              <div className="compliance-summary-grid">
+                <article>
+                  <strong>{architectureCompliance.rules_passed}</strong>
+                  <span>Rules passed</span>
+                </article>
+                <article>
+                  <strong>{architectureCompliance.rules_failed}</strong>
+                  <span>Rules failed</span>
+                </article>
+                <article>
+                  <strong>{architectureCompliance.mode}</strong>
+                  <span>Report source</span>
+                </article>
+                <article>
+                  <strong>/metrics/architecture/compliance</strong>
+                  <span>Prometheus Metrics</span>
+                </article>
+              </div>
+              <div className="chip-row">
+                {(architectureCompliance.capabilities || []).map((capability) => (
+                  <span key={capability} className="surface-chip">
+                    {capability}
+                  </span>
+                ))}
+                <span className="surface-chip">Grafana Panels</span>
+                <span className="surface-chip">Failed rules trend</span>
+                <span className="surface-chip">API breaking changes</span>
+                <span className="surface-chip">Security violations</span>
+              </div>
+              <div className="compliance-rule-list">
+                {(architectureCompliance.report || []).map((rule) => (
+                  <article key={rule.name} className="compliance-rule-row">
+                    <div>
+                      <strong>{rule.name}</strong>
+                      <span>
+                        {Array.isArray(rule.issues) && rule.issues.length > 0
+                          ? rule.issues.slice(0, 2).join(" | ")
+                          : "No violations detected"}
+                      </span>
+                    </div>
+                    <span className={`compliance-status ${rule.passed ? "pass" : "fail"}`}>
+                      {rule.passed ? "PASS" : "FAIL"}
+                    </span>
+                  </article>
+                ))}
+                {(architectureCompliance.report || []).length === 0 ? (
+                  <EmptyState label="Compliance report will appear after the architecture validator publishes a result." />
+                ) : null}
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Auto-Fix Actions">
+            <div className="compliance-panel">
+              <article className="compliance-score-card">
+                <div>
+                  <strong>{architectureRemediation.fixes_total}</strong>
+                  <span>Proposed fixes</span>
+                </div>
+                <span className={`compliance-status ${architectureRemediation.final_passed ? "pass" : "fail"}`}>
+                  {architectureRemediation.final_passed ? "COMPLIANT" : "REVIEW"}
+                </span>
+              </article>
+              <div className="compliance-summary-grid">
+                <article>
+                  <strong>{architectureRemediation.manual_review_required}</strong>
+                  <span>Human approval required</span>
+                </article>
+                <article>
+                  <strong>{architectureRemediation.mode}</strong>
+                  <span>Self-healing status</span>
+                </article>
+                <article>
+                  <strong>{architectureRemediation.source || "validator"}</strong>
+                  <span>Plan source</span>
+                </article>
+              </div>
+              <div className="compliance-rule-list">
+                {(architectureRemediation.fixes || []).slice(0, 8).map((fix, index) => (
+                  <article key={`${fix.rule}-${fix.action}-${index}`} className="compliance-rule-row">
+                    <div>
+                      <strong>{fix.action || "request_human_architecture_review"}</strong>
+                      <span>{fix.detail || fix.issue || "Remediation pending review"}</span>
+                    </div>
+                    <span className={`compliance-status ${fix.safe_to_apply ? "pass" : "fail"}`}>
+                      {fix.safe_to_apply ? "SAFE" : "APPROVAL"}
+                    </span>
+                  </article>
+                ))}
+                {(architectureRemediation.fixes || []).length === 0 ? (
+                  <article className="compliance-rule-row">
+                    <div>
+                      <strong>No remediation required</strong>
+                      <span>Validator report is compliant; auto-fix engine is standing by.</span>
+                    </div>
+                    <span className="compliance-status pass">PASS</span>
+                  </article>
+                ) : null}
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="AI Learning Insights">
+            <div className="compliance-panel">
+              <article className="compliance-score-card">
+                <div>
+                  <strong>{architectureLearning.risk_profile.score}%</strong>
+                  <span>Auto-fix success</span>
+                </div>
+                <span
+                  className={`compliance-status ${architectureLearning.risk_profile.risk === "low" ? "pass" : "fail"}`}
+                >
+                  {architectureLearning.risk_profile.risk}
+                </span>
+              </article>
+              <div className="compliance-summary-grid">
+                <article>
+                  <strong>
+                    {Object.entries(architectureLearning.patterns).sort(
+                      (left, right) =>
+                        ((right[1]?.success || 0) + (right[1]?.fail || 0)) -
+                        ((left[1]?.success || 0) + (left[1]?.fail || 0)),
+                    )[0]?.[0] || "No learning data"}
+                  </strong>
+                  <span>Top issue</span>
+                </article>
+                <article>
+                  <strong>{architectureLearning.risk_profile.total}</strong>
+                  <span>Learning events</span>
+                </article>
+                <article>
+                  <strong>{architectureLearning.learning_memory_path}</strong>
+                  <span>Memory store</span>
+                </article>
+                <article>
+                  <strong>{architectureLearning.risk_profile.risk}</strong>
+                  <span>System risk</span>
+                </article>
+                <article>
+                  <strong>{architectureLearning.optimizer_suggestions.length}</strong>
+                  <span>Optimization suggestions</span>
+                </article>
+              </div>
+              <div className="chip-row">
+                {architectureLearning.optimizer_suggestions.length > 0 ? (
+                  architectureLearning.optimizer_suggestions.slice(0, 4).map((suggestion) => (
+                    <span key={suggestion} className="surface-chip">
+                      {suggestion}
+                    </span>
+                  ))
+                ) : (
+                  <span className="surface-chip">No optimization suggestions</span>
+                )}
+              </div>
+              <div className="compliance-rule-list">
+                {Object.entries(architectureLearning.knowledge_graph)
+                  .slice(0, 4)
+                  .map(([issue, summary]) => (
+                    <article key={issue} className="compliance-rule-row">
+                      <div>
+                        <strong>{issue}</strong>
+                        <span>
+                          {summary.best_fix?.action || "No learned fix"} · {summary.success || 0} success ·{" "}
+                          {summary.fail || 0} fail
+                        </span>
+                      </div>
+                      <span
+                        className={`compliance-status ${
+                          (summary.success || 0) >= (summary.fail || 0) ? "pass" : "fail"
+                        }`}
+                      >
+                        {summary.total || 0}
+                      </span>
+                    </article>
+                  ))}
+                {Object.keys(architectureLearning.knowledge_graph).length === 0 ? (
+                  <article className="compliance-rule-row">
+                    <div>
+                      <strong>No learning history</strong>
+                      <span>Learning memory is empty until a governed remediation is recorded.</span>
+                    </div>
+                    <span className="compliance-status pass">PASS</span>
+                  </article>
+                ) : null}
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Predictive Governance">
+            <div className="compliance-panel">
+              <article className="compliance-score-card">
+                <div>
+                  <strong>{architecturePredictive.risk_score}</strong>
+                  <span>Predictive risk score</span>
+                </div>
+                <span className={`compliance-status ${architecturePredictive.risk_score >= 60 ? "fail" : "pass"}`}>
+                  {architecturePredictive.digital_twin.twin_health_score}% twin
+                </span>
+              </article>
+              <div className="compliance-summary-grid">
+                <article>
+                  <strong>{architecturePredictive.metrics.predicted_risks}</strong>
+                  <span>Predicted risks</span>
+                </article>
+                <article>
+                  <strong>{architecturePredictive.metrics.prevented_violations}</strong>
+                  <span>Preventive actions</span>
+                </article>
+                <article>
+                  <strong>{architecturePredictive.digital_twin.scenario_count}</strong>
+                  <span>Simulation scenarios</span>
+                </article>
+                <article>
+                  <strong>{architecturePredictive.authority_boundary}</strong>
+                  <span>Authority boundary</span>
+                </article>
+              </div>
+              <div className="chip-row">
+                {(architecturePredictive.digital_twin.mirrored_components || []).slice(0, 5).map((component) => (
+                  <span key={component} className="surface-chip">
+                    {component}
+                  </span>
+                ))}
+              </div>
+              <div className="compliance-rule-list">
+                {(architecturePredictive.scenarios || []).slice(0, 4).map((scenario) => (
+                  <article key={scenario.scenario_id} className="compliance-rule-row">
+                    <div>
+                      <strong>{scenario.description}</strong>
+                      <span>
+                        {scenario.predictions?.[0]?.risk || "No risk"} · {scenario.predictions?.[0]?.preventive_action || "WATCH"}
+                      </span>
+                    </div>
+                    <span
+                      className={`compliance-status ${
+                        (scenario.risk_score || 0) >= 60 ? "fail" : "pass"
+                      }`}
+                    >
+                      {scenario.risk_score || 0}
+                    </span>
+                  </article>
+                ))}
+                {(architecturePredictive.scenarios || []).length === 0 ? (
+                  <article className="compliance-rule-row">
+                    <div>
+                      <strong>No predictive scenarios</strong>
+                      <span>Digital twin projections will appear after the predictive governance endpoint is reachable.</span>
+                    </div>
+                    <span className="compliance-status pass">PASS</span>
+                  </article>
+                ) : null}
+              </div>
+            </div>
+          </OperatorPanel>
+
+          <OperatorPanel title="Autonomous Multi-Agent Governance">
+            <div className="compliance-panel">
+              <article className="compliance-score-card">
+                <div>
+                  <strong>{architectureAutonomous.metrics.multi_agent_findings}</strong>
+                  <span>Multi-agent findings</span>
+                </div>
+                <span className={`compliance-status ${architectureAutonomous.metrics.critical_crisis_scenarios > 0 ? "fail" : "pass"}`}>
+                  {architectureAutonomous.metrics.economic_efficiency}% efficiency
+                </span>
+              </article>
+              <div className="compliance-summary-grid">
+                <article>
+                  <strong>{architectureAutonomous.multi_agent.agent_count}</strong>
+                  <span>Active agents</span>
+                </article>
+                <article>
+                  <strong>{architectureAutonomous.crisis_summary.scenario_count}</strong>
+                  <span>Crisis scenarios</span>
+                </article>
+                <article>
+                  <strong>{architectureAutonomous.crisis_summary.max_risk_score}</strong>
+                  <span>Max crisis risk</span>
+                </article>
+                <article>
+                  <strong>{architectureAutonomous.economic_optimization.action}</strong>
+                  <span>Economic decision</span>
+                </article>
+                <article>
+                  <strong>{architectureAutonomous.crisis_summary.black_swan.event}</strong>
+                  <span>Black swan</span>
+                </article>
+              </div>
+              <div className="chip-row">
+                {(architectureAutonomous.refactor_suggestions || []).length > 0 ? (
+                  architectureAutonomous.refactor_suggestions.slice(0, 4).map((suggestion) => (
+                    <span key={suggestion} className="surface-chip">
+                      {suggestion}
+                    </span>
+                  ))
+                ) : (
+                  <span className="surface-chip">No refactor suggestions</span>
+                )}
+              </div>
+              <div className="compliance-rule-list">
+                {(architectureAutonomous.multi_agent.findings || []).slice(0, 4).map((finding) => (
+                  <article key={`${finding.agent}-${finding.risk}`} className="compliance-rule-row">
+                    <div>
+                      <strong>{finding.agent}</strong>
+                      <span>
+                        {finding.risk} · {finding.detail}
+                      </span>
+                    </div>
+                    <span className={`compliance-status ${finding.severity === "critical" ? "fail" : "pass"}`}>
+                      {finding.severity}
+                    </span>
+                  </article>
+                ))}
+                {(architectureAutonomous.crisis || []).slice(0, 2).map((scenario) => (
+                  <article key={scenario.scenario} className="compliance-rule-row">
+                    <div>
+                      <strong>{scenario.scenario}</strong>
+                      <span>
+                        {scenario.impact} · {scenario.requires}
+                      </span>
+                    </div>
+                    <span className={`compliance-status ${scenario.impact === "CRITICAL" ? "fail" : "pass"}`}>
+                      {scenario.risk_score}
+                    </span>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </OperatorPanel>
+
           <OperatorPanel title="NovaRide Next-Generation Mobility Platform">
             <div className="stack">
               <article className="record-card">
@@ -7754,6 +10379,44 @@ export default function OperatorDashboard() {
                     ))}
                   </div>
                 </article>
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideEcosystem.unified_ui_framework?.name || "NovaRide Unified UI Framework"}</strong>
+                    <span>{novarideEcosystem.unified_ui_framework?.status || "contract_ready"}</span>
+                  </div>
+                  <div className="chip-row">
+                    {(novarideEcosystem.unified_ui_framework?.shared_components || [
+                      "TrustBadge",
+                      "ReplayTimeline",
+                      "NovaPayReceiptPanel",
+                      "AgentRecommendationPanel",
+                    ]).slice(0, 6).map((component) => (
+                      <span key={component} className="surface-chip">
+                        {component}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Native app activation</strong>
+                  <div className="stack compact-stack">
+                    {(novarideEcosystem.native_app_activation || []).map((activation) => (
+                      <div key={activation.surface} className="reason-chip">
+                        {activation.surface}: {activation.status}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Agentic AI modules</strong>
+                  <div className="stack compact-stack">
+                    {(novarideEcosystem.agentic_ai_modules || []).map((module) => (
+                      <div key={module.key} className="reason-chip">
+                        {module.name}: {module.authority}
+                      </div>
+                    ))}
+                  </div>
+                </article>
               </div>
             ) : (
               <EmptyState label="NovaRide ecosystem contract will appear after the API is reachable." />
@@ -8270,6 +10933,1100 @@ export default function OperatorDashboard() {
             )}
           </OperatorPanel>
 
+          <OperatorPanel title="NovaRide Super App">
+            {novarideSuperApp ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>Global Super App Shell</strong>
+                    <span>{novarideSuperApp.status || "contract_ready"}</span>
+                  </div>
+                  <p>{novarideSuperApp.super_app?.purpose}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Users {novarideSuperApp.super_app?.metrics?.users || "2.5M"}
+                    </span>
+                    <span className="surface-chip">
+                      Apps {novarideSuperApp.super_app?.metrics?.apps || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Transactions {novarideSuperApp.super_app?.metrics?.transactions_per_day || "$5M"}
+                    </span>
+                    <span className="surface-chip">
+                      {novarideSuperApp.super_app?.authority_boundary || "interface_only"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Super App dashboard</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novarideSuperApp.super_app?.profile?.novaid}</strong>
+                      <span>NovaID</span>
+                    </article>
+                    <article>
+                      <strong>${novarideSuperApp.super_app?.profile?.wallet_balance_usd}</strong>
+                      <span>Wallet</span>
+                    </article>
+                    <article>
+                      <strong>{novarideSuperApp.super_app?.profile?.token_balance}</strong>
+                      <span>Tokens</span>
+                    </article>
+                    <article>
+                      <strong>{novarideSuperApp.super_app?.profile?.trust_score}</strong>
+                      <span>Trust score</span>
+                    </article>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Modules</strong>
+                  <div className="stack compact-stack">
+                    {(novarideSuperApp.super_app?.modules || []).map((module) => (
+                      <article key={module.key} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{module.name}</strong>
+                          <span>{module.authority}</span>
+                        </div>
+                        <div className="chip-row">
+                          {(module.capabilities || []).map((capability) => (
+                            <span key={capability} className="surface-chip">
+                              {capability.replaceAll("_", " ")}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Wallet + AI</strong>
+                  <div className="chip-row">
+                    {Object.entries(novarideSuperApp.super_app?.wallet?.balances || {}).map(([currency, amount]) => (
+                      <span key={currency} className="surface-chip">
+                        {currency} {amount}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novarideSuperApp.super_app?.ai_assistant?.recommendations || []).map((recommendation) => (
+                      <div key={recommendation} className="reason-chip">
+                        {recommendation}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide Super App will appear after the contract surface is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaID Global Identity">
+            {novaidIdentity ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novaidIdentity.identity?.positioning || "Login with NovaID"}</strong>
+                    <span>{novaidIdentity.status || "standard_ready"}</span>
+                  </div>
+                  <p>{novaidIdentity.identity?.authority_boundary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Profiles {novaidIdentity.identity?.metrics?.identity_profiles || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Wallet link {novaidIdentity.identity?.metrics?.wallet_link_rate || "0%"}
+                    </span>
+                    <span className="surface-chip">
+                      Devices {novaidIdentity.identity?.metrics?.verified_devices || 0}
+                    </span>
+                    <span className="surface-chip">
+                      {novaidIdentity.identity?.login_button?.contract}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Digital economic identity</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novaidIdentity.identity?.sample_profile?.id}</strong>
+                      <span>NovaID</span>
+                    </article>
+                    <article>
+                      <strong>{novaidIdentity.identity?.sample_profile?.did}</strong>
+                      <span>DID</span>
+                    </article>
+                    <article>
+                      <strong>{novaidIdentity.identity?.sample_profile?.trust_score}%</strong>
+                      <span>Trust score</span>
+                    </article>
+                    <article>
+                      <strong>{novaidIdentity.identity?.sample_profile?.wallet}</strong>
+                      <span>Wallet</span>
+                    </article>
+                  </div>
+                  <div className="chip-row">
+                    {(novaidIdentity.identity?.sample_profile?.reputation || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Capabilities</strong>
+                  <div className="stack compact-stack">
+                    {(novaidIdentity.identity?.capabilities || []).map((capability) => (
+                      <div key={capability.key} className="reason-chip">
+                        {capability.name}: {capability.capability}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Policy gates</strong>
+                  <div className="chip-row">
+                    {(novaidIdentity.identity?.login_button?.policy_gates || []).map((gate) => (
+                      <span key={gate} className="surface-chip">
+                        {gate.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaID global identity will appear after the identity contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaID Gen-Sovereign">
+            {novaidGenSovereign ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novaidGenSovereign.gen_sovereign?.positioning}</strong>
+                    <span>{novaidGenSovereign.status || "architecture_contract_ready"}</span>
+                  </div>
+                  <p>{novaidGenSovereign.gen_sovereign?.authority_boundary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      NovaIDs {novaidGenSovereign.gen_sovereign?.dashboard?.identity?.novaids}
+                    </span>
+                    <span className="surface-chip">
+                      Verified {novaidGenSovereign.gen_sovereign?.dashboard?.identity?.verified}
+                    </span>
+                    <span className="surface-chip">
+                      Daily {novaidGenSovereign.gen_sovereign?.dashboard?.economy?.daily_transactions}
+                    </span>
+                    <span className="surface-chip">
+                      Governance {novaidGenSovereign.gen_sovereign?.dashboard?.governance?.participation}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Sovereign infrastructure layers</strong>
+                  <div className="stack compact-stack">
+                    {(novaidGenSovereign.gen_sovereign?.core_layers || []).map((layer) => (
+                      <article key={layer.key} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{layer.name}</strong>
+                          <span>{layer.authority}</span>
+                        </div>
+                        <p>{layer.role}</p>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>SSI credential model</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novaidGenSovereign.gen_sovereign?.identity?.sample_did_document?.id}</strong>
+                      <span>DID</span>
+                    </article>
+                    <article>
+                      <strong>{novaidGenSovereign.gen_sovereign?.identity?.did_method}</strong>
+                      <span>Method</span>
+                    </article>
+                    <article>
+                      <strong>{novaidGenSovereign.gen_sovereign?.identity?.credential_standard}</strong>
+                      <span>Credentials</span>
+                    </article>
+                    <article>
+                      <strong>{novaidGenSovereign.gen_sovereign?.crypto_finance?.metrics?.token_circulation}</strong>
+                      <span>Token circulation</span>
+                    </article>
+                  </div>
+                  <div className="chip-row">
+                    {(novaidGenSovereign.gen_sovereign?.identity?.sample_did_document?.credentials || []).map((credential) => (
+                      <span key={credential} className="surface-chip">
+                        {credential.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Government + federation adapters</strong>
+                  <div className="chip-row">
+                    {(novaidGenSovereign.gen_sovereign?.government_integration?.credential_types || []).map((credential) => (
+                      <span key={credential} className="surface-chip">
+                        {credential.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="stack compact-stack">
+                    {(novaidGenSovereign.gen_sovereign?.federation?.apis || []).map((api) => (
+                      <div key={api.path} className="reason-chip">
+                        {api.path}: {api.purpose}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>AI governance voting</strong>
+                  <div className="chip-row">
+                    {Object.entries(novaidGenSovereign.gen_sovereign?.ai_governance?.formula || {}).map(([key, value]) => (
+                      <span key={key} className="surface-chip">
+                        {key} {value}
+                      </span>
+                    ))}
+                  </div>
+                  <p>
+                    {novaidGenSovereign.gen_sovereign?.ai_governance?.sample_analysis?.proposal}:{" "}
+                    ROI {novaidGenSovereign.gen_sovereign?.ai_governance?.sample_analysis?.roi},{" "}
+                    risk {novaidGenSovereign.gen_sovereign?.ai_governance?.sample_analysis?.risk},{" "}
+                    recommendation {novaidGenSovereign.gen_sovereign?.ai_governance?.sample_analysis?.recommendation}.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      {novaidGenSovereign.gen_sovereign?.ai_governance?.authority_boundary}
+                    </span>
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaID Gen-Sovereign will appear after the sovereign contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaID Digital Nation">
+            {novaidDigitalNation ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novaidDigitalNation.digital_nation?.positioning}</strong>
+                    <span>{novaidDigitalNation.status || "architecture_contract_ready"}</span>
+                  </div>
+                  <p>{novaidDigitalNation.digital_nation?.authority_boundary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      NovaCitizens {novaidDigitalNation.digital_nation?.dashboard?.identity?.novacitizens}
+                    </span>
+                    <span className="surface-chip">
+                      Verified {novaidDigitalNation.digital_nation?.dashboard?.identity?.verified}
+                    </span>
+                    <span className="surface-chip">
+                      Trusted {novaidDigitalNation.digital_nation?.dashboard?.identity?.trusted}
+                    </span>
+                    <span className="surface-chip">
+                      Daily {novaidDigitalNation.digital_nation?.dashboard?.economy?.daily_transactions}
+                    </span>
+                    <span className="surface-chip">
+                      AI-assisted decisions{" "}
+                      {novaidDigitalNation.digital_nation?.dashboard?.governance?.ai_assisted_decisions
+                        ? "ENABLED"
+                        : "DISABLED"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Digital nation boundary</strong>
+                  <div className="chip-row">
+                    {(novaidDigitalNation.digital_nation?.what_this_is || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novaidDigitalNation.digital_nation?.what_this_is_not || []).map((item) => (
+                      <span key={item} className="reason-chip">
+                        Not {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>NovaCitizen profile</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.citizenship?.profile?.nova_id}</strong>
+                      <span>NovaID</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.citizenship?.profile?.wallet}</strong>
+                      <span>Wallet</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.citizenship?.profile?.trust_score}</strong>
+                      <span>Trust score</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.citizenship?.profile?.governance_power}</strong>
+                      <span>Governance power</span>
+                    </article>
+                  </div>
+                  <div className="chip-row">
+                    {(novaidDigitalNation.digital_nation?.citizenship?.profile?.roles || []).map((role) => (
+                      <span key={role} className="surface-chip">
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>NovaPassport</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.passport?.sample?.passport_id}</strong>
+                      <span>Passport ID</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.passport?.sample?.holder}</strong>
+                      <span>Holder</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.passport?.sample?.validity}</strong>
+                      <span>Validity</span>
+                    </article>
+                    <article>
+                      <strong>{novaidDigitalNation.digital_nation?.passport?.sample?.signature}</strong>
+                      <span>Signature</span>
+                    </article>
+                  </div>
+                  <p>{novaidDigitalNation.digital_nation?.passport?.authority_boundary}</p>
+                  <div className="chip-row">
+                    {(novaidDigitalNation.digital_nation?.passport?.sample?.credentials || []).map((credential) => (
+                      <span key={credential} className="surface-chip">
+                        {credential.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Citizenship tiers</strong>
+                  <div className="stack compact-stack">
+                    {(novaidDigitalNation.digital_nation?.citizenship?.tiers || []).map((tier) => (
+                      <article key={tier.tier} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{tier.tier}</strong>
+                          <span>{tier.access}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Digital governance</strong>
+                  <div className="chip-row">
+                    {Object.entries(novaidDigitalNation.digital_nation?.governance?.formula || {}).map(([key, value]) => (
+                      <span key={key} className="surface-chip">
+                        {key} {value}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novaidDigitalNation.digital_nation?.governance?.proposal_types || []).map((proposalType) => (
+                      <span key={proposalType} className="surface-chip">
+                        {proposalType.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <p>
+                    {novaidDigitalNation.digital_nation?.ai_governance?.sample_analysis?.proposal}:{" "}
+                    impact {novaidDigitalNation.digital_nation?.ai_governance?.sample_analysis?.impact},{" "}
+                    cost {novaidDigitalNation.digital_nation?.ai_governance?.sample_analysis?.cost},{" "}
+                    recommendation {novaidDigitalNation.digital_nation?.ai_governance?.sample_analysis?.recommendation}.
+                  </p>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaID Digital Nation will appear after the citizenship contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Digital Constitution">
+            {novarideDigitalConstitution ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideDigitalConstitution.constitution?.positioning}</strong>
+                    <span>{novarideDigitalConstitution.status || "architecture_contract_ready"}</span>
+                  </div>
+                  <p>{novarideDigitalConstitution.constitution?.authority_boundary}</p>
+                  <div className="chip-row">
+                    {Object.entries(novarideDigitalConstitution.constitution?.guarantees || {}).map(([key, value]) => (
+                      <span key={key} className="surface-chip">
+                        {key.replaceAll("_", " ")} {value ? "guaranteed" : "pending"}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Constitutional principle</strong>
+                  <p>{novarideDigitalConstitution.constitution?.core_statement}</p>
+                </article>
+                <article className="record-card">
+                  <strong>Foundational articles</strong>
+                  <div className="stack compact-stack">
+                    {(novarideDigitalConstitution.constitution?.articles || []).map((article) => (
+                      <article key={article.article} className="record-card">
+                        <div className="record-card-header">
+                          <strong>Article {article.article}: {article.title}</strong>
+                          <span>constitutional</span>
+                        </div>
+                        <p>{article.principle}</p>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Authority structure</strong>
+                  <p>{novarideDigitalConstitution.constitution?.authority_structure?.fundamental_rule}</p>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.authority_structure?.authorities || []).map((authority) => (
+                      <span key={authority.authority} className="surface-chip">
+                        {authority.authority}: {authority.role}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Governance + AI limits</strong>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.governance?.powers || []).map((power) => (
+                      <span key={power} className="surface-chip">
+                        {power.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.governance?.ai_role?.shall_not || []).map((restriction) => (
+                      <span key={restriction} className="reason-chip">
+                        AI shall not {restriction.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Programmable law</strong>
+                  <p>{novarideDigitalConstitution.constitution?.contract_law?.rule}</p>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.contract_law?.types || []).map((type) => (
+                      <span key={type} className="surface-chip">
+                        {type.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.contract_law?.enforcement || []).map((rule) => (
+                      <span key={rule} className="surface-chip">
+                        {rule.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Trust + dispute law</strong>
+                  <p>{novarideDigitalConstitution.constitution?.trust_verification_law?.legal_equivalent}</p>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.dispute_resolution?.example_flow || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Enforcement + amendment</strong>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.compliance_enforcement?.layers || []).map((layer) => (
+                      <span key={layer} className="surface-chip">
+                        {layer.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideDigitalConstitution.constitution?.amendment_process || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide Digital Constitution will appear after the governance contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Regulatory Alignment">
+            {novarideRegulatoryAlignment ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideRegulatoryAlignment.regulatory_alignment?.positioning}</strong>
+                    <span>{novarideRegulatoryAlignment.status || "architecture_contract_ready"}</span>
+                  </div>
+                  <p>{novarideRegulatoryAlignment.regulatory_alignment?.authority_boundary}</p>
+                  <div className="chip-row">
+                    {Object.entries(novarideRegulatoryAlignment.regulatory_alignment?.dashboard?.regulatory_status || {}).map(([key, value]) => (
+                      <span key={key} className="surface-chip">
+                        {key} {value}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Legal alignment principle</strong>
+                  <p>{novarideRegulatoryAlignment.regulatory_alignment?.core_principle}</p>
+                </article>
+                <article className="record-card">
+                  <strong>Regulatory domains</strong>
+                  <div className="stack compact-stack">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.alignment_model || []).map((domain) => (
+                      <article key={domain.domain} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{domain.domain}: {domain.novaride_layer}</strong>
+                          <span>{domain.real_world_equivalent}</span>
+                        </div>
+                        <p>{domain.control}</p>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Identity + payments controls</strong>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.identity_compliance?.aligns_with || []).map((standard) => (
+                      <span key={standard} className="surface-chip">
+                        {standard.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <p>{novarideRegulatoryAlignment.regulatory_alignment?.identity_compliance?.rule}</p>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.payments_regulation?.requirements || []).map((requirement) => (
+                      <span key={requirement} className="surface-chip">
+                        {requirement.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Token + privacy classification</strong>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.token_regulation?.classification_model || []).map((token) => (
+                      <span key={token.type} className="surface-chip">
+                        {token.type.replaceAll("_", " ")}: {token.treatment.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.privacy_law?.principles || []).map((principle) => (
+                      <span key={principle} className="surface-chip">
+                        {principle.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Jurisdiction map</strong>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.cross_border_framework?.regions || []).map((region) => (
+                      <span key={region.region} className="surface-chip">
+                        {region.region}: {region.active_rule}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.cross_border_framework?.flow || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Liability + AI compliance</strong>
+                  <p>{novarideRegulatoryAlignment.regulatory_alignment?.liability_model?.rule}</p>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.liability_model?.responsibilities || []).map((item) => (
+                      <span key={item.component} className="surface-chip">
+                        {item.component}: {item.responsibility}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.ai_regulation_compliance?.rules || []).map((rule) => (
+                      <span key={rule} className="reason-chip">
+                        {rule.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Compliance engine + risk monitor</strong>
+                  <div className="chip-row">
+                    {(novarideRegulatoryAlignment.regulatory_alignment?.compliance_engine?.flow || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {Object.entries(novarideRegulatoryAlignment.regulatory_alignment?.dashboard?.risk_monitor || {}).map(([key, value]) => (
+                      <span key={key} className="surface-chip">
+                        {key.replaceAll("_", " ")} {value}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide Regulatory Alignment will appear after the compliance contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="NovaRide Global Expansion">
+            {novarideGlobalExpansion ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>{novarideGlobalExpansion.expansion?.positioning}</strong>
+                    <span>{novarideGlobalExpansion.status || "strategy_contract_ready"}</span>
+                  </div>
+                  <p>{novarideGlobalExpansion.expansion?.authority_boundary}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Objective {novarideGlobalExpansion.expansion?.objective}
+                    </span>
+                    <span className="surface-chip">
+                      Core principle {novarideGlobalExpansion.expansion?.core_principle}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Global Regulatory Expansion Strategy</strong>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.expansion_model || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Regulatory ready markets</strong>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.phases || [])
+                      .filter((phase) => phase.phase === "1")
+                      .map((phase) => (
+                        <article key={phase.name} className="record-card">
+                          <div className="record-card-header">
+                            <strong>{phase.name}</strong>
+                            <span>{phase.status}</span>
+                          </div>
+                          <p>{phase.note}</p>
+                          <div className="chip-row">
+                            {(phase.markets || []).map((market) => (
+                              <span key={market} className="surface-chip">
+                                {market}
+                              </span>
+                            ))}
+                          </div>
+                        </article>
+                      ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>High growth markets</strong>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.phases || [])
+                      .filter((phase) => phase.phase === "2")
+                      .map((phase) => (
+                        <article key={phase.name} className="record-card">
+                          <div className="record-card-header">
+                            <strong>{phase.name}</strong>
+                            <span>{phase.status}</span>
+                          </div>
+                          <p>{phase.note}</p>
+                          <div className="chip-row">
+                            {(phase.markets || []).map((market) => (
+                              <span key={market} className="surface-chip">
+                                {market}
+                              </span>
+                            ))}
+                          </div>
+                        </article>
+                      ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Complex regulations</strong>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.phases || [])
+                      .filter((phase) => phase.phase === "3")
+                      .map((phase) => (
+                        <article key={phase.name} className="record-card">
+                          <div className="record-card-header">
+                            <strong>{phase.name}</strong>
+                            <span>{phase.status}</span>
+                          </div>
+                          <p>{phase.note}</p>
+                          <div className="chip-row">
+                            {(phase.markets || []).map((market) => (
+                              <span key={market} className="surface-chip">
+                                {market}
+                              </span>
+                            ))}
+                          </div>
+                        </article>
+                      ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Country entry playbook</strong>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.country_entry_playbook?.regulatory_mapping || []).map(
+                      (item) => (
+                        <span key={item} className="surface-chip">
+                          {item.replaceAll("_", " ")}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.country_entry_playbook?.legal_structure || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.country_entry_playbook?.partnership_model || []).map(
+                      (item) => (
+                        <span key={item} className="surface-chip">
+                          {item.replaceAll("_", " ")}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Jurisdiction-aware compliance</strong>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.cross_border_architecture?.region_examples || []).map(
+                      (region) => (
+                        <span key={region.region} className="surface-chip">
+                          {region.region}: {region.feature}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                  <p>
+                    {(novarideGlobalExpansion.expansion?.cross_border_architecture?.compliance_engine || []).join(
+                      " -> ",
+                    )}
+                  </p>
+                </article>
+                <article className="record-card">
+                  <strong>Partner model</strong>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.novapay_deployment?.partner_based || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <p>{novarideGlobalExpansion.expansion?.go_to_market?.entry_model?.join(" -> ")}</p>
+                </article>
+                <article className="record-card">
+                  <strong>Risk management</strong>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.risk_management?.top_risks || []).map((item) => (
+                      <article key={item.risk} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{item.risk}</strong>
+                          <span>{item.mitigation}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Dashboard snapshot</strong>
+                  <div className="compliance-summary-grid">
+                    <article>
+                      <strong>{novarideGlobalExpansion.expansion?.dashboard?.expansion_status?.Australia}</strong>
+                      <span>Australia</span>
+                    </article>
+                    <article>
+                      <strong>{novarideGlobalExpansion.expansion?.dashboard?.expansion_status?.Kenya}</strong>
+                      <span>Kenya</span>
+                    </article>
+                    <article>
+                      <strong>{novarideGlobalExpansion.expansion?.dashboard?.expansion_status?.EU}</strong>
+                      <span>EU</span>
+                    </article>
+                    <article>
+                      <strong>{novarideGlobalExpansion.expansion?.dashboard?.financial?.transactions_per_day}</strong>
+                      <span>Transactions / day</span>
+                    </article>
+                  </div>
+                  <div className="chip-row">
+                    {Object.entries(novarideGlobalExpansion.expansion?.dashboard?.compliance_status || {}).map(
+                      ([key, value]) => (
+                        <span key={key} className="surface-chip">
+                          {key} {value}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Execution blueprint</strong>
+                  <p>3-Hub deployment model: Melbourne, Burundi, DRC, East Africa.</p>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.execution_blueprint?.hub_model || []).map((hub) => (
+                      <article key={hub.hub} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{hub.hub}</strong>
+                          <span>{hub.role}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                  <article className="record-card">
+                    <strong>Melbourne pilot</strong>
+                    <p>Airport transfers and courier logistics with a 1000+ rides/month target.</p>
+                  </article>
+                  <article className="record-card">
+                    <strong>Burundi launch</strong>
+                    <p>Mobile money payments and a small local driver cohort.</p>
+                  </article>
+                  <article className="record-card">
+                    <strong>DRC launch</strong>
+                    <p>Motorbike taxis, delivery, and business transport expansion.</p>
+                  </article>
+                  <article className="record-card">
+                    <strong>East Africa expansion</strong>
+                    <p>M-Pesa integration for Kenya, with Rwanda and Uganda next.</p>
+                  </article>
+                  <div className="stack compact-stack">
+                    {(novarideGlobalExpansion.expansion?.execution_blueprint?.phase_sequence || []).map((phase) => (
+                      <article key={`${phase.phase}-${phase.market}`} className="record-card">
+                        <div className="record-card-header">
+                          <strong>Phase {phase.phase}: {phase.market}</strong>
+                          <span>{phase.objective}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.execution_blueprint?.novaid_rollout || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.execution_blueprint?.novapay_rollout || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="chip-row">
+                    {(novarideGlobalExpansion.expansion?.execution_blueprint?.ninety_day_plan || []).map((item) => (
+                      <span key={item} className="surface-chip">
+                        {item.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide Global Expansion will appear after the rollout strategy contract is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="App Store">
+            {novarideAppStore ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>NovaRide App Store</strong>
+                    <span>{novarideAppStore.status || "governed_beta"}</span>
+                  </div>
+                  <p>
+                    Apps are discovered, validated, installed, and published through a governed
+                    distribution surface with policy gates and trust review.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Apps {novarideAppStore.app_store?.metrics?.app_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Developers {novarideAppStore.app_store?.metrics?.developer_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Cities {novarideAppStore.app_store?.metrics?.city_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Revenue split {novarideAppStore.app_store?.monetization?.revenue_split?.developer || "70%"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Categories</strong>
+                  <div className="chip-row">
+                    {(novarideAppStore.app_store?.categories || []).map((category) => (
+                      <span key={category.key} className="surface-chip">
+                        {category.name}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Published apps</strong>
+                  <div className="stack compact-stack">
+                    {(novarideAppStore.app_store?.apps || []).map((app) => (
+                      <article key={app.app_id} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{app.name}</strong>
+                          <span>{app.status}</span>
+                        </div>
+                        <p>{app.summary}</p>
+                        <div className="chip-row">
+                          <span className="surface-chip">{app.category}</span>
+                          <span className="surface-chip">{app.pricing}</span>
+                          {app.token_integration ? (
+                            <span className="surface-chip">NVT enabled</span>
+                          ) : (
+                            <span className="surface-chip">fiat only</span>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Developer flow</strong>
+                  <div className="chip-row">
+                    {(novarideAppStore.app_store?.developer_flow || []).map((step) => (
+                      <span key={step} className="surface-chip">
+                        {step.replaceAll("_", " ")}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="NovaRide App Store will appear after the app store surface is loaded." />
+            )}
+          </OperatorPanel>
+
+          <OperatorPanel title="Protocol Marketplace">
+            {novarideProtocolMarketplace ? (
+              <div className="stack">
+                <article className="record-card">
+                  <div className="record-card-header">
+                    <strong>NovaRide App Store</strong>
+                    <span>{novarideProtocolMarketplace.status || "governed_beta"}</span>
+                  </div>
+                  <p>
+                    Open protocol listings, SDK publishing, and partner integrations are routed
+                    through the governed marketplace surface.
+                  </p>
+                  <div className="chip-row">
+                    <span className="surface-chip">
+                      Storefronts {novarideProtocolMarketplace.marketplace?.metrics?.storefront_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Catalog {novarideProtocolMarketplace.marketplace?.metrics?.catalog_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Publishing steps{" "}
+                      {novarideProtocolMarketplace.marketplace?.metrics?.publishing_step_count || 0}
+                    </span>
+                    <span className="surface-chip">
+                      Trust review{" "}
+                      {novarideProtocolMarketplace.marketplace?.developer_program?.trust_review || "required"}
+                    </span>
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Storefronts</strong>
+                  <div className="stack compact-stack">
+                    {(novarideProtocolMarketplace.marketplace?.storefronts || []).map((storefront) => (
+                      <article key={storefront.key} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{storefront.name}</strong>
+                          <span>{storefront.status}</span>
+                        </div>
+                        <p>{storefront.purpose}</p>
+                        <div className="chip-row">
+                          <span className="surface-chip">{storefront.audience}</span>
+                          {(storefront.listing_types || []).map((listingType) => (
+                            <span key={listingType} className="surface-chip">
+                              {listingType.replaceAll("_", " ")}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Developer catalog</strong>
+                  <div className="stack compact-stack">
+                    {(novarideProtocolMarketplace.marketplace?.catalog || []).map((listing) => (
+                      <article key={listing.listing_id} className="record-card">
+                        <div className="record-card-header">
+                          <strong>{listing.name}</strong>
+                          <span>{listing.publish_channel}</span>
+                        </div>
+                        <p>{listing.purpose}</p>
+                        <div className="chip-row">
+                          <span className="surface-chip">{listing.role}</span>
+                          <span className="surface-chip">{listing.surface_type}</span>
+                          {(listing.platforms || []).map((platform) => (
+                            <span key={platform} className="surface-chip">
+                              {platform}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+                <article className="record-card">
+                  <strong>Publishing pipeline</strong>
+                  <div className="stack compact-stack">
+                    {(novarideProtocolMarketplace.marketplace?.publishing_pipeline || []).map((step) => (
+                      <div key={step.step} className="reason-chip">
+                        {step.title} - {step.goal}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <EmptyState label="Protocol marketplace will appear after the developer marketplace surface is loaded." />
+            )}
+          </OperatorPanel>
+
           <OperatorPanel title="Partner Trust Governance">
             {novatechPartnerGovernance ? (
               <div className="stack">
@@ -8640,6 +12397,147 @@ export default function OperatorDashboard() {
                   ))}
                 </div>
               </article>
+            </div>
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="Treasury AI">
+          <div className="compliance-panel">
+            <article className="compliance-score-card">
+              <div>
+                <strong>{novapayTreasuryIntelligence.risk_level}</strong>
+                <span>Risk level</span>
+              </div>
+              <span
+                className={`compliance-status ${
+                  novapayTreasuryIntelligence.risk_level === "CRITICAL" ||
+                  novapayTreasuryIntelligence.risk_level === "HIGH"
+                    ? "fail"
+                    : "pass"
+                }`}
+              >
+                Liquidity ratio {novapayTreasuryIntelligence.coverage_ratio}
+              </span>
+            </article>
+            <div className="compliance-summary-grid">
+              <article>
+                <strong>{novapayTreasuryIntelligence.cash_balance}</strong>
+                <span>Cash balance</span>
+              </article>
+              <article>
+                <strong>{novapayTreasuryIntelligence.settlement_obligations}</strong>
+                <span>Settlement obligations</span>
+              </article>
+              <article>
+                <strong>{novapayTreasuryIntelligence.prefunding_gap}</strong>
+                <span>Prefunding gap</span>
+              </article>
+              <article>
+                <strong>{novapayTreasuryIntelligence.reserve_headroom}</strong>
+                <span>Reserve headroom</span>
+              </article>
+            </div>
+            <div className="chip-row">
+              {(novapayTreasuryIntelligence.recommendations || []).length > 0 ? (
+                novapayTreasuryIntelligence.recommendations.slice(0, 4).map((recommendation) => (
+                  <span
+                    key={recommendation.recommendation_id || recommendation.title}
+                    className="surface-chip"
+                  >
+                    {recommendation.title || recommendation.action}
+                  </span>
+                ))
+              ) : (
+                <span className="surface-chip">No treasury recommendations</span>
+              )}
+            </div>
+            <div className="compliance-rule-list">
+              {(novapayTreasuryIntelligence.provider_snapshot || []).slice(0, 4).map((provider) => (
+                <article
+                  key={`${provider.provider}-${provider.currency}`}
+                  className="compliance-rule-row"
+                >
+                  <div>
+                    <strong>{provider.provider}</strong>
+                    <span>
+                      {provider.current_balance} / {provider.required_balance} · {provider.status}
+                    </span>
+                  </div>
+                  <span className="compliance-status pass">{provider.prefunding_gap}</span>
+                </article>
+              ))}
+              {(novapayTreasuryIntelligence.stress_tests || []).slice(0, 3).map((scenario) => (
+                <article key={scenario.scenario} className="compliance-rule-row">
+                  <div>
+                    <strong>{scenario.scenario}</strong>
+                    <span>
+                      {scenario.projected_coverage_ratio} coverage · {scenario.mitigation}
+                    </span>
+                  </div>
+                  <span className={`compliance-status ${scenario.impact === "CRITICAL" ? "fail" : "pass"}`}>
+                    {scenario.impact}
+                  </span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </OperatorPanel>
+
+        <OperatorPanel title="Global Treasury Intelligence">
+          <div className="compliance-panel">
+            <article className="compliance-score-card">
+              <div>
+                <strong>{novapayGlobalTreasuryIntelligence.multi_currency.action}</strong>
+                <span>Multi-currency action</span>
+              </div>
+              <span className="compliance-status pass">
+                On-chain coverage {novapayGlobalTreasuryIntelligence.metrics.onchain_coverage}
+              </span>
+            </article>
+            <div className="compliance-summary-grid">
+              <article>
+                <strong>{novapayGlobalTreasuryIntelligence.multi_currency.fx_exposure}%</strong>
+                <span>FX exposure</span>
+              </article>
+              <article>
+                <strong>{novapayGlobalTreasuryIntelligence.multi_currency.stablecoin_ratio}%</strong>
+                <span>Stablecoin ratio</span>
+              </article>
+              <article>
+                <strong>{novapayGlobalTreasuryIntelligence.onchain.batch_size}</strong>
+                <span>Anchor batch size</span>
+              </article>
+              <article>
+                <strong>{novapayGlobalTreasuryIntelligence.metrics.currency_count}</strong>
+                <span>Active currencies</span>
+              </article>
+            </div>
+            <div className="chip-row">
+              {(novapayGlobalTreasuryIntelligence.multi_currency.currency_distribution || []).map((entry) => (
+                <span key={entry.currency} className="surface-chip">
+                  {entry.currency} {entry.share}%
+                </span>
+              ))}
+            </div>
+            <div className="chip-row">
+              {(novapayGlobalTreasuryIntelligence.multi_currency.hedge_actions || []).map((action) => (
+                <span key={action} className="reason-chip">
+                  {action}
+                </span>
+              ))}
+            </div>
+            <div className="compliance-rule-list">
+              {(novapayGlobalTreasuryIntelligence.onchain.anchor_batch_plan || []).slice(0, 4).map((anchor) => (
+                <article key={anchor.anchor_id} className="compliance-rule-row">
+                  <div>
+                    <strong>{anchor.anchor_id}</strong>
+                    <span>
+                      {anchor.currency} · {anchor.context} · {anchor.amount}
+                    </span>
+                  </div>
+                  <span className="compliance-status pass">{anchor.proof_hash.slice(0, 12)}</span>
+                </article>
+              ))}
             </div>
           </div>
         </OperatorPanel>

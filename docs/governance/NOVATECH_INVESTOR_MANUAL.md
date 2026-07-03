@@ -580,7 +580,7 @@ No ride state or driver state is lost on restart.
 
 Execution setup for this phase is defined in:
 
-- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](./AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
+- [`AFRIRIDE_PHASE1_SETUP_RUNBOOK.md`](../pilot/AFRIRIDE_PHASE1_SETUP_RUNBOOK.md)
 
 ### Current Problem
 

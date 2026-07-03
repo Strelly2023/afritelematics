@@ -12,8 +12,8 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `509`
-- Django-bound modules declared in repo: `248`
+- Startup-safe closure size: `511`
+- Django-bound modules declared in repo: `274`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `62`
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (509 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (511 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (248 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (274 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -79,10 +79,10 @@ flowchart TD
     Core --> Semantic["semantic_engine (26 files)"]
     Core --> Runtime["runtime (79 files)"]
 
-    Ride --> Backend["backend (28 files)"]
+    Ride --> Backend["backend (30 files)"]
     Ride --> Django["django_app (99 files)"]
     Ui --> Dashboard["src (6 files)"]
-    Deploy --> Production["production (3 files)"]
+    Deploy --> Production["production (4 files)"]
 ```
 
 ## Repo Area Counts
@@ -97,10 +97,10 @@ flowchart TD
 - `governance`: `18` files
 - `semantic_engine`: `26` files
 - `runtime`: `79` files
-- `afriride_backend`: `28` files
+- `afriride_backend`: `30` files
 - `afriride_django`: `99` files
 - `dashboard_ui`: `6` files
-- `deploy_production`: `3` files
+- `deploy_production`: `4` files
 
 ## Startup Inventory
 
@@ -188,7 +188,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (417)
+### Other (419)
 
 - `afritech`
 - `afritech.afripay`
@@ -503,6 +503,7 @@ flowchart TD
 - `afritech.mobility.pilot_deployment_architecture`
 - `afritech.mobility.public_evidence_api`
 - `afritech.mobility.real_time_execution_engine`
+- `afritech.mobility.realtime_hub`
 - `afritech.mobility.reconciliation`
 - `afritech.mobility.regulator_certification_layer`
 - `afritech.mobility.self_auditing_network`
@@ -601,6 +602,7 @@ flowchart TD
 - `afritech.tools.feature_registry_verifier`
 - `afritech.trust_badges`
 - `afritech.trust_federation`
+- `afritech.workers.mobile_push_worker`
 - `afritech.zk`
 - `afritech.zk.groth16_prover`
 - `afritech.zk.groth16_verifier`

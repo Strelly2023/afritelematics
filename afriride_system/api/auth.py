@@ -138,6 +138,14 @@ def _required_roles(method: str, path: str) -> set[str] | None:
         return None
     if path.startswith("/system/") or path == "/rides/active":
         return {"OPERATOR", "ADMIN"}
+    if path == "/v1/operations/safety/distress":
+        return {"CUSTOMER", "DRIVER", "DISPATCHER", "OPERATOR", "ADMIN"}
+    if path.startswith("/v1/operations/"):
+        return {"DISPATCHER", "FLEET_OWNER", "OPERATOR", "ADMIN"}
+    if path.startswith("/v1/payments/"):
+        if path.endswith("/health") or path.endswith("/reporting"):
+            return {"OPERATOR", "ADMIN"}
+        return {"CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "OPERATOR", "ADMIN"}
     if path.startswith("/passenger/"):
         return {"CUSTOMER", "DRIVER", "DISPATCHER", "FLEET_OWNER", "ADMIN"} if method == "GET" else {"CUSTOMER", "ADMIN"}
     if path.startswith("/driver/"):

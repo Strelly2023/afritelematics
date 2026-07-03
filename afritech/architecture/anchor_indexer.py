@@ -28,6 +28,7 @@ from afritech.architecture.blockchain_anchor import (
     resolve_chain_ws_url,
 )
 from afritech.chain.contracts.architecture_anchor_abi import ARCHITECTURE_ANCHOR_ABI
+from afritech.chain.contracts.architecture_anchor_v2_abi import ARCHITECTURE_ANCHOR_V2_ABI
 from afritech.chain.contracts.contract_client import chain_health
 from afritech.chain.contracts.deployment_config import PLACEHOLDER_CONTRACT_ADDRESSES
 from afritech.chain.types import ChainReceipt
@@ -57,6 +58,10 @@ def _abi_fingerprint() -> str:
     return _json_hash(ARCHITECTURE_ANCHOR_ABI)
 
 
+def _abi_v2_fingerprint() -> str:
+    return _json_hash(ARCHITECTURE_ANCHOR_V2_ABI)
+
+
 def _coerce_receipt(payload: ChainReceipt | dict[str, Any]) -> dict[str, Any]:
     if isinstance(payload, ChainReceipt):
         return payload.canonical_dict()
@@ -70,6 +75,16 @@ def _hex_value(value: Any) -> str:
     if callable(hex_method):
         return str(hex_method())
     return str(value)
+
+
+def _bytes32_context(value: Any) -> str:
+    raw_hex = _hex_value(value).removeprefix("0x")
+    if not raw_hex:
+        return ""
+    try:
+        return bytes.fromhex(raw_hex).rstrip(b"\x00").decode("utf-8", errors="replace")
+    except ValueError:
+        return str(value)
 
 
 def _event_args(event: Any) -> Any:
@@ -1609,20 +1624,42 @@ class AnchorEventSubscriber:
         return Web3(provider(ws_url))
 
     def _subscription_topic(self) -> str:
+        return self._subscription_topic_v1()
+
+    def _subscription_topic_v1(self) -> str:
         try:
             from web3 import Web3
         except ModuleNotFoundError as exc:
             raise AnchorIndexBackendError("web3 is required for anchor event subscription") from exc
         return Web3.keccak(text="ProofAnchored(string,bytes32,address,uint256)").hex()
 
-    def _build_entry_from_event(self, profile, event: Any) -> AnchorIndexEntry:
+    def _subscription_topic_v2(self) -> str:
+        try:
+            from web3 import Web3
+        except ModuleNotFoundError as exc:
+            raise AnchorIndexBackendError("web3 is required for anchor event subscription") from exc
+        return Web3.keccak(text="ProofAnchored(bytes32,bytes32,address,uint256,bytes32)").hex()
+
+    def _build_entry_from_event(
+        self,
+        profile,
+        event: Any,
+        *,
+        version: str = "v1",
+        contract_address: str | None = None,
+    ) -> AnchorIndexEntry:
         args = _event_args(event)
-        anchor_id = str(_event_arg(args, "anchorId", ""))
+        anchor_id_value = _event_arg(args, "anchorId", "")
+        anchor_id = _hex_value(anchor_id_value) if version == "v2" else str(anchor_id_value)
         proof_hash_value = _hex_value(_event_arg(args, "proofHash"))
+        context_value = _event_arg(args, "context", b"")
 
         transaction_hash = _hex_value(_event_value(event, "transactionHash"))
         if transaction_hash and not transaction_hash.startswith("0x"):
             transaction_hash = f"0x{transaction_hash}"
+        resolved_contract_address = contract_address or os.getenv(
+            "AFRITECH_CHAIN_CONTRACT_ADDRESS_V2" if version == "v2" else "AFRITECH_CHAIN_CONTRACT_ADDRESS"
+        )
 
         payload = {
             "anchor_id": anchor_id,
@@ -1631,7 +1668,7 @@ class AnchorEventSubscriber:
             "network": profile.network,
             "chain_id": profile.chain_id,
             "chain_name": profile.chain_name,
-            "contract_address": os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS"),
+            "contract_address": resolved_contract_address,
             "transaction_hash": transaction_hash,
             "block_number": _int_or_default(_event_value(event, "blockNumber")),
             "explorer_url": f"{profile.explorer_base_url}{transaction_hash.removeprefix('0x')}",
@@ -1639,80 +1676,74 @@ class AnchorEventSubscriber:
             "status": "live",
             "source": "event_subscriber.websocket",
             "sequence": len(self.index_store.list_entries()) + 1,
-            "contract_explorer_url": _contract_explorer_url(profile.key, os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS")),
+            "contract_explorer_url": _contract_explorer_url(profile.key, resolved_contract_address),
             "etherscan_verification_stage": "EVENT_STREAMED",
+            "meta": {
+                "contract_version": version,
+                "context": _bytes32_context(context_value) if version == "v2" else None,
+                "context_bytes32": _hex_value(context_value) if version == "v2" else None,
+            },
         }
         return _entry_from_row(payload)
 
+    def _configured_contracts(self) -> tuple[tuple[str, str, list[dict[str, Any]]], ...]:
+        contracts: list[tuple[str, str, list[dict[str, Any]]]] = []
+        v1_address = os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS")
+        if v1_address:
+            contracts.append(("v1", v1_address, ARCHITECTURE_ANCHOR_ABI))
+        v2_address = os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS_V2")
+        if v2_address:
+            contracts.append(("v2", v2_address, ARCHITECTURE_ANCHOR_V2_ABI))
+        return tuple(contracts)
+
     def _backfill_once(self, profile_name: str) -> int:
         profile = get_chain_profile(profile_name)
-        profile_config = {
-            "rpc_url": os.getenv(profile.rpc_env_var),
-            "contract_address": os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS"),
-        }
-        if not profile_config["rpc_url"] or not profile_config["contract_address"]:
+        rpc_url = os.getenv(profile.rpc_env_var)
+        if not rpc_url:
             return 0
 
-        web3 = self._web3(profile_config["rpc_url"])
+        configured_contracts = self._configured_contracts()
+        if not configured_contracts:
+            return 0
+
+        web3 = self._web3(rpc_url)
         if not web3.is_connected():
             raise AnchorIndexBackendError(f"anchor event subscriber cannot connect to {profile_name}")
-
-        contract = web3.eth.contract(
-            address=web3.to_checksum_address(profile_config["contract_address"]),
-            abi=ARCHITECTURE_ANCHOR_ABI,
-        )
         from_block = _latest_index_block_for_network(profile.network)
         if from_block is None:
             from_block = _deployment_start_block(profile_name)
         else:
             from_block += 1
 
-        try:
-            events = contract.events.ProofAnchored().get_logs(from_block=from_block, to_block="latest")
-        except TypeError:
-            events = contract.events.ProofAnchored().get_logs(fromBlock=from_block, toBlock="latest")
-
         indexed = 0
-        for event in events:
-            args = _event_args(event)
-            anchor_id = str(_event_arg(args, "anchorId", ""))
-            proof_hash_value = _hex_value(_event_arg(args, "proofHash"))
+        for version, contract_address, abi in configured_contracts:
+            contract = web3.eth.contract(
+                address=web3.to_checksum_address(contract_address),
+                abi=abi,
+            )
+            try:
+                events = contract.events.ProofAnchored().get_logs(from_block=from_block, to_block="latest")
+            except TypeError:
+                events = contract.events.ProofAnchored().get_logs(fromBlock=from_block, toBlock="latest")
 
-            transaction_hash = _hex_value(_event_value(event, "transactionHash"))
-            if transaction_hash and not transaction_hash.startswith("0x"):
-                transaction_hash = f"0x{transaction_hash}"
-
-            if not anchor_id:
-                continue
-            if any(
-                entry.anchor_id == anchor_id
-                and entry.network == profile.network
-                and entry.transaction_hash == transaction_hash
-                for entry in self.index_store.list_entries()
-            ):
-                continue
-
-            payload = {
-                "anchor_id": anchor_id,
-                "publication_id": f"{anchor_id}:{transaction_hash}",
-                "proof_hash": proof_hash_value,
-                "network": profile.network,
-                "chain_id": profile.chain_id,
-                "chain_name": profile.chain_name,
-                "contract_address": profile_config["contract_address"],
-                "transaction_hash": transaction_hash,
-                "block_number": _int_or_default(_event_value(event, "blockNumber")),
-                "explorer_url": f"{profile.explorer_base_url}{transaction_hash.removeprefix('0x')}",
-                "anchor_mode": "smart_contract",
-                "status": "live",
-                "source": "event_subscriber",
-                "sequence": len(self.index_store.list_entries()) + 1,
-                "contract_explorer_url": _contract_explorer_url(profile_name, profile_config["contract_address"]),
-                "etherscan_verification_stage": "EVENT_SUBSCRIBED",
-            }
-            entry = _entry_from_row(payload)
-            self.index_store.remember(entry)
-            indexed += 1
+            for event in events:
+                entry = self._build_entry_from_event(
+                    profile,
+                    event,
+                    version=version,
+                    contract_address=contract_address,
+                )
+                if not entry.anchor_id:
+                    continue
+                if any(
+                    existing.anchor_id == entry.anchor_id
+                    and existing.network == entry.network
+                    and existing.transaction_hash == entry.transaction_hash
+                    for existing in self.index_store.list_entries()
+                ):
+                    continue
+                self.index_store.remember(entry)
+                indexed += 1
 
         self._last_error = None
         return indexed
@@ -1743,8 +1774,8 @@ class AnchorEventSubscriber:
         profile = get_chain_profile(profile_name)
         ws_url = resolve_chain_ws_url(profile)
         web3 = self._web3_ws(ws_url)
-        contract_address = os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS")
-        if not contract_address:
+        configured_contracts = self._configured_contracts()
+        if not configured_contracts:
             return
 
         if self.backfill_enabled:
@@ -1772,8 +1803,8 @@ class AnchorEventSubscriber:
                                 "params": [
                                     "logs",
                                     {
-                                        "address": contract_address,
-                                        "topics": [self._subscription_topic()],
+                                        "address": [contract[1] for contract in configured_contracts],
+                                        "topics": [[self._subscription_topic_v1(), self._subscription_topic_v2()]],
                                     },
                                 ],
                             }
@@ -1785,10 +1816,16 @@ class AnchorEventSubscriber:
 
                     self._started_profiles.add(profile_name)
                     self._last_error = None
-                    contract = web3.eth.contract(
-                        address=web3.to_checksum_address(contract_address),
-                        abi=ARCHITECTURE_ANCHOR_ABI,
-                    )
+                    contracts = {
+                        address.lower(): (
+                            version,
+                            web3.eth.contract(
+                                address=web3.to_checksum_address(address),
+                                abi=abi,
+                            ),
+                        )
+                        for version, address, abi in configured_contracts
+                    }
                     while not self._stop_requested:
                         message = json.loads(await websocket.recv())
                         if message.get("method") != "eth_subscription":
@@ -1797,11 +1834,21 @@ class AnchorEventSubscriber:
                         if params.get("subscription") is None:
                             continue
                         log = params.get("result") or {}
+                        log_address = str(log.get("address") or "").lower()
+                        contract_pair = contracts.get(log_address)
+                        if not contract_pair:
+                            continue
+                        version, contract = contract_pair
                         try:
                             event = contract.events.ProofAnchored().process_log(log)
                         except Exception:
                             continue
-                        entry = self._build_entry_from_event(profile, event)
+                        entry = self._build_entry_from_event(
+                            profile,
+                            event,
+                            version=version,
+                            contract_address=log.get("address"),
+                        )
                         if any(
                             existing.anchor_id == entry.anchor_id
                             and existing.network == entry.network

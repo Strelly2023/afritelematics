@@ -17,3 +17,9 @@ export const APP_VERSION =
 
 export const DEVICE_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_DEVICE_ID || "rider-test-device";
+
+export const REGION_ID =
+  process.env.EXPO_PUBLIC_AFRIRIDE_REGION_ID || "ug-kla";
+
+export const APP_LOCALE =
+  process.env.EXPO_PUBLIC_AFRIRIDE_LOCALE || "";

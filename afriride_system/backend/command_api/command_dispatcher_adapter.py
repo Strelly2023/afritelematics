@@ -18,6 +18,7 @@ from afriride_system.backend.repositories import (
     DriverRepository,
     EventRepository,
     RideRepository,
+    PushOutboxRepository,
 )
 from afriride_system.backend.state import DriverSession, RideSession
 from afriride_system.integration.websocket_gateway.event_bridge import EventBridge
@@ -33,6 +34,7 @@ class AfriRideCommandDispatcher:
     driver_repository: DriverRepository
     ride_repository: RideRepository
     event_repository: EventRepository
+    push_outbox_repository: PushOutboxRepository | None = None
     _mutation_lock: RLock = field(default_factory=RLock, repr=False)
 
     @property
@@ -90,8 +92,7 @@ class AfriRideCommandDispatcher:
 
         return [
             ride.snapshot()
-            for ride in self.ride_repository.all()
-            if ride.status == "REQUESTED"
+            for ride in self.ride_repository.requested()
         ]
 
     def accept_ride(
@@ -127,12 +128,24 @@ class AfriRideCommandDispatcher:
                 state_hash=canonical_hash(final_snapshot),
                 events=(*ride.events, "driver_assigned"),
             )
-            self.ride_repository.save(updated)
-            self.event_repository.append(
-                ride_id,
-                "driver_assigned",
-                updated.snapshot(),
-            )
+            if self.push_outbox_repository is not None:
+                with self.ride_repository.storage.connect() as connection:
+                    self.ride_repository.save_on(connection, updated)
+                    self.event_repository.append_on(
+                        connection, ride_id, "driver_assigned", updated.snapshot()
+                    )
+                    self.push_outbox_repository.enqueue_on(
+                        connection,
+                        updated.passenger_id,
+                        "driver_assigned",
+                        {"ride_id": ride_id, "driver_id": driver_id},
+                        idempotency_key=f"ride:{ride_id}:driver_assigned",
+                    )
+            else:
+                self.ride_repository.save(updated)
+                self.event_repository.append(
+                    ride_id, "driver_assigned", updated.snapshot()
+                )
             self.event_bridge.publish(
                 f"ride_updates:{ride_id}",
                 "driver_assigned",

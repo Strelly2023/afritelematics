@@ -97,6 +97,7 @@ def get_deployment_profile(profile_name: Optional[str] = None) -> Dict[str, Any]
 
     rpc_url = os.getenv(base["rpc_env"])
     contract_address = os.getenv(base["contract_env"])
+    contract_address_v2 = os.getenv("AFRITECH_CHAIN_CONTRACT_ADDRESS_V2")
 
     profile = {
         "profile": name,
@@ -106,6 +107,7 @@ def get_deployment_profile(profile_name: Optional[str] = None) -> Dict[str, Any]
         "rpc_url": rpc_url,
         "ws_url": os.getenv(base["ws_env"]),
         "contract_address": contract_address,
+        "contract_address_v2": contract_address_v2,
         "explorer_base_url": base["explorer_base_url"],
         "gas_price_gwei": float(os.getenv("AFRITECH_CHAIN_GAS_PRICE_GWEI", base["gas_price_gwei"])),
         "timeout": int(os.getenv("AFRITECH_CHAIN_TX_TIMEOUT", base["timeout"])),
@@ -170,6 +172,7 @@ def get_chain_config_snapshot() -> Dict[str, Any]:
         "rpc_configured": bool(profile["rpc_url"]),
         "ws_configured": bool(profile["ws_url"]),
         "contract_configured": bool(profile["contract_address"]),
+        "contract_v2_configured": bool(profile.get("contract_address_v2")),
         "contract_placeholder": str(profile.get("contract_address") or "").lower()
         in PLACEHOLDER_CONTRACT_ADDRESSES,
         "wallet_configured": bool(

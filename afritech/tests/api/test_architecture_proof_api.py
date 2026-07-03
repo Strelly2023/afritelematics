@@ -16,6 +16,7 @@ from afritech.architecture.anchor_indexer import (
 )
 from afritech.api import architecture_proof_api
 from afritech.api.architecture_proof_api import build_architecture_proof_router
+from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.app import app as production_app
 from afritech.ci.runtime_boundary_validator import RuntimeBoundaryValidator
@@ -25,6 +26,12 @@ def build_client() -> TestClient:
     app = FastAPI()
     app.include_router(build_auth_router())
     app.include_router(build_architecture_proof_router())
+    return TestClient(app)
+
+
+def build_next_gen_client() -> TestClient:
+    app = FastAPI()
+    app.include_router(build_afriride_next_gen_mobile_router())
     return TestClient(app)
 
 
@@ -204,6 +211,399 @@ def test_system_integrity_dashboard_is_partner_ready() -> None:
     assert payload["view"] == "system_integrity_dashboard"
     assert payload["proof_surface"]["verification_status"] == "VERIFIED"
     assert payload["partner_demo"]["public_demo_ready"] is True
+
+
+def test_novaride_super_app_endpoint_exposes_global_shell_contract() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/super-app")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["view"] == "novaride_super_app"
+    assert payload["super_app"]["classification"] == "global_super_app_operating_system_contract"
+    assert payload["super_app"]["authority_boundary"] == "super_app_is_interface_only_backend_services_keep_authority"
+    assert {module["key"] for module in payload["super_app"]["modules"]} >= {
+        "mobility",
+        "delivery",
+        "wallet",
+        "finance",
+        "app_store",
+        "identity",
+        "ai_assistant",
+    }
+    assert payload["super_app"]["profile"]["novaid"] == "NOVA-84729"
+    assert payload["super_app"]["wallet"]["authority"] == "NovaPay"
+    assert payload["super_app"]["governance"]["authority"] == "DAO_policy_gated"
+
+
+def test_novaid_endpoint_exposes_global_identity_contract() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/novaid")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["view"] == "novaid_global_identity"
+    assert payload["identity"]["classification"] == "global_identity_layer_contract"
+    assert payload["identity"]["positioning"] == "Login with NovaID"
+    assert payload["identity"]["sample_profile"]["did"] == "did:nova:84729"
+    assert payload["identity"]["login_button"]["contract"] == "novaride.identity.login.v1"
+    assert "driver_verification" in payload["identity"]["use_cases"]
+
+
+def test_novaid_gen_sovereign_endpoint_exposes_policy_gated_infrastructure_contract() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/novaid/gen-sovereign")
+
+    assert response.status_code == 200
+    payload = response.json()
+    contract = payload["gen_sovereign"]
+    assert payload["view"] == "novaid_gen_sovereign"
+    assert contract["classification"] == "novaid_gen_sovereign_infrastructure_contract"
+    assert contract["authority_boundary"] == (
+        "gen_sovereign_is_architecture_and_policy_gated_infrastructure_not_live_state_authority"
+    )
+    assert contract["identity"]["sample_did_document"]["id"] == "did:nova:847392"
+    assert "national_id_verification" in contract["government_integration"]["credential_types"]
+    assert contract["crypto_finance"]["metrics"]["token_circulation"] == "50M NVT"
+    assert contract["ai_governance"]["authority_boundary"] == "NovaAI_recommends_only_DAO_and_policy_execute"
+    assert {api["path"] for api in contract["federation"]["apis"]} == {
+        "/v1/federation/identity",
+        "/v1/federation/payments",
+        "/v1/federation/trust",
+    }
+
+
+def test_novaid_digital_nation_endpoint_exposes_platform_citizenship_contract() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/novaid/digital-nation")
+
+    assert response.status_code == 200
+    payload = response.json()
+    contract = payload["digital_nation"]
+    assert payload["view"] == "novaid_digital_nation"
+    assert contract["classification"] == "novaid_gen_sovereign_plus_plus_digital_nation_contract"
+    assert contract["positioning"] == "Digital Citizenship + NovaID Passport System"
+    assert contract["authority_boundary"] == (
+        "digital_nation_is_platform_citizenship_not_legal_nationality_or_immigration_authority"
+    )
+    assert "legal_passport" in contract["what_this_is_not"]
+    assert contract["citizenship"]["profile"]["nova_id"] == "did:nova:00087423"
+    assert contract["citizenship"]["profile"]["governance_power"] == 2450
+    assert {tier["tier"] for tier in contract["citizenship"]["tiers"]} == {
+        "Basic",
+        "Verified",
+        "Trusted",
+        "Elite",
+    }
+    assert contract["passport"]["sample"]["passport_id"] == "NVP-992384"
+    assert contract["passport"]["authority_boundary"] == (
+        "novapassport_is_platform_access_not_a_legal_travel_document"
+    )
+    assert "licensed_driver" in contract["passport"]["sample"]["credentials"]
+    assert contract["governance"]["formula"] == {"tokens": 0.5, "trust_score": 0.3, "activity": 0.2}
+    assert "treasury_allocation" in contract["governance"]["proposal_types"]
+    assert contract["dashboard"]["identity"]["novacitizens"] == "12M"
+    assert contract["dashboard"]["economy"]["daily_transactions"] == "$25M"
+    assert contract["ai_governance"]["sample_analysis"]["recommendation"] == "APPROVE"
+
+
+def test_novaride_constitution_endpoint_exposes_platform_governance_contract() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/constitution")
+
+    assert response.status_code == 200
+    payload = response.json()
+    contract = payload["constitution"]
+    assert payload["view"] == "novaride_digital_constitution"
+    assert contract["classification"] == "novaride_digital_constitution_governance_contract"
+    assert contract["positioning"] == "Digital Constitution + Legal Governance Framework"
+    assert contract["authority_boundary"] == (
+        "digital_constitution_is_platform_governance_not_statutory_law_or_regulator_substitute"
+    )
+    assert "identity is sovereign" in contract["core_statement"]
+    assert {article["title"] for article in contract["articles"]} == {
+        "Sovereign Identity",
+        "Digital Citizenship",
+        "Rights of Users",
+    }
+    assert contract["authority_structure"]["fundamental_rule"] == (
+        "execution_authority_shall_remain_with_NovaPower_and_authorized_subsystems_only"
+    )
+    assert "approve_treasury_allocations" in contract["governance"]["powers"]
+    assert "directly_vote" in contract["governance"]["ai_role"]["shall_not"]
+    assert contract["trust_verification_law"]["legal_equivalent"] == "replay_is_digital_audit_record"
+    assert "violations_shall_be_rejected_automatically" in contract["contract_law"]["enforcement"]
+    assert contract["dispute_resolution"]["example_flow"] == [
+        "transaction_dispute",
+        "replay_verification",
+        "ai_review",
+        "dao_vote",
+        "decision_enforced",
+    ]
+    assert contract["amendment_process"][-1] == "enactment_via_contract_update"
+    assert contract["guarantees"]["ai_safety"] is True
+
+
+def test_novaride_regulatory_alignment_endpoint_exposes_jurisdiction_aware_controls() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/regulatory-alignment")
+
+    assert response.status_code == 200
+    payload = response.json()
+    contract = payload["regulatory_alignment"]
+    assert payload["view"] == "novaride_regulatory_alignment"
+    assert contract["classification"] == "novaride_regulatory_alignment_contract"
+    assert contract["positioning"] == "Regulatory-Aligned Digital Infrastructure Layer"
+    assert contract["authority_boundary"] == (
+        "regulatory_alignment_is_control_mapping_not_legal_advice_certification_or_regulatory_approval"
+    )
+    assert "applicable legal frameworks" in contract["core_principle"]
+    assert {domain["domain"] for domain in contract["alignment_model"]} == {
+        "Identity",
+        "Finance",
+        "Token",
+        "Governance",
+        "Trust",
+    }
+    assert "W3C_DID" in contract["identity_compliance"]["aligns_with"]
+    assert contract["identity_compliance"]["rule"] == (
+        "identity_verification_required_for_high_risk_financial_or_governance_actions"
+    )
+    assert "suspicious_activity_shall_be_flagged" in contract["payments_regulation"]["requirements"]
+    assert contract["token_regulation"]["classification_model"][2]["type"] == "payment_token"
+    assert "GDPR" in contract["privacy_law"]["aligns_with"]
+    assert contract["cross_border_framework"]["rule"] == (
+        "novaride_shall_implement_jurisdiction_aware_compliance_layers"
+    )
+    assert {region["region"] for region in contract["cross_border_framework"]["regions"]} == {
+        "EU",
+        "US",
+        "Africa",
+    }
+    assert contract["liability_model"]["rule"] == "liability_attributed_by_layer_of_control_and_authority"
+    assert "ai_shall_not_execute_high_risk_actions_autonomously" in contract["ai_regulation_compliance"]["rules"]
+    assert contract["dashboard"]["risk_monitor"]["audit_readiness"] == "HIGH"
+
+
+def test_novaride_global_expansion_endpoint_exposes_multi_country_rollout_strategy() -> None:
+    client = build_next_gen_client()
+
+    response = client.get("/v1/novaride/global-expansion")
+
+    assert response.status_code == 200
+    payload = response.json()
+    contract = payload["expansion"]
+    assert payload["view"] == "novaride_global_expansion"
+    assert contract["classification"] == "novaride_global_regulatory_expansion_strategy_contract"
+    assert contract["positioning"] == "Global Regulatory Expansion Strategy"
+    assert (
+        contract["authority_boundary"]
+        == "expansion_strategy_is_rollout_planning_not_country_launch_authorization_or_legal_approval"
+    )
+    assert contract["objective"] == "globally_compliant_identity_mobility_fintech_protocol"
+    assert "Global Core Platform" in contract["expansion_model"]
+    assert "Regional Compliance Layer" in contract["expansion_model"]
+    assert "Australia" in contract["dashboard"]["expansion_status"]
+    assert "Kenya" in contract["dashboard"]["expansion_status"]
+    assert "EU" in contract["dashboard"]["expansion_status"]
+    assert "identify_financial_regulators" in contract["country_entry_playbook"]["regulatory_mapping"]
+    assert "local_entity" in contract["country_entry_playbook"]["legal_structure"]
+    assert "integrate_with_local_banks" in contract["country_entry_playbook"]["partnership_model"]
+    assert contract["novaid_deployment"]["government_integration_path"][0] == "start_with_KYC_providers"
+    assert contract["novapay_deployment"]["multi_currency_rollout"][0] == "fiat_only"
+    assert contract["token_strategy"]["launch_model"][0]["region"] == "strict_regulation"
+    assert contract["cross_border_architecture"]["region_examples"][0]["region"] == "EU"
+    assert "explainability" in contract["ai_alignment"]["requirements"]
+    assert contract["risk_management"]["top_risks"][0]["mitigation"] == "Partner model"
+    assert contract["dashboard"]["compliance_status"]["token"] == "Restricted"
+    assert [hub["hub"] for hub in contract["execution_blueprint"]["hub_model"]] == [
+        "Melbourne",
+        "Burundi",
+        "DRC",
+        "East Africa",
+    ]
+    assert contract["execution_blueprint"]["phase_sequence"][0]["market"] == "Melbourne"
+    assert contract["execution_blueprint"]["phase_sequence"][1]["market"] == "Burundi"
+    assert "airport_transfers" in contract["execution_blueprint"]["melbourne_pilot"]["target"]
+    assert "mobile_money_payments" in contract["execution_blueprint"]["burundi_launch"]["services"]
+    assert "motorbike_taxis" in contract["execution_blueprint"]["drc_launch"]["priorities"]
+    assert "M_Pesa_integration" in contract["execution_blueprint"]["east_africa_expansion"]["kenya"]
+    assert contract["execution_blueprint"]["team_structure"]["founder"] == "Australia"
+    assert "launch_Melbourne_pilot" in contract["execution_blueprint"]["ninety_day_plan"]
+
+
+def test_architecture_compliance_endpoint_exposes_governed_report() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/compliance",
+        headers=auth_headers(role="OBSERVER", user_id="observer-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "NOVARIDE_ARCHITECTURE_COMPLIANCE_REPORT"
+    assert payload["status"] == "pass"
+    assert payload["score"] == 100
+    assert payload["rules_total"] >= 10
+    assert "multi_language_ast_validation" in payload["capabilities"]
+    assert "semantic_openapi_diff" in payload["capabilities"]
+    assert "architecture_anchor_v2_verification" in payload["capabilities"]
+    assert any(rule["name"] == "Multi-Language AST Validation" for rule in payload["report"])
+    assert any(rule["name"] == "Blockchain Proof Verification" for rule in payload["report"])
+
+
+def test_architecture_compliance_endpoint_can_run_live_validator() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/compliance?live=true",
+        headers=auth_headers(role="VERIFIER", user_id="verifier-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["mode"] == "live_validator_scan"
+    assert payload["live_scan"] is True
+    assert payload["status"] == "pass"
+    assert any(rule["name"] == "Semantic OpenAPI Diff" for rule in payload["report"])
+
+
+def test_architecture_compliance_prometheus_metrics_endpoint() -> None:
+    client = build_client()
+
+    response = client.get("/metrics/architecture/compliance")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+    text = response.text
+    assert "novaride_compliance_score" in text
+    assert "novaride_compliance_rules_failed" in text
+    assert 'novaride_compliance_rule_passed{rule="Architecture Invariants"}' in text
+    assert 'novaride_compliance_report_info{mode="' in text
+
+
+def test_architecture_remediation_endpoint_exposes_autofix_plan() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/remediation",
+        headers=auth_headers(role="OBSERVER", user_id="observer-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "NOVARIDE_AUTONOMOUS_REMEDIATION_REPORT"
+    assert payload["mode"] == "plan"
+    assert payload["final_passed"] is True
+    assert payload["fixes_total"] == 0
+    assert payload["manual_review_required"] == 0
+
+
+def test_architecture_learning_endpoint_exposes_continuous_learning_surface() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/learning",
+        headers=auth_headers(role="OBSERVER", user_id="observer-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "NOVARIDE_CONTINUOUS_LEARNING_REPORT"
+    assert "risk_profile" in payload
+    assert "patterns" in payload
+    assert "knowledge_graph" in payload
+    assert "optimizer_suggestions" in payload
+    assert "remediation" in payload
+
+
+def test_architecture_learning_prometheus_metrics_endpoint() -> None:
+    client = build_client()
+
+    response = client.get("/metrics/architecture/learning")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+    text = response.text
+    assert "novaride_ai_fix_accuracy" in text
+    assert "novaride_architecture_violation_rate" in text
+    assert "novaride_learning_total_events" in text
+    assert "novaride_learning_suggestions_total" in text
+
+
+def test_architecture_predictive_governance_endpoint_exposes_digital_twin() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/predictive-governance",
+        headers=auth_headers(role="OBSERVER", user_id="observer-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "NOVARIDE_PREDICTIVE_GOVERNANCE_REPORT"
+    assert payload["authority_boundary"] == "predictive_governance_is_advisory_and_simulation_only"
+    assert "digital_twin" in payload
+    assert "scenarios" in payload
+    assert "predictions" in payload
+    assert "preventive_actions" in payload
+    assert "risk_score" in payload
+
+
+def test_architecture_predictive_governance_prometheus_metrics_endpoint() -> None:
+    client = build_client()
+
+    response = client.get("/metrics/architecture/predictive-governance")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+    text = response.text
+    assert "novaride_predictive_risk_score" in text
+    assert "novaride_digital_twin_health_score" in text
+    assert "novaride_predicted_risks_total" in text
+    assert "novaride_preventive_actions_total" in text
+
+
+def test_architecture_autonomous_governance_endpoint_exposes_multi_agent_crisis_and_economic_layers() -> None:
+    client = build_client()
+
+    response = client.get(
+        "/v1/architecture/autonomous-governance",
+        headers=auth_headers(role="OBSERVER", user_id="observer-1"),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "NOVARIDE_AUTONOMOUS_MULTI_AGENT_GOVERNANCE_REPORT"
+    assert payload["authority_boundary"] == "multi_agent_governance_is_advisory_and_simulation_only"
+    assert "multi_agent" in payload
+    assert "crisis" in payload
+    assert "crisis_summary" in payload
+    assert "economic_optimization" in payload
+    assert "refactor_suggestions" in payload
+    assert "predictive" in payload
+
+
+def test_architecture_autonomous_governance_prometheus_metrics_endpoint() -> None:
+    client = build_client()
+
+    response = client.get("/metrics/architecture/autonomous-governance")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+    text = response.text
+    assert "novaride_multi_agent_findings_total" in text
+    assert "novaride_crisis_max_risk_score" in text
+    assert "novaride_crisis_critical_scenarios_total" in text
+    assert "novaride_economic_efficiency" in text
+    assert "novaride_refactor_suggestions_total" in text
 
 
 def test_public_trust_dashboard_exposes_public_surfaces() -> None:
@@ -512,6 +912,28 @@ def test_public_adr_contract_link_packet_is_public() -> None:
     assert payload["network"] == "base-sepolia"
     assert payload["contract_arguments"]["anchorId"] == "adr-adr-0045"
     assert payload["contract_arguments"]["proofHash"].startswith("0x")
+
+
+def test_public_anchor_v2_contract_metadata_is_public() -> None:
+    client = build_client()
+
+    report_response = client.get("/public/architecture/anchors/verification")
+    abi_response = client.get("/public/architecture/anchors/verification/v2/abi")
+    source_response = client.get("/public/architecture/anchors/verification/v2/source")
+
+    assert report_response.status_code == 200
+    assert report_response.json()["anchor_v2_abi"].endswith("/verification/v2/abi")
+
+    assert abi_response.status_code == 200
+    abi_payload = abi_response.json()
+    assert abi_payload["contract_name"] == "ArchitectureAnchorV2"
+    assert any(item.get("name") == "anchorBatch" for item in abi_payload["abi"])
+
+    assert source_response.status_code == 200
+    source_payload = source_response.json()
+    assert source_payload["contract_name"] == "ArchitectureAnchorV2"
+    assert "contract ArchitectureAnchorV2" in source_payload["source"]
+    assert "function anchorBatch(" in source_payload["source"]
 
 
 def test_public_anchor_explorer_shell_is_available() -> None:

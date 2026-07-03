@@ -1,0 +1,27 @@
+groups:
+  - name: novaride.architecture.compliance
+    rules:
+      - alert: NovaRideArchitectureComplianceFailed
+        expr: novaride_compliance_rules_failed > 0
+        for: 5m
+        labels:
+          severity: critical
+          subsystem: architecture-governance
+        annotations:
+          summary: NovaRide architecture compliance has failing rules
+      - alert: NovaRideArchitectureComplianceScoreLow
+        expr: novaride_compliance_score < 100
+        for: 10m
+        labels:
+          severity: warning
+          subsystem: architecture-governance
+        annotations:
+          summary: NovaRide architecture compliance score is below full compliance
+      - alert: NovaRideSemanticOpenAPIDiffFailed
+        expr: novaride_compliance_rule_passed{rule="Semantic OpenAPI Diff"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          subsystem: api-contracts
+        annotations:
+          summary: NovaRide semantic OpenAPI compatibility check is failing
