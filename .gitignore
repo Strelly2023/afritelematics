@@ -66,6 +66,7 @@ driver_app/node_modules/
 *institutional_proof_packet.zip
 *institutional_proof_packet.zip.sha256
 *institutional_proof_file_manifest.sha256
+ci_artifacts/
 
 # Screenshots / images (optional – keep only if intentional)
 *.jpg

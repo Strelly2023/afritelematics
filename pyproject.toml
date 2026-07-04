@@ -91,6 +91,17 @@ addopts = "-ra -q --disable-warnings -p no:django"
 
 xfail_strict = true
 
+markers = [
+    "serial: tests that must not run in parallel",
+    "integration: integration-level tests",
+    "governance: governance and boundary tests",
+    "release: release certification tests",
+    "mobile: mobile-app tests",
+    "dashboard: dashboard tests",
+    "payments: payment-domain tests",
+    "trust: trust, replay, and proof tests",
+]
+
 filterwarnings = [
     "error",
 ]

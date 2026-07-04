@@ -139,6 +139,26 @@ class ComplianceHoldRequest(StrictPayload):
     reason: str
 
 
+class InvoiceRequest(StrictPayload):
+    organization_id: str
+    actor_id: str
+    actor_role: str
+    customer_wallet_id: str
+    amount: Decimal
+    currency: str = "AUD"
+    reference: str
+    due_date: str | None = None
+    idempotency_key: str
+
+
+class WebhookRequest(StrictPayload):
+    organization_id: str
+    developer_id: str
+    webhook_url: str
+    event_types: list[str] = Field(default_factory=list)
+    secret_hint: str | None = None
+
+
 class IdentityRequest(StrictPayload):
     identity_id: str
     identity_type: str
@@ -206,10 +226,22 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
         data = payload.model_dump()
         return ecosystem.merchant_payment(**data)
 
+    @router.get("/merchants")
+    def merchants(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.merchant_app_surface(organization_id=claims.organization_id)
+
     @router.post("/bills")
     def bill_payment(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
         data = payload.model_dump()
         return ecosystem.bill_payment(**data)
+
+    @router.get("/bills")
+    def bills(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_bills",
+            "organization_id": claims.organization_id,
+            "invoices": ecosystem.repository.list("novapay_invoices", organization_id=claims.organization_id),
+        }
 
     @router.post("/remittances")
     def remittance(payload: TransferRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
@@ -221,12 +253,36 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
         data = payload.model_dump()
         return ecosystem.card_payment(**data)
 
+    @router.get("/cards")
+    def cards(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_cards",
+            "organization_id": claims.organization_id,
+            "cards": [
+                {"type": "virtual", "status": "active"},
+                {"type": "physical", "status": "active"},
+                {"type": "disposable", "status": "supported"},
+            ],
+        }
+
     @router.post("/payouts")
     def payouts(payload: PayoutRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
         return ecosystem.payout(**payload.model_dump())
 
     @router.post("/operations/payroll")
     def payroll(payload: PayrollRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.business_payroll(
+            organization_id=payload.organization_id,
+            actor_id=payload.actor_id,
+            actor_role=payload.actor_role,
+            source_wallet_id=payload.source_wallet_id,
+            recipients=[item.model_dump() for item in payload.payroll],
+            currency=payload.currency,
+            idempotency_key=payload.idempotency_key,
+        )
+
+    @router.post("/payroll")
+    def payroll_alias(payload: PayrollRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
         return ecosystem.business_payroll(
             organization_id=payload.organization_id,
             actor_id=payload.actor_id,
@@ -267,6 +323,29 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
     def agent_cash(payload: AgentCashRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
         return ecosystem.agent_cash_movement(**payload.model_dump())
 
+    @router.get("/agents")
+    def agents(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_app_surface(organization_id=claims.organization_id)
+
+    @router.get("/business")
+    def business(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.business_wallet_surface(organization_id=claims.organization_id)
+
+    @router.get("/corporate")
+    def corporate(claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
+        return ecosystem.corporate_portal_surface(organization_id=claims.organization_id)
+
+    @router.get("/invoices")
+    def invoices(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_invoices",
+            "invoices": ecosystem.repository.list("novapay_invoices", organization_id=claims.organization_id),
+        }
+
+    @router.post("/invoices")
+    def create_invoice(payload: InvoiceRequest, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.issue_invoice(**payload.model_dump())
+
     @router.get("/receipts/{receipt_id}")
     def receipts(receipt_id: str, claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
         return ecosystem.verify_receipt(receipt_id)
@@ -279,9 +358,20 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
     def developer_apps(payload: DeveloperAppRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
         return ecosystem.developer_app_lifecycle(**payload.model_dump())
 
+    @router.get("/webhooks")
+    def webhooks(claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return {
+            "view": "novapay_webhooks",
+            "webhooks": ecosystem.repository.list("novapay_webhooks", organization_id=claims.organization_id),
+        }
+
+    @router.post("/webhooks")
+    def register_webhook(payload: WebhookRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return ecosystem.register_webhook(**payload.model_dump())
+
     @router.post("/developer/webhooks")
-    def developer_webhooks(payload: DeveloperAppRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
-        return ecosystem.developer_app_lifecycle(**payload.model_dump())
+    def developer_webhooks(payload: WebhookRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+        return ecosystem.register_webhook(**payload.model_dump())
 
     @router.post("/compliance/holds")
     def compliance_holds(payload: ComplianceHoldRequest, claims: JWTClaims = Depends(internal)) -> dict[str, Any]:
@@ -297,11 +387,7 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
 
     @router.get("/developer")
     def developer_portal(claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
-        return {
-            "view": "novapay_developer_portal",
-            "apps": ecosystem.repository.list("novapay_developer_apps", organization_id=claims.organization_id),
-            "webhooks": ecosystem.repository.list("novapay_webhooks", organization_id=claims.organization_id),
-        }
+        return ecosystem.developer_portal_surface(organization_id=claims.organization_id)
 
     @router.get("/trust")
     def trust_portal(claims: JWTClaims = Depends(trust_roles)) -> dict[str, Any]:
@@ -309,6 +395,7 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
             "view": "novapay_trust_portal",
             "recent_receipts": ecosystem.repository.list("novapay_receipts", organization_id=claims.organization_id),
             "recent_audit_events": ecosystem.repository.list("novapay_audit_events", organization_id=claims.organization_id),
+            "trust_surfaces": ecosystem.trust_surfaces(),
         }
 
     @router.get("/portals")
@@ -317,6 +404,14 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
             "view": "novapay_portals",
             "portals": ecosystem.portals(),
             "role_permissions": ecosystem.role_permissions(),
+        }
+
+    @router.get("/apps")
+    def apps(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_app_suite",
+            "apps": ecosystem.app_surfaces(),
+            "trust": ecosystem.trust_surfaces(),
         }
 
     @router.get("/ai/insights")

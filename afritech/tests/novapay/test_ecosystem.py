@@ -40,6 +40,7 @@ def test_repository_creates_requested_novapay_tables(tmp_path: Path) -> None:
         "novapay_refunds",
         "novapay_disputes",
         "novapay_payouts",
+        "novapay_invoices",
         "novapay_receipts",
         "novapay_provider_events",
         "novapay_audit_events",
@@ -334,9 +335,24 @@ def test_developer_api_key_lifecycle_compliance_hold_finance_reporting_and_porta
     assert portals.status_code == 200
     assert any(portal["name"] == "Trust Explorer" for portal in portals.json()["portals"])
 
+    app_suite = client.get("/v1/novapay/apps", headers=headers)
+    assert app_suite.status_code == 200
+    assert any(app["name"] == "NovaPay Agent App" for app in app_suite.json()["apps"])
+    assert any(app["name"] == "NovaPay Corporate Portal" for app in app_suite.json()["apps"])
+
     ai = client.get("/v1/novapay/ai/insights", headers=headers)
     assert ai.status_code == 200
     assert "spending_insights" in ai.json()
+
+    agents = client.get("/v1/novapay/agents", headers=headers)
+    business = client.get("/v1/novapay/business", headers=headers)
+    corporate = client.get("/v1/novapay/corporate", headers=headers)
+    invoices = client.get("/v1/novapay/invoices", headers=headers)
+
+    assert agents.status_code == 200
+    assert business.status_code == 200
+    assert corporate.status_code == 200
+    assert invoices.status_code == 200
 
 
 def test_role_permission_boundaries_block_consumer_access_to_internal_surfaces(tmp_path: Path) -> None:
@@ -347,10 +363,71 @@ def test_role_permission_boundaries_block_consumer_access_to_internal_surfaces(t
     finance = client.get("/v1/novapay/finance", headers=consumer_headers)
     operations = client.get("/v1/novapay/operations", headers=consumer_headers)
     trust = client.get("/v1/novapay/trust/explorer/demo", headers=consumer_headers)
+    corporate = client.get("/v1/novapay/corporate", headers=consumer_headers)
 
     assert finance.status_code == 403
     assert operations.status_code == 403
     assert trust.status_code == 403
+    assert corporate.status_code == 403
+
+
+def test_invoice_and_webhook_lifecycle(tmp_path: Path) -> None:
+    service = NovaPayEcosystem(NovaPayRepository(tmp_path / "novapay.sqlite3"))
+    client = _client(service)
+    headers = _headers("DEVELOPER", "dev-1", "org-pay")
+
+    wallet = client.post(
+        "/v1/novapay/wallets",
+        headers=_headers("OPERATOR", "ops-1", "org-pay"),
+        json={
+            "owner_id": "customer-1",
+            "organization_id": "org-pay",
+            "owner_type": "consumer",
+            "currency": "AUD",
+            "initial_balance": "50.00",
+            "kyc_status": "verified",
+        },
+    ).json()
+
+    invoice = client.post(
+        "/v1/novapay/invoices",
+        headers=headers,
+        json={
+            "organization_id": "org-pay",
+            "actor_id": "dev-1",
+            "actor_role": "DEVELOPER",
+            "customer_wallet_id": wallet["wallet_id"],
+            "amount": "12.50",
+            "currency": "AUD",
+            "reference": "inv-001",
+            "due_date": "2026-07-31",
+            "idempotency_key": "invoice-1",
+        },
+    )
+    assert invoice.status_code == 200
+    assert invoice.json()["reference"] == "inv-001"
+
+    webhook = client.post(
+        "/v1/novapay/developer/webhooks",
+        headers=headers,
+        json={
+            "organization_id": "org-pay",
+            "developer_id": "dev-1",
+            "webhook_url": "https://example.com/webhook",
+            "event_types": ["payment.completed", "settlement.completed"],
+            "secret_hint": "rotating",
+        },
+    )
+    assert webhook.status_code == 200
+    assert webhook.json()["delivery_status"] == "pending"
+
+    developer_portal = client.get("/v1/novapay/developer", headers=headers)
+    assert developer_portal.status_code == 200
+    assert developer_portal.json()["view"] == "novapay_developer_portal"
+
+    finance_report = client.get("/v1/novapay/finance", headers=_headers("INVESTOR", "investor-2", "org-pay"))
+    assert finance_report.status_code == 200
+    assert finance_report.json()["invoice_count"] == 1
 
 
 def test_signed_receipt_and_runtime_boundary_validation() -> None:

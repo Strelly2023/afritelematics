@@ -15,6 +15,7 @@ from afritech.core_platform.models import AuthorityRequest, Identity
 from afritech.core_platform.services import NovaIDService, NovaPowerEngine, NovaTrustService
 
 from .repository import NovaPayRecord, NovaPayRepository
+from .surfaces import build_app_surfaces, build_trust_surfaces
 
 
 ROLE_LIMITS = {
@@ -788,6 +789,65 @@ class NovaPayEcosystem:
         )
         return {"app": _record(app_record), "webhook": _record(webhook_record)}
 
+    def register_webhook(
+        self,
+        *,
+        organization_id: str,
+        developer_id: str,
+        webhook_url: str,
+        event_types: list[str],
+        secret_hint: str | None = None,
+    ) -> dict[str, Any]:
+        webhook_id = f"webhook-{uuid4().hex[:12]}"
+        record = self.repository.upsert(
+            "novapay_webhooks",
+            record_id=webhook_id,
+            organization_id=organization_id,
+            status="active",
+            payload={
+                "webhook_id": webhook_id,
+                "developer_id": developer_id,
+                "webhook_url": webhook_url,
+                "event_types": list(event_types),
+                "secret_hint": secret_hint,
+                "delivery_status": "pending",
+            },
+        )
+        return _record(record)
+
+    def issue_invoice(
+        self,
+        *,
+        organization_id: str,
+        actor_id: str,
+        actor_role: str,
+        customer_wallet_id: str,
+        amount: Decimal | int | str,
+        currency: str,
+        reference: str,
+        due_date: str | None = None,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        invoice_id = f"invoice-{uuid4().hex[:12]}"
+        record = self.repository.upsert(
+            "novapay_invoices",
+            record_id=invoice_id,
+            organization_id=organization_id,
+            status="issued",
+            payload={
+                "invoice_id": invoice_id,
+                "actor_id": actor_id,
+                "actor_role": actor_role,
+                "customer_wallet_id": customer_wallet_id,
+                "amount": _money(amount),
+                "currency": currency.upper(),
+                "reference": reference,
+                "due_date": due_date,
+                "idempotency_key": idempotency_key,
+            },
+        )
+        return _record(record)
+
     def compliance_hold(self, *, organization_id: str, actor_id: str, reason: str, subject_id: str) -> dict[str, Any]:
         decision = self.policy_decision(
             role="COMPLIANCE",
@@ -815,6 +875,7 @@ class NovaPayEcosystem:
         transactions = self.repository.list("novapay_transactions", organization_id=organization_id)
         refunds = self.repository.list("novapay_refunds", organization_id=organization_id)
         payouts = self.repository.list("novapay_payouts", organization_id=organization_id)
+        invoices = self.repository.list("novapay_invoices", organization_id=organization_id)
         ledger_entries = self.repository.list("novapay_ledger_entries", organization_id=organization_id)
         gross = sum(Decimal(str(tx.payload.get("amount", "0"))) for tx in transactions)
         total_wallet_balance = sum(Decimal(str(wallet.payload.get("balance", "0"))) for wallet in wallets)
@@ -824,6 +885,7 @@ class NovaPayEcosystem:
             "transaction_count": len(transactions),
             "refund_count": len(refunds),
             "payout_count": len(payouts),
+            "invoice_count": len(invoices),
             "ledger_entry_count": len(ledger_entries),
             "gross_volume": _money(gross),
             "wallet_balance": _money(total_wallet_balance),
@@ -833,42 +895,94 @@ class NovaPayEcosystem:
         report = self.finance_report(organization_id=organization_id)
         policy_approvals = self.repository.list("novapay_policy_approvals", organization_id=organization_id)
         receipts = self.repository.list("novapay_receipts", organization_id=organization_id)
+        webhooks = self.repository.list("novapay_webhooks", organization_id=organization_id)
         return {
             "organization_id": organization_id,
             "finance": report,
             "policy_approvals": len(policy_approvals),
             "verified_receipts": sum(1 for receipt in receipts if receipt.status == "verified"),
+            "webhooks": len(webhooks),
             "table_names": list(self.repository.table_names()),
         }
 
     def role_permissions(self) -> dict[str, list[str]]:
         return {
-            "consumer": ["wallet", "transfer", "qr", "refund"],
-            "business": ["wallet", "payroll", "merchant_payment", "settlement"],
-            "merchant": ["merchant_payment", "qr", "refund"],
-            "agent": ["cash_in", "cash_out", "wallet"],
-            "enterprise": ["approval", "payout", "settlement", "reconciliation"],
-            "developer": ["api_key_lifecycle", "webhook_delivery"],
+            "consumer": ["wallet", "transfer", "qr", "refund", "bill"],
+            "business": ["wallet", "payroll", "merchant_payment", "settlement", "invoice"],
+            "merchant": ["merchant_payment", "qr", "refund", "catalog"],
+            "agent": ["cash_in", "cash_out", "wallet", "kyc"],
+            "enterprise": ["approval", "payout", "settlement", "reconciliation", "treasury"],
+            "developer": ["api_key_lifecycle", "webhook_delivery", "contract_verification"],
             "public": ["trust_explorer"],
             "internal": ["support", "compliance", "operations", "finance"],
         }
 
     def portals(self) -> list[dict[str, Any]]:
-        return [
-            {"name": "NovaPay Wallet", "role": "consumer", "surface": "/v1/novapay/wallets"},
-            {"name": "Business Wallet", "role": "business", "surface": "/v1/novapay/transfers"},
-            {"name": "Merchant App", "role": "merchant", "surface": "/v1/novapay/merchants"},
-            {"name": "Agent App", "role": "agent", "surface": "/v1/novapay/payouts"},
-            {"name": "Corporate Portal", "role": "enterprise", "surface": "/v1/novapay/finance"},
-            {"name": "Developer Portal", "role": "developer", "surface": "/v1/novapay/developer"},
-            {"name": "Trust Explorer", "role": "public", "surface": "/v1/novapay/trust"},
-            {"name": "Customer Support Console", "role": "internal", "surface": "/v1/novapay/operations"},
-            {"name": "Compliance Portal", "role": "internal", "surface": "/v1/novapay/compliance"},
-            {"name": "Operations Dashboard", "role": "internal", "surface": "/v1/novapay/operations"},
-            {"name": "Finance Portal", "role": "internal", "surface": "/v1/novapay/finance"},
-            {"name": "Partner Portal", "role": "internal", "surface": "/v1/novapay/merchants"},
-            {"name": "Inspector Portal", "role": "public", "surface": "/v1/novapay/trust"},
-        ]
+        return [*build_app_surfaces(), *build_trust_surfaces()]
+
+    def app_surfaces(self) -> list[dict[str, Any]]:
+        return build_app_surfaces()
+
+    def trust_surfaces(self) -> list[dict[str, Any]]:
+        return build_trust_surfaces()
+
+    def agent_app_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_app",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "live_operations": {
+                "customers_waiting": len(self.repository.list("novapay_transactions", organization_id=organization_id)),
+                "nearby_agents": len(self.repository.list("novapay_agents", organization_id=organization_id)),
+                "settlement_queue": len(self.repository.list("novapay_payouts", organization_id=organization_id)),
+                "network_health": "green",
+            },
+        }
+
+    def wallet_app_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_wallet_app",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Wallet"),
+            "balances": {
+                "wallets": [wallet.payload for wallet in self.repository.list("novapay_wallets", organization_id=organization_id)],
+                "receipts": len(self.repository.list("novapay_receipts", organization_id=organization_id)),
+            },
+        }
+
+    def business_wallet_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_business_wallet",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Business Wallet"),
+            "treasury": self.finance_report(organization_id=organization_id),
+        }
+
+    def merchant_app_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_merchant_app",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Merchant App"),
+            "settlement": len(self.repository.list("novapay_settlements", organization_id=organization_id)),
+            "refunds": len(self.repository.list("novapay_refunds", organization_id=organization_id)),
+        }
+
+    def corporate_portal_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_corporate_portal",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Corporate Portal"),
+            "finance": self.finance_report(organization_id=organization_id),
+        }
+
+    def developer_portal_surface(self, organization_id: str) -> dict[str, Any]:
+        return {
+            "view": "novapay_developer_portal",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Developer Portal"),
+            "apps": self.repository.list("novapay_developer_apps", organization_id=organization_id),
+            "webhooks": self.repository.list("novapay_webhooks", organization_id=organization_id),
+        }
 
     def ai_insights(self, *, organization_id: str) -> dict[str, Any]:
         transactions = self.repository.list("novapay_transactions", organization_id=organization_id)

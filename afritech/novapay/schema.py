@@ -16,6 +16,7 @@ TABLE_NAMES = (
     "novapay_refunds",
     "novapay_disputes",
     "novapay_payouts",
+    "novapay_invoices",
     "novapay_receipts",
     "novapay_provider_events",
     "novapay_audit_events",

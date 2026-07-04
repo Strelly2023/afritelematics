@@ -1,0 +1,127 @@
+name: Full CI
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  push:
+    branches:
+      - main
+      - release/**
+      - rc/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  certification:
+    name: Full certification matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            rider_app/package-lock.json
+            driver_app/package-lock.json
+            dashboard/package-lock.json
+
+      - name: Cache tooling directories
+        uses: actions/cache@v4
+        with:
+          path: |
+            .pytest_cache
+            ~/.cache/mypy
+            ~/.cache/ruff
+            ~/.expo
+            ~/.cache/expo
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.cache/buildx
+            ~/.docker/buildx
+          key: full-ci-tools-${{ runner.os }}-${{ hashFiles('requirements.txt', 'requirements-dev.txt', 'pyproject.toml', 'package-lock.json', 'rider_app/package-lock.json', 'driver_app/package-lock.json', 'dashboard/package-lock.json') }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Install frontend dependencies
+        run: |
+          npm --prefix rider_app ci
+          npm --prefix driver_app ci
+          npm --prefix dashboard ci
+
+      - name: Compile all Python
+        run: python -m compileall afritech afriride_system
+
+      - name: Full pytest parallel pass
+        run: python -m pytest -n auto -m "not serial"
+
+      - name: Full pytest serial pass
+        run: python -m pytest -q -m serial
+
+      - name: Dashboard build
+        run: npm --prefix dashboard run build
+
+      - name: Rider typecheck
+        run: npm --prefix rider_app run typecheck
+
+      - name: Driver typecheck
+        run: npm --prefix driver_app run typecheck
+
+      - name: Android validation
+        run: npm --prefix driver_app run android
+
+      - name: iOS validation
+        if: ${{ secrets.EXPO_TOKEN != '' }}
+        run: npm --prefix driver_app run ios
+
+      - name: Documentation link check
+        run: python -m afritech.ci.docs_link_validator
+
+      - name: Secret scan
+        run: python -m afritech.ci.secret_scan
+
+      - name: Governance validators
+        run: |
+          python -m afritech.ci.four_gate_validator
+          python -m afritech.guards.guard_runtime_boundary_governance --fail-on-drift
+          python -m afritech.ci.runtime_certificate_validator
+          python -m afritech.ci.security_integrity_validator
+          python -m afritech.ci.observability_evidence_validator
+
+      - name: Proof and replay validators
+        run: |
+          python -m afritech.ci.receipt_validator
+          python -m afritech.ci.replay_authority_validator
+          python -m afritech.ci.replay_integrity_validator
+          python -m afritech.ci.distributed_replay_validator
+          python -m afritech.ci.witness_proof_validator
+
+      - name: Git diff check
+        run: git diff --check

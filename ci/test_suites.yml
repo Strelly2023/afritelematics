@@ -1,0 +1,177 @@
+suites:
+  core_api:
+    description: Core API, runtime, and architecture contract tests
+    command: python3 -m pytest -q afritech/tests/api/test_core_platform_api.py afritech/tests/api/test_dashboard_gateway_api.py afritech/tests/api/test_system_status_api.py afritech/tests/api/test_schema_registry_api.py afritech/tests/api/test_public_verification_api.py
+    pytest_paths:
+      - afritech/tests/api/test_core_platform_api.py
+      - afritech/tests/api/test_dashboard_gateway_api.py
+      - afritech/tests/api/test_system_status_api.py
+      - afritech/tests/api/test_schema_registry_api.py
+      - afritech/tests/api/test_public_verification_api.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, git_diff_check]
+    parallel_safe: true
+
+  governance:
+    description: Governance, validators, and boundary checks
+    command: python3 -m pytest -q afritech/tests/ci afritech/tests/guards
+    pytest_paths:
+      - afritech/tests/ci
+      - afritech/tests/guards
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, git_diff_check]
+    parallel_safe: false
+
+  trust:
+    description: Proof, replay, receipt, and trust tests
+    command: python3 -m pytest -q afritech/tests/proof afritech/tests/replay afritech/tests/trust_lock afritech/tests/api/test_trust_network_api.py afritech/tests/api/test_pilot_evidence_compatibility.py
+    pytest_paths:
+      - afritech/tests/proof
+      - afritech/tests/replay
+      - afritech/tests/trust_lock
+      - afritech/tests/api/test_trust_network_api.py
+      - afritech/tests/api/test_pilot_evidence_compatibility.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, git_diff_check]
+    parallel_safe: false
+
+  payments:
+    description: AfriPay and NovaPay money movement tests
+    command: python3 -m pytest -q afritech/tests/afripay afritech/tests/novapay afritech/tests/api/test_novapay_runtime_api.py afritech/tests/api/test_driver_backend_contract.py
+    pytest_paths:
+      - afritech/tests/afripay
+      - afritech/tests/novapay
+      - afritech/tests/api/test_novapay_runtime_api.py
+      - afritech/tests/api/test_driver_backend_contract.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, git_diff_check]
+    parallel_safe: false
+
+  identity:
+    description: Identity, auth, and claims tests
+    command: python3 -m pytest -q afritech/tests/api/test_afriride_rbac_api.py afritech/tests/api/test_trace_api.py
+    pytest_paths:
+      - afritech/tests/api/test_afriride_rbac_api.py
+      - afritech/tests/api/test_trace_api.py
+    builds: [python]
+    governance_checks: [runtime_boundary, git_diff_check]
+    parallel_safe: true
+
+  novapay:
+    description: NovaPay suite and contract tests
+    command: python3 -m pytest -q afritech/tests/novapay afritech/tests/api/test_novapay_runtime_api.py
+    pytest_paths:
+      - afritech/tests/novapay
+      - afritech/tests/api/test_novapay_runtime_api.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, git_diff_check]
+    parallel_safe: false
+
+  novaride:
+    description: NovaRide backend and phase tests
+    command: python3 -m pytest -q afritech/tests/api/test_novaride_phase1_api.py afritech/tests/api/test_novaride_phase2_api.py afritech/tests/api/test_novaride_phase3_api.py afritech/tests/api/test_novaride_phase4_api.py afritech/tests/api/test_novaride_phase5_api.py afritech/tests/api/test_novaride_phase6_api.py afritech/tests/api/test_novaride_phase7_api.py afritech/tests/api/test_novaride_phase8_api.py afritech/tests/api/test_novaride_phase9_api.py afritech/tests/api/test_novaride_phase10_api.py afritech/tests/api/test_novaride_phase11_api.py afritech/tests/api/test_novaride_phase12_api.py afritech/tests/api/test_novaride_phase13_api.py
+    pytest_paths:
+      - afritech/tests/api/test_novaride_phase1_api.py
+      - afritech/tests/api/test_novaride_phase2_api.py
+      - afritech/tests/api/test_novaride_phase3_api.py
+      - afritech/tests/api/test_novaride_phase4_api.py
+      - afritech/tests/api/test_novaride_phase5_api.py
+      - afritech/tests/api/test_novaride_phase6_api.py
+      - afritech/tests/api/test_novaride_phase7_api.py
+      - afritech/tests/api/test_novaride_phase8_api.py
+      - afritech/tests/api/test_novaride_phase9_api.py
+      - afritech/tests/api/test_novaride_phase10_api.py
+      - afritech/tests/api/test_novaride_phase11_api.py
+      - afritech/tests/api/test_novaride_phase12_api.py
+      - afritech/tests/api/test_novaride_phase13_api.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, git_diff_check]
+    parallel_safe: true
+
+  rider_app:
+    description: Rider app typecheck and tests
+    command: npm --prefix rider_app run typecheck
+    pytest_paths:
+      - afritech/tests/api/test_afriride_next_gen_mobile_api.py
+      - afritech/tests/api/test_afriride_shared_js_mobile_flow.py
+    builds: [rider_typecheck]
+    governance_checks: [git_diff_check]
+    parallel_safe: true
+
+  driver_app:
+    description: Driver app typecheck and tests
+    command: npm --prefix driver_app run typecheck
+    pytest_paths:
+      - afritech/tests/api/test_afriride_driver_views.py
+      - afritech/tests/api/test_driver_backend_contract.py
+    builds: [driver_typecheck]
+    governance_checks: [git_diff_check]
+    parallel_safe: true
+
+  dashboard:
+    description: Operator dashboard build and tests
+    command: npm --prefix dashboard run build
+    pytest_paths:
+      - dashboard/tests
+    builds: [dashboard_build]
+    governance_checks: [git_diff_check]
+    parallel_safe: true
+
+  android:
+    description: Android packaging and release validation
+    command: npm --prefix driver_app run android
+    pytest_paths: []
+    builds: [android_build]
+    governance_checks: [git_diff_check]
+    parallel_safe: false
+
+  ios:
+    description: iOS release validation
+    command: npm --prefix driver_app run ios
+    pytest_paths: []
+    builds: [ios_validation]
+    governance_checks: [git_diff_check]
+    parallel_safe: false
+
+  security:
+    description: Security and integrity validators
+    command: python3 -m pytest -q afritech/tests/security afritech/tests/afripay/test_afripay_api_security.py afritech/tests/afripay/test_afripay_evidence_security.py afritech/tests/afripay/test_afripay_global_proof_security.py
+    pytest_paths:
+      - afritech/tests/security
+      - afritech/tests/afripay/test_afripay_api_security.py
+      - afritech/tests/afripay/test_afripay_evidence_security.py
+      - afritech/tests/afripay/test_afripay_global_proof_security.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, git_diff_check]
+    parallel_safe: false
+
+  performance:
+    description: Performance and load tests
+    command: python3 -m pytest -q afritech/tests/load afritech/tests/monitoring afritech/tests/runtime
+    pytest_paths:
+      - afritech/tests/load
+      - afritech/tests/monitoring
+      - afritech/tests/runtime
+    builds: [python]
+    governance_checks: [git_diff_check]
+    parallel_safe: true
+
+  docs:
+    description: Documentation compliance and link checks
+    command: python3 -m pytest -q afritech/tests/api/test_documentation_compliance_api.py
+    pytest_paths:
+      - afritech/tests/api/test_documentation_compliance_api.py
+    builds: [python]
+    governance_checks: [docs_link_check, git_diff_check]
+    parallel_safe: true
+
+  release_certification:
+    description: Release certification and proof validation
+    command: python3 -m pytest -q afritech/tests/certification afritech/tests/ci/test_production_readiness_certificate.py afritech/tests/ci/test_runtime_boundary_validator.py
+    pytest_paths:
+      - afritech/tests/certification
+      - afritech/tests/ci/test_production_readiness_certificate.py
+      - afritech/tests/ci/test_runtime_boundary_validator.py
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary, secret_scan, docs_link_check, git_diff_check]
+    parallel_safe: false

@@ -1,0 +1,116 @@
+force_full_patterns:
+  - afritech/constitution/**
+  - afritech/guards/**
+  - afritech/ci/**
+  - afritech/proof/**
+  - afritech/replay/**
+  - afritech/trust/**
+  - afritech/novapay/**
+  - afritech/afripay/**
+  - afritech/api/auth/**
+  - afritech/security/**
+  - afritech/middleware/**
+  - afritech/migrations/**
+  - .github/workflows/**
+  - requirements*.txt
+  - pyproject.toml
+  - package.json
+  - package-lock.json
+  - rider_app/**
+  - driver_app/**
+  - dashboard/**
+  - deploy/**
+  - docs/release/**
+
+rules:
+  - match: afritech/novapay/**
+    modules: [novapay_core, novapay_apps, novapay_trust, novapay_policy, novapay_ai]
+    suites: [novapay, payments, trust]
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary]
+    confidence: 0.97
+    reason: NovaPay domain files changed.
+  - match: afritech/api/novapay_ecosystem_api.py
+    modules: [novapay_api_surface]
+    suites: [novapay, core_api]
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary]
+    confidence: 0.96
+    reason: NovaPay API surface changed.
+  - match: afritech/api/core_platform_api.py
+    modules: [core_api]
+    suites: [core_api, trust, identity]
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary]
+    confidence: 0.95
+    reason: Core platform API changed.
+  - match: afritech/api/novapay_runtime_api.py
+    modules: [novapay_runtime]
+    suites: [novapay, payments]
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary]
+    confidence: 0.95
+    reason: NovaPay runtime changed.
+  - match: afritech/api/auth/**
+    modules: [identity, security]
+    suites: [identity, security]
+    builds: [python]
+    governance_checks: [runtime_boundary]
+    confidence: 0.94
+    reason: Auth and claims surface changed.
+  - match: afritech/afripay/**
+    modules: [payments, trust]
+    suites: [payments, trust]
+    builds: [python]
+    governance_checks: [four_gate, runtime_boundary]
+    confidence: 0.95
+    reason: AfriPay payment core changed.
+  - match: afritech/afriride_mobile_release.py
+    modules: [mobile_release]
+    suites: [android, ios, rider_app, driver_app]
+    builds: [android_build, ios_validation, rider_typecheck, driver_typecheck]
+    governance_checks: [runtime_boundary]
+    confidence: 0.91
+    reason: Mobile release surface changed.
+  - match: rider_app/**
+    modules: [rider_app]
+    suites: [rider_app, android]
+    builds: [rider_typecheck, android_build]
+    governance_checks: [git_diff_check]
+    confidence: 0.92
+    reason: Rider app files changed.
+  - match: driver_app/**
+    modules: [driver_app]
+    suites: [driver_app, ios]
+    builds: [driver_typecheck, ios_validation]
+    governance_checks: [git_diff_check]
+    confidence: 0.92
+    reason: Driver app files changed.
+  - match: dashboard/**
+    modules: [dashboard]
+    suites: [dashboard, docs]
+    builds: [dashboard_build]
+    governance_checks: [git_diff_check]
+    confidence: 0.92
+    reason: Dashboard files changed.
+  - match: afritech/tests/novapay/**
+    modules: [novapay_tests]
+    suites: [novapay]
+    builds: [python]
+    governance_checks: [git_diff_check]
+    confidence: 0.93
+    reason: NovaPay contract tests changed.
+  - match: afritech/tests/api/test_novapay_runtime_api.py
+    modules: [novapay_runtime_tests]
+    suites: [novapay]
+    builds: [python]
+    governance_checks: [git_diff_check]
+    confidence: 0.93
+    reason: NovaPay runtime test changed.
+  - match: docs/**
+    modules: [docs]
+    suites: [docs]
+    builds: []
+    governance_checks: [docs_link_check]
+    confidence: 0.9
+    reason: Documentation files changed.
