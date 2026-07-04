@@ -5,6 +5,10 @@ This document defines the deployment shape for NovaPay as a protocol + rails + a
 It complements the existing NovaTech core platform docs and is intended to be the
 operational handoff for an Australia-to-Africa corridor launch.
 
+For controlled pilot execution and evidence requirements before launch, see:
+
+`docs/operations/NOVATECH_CONTROLLED_PILOT_PROGRAM.md`
+
 ## 1. System architecture
 
 NovaPay is split into four deployment layers:
@@ -247,4 +251,3 @@ NovaPay is production-ready for a corridor only if all are true:
 - settlement adapter is live in sandbox and production
 - compliance screen is wired and tested
 - reconciliation reports zero unexplained drift
-

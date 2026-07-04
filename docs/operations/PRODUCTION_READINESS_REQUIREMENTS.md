@@ -160,3 +160,7 @@ Business gates:
 
 This classification separates implemented software from external activation and
 launch dependencies.
+
+For the operational pilot stage that precedes commercial launch, see:
+
+`docs/operations/NOVATECH_CONTROLLED_PILOT_PROGRAM.md`
