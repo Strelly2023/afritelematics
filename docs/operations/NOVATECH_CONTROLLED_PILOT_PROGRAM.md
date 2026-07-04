@@ -229,7 +229,87 @@ Each pilot cycle should generate an evidence package with:
 | Support | incident and resolution summary |
 | Security | vulnerability review summary |
 
-## 9. Exit Gates
+### Evidence separation
+
+Repository evidence and operational evidence are related but distinct:
+
+| Category | Evidence |
+| --- | --- |
+| Repository evidence | CI validation, architecture validation, tests, documentation validation |
+| Operational evidence | Pilot metrics, monitoring, support outcomes, finance reconciliation, compliance reviews, operational incidents |
+
+## 9. Pilot Decision Matrix
+
+Operators should use the following matrix when deciding how to proceed at the
+end of a pilot cycle or after a material incident:
+
+| Pilot outcome | Required action | Approval |
+| --- | --- | --- |
+| All KPIs achieved, no critical incidents | Promote to Operational Readiness review | Pilot Manager + Operations Lead |
+| KPIs achieved with minor issues | Continue pilot with corrective actions | Pilot Manager |
+| KPIs partially achieved | Extend pilot for another cycle | Governance Board |
+| Critical defect affecting safety, payments, identity, or trust | Pause affected workflows until resolved | Operations Lead + Governance |
+| Governance validation fails | Suspend pilot immediately | Governance Authority |
+| External dependency unavailable (payment provider, push service, maps, etc.) | Continue unaffected scenarios or suspend impacted workflows | Operations Lead |
+
+## 10. Pilot Completion Report
+
+Every pilot cycle should end with a standardized completion report.
+
+Suggested structure:
+
+```text
+Pilot ID
+Pilot Name
+Cycle Number
+Start Date
+End Date
+
+Participants
+-----------
+Drivers
+Riders
+Consumers
+Merchants
+Agents
+
+KPIs
+----
+Ride completion
+Transaction success
+Settlement success
+Support SLA
+Compliance SLA
+
+Governance
+----------
+Four-gate validation
+Runtime validation
+Replay validation
+Security review
+
+Operational Summary
+-------------------
+Incidents
+Corrective actions
+Known risks
+
+Recommendation
+--------------
+Continue Pilot
+Extend Pilot
+Promote to Operational Readiness
+Stop Pilot
+
+Approvals
+---------
+Pilot Manager
+Operations Lead
+Compliance Lead
+Engineering Lead
+```
+
+## 11. Exit Gates
 
 ### From Controlled Pilot Ready to Operationally Ready
 
@@ -252,7 +332,7 @@ Promotion requires:
 - app store / Play Console approvals completed
 - executive go-live approval recorded
 
-## 10. Current Classification
+## 12. Current Classification
 
 | Domain | Status |
 | --- | --- |
@@ -266,7 +346,7 @@ Promotion requires:
 | Operational readiness | External activation required |
 | Commercial launch | Pending operational approvals |
 
-## 11. Notes
+## 13. Notes
 
 The repository evidence referenced by this program is the implementation and
 validation work in source control. Operational evidence is produced by the live
