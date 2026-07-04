@@ -41,6 +41,16 @@ provable.
 - CBDC live gateway mode, enabled by environment configuration
 - blockchain anchor adapter, exposed as an optional verification layer
 
+### Operational Readiness Dependencies
+
+The following items are production activation requirements rather than source
+control features:
+
+- live provider credentials and webhook registration
+- production signing material and secret provisioning
+- store release activation and platform review approvals
+- production monitoring, alerting, and backup services
+
 ### Future
 
 - true multi-region infrastructure deployment

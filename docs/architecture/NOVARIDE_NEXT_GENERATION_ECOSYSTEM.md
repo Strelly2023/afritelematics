@@ -58,6 +58,10 @@ NovaRide guarantees within supported versions:
 - auditable operations
 - backward compatibility within supported versions
 
+Launch prerequisites such as production signing material, live provider
+credentials, store console activation, and production secret provisioning are
+operational readiness requirements, not missing product features.
+
 ## Application Ecosystem
 
 NovaRide applications are organized around the people who operate or consume

@@ -46,3 +46,13 @@ per-process latency samples must be scraped from every replica.
 - [ ] Redis/PostgreSQL backups, outbox workers, observability alerts and incident drills pass.
 - [ ] Real-device rider/driver ride, offline, SOS, payment, refund and payout rehearsals pass.
 - [ ] Production signing is independently verified before Play Store/TestFlight upload.
+
+## Operational Readiness Requirements
+
+The remaining launch dependencies are external production prerequisites, not
+missing software features. They are documented centrally in:
+
+`docs/operations/PRODUCTION_READINESS_REQUIREMENTS.md`
+
+Use that document for production credentials, live provider activation, app
+store release prerequisites, and launch approval gates.

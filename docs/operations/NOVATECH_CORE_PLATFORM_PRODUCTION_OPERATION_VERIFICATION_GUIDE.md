@@ -5,6 +5,12 @@
 This guide describes the production operation path for the NovaTech core
 platform services implemented in this repository.
 
+Production credentials, app-store activation, and live external provider
+certification are operational readiness requirements rather than source
+control features. See:
+
+`docs/operations/PRODUCTION_READINESS_REQUIREMENTS.md`
+
 The following container state was reported by the operator and should be
 verified on the host before running a live pilot:
 

@@ -12,6 +12,10 @@ It explains how layers connect.
 It does not itself prove production readiness, unrestricted ecosystem scale, or
 runtime truth.
 
+External production dependencies, such as live provider credentials, app-store
+activation, and production secrets, are documented as operational readiness
+requirements rather than missing implementation work.
+
 ## Canonical Distinction
 
 ```text

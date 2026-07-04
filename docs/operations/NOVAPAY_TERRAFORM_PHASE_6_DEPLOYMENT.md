@@ -6,6 +6,12 @@ This guide describes the step-by-step Terraform deployment path for moving the
 current NovaPay stack toward Kafka-backed, multi-region operation with KMS
 signing and cross-border settlement pilots.
 
+Operational prerequisites that remain outside source control, including live
+provider credentials, store release activation, and production secret
+provisioning, are documented in:
+
+`docs/operations/PRODUCTION_READINESS_REQUIREMENTS.md`
+
 ## 1. What is already in code
 
 The repository already implements:
