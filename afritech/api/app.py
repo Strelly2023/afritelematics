@@ -65,6 +65,7 @@ from afritech.api.core_platform_api import (
     build_public_trust_explorer_router,
 )
 from afritech.api.novapay_ecosystem_api import build_novapay_ecosystem_router
+from afritech.api.novaid_api import build_novaid_router
 from afritech.api.novaportal_suite_api import build_novaportal_suite_router
 from afritech.api.novapay_runtime_api import build_novapay_runtime_router
 from afritech.api.contracts.schema_registry_api import build_schema_registry_router
@@ -364,6 +365,7 @@ app.include_router(
     )
 )
 app.include_router(build_novapay_ecosystem_router())
+app.include_router(build_novaid_router())
 app.include_router(build_novaportal_suite_router())
 
 # ✅ AfriPro workspace API

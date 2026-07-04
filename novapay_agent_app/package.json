@@ -1,0 +1,10 @@
+{
+  "name": "novapay-agent-app",
+  "version": "2026.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "test": "python3 -m pytest -q tests"
+  }
+}

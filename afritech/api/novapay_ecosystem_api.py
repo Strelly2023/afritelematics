@@ -327,6 +327,114 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
     def agents(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
         return ecosystem.agent_app_surface(organization_id=claims.organization_id)
 
+    @router.get("/agents/profile")
+    def agent_profile(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_profile_surface(organization_id=claims.organization_id)
+
+    @router.get("/agents/float")
+    def agent_float(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_float_surface(organization_id=claims.organization_id)
+
+    @router.post("/agents/send-money")
+    def agent_send_money(payload: dict[str, Any], claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_send_money",
+            "organization_id": claims.organization_id,
+            "status": "preview",
+            "policy": "NovaPower required",
+            "receipt": "NovaTrust preview only",
+            "payload": payload,
+        }
+
+    @router.post("/agents/receive-money")
+    def agent_receive_money(payload: dict[str, Any], claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_receive_money",
+            "organization_id": claims.organization_id,
+            "status": "preview",
+            "policy": "NovaPower required",
+            "payload": payload,
+        }
+
+    @router.post("/agents/cash-in")
+    def agent_cash_in(payload: dict[str, Any], claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_cash_in",
+            "organization_id": claims.organization_id,
+            "status": "preview",
+            "policy": "NovaPower required",
+            "payload": payload,
+        }
+
+    @router.post("/agents/cash-out")
+    def agent_cash_out(payload: dict[str, Any], claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_cash_out",
+            "organization_id": claims.organization_id,
+            "status": "preview",
+            "policy": "NovaPower required",
+            "payload": payload,
+        }
+
+    @router.get("/agents/qr")
+    def agent_qr(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_qr",
+            "organization_id": claims.organization_id,
+            "scan_modes": ["camera", "flashlight", "offline_decode"],
+        }
+
+    @router.get("/agents/kyc")
+    def agent_kyc(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_kyc",
+            "organization_id": claims.organization_id,
+            "customers": ecosystem.repository.list("novapay_accounts", organization_id=claims.organization_id),
+        }
+
+    @router.get("/agents/commissions")
+    def agent_commissions(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_float_surface(organization_id=claims.organization_id)
+
+    @router.get("/agents/settlement")
+    def agent_settlement(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_settlement",
+            "organization_id": claims.organization_id,
+            "settlements": ecosystem.repository.list("novapay_settlements", organization_id=claims.organization_id),
+        }
+
+    @router.get("/agents/history")
+    def agent_history(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_history_surface(organization_id=claims.organization_id)
+
+    @router.get("/agents/offline-queue")
+    def agent_offline_queue(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_offline_queue_surface(organization_id=claims.organization_id)
+
+    @router.post("/agents/sync")
+    def agent_sync(payload: dict[str, Any], claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return {
+            "view": "novapay_agent_sync",
+            "organization_id": claims.organization_id,
+            "status": "queued",
+            "sync_status": "queued",
+            "payload": payload,
+            "policy": "NovaPower conflict detection required",
+        }
+
+    @router.get("/agents/compliance")
+    def agent_compliance(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_compliance_surface(organization_id=claims.organization_id)
+
+    @router.get("/agents/receipts")
+    def agent_receipts(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_receipts_surface(organization_id=claims.organization_id)
+
+    @router.get("/agents/supervisor-review")
+    def agent_supervisor_review(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return ecosystem.agent_supervisor_review_surface(organization_id=claims.organization_id)
+
     @router.get("/business")
     def business(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
         return ecosystem.business_wallet_surface(organization_id=claims.organization_id)

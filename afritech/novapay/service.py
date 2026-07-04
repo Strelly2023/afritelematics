@@ -7,6 +7,7 @@ from decimal import Decimal
 import hashlib
 import json
 import os
+import sqlite3
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -938,6 +939,115 @@ class NovaPayEcosystem:
                 "network_health": "green",
             },
         }
+
+    def agent_profile_surface(self, organization_id: str) -> dict[str, Any]:
+        accounts = self.repository.list("novapay_accounts", organization_id=organization_id)
+        wallets = self.repository.list("novapay_wallets", organization_id=organization_id)
+        agents = self.repository.list("novapay_agents", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_profile",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "agent_count": len(agents),
+            "wallet_count": len(wallets),
+            "identity_status": "verified" if accounts else "review",
+            "device_trust": "trusted" if agents else "review",
+            "pilot_mode": True,
+        }
+
+    def agent_float_surface(self, organization_id: str) -> dict[str, Any]:
+        wallets = self.repository.list("novapay_wallets", organization_id=organization_id)
+        payouts = self.repository.list("novapay_payouts", organization_id=organization_id)
+        settlements = self.repository.list("novapay_settlements", organization_id=organization_id)
+        balance = sum(Decimal(str(wallet.payload.get("balance", "0"))) for wallet in wallets)
+        return {
+            "view": "novapay_agent_float",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "float_balance": _money(balance),
+            "wallet_count": len(wallets),
+            "pending_settlements": len([record for record in settlements if record.status != "settled"]),
+            "pending_payouts": len([record for record in payouts if record.status != "settled"]),
+            "commission_today": _money(sum(Decimal(str(item.payload.get("amount", "0"))) for item in payouts)),
+        }
+
+    def agent_history_surface(self, organization_id: str) -> dict[str, Any]:
+        transactions = self.repository.list("novapay_transactions", organization_id=organization_id)
+        receipts = self.repository.list("novapay_receipts", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_history",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "transactions": [_record(record) for record in transactions],
+            "receipts": [_record(record) for record in receipts],
+        }
+
+    def agent_offline_queue_surface(self, organization_id: str) -> dict[str, Any]:
+        queue = self._optional_records("novapay_offline_queue", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_offline_queue",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "offline_queue": [_record(record) for record in queue],
+            "duplicate_prevention": True,
+            "idempotency": True,
+        }
+
+    def agent_sync_surface(self, organization_id: str) -> dict[str, Any]:
+        queue = self._optional_records("novapay_offline_queue", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_sync",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "pending_sync": len(queue),
+            "sync_status": "pending" if queue else "online",
+            "conflict_detection": True,
+        }
+
+    def agent_compliance_surface(self, organization_id: str) -> dict[str, Any]:
+        approvals = self._optional_records("novapay_policy_approvals", organization_id=organization_id)
+        holds = self._optional_records("novapay_compliance_holds", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_compliance",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "alerts": [
+                "High Value Alert" if approvals else "Daily Limit Warning",
+                "AML Review Pending" if holds else "Supervisor Review Required",
+            ],
+            "holds": [_record(record) for record in holds],
+            "policy_approvals": [_record(record) for record in approvals],
+        }
+
+    def agent_receipts_surface(self, organization_id: str) -> dict[str, Any]:
+        receipts = self._optional_records("novapay_receipts", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_receipts",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "receipts": [_record(record) for record in receipts],
+            "signature_state": "verified" if receipts else "pending",
+        }
+
+    def agent_supervisor_review_surface(self, organization_id: str) -> dict[str, Any]:
+        approvals = self._optional_records("novapay_policy_approvals", organization_id=organization_id)
+        receipts = self._optional_records("novapay_receipts", organization_id=organization_id)
+        return {
+            "view": "novapay_agent_supervisor_review",
+            "organization_id": organization_id,
+            "surface": next(surface for surface in build_app_surfaces() if surface["name"] == "NovaPay Agent App"),
+            "requires_review": bool(approvals or receipts),
+            "policy_approvals": len(approvals),
+            "verified_receipts": len(receipts),
+        }
+
+    def _optional_records(self, table_name: str, *, organization_id: str) -> list[NovaPayRecord]:
+        try:
+            return self.repository.list(table_name, organization_id=organization_id)
+        except sqlite3.OperationalError as exc:
+            if "no such table" not in str(exc).lower():
+                raise
+            return []
 
     def wallet_app_surface(self, organization_id: str) -> dict[str, Any]:
         return {

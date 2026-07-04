@@ -73,41 +73,6 @@ include = [
 
 
 # =============================================================================
-# PYTEST CONFIGURATION
-# =============================================================================
-
-[tool.pytest.ini_options]
-
-pythonpath = ["."]
-testpaths = [
-    "afritech/tests",
-    "tests",
-    "afriride_system/tests",
-    "ecosystems/afriride/tests",
-]
-
-# ✅ IMPORTANT: disable Django auto-load globally
-addopts = "-ra -q --disable-warnings -p no:django"
-
-xfail_strict = true
-
-markers = [
-    "serial: tests that must not run in parallel",
-    "integration: integration-level tests",
-    "governance: governance and boundary tests",
-    "release: release certification tests",
-    "mobile: mobile-app tests",
-    "dashboard: dashboard tests",
-    "payments: payment-domain tests",
-    "trust: trust, replay, and proof tests",
-]
-
-filterwarnings = [
-    "error",
-]
-
-
-# =============================================================================
 # COVERAGE CONFIGURATION
 # =============================================================================
 

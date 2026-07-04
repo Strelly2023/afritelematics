@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "NovaPay Agent (Pilot)",
+    "slug": "novapay-agent-pilot",
+    "version": "2026.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "android": {
+      "package": "com.ostrinov23.novapayagentpilot",
+      "permissions": ["CAMERA", "POST_NOTIFICATIONS", "USE_BIOMETRIC"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.ostrinov23.novapayagentpilot",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "NovaPay Agent App scans QR codes for controlled pilot operations.",
+        "NSFaceIDUsageDescription": "NovaPay Agent App uses biometrics for trusted pilot sign-in.",
+        "NSUserNotificationUsageDescription": "NovaPay Agent App sends sync and compliance updates."
+      }
+    },
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d7de07e8-1f8a-4f16-bf52-71e1a7d4c4f8"
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": ["expo-secure-store"]
+  }
+}
