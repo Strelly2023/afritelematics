@@ -19,7 +19,7 @@ services:
     expose:
       - "8000"
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8001:8000"
     command:
       - uvicorn
       - afritech.api.app:app
@@ -31,9 +31,9 @@ services:
       - "1"
       - --proxy-headers
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "--max-time", "10", "http://127.0.0.1:8000/health"]
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('127.0.0.1', 8000), 5); s.close()\""]
       interval: 15s
-      timeout: 12s
+      timeout: 8s
       retries: 5
       start_period: 30s
 

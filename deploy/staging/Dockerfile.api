@@ -13,9 +13,11 @@ RUN apt-get update && apt-get install -y \
 # --- App directory ---
 WORKDIR /app
 
+
 # --- Copy project files ---
 COPY pyproject.toml README.md /app/
 COPY afritech /app/afritech
+COPY architecture_validator /app/architecture_validator
 COPY afriride_system /app/afriride_system
 COPY afriride /app/afriride
 COPY dashboard /app/dashboard
@@ -25,6 +27,8 @@ COPY ecosystems /app/ecosystems
 COPY docs /app/docs
 COPY reports /app/reports
 COPY traces /app/traces
+
+
 
 # --- Install Python dependencies ---
 RUN pip install --no-cache-dir --upgrade pip && \
