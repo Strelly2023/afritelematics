@@ -1,0 +1,77 @@
+{
+  "app_id": "novapay-agent-app",
+  "display_name": "NovaPay Agent App",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "novapay_agent_app",
+  "store_surfaces": {
+    "android_package": "com.ostrinov23.novapayagentpilot",
+    "ios_bundle_identifier": "com.ostrinov23.novapayagentpilot",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "apk_url": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
+  "apk_sha256": "94106a69870c8603b6b751459c14a17318e60def9d4c05a75b0d9c3a9b4a1043",
+  "required_capabilities": [
+    "dashboard",
+    "primary_actions",
+    "send_money",
+    "receive_money",
+    "cash_in",
+    "cash_out",
+    "qr_scanning",
+    "customer_verification",
+    "float_management",
+    "transaction_timeline",
+    "offline_queue",
+    "receipt_verification",
+    "commission_tracking",
+    "compliance_alerts",
+    "pilot_mode_banner",
+    "device_trust",
+    "novai_advisory"
+  ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
+    "android_apk_sha256": "94106a69870c8603b6b751459c14a17318e60def9d4c05a75b0d9c3a9b4a1043"
+  },
+  "required_backend_contracts": [
+    "GET /v1/novapay/agents/profile",
+    "GET /v1/novapay/agents/float",
+    "POST /v1/novapay/agents/send-money",
+    "POST /v1/novapay/agents/receive-money",
+    "POST /v1/novapay/agents/cash-in",
+    "POST /v1/novapay/agents/cash-out",
+    "GET /v1/novapay/agents/qr",
+    "GET /v1/novapay/agents/kyc",
+    "GET /v1/novapay/agents/commissions",
+    "GET /v1/novapay/agents/settlement",
+    "GET /v1/novapay/agents/history",
+    "GET /v1/novapay/agents/offline-queue",
+    "POST /v1/novapay/agents/sync",
+    "GET /v1/novapay/agents/compliance",
+    "GET /v1/novapay/agents/receipts",
+    "GET /v1/novapay/agents/supervisor-review"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "pilot_mode_banner_present",
+    "device_trust_visible",
+    "api_contract_verified",
+    "offline_queue_verified",
+    "receipt_signature_visible",
+    "novaai_advisory_only_verified",
+    "no_payment_execution_logic_in_ui",
+    "crash_free_pilot_build",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "novapay_agent_app_is_interface_only_novapay_core_novapower_novaid_and_novatrust_remain_authority"
+}

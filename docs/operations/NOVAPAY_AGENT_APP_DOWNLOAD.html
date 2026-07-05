@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NovaPay Agent App Pilot Downloads</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8f7;
+        --surface: #ffffff;
+        --ink: #101820;
+        --muted: #63706a;
+        --line: #d8e0da;
+        --trust: #168a5a;
+        --warn: #b7791f;
+        --radius: 8px;
+      }
+      body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      main { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+      header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      h1 { margin: 0; font-size: 28px; }
+      .subtitle { margin-top: 8px; color: var(--muted); max-width: 60ch; line-height: 1.5; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+      .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+      .app { display: grid; gap: 12px; }
+      .label { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+      .name { font-size: 20px; font-weight: 800; }
+      .meta { color: var(--muted); line-height: 1.5; }
+      a.button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 8px; text-decoration: none; font-weight: 800; border: 1px solid var(--line); background: #f9fbfa; color: var(--ink); }
+      a.button.primary { background: var(--trust); border-color: var(--trust); color: white; }
+      .note { margin-top: 18px; color: var(--warn); font-size: 14px; }
+      .access { display: grid; gap: 8px; margin: 16px 0 24px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfb; }
+      .access-row { display: grid; gap: 4px; }
+      .access-label { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+      code { background: #eef3f7; border-radius: 4px; padding: 2px 6px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="label">NovaPay Pilot</div>
+          <h1>NovaPay Agent App Downloads</h1>
+          <div class="subtitle">
+            Use these controlled-pilot links for NovaPay agent field testing. The build
+            artifacts are execution-enabling only and do not claim production release.
+          </div>
+          <div class="access">
+            <div class="access-row">
+              <div class="access-label">Local index</div>
+              <div><code>http://127.0.0.1:8765/</code></div>
+            </div>
+            <div class="access-row">
+              <div class="access-label">LAN access from device</div>
+              <div><code>http://192.168.20.14:8765/</code></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="panel app">
+          <div class="label">Agent</div>
+          <div class="name">NovaPay Agent App</div>
+          <div class="meta">Controlled-pilot agent wallet surface with governed payments, verification, offline queue, receipts, and advisory AI only.</div>
+          <a class="button primary" href="http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk">Download NovaPay Agent APK</a>
+          <div class="meta"><code>novapay-agent-live_pilot_002-release.apk</code></div>
+        </div>
+      </section>
+
+      <div class="note">
+        Field use only. Keep the NovaPay Agent App in pilot mode and use the governed pilot backend endpoint specified in the release plan.
+      </div>
+    </main>
+  </body>
+</html>
