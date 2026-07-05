@@ -1,0 +1,48 @@
+import { AppConfig } from "./models";
+
+export const appConfig: AppConfig = {
+  id: "inspector",
+  appName: "NovaID Inspector",
+  packageId: "com.novatech.novaid.inspector",
+  tagline: "Field verification and offline inspection tooling.",
+  trustTheme: "#d47b00",
+  tabs: [
+    { key: "scan", label: "Scan", description: "Scan QR and capture credential details." },
+    { key: "verify", label: "Verify", description: "Online credential and certificate checks." },
+    { key: "offline", label: "Offline", description: "Offline verification and sync mode." },
+    { key: "records", label: "Records", description: "Saved inspections and evidence." },
+    { key: "profile", label: "Profile", description: "Inspector settings and history." },
+  ],
+  actions: [
+    { label: "Scan QR", detail: "Scan a credential QR or replay anchor." },
+    { label: "Verify Credential", detail: "Run a live credential verification request." },
+    { label: "Offline Verify", detail: "Approve inspection while offline with cached trust." },
+    { label: "Save Inspection", detail: "Store the inspection record locally." },
+    { label: "Sync Records", detail: "Push inspection records to the server." },
+    { label: "Validate Certificate", detail: "Check certificate seals and replay hashes." },
+  ],
+  primaryFlow: [
+    "Scan credential",
+    "Review attributes",
+    "Verify certificate",
+    "Offline fallback",
+    "Save inspection",
+    "Sync records",
+  ],
+  seed: {
+    displayName: "Nova Inspector",
+    walletLabel: "Inspection credential wallet",
+    trustLevel: "High",
+    identityScore: 89,
+    credentialCount: 2,
+    trustedDevices: 1,
+    governmentIds: 1,
+    certificateCount: 1,
+    biometricVerified: true,
+    passkeyEnabled: true,
+    deviceTrustEnabled: true,
+    recoveryEnabled: false,
+    connectedApps: 2,
+    loginHistory: 9,
+  },
+};

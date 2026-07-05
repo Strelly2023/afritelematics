@@ -15,8 +15,8 @@ def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     app_config = read("app.json")
     eas = read("eas.json")
 
-    assert "AfriRide Driver (Test)" in app_config
-    assert "afriride-driver-test" in app_config
+    assert "NovaRide Driver (Test)" in app_config
+    assert "novaride-driver-test" in app_config
     assert '"test_mode": true' in app_config
     assert '"distribution": "internal"' in eas
     assert '"distribution": "store"' in eas
@@ -25,7 +25,8 @@ def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     assert '"owner": "ostrinov23"' in app_config
     assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
-    assert "TEST_MODE ? \"Pilot\" : \"Live\"" in app
+    assert 'globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")' in app
+    assert "NovaRide Driver" in app
     assert 'throw new Error("Test mode required")' not in app
 
 
@@ -248,7 +249,7 @@ def test_driver_product_completion_surfaces_are_wired() -> None:
     assert "Predictive positioning" in home_source
     assert "City-wide AI automation" in home_source
     assert "Multi-city orchestration" in home_source
-    assert "accessibilityRole=\"button\"" in tabs
+    assert "accessibilityRole=\"tab\"" in tabs
 
 
 def test_earnings_screen_requires_core_source() -> None:

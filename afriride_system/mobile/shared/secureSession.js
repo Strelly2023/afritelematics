@@ -31,10 +31,29 @@ export async function persistSession(token, metadata = {}) {
 export async function restoreSession() {
   memoryToken = await SecureStore.getItemAsync(TOKEN_KEY);
   const raw = await SecureStore.getItemAsync(SESSION_KEY);
-  return {
-    token: memoryToken,
-    metadata: raw ? JSON.parse(raw) : null,
-  };
+  if (!raw) {
+    return {
+      token: memoryToken,
+      metadata: null,
+    };
+  }
+
+  try {
+    return {
+      token: memoryToken,
+      metadata: JSON.parse(raw),
+    };
+  } catch {
+    await Promise.all([
+      SecureStore.deleteItemAsync(TOKEN_KEY),
+      SecureStore.deleteItemAsync(SESSION_KEY),
+    ]);
+    memoryToken = null;
+    return {
+      token: null,
+      metadata: null,
+    };
+  }
 }
 
 export async function requireBiometricUnlock(reason = "Unlock AfriRide") {

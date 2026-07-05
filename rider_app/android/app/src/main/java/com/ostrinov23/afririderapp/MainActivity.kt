@@ -1,4 +1,4 @@
-package com.ostrinov23.afririderapp
+package com.novatech.novapay.consumer
 
 import android.os.Build
 import android.os.Bundle

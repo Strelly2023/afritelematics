@@ -1,10 +1,17 @@
 {
   "name": "novapay-agent-app",
-  "version": "2026.0.0",
+  "version": "2026.1.0",
   "private": true,
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "main.tsx",
   "scripts": {
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
-    "test": "python3 -m pytest -q tests"
+    "test": "python3 -m pytest -q tests",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.28",
+    "react": "18.2.0",
+    "react-native": "0.74.5"
   }
 }

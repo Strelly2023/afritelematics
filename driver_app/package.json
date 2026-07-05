@@ -1,6 +1,6 @@
 {
-  "name": "afriride-driver-app",
-  "version": "0.1.0",
+  "name": "novaride-driver-app",
+  "version": "2026.1.0",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {

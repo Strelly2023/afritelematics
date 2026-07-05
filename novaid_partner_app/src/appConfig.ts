@@ -1,0 +1,48 @@
+import { AppConfig } from "./models";
+
+export const appConfig: AppConfig = {
+  id: "partner",
+  appName: "NovaID Partner",
+  packageId: "com.novatech.novaid.partner",
+  tagline: "Partner certificates, OAuth clients, and webhook trust.",
+  trustTheme: "#0f7a8a",
+  tabs: [
+    { key: "dashboard", label: "Dashboard", description: "Partner trust and usage overview." },
+    { key: "clients", label: "Clients", description: "OAuth clients and secrets." },
+    { key: "certificates", label: "Certificates", description: "Partner certificate issuance." },
+    { key: "webhooks", label: "Webhooks", description: "Webhook targets and replay logs." },
+    { key: "analytics", label: "Analytics", description: "Usage trends and delivery checks." },
+    { key: "profile", label: "Profile", description: "Partner support and API identity." },
+  ],
+  actions: [
+    { label: "Create OAuth Client", detail: "Provision a new partner OAuth 2.1 client." },
+    { label: "Rotate Secret", detail: "Rotate the client secret and update trust state." },
+    { label: "Issue Partner Certificate", detail: "Create a partner trust certificate." },
+    { label: "View API Usage", detail: "Inspect live request counts and quota status." },
+    { label: "Test Webhook", detail: "Send a webhook test against the current client." },
+  ],
+  primaryFlow: [
+    "Client created",
+    "Secret rotated",
+    "Certificate issued",
+    "Webhook tested",
+    "Usage observed",
+    "Audit package ready",
+  ],
+  seed: {
+    displayName: "Nova Partner Network",
+    walletLabel: "Partner trust vault",
+    trustLevel: "High",
+    identityScore: 95,
+    credentialCount: 4,
+    trustedDevices: 2,
+    governmentIds: 1,
+    certificateCount: 4,
+    biometricVerified: true,
+    passkeyEnabled: true,
+    deviceTrustEnabled: true,
+    recoveryEnabled: true,
+    connectedApps: 5,
+    loginHistory: 21,
+  },
+};

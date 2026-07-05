@@ -119,7 +119,7 @@ export default function App() {
       if (!restored.token || !active) return;
       const unlock = TEST_MODE
         ? { success: true }
-        : await requireBiometricUnlock("Unlock AfriRide Driver");
+        : await requireBiometricUnlock("Unlock NovaRide Driver");
       if (active && unlock.success) setAuthenticated(true);
       else if (!unlock.success) await clearSession();
     })();
@@ -213,7 +213,7 @@ export default function App() {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <Text style={styles.title}>
-                {globalRuntime.brand.name} {globalRuntime.t("app.driver")}
+                NovaRide {globalRuntime.t("app.driver")}
               </Text>
               <Text style={styles.modePill}>
                 {globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")}

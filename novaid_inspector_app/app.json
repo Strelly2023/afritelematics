@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "NovaID Inspector",
+    "slug": "novaid-inspector",
+    "version": "2026.1.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d75288c7-a122-43ca-8c25-2a7443e6f499"
+      }
+    },
+    "android": {
+      "package": "com.novatech.novaid.inspector",
+      "permissions": ["CAMERA", "USE_BIOMETRIC", "POST_NOTIFICATIONS"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.novatech.novaid.inspector",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": "NovaID Inspector uses Face ID to secure field verification.",
+        "NSCameraUsageDescription": "NovaID Inspector uses the camera to scan QR credentials and certificates."
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

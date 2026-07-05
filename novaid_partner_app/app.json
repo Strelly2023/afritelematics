@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "NovaID Partner",
+    "slug": "novaid-partner",
+    "version": "2026.1.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d75288c7-a122-43ca-8c25-2a7443e6f499"
+      }
+    },
+    "android": {
+      "package": "com.novatech.novaid.partner",
+      "permissions": ["CAMERA", "USE_BIOMETRIC", "POST_NOTIFICATIONS"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.novatech.novaid.partner",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": "NovaID Partner uses Face ID to protect SDK credentials and clients.",
+        "NSCameraUsageDescription": "NovaID Partner uses the camera to scan certificates and webhook proofs."
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

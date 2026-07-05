@@ -5,6 +5,8 @@
   "release_channel": "controlled_pilot_to_store",
   "targets": ["android", "ios"],
   "source_path": "novapay_agent_app",
+  "version_name": "2026.1.0",
+  "version_code": 3,
   "store_surfaces": {
     "android_package": "com.ostrinov23.novapayagentpilot",
     "ios_bundle_identifier": "com.ostrinov23.novapayagentpilot",
@@ -12,7 +14,7 @@
     "app_store_track": "testflight"
   },
   "apk_url": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
-  "apk_sha256": "94106a69870c8603b6b751459c14a17318e60def9d4c05a75b0d9c3a9b4a1043",
+  "apk_sha256": "2ed879ca515ff814345489ff6d36c81622b0c85af9934b8aa930e2f4f07bde4a",
   "required_capabilities": [
     "dashboard",
     "primary_actions",
@@ -34,7 +36,7 @@
   ],
   "release_artifacts": {
     "android_apk": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
-    "android_apk_sha256": "94106a69870c8603b6b751459c14a17318e60def9d4c05a75b0d9c3a9b4a1043"
+    "android_apk_sha256": "2ed879ca515ff814345489ff6d36c81622b0c85af9934b8aa930e2f4f07bde4a"
   },
   "required_backend_contracts": [
     "GET /v1/novapay/agents/profile",

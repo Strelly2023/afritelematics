@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "AfriRide Driver (Test)",
-    "slug": "afriride-driver-test",
-    "version": "0.1.0",
+    "name": "NovaRide Driver (Test)",
+    "slug": "novaride-driver-test",
+    "version": "2026.1.0",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.ostrinov23.afriridedrivertest",
+      "package": "com.novatech.novaride.driver",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -32,7 +32,7 @@
       ]
     },
     "ios": {
-      "bundleIdentifier": "com.ostrinov23.afriridedrivertest",
+      "bundleIdentifier": "com.novatech.novaride.driver",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
@@ -48,8 +48,8 @@
             }
           }
         },
-        "NSLocationWhenInUseUsageDescription": "AfriRide uses location for dispatch, pickup and navigation while you drive.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "AfriRide continues location tracking during an active shift for dispatch, rider safety and trip evidence.",
+        "NSLocationWhenInUseUsageDescription": "NovaRide uses location for dispatch, pickup and navigation while you drive.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "NovaRide continues location tracking during an active shift for dispatch, rider safety and trip evidence.",
         "UIBackgroundModes": [
           "location",
           "fetch",

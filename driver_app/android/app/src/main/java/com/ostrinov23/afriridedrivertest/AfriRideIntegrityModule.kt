@@ -1,4 +1,4 @@
-package com.ostrinov23.afriridedrivertest
+package com.novatech.novaride.driver
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -7,9 +7,9 @@ import com.facebook.react.bridge.ReactMethod
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 
-class AfriRideIntegrityModule(context: ReactApplicationContext) :
+class NovaRideIntegrityModule(context: ReactApplicationContext) :
   ReactContextBaseJavaModule(context) {
-  override fun getName() = "AfriRideIntegrity"
+  override fun getName() = "NovaRideIntegrity"
 
   @ReactMethod
   fun requestToken(nonce: String, cloudProjectNumber: String?, promise: Promise) {

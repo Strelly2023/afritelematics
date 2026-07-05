@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "AfriRide Rider (Test)",
-    "slug": "afriride-rider-test",
-    "version": "0.1.0",
+    "name": "NovaPay Consumer (Test)",
+    "slug": "novapay-consumer-test",
+    "version": "2026.1.0",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"
@@ -13,32 +13,18 @@
       "web"
     ],
     "android": {
-      "package": "com.ostrinov23.afririderapp",
+      "package": "com.novatech.novapay.consumer",
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
+        "CAMERA",
         "POST_NOTIFICATIONS"
       ]
     },
     "ios": {
-      "bundleIdentifier": "com.ostrinov23.afririderapp",
+      "bundleIdentifier": "com.novatech.novapay.consumer",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": false,
-          "NSPinnedDomains": {
-            "api.afritechnology.com": {
-              "NSIncludesSubdomains": true,
-              "NSPinnedCAIdentities": [
-                {
-                  "SPKI-SHA256-BASE64": "brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4="
-                }
-              ]
-            }
-          }
-        },
-        "NSLocationWhenInUseUsageDescription": "AfriRide uses location during rides to set pickup points, show trip progress, and support safety evidence.",
-        "NSUserNotificationUsageDescription": "AfriRide sends time-sensitive trip and safety updates."
+        "NSCameraUsageDescription": "NovaPay uses the camera for QR payment and receipt capture flows.",
+        "NSUserNotificationUsageDescription": "NovaPay sends payment, security, and transfer notifications."
       }
     },
     "extra": {

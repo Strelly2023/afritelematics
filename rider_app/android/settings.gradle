@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'AfriRide Rider (Test)'
+rootProject.name = 'NovaPay Consumer (2026)'
 
 dependencyResolutionManagement {
   versionCatalogs {

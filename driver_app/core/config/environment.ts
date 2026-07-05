@@ -37,7 +37,7 @@ export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
 
 export const APP_VERSION =
-  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "0.1";
+  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.0";
 
 export const DEVICE_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_DEVICE_ID || "driver-test-device";

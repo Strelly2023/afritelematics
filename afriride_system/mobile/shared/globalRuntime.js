@@ -67,8 +67,12 @@ export function useGlobalRuntime(apiRequest, organizationId, regionId, requested
     void (async () => {
       const cached = await AsyncStorage.getItem(`${CACHE_KEY}:${organizationId}:${regionId}`);
       if (cached && active) {
-        setConfig(JSON.parse(cached));
-        setSource("cache");
+        try {
+          setConfig(JSON.parse(cached));
+          setSource("cache");
+        } catch {
+          await AsyncStorage.removeItem(`${CACHE_KEY}:${organizationId}:${regionId}`);
+        }
       }
       try {
         const query = new URLSearchParams({

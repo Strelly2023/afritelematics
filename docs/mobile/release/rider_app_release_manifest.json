@@ -5,6 +5,8 @@
   "release_channel": "controlled_pilot_to_store",
   "targets": ["android", "ios"],
   "source_path": "rider_app",
+  "version_name": "0.2.1",
+  "version_code": 3,
   "store_surfaces": {
     "android_package": "com.ostrinov23.afririderapp",
     "ios_bundle_identifier": "com.ostrinov23.afririderapp",
@@ -12,6 +14,7 @@
     "app_store_track": "testflight"
   },
   "apk_url": "http://192.168.20.14:8765/afriride-rider-live_pilot_002-release.apk",
+  "apk_sha256": "da1922541bde23ab349477f722191c69b598db7903eb4e284635eba39a7f9e66",
   "required_capabilities": [
     "rider_auth",
     "pickup_destination_entry",
@@ -24,7 +27,8 @@
     "support_ticket"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/afriride-rider-live_pilot_002-release.apk"
+    "android_apk": "http://192.168.20.14:8765/afriride-rider-live_pilot_002-release.apk",
+    "android_apk_sha256": "da1922541bde23ab349477f722191c69b598db7903eb4e284635eba39a7f9e66"
   },
   "required_backend_contracts": [
     "POST /v1/mobile/auth/session",

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <base-config cleartextTrafficPermitted="false" />
+  <domain-config cleartextTrafficPermitted="false">
+    <domain includeSubdomains="true">api.afritechnology.com</domain>
+    <pin-set expiration="2027-07-01">
+      <pin digest="SHA-256">5YKPKI8dH/EpgQSe8awrtQJZXs9bDXL5wamTdcE9l9E=</pin>
+      <pin digest="SHA-256">brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4=</pin>
+    </pin-set>
+  </domain-config>
+</network-security-config>

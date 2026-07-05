@@ -1,4 +1,4 @@
-package com.ostrinov23.afriridedrivertest
+package com.novatech.novaride.driver
 
 import android.os.Build
 import android.os.Bundle

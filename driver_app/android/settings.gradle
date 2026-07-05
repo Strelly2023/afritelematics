@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'AfriRide Driver (Test)'
+rootProject.name = 'NovaRide Driver (2026)'
 
 dependencyResolutionManagement {
   versionCatalogs {

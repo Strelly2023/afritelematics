@@ -1,4 +1,4 @@
-package com.ostrinov23.afririderapp
+package com.novatech.novapay.consumer
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -7,9 +7,9 @@ import com.facebook.react.bridge.ReactMethod
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
 
-class AfriRideIntegrityModule(context: ReactApplicationContext) :
+class NovaPayIntegrityModule(context: ReactApplicationContext) :
   ReactContextBaseJavaModule(context) {
-  override fun getName() = "AfriRideIntegrity"
+  override fun getName() = "NovaPayIntegrity"
 
   @ReactMethod
   fun requestToken(nonce: String, cloudProjectNumber: String?, promise: Promise) {
