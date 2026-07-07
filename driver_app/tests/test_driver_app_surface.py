@@ -15,8 +15,8 @@ def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     app_config = read("app.json")
     eas = read("eas.json")
 
-    assert "NovaRide Driver (Test)" in app_config
-    assert "novaride-driver-test" in app_config
+    assert "NovaRide Driver" in app_config
+    assert "novaride-driver" in app_config
     assert '"test_mode": true' in app_config
     assert '"distribution": "internal"' in eas
     assert '"distribution": "store"' in eas

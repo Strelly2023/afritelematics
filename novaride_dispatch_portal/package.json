@@ -1,0 +1,1 @@
+{"name":"novaride-dispatch-portal","version":"2026.1.0","private":true,"scripts":{"typecheck":"node ../rider_app/node_modules/typescript/bin/tsc --noEmit"}}

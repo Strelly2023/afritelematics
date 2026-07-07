@@ -1,0 +1,2 @@
+export const portal={name:"NovaRide Partner",role:"partner",features:["Live Rides Map","Fare Review","Driver Onboarding Review","Vehicle Compliance","City Operations","Evidence Package Review","Replay Verification","Performance Analytics"]} as const;
+export const render=()=>`<main aria-label="${portal.name}"><h1>${portal.name}</h1>${portal.features.map(feature=>`<button aria-label="Open ${feature}">${feature}</button>`).join("")}</main>`;

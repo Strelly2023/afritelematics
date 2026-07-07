@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "NovaPay Merchant",
+    "slug": "novapay-merchant",
+    "version": "2026.1.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "android": {
+      "package": "com.novatech.novapay.merchant",
+      "versionCode": 3,
+      "permissions": ["CAMERA", "POST_NOTIFICATIONS", "USE_BIOMETRIC"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.novatech.novapay.merchant",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "NovaPay Merchant scans QR codes for collections.",
+        "NSFaceIDUsageDescription": "NovaPay Merchant uses biometrics for trusted sign-in.",
+        "NSUserNotificationUsageDescription": "NovaPay Merchant sends payment and settlement updates."
+      }
+    },
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d7de07e8-1f8a-4f16-bf52-71e1a7d4c4f8"
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": ["expo-secure-store"]
+  }
+}

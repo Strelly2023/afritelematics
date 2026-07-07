@@ -31,13 +31,27 @@ export const NOVAPAY_AGENT_API_CONTRACTS = [
 
 // Searchable capability names retained for pilot documentation and older clients.
 export const NOVAPAY_AGENT_CAPABILITIES = [
+  "Home",
   "Transfers",
   "Transactions",
   "Float",
   "Profile",
   "Send Money",
   "Receive Money",
+  "Scan QR",
   "Verify Customer",
+  "Agent Dashboard",
+  "Cash In",
+  "Cash Out",
+  "Customer Lookup",
+  "Assisted Transfer",
+  "Customer KYC",
+  "Float Balance",
+  "Commission Report",
+  "Settlement Report",
+  "QR Scanner",
+  "Liquidity Alerts",
+  "Compliance Alerts",
 ] as const;
 
 type AgentTab = "home" | "cash" | "scan" | "customers" | "reports";

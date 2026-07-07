@@ -1,0 +1,2 @@
+export const portal={name:"NovaRide Fleet",role:"fleet_manager",features:["Live Rides Map","Driver Lookup","Driver Onboarding Review","Vehicle Compliance","City Operations","Trust Alerts","Performance Analytics","Evidence Package Review"]} as const;
+export const render=()=>`<main aria-label="${portal.name}"><h1>${portal.name}</h1>${portal.features.map(feature=>`<button aria-label="Open ${feature}">${feature}</button>`).join("")}</main>`;

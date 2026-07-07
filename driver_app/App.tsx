@@ -35,6 +35,19 @@ import { EarningsScreen } from "./ui/screens/EarningsScreen";
 import { IncomingRideModal } from "./ui/screens/IncomingRideModal";
 import { OperatorDashboardScreen } from "./ui/screens/OperatorDashboardScreen";
 import { ReplayHistoryScreen } from "./ui/screens/ReplayHistoryScreen";
+
+export const NOVARIDE_DRIVER_FEATURES = [
+  "Go Online", "Go Offline", "Ride Requests", "Accept", "Reject", "Navigate",
+  "Arrived", "Start Trip", "Complete Trip", "Earnings", "Payouts",
+  "Driver Trust Profile", "Safety/SOS", "Trip Replay", "Proof Recorder",
+  "Vehicle Documents", "Support",
+] as const;
+
+export const NOVARIDE_DRIVER_FLOW = [
+  "go online", "receive request", "accept/reject", "navigate to pickup", "arrived",
+  "verify rider", "start trip", "complete trip", "earnings update",
+  "receipt proof recorded", "payout available",
+] as const;
 import { RideRequestsScreen } from "./ui/screens/RideRequestsScreen";
 import { TripLifecycleScreen } from "./ui/screens/TripLifecycleScreen";
 import { VehicleManagementScreen } from "./ui/screens/VehicleManagementScreen";

@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "NovaPay Business",
+    "slug": "novapay-business",
+    "version": "2026.1.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "android": {
+      "package": "com.novatech.novapay.business",
+      "versionCode": 3,
+      "permissions": ["CAMERA", "POST_NOTIFICATIONS", "USE_BIOMETRIC"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.novatech.novapay.business",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "NovaPay Business scans QR codes for governed payments.",
+        "NSFaceIDUsageDescription": "NovaPay Business uses biometrics for trusted sign-in.",
+        "NSUserNotificationUsageDescription": "NovaPay Business sends approval and treasury updates."
+      }
+    },
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d7de07e8-1f8a-4f16-bf52-71e1a7d4c4f8"
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": ["expo-secure-store"]
+  }
+}

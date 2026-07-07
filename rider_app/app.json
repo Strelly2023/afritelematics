@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "NovaPay Consumer (Test)",
-    "slug": "novapay-consumer-test",
+    "name": "NovaRide Rider",
+    "slug": "novaride-rider",
     "version": "2026.1.0",
     "orientation": "portrait",
     "splash": {
@@ -13,18 +13,18 @@
       "web"
     ],
     "android": {
-      "package": "com.novatech.novapay.consumer",
+      "package": "com.novatech.novaride.rider",
       "permissions": [
         "CAMERA",
         "POST_NOTIFICATIONS"
       ]
     },
     "ios": {
-      "bundleIdentifier": "com.novatech.novapay.consumer",
+      "bundleIdentifier": "com.novatech.novaride.rider",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "NovaPay uses the camera for QR payment and receipt capture flows.",
-        "NSUserNotificationUsageDescription": "NovaPay sends payment, security, and transfer notifications."
+        "NSCameraUsageDescription": "NovaRide uses the camera for QR payment and receipt capture flows.",
+        "NSUserNotificationUsageDescription": "NovaRide sends payment, security, and transfer notifications."
       }
     },
     "extra": {

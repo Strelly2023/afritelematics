@@ -4,7 +4,7 @@
   "private": true,
   "main": "main.tsx",
   "scripts": {
-    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "python3 -m pytest -q tests",
     "android": "expo run:android",
     "ios": "expo run:ios"
@@ -13,5 +13,8 @@
     "expo": "~51.0.28",
     "react": "18.2.0",
     "react-native": "0.74.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
   }
 }

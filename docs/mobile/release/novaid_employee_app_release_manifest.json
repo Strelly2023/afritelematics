@@ -1,0 +1,82 @@
+{
+  "app_id": "novaid-employee-app",
+  "display_name": "NovaID Employee App",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "novaid_employee_app",
+  "version_name": "2026.1.0",
+  "version_code": 1,
+  "store_surfaces": {
+    "android_package": "com.novatech.novaid.employee",
+    "ios_bundle_identifier": "com.novatech.novaid.employee",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "apk_url": "http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk",
+  "apk_sha256": "05003f91164d7f8bed03bfee5dfe63adf33d14198b5eead4930142ecdc20f3eb",
+  "required_capabilities": [
+    "dashboard",
+    "employment",
+    "access",
+    "tasks",
+    "security",
+    "profile",
+    "legacy_id",
+    "legacy_attendance",
+    "legacy_hr",
+    "legacy_wallet",
+    "employment_verification",
+    "manager_approval",
+    "temporary_access",
+    "sso",
+    "onboarding_tasks",
+    "security_training",
+    "compliance_training",
+    "device_management",
+    "mfa",
+    "biometric_login",
+    "dark_mode",
+    "accessibility"
+  ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk",
+    "android_apk_sha256": "05003f91164d7f8bed03bfee5dfe63adf33d14198b5eead4930142ecdc20f3eb"
+  },
+  "required_backend_contracts": [
+    "POST /auth/register",
+    "POST /auth/login",
+    "POST /auth/logout",
+    "POST /auth/otp/send",
+    "POST /auth/otp/verify",
+    "POST /auth/mfa/setup",
+    "POST /auth/mfa/verify",
+    "GET /novaid/profile",
+    "POST /novaid/verify/employee",
+    "GET /novaid/activity",
+    "GET /novaid/audit",
+    "GET /novaid/devices",
+    "POST /novaid/freeze",
+    "GET /support/tickets"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "tab_surface_verified",
+    "employment_verification_verified",
+    "access_flow_verified",
+    "task_flow_verified",
+    "security_controls_verified",
+    "dark_mode_verified",
+    "accessibility_verified",
+    "crash_free_pilot_build",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "novaid_employee_app_is_interface_only_employee_identity_and_access_remain_authority"
+}

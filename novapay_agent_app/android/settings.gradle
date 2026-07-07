@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'NovaPay Agent (Pilot)'
+rootProject.name = 'NovaPay Agent'
 
 dependencyResolutionManagement {
   versionCatalogs {

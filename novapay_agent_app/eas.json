@@ -19,7 +19,7 @@
       "android": { "buildType": "apk" },
       "env": {
         "EXPO_PUBLIC_NOVAPAY_AGENT_TEST_MODE": "true",
-        "EXPO_PUBLIC_NOVAPAY_AGENT_DEVICE_ID": "novapay-agent-pilot-device"
+        "EXPO_PUBLIC_NOVAPAY_AGENT_DEVICE_ID": "novapay-agent-device"
       }
     },
     "test": {

@@ -683,6 +683,18 @@ export default function App() {
         `Biometric verified: ${profile.biometricVerified ? "Yes" : "No"}`,
         `Certificate count: ${profile.certificateCount}`,
       ],
+      verify: [
+        "Phone verification ready",
+        "Email verification ready",
+        "Document capture ready",
+        "Selfie and liveness ready",
+      ],
+      documents: credentials.length > 0 ? credentials.map((credential) => `${credential.label} · ${credential.issuer}`) : ["No documents uploaded yet"],
+      activity: [
+        `Verification history: ${verification ? "Available" : "No recent verification"}`,
+        `Consent history entries: ${consents.length}`,
+        `Audit log entries: ${events.length}`,
+      ],
       wallet: credentials.map((credential) => `${credential.label} · ${credential.issuer}`),
       share: [`QR: ${shareQr}`, `Link: ${shareLink}`, `Selective disclosure enabled`],
       consent: consents.length > 0 ? consents.map((grant) => `${grant.requester} · ${grant.status}`) : ["No active grants yet"],
@@ -694,6 +706,23 @@ export default function App() {
       profile: [supportNote, ...events.slice(0, 3).map((event) => event.title)],
     },
     business: {
+      overview: [
+        `Trust level: ${profile.trustLevel}`,
+        `KYB score: ${profile.identityScore}`,
+        `Certificates: ${certificates.length}`,
+        `Alerts: ${events.length}`,
+      ],
+      "business-verify": [
+        "Business details intake",
+        "Registration upload ready",
+        "Tax certificate upload ready",
+        "Representative verification ready",
+      ],
+      representatives: businessRoster,
+      documents: certificates.map((cert) => `${cert.title} · ${cert.sealHash}`),
+      access: ["User management ready", "Role management ready", "MFA required"],
+      audit: events.slice(0, 5).map((event) => `${event.title} · ${event.severity}`),
+      settings: [supportNote],
       dashboard: [
         `Trust level: ${profile.trustLevel}`,
         `KYB score: ${profile.identityScore}`,
@@ -706,21 +735,48 @@ export default function App() {
       profile: [supportNote],
     },
     employee: {
+      dashboard: [`Employee ID: ${profile.displayName}`, `Access level: verified`, `Pending tasks: ${hrItems.length}`],
+      employment: ["Employment verification ready", "Manager approval ready", "Role update ready"],
+      access: [
+        `Trusted devices: ${devices.length}`,
+        `Access QR ready`,
+        `Passkey ${profile.passkeyEnabled ? "enabled" : "pending"}`,
+        "SSO ready",
+        "Temporary access requests ready",
+      ],
+      tasks: hrItems,
+      security: [
+        `MFA: ${profile.passkeyEnabled ? "Ready" : "Pending"}`,
+        `Biometric: ${profile.biometricVerified ? "Ready" : "Pending"}`,
+        `Device trust: ${profile.deviceTrustEnabled ? "On" : "Off"}`,
+      ],
+      profile: [supportNote],
       id: credentials.map((credential) => `${credential.label} · ${credential.status}`),
-      access: [`Trusted devices: ${devices.length}`, `Access QR ready`, `Passkey ${profile.passkeyEnabled ? "enabled" : "pending"}`],
       attendance: hrItems,
       hr: hrItems,
       wallet: [`Identity score: ${profile.identityScore}`, `Login history: ${profile.loginHistory}`],
-      profile: [supportNote],
     },
     inspector: {
+      dashboard: [`Inspections saved: ${inspections.length}`, `Pending cases: ${inspections.filter((record) => !record.syncedAt).length}`],
+      inspections: [`Inspections saved: ${inspections.length}`, `Offline mode: ${offlineMode ? "On" : "Off"}`],
+      cases: ["Case queue ready", "Escalations available", "Resolution workflow ready"],
+      evidence: ["Photo upload ready", "Document upload ready", "Evidence lock ready"],
+      reports: ["Inspection report ready", "Audit export ready", "Submitted reports available"],
+      security: [`Offline mode: ${offlineMode ? "On" : "Off"}`, `Device trust: ${profile.deviceTrustEnabled ? "On" : "Off"}`],
+      profile: [supportNote],
       scan: [`Inspections saved: ${inspections.length}`, `Offline mode: ${offlineMode ? "On" : "Off"}`],
       verify: verification ? [`Verification ${verification.status}`, `Policy score ${verification.policyEvaluation.score}`] : ["No verification request yet"],
       offline: [`Offline verify: ${offlineMode ? "Ready" : "Off"}`, `Sync state: ${inspections.every((record) => record.syncedAt) ? "Synced" : "Pending"}`],
       records: inspections.length > 0 ? inspections.map((record) => `${record.id} · ${record.result}`) : ["No inspection records yet"],
-      profile: [supportNote],
     },
     partner: {
+      overview: [`Clients: ${partnerClients.length}`, `API usage: ${partnerClients.reduce((sum, client) => sum + client.apiUsage, 0)}`, `Alerts: ${events.length}`],
+      "partner-verify": ["Application review ready", "Representative verification ready", "Compliance checklist ready"],
+      integrations: ["Integration creation ready", "Webhook test ready", "API docs ready"],
+      credentials: partnerClients.length > 0 ? partnerClients.map((client) => `${client.clientId} · ${client.status}`) : ["No client credentials yet"],
+      compliance: ["Security review ready", "AML policy ready", "Data protection policy ready"],
+      support: [webhookState],
+      settings: [supportNote],
       dashboard: [`Clients: ${partnerClients.length}`, `API usage: ${partnerClients.reduce((sum, client) => sum + client.apiUsage, 0)}`],
       clients: partnerClients.length > 0 ? partnerClients.map((client) => `${client.name} · ${client.clientId}`) : ["Create an OAuth client to begin"],
       certificates: certificates.map((cert) => `${cert.title} · ${cert.scope.join(", ")}`),
@@ -853,7 +909,7 @@ export default function App() {
           </>
         );
       default:
-        return null;
+        return renderGenericTab();
     }
   };
 

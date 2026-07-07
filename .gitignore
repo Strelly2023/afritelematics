@@ -100,3 +100,6 @@ novascript-site/node_modules/
 
 # Expo static prototype exports
 */dist-web-prototype/
+
+# Dependencies
+**/node_modules/

@@ -1,5 +1,5 @@
 {
-  "name": "novapay-consumer-app",
+  "name": "novaride-rider-app",
   "version": "2026.1.0",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",

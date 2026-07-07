@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "NovaPay Agent (Pilot)",
-    "slug": "novapay-agent-pilot",
+    "name": "NovaPay Agent",
+    "slug": "novapay-agent",
     "version": "2026.1.0",
     "orientation": "portrait",
     "platforms": ["ios", "android", "web"],
     "android": {
-      "package": "com.ostrinov23.novapayagentpilot",
+      "package": "com.novatech.novapay.agent",
       "versionCode": 3,
       "permissions": ["CAMERA", "POST_NOTIFICATIONS", "USE_BIOMETRIC"]
     },
     "ios": {
-      "bundleIdentifier": "com.ostrinov23.novapayagentpilot",
+      "bundleIdentifier": "com.novatech.novapay.agent",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "NovaPay Agent App scans QR codes for controlled pilot operations.",

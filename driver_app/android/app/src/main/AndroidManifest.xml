@@ -32,7 +32,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.novatech.novaride.driver"/>
-        <data android:scheme="exp+novaride-driver-test"/>
+        <data android:scheme="exp+novaride-driver"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>

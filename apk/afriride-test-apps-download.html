@@ -3,19 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Nova Ecosystem APK Downloads</title>
+    <title>NovaTech App Center</title>
     <style>
       :root {
-        color-scheme: light;
-        --bg: #f6f8f7;
+        color-scheme: light dark;
+        --bg: #f6f8fb;
         --surface: #ffffff;
         --ink: #101820;
-        --muted: #63706a;
-        --line: #d8e0da;
+        --muted: #607080;
+        --line: #d9e2ec;
+        --primary: #155eef;
         --trust: #168a5a;
-        --warn: #b7791f;
         --radius: 8px;
       }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #08111f;
+          --surface: #111c2e;
+          --ink: #f7fafc;
+          --muted: #9fb0c7;
+          --line: #2d3a4f;
+          --primary: #7da2ff;
+          --trust: #4ad08f;
+        }
+      }
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         background: var(--bg);
@@ -23,59 +35,61 @@
         font-family: Inter, "Segoe UI", Arial, sans-serif;
       }
       main {
-        max-width: 960px;
+        max-width: 1120px;
         margin: 0 auto;
         padding: 32px 20px 48px;
       }
       header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        display: grid;
+        gap: 14px;
         margin-bottom: 24px;
       }
-      h1 {
-        margin: 0;
-        font-size: 28px;
-        letter-spacing: 0;
-      }
-      .subtitle {
-        margin-top: 8px;
-        color: var(--muted);
-        max-width: 60ch;
-        line-height: 1.5;
-      }
-      .panel {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 20px;
-        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-      }
-      .grid {
-        display: grid;
-        gap: 16px;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      }
-      .app {
-        display: grid;
-        gap: 12px;
-      }
+      h1, h2, h3, p { margin: 0; }
+      h1 { font-size: 30px; letter-spacing: 0; }
+      h2 { font-size: 22px; margin: 28px 0 14px; }
+      h3 { font-size: 18px; }
       .label {
+        color: var(--muted);
         font-size: 12px;
         font-weight: 800;
         letter-spacing: 0;
         text-transform: uppercase;
-        color: var(--muted);
       }
-      .name {
-        font-size: 20px;
-        font-weight: 800;
+      .subtitle {
+        color: var(--muted);
+        line-height: 1.5;
+        max-width: 76ch;
+      }
+      .access {
+        display: grid;
+        gap: 8px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      .app {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
       }
       .meta {
         color: var(--muted);
-        line-height: 1.5;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+      code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: rgba(96, 112, 128, 0.14);
       }
       a.button {
         display: inline-flex;
@@ -83,150 +97,165 @@
         justify-content: center;
         min-height: 44px;
         padding: 0 16px;
-        border-radius: 8px;
+        border-radius: var(--radius);
+        color: #ffffff;
+        background: var(--primary);
         text-decoration: none;
         font-weight: 800;
-        border: 1px solid var(--line);
-        background: #f9fbfa;
-        color: var(--ink);
       }
-      a.button.primary {
-        background: var(--trust);
-        border-color: var(--trust);
-        color: white;
+      .checksum {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
       }
       .note {
-        margin-top: 18px;
-        color: var(--warn);
-        font-size: 14px;
-      }
-      .access {
-        display: grid;
-        gap: 8px;
-        margin: 16px 0 24px;
+        margin-top: 24px;
         padding: 14px 16px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fbfcfb;
-      }
-      .access-row {
-        display: grid;
-        gap: 4px;
-      }
-      .access-label {
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
+        border-left: 4px solid var(--trust);
+        background: var(--surface);
         color: var(--muted);
-      }
-      code {
-        background: #eef3f7;
-        border-radius: 4px;
-        padding: 2px 6px;
       }
     </style>
   </head>
   <body>
     <main>
       <header>
-        <div>
-          <div class="label">Nova ecosystem</div>
-          <h1>APK Downloads</h1>
-          <div class="subtitle">
-            Use these direct APK links for controlled pilot installation. The build
-            artifacts are separate rider, driver, payments, identity, and partner APKs.
-          </div>
-          <div class="access">
-            <div class="access-row">
-              <div class="access-label">Local index</div>
-              <div><code>http://127.0.0.1:8765/</code></div>
-            </div>
-            <div class="access-row">
-              <div class="access-label">LAN access from phone</div>
-              <div><code>http://192.168.20.14:8765/</code></div>
-            </div>
-          </div>
+        <div class="label">NovaTech controlled distribution</div>
+        <h1>App Center</h1>
+        <p class="subtitle">
+          Production-aligned 2026 APK matrix for independent NovaRide, NovaPay, and NovaID products.
+          Filenames, package IDs, and LAN download paths are preserved for pilot installation.
+        </p>
+        <div class="access" aria-label="LAN access details">
+          <div><strong>Local index:</strong> <code>http://127.0.0.1:8765/</code></div>
+          <div><strong>LAN access from phone:</strong> <code>http://192.168.20.14:8765/</code></div>
         </div>
       </header>
 
-      <section class="grid">
-        <div class="panel app">
-          <div class="label">Mobility</div>
-          <div class="name">NovaRide Rider</div>
-          <div class="meta">Passenger booking, live tracking, receipts, and trip history.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/afriride-rider-live_pilot_002-release.apk">Download Rider APK</a>
-          <div class="meta"><code>afriride-rider-live_pilot_002-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Mobility</div>
-          <div class="name">NovaRide Driver</div>
-          <div class="meta">Driver onboarding, ride execution, earnings, and trust evidence.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaride-driver-v2026.1.0-release.apk">Download Driver APK</a>
-          <div class="meta"><code>novaride-driver-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Payments</div>
-          <div class="name">NovaPay Consumer</div>
-          <div class="meta">Modern wallet app for sending, receiving, saving, paying merchants, and tracking receipts.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novapay-consumer-v2026.1.0-release.apk">Download Consumer APK</a>
-          <div class="meta"><code>novapay-consumer-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Payments</div>
-          <div class="name">NovaPay Agent</div>
-          <div class="meta">Agent cash-in, cash-out, onboarding, and assisted transfer operations.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk">Download Agent APK</a>
-          <div class="meta"><code>novapay-agent-live_pilot_002-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Identity</div>
-          <div class="name">NovaID Personal</div>
-          <div class="meta">Consumer identity wallet with trust score, credentials, and consent controls.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaid-personal-v2026.1.0-release.apk">Download Personal APK</a>
-          <div class="meta"><code>novaid-personal-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Identity</div>
-          <div class="name">NovaID Business</div>
-          <div class="meta">Business identity, KYB, directors, employees, and certificates.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaid-business-v2026.1.0-release.apk">Download Business APK</a>
-          <div class="meta"><code>novaid-business-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Identity</div>
-          <div class="name">NovaID Employee</div>
-          <div class="meta">Employee ID, access QR, attendance, leave, and expense flows.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk">Download Employee APK</a>
-          <div class="meta"><code>novaid-employee-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Identity</div>
-          <div class="name">NovaID Inspector</div>
-          <div class="meta">Field verification, offline checks, and inspection record sync.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaid-inspector-v2026.1.0-release.apk">Download Inspector APK</a>
-          <div class="meta"><code>novaid-inspector-v2026.1.0-release.apk</code></div>
-        </div>
-
-        <div class="panel app">
-          <div class="label">Identity</div>
-          <div class="name">NovaID Partner</div>
-          <div class="meta">OAuth clients, partner certificates, webhook testing, and analytics.</div>
-          <a class="button primary" href="http://192.168.20.14:8765/novaid-partner-v2026.1.0-release.apk">Download Partner APK</a>
-          <div class="meta"><code>novaid-partner-v2026.1.0-release.apk</code></div>
+      <section aria-label="NovaRide APK downloads">
+        <h2>NovaRide</h2>
+        <div class="grid">
+          <article class="app">
+            <h3>NovaRide Rider</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaride.rider</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaride-rider-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaride-rider-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35</p>
+          </article>
+          <article class="app">
+            <h3>NovaRide Driver</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaride.driver</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaride-driver-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaride-driver-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507</p>
+          </article>
+          <article class="app">
+            <h3>NovaRide Operator</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaride.operator</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaride-operator-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaride-operator-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: a31b97809c80e1964c3862b75d592a4603e256e76b4030749d2f2bb5cbf7391b</p>
+          </article>
+          <article class="app">
+            <h3>NovaRide Fleet</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaride.fleet</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaride-fleet-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaride-fleet-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 0c0592eac2d5b331ab2f3b3a077a296bb60ca8583e1113068acf42c401307d4d</p>
+          </article>
         </div>
       </section>
 
-      <div class="note">
-        Field use only. Keep the relevant test-mode flags enabled for each APK and
-        use the pilot backend endpoint specified in the release plan.
-      </div>
+      <section aria-label="NovaPay APK downloads">
+        <h2>NovaPay</h2>
+        <div class="grid">
+          <article class="app">
+            <h3>NovaPay Consumer</h3>
+            <p class="meta">Package ID: <code>com.novatech.novapay.consumer</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novapay-consumer-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novapay-consumer-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: f7a8e502f39c369d569deaa8cac1c51d52e89666a747a62af9d2fa13e4c33f85</p>
+          </article>
+          <article class="app">
+            <h3>NovaPay Agent</h3>
+            <p class="meta">Package ID: <code>com.novatech.novapay.agent</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novapay-agent-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novapay-agent-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: e1d86c6bbca896cab6452d43d1297d47e302a9aa9b98497624831a83d7696b42</p>
+          </article>
+          <article class="app">
+            <h3>NovaPay Merchant</h3>
+            <p class="meta">Package ID: <code>com.novatech.novapay.merchant</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novapay-merchant-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novapay-merchant-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 86549490c5c2f69ca50c7e467e7b9751e430453319fa282517a1104543f22aa2</p>
+          </article>
+          <article class="app">
+            <h3>NovaPay Business</h3>
+            <p class="meta">Package ID: <code>com.novatech.novapay.business</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novapay-business-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novapay-business-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-label="NovaID APK downloads">
+        <h2>NovaID</h2>
+        <div class="grid">
+          <article class="app">
+            <h3>NovaID Personal</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaid.personal</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaid-personal-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaid-personal-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 0e4a77944bab93658ec2881204b03440acc01a2236fc51105231294fe7b31443</p>
+          </article>
+          <article class="app">
+            <h3>NovaID Business</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaid.business</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaid-business-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaid-business-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: aac2f97a0e71645af5814ef55f57c5df1a94559b8c8e7f64c1a9d149d4d5eb95</p>
+          </article>
+          <article class="app">
+            <h3>NovaID Employee</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaid.employee</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaid-employee-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 05003f91164d7f8bed03bfee5dfe63adf33d14198b5eead4930142ecdc20f3eb</p>
+          </article>
+          <article class="app">
+            <h3>NovaID Partner</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaid.partner</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaid-partner-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaid-partner-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 68783fd428b8964f70b7a0625e895c6f6d10a9c4d28fd2e86ec41b6f47faa8f2</p>
+          </article>
+          <article class="app">
+            <h3>NovaID Inspector</h3>
+            <p class="meta">Package ID: <code>com.novatech.novaid.inspector</code></p>
+            <p class="meta">Version: <code>2026.1.0</code></p>
+            <p class="meta">APK: <code>novaid-inspector-v2026.1.0-release.apk</code></p>
+            <a class="button" href="http://192.168.20.14:8765/novaid-inspector-v2026.1.0-release.apk">Download APK</a>
+            <p class="checksum">SHA-256: 39c640e7c3dfc7b68bc9ed2c800f0346a39d6ed98b127411d9aa5d1d2dafc205</p>
+          </article>
+        </div>
+      </section>
+
+      <p class="note">
+        Field use only. Keep market-specific backend endpoints and test-mode flags aligned with the active release manifest.
+      </p>
     </main>
   </body>
 </html>

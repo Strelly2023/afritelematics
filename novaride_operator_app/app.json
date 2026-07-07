@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "NovaRide Operator",
+    "slug": "novaride-operator",
+    "version": "2026.1.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "test_mode": true,
+      "api_url": "https://your-backend-url",
+      "eas": {
+        "projectId": "d75288c7-a122-43ca-8c25-2a7443e6f499"
+      }
+    },
+    "android": {
+      "package": "com.novatech.novaride.operator",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.novatech.novaride.operator",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSPinnedDomains": {
+            "api.afritechnology.com": {
+              "NSIncludesSubdomains": true,
+              "NSPinnedCAIdentities": [
+                {
+                  "SPKI-SHA256-BASE64": "brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4="
+                }
+              ]
+            }
+          }
+        },
+        "NSLocationWhenInUseUsageDescription": "NovaRide uses location for dispatch, pickup and navigation while you drive.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "NovaRide continues location tracking during an active shift for dispatch, rider safety and trip evidence.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ]
+      }
+    },
+    "owner": "ostrinov23",
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}
