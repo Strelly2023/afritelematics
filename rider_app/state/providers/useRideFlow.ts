@@ -6,7 +6,7 @@ import {
   getRideStatus,
   requestRide,
 } from "../../core/api/ride.service";
-import type { RequestRidePayload } from "../../core/models/ride";
+import type { RequestRidePayload, RideRequestResult } from "../../core/models/ride";
 import { loadCompletedRideEvidence } from "../../core/services/rideEvidence.service";
 import {
   initialRiderAppState,
@@ -27,7 +27,7 @@ export function useRideFlow() {
   const [realtimeState, setRealtimeState] =
     useState<RealtimeConnectionState>("idle");
 
-  async function submitRideRequest(payload: RequestRidePayload) {
+  async function submitRideRequest(payload: RequestRidePayload): Promise<RideRequestResult | null> {
     const optimisticRide = {
       rideId: `optimistic-${Date.now()}`,
       status: "requested" as const,
@@ -46,6 +46,7 @@ export function useRideFlow() {
         requestedRide,
         loading: false,
       }));
+      return requestedRide;
     } catch (error) {
       const network = await Network.getNetworkStateAsync();
       if (!network.isConnected) {
@@ -60,7 +61,7 @@ export function useRideFlow() {
           loading: false,
           error: "Ride saved offline and will sync automatically.",
         }));
-        return;
+        return null;
       }
       setState((current) => ({
         ...current,
@@ -68,6 +69,7 @@ export function useRideFlow() {
         error: error instanceof Error ? error.message : "request_failed",
         loading: false,
       }));
+      return null;
     }
   }
 

@@ -18,6 +18,11 @@ export type NovaPayRoleConfig = Readonly<{
   tabs: readonly string[];
   features: readonly string[];
   primaryFlows: readonly string[];
+  sections: readonly {
+    title: string;
+    description: string;
+    buttons: readonly string[];
+  }[];
 }>;
 
 type FlowState = "idle" | "loading" | "success" | "error" | "offline";
@@ -75,6 +80,11 @@ export function NovaPayRoleApp({ config }: { config: NovaPayRoleConfig }) {
     "Replay Evidence Stored",
     "Audit Package Available",
   ] as const;
+  const activeSection = config.sections.find((section) => section.title === tab) ?? config.sections[0] ?? {
+    title: tab,
+    description: "",
+    buttons: [],
+  };
 
   const submit = () => {
     if (!amount || !recipient) {
@@ -195,6 +205,23 @@ export function NovaPayRoleApp({ config }: { config: NovaPayRoleConfig }) {
                 <Text style={{ color: flow === item ? "#fff" : palette.text }}>{item}</Text>
               </Pressable>
             ))}
+          </View>
+          <View style={[styles.card, { backgroundColor: palette.surface }]}>
+            <Text style={[styles.heading, { color: palette.text }]}>{activeSection.title}</Text>
+            <Text style={{ color: palette.muted }}>{activeSection.description}</Text>
+            <View style={styles.grid}>
+              {activeSection.buttons.map((button) => (
+                <Pressable
+                  key={button}
+                  accessibilityRole="button"
+                  accessibilityLabel={button}
+                  onPress={() => setState("idle")}
+                  style={[styles.action, { backgroundColor: palette.surface }]}
+                >
+                  <Text style={{ color: palette.text }}>{button}</Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
           <View style={[styles.card, { backgroundColor: palette.surface }]}>
             <Text style={[styles.heading, { color: palette.text }]}>{flow}</Text>

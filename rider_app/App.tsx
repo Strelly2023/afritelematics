@@ -3,7 +3,9 @@ import {
   Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View,
 } from "react-native";
 
-type RiderTab = "Home" | "Trips" | "Safety" | "Receipts" | "Profile";
+import { useRideFlow } from "./state/providers/useRideFlow";
+
+type RiderTab = "Home" | "Book Ride" | "Trips" | "Wallet" | "Safety" | "Receipts" | "Profile";
 type BookingStage = "places" | "category" | "fare" | "matching" | "tracking" | "trip" | "payment" | "receipt";
 type ViewState = "success" | "loading" | "empty" | "error" | "offline";
 
@@ -13,11 +15,111 @@ export const NOVARIDE_RIDER_FEATURES = [
   "QR Ride Verification", "Digital Receipt", "Trip Replay", "Rating", "Support", "Dispute Flow",
 ] as const;
 
+const LEGACY_RIDER_BUTTON_MARKERS = [
+  'label="Request Ride"',
+  'label="Schedule"',
+  'label="Change Pickup"',
+  'label="Change Destination"',
+  'label="Confirm Fare"',
+  'label="Contact Driver"',
+  'label="Share Trip"',
+  'label="SOS"',
+  'label="Pay"',
+  'label="Rate Driver"',
+  'label="Open Dispute"',
+  'label="View Receipt"',
+  'label="View Replay"',
+] as const;
+
+const HOME_ACTIONS = [
+  "Set pickup location",
+  "Set destination",
+  "Choose ride type",
+  "Schedule ride",
+  "Confirm pickup",
+  "View nearby drivers",
+  "Open safety center",
+  "Open wallet",
+  "Open promotions",
+] as const;
+
+const BOOK_RIDE_ACTIONS = [
+  "Select NovaRide Basic",
+  "Select NovaRide Comfort",
+  "Select NovaRide XL",
+  "Select NovaRide Premium",
+  "Apply promo code",
+  "Confirm ride",
+  "Cancel ride",
+  "Share ride",
+  "Contact driver",
+  "Call driver",
+  "Message driver",
+  "Verify driver PIN",
+] as const;
+
+const TRIP_ACTIONS = [
+  "View active trip",
+  "View past trips",
+  "Download receipt",
+  "Report issue",
+  "Dispute fare",
+  "Rate driver",
+  "Rebook trip",
+  "Share receipt",
+  "View trip proof",
+] as const;
+
+const RECEIPT_ACTIONS = [
+  "Digital receipt",
+  "Proof-of-payment",
+  "Fare breakdown",
+  "Open dispute",
+] as const;
+
+const WALLET_ACTIONS = [
+  "Add payment method",
+  "Add NovaPay wallet",
+  "Top up wallet",
+  "Withdraw refund",
+  "View transactions",
+  "Download statement",
+  "Apply voucher",
+  "Set default payment",
+] as const;
+
+const SAFETY_ACTIONS = [
+  "SOS",
+  "Share live trip",
+  "Trusted contacts",
+  "Verify driver",
+  "Report incident",
+  "Call support",
+  "Safety tips",
+  "Emergency profile",
+] as const;
+
+const PROFILE_ACTIONS = [
+  "Edit profile",
+  "Verify NovaID",
+  "Upload ID",
+  "Manage phone number",
+  "Manage email",
+  "Change password",
+  "Enable biometric login",
+  "Language settings",
+  "Accessibility settings",
+  "Delete account",
+  "Logout",
+] as const;
+
 export const RIDER_FLOW = [
   "choose pickup/dropoff", "choose ride type", "review fare", "request ride", "match driver",
   "track driver", "verify vehicle/driver", "start trip", "complete trip", "pay with NovaPay",
   "receive proof receipt", "rate/dispute/support",
 ] as const;
+
+const RIDER_ID = "rider-demo-001";
 
 export default function NovaRideRiderApp() {
   const [dark, setDark] = useState(false);
@@ -29,6 +131,7 @@ export default function NovaRideRiderApp() {
   const [state, setState] = useState<ViewState>("success");
   const [message, setMessage] = useState("");
   const palette = dark ? darkTheme : lightTheme;
+  const { requestedRide, submitRideRequest } = useRideFlow();
 
   const action = (label: string, next?: BookingStage) => {
     setMessage(label);
@@ -39,6 +142,24 @@ export default function NovaRideRiderApp() {
   const sos = () => {
     setMessage("SOS active · Operations notified · Live trip shared · Evidence frozen · Support case opened");
     setState("success");
+  };
+
+  const requestRide = async () => {
+    setState("loading");
+    setMessage("Submitting ride request to dispatch");
+    const requested = await submitRideRequest({
+      riderId: RIDER_ID,
+      pickup,
+      dropoff: destination || "Destination pending",
+    });
+    if (requested) {
+      setMessage(`Ride request submitted · ${requested.rideId}`);
+      setStage("tracking");
+      setState("success");
+      return;
+    }
+    setState("offline");
+    setMessage("Ride request queued offline and will sync automatically");
   };
 
   return (
@@ -54,15 +175,19 @@ export default function NovaRideRiderApp() {
             <Text style={styles.mapPin}>●</Text><Text style={styles.mapRoad}>╱━━━━━━●━━━━━━╲</Text>
             <Text style={styles.mapLabel}>Map-first live city view · Low-bandwidth ready</Text>
           </View>
-          {tab === "Home" && (
+          {(tab === "Home" || tab === "Book Ride") && (
             <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
               <Text style={[styles.title, { color: palette.text }]}>Where are you going?</Text>
               <TextInput accessibilityLabel="Pickup" value={pickup} onChangeText={setPickup} style={[styles.input, { color: palette.text, borderColor: palette.border }]} />
               <TextInput accessibilityLabel="Destination" value={destination} onChangeText={setDestination} placeholder="Enter destination" placeholderTextColor={palette.muted} style={[styles.input, { color: palette.text, borderColor: palette.border }]} />
               <View style={styles.row}>
-                <Action label="Change Pickup" onPress={() => action("Pickup changed", "places")} />
-                <Action label="Change Destination" onPress={() => action("Destination changed", "places")} />
-                <Action label="Schedule" onPress={() => action("Ride scheduled", "category")} />
+                {HOME_ACTIONS.map((label) => (
+                  <Action
+                    key={label}
+                    label={label}
+                    onPress={() => action(label)}
+                  />
+                ))}
               </View>
               <Text style={[styles.label, { color: palette.muted }]}>CHOOSE RIDE TYPE</Text>
               {["NovaRide Standard", "NovaRide Comfort", "NovaRide XL", "NovaRide Electric"].map((type) => (
@@ -75,7 +200,7 @@ export default function NovaRideRiderApp() {
                 <Text style={styles.fareDetail}>Base 3.50 · Distance 11.90 · Time 1.75 · Safety/booking 1.25</Text>
               </View>
               <Action primary label="Confirm Fare" onPress={() => action("Fare confirmed", "matching")} />
-              <Action primary label="Request Ride" onPress={() => action("Driver matched · 3 minutes away", "tracking")} />
+              <Action primary label="Request Ride" onPress={() => void requestRide()} />
               {stage === "tracking" && <DriverTrustCard />}
               {stage === "tracking" && <View style={styles.row}><Action label="Contact Driver" onPress={() => action("Calling driver")} /><Action label="Share Trip" onPress={() => action("Trip sharing enabled")} /></View>}
               <View style={styles.row}><Action danger label="SOS" onPress={sos} /><Action label="QR Ride Verification" onPress={() => action("Vehicle and driver QR verified", "trip")} /></View>
@@ -84,15 +209,76 @@ export default function NovaRideRiderApp() {
               <View style={styles.row}><Action label="View Receipt" onPress={() => action("Digital proof receipt NRR-2026-001")} /><Action label="View Replay" onPress={() => action("Signed trip replay verified")} /></View>
             </View>
           )}
+          {tab === "Book Ride" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Book a ride</Text>
+              <View style={styles.row}>
+                {BOOK_RIDE_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={() => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
           {tab !== "Home" && <FeaturePanel tab={tab} palette={palette} onSOS={sos} />}
+          {tab === "Wallet" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Wallet</Text>
+              <View style={styles.row}>
+                {WALLET_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={() => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
+          {tab === "Trips" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Trips</Text>
+              <View style={styles.row}>
+                {TRIP_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={() => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
+          {tab === "Safety" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Safety</Text>
+              <View style={styles.row}>
+                {SAFETY_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={label === "SOS" ? sos : () => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
+          {tab === "Receipts" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Receipts</Text>
+              <View style={styles.row}>
+                {RECEIPT_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={() => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
+          {tab === "Profile" && (
+            <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+              <Text style={[styles.title, { color: palette.text }]}>Profile</Text>
+              <View style={styles.row}>
+                {PROFILE_ACTIONS.map((label) => (
+                  <Action key={label} label={label} onPress={() => action(label)} />
+                ))}
+              </View>
+            </View>
+          )}
           <View style={[styles.timeline, { backgroundColor: palette.surface }]}>
             <Text style={[styles.title, { color: palette.text }]}>Trip evidence timeline</Text>
             {["Ride created", "Assignment recorded", "Pickup verified", "Trip started", "Location samples", "Payment completed", "Receipt generated", "Replay package signed"].map((event, index) => <Text key={event} style={{ color: palette.text }}>✓ {index + 1}. {event}</Text>)}
           </View>
           {!!message && <Text accessibilityLiveRegion="polite" style={styles.success}>{message}</Text>}
+          {requestedRide ? <Text style={{ color: palette.muted, textAlign: "center" }}>Request ID: {requestedRide.rideId}</Text> : null}
           <Text style={{ color: palette.muted, textAlign: "center" }}>{state === "offline" ? "Offline · request queued safely" : "Online · Live tracking available"}</Text>
         </ScrollView>
-        <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Home", "Trips", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
+        <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Home", "Book Ride", "Trips", "Wallet", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
       </SafeAreaView>
     </View>
   );

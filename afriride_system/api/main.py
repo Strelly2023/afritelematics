@@ -19,10 +19,12 @@ from afriride_system.api.system_routes import router as system_router
 from afriride_system.api.operations_routes import router as operations_router
 from afriride_system.api.payment_routes import router as payment_router
 from afriride_system.api.global_routes import router as global_router
+from afriride_system.api.architecture_routes import router as architecture_router
 from afriride_system.api.trace_middleware import trace_enforcement_middleware
 from afriride_system.api.responses import error
 from afriride_system.api.security import build_security_router, security_middleware
 from afriride_system.observability.enterprise import api_metrics_middleware
+from afriride_system.api.treasury_routes import router as treasury_router
 from afriride_system.integration.websocket_gateway.mobility_hub import mobility_hub
 from afritech.api.ingestion.event_ingestion import EventIngestionAPI, build_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
@@ -54,6 +56,8 @@ app.include_router(system_router)
 app.include_router(operations_router)
 app.include_router(payment_router)
 app.include_router(global_router)
+app.include_router(architecture_router)
+app.include_router(treasury_router)
 app.include_router(build_security_router())
 app.include_router(build_afriride_next_gen_mobile_router())
 _AFRIRIDE_EVENT_SECRET = os.environ.get("AFRIRIDE_EVENT_INGESTION_SECRET", secrets.token_urlsafe(32))

@@ -44,6 +44,9 @@ def test_rider_booking_safety_payment_and_evidence_flows() -> None:
         "NovaID verified",
     ]:
         assert marker.lower() in app.lower()
+    assert "useRideFlow" in app
+    assert "submitRideRequest" in app
+    assert "Ride request submitted" in app
 
 
 def test_rider_accessibility_theme_and_offline_states() -> None:

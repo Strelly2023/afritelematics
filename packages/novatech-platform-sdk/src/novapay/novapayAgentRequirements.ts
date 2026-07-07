@@ -1,0 +1,241 @@
+export type NovapayAgentRequirements = Readonly<{
+  eligibility: readonly string[];
+  registration: readonly string[];
+  kyb: readonly string[];
+  personalVerification: readonly string[];
+  financialRequirements: readonly string[];
+  agentEquipment: readonly string[];
+  operationalServices: readonly string[];
+  cashManagement: readonly string[];
+  securityRequirements: readonly string[];
+  complianceRequirements: readonly string[];
+  dashboardFields: readonly string[];
+  performanceMetrics: readonly string[];
+  agentTrustProfile: readonly string[];
+  uiTabs: readonly string[];
+  uiButtons: Readonly<Record<string, readonly string[]>>;
+  apiSurfaces: readonly string[];
+  requiresNovaRide: false;
+  advisoryOnly: true;
+  novaTrustEvidenceRequired: readonly string[];
+}>;
+
+export const novapayAgentRequirements: NovapayAgentRequirements = {
+  eligibility: [
+    "Individual entrepreneur",
+    "Retail shop",
+    "Pharmacy",
+    "Supermarket",
+    "Fuel station",
+    "Bank partner",
+    "Mobile money outlet",
+    "Financial services provider",
+  ],
+  registration: [
+    "Valid NovaID Business or NovaID Personal depending on agent type",
+    "Agent application",
+    "Business location",
+    "Operating hours",
+    "Contact details",
+  ],
+  kyb: [
+    "Business registration certificate",
+    "Tax registration",
+    "Business licence",
+    "Proof of address",
+    "Authorized representative verification",
+  ],
+  personalVerification: [
+    "Government-issued ID",
+    "Selfie/liveness verification",
+    "Face matching",
+    "Phone verification",
+    "Background screening where applicable",
+  ],
+  financialRequirements: ["Agent wallet", "Settlement account", "Float account", "Minimum operating balance", "Bank account verification", "Commission account"],
+  agentEquipment: [
+    "Android tablet or smartphone",
+    "Internet connection",
+    "QR scanner",
+    "Receipt printer optional",
+    "Barcode scanner optional",
+    "Biometric scanner optional",
+    "Secure POS terminal optional",
+  ],
+  operationalServices: [
+    "Customer registration",
+    "Identity verification",
+    "Cash deposit",
+    "Cash withdrawal",
+    "Wallet funding",
+    "Money transfer initiation",
+    "Bill payments",
+    "Merchant payments",
+    "Account recovery assistance",
+    "Customer support",
+  ],
+  cashManagement: [
+    "Float management",
+    "Cash reconciliation",
+    "Settlement reconciliation",
+    "Liquidity monitoring",
+    "Daily balancing",
+    "Cash audit procedures",
+  ],
+  securityRequirements: [
+    "MFA",
+    "Device binding",
+    "Secure agent login",
+    "Transaction PIN",
+    "Audit logging",
+    "Fraud detection",
+    "Role-based permissions",
+    "Remote device disable",
+  ],
+  complianceRequirements: [
+    "KYC",
+    "KYB",
+    "AML",
+    "CTF",
+    "Customer Due Diligence",
+    "Enhanced Due Diligence",
+    "Suspicious transaction reporting",
+    "Record retention",
+    "Periodic compliance reviews",
+  ],
+  dashboardFields: [
+    "Current float balance",
+    "Cash balance",
+    "Daily transaction summary",
+    "Commission earnings",
+    "Customer registrations",
+    "Pending settlements",
+    "Compliance alerts",
+    "Device status",
+    "Operational notifications",
+  ],
+  performanceMetrics: [
+    "Transaction volume",
+    "Cash availability",
+    "Float utilization",
+    "Customer satisfaction",
+    "Compliance score",
+    "Fraud incidents",
+    "Service availability",
+    "Settlement accuracy",
+  ],
+  agentTrustProfile: [
+    "Identity verification status",
+    "Business verification status",
+    "Compliance status",
+    "Operational rating",
+    "Fraud risk score",
+    "Transaction success rate",
+    "Settlement accuracy",
+    "Trust score",
+  ],
+  uiTabs: ["Dashboard", "Cash In", "Cash Out", "Customers", "Transactions", "Float", "Support", "Profile"],
+  uiButtons: {
+    Dashboard: [
+      "Open agent shift",
+      "Close agent shift",
+      "View daily summary",
+      "View cash balance",
+      "View float balance",
+      "View commission",
+      "View alerts",
+      "Sync transactions",
+    ],
+    "Cash In": [
+      "Enter customer phone",
+      "Scan customer QR",
+      "Enter amount",
+      "Collect cash",
+      "Confirm deposit",
+      "Print receipt",
+      "Share receipt",
+      "Cancel transaction",
+    ],
+    "Cash Out": [
+      "Enter customer phone",
+      "Scan customer QR",
+      "Verify customer OTP",
+      "Enter amount",
+      "Pay cash",
+      "Confirm withdrawal",
+      "Print receipt",
+      "Share receipt",
+      "Cancel withdrawal",
+    ],
+    Customers: [
+      "Register customer",
+      "Verify customer NovaID",
+      "Upload customer ID",
+      "Take customer selfie",
+      "Update customer profile",
+      "Reset customer PIN",
+      "View customer status",
+    ],
+    Transactions: [
+      "View transaction list",
+      "Search transaction",
+      "Filter by date",
+      "Download receipt",
+      "Reverse pending transaction",
+      "Report suspicious transaction",
+      "Export daily report",
+    ],
+    Float: [
+      "View float balance",
+      "Request float",
+      "Transfer float",
+      "Rebalance cash",
+      "View settlement",
+      "Reconcile cash",
+      "Submit cash report",
+    ],
+    Support: [
+      "Open support ticket",
+      "Report fraud",
+      "Report device issue",
+      "Report cash mismatch",
+      "Call support",
+      "View training guide",
+    ],
+    Profile: [
+      "Edit agent profile",
+      "Verify agent NovaID",
+      "Manage business location",
+      "Manage device",
+      "Change PIN",
+      "Enable biometric login",
+      "Logout",
+    ],
+  },
+  apiSurfaces: [
+    "/auth/login",
+    "/auth/register",
+    "/auth/otp/verify",
+    "/novaid/verify",
+    "/novapay/agent/float",
+    "/novapay/cash-in",
+    "/novapay/cash-out",
+    "/novapay/transactions",
+    "/novapay/receipts",
+    "/novapay/settlements",
+    "/support/tickets",
+    "/security/devices",
+  ],
+  requiresNovaRide: false,
+  advisoryOnly: true,
+  novaTrustEvidenceRequired: [
+    "Identity Verified",
+    "Business Verified",
+    "Cash Received",
+    "Ledger Entry",
+    "Settlement Record",
+    "Digital Signature",
+    "Replay Evidence",
+    "Audit Package",
+  ],
+};

@@ -1,0 +1,74 @@
+{
+  "app_id": "novapay-business-app",
+  "display_name": "NovaPay Business App",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "novapay_business_app",
+  "version_name": "2026.1.0",
+  "version_code": 3,
+  "store_surfaces": {
+    "android_package": "com.novatech.novapay.business",
+    "ios_bundle_identifier": "com.novatech.novapay.business",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "apk_url": "http://192.168.20.14:8765/novapay-business-v2026.1.0-release.apk",
+  "apk_sha256": "51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6",
+  "required_capabilities": [
+    "overview",
+    "wallets",
+    "payments",
+    "approvals",
+    "invoices",
+    "payroll",
+    "reports",
+    "settings",
+    "business_wallets",
+    "bulk_payments",
+    "supplier_payments",
+    "approval_chain",
+    "invoice_pdf",
+    "payroll_run",
+    "audit_reports",
+    "api_keys",
+    "webhooks"
+  ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/novapay-business-v2026.1.0-release.apk",
+    "android_apk_sha256": "51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6"
+  },
+  "required_backend_contracts": [
+    "POST /auth/register",
+    "POST /auth/login",
+    "POST /auth/otp/verify",
+    "GET /novaid/verify",
+    "GET /novapay/business/wallets",
+    "GET /novapay/business/approvals",
+    "POST /novapay/business/payments",
+    "POST /novapay/business/payroll",
+    "POST /novapay/business/invoices",
+    "GET /novapay/transactions",
+    "GET /novapay/settlements",
+    "GET /support/tickets",
+    "GET /security/devices"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "overview_verified",
+    "wallets_verified",
+    "approvals_verified",
+    "invoice_flow_verified",
+    "payroll_flow_verified",
+    "audit_reports_verified",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "novapay_business_app_is_interface_only_novaid_novapay_core_novatrust_and_novapower_remain_authority"
+}

@@ -1,0 +1,71 @@
+{
+  "app_id": "novapay-merchant-app",
+  "display_name": "NovaPay Merchant App",
+  "classification": "MOBILE_STORE_RELEASE_MANIFEST",
+  "release_channel": "controlled_pilot_to_store",
+  "targets": ["android", "ios"],
+  "source_path": "novapay_merchant_app",
+  "version_name": "2026.1.0",
+  "version_code": 3,
+  "store_surfaces": {
+    "android_package": "com.novatech.novapay.merchant",
+    "ios_bundle_identifier": "com.novatech.novapay.merchant",
+    "play_store_track": "internal_testing",
+    "app_store_track": "testflight"
+  },
+  "apk_url": "http://192.168.20.14:8765/novapay-merchant-v2026.1.0-release.apk",
+  "apk_sha256": "86549490c5c2f69ca50c7e467e7b9751e430453319fa282517a1104543f22aa2",
+  "required_capabilities": [
+    "dashboard",
+    "accept_payment",
+    "sales",
+    "refunds",
+    "settlements",
+    "products",
+    "profile",
+    "merchant_qr",
+    "payment_request",
+    "print_receipt",
+    "share_receipt",
+    "sales_reports",
+    "inventory",
+    "staff_access",
+    "disputes",
+    "customer_receipts"
+  ],
+  "release_artifacts": {
+    "android_apk": "http://192.168.20.14:8765/novapay-merchant-v2026.1.0-release.apk",
+    "android_apk_sha256": "86549490c5c2f69ca50c7e467e7b9751e430453319fa282517a1104543f22aa2"
+  },
+  "required_backend_contracts": [
+    "POST /auth/register",
+    "POST /auth/login",
+    "POST /auth/otp/verify",
+    "GET /novaid/verify",
+    "GET /novapay/wallet",
+    "POST /novapay/merchant/pay",
+    "GET /novapay/transactions",
+    "GET /novapay/receipts",
+    "POST /novapay/refunds",
+    "GET /novapay/settlements",
+    "GET /support/tickets",
+    "GET /security/devices"
+  ],
+  "required_store_assets": [
+    "app_icon_512",
+    "feature_graphic",
+    "phone_screenshots",
+    "privacy_policy_url",
+    "support_url",
+    "terms_url"
+  ],
+  "release_gates": [
+    "merchant_qr_verified",
+    "accept_payment_verified",
+    "refund_flow_verified",
+    "settlement_flow_verified",
+    "receipt_flow_verified",
+    "store_listing_reviewed"
+  ],
+  "authority_boundary": "novapay_merchant_app_is_interface_only_novaid_novapay_core_novatrust_and_novapower_remain_authority"
+}

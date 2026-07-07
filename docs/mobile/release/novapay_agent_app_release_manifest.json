@@ -13,15 +13,18 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
-  "apk_sha256": "2ed879ca515ff814345489ff6d36c81622b0c85af9934b8aa930e2f4f07bde4a",
+  "apk_url": "http://192.168.20.14:8765/novapay-agent-v2026.1.0-release.apk",
+  "apk_sha256": "e1d86c6bbca896cab6452d43d1297d47e302a9aa9b98497624831a83d7696b42",
   "required_capabilities": [
     "dashboard",
-    "primary_actions",
-    "send_money",
-    "receive_money",
     "cash_in",
     "cash_out",
+    "customers",
+    "transactions",
+    "float",
+    "support",
+    "profile",
+    "primary_actions",
     "qr_scanning",
     "customer_verification",
     "float_management",
@@ -35,10 +38,14 @@
     "novai_advisory"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novapay-agent-live_pilot_002-release.apk",
-    "android_apk_sha256": "2ed879ca515ff814345489ff6d36c81622b0c85af9934b8aa930e2f4f07bde4a"
+    "android_apk": "http://192.168.20.14:8765/novapay-agent-v2026.1.0-release.apk",
+    "android_apk_sha256": "e1d86c6bbca896cab6452d43d1297d47e302a9aa9b98497624831a83d7696b42"
   },
   "required_backend_contracts": [
+    "GET /auth/login",
+    "POST /auth/register",
+    "POST /auth/otp/verify",
+    "GET /novaid/verify",
     "GET /v1/novapay/agents/profile",
     "GET /v1/novapay/agents/float",
     "POST /v1/novapay/agents/send-money",
@@ -65,6 +72,8 @@
     "terms_url"
   ],
   "release_gates": [
+    "dashboard_tabs_verified",
+    "cash_in_cash_out_verified",
     "pilot_mode_banner_present",
     "device_trust_visible",
     "api_contract_verified",

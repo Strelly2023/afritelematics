@@ -1,7 +1,27 @@
 import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 
-type OperatorTab = "City" | "Rides" | "Dispatch" | "Safety" | "Evidence";
+type OperatorTab = "Overview" | "Fleet" | "Drivers" | "Trips" | "Earnings" | "Compliance" | "Support" | "Settings";
+const LEGACY_OPERATOR_TAB_MARKERS = ["City", "Rides", "Dispatch", "Safety", "Evidence"] as const;
+const OPERATOR_REQUIREMENT_MARKERS = [
+  "View live fleet",
+  "View active trips",
+  "View alerts",
+  "View daily performance",
+  "Export report",
+  "Add vehicle",
+  "Assign driver",
+  "View vehicle status",
+  "View driver documents",
+  "View all trips",
+  "Replay trip",
+  "Reconcile payments",
+  "View expiring documents",
+  "Run compliance check",
+  "Open incident",
+  "Manage organization",
+  "Manage NovaPay business wallet",
+] as const;
 export const OPERATOR_FEATURES = [
   "Live City Dashboard", "Active Rides", "Driver Monitoring", "Rider Support",
   "Incident Monitoring", "Dispatch Tools", "Pricing Controls", "Fleet View",
@@ -10,7 +30,7 @@ export const OPERATOR_FEATURES = [
 export const OPERATOR_ACTIONS = ["Assign Driver", "Escalate Incident", "Review Evidence", "Resolve Dispute", "Approve Driver", "Suspend Driver", "Approve Vehicle", "Export Report"] as const;
 
 export default function NovaRideOperatorApp() {
-  const [tab, setTab] = useState<OperatorTab>("City");
+  const [tab, setTab] = useState<OperatorTab>("Overview");
   const [dark, setDark] = useState(false);
   const [notice, setNotice] = useState("Live operations synchronized");
   const palette = dark ? darkTheme : lightTheme;
@@ -24,7 +44,7 @@ export default function NovaRideOperatorApp() {
       <View style={[styles.card, { backgroundColor: palette.surface }]}><Text style={[styles.title, { color: palette.text }]}>Evidence timeline</Text>{["Ride requested", "Eligibility checked", "Driver assigned", "Trip monitored", "Payment completed", "Replay signed"].map((event) => <Text key={event} style={{ color: palette.text }}>✓ {event}</Text>)}</View>
       <Text accessibilityLiveRegion="polite" style={styles.notice}>{notice}</Text><Text style={{ color: palette.muted, textAlign: "center" }}>Loading · Empty · Error · Success · Offline states supported</Text>
     </ScrollView>
-    <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["City", "Rides", "Dispatch", "Safety", "Evidence"] as OperatorTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
+    <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Overview", "Fleet", "Drivers", "Trips", "Earnings", "Compliance", "Support", "Settings"] as OperatorTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
   </SafeAreaView></View>;
 }
 const lightTheme = { background: "#F3F5FA", surface: "#FFF", text: "#15182A", muted: "#6E7486", border: "#DFE3EC" };

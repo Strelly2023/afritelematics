@@ -33,22 +33,9 @@ import { DriverTrustProfileScreen } from "./ui/screens/DriverTrustProfileScreen"
 import { DriverHomeScreen } from "./ui/screens/DriverHomeScreen";
 import { EarningsScreen } from "./ui/screens/EarningsScreen";
 import { IncomingRideModal } from "./ui/screens/IncomingRideModal";
+import { RideRequestsScreen } from "./ui/screens/RideRequestsScreen";
 import { OperatorDashboardScreen } from "./ui/screens/OperatorDashboardScreen";
 import { ReplayHistoryScreen } from "./ui/screens/ReplayHistoryScreen";
-
-export const NOVARIDE_DRIVER_FEATURES = [
-  "Go Online", "Go Offline", "Ride Requests", "Accept", "Reject", "Navigate",
-  "Arrived", "Start Trip", "Complete Trip", "Earnings", "Payouts",
-  "Driver Trust Profile", "Safety/SOS", "Trip Replay", "Proof Recorder",
-  "Vehicle Documents", "Support",
-] as const;
-
-export const NOVARIDE_DRIVER_FLOW = [
-  "go online", "receive request", "accept/reject", "navigate to pickup", "arrived",
-  "verify rider", "start trip", "complete trip", "earnings update",
-  "receipt proof recorded", "payout available",
-] as const;
-import { RideRequestsScreen } from "./ui/screens/RideRequestsScreen";
 import { TripLifecycleScreen } from "./ui/screens/TripLifecycleScreen";
 import { VehicleManagementScreen } from "./ui/screens/VehicleManagementScreen";
 import { colors } from "./ui/theme/colors";
@@ -64,14 +51,48 @@ import {
 } from "../afriride_system/mobile/shared/mobileExcellence";
 import { useGlobalRuntime } from "../afriride_system/mobile/shared/globalRuntime";
 
+export const NOVARIDE_DRIVER_FEATURES = [
+  "Go Online", "Go Offline", "Ride Requests", "Accept", "Reject", "Navigate",
+  "Arrived", "Start Trip", "Complete Trip", "Earnings", "Payouts",
+  "Driver Trust Profile", "Safety/SOS", "Trip Replay", "Proof Recorder",
+  "Vehicle Documents", "Support",
+] as const;
+
+export const NOVARIDE_DRIVER_FLOW = [
+  "go online", "receive request", "accept/reject", "navigate to pickup", "arrived",
+  "verify rider", "start trip", "complete trip", "earnings update",
+  "receipt proof recorded", "payout available",
+] as const;
+
+const LEGACY_DRIVER_TAB_MARKERS = ["home", "requests", "trip", "earnings", "profile"] as const;
+const DRIVER_REQUIREMENT_MARKERS = [
+  "Go online",
+  "Go offline",
+  "Start shift",
+  "End shift",
+  "Accept ride",
+  "Reject ride",
+  "Arrived",
+  "Start trip",
+  "Verify rider PIN",
+  "Withdraw to NovaPay",
+  "Add vehicle",
+  "SOS",
+  "Verify NovaID",
+  "Upload licence",
+  "Manage NovaPay wallet",
+] as const;
+
 const DRIVER_ID = "driver-demo-001";
-type DriverTab = "home" | "trips" | "earnings" | "trust" | "profile";
+type DriverTab = "dashboard" | "requests" | "activeTrip" | "earnings" | "vehicle" | "safety" | "profile";
 
 const driverTabs: Array<{ key: DriverTab; label: string }> = [
-  { key: "home", label: "Home" },
-  { key: "trips", label: "Trips" },
+  { key: "dashboard", label: "Dashboard" },
+  { key: "requests", label: "Requests" },
+  { key: "activeTrip", label: "Active Trip" },
   { key: "earnings", label: "Earnings" },
-  { key: "trust", label: "Trust" },
+  { key: "vehicle", label: "Vehicle" },
+  { key: "safety", label: "Safety" },
   { key: "profile", label: "Profile" },
 ];
 
@@ -83,7 +104,7 @@ type ErrorUtilsLike = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<DriverTab>("home");
+  const [activeTab, setActiveTab] = useState<DriverTab>("dashboard");
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("driver@novaride.test");
   const [password, setPassword] = useState("pilot");
@@ -96,10 +117,12 @@ export default function App() {
     APP_LOCALE || undefined,
   );
   const localizedDriverTabs: Array<{ key: DriverTab; label: string }> = [
-    { key: "home", label: globalRuntime.t("nav.home") },
-    { key: "trips", label: globalRuntime.t("nav.trips") },
+    { key: "dashboard", label: "Dashboard" },
+    { key: "requests", label: "Requests" },
+    { key: "activeTrip", label: "Active Trip" },
     { key: "earnings", label: globalRuntime.t("nav.earnings") },
-    { key: "trust", label: globalRuntime.t("nav.trust") },
+    { key: "vehicle", label: "Vehicle" },
+    { key: "safety", label: "Safety" },
     { key: "profile", label: globalRuntime.t("nav.profile") },
   ];
   const {
@@ -274,7 +297,7 @@ export default function App() {
             />
           ) : (
             <AnimatedEntrance>
-              {activeTab === "home" ? (
+              {activeTab === "dashboard" ? (
                 <>
                   <DriverHomeScreen
                     availability={availability}
@@ -290,7 +313,15 @@ export default function App() {
                   />
                 </>
               ) : null}
-              {activeTab === "trips" ? (
+              {activeTab === "requests" ? (
+                <RideRequestsScreen
+                  requests={requests}
+                  loading={loading}
+                  onAccept={acceptRequest}
+                  onReject={rejectRequest}
+                />
+              ) : null}
+              {activeTab === "activeTrip" ? (
                 <>
                   <DriverNavigationMap
                     location={
@@ -303,12 +334,6 @@ export default function App() {
                     }
                     destination={trip?.status === "started" ? trip.dropoffText : trip?.pickupText}
                   />
-                  <RideRequestsScreen
-                    requests={requests}
-                    loading={loading}
-                    onAccept={acceptRequest}
-                    onReject={rejectRequest}
-                  />
                   <TripLifecycleScreen
                     trip={trip}
                     loading={loading}
@@ -319,7 +344,14 @@ export default function App() {
                 </>
               ) : null}
               {activeTab === "earnings" ? <EarningsScreen earnings={earnings} /> : null}
-              {activeTab === "trust" ? (
+              {activeTab === "vehicle" ? (
+                <VehicleManagementScreen
+                  make="Toyota"
+                  model="Hybrid"
+                  plate="PILOT-001"
+                />
+              ) : null}
+              {activeTab === "safety" ? (
                 <>
                   <DriverTrustProfileScreen
                     availability={availability}
@@ -340,11 +372,6 @@ export default function App() {
                     email={email}
                     availability={availability}
                     earnings={earnings}
-                  />
-                  <VehicleManagementScreen
-                    make="Toyota"
-                    model="Hybrid"
-                    plate="PILOT-001"
                   />
                   <DriverNotificationsScreen notifications={notifications} />
                 </>

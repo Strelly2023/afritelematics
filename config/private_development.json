@@ -1,0 +1,12 @@
+{
+  "environment": "PRIVATE_DEVELOPMENT",
+  "live_payments_enabled": false,
+  "real_charging_enabled": false,
+  "external_payouts_enabled": false,
+  "production_credentials_allowed": false,
+  "public_launch_allowed": false,
+  "controlled_pilot_allowed": false,
+  "payment_mode": "SIMULATED",
+  "identity_mode": "SANDBOX",
+  "apk_distribution": "LOCAL_ONLY"
+}

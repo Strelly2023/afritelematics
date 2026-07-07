@@ -9,6 +9,10 @@ from typing import Any, Protocol
 from uuid import uuid4
 
 from afriride_system.backend.storage import AfriRideStorage, decode_json_value
+from afriride_system.payments.private_development import (
+    guard_payment_boundary,
+    mark_simulated_payment,
+)
 
 
 class PaymentProvider(Protocol):
@@ -193,6 +197,7 @@ class PaymentService:
             return existing
         if provider not in self.providers:
             raise ValueError("unsupported_payment_provider")
+        guard_payment_boundary(provider=provider, method=method)
         discount = min(amount_minor, self.repository.consume_promotion(promotion_code, currency))
         net = amount_minor - discount
         commission, tax = round(net * 0.20), round(net * 0.10)
@@ -207,12 +212,13 @@ class PaymentService:
             "currency": currency.upper(), "method": method, "provider": provider,
             "provider_reference": reference, "status": "captured", "split": split,
             "promotion_code": promotion_code, "created_at": now, "updated_at": now,
+            "simulated_payment": True,
         }
         self.repository.save_transaction(row)
         if driver_id:
             wallet = self.repository.wallet(driver_id, "driver", currency)
             self.repository.post(wallet["wallet_id"], driver_share, "ride_earning", transaction_id)
-        return row
+        return mark_simulated_payment(row)
 
     def refund(self, transaction_id: str, amount_minor: int) -> dict[str, Any]:
         tx = self.repository.transaction(transaction_id)
@@ -220,13 +226,14 @@ class PaymentService:
             raise ValueError("transaction_not_refundable")
         if amount_minor <= 0 or amount_minor > tx["amount_minor"]:
             raise ValueError("invalid_refund_amount")
+        guard_payment_boundary(provider=str(tx["provider"]), method=str(tx["method"]))
         reference = self.providers[tx["provider"]].refund(
             tx["provider_reference"], amount_minor, tx["currency"]
         )
         status = "refunded" if amount_minor == tx["amount_minor"] else "partially_refunded"
         self.repository.update_transaction(transaction_id, status, reference)
-        return {"transaction_id": transaction_id, "refund_minor": amount_minor,
-                "status": status, "provider_reference": reference}
+        return mark_simulated_payment({"transaction_id": transaction_id, "refund_minor": amount_minor,
+                "status": status, "provider_reference": reference})
 
 
 def default_payment_service(storage: AfriRideStorage) -> PaymentService:

@@ -1,0 +1,32 @@
+export const novapayComplianceControls = {
+  consumer: [
+    "KYC requirements",
+    "AML/CTF policies",
+    "Fraud prevention policies",
+    "Transaction monitoring",
+    "Ongoing identity verification when required",
+  ],
+  agent: [
+    "KYC",
+    "KYB",
+    "AML",
+    "CTF",
+    "Customer Due Diligence",
+    "Enhanced Due Diligence",
+    "Suspicious transaction reporting",
+    "Record retention",
+    "Periodic compliance reviews",
+  ],
+  novaTrustEvidenceRequired: [
+    "Identity Verified",
+    "KYC Complete",
+    "Ledger Entry",
+    "Settlement Record",
+    "Digital Signature",
+    "Replay Evidence",
+    "Audit Package",
+    "PDF Receipt",
+  ],
+  novaAIAdvisoryOnly: true,
+  novaRideRequired: false,
+} as const;

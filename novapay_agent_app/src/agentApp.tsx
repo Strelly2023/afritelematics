@@ -32,17 +32,19 @@ export const NOVAPAY_AGENT_API_CONTRACTS = [
 // Searchable capability names retained for pilot documentation and older clients.
 export const NOVAPAY_AGENT_CAPABILITIES = [
   "Home",
+  "home",
+  "Dashboard",
   "Transfers",
   "Transactions",
   "Float",
   "Profile",
   "Send Money",
   "Receive Money",
+  "Cash In",
+  "Cash Out",
   "Scan QR",
   "Verify Customer",
   "Agent Dashboard",
-  "Cash In",
-  "Cash Out",
   "Customer Lookup",
   "Assisted Transfer",
   "Customer KYC",
@@ -52,9 +54,13 @@ export const NOVAPAY_AGENT_CAPABILITIES = [
   "QR Scanner",
   "Liquidity Alerts",
   "Compliance Alerts",
+  "Support",
+  "Settings",
 ] as const;
 
-type AgentTab = "home" | "cash" | "scan" | "customers" | "reports";
+export const NOVAPAY_AGENT_LEGACY_TABS = ["home", "cash", "scan", "customers", "reports"] as const;
+
+type AgentTab = "dashboard" | "cash-in" | "cash-out" | "customers" | "transactions" | "float" | "support" | "profile";
 type CashMode = "Cash In" | "Cash Out" | "Assisted Transfer";
 type AlertStatus =
   | "High Value Alert"
@@ -81,7 +87,7 @@ const complianceAlerts: AlertStatus[] = [
 ];
 
 export default function NovaPayAgentApp() {
-  const [activeTab, setActiveTab] = useState<AgentTab>("home");
+  const [activeTab, setActiveTab] = useState<AgentTab>("dashboard");
   const [darkMode, setDarkMode] = useState(false);
   const palette = darkMode ? dark : light;
 
@@ -109,11 +115,14 @@ export default function NovaPayAgentApp() {
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <PilotModeBanner />
-          {activeTab === "home" && <AgentHomeDashboard onNavigate={setActiveTab} palette={palette} />}
-          {activeTab === "cash" && <CashWorkspace palette={palette} />}
-          {activeTab === "scan" && <QRScannerScreen palette={palette} />}
+          {activeTab === "dashboard" && <AgentHomeDashboard onNavigate={setActiveTab} palette={palette} />}
+          {activeTab === "cash-in" && <CashWorkspace palette={palette} mode="Cash In" />}
+          {activeTab === "cash-out" && <CashWorkspace palette={palette} mode="Cash Out" />}
           {activeTab === "customers" && <CustomersWorkspace palette={palette} />}
-          {activeTab === "reports" && <ReportsWorkspace palette={palette} />}
+          {activeTab === "transactions" && <ReportsWorkspace palette={palette} />}
+          {activeTab === "float" && <FloatWorkspace palette={palette} />}
+          {activeTab === "support" && <SupportWorkspace palette={palette} />}
+          {activeTab === "profile" && <AgentProfileScreen palette={palette} />}
         </ScrollView>
 
         <TabBar activeTab={activeTab} onChange={setActiveTab} palette={palette} />
@@ -129,6 +138,17 @@ function AgentHomeDashboard({
   onNavigate: (tab: AgentTab) => void;
   palette: Palette;
 }) {
+  const dashboardActions = [
+    { key: "cash-in", label: "Open agent shift" },
+    { key: "cash-out", label: "Close agent shift" },
+    { key: "transactions", label: "View daily summary" },
+    { key: "float", label: "View cash balance" },
+    { key: "float", label: "View float balance" },
+    { key: "transactions", label: "View commission" },
+    { key: "support", label: "View alerts" },
+    { key: "transactions", label: "Sync transactions" },
+  ] as const;
+
   return (
     <View style={styles.stack}>
       <View style={styles.welcomeRow}>
@@ -148,11 +168,27 @@ function AgentHomeDashboard({
         <View style={styles.balanceStats}>
           <Metric label="Wallet" value="UGX 180,000" inverse />
           <Metric label="Reserved" value="UGX 320,000" inverse />
-          <Metric label="Limit left" value="UGX 8.2M" inverse />
+        <Metric label="Limit left" value="UGX 8.2M" inverse />
         </View>
       </View>
 
-      <PrimaryActionGrid onAction={(action) => onNavigate(action === "customers" ? "customers" : action === "scan" ? "scan" : "cash")} palette={palette} />
+      <PrimaryActionGrid
+        onAction={(action) =>
+          onNavigate(action === "customers" ? "customers" : action === "scan" ? "transactions" : action === "cash" ? "cash-in" : "cash-out")
+        }
+        palette={palette}
+      />
+
+      <Card title="Dashboard actions" palette={palette}>
+        <View style={styles.actionGrid}>
+          {dashboardActions.map((action) => (
+            <Pressable key={action.label} style={[styles.actionCard, { backgroundColor: palette.surface, borderColor: palette.border }]} onPress={() => onNavigate(action.key)}>
+              <View style={styles.actionIcon}><Text style={styles.actionIconText}>•</Text></View>
+              <Text style={[styles.actionTitle, { color: palette.text }]}>{action.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
 
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: palette.text }]}>Today</Text>
@@ -172,14 +208,17 @@ function AgentHomeDashboard({
   );
 }
 
-function CashWorkspace({ palette }: { palette: Palette }) {
-  const [mode, setMode] = useState<CashMode>("Cash In");
+function CashWorkspace({ palette, mode: initialMode }: { palette: Palette; mode: CashMode }) {
+  const [mode, setMode] = useState<CashMode>(initialMode);
   const [customer, setCustomer] = useState("");
   const [amount, setAmount] = useState("");
   const [otp, setOtp] = useState("");
   const [stage, setStage] = useState<"entry" | "review" | "receipt">("entry");
   const numericAmount = Number(amount.replace(/\D/g, "")) || 0;
   const commission = Math.round(numericAmount * (mode === "Cash Out" ? 0.008 : 0.005));
+  const actionButtons = mode === "Cash Out"
+    ? ["Enter customer phone", "Scan customer QR", "Verify customer OTP", "Enter amount", "Pay cash", "Confirm withdrawal", "Print receipt", "Share receipt", "Cancel withdrawal"]
+    : ["Enter customer phone", "Scan customer QR", "Enter amount", "Collect cash", "Confirm deposit", "Print receipt", "Share receipt", "Cancel transaction"];
 
   const reset = (nextMode?: CashMode) => {
     if (nextMode) setMode(nextMode);
@@ -199,6 +238,16 @@ function CashWorkspace({ palette }: { palette: Palette }) {
           </Pressable>
         ))}
       </View>
+
+      <Card title={`${mode} actions`} palette={palette}>
+        <View style={styles.grid}>
+          {actionButtons.map((button) => (
+            <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+              <Text style={{ color: palette.text }}>{button}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
 
       {stage === "entry" && (
         <Card title={mode} palette={palette}>
@@ -287,6 +336,15 @@ function CustomersWorkspace({ palette }: { palette: Palette }) {
   const [registering, setRegistering] = useState(false);
   const [kycStep, setKycStep] = useState(0);
   const steps = ["Phone verified", "Document captured", "Selfie matched", "Compliance submitted"];
+  const customerActions = [
+    "Register customer",
+    "Verify customer NovaID",
+    "Upload customer ID",
+    "Take customer selfie",
+    "Update customer profile",
+    "Reset customer PIN",
+    "View customer status",
+  ];
 
   return (
     <View style={styles.stack}>
@@ -299,6 +357,15 @@ function CustomersWorkspace({ palette }: { palette: Palette }) {
         placeholderTextColor={palette.muted}
       />
       <PrimaryButton label={registering ? "Close registration" : "+ Register customer"} onPress={() => setRegistering((value) => !value)} />
+      <Card title="Customer actions" palette={palette}>
+        <View style={styles.grid}>
+          {customerActions.map((button) => (
+            <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+              <Text style={{ color: palette.text }}>{button}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
       {registering ? (
         <Card title="Customer Registration" palette={palette}>
           <Text style={[styles.body, { color: palette.muted }]}>Guided Agent KYC</Text>
@@ -330,7 +397,7 @@ function ReportsWorkspace({ palette }: { palette: Palette }) {
   const [period, setPeriod] = useState("Today");
   return (
     <View style={styles.stack}>
-      <ScreenHeading title="Reports" subtitle="Performance, commission and settlement" palette={palette} />
+      <ScreenHeading title="Transactions" subtitle="Performance, commission and settlement" palette={palette} />
       <View style={styles.filterRow}>
         {["Today", "7 days", "30 days"].map((item) => (
           <Pressable key={item} onPress={() => setPeriod(item)} style={[styles.filter, { borderColor: palette.border }, period === item && styles.filterActive]}>
@@ -338,6 +405,23 @@ function ReportsWorkspace({ palette }: { palette: Palette }) {
           </Pressable>
         ))}
       </View>
+      <Card title="Transactions actions" palette={palette}>
+        <View style={styles.grid}>
+          {[
+            "View transaction list",
+            "Search transaction",
+            "Filter by date",
+            "Download receipt",
+            "Reverse pending transaction",
+            "Report suspicious transaction",
+            "Export daily report",
+          ].map((button) => (
+            <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+              <Text style={{ color: palette.text }}>{button}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
       <CommissionSummaryCard palette={palette} />
       <FloatSummaryCard palette={palette} />
       <Card title="Settlement Report" palette={palette}>
@@ -352,6 +436,57 @@ function ReportsWorkspace({ palette }: { palette: Palette }) {
       </Card>
       <TransactionList palette={palette} />
       <AgentProfileScreen palette={palette} />
+    </View>
+  );
+}
+
+function FloatWorkspace({ palette }: { palette: Palette }) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading title="Float" subtitle="Cash balance and reconciliation controls" palette={palette} />
+      <Card title="Float actions" palette={palette}>
+        <View style={styles.grid}>
+          {[
+            "View float balance",
+            "Request float",
+            "Transfer float",
+            "Rebalance cash",
+            "View settlement",
+            "Reconcile cash",
+            "Submit cash report",
+          ].map((button) => (
+            <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+              <Text style={{ color: palette.text }}>{button}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
+      <FloatSummaryCard palette={palette} />
+    </View>
+  );
+}
+
+function SupportWorkspace({ palette }: { palette: Palette }) {
+  return (
+    <View style={styles.stack}>
+      <ScreenHeading title="Support" subtitle="Incident handling and training" palette={palette} />
+      <Card title="Support actions" palette={palette}>
+        <View style={styles.grid}>
+          {[
+            "Open support ticket",
+            "Report fraud",
+            "Report device issue",
+            "Report cash mismatch",
+            "Call support",
+            "View training guide",
+          ].map((button) => (
+            <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+              <Text style={{ color: palette.text }}>{button}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
+      <ComplianceAlertPanel palette={palette} />
     </View>
   );
 }
@@ -520,6 +655,21 @@ export function NovaAIInsightCard({ palette = light }: { palette?: Palette }) {
 export function AgentProfileScreen({ palette = light }: { palette?: Palette }) {
   return (
     <Card title="Agent profile & security" palette={palette}>
+      <View style={styles.grid}>
+        {[
+          "Edit agent profile",
+          "Verify agent NovaID",
+          "Manage business location",
+          "Manage device",
+          "Change PIN",
+          "Enable biometric login",
+          "Logout",
+        ].map((button) => (
+          <Pressable key={button} accessibilityRole="button" accessibilityLabel={button} style={[styles.action, { backgroundColor: palette.surface }]}>
+            <Text style={{ color: palette.text }}>{button}</Text>
+          </Pressable>
+        ))}
+      </View>
       <ReviewRow label="Agent" value="Mary • agent-001" palette={palette} />
       <ReviewRow label="Device binding" value="Trusted ✓" palette={palette} />
       <ReviewRow label="Biometrics" value="Enabled" palette={palette} />
@@ -616,11 +766,14 @@ function ScreenHeading({ title, subtitle, palette }: { title: string; subtitle: 
 
 function TabBar({ activeTab, onChange, palette }: { activeTab: AgentTab; onChange: (tab: AgentTab) => void; palette: Palette }) {
   const tabs: Array<{ key: AgentTab; icon: string; label: string }> = [
-    { key: "home", icon: "⌂", label: "Home" },
-    { key: "cash", icon: "↕", label: "Cash" },
-    { key: "scan", icon: "▦", label: "Scan QR" },
+    { key: "dashboard", icon: "⌂", label: "Dashboard" },
+    { key: "cash-in", icon: "↓", label: "Cash In" },
+    { key: "cash-out", icon: "↑", label: "Cash Out" },
     { key: "customers", icon: "♙", label: "Customers" },
-    { key: "reports", icon: "▥", label: "Reports" },
+    { key: "transactions", icon: "▥", label: "Transactions" },
+    { key: "float", icon: "◫", label: "Float" },
+    { key: "support", icon: "!", label: "Support" },
+    { key: "profile", icon: "⚙", label: "Profile" },
   ];
   return (
     <View style={[styles.tabBar, { backgroundColor: palette.surface, borderTopColor: palette.border }]}>
