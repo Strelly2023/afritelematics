@@ -18,7 +18,7 @@ pytestmark = [pytest.mark.controlled_pilot, pytest.mark.pilot_payment_guard, pyt
 
 def test_payment_mode_is_simulated_and_live_paths_are_blocked() -> None:
     config = read_json("config/controlled_pilot.json")
-    assert config["payment_mode"] == "SIMULATED"
+    assert config["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert config["live_payments_enabled"] is False
     assert config["real_charging_enabled"] is False
     assert config["external_payouts_enabled"] is False
@@ -41,7 +41,7 @@ def test_controlled_pilot_payment_payload_is_marked_simulated() -> None:
     payload = mark_controlled_pilot_payment({"transaction_id": "cp-001", "status": "captured"})
     assert payload["controlled_pilot"] is True
     assert payload["simulated_payment"] is True
-    assert payload["payment_mode"] == "SIMULATED"
+    assert payload["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert payload["controlled_pilot_environment"]["environment"] == "CONTROLLED_PILOT"
 
     approval = Path("docs/pilot/PILOT_PAYMENT_APPROVAL.json")

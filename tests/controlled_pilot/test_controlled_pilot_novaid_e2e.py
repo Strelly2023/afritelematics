@@ -19,18 +19,18 @@ def _token(client: TestClient, user_key: str) -> str:
 
 def test_novaid_pilot_identity_flows_are_visible_in_app_surfaces() -> None:
     client = TestClient(app)
-    personal_token = client.post("/auth/token", json=token_payload("pilot-consumer-1", "OBSERVER")).json()["token"]
-    business_token = client.post("/auth/token", json=token_payload("pilot-business-1", "OBSERVER")).json()["token"]
-    employee_token = client.post("/auth/token", json=token_payload("pilot-business-1", "OBSERVER")).json()["token"]
-    partner_token = client.post("/auth/token", json=token_payload("pilot-agent-1", "PARTNER")).json()["token"]
-    inspector_token = client.post("/auth/token", json=token_payload("pilot-business-1", "VERIFIER")).json()["token"]
+    personal_token = client.post("/auth/token", json=token_payload("rider-002", "OBSERVER")).json()["token"]
+    business_token = client.post("/auth/token", json=token_payload("business-001", "OBSERVER")).json()["token"]
+    employee_token = client.post("/auth/token", json=token_payload("employee-003", "OBSERVER")).json()["token"]
+    partner_token = client.post("/auth/token", json=token_payload("merchant-002", "PARTNER")).json()["token"]
+    inspector_token = client.post("/auth/token", json=token_payload("employee-002", "VERIFIER")).json()["token"]
 
     for token, device in [
-        (personal_token, "device-consumer-1"),
-        (business_token, "device-business-1"),
-        (employee_token, "device-business-1"),
-            (partner_token, "device-agent-1"),
-        (inspector_token, "device-business-1"),
+        (personal_token, "device-012"),
+        (business_token, "device-036"),
+        (employee_token, "device-040"),
+        (partner_token, "device-032"),
+        (inspector_token, "device-039"),
     ]:
         assert client.post("/v1/pilot/devices/bind", headers=auth_header(token), json={"device_id": device}).status_code == 200
 
@@ -38,9 +38,9 @@ def test_novaid_pilot_identity_flows_are_visible_in_app_surfaces() -> None:
     assert registry.status_code == 200
     assert registry.json()["config"]["environment"] == "CONTROLLED_PILOT"
 
-    assert client.post("/v1/pilot/access/check", headers=auth_header(personal_token), json={"device_id": "device-consumer-1", "surface": "identity"}).json()["allowed"] is True
-    assert client.post("/v1/pilot/access/check", headers=auth_header(business_token), json={"device_id": "device-business-1", "surface": "identity"}).json()["allowed"] is True
-    assert client.post("/v1/pilot/access/check", headers=auth_header(inspector_token), json={"device_id": "device-business-1", "surface": "identity"}).json()["allowed"] is True
+    assert client.post("/v1/pilot/access/check", headers=auth_header(personal_token), json={"device_id": "device-012", "surface": "identity"}).json()["allowed"] is True
+    assert client.post("/v1/pilot/access/check", headers=auth_header(business_token), json={"device_id": "device-036", "surface": "identity"}).json()["allowed"] is True
+    assert client.post("/v1/pilot/access/check", headers=auth_header(inspector_token), json={"device_id": "device-039", "surface": "identity"}).json()["allowed"] is True
 
     personal_source = load_source_text("novaid_personal")
     business_source = load_source_text("novaid_business")

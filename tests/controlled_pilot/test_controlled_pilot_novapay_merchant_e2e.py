@@ -24,13 +24,13 @@ def test_merchant_qr_payment_refund_and_settlement_are_simulated() -> None:
     merchant_token = _token(client, "merchant")
     operator_token = _token(client, "operator")
     charge_key = f"cp-merchant-{uuid4().hex[:8]}"
-    assert client.post("/v1/pilot/devices/bind", headers=auth_header(merchant_token), json={"device_id": "device-merchant-1"}).status_code == 200
+    assert client.post("/v1/pilot/devices/bind", headers=auth_header(merchant_token), json={"device_id": "device-031"}).status_code == 200
 
     charge = client.post(
         "/v1/payments/charges",
         headers={**auth_header(operator_token), "Idempotency-Key": charge_key},
         json={
-            "payer_id": "pilot-consumer-1",
+            "payer_id": "rider-002",
             "amount_minor": 2500,
             "currency": "AUD",
             "method": "wallet",

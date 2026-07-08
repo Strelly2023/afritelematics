@@ -44,14 +44,16 @@ APP_SOURCE_FILES = {
 }
 
 PILOT_ACCOUNTS = {
-    "rider": ("pilot-rider-1", "CUSTOMER", "device-rider-1"),
-    "consumer": ("pilot-consumer-1", "CUSTOMER", "device-consumer-1"),
-    "driver": ("driver-pilot-1", "DRIVER", "device-rider-1"),
-    "operator": ("operator-pilot-1", "OPERATOR", "device-business-1"),
-    "agent": ("agent-pilot-1", "DISPATCHER", "device-agent-1"),
-    "merchant": ("merchant-pilot-1", "CLIENT", "device-merchant-1"),
-    "business": ("business-pilot-1", "CLIENT", "device-business-1"),
-    "identity": ("pilot-consumer-1", "VERIFIER", "device-consumer-1"),
+    "rider": ("rider-001", "CUSTOMER", "device-011"),
+    "consumer": ("rider-002", "CUSTOMER", "device-012"),
+    "driver": ("driver-001", "DRIVER", "device-001"),
+    "operator": ("employee-001", "OPERATOR", "device-038"),
+    "agent": ("agent-001", "DISPATCHER", "device-033"),
+    "merchant": ("merchant-001", "CLIENT", "device-031"),
+    "business": ("business-001", "CLIENT", "device-036"),
+    "identity": ("employee-002", "VERIFIER", "device-039"),
+    "employee": ("employee-003", "EMPLOYEE", "device-040"),
+    "partner": ("merchant-002", "PARTNER", "device-032"),
 }
 
 

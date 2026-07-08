@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.controlled_pilot, pytest.mark.pilot_apk, pytest.mark.a
 def test_controlled_pilot_apks_checksums_manifests_and_labels_exist() -> None:
     config = read_json("config/controlled_pilot.json")
     assert config["environment"] == "CONTROLLED_PILOT"
-    assert config["payment_mode"] == "SIMULATED"
+    assert config["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert config["live_payments_enabled"] is False
 
     for apk_name, manifest_name, app_label in APK_CASES:

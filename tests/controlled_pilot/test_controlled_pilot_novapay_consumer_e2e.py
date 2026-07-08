@@ -24,16 +24,16 @@ def test_consumer_wallet_transfer_and_receipt_are_simulated() -> None:
     consumer_token = _token(client, "consumer")
     operator_token = _token(client, "operator")
     idempotency_key = f"cp-consumer-{uuid4().hex[:8]}"
-    assert client.post("/v1/pilot/devices/bind", headers=auth_header(consumer_token), json={"device_id": "device-consumer-1"}).status_code == 200
+    assert client.post("/v1/pilot/devices/bind", headers=auth_header(consumer_token), json={"device_id": "device-012"}).status_code == 200
 
-    wallet = client.get("/v1/payments/wallets/rider/pilot-consumer-1/AUD", headers=auth_header(consumer_token))
+    wallet = client.get("/v1/payments/wallets/rider/rider-002/AUD", headers=auth_header(consumer_token))
     assert wallet.status_code == 200
 
     charge = client.post(
         "/v1/payments/charges",
         headers={**auth_header(consumer_token), "Idempotency-Key": idempotency_key},
         json={
-            "payer_id": "pilot-consumer-1",
+            "payer_id": "rider-002",
             "amount_minor": 5000,
             "currency": "AUD",
             "method": "wallet",
@@ -54,7 +54,7 @@ def test_consumer_wallet_transfer_and_receipt_are_simulated() -> None:
     dispute = client.post(
         f"/v1/payments/transactions/{payload['transaction_id']}/disputes",
         headers=auth_header(consumer_token),
-        json={"opened_by": "pilot-consumer-1", "reason": "pilot dispute"},
+        json={"opened_by": "rider-002", "reason": "pilot dispute"},
     )
     assert dispute.status_code == 200
 

@@ -15,11 +15,14 @@ def test_controlled_pilot_release_guard_blocks_public_ga_claims() -> None:
     assert config["public_launch_allowed"] is False
     assert config["general_availability_allowed"] is False
     assert config["unrestricted_signup_allowed"] is False
+    assert config["approved_participants_only"] is True
     assert config["live_payments_enabled"] is False
     assert config["real_charging_enabled"] is False
     assert config["external_payouts_enabled"] is False
+    assert config["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert registry["public_launch_allowed"] is False
     assert registry["real_payments_approved"] is False
+    assert registry["roles_overlap_allowed"] is False
 
     release_text = DOWNLOAD_PAGE_PATH.read_text(encoding="utf-8")
     assert "public launch" in release_text.lower()

@@ -24,13 +24,13 @@ def test_business_approval_payroll_and_reports_are_simulated() -> None:
     business_token = _token(client, "business")
     operator_token = _token(client, "operator")
     charge_key = f"cp-business-{uuid4().hex[:8]}"
-    assert client.post("/v1/pilot/devices/bind", headers=auth_header(business_token), json={"device_id": "device-business-1"}).status_code == 200
+    assert client.post("/v1/pilot/devices/bind", headers=auth_header(business_token), json={"device_id": "device-036"}).status_code == 200
 
     charge = client.post(
         "/v1/payments/charges",
         headers={**auth_header(operator_token), "Idempotency-Key": charge_key},
         json={
-            "payer_id": "business-pilot-1",
+            "payer_id": "business-001",
             "amount_minor": 100000,
             "currency": "AUD",
             "method": "split",

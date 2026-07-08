@@ -21,7 +21,7 @@ def test_incident_response_and_support_cases_are_available() -> None:
     client = TestClient(app)
     rider_token = _token(client, "rider")
     operator_token = _token(client, "operator")
-    assert client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-rider-1"}).status_code == 200
+    assert client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-011"}).status_code == 200
     assert client.post("/v1/pilot/support/tickets", headers=auth_header(operator_token), json={"summary": "broken route"}).status_code == 200
     assert client.post("/v1/pilot/safety/sos", headers=auth_header(rider_token), json={"ride_id": "pilot-ride-incident"}).status_code == 200
     audit = client.get("/v1/pilot/audit", headers=auth_header(operator_token))

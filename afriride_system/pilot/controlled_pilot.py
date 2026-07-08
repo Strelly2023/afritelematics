@@ -41,13 +41,20 @@ class ControlledPilotConfig:
 class PilotRegistry:
     pilot_id: str
     status: str
+    approved_participants_only: bool
+    roles_overlap_allowed: bool
+    approved_users_only: bool
+    approved_devices_only: bool
+    approved_operators_only: bool
     approved_users: tuple[str, ...]
+    approved_riders: tuple[str, ...]
     approved_devices: tuple[str, ...]
     approved_drivers: tuple[str, ...]
     approved_operators: tuple[str, ...]
     approved_agents: tuple[str, ...]
     approved_merchants: tuple[str, ...]
     approved_businesses: tuple[str, ...]
+    approved_employees: tuple[str, ...]
     approved_test_locations: tuple[str, ...]
     payment_mode: str
     real_payments_approved: bool
@@ -89,13 +96,20 @@ def load_pilot_registry() -> PilotRegistry:
     return PilotRegistry(
         pilot_id=str(payload["pilot_id"]),
         status=str(payload["status"]),
+        approved_participants_only=bool(payload["approved_participants_only"]),
+        roles_overlap_allowed=bool(payload["roles_overlap_allowed"]),
+        approved_users_only=bool(payload["approved_users_only"]),
+        approved_devices_only=bool(payload["approved_devices_only"]),
+        approved_operators_only=bool(payload["approved_operators_only"]),
         approved_users=tuple(payload.get("approved_users", [])),
+        approved_riders=tuple(payload.get("approved_riders", [])),
         approved_devices=tuple(payload.get("approved_devices", [])),
         approved_drivers=tuple(payload.get("approved_drivers", [])),
         approved_operators=tuple(payload.get("approved_operators", [])),
         approved_agents=tuple(payload.get("approved_agents", [])),
         approved_merchants=tuple(payload.get("approved_merchants", [])),
         approved_businesses=tuple(payload.get("approved_businesses", [])),
+        approved_employees=tuple(payload.get("approved_employees", [])),
         approved_test_locations=tuple(payload.get("approved_test_locations", [])),
         payment_mode=str(payload["payment_mode"]),
         real_payments_approved=bool(payload["real_payments_approved"]),
@@ -154,11 +168,13 @@ def _subject_registered(subject: str) -> bool:
     registry = load_pilot_registry()
     approved_groups = (
         registry.approved_users,
+        registry.approved_riders,
         registry.approved_drivers,
         registry.approved_operators,
         registry.approved_agents,
         registry.approved_merchants,
         registry.approved_businesses,
+        registry.approved_employees,
     )
     return any(subject in group for group in approved_groups)
 
@@ -191,7 +207,16 @@ def audit_log() -> list[dict[str, Any]]:
 def bind_device(subject: str, device_id: str) -> dict[str, Any]:
     config = ensure_controlled_pilot_mode()
     registry = load_pilot_registry()
-    if subject not in registry.approved_users and subject not in registry.approved_drivers and subject not in registry.approved_operators and subject not in registry.approved_agents and subject not in registry.approved_merchants and subject not in registry.approved_businesses:
+    if (
+        subject not in registry.approved_users
+        and subject not in registry.approved_riders
+        and subject not in registry.approved_drivers
+        and subject not in registry.approved_operators
+        and subject not in registry.approved_agents
+        and subject not in registry.approved_merchants
+        and subject not in registry.approved_businesses
+        and subject not in registry.approved_employees
+    ):
         raise ControlledPilotError("subject_not_approved")
     if device_id not in registry.approved_devices:
         raise ControlledPilotError("device_not_approved")
@@ -216,7 +241,16 @@ def check_access(claims: AuthClaims, device_id: str, surface: str) -> dict[str, 
     registry = load_pilot_registry()
     if config.public_launch_allowed or config.general_availability_allowed or config.unrestricted_signup_allowed:
         raise ControlledPilotError("pilot_release_guard_failed")
-    if claims.sub not in registry.approved_users and claims.sub not in registry.approved_drivers and claims.sub not in registry.approved_operators and claims.sub not in registry.approved_agents and claims.sub not in registry.approved_merchants and claims.sub not in registry.approved_businesses:
+    if (
+        claims.sub not in registry.approved_users
+        and claims.sub not in registry.approved_riders
+        and claims.sub not in registry.approved_drivers
+        and claims.sub not in registry.approved_operators
+        and claims.sub not in registry.approved_agents
+        and claims.sub not in registry.approved_merchants
+        and claims.sub not in registry.approved_businesses
+        and claims.sub not in registry.approved_employees
+    ):
         result = {"allowed": False, "reason": "user_not_approved"}
     elif device_id not in registry.approved_devices or _DEVICE_BINDINGS.get(claims.sub) != device_id:
         result = {"allowed": False, "reason": "device_not_approved"}

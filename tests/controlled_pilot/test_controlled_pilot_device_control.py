@@ -20,7 +20,7 @@ def _token(client: TestClient, user_key: str) -> str:
 def test_device_binding_revoke_and_audit_log_work() -> None:
     client = TestClient(app)
     rider_token = _token(client, "rider")
-    bind = client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-rider-1"})
+    bind = client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-011"})
     assert bind.status_code == 200
     assert bind.json()["status"] == "bound"
 
@@ -29,20 +29,20 @@ def test_device_binding_revoke_and_audit_log_work() -> None:
     assert audit.json()["environment"] == "CONTROLLED_PILOT"
     assert any(item["action"] == "bind_device" for item in audit.json()["items"])
 
-    revoke = client.post("/v1/pilot/devices/revoke", headers=auth_header(rider_token), json={"device_id": "device-rider-1"})
+    revoke = client.post("/v1/pilot/devices/revoke", headers=auth_header(rider_token), json={"device_id": "device-011"})
     assert revoke.status_code == 200
     assert revoke.json()["revoked"] is True
 
     blocked = client.post(
         "/v1/pilot/access/check",
         headers=auth_header(rider_token),
-        json={"device_id": "device-rider-1", "surface": "rider"},
+        json={"device_id": "device-011", "surface": "rider"},
     )
     assert blocked.status_code == 200
     assert blocked.json()["allowed"] is False
     assert blocked.json()["reason"] == "device_not_approved"
 
-    device_rebind = client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-rider-1"})
+    device_rebind = client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-011"})
     assert device_rebind.status_code == 200
 
     unapproved = client.post("/v1/pilot/devices/bind", headers=auth_header(rider_token), json={"device_id": "device-unknown"})

@@ -25,13 +25,13 @@ def test_agent_cash_in_cash_out_and_reconciliation_are_simulated() -> None:
     operator_token = _token(client, "operator")
     cash_in_key = f"cp-agent-cash-in-{uuid4().hex[:8]}"
     cash_out_key = f"cp-agent-cash-out-{uuid4().hex[:8]}"
-    assert client.post("/v1/pilot/devices/bind", headers=auth_header(agent_token), json={"device_id": "device-agent-1"}).status_code == 200
+    assert client.post("/v1/pilot/devices/bind", headers=auth_header(agent_token), json={"device_id": "device-033"}).status_code == 200
 
     cash_in = client.post(
         "/v1/payments/charges",
         headers={**auth_header(agent_token), "Idempotency-Key": cash_in_key},
         json={
-            "payer_id": "pilot-consumer-1",
+            "payer_id": "rider-002",
             "amount_minor": 10000,
             "currency": "AUD",
             "method": "cash",
@@ -47,7 +47,7 @@ def test_agent_cash_in_cash_out_and_reconciliation_are_simulated() -> None:
         "/v1/payments/charges",
         headers={**auth_header(agent_token), "Idempotency-Key": cash_out_key},
         json={
-            "payer_id": "pilot-consumer-1",
+            "payer_id": "rider-002",
             "amount_minor": 5000,
             "currency": "AUD",
             "method": "cash",
@@ -59,7 +59,7 @@ def test_agent_cash_in_cash_out_and_reconciliation_are_simulated() -> None:
     assert cash_out.status_code == 200
     assert cash_out.json().get("data", cash_out.json())["simulated_payment"] is True
 
-    wallet = client.get("/v1/payments/wallets/driver/driver-pilot-1/AUD", headers=auth_header(agent_token))
+    wallet = client.get("/v1/payments/wallets/driver/driver-001/AUD", headers=auth_header(agent_token))
     assert wallet.status_code == 200
 
     report = client.get("/v1/payments/reporting", headers=auth_header(operator_token))

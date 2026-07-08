@@ -11,8 +11,8 @@ pytestmark = [pytest.mark.controlled_pilot, pytest.mark.pilot_security]
 
 def test_pilot_events_are_logged_with_required_fields() -> None:
     start = len(audit_log())
-    record_event(actor="pilot-rider-1", role="CUSTOMER", device="device-rider-1", action="trip_requested", result="ok")
-    record_event(actor="pilot-rider-1", role="CUSTOMER", device="device-rider-1", action="payment_guard", result="simulated")
+    record_event(actor="rider-001", role="CUSTOMER", device="device-011", action="trip_requested", result="ok")
+    record_event(actor="rider-001", role="CUSTOMER", device="device-011", action="payment_guard", result="simulated")
     events = audit_log()[start:]
     assert len(events) >= 2
     for event in events:

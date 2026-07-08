@@ -19,7 +19,9 @@ def test_controlled_pilot_environment_is_locked_down() -> None:
     assert config["approved_users_only"] is True
     assert config["approved_devices_only"] is True
     assert config["approved_operators_only"] is True
-    assert config["payment_mode"] == "SIMULATED"
+    assert config["approved_participants_only"] is True
+    assert config["roles_overlap_allowed"] is False
+    assert config["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert config["live_payments_enabled"] is False
     assert config["real_charging_enabled"] is False
     assert config["external_payouts_enabled"] is False
@@ -28,8 +30,10 @@ def test_controlled_pilot_environment_is_locked_down() -> None:
 
     assert registry["pilot_id"] == "nova-controlled-pilot-001"
     assert registry["status"] == "CONTROLLED_PILOT"
-    assert registry["payment_mode"] == "SIMULATED"
+    assert registry["approved_participants_only"] is True
+    assert registry["roles_overlap_allowed"] is False
+    assert registry["payment_mode"] == "SIMULATED_AND_SANDBOX"
     assert registry["real_payments_approved"] is False
     assert registry["public_launch_allowed"] is False
-    assert registry["approved_users"]
-    assert registry["approved_devices"]
+    assert len(registry["approved_users"]) == 57
+    assert len(registry["approved_devices"]) == 40
