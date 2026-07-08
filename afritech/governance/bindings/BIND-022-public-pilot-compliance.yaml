@@ -1,0 +1,68 @@
+id: BIND-022
+
+description: >
+  Binds public-pilot compliance to the ADR, safety rule, geography guard,
+  release guard, and reconciliation guard, ensuring the stage remains
+  limited, monitored, and blocked from GA.
+
+bindings:
+  - id: BIND-022-1
+    name: public_pilot_limits_guard
+    target: afritech.guards.guard_public_pilot_limits
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - enforce transaction limits
+      - block unsupported payment modes
+      - reject production credentials outside approved rules
+
+  - id: BIND-022-2
+    name: public_pilot_geography_guard
+    target: afritech.guards.guard_public_pilot_geography
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - enforce approved pilot regions
+      - block unsupported regions or waitlist them
+      - preserve geography restrictions
+
+  - id: BIND-022-3
+    name: public_pilot_release_guard
+    target: afritech.guards.guard_public_pilot_release
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - keep GA disabled
+      - fail on public launch claims
+      - verify PRR remains required
+
+  - id: BIND-022-4
+    name: public_pilot_reconciliation_guard
+    target: afritech.guards.guard_public_pilot_reconciliation
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - verify reconciliation reports
+      - surface balance drift
+      - keep pilot settlement gated
+
+linked_rules:
+  - RULE-043
+
+linked_adr:
+  - ADR-0023
+
+linked_invariants:
+  - INVARIANT-015
+
+guards:
+  - afritech.guards.guard_public_pilot_limits
+  - afritech.guards.guard_public_pilot_geography
+  - afritech.guards.guard_public_pilot_release
+  - afritech.guards.guard_public_pilot_reconciliation
+
+ci:
+  enforcement:
+    - Public pilot guards must pass with zero violations.
+    - GA claims remain forbidden.
+    - Reconciliation must remain available for limited real payments.

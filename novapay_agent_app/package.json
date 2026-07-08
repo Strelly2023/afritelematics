@@ -9,7 +9,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "test:internal-qa": "pytest tests/internal_qa -q",
-    "test:controlled-pilot": "pytest tests/controlled_pilot -q"
+    "test:controlled-pilot": "pytest tests/controlled_pilot -q",
+    "test:public-pilot": "pytest tests/public_pilot -q"
   },
   "dependencies": {
     "expo": "~51.0.28",

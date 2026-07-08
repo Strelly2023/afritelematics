@@ -1,0 +1,19 @@
+prr_id: PRR-001
+status: BLOCKED
+stage: PRODUCTION_READINESS_REVIEW
+approval_required: true
+blocked_by_public_pilot_exit_report: true
+certifications_required:
+  - engineering_readiness
+  - security_review
+  - disaster_recovery
+  - capacity_review
+  - monitoring_review
+  - support_readiness
+  - incident_response
+  - escalation_workflows
+  - compliance_review
+  - data_retention
+  - audit_controls
+  - payment_compliance
+  - governance_approval

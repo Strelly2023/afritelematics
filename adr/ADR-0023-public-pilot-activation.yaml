@@ -1,0 +1,33 @@
+adr:
+  id: ADR-0023
+  title: Public pilot activation
+  status: PROPOSED
+  classification: PUBLIC_PILOT_GOVERNANCE
+  context: >
+    Public Pilot is the stage after Controlled Pilot and before Production
+    Readiness Review. It admits approved external users under restricted
+    geography, limited transaction amounts, explicit monitoring, and a hard
+    GA block.
+  decision: >
+    Activate a governed public-pilot boundary, route approval through
+    configuration and approval artifacts, and fail closed whenever geography,
+    payment, release, or PRR requirements are unmet.
+  consequences:
+    - External users may be admitted only when approved regions and users exist.
+    - Limited real payments remain blocked unless explicit approval is present.
+    - PRR remains blocked until the public-pilot exit report is satisfied.
+    - GA claims remain forbidden.
+  constraints:
+    - public launch is forbidden
+    - GA remains disabled
+    - transaction limits are mandatory
+    - monitoring and incident response are mandatory
+  rules:
+    - RULE-043
+  linked_rule: RULE-043
+  linked_binding: BIND-022
+  linked_guard: afritech/guards/guard_public_pilot_release.py
+  linked_surfaces:
+    - config/public_pilot.json
+    - docs/public_pilot/PUBLIC_PILOT_APPROVAL.json
+    - docs/public_pilot/PUBLIC_PILOT_EXIT_REPORT.yaml

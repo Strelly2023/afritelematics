@@ -1,0 +1,21 @@
+id: INVARIANT-015
+name: public_pilot_boundaries
+status: ACTIVE
+classification: PUBLIC_PILOT_BOUNDARY_INVARIANT
+
+description: >
+  Public pilot boundaries must keep GA disabled, restrict geography, enforce
+  transaction limits, require monitoring and incident response, and preserve
+  product authority boundaries between NovaID, NovaPay, NovaRide, NovaTrust,
+  and NovaAI.
+
+constraints:
+  - public launch remains false
+  - general availability remains false
+  - approved regions are mandatory
+  - limited real payments require explicit approval
+  - NovaID owns identity and verification
+  - NovaPay owns financial execution
+  - NovaRide owns mobility only
+  - NovaTrust owns evidence
+  - NovaAI remains advisory only

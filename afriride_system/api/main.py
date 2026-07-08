@@ -23,6 +23,7 @@ from afriride_system.api.corridors_routes import router as corridors_router
 from afriride_system.api.architecture_routes import router as architecture_router
 from afriride_system.api.internal_qa_contract_routes import router as internal_qa_contract_router
 from afriride_system.api.controlled_pilot_routes import router as controlled_pilot_router
+from afriride_system.api.public_pilot_routes import router as public_pilot_router
 from afriride_system.api.trace_middleware import trace_enforcement_middleware
 from afriride_system.api.responses import error
 from afriride_system.api.security import build_security_router, security_middleware
@@ -64,6 +65,7 @@ app.include_router(corridors_router)
 app.include_router(architecture_router)
 app.include_router(internal_qa_contract_router)
 app.include_router(controlled_pilot_router)
+app.include_router(public_pilot_router)
 app.include_router(treasury_router)
 app.include_router(build_security_router())
 app.include_router(build_afriride_next_gen_mobile_router())

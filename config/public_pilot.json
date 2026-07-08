@@ -1,0 +1,23 @@
+{
+  "environment": "PUBLIC_PILOT",
+  "public_users_allowed": true,
+  "selected_external_users_allowed": true,
+  "pilot_transaction_limits_enabled": true,
+  "pilot_geography_restricted": true,
+  "pilot_monitoring_required": true,
+  "incident_response_required": true,
+  "rollback_required": true,
+  "support_required": true,
+  "production_credentials_allowed": true,
+  "ga_enabled": false,
+  "general_availability_allowed": false,
+  "unrestricted_signup_allowed": false,
+  "payment_mode": "PILOT_REAL_LIMITED",
+  "max_transaction_amount_aud": 50,
+  "daily_transaction_limit_aud": 200,
+  "monthly_transaction_limit_aud": 1000,
+  "identity_mode": "REAL_WITH_MANUAL_REVIEW",
+  "apk_distribution": "PUBLIC_PILOT_ONLY",
+  "prr_required": true,
+  "production_real_payment_mode": "disabled"
+}

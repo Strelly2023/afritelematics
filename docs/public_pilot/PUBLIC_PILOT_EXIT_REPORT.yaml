@@ -1,0 +1,16 @@
+pilot_stage: PUBLIC_PILOT
+status: NOT_READY_FOR_PRR
+services:
+  novaride: PENDING
+  novapay: PENDING
+  novaid: PENDING
+  novatrust: PENDING
+  novaai: ADVISORY_ONLY
+availability_target_met: false
+payment_reconciliation_passed: false
+identity_validation_passed: false
+incident_response_exercised: false
+rollback_verified: false
+support_sla_met: false
+compliance_review_completed: false
+next_stage: PRODUCTION_READINESS_REVIEW

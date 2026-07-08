@@ -1,0 +1,36 @@
+id: RULE-043
+name: public_pilot_safety
+status: ACTIVE
+classification: PUBLIC_PILOT_SAFETY_RULE
+
+description: >
+  Public Pilot must fail closed unless approved regions exist, user/device
+  access is governed, monitoring and support are active, rollback is
+  documented, and limited real payments have explicit approval.
+
+linked_artifacts:
+  adr: adr/ADR-0023-public-pilot-activation.yaml
+  binding: afritech/governance/bindings/BIND-022-public-pilot-compliance.yaml
+  guard: afritech/guards/guard_public_pilot_release.py
+  limits_guard: afritech/guards/guard_public_pilot_limits.py
+  geography_guard: afritech/guards/guard_public_pilot_geography.py
+  reconciliation_guard: afritech/guards/guard_public_pilot_reconciliation.py
+  config: config/public_pilot.json
+  approval: docs/public_pilot/PUBLIC_PILOT_APPROVAL.json
+  exit_report: docs/public_pilot/PUBLIC_PILOT_EXIT_REPORT.yaml
+
+contract:
+  public_pilot:
+    required_environment: PUBLIC_PILOT
+    required_payment_mode: PILOT_REAL_LIMITED
+    required_identity_mode: REAL_WITH_MANUAL_REVIEW
+    required_prr: true
+    required_ga_disabled: true
+    required_limits:
+      max_transaction_amount_aud: 50
+      daily_transaction_limit_aud: 200
+      monthly_transaction_limit_aud: 1000
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
