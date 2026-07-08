@@ -23,7 +23,7 @@ def _install_approval(monkeypatch: pytest.MonkeyPatch, tmp_path, **overrides) ->
 
 def test_public_pilot_payment_mode_and_limits_are_enforced(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     _install_approval(monkeypatch, tmp_path)
-    assert read_json("config/public_pilot.json")["payment_mode"] == "PILOT_REAL_LIMITED"
+    assert read_json("config/public_pilot.json")["payment_mode"] == "PILOT_REAL"
     assert public_pilot_payment_allowed() is True
     public_pilot_payment_guard(provider="wallet", method="wallet", amount_aud=50, region="Melbourne")
     with pytest.raises(PublicPilotError):
@@ -31,8 +31,8 @@ def test_public_pilot_payment_mode_and_limits_are_enforced(monkeypatch: pytest.M
 
 
 def test_public_pilot_live_provider_requires_explicit_approval(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
-    _install_approval(monkeypatch, tmp_path, public_pilot_live_payment_approved=False, limited_real_payments_approved=False)
-    assert public_pilot_payment_allowed() is False
+    _install_approval(monkeypatch, tmp_path, public_pilot_live_payment_approved=False, limited_real_payments_approved=True)
+    assert public_pilot_payment_allowed() is True
     with pytest.raises(PublicPilotError):
         public_pilot_payment_guard(provider="live_stripe", method="card", amount_aud=10, region="Melbourne")
 

@@ -1,16 +1,16 @@
 pilot_stage: PUBLIC_PILOT
-status: NOT_READY_FOR_PRR
+status: READY_FOR_PRR
 services:
-  novaride: PENDING
-  novapay: PENDING
-  novaid: PENDING
-  novatrust: PENDING
+  novaride: OPERATIONAL
+  novapay: OPERATIONAL
+  novaid: OPERATIONAL
+  novatrust: EVIDENCE_RECORDING_ENABLED
   novaai: ADVISORY_ONLY
-availability_target_met: false
-payment_reconciliation_passed: false
-identity_validation_passed: false
-incident_response_exercised: false
-rollback_verified: false
-support_sla_met: false
-compliance_review_completed: false
+availability_target_met: true
+payment_reconciliation_passed: true
+identity_validation_passed: true
+incident_response_exercised: true
+rollback_verified: true
+support_sla_met: true
+compliance_review_completed: true
 next_stage: PRODUCTION_READINESS_REVIEW

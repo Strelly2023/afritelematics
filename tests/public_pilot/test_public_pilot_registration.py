@@ -36,13 +36,14 @@ def test_public_pilot_access_control_allows_approved_user_and_blocks_region(monk
     _install_approval(monkeypatch, tmp_path)
     client = TestClient(app)
     rider_token = _token(client, "rider")
+    rider_id, _, device_id, _ = PUBLIC_PILOT_ACCOUNTS["rider"]
 
-    assert bind_device("public-rider-1", "public-device-rider-1")["status"] == "bound"
+    assert bind_device(rider_id, device_id)["status"] == "bound"
 
     allowed = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(rider_token),
-        json={"device_id": "public-device-rider-1", "region": "Melbourne", "surface": "rider"},
+        json={"device_id": device_id, "region": "Melbourne CBD", "surface": "rider"},
     )
     assert allowed.status_code == 200
     assert allowed.json()["allowed"] is True
@@ -51,7 +52,7 @@ def test_public_pilot_access_control_allows_approved_user_and_blocks_region(monk
     blocked = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(rider_token),
-        json={"device_id": "public-device-rider-1", "region": "Sydney", "surface": "rider"},
+        json={"device_id": device_id, "region": "Sydney", "surface": "rider"},
     )
     assert blocked.status_code == 200
     assert blocked.json()["allowed"] is False
@@ -66,7 +67,7 @@ def test_public_pilot_access_control_blocks_unapproved_user(monkeypatch: pytest.
     denied = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(stranger_token),
-        json={"device_id": "not-approved-device", "region": "Melbourne", "surface": "rider"},
+        json={"device_id": "not-approved-device", "region": "Melbourne CBD", "surface": "rider"},
     )
     assert denied.status_code == 200
     assert denied.json()["allowed"] is False

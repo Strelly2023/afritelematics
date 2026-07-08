@@ -22,7 +22,10 @@ class PublicPilotError(RuntimeError):
 class PublicPilotConfig:
     environment: str
     public_users_allowed: bool
+    invitation_required: bool
+    approved_regions_only: bool
     selected_external_users_allowed: bool
+    production_infrastructure: bool
     pilot_transaction_limits_enabled: bool
     pilot_geography_restricted: bool
     pilot_monitoring_required: bool
@@ -69,10 +72,12 @@ class PublicPilotApproval:
     approved_users: tuple[str, ...]
     approved_devices: tuple[str, ...]
     approved_drivers: tuple[str, ...]
+    approved_riders: tuple[str, ...]
     approved_operators: tuple[str, ...]
     approved_agents: tuple[str, ...]
     approved_merchants: tuple[str, ...]
     approved_businesses: tuple[str, ...]
+    approved_employees: tuple[str, ...]
 
 
 _AUDIT_LOG: list[dict[str, Any]] = []
@@ -93,7 +98,10 @@ def load_public_pilot_config() -> PublicPilotConfig:
     return PublicPilotConfig(
         environment=str(payload["environment"]),
         public_users_allowed=bool(payload["public_users_allowed"]),
+        invitation_required=bool(payload.get("invitation_required", False)),
+        approved_regions_only=bool(payload.get("approved_regions_only", False)),
         selected_external_users_allowed=bool(payload["selected_external_users_allowed"]),
+        production_infrastructure=bool(payload.get("production_infrastructure", False)),
         pilot_transaction_limits_enabled=bool(payload["pilot_transaction_limits_enabled"]),
         pilot_geography_restricted=bool(payload["pilot_geography_restricted"]),
         pilot_monitoring_required=bool(payload["pilot_monitoring_required"]),
@@ -143,10 +151,12 @@ def load_public_pilot_approval() -> PublicPilotApproval:
         approved_users=tuple(payload.get("approved_users", [])),
         approved_devices=tuple(payload.get("approved_devices", [])),
         approved_drivers=tuple(payload.get("approved_drivers", [])),
+        approved_riders=tuple(payload.get("approved_riders", [])),
         approved_operators=tuple(payload.get("approved_operators", [])),
         approved_agents=tuple(payload.get("approved_agents", [])),
         approved_merchants=tuple(payload.get("approved_merchants", [])),
         approved_businesses=tuple(payload.get("approved_businesses", [])),
+        approved_employees=tuple(payload.get("approved_employees", [])),
     )
 
 
@@ -162,6 +172,15 @@ def ensure_public_pilot_mode() -> PublicPilotConfig:
 
 
 def _approval_allows_real_payments() -> bool:
+    approval = load_public_pilot_approval()
+    return bool(
+        approval.public_pilot_approved
+        and approval.scope == "PUBLIC_PILOT_ONLY"
+        and approval.limited_real_payments_approved
+    )
+
+
+def _approval_allows_live_payments() -> bool:
     approval = load_public_pilot_approval()
     return bool(
         approval.public_pilot_approved
@@ -198,8 +217,14 @@ def _subject_allowed(claims: AuthClaims, surface: str) -> bool:
         return role in {"CLIENT", "SUPPLIER"} and subject in approval.approved_merchants
     if surface == "business":
         return role in {"CLIENT", "FLEET_OWNER"} and subject in approval.approved_businesses
-    if surface == "identity":
-        return role in {"VERIFIER", "PARTNER", "ADMIN", "OBSERVER", "OPERATOR"}
+    if surface in {"employee", "identity"}:
+        return role in {"EMPLOYEE", "VERIFIER", "PARTNER", "ADMIN", "OBSERVER", "OPERATOR", "INSPECTOR"} and subject in (
+            approval.approved_employees + approval.approved_users
+        )
+    if surface == "partner":
+        return role in {"PARTNER", "EMPLOYEE", "ADMIN"} and subject in (approval.approved_employees + approval.approved_businesses)
+    if surface == "inspector":
+        return role in {"INSPECTOR", "EMPLOYEE", "ADMIN", "OBSERVER"} and subject in (approval.approved_employees + approval.approved_users)
     return False
 
 
@@ -263,6 +288,7 @@ def bind_device(subject: str, device_id: str) -> dict[str, Any]:
         + approval.approved_agents
         + approval.approved_merchants
         + approval.approved_businesses
+        + approval.approved_employees
     ):
         raise PublicPilotError("subject_not_approved")
     if device_id not in approval.approved_devices:
@@ -293,6 +319,7 @@ def check_access(claims: AuthClaims, device_id: str, surface: str, region: str) 
         + approval.approved_agents
         + approval.approved_merchants
         + approval.approved_businesses
+        + approval.approved_employees
     ):
         result = {"allowed": False, "reason": "user_not_approved"}
     elif not _device_allowed(claims.sub):
@@ -348,10 +375,10 @@ def public_pilot_payment_guard(
     if config.pilot_transaction_limits_enabled:
         if amount_aud > approval.max_transaction_amount_aud:
             raise PublicPilotError("approval_limit_exceeded")
-        if config.payment_mode != "PILOT_REAL_LIMITED":
+        if config.payment_mode not in {"PILOT_REAL", "PILOT_REAL_LIMITED"}:
             raise PublicPilotError("invalid_public_pilot_payment_mode")
     if provider.startswith("live_"):
-        if not public_pilot_payment_allowed():
+        if not _approval_allows_live_payments():
             raise PublicPilotError("live_provider_requires_public_pilot_approval")
     if production_credentials_present and not config.production_credentials_allowed:
         raise PublicPilotError("production_credentials_rejected")

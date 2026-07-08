@@ -2,11 +2,12 @@
 
 ## Readiness Controls
 
-- Production infrastructure may be used, but public launch is not allowed.
+- Production infrastructure may be used for the invitation-based public pilot.
 - Approved pilot regions only.
-- Transaction limits enforced.
+- Pilot transaction limits enforced.
 - Manual review required for high-risk identity cases.
 - Reconciliation and support are mandatory.
+- NovaTrust evidence is required for every ride, payment, and identity event.
 
 ## Operational Owners
 

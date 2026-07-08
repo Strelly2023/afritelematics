@@ -1,0 +1,15 @@
+pilot_stage: PUBLIC_PILOT
+status: READY_FOR_PRR
+participants_total: 57
+participants_by_group:
+  drivers: 10
+  riders: 30
+  merchants: 2
+  agents: 3
+  businesses: 2
+  employees: 10
+approved_devices: 40
+ga_enabled: false
+public_launch_allowed: false
+prr_required: true
+next_stage: PRODUCTION_READINESS_REVIEW

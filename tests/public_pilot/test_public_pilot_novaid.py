@@ -38,16 +38,17 @@ def test_public_pilot_novaid_identity_flows(monkeypatch: pytest.MonkeyPatch, tmp
     employee_token = _token(client, "employee")
     partner_token = _token(client, "partner")
     inspector_token = _token(client, "inspector")
+    personal_id, _, personal_device, region = PUBLIC_PILOT_ACCOUNTS["identity"]
 
-    assert bind_device("public-verifier-1", "public-device-verifier-1")["status"] == "bound"
+    assert bind_device(personal_id, personal_device)["status"] == "bound"
 
-    personal_access = check_access(AuthClaims(sub="public-verifier-1", role="VERIFIER", exp=9999999999), "public-device-verifier-1", "identity", "Melbourne")
+    personal_access = check_access(AuthClaims(sub=personal_id, role="VERIFIER", exp=9999999999), personal_device, "identity", region)
     assert personal_access["allowed"] is True
 
     response = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(personal_token),
-        json={"device_id": "public-device-verifier-1", "region": "Melbourne", "surface": "identity"},
+        json={"device_id": personal_device, "region": region, "surface": "identity"},
     )
     assert response.status_code == 200
     assert response.json()["allowed"] is True
@@ -58,10 +59,10 @@ def test_public_pilot_novaid_identity_flows(monkeypatch: pytest.MonkeyPatch, tmp
         ("partner", "identity"),
         ("inspector", "identity"),
     ):
-        subject, _, device_id, _ = PUBLIC_PILOT_ACCOUNTS[key]
+        subject, _, device_id, region = PUBLIC_PILOT_ACCOUNTS[key]
         assert bind_device(subject, device_id)["status"] == "bound"
         user_token = _token(client, key)
-        data = {"device_id": device_id, "region": "Melbourne", "surface": surface}
+        data = {"device_id": device_id, "region": region, "surface": surface}
         assert client.post("/v1/public-pilot/access/check", headers=auth_header(user_token), json=data).status_code == 200
 
     assert client.get("/v1/public-pilot/release/status", headers=auth_header(personal_token)).status_code == 200

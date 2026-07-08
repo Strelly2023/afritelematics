@@ -1,214 +1,464 @@
 {
   "environment": "PUBLIC_PILOT",
-  "release_stage": "PUBLIC_PILOT",
   "ga_enabled": false,
   "pilot_geography_restricted": true,
-  "pilot_transaction_limits_enabled": true,
   "support_required": true,
   "rollback_required": true,
   "apps": {
     "novaride_rider": {
-      "tabs": ["Home", "Book Ride", "Trips", "Wallet", "Safety", "Profile"],
+      "tabs": [
+        "Home",
+        "Book Ride",
+        "Trips",
+        "Wallet",
+        "Safety",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "public pilot registration", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "phone/email verification", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "NovaID verification", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "approved-region ride request", "handler": "ride:route:/rides/request"},
-        {"label": "pickup and destination selection", "handler": "ride:route:/rides/request"},
-        {"label": "ride category selection", "handler": "ride:route:/rides/request"},
-        {"label": "fare estimate", "handler": "ride:route:/rides/request"},
-        {"label": "confirm ride", "handler": "ride:route:/rides/request"},
-        {"label": "cancel ride", "handler": "ride:route:/rides/cancel", "confirmation_required": true},
-        {"label": "driver matching", "handler": "ride:route:/rides/accept"},
-        {"label": "driver PIN verification", "handler": "ride:route:/rides/start"},
-        {"label": "live trip sharing", "handler": "safe:share_trip"},
-        {"label": "SOS", "handler": "safe:sos", "confirmation_required": true},
-        {"label": "receipt", "handler": "proof:route:/ride/{ride_id}/receipt"},
-        {"label": "rating", "handler": "safe:rate_trip"},
-        {"label": "issue reporting", "handler": "support:route:/support/tickets"},
-        {"label": "support ticket", "handler": "support:route:/support/tickets"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Set pickup location",
+          "handler": "ride:set_pickup"
+        },
+        {
+          "label": "Set destination",
+          "handler": "ride:set_destination"
+        },
+        {
+          "label": "Choose ride type",
+          "handler": "ride:choose_type"
+        },
+        {
+          "label": "Schedule ride",
+          "handler": "ride:schedule"
+        },
+        {
+          "label": "Confirm pickup",
+          "handler": "ride:confirm_pickup",
+          "confirmation_required": true
+        },
+        {
+          "label": "View nearby drivers",
+          "handler": "ride:view_drivers"
+        },
+        {
+          "label": "Open safety center",
+          "handler": "safe:open_center"
+        },
+        {
+          "label": "Open wallet",
+          "handler": "wallet:open"
+        },
+        {
+          "label": "Open promotions",
+          "handler": "support:open_promotions"
+        },
+        {
+          "label": "Cancel ride",
+          "handler": "ride:cancel",
+          "confirmation_required": true
+        }
       ]
     },
     "novaride_driver": {
-      "tabs": ["Dashboard", "Requests", "Active Trip", "Earnings", "Vehicle", "Safety", "Profile"],
+      "tabs": [
+        "Dashboard",
+        "Requests",
+        "Active Trip",
+        "Earnings",
+        "Vehicle",
+        "Safety",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "public pilot driver application", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "licence upload", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "vehicle upload", "handler": "ride:route:/drivers/status"},
-        {"label": "compliance status", "handler": "safe:compliance_status"},
-        {"label": "go online", "handler": "ride:route:/drivers/status"},
-        {"label": "go offline", "handler": "ride:route:/drivers/status", "confirmation_required": true},
-        {"label": "accept ride", "handler": "ride:route:/driver/accept"},
-        {"label": "reject ride", "handler": "ride:route:/driver/reject"},
-        {"label": "navigate to pickup", "handler": "safe:navigate"},
-        {"label": "arrive", "handler": "ride:route:/driver/arrive"},
-        {"label": "verify rider PIN", "handler": "safe:verify_pin"},
-        {"label": "start trip", "handler": "ride:route:/driver/start"},
-        {"label": "end trip", "handler": "ride:route:/driver/complete"},
-        {"label": "earnings view", "handler": "payment:route:/novapay/balance"},
-        {"label": "limited payout guard", "handler": "payment:guard"},
-        {"label": "incident report", "handler": "support:route:/support/tickets"},
-        {"label": "SOS", "handler": "safe:sos", "confirmation_required": true},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Go online",
+          "handler": "ride:go_online"
+        },
+        {
+          "label": "Go offline",
+          "handler": "ride:go_offline",
+          "confirmation_required": true
+        },
+        {
+          "label": "Start shift",
+          "handler": "ride:start_shift"
+        },
+        {
+          "label": "End shift",
+          "handler": "ride:end_shift",
+          "confirmation_required": true
+        },
+        {
+          "label": "Accept ride",
+          "handler": "ride:accept"
+        },
+        {
+          "label": "Reject ride",
+          "handler": "ride:reject",
+          "confirmation_required": true
+        },
+        {
+          "label": "Verify rider PIN",
+          "handler": "identity:verify_pin"
+        },
+        {
+          "label": "End trip",
+          "handler": "ride:end"
+        },
+        {
+          "label": "Report issue",
+          "handler": "support:report"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaride_operator": {
-      "tabs": ["Overview", "Fleet", "Drivers", "Trips", "Earnings", "Compliance", "Support", "Settings"],
+      "tabs": [
+        "Overview",
+        "Fleet",
+        "Drivers",
+        "Trips",
+        "Earnings",
+        "Compliance",
+        "Support",
+        "Settings"
+      ],
       "buttons": [
-        {"label": "operator onboarding", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "fleet onboarding", "handler": "fleet:route:/operators/fleet"},
-        {"label": "driver approval", "handler": "access:approve_driver"},
-        {"label": "vehicle approval", "handler": "access:approve_vehicle"},
-        {"label": "active trip monitoring", "handler": "ride:route:/ride/{ride_id}/replay"},
-        {"label": "trip replay/proof", "handler": "proof:route:/ride/{ride_id}/replay"},
-        {"label": "compliance alerts", "handler": "safe:compliance_alerts"},
-        {"label": "support case handling", "handler": "support:route:/support/tickets"},
-        {"label": "pilot report export", "handler": "safe:export_report"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
-      ]
-    },
-    "novaride_fleet": {
-      "tabs": ["Fleet", "Vehicles", "Drivers", "Maintenance", "Reports"],
-      "buttons": [
-        {"label": "fleet onboarding", "handler": "fleet:route:/operators/fleet"},
-        {"label": "vehicle management", "handler": "fleet:route:/operators/fleet"},
-        {"label": "driver assignment", "handler": "fleet:route:/operators/fleet"},
-        {"label": "maintenance tracking", "handler": "safe:maintenance"},
-        {"label": "compliance report", "handler": "safe:compliance_report"},
-        {"label": "fleet earnings", "handler": "payment:route:/novapay/settlements"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "View live fleet",
+          "handler": "fleet:view"
+        },
+        {
+          "label": "View active trips",
+          "handler": "ride:view_active"
+        },
+        {
+          "label": "Export report",
+          "handler": "proof:export_report"
+        },
+        {
+          "label": "Suspend vehicle",
+          "handler": "fleet:suspend",
+          "confirmation_required": true
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novapay_consumer": {
-      "tabs": ["Home", "Send", "Receive", "Wallet", "Payments", "History", "Profile"],
+      "tabs": [
+        "Home",
+        "Send",
+        "Receive",
+        "Wallet",
+        "Payments",
+        "History",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "public pilot registration", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "KYC onboarding", "handler": "identity:route:/novaid/verify/personal"},
-        {"label": "wallet creation", "handler": "wallet:route:/novapay/wallet"},
-        {"label": "limited top-up", "handler": "payment:route:/novapay/topup"},
-        {"label": "limited send money", "handler": "payment:route:/novapay/send"},
-        {"label": "receive money", "handler": "payment:route:/novapay/receive"},
-        {"label": "QR payment", "handler": "payment:route:/novapay/merchant/pay"},
-        {"label": "merchant payment", "handler": "payment:route:/novapay/merchant/pay"},
-        {"label": "transaction receipt", "handler": "proof:route:/novapay/receipts"},
-        {"label": "refund", "handler": "payment:route:/novapay/refunds"},
-        {"label": "dispute", "handler": "support:route:/support/tickets"},
-        {"label": "wallet freeze", "handler": "safe:freeze_wallet", "confirmation_required": true},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Send money",
+          "handler": "payment:send"
+        },
+        {
+          "label": "Receive money",
+          "handler": "payment:receive"
+        },
+        {
+          "label": "Scan QR",
+          "handler": "payment:scan_qr"
+        },
+        {
+          "label": "Pay merchant",
+          "handler": "payment:merchant_pay"
+        },
+        {
+          "label": "Top up wallet",
+          "handler": "wallet:top_up"
+        },
+        {
+          "label": "Wallet freeze",
+          "handler": "wallet:freeze",
+          "confirmation_required": true
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novapay_agent": {
-      "tabs": ["Dashboard", "Cash In", "Cash Out", "Customers", "Transactions", "Float", "Support", "Profile"],
+      "tabs": [
+        "Dashboard",
+        "Cash In",
+        "Cash Out",
+        "Customers",
+        "Transactions",
+        "Float",
+        "Support",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "agent onboarding", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "location verification", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "open shift", "handler": "safe:open_shift"},
-        {"label": "close shift", "handler": "safe:close_shift", "confirmation_required": true},
-        {"label": "limited cash-in", "handler": "payment:route:/novapay/cash-in"},
-        {"label": "limited cash-out", "handler": "payment:route:/novapay/cash-out"},
-        {"label": "customer OTP verification", "handler": "identity:route:/auth/otp/verify"},
-        {"label": "float management", "handler": "safe:float_management"},
-        {"label": "reconciliation", "handler": "payment:route:/novapay/settlements"},
-        {"label": "suspicious transaction report", "handler": "support:route:/support/tickets"},
-        {"label": "commission view", "handler": "safe:commission_view"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Open agent shift",
+          "handler": "access:open_shift"
+        },
+        {
+          "label": "Close agent shift",
+          "handler": "access:close_shift",
+          "confirmation_required": true
+        },
+        {
+          "label": "Cash in",
+          "handler": "payment:cash_in"
+        },
+        {
+          "label": "Cash out",
+          "handler": "payment:cash_out"
+        },
+        {
+          "label": "Report suspicious transaction",
+          "handler": "support:report_suspicious"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novapay_merchant": {
-      "tabs": ["Dashboard", "Accept Payment", "Sales", "Refunds", "Settlements", "Products", "Profile"],
+      "tabs": [
+        "Dashboard",
+        "Accept Payment",
+        "Sales",
+        "Refunds",
+        "Settlements",
+        "Products",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "merchant onboarding", "handler": "identity:route:/v1/public-pilot/access/check"},
-        {"label": "KYB", "handler": "identity:route:/novaid/verify/business"},
-        {"label": "QR generation", "handler": "payment:route:/novapay/qr/generate"},
-        {"label": "accept limited payment", "handler": "payment:route:/novapay/merchant/pay"},
-        {"label": "create payment link", "handler": "payment:route:/novapay/merchant/pay"},
-        {"label": "view sales", "handler": "safe:view_sales"},
-        {"label": "issue refund", "handler": "payment:route:/novapay/refunds"},
-        {"label": "settlement report", "handler": "payment:route:/novapay/settlements"},
-        {"label": "product management", "handler": "safe:product_management"},
-        {"label": "suspicious activity alert", "handler": "support:route:/support/tickets"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Show merchant QR",
+          "handler": "payment:qr_generate"
+        },
+        {
+          "label": "Accept payment",
+          "handler": "payment:merchant_pay"
+        },
+        {
+          "label": "Issue refund",
+          "handler": "payment:refund",
+          "confirmation_required": true
+        },
+        {
+          "label": "Download settlement report",
+          "handler": "proof:download_settlement"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novapay_business": {
-      "tabs": ["Overview", "Wallets", "Payments", "Approvals", "Invoices", "Payroll", "Reports", "Settings"],
+      "tabs": [
+        "Overview",
+        "Wallets",
+        "Payments",
+        "Approvals",
+        "Invoices",
+        "Payroll",
+        "Reports",
+        "Settings"
+      ],
       "buttons": [
-        {"label": "KYB onboarding", "handler": "identity:route:/novaid/verify/business"},
-        {"label": "department wallets", "handler": "wallet:route:/novapay/business/wallets"},
-        {"label": "supplier payment", "handler": "payment:route:/novapay/business/approvals"},
-        {"label": "payment approval chain", "handler": "payment:route:/novapay/business/approvals"},
-        {"label": "invoice generation", "handler": "safe:invoice_generation"},
-        {"label": "limited payroll", "handler": "payment:route:/novapay/business/payroll"},
-        {"label": "report export", "handler": "safe:export_report"},
-        {"label": "audit log", "handler": "safe:audit_log"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Submit for approval",
+          "handler": "payment:submit_for_approval"
+        },
+        {
+          "label": "Approve payment",
+          "handler": "payment:approve",
+          "confirmation_required": true
+        },
+        {
+          "label": "Run payroll",
+          "handler": "payment:payroll"
+        },
+        {
+          "label": "Export CSV",
+          "handler": "proof:export_csv"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaid_personal": {
-      "tabs": ["Home", "Verify", "Documents", "Security", "Activity", "Profile"],
+      "tabs": [
+        "Home",
+        "Verify",
+        "Documents",
+        "Security",
+        "Activity",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "real identity onboarding", "handler": "identity:route:/novaid/verify/personal"},
-        {"label": "phone verification", "handler": "identity:route:/auth/otp/verify"},
-        {"label": "email verification", "handler": "identity:route:/auth/otp/send"},
-        {"label": "government ID validation", "handler": "identity:route:/novaid/documents/upload"},
-        {"label": "selfie/liveness", "handler": "identity:route:/novaid/biometric/liveness"},
-        {"label": "face match", "handler": "identity:route:/novaid/biometric/face-match"},
-        {"label": "risk scoring", "handler": "safe:risk_scoring"},
-        {"label": "manual review", "handler": "safe:manual_review"},
-        {"label": "digital ID", "handler": "identity:route:/novaid/profile"},
-        {"label": "consent grant/revoke", "handler": "identity:route:/novaid/consent/grant"},
-        {"label": "device trust", "handler": "safe:device_trust"},
-        {"label": "audit history", "handler": "identity:route:/novaid/audit"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Start identity verification",
+          "handler": "identity:start_verification"
+        },
+        {
+          "label": "Upload government ID",
+          "handler": "identity:upload_document"
+        },
+        {
+          "label": "Take selfie",
+          "handler": "identity:take_selfie"
+        },
+        {
+          "label": "Enable MFA",
+          "handler": "identity:enable_mfa"
+        },
+        {
+          "label": "Freeze NovaID",
+          "handler": "identity:freeze",
+          "confirmation_required": true
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaid_business": {
-      "tabs": ["Overview", "Business Verify", "Representatives", "Documents", "Access", "Audit", "Settings"],
+      "tabs": [
+        "Overview",
+        "Business Verify",
+        "Representatives",
+        "Documents",
+        "Access",
+        "Audit",
+        "Settings"
+      ],
       "buttons": [
-        {"label": "KYB", "handler": "identity:route:/novaid/verify/business"},
-        {"label": "representative verification", "handler": "identity:route:/novaid/verify/business"},
-        {"label": "beneficial owner records", "handler": "safe:ubo_records"},
-        {"label": "business documents", "handler": "identity:route:/novaid/documents/upload"},
-        {"label": "role management", "handler": "safe:role_management"},
-        {"label": "audit trail", "handler": "identity:route:/novaid/audit"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Submit KYB review",
+          "handler": "identity:submit_kyb"
+        },
+        {
+          "label": "Add representative",
+          "handler": "identity:add_representative"
+        },
+        {
+          "label": "View audit trail",
+          "handler": "proof:view_audit"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaid_employee": {
-      "tabs": ["Dashboard", "Employment", "Access", "Tasks", "Security", "Profile"],
+      "tabs": [
+        "Dashboard",
+        "Employment",
+        "Access",
+        "Tasks",
+        "Security",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "employment verification", "handler": "identity:route:/novaid/verify/employee"},
-        {"label": "role access", "handler": "safe:role_access"},
-        {"label": "access request", "handler": "safe:access_request"},
-        {"label": "MFA", "handler": "identity:route:/auth/mfa/setup"},
-        {"label": "device trust", "handler": "safe:device_trust"},
-        {"label": "audit log", "handler": "identity:route:/novaid/audit"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Request access",
+          "handler": "access:request"
+        },
+        {
+          "label": "Enable MFA",
+          "handler": "identity:enable_mfa"
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaid_partner": {
-      "tabs": ["Overview", "Partner Verify", "Integrations", "Credentials", "Compliance", "Support", "Settings"],
+      "tabs": [
+        "Overview",
+        "Partner Verify",
+        "Integrations",
+        "Credentials",
+        "Compliance",
+        "Support",
+        "Settings"
+      ],
       "buttons": [
-        {"label": "partner verification", "handler": "identity:route:/novaid/verify/partner"},
-        {"label": "sandbox or pilot API credentials", "handler": "safe:api_credentials"},
-        {"label": "API key rotation", "handler": "safe:api_key_rotation"},
-        {"label": "webhook validation", "handler": "safe:webhook_validation"},
-        {"label": "compliance checklist", "handler": "identity:route:/novaid/audit"},
-        {"label": "support", "handler": "support:route:/support/tickets"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Create integration",
+          "handler": "identity:create_integration"
+        },
+        {
+          "label": "Generate API key",
+          "handler": "identity:generate_api_key"
+        },
+        {
+          "label": "Rotate API key",
+          "handler": "identity:rotate_api_key",
+          "confirmation_required": true
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     },
     "novaid_inspector": {
-      "tabs": ["Dashboard", "Inspections", "Cases", "Evidence", "Reports", "Security", "Profile"],
+      "tabs": [
+        "Dashboard",
+        "Inspections",
+        "Cases",
+        "Evidence",
+        "Reports",
+        "Security",
+        "Profile"
+      ],
       "buttons": [
-        {"label": "inspector authorization", "handler": "identity:route:/novaid/verify/inspector"},
-        {"label": "inspection records", "handler": "safe:inspection_records"},
-        {"label": "evidence upload", "handler": "safe:evidence_upload"},
-        {"label": "evidence chain", "handler": "safe:evidence_chain"},
-        {"label": "report generation", "handler": "safe:report_generation"},
-        {"label": "case closure", "handler": "safe:case_closure"},
-        {"label": "logout", "handler": "safe:logout", "confirmation_required": true}
+        {
+          "label": "Create inspection",
+          "handler": "identity:create_inspection"
+        },
+        {
+          "label": "Upload evidence",
+          "handler": "proof:upload_evidence"
+        },
+        {
+          "label": "Close case",
+          "handler": "support:close_case",
+          "confirmation_required": true
+        },
+        {
+          "label": "Logout",
+          "handler": "access:logout",
+          "confirmation_required": true
+        }
       ]
     }
   }

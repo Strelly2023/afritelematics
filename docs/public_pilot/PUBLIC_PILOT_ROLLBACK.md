@@ -1,18 +1,7 @@
 # Public Pilot Rollback
 
-## Rollback Triggers
-
-- GA claim drift.
-- Unapproved geography exposure.
-- Payment limit bypass.
-- Reconciliation failure.
-- Security or compliance regression.
-
-## Rollback Assets
-
-- Feature flags.
-- Release manifests.
-- APK distribution index.
-- Incident comms.
-- API rollback steps.
-- APK rollback steps.
+- Rollback plans are required before PRR.
+- Payment rollback can disable live payment capture while preserving pilot reporting.
+- Geography rollback can remove a region from the approved pilot list.
+- Identity rollback can switch high-risk onboarding to manual review only.
+- APK rollback restores the prior approved build and release manifest.

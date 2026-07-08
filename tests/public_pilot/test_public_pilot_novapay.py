@@ -37,16 +37,20 @@ def test_public_pilot_novapay_consumer_agent_merchant_business_flow(monkeypatch:
     merchant_token = _token(client, "merchant")
     business_token = _token(client, "business")
     operator_token = _token(client, "operator")
+    consumer_id, _, consumer_device, region = PUBLIC_PILOT_ACCOUNTS["consumer"]
+    agent_id, _, agent_device, _ = PUBLIC_PILOT_ACCOUNTS["agent"]
+    merchant_id, _, merchant_device, _ = PUBLIC_PILOT_ACCOUNTS["merchant"]
+    business_id, _, business_device, _ = PUBLIC_PILOT_ACCOUNTS["business"]
 
-    assert bind_device("public-consumer-1", "public-device-consumer-1")["status"] == "bound"
-    assert bind_device("public-agent-1", "public-device-agent-1")["status"] == "bound"
-    assert bind_device("public-merchant-1", "public-device-merchant-1")["status"] == "bound"
-    assert bind_device("public-business-1", "public-device-business-1")["status"] == "bound"
+    assert bind_device(consumer_id, consumer_device)["status"] == "bound"
+    assert bind_device(agent_id, agent_device)["status"] == "bound"
+    assert bind_device(merchant_id, merchant_device)["status"] == "bound"
+    assert bind_device(business_id, business_device)["status"] == "bound"
 
     consumer_access = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(consumer_token),
-        json={"device_id": "public-device-consumer-1", "region": "Melbourne", "surface": "consumer"},
+        json={"device_id": consumer_device, "region": region, "surface": "consumer"},
     )
     assert consumer_access.status_code == 200
     assert consumer_access.json()["allowed"] is True
@@ -60,7 +64,7 @@ def test_public_pilot_novapay_consumer_agent_merchant_business_flow(monkeypatch:
     limits = client.post(
         "/v1/public-pilot/limits/check",
         headers=auth_header(operator_token),
-        json={"provider": "wallet", "method": "wallet", "amount_aud": 50, "region": "Melbourne"},
+        json={"provider": "wallet", "method": "wallet", "amount_aud": 50, "region": region},
     )
     assert limits.status_code == 200
     assert limits.json()["allowed"] is True

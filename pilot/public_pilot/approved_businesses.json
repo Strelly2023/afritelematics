@@ -1,0 +1,14 @@
+[
+  {
+    "user_id": "public-business-001",
+    "group": "business",
+    "role": "CLIENT",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-business-002",
+    "group": "business",
+    "role": "CLIENT",
+    "region": "Melbourne CBD"
+  }
+]

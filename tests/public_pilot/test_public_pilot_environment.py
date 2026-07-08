@@ -23,7 +23,10 @@ def test_public_pilot_environment_configuration_exists() -> None:
     config = read_json("config/public_pilot.json")
     assert config["environment"] == "PUBLIC_PILOT"
     assert config["public_users_allowed"] is True
+    assert config["invitation_required"] is True
+    assert config["approved_regions_only"] is True
     assert config["selected_external_users_allowed"] is True
+    assert config["production_infrastructure"] is True
     assert config["pilot_transaction_limits_enabled"] is True
     assert config["pilot_geography_restricted"] is True
     assert config["pilot_monitoring_required"] is True
@@ -33,7 +36,7 @@ def test_public_pilot_environment_configuration_exists() -> None:
     assert config["ga_enabled"] is False
     assert config["general_availability_allowed"] is False
     assert config["unrestricted_signup_allowed"] is False
-    assert config["payment_mode"] == "PILOT_REAL_LIMITED"
+    assert config["payment_mode"] == "PILOT_REAL"
     assert config["identity_mode"] == "REAL_WITH_MANUAL_REVIEW"
     assert config["max_transaction_amount_aud"] == 50
     assert config["daily_transaction_limit_aud"] == 200
@@ -45,10 +48,13 @@ def test_public_pilot_approval_and_exit_report_are_present() -> None:
     approval = read_json("docs/public_pilot/PUBLIC_PILOT_APPROVAL.json")
     report = read_text("docs/public_pilot/PUBLIC_PILOT_EXIT_REPORT.yaml")
     prr = read_text("docs/prr/PRR-001-production-readiness-review.yaml")
-    assert approval["public_pilot_approved"] is False
+    assert approval["public_pilot_approved"] is True
     assert approval["public_pilot_live_payment_approved"] is False
-    assert approval["scope"] == "NOT_APPROVED"
-    assert "NOT_READY_FOR_PRR" in report
+    assert approval["scope"] == "PUBLIC_PILOT_ONLY"
+    assert approval["approved_user_limit"] == 57
+    assert len(approval["approved_users"]) == 57
+    assert len(approval["approved_devices"]) == 40
+    assert "READY_FOR_PRR" in report
     assert "PRODUCTION_READINESS_REVIEW" in prr
     assert "BLOCKED" in prr
 

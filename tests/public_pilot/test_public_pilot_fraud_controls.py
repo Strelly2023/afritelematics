@@ -36,9 +36,9 @@ def test_public_pilot_live_provider_blocked_without_explicit_approval(monkeypatc
     with pytest.raises(PublicPilotError):
         public_pilot_payment_guard(provider="live_stripe", method="card", amount_aud=10, region="Melbourne")
 
-    record_event(actor="public-consumer-1", role="CUSTOMER", device="public-device-consumer-1", action="fraud_check", result="flagged", region="Melbourne")
+    record_event(actor="public-rider-002", role="CUSTOMER", device="public-device-012", action="fraud_check", result="flagged", region="Melbourne")
     log = audit_log()
     assert log
     assert log[-1]["environment"] == "PUBLIC_PILOT"
     assert "timestamp" in log[-1]
-    assert log[-1]["actor"] == "public-consumer-1"
+    assert log[-1]["actor"] == "public-rider-002"

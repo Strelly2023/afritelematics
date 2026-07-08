@@ -1,0 +1,14 @@
+[
+  {
+    "user_id": "public-merchant-001",
+    "group": "merchant",
+    "role": "CLIENT",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-merchant-002",
+    "group": "merchant",
+    "role": "CLIENT",
+    "region": "Melbourne CBD"
+  }
+]

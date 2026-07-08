@@ -1,15 +1,10 @@
 # Public Pilot Support Runbook
 
-## Support Actions
-
-- Register and triage incidents.
-- Freeze accounts or wallets where needed.
-- Escalate payment failures.
-- Escalate identity review queues.
-- Validate trip and receipt evidence.
-
-## Escalation
-
-- NovaRide support for mobility incidents.
-- NovaPay support for transaction incidents.
-- NovaID support for identity incidents.
+- Rider support.
+- Driver support.
+- Merchant support.
+- Agent support.
+- Employee support.
+- Operations escalation.
+- Compliance escalation.
+- Refund, dispute, incident, and trip replay support.

@@ -1,0 +1,20 @@
+[
+  {
+    "user_id": "public-agent-001",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-agent-002",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-agent-003",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "region": "Melbourne CBD"
+  }
+]

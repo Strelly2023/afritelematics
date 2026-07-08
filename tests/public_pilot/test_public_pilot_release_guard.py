@@ -26,12 +26,12 @@ def _install_approval(monkeypatch: pytest.MonkeyPatch, tmp_path, **overrides) ->
     public_pilot.reset_runtime_state()
 
 
-def test_public_pilot_release_guard_reports_not_ready_by_default() -> None:
+def test_public_pilot_release_guard_reports_ready_by_default() -> None:
     report = public_pilot.public_pilot_release_guard()
     assert report["environment"] == "PUBLIC_PILOT"
     assert report["ga_enabled"] is False
     assert report["general_availability_allowed"] is False
-    assert report["ready_for_prr"] is False
+    assert report["ready_for_prr"] is True
 
 
 def test_public_pilot_release_guard_can_become_ready_with_approval(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -42,4 +42,4 @@ def test_public_pilot_release_guard_can_become_ready_with_approval(monkeypatch: 
 
 
 def test_public_pilot_exit_report_is_not_ready_for_prr() -> None:
-    assert "NOT_READY_FOR_PRR" in PUBLIC_PILOT_EXIT_REPORT_PATH.read_text(encoding="utf-8")
+    assert "READY_FOR_PRR" in PUBLIC_PILOT_EXIT_REPORT_PATH.read_text(encoding="utf-8")

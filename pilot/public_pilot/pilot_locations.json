@@ -1,0 +1,182 @@
+[
+  {
+    "location_id": "melbourne-cbd",
+    "city": "Melbourne CBD",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.8136,
+    "longitude": 144.9631,
+    "service_radius_km": 6,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "docklands",
+    "city": "Docklands",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.8163,
+    "longitude": 144.9416,
+    "service_radius_km": 5,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "southbank",
+    "city": "Southbank",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.8201,
+    "longitude": 144.9646,
+    "service_radius_km": 5,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "footscray",
+    "city": "Footscray",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.8,
+    "longitude": 144.9,
+    "service_radius_km": 6,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "sunshine",
+    "city": "Sunshine",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.7833,
+    "longitude": 144.8333,
+    "service_radius_km": 6,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "werribee",
+    "city": "Werribee",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.9,
+    "longitude": 144.65,
+    "service_radius_km": 8,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "tarneit",
+    "city": "Tarneit",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.822,
+    "longitude": 144.66,
+    "service_radius_km": 7,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "truganina",
+    "city": "Truganina",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.844,
+    "longitude": 144.724,
+    "service_radius_km": 7,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "hoppers-crossing",
+    "city": "Hoppers Crossing",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.8846,
+    "longitude": 144.7,
+    "service_radius_km": 7,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "wyndham-vale",
+    "city": "Wyndham Vale",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.888,
+    "longitude": 144.619,
+    "service_radius_km": 7,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "point-cook",
+    "city": "Point Cook",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.914,
+    "longitude": 144.75,
+    "service_radius_km": 7,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "melton",
+    "city": "Melton",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.6833,
+    "longitude": 144.5833,
+    "service_radius_km": 8,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "caroline-springs",
+    "city": "Caroline Springs",
+    "state": "VIC",
+    "country": "Australia",
+    "latitude": -37.7414,
+    "longitude": 144.7368,
+    "service_radius_km": 6,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "brisbane-cbd",
+    "city": "Brisbane CBD",
+    "state": "QLD",
+    "country": "Australia",
+    "latitude": -27.4698,
+    "longitude": 153.0251,
+    "service_radius_km": 6,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "south-brisbane",
+    "city": "South Brisbane",
+    "state": "QLD",
+    "country": "Australia",
+    "latitude": -27.48,
+    "longitude": 153.0167,
+    "service_radius_km": 5,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "fortitude-valley",
+    "city": "Fortitude Valley",
+    "state": "QLD",
+    "country": "Australia",
+    "latitude": -27.457,
+    "longitude": 153.033,
+    "service_radius_km": 5,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "logan",
+    "city": "Logan",
+    "state": "QLD",
+    "country": "Australia",
+    "latitude": -27.639,
+    "longitude": 153.109,
+    "service_radius_km": 8,
+    "pilot_enabled": true
+  },
+  {
+    "location_id": "ipswich",
+    "city": "Ipswich",
+    "state": "QLD",
+    "country": "Australia",
+    "latitude": -27.6167,
+    "longitude": 152.7667,
+    "service_radius_km": 8,
+    "pilot_enabled": true
+  }
+]

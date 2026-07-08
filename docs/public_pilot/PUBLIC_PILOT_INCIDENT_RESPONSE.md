@@ -1,12 +1,28 @@
 # Public Pilot Incident Response
 
-## Response Model
+## Severity Levels
 
-- Severity levels: P0, P1, P2, P3.
-- Escalation path: operations -> incident commander -> support -> governance.
-- Payment incidents route to NovaPay operations and support.
-- Safety incidents route to NovaRide operations and support.
-- Identity fraud incidents route to NovaID compliance and support.
-- Emergency contacts are maintained for payment, safety, and identity on-call ownership.
-- Rollback is required for pilot-safe release control.
-- Rollback triggers include payment safety drift, unsupported geography, and GA-claim drift.
+- P0: safety, security, or payment stop condition.
+- P1: pilot-blocking regional or identity issue.
+- P2: degraded monitoring, support, or reconciliation.
+- P3: informational or low-severity issue.
+
+## Escalation Path
+
+Operations -> Incident Commander -> Support -> Governance
+
+## Triggers
+
+- Payment incidents.
+- Safety incidents.
+- Identity fraud incidents.
+- Reconciliation variance.
+- Unsupported geography.
+- Rollback triggers include payment safety drift, unsupported geography, identity fraud, and GA claim drift.
+
+## Emergency Contacts
+
+- Operations on-call.
+- Support lead.
+- Compliance lead.
+- Release manager.

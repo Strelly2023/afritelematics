@@ -1,0 +1,401 @@
+[
+  {
+    "user_id": "public-driver-001",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-002",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-003",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 3,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-004",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 4,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-005",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 5,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-006",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 6,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-007",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 7,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-008",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 8,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-009",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 9,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-driver-010",
+    "group": "driver",
+    "role": "DRIVER",
+    "sequence": 10,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-001",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-002",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-003",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 3,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-004",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 4,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-005",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 5,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-006",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 6,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-007",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 7,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-008",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 8,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-009",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 9,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-010",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 10,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-011",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 11,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-012",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 12,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-013",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 13,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-014",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 14,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-015",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 15,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-016",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 16,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-017",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 17,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-018",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 18,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-019",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 19,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-020",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 20,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-021",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 21,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-022",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 22,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-023",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 23,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-024",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 24,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-025",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 25,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-026",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 26,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-027",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 27,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-028",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 28,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-029",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 29,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-rider-030",
+    "group": "rider",
+    "role": "CUSTOMER",
+    "sequence": 30,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-merchant-001",
+    "group": "merchant",
+    "role": "CLIENT",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-merchant-002",
+    "group": "merchant",
+    "role": "CLIENT",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-agent-001",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-agent-002",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-agent-003",
+    "group": "agent",
+    "role": "DISPATCHER",
+    "sequence": 3,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-business-001",
+    "group": "business",
+    "role": "CLIENT",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-business-002",
+    "group": "business",
+    "role": "CLIENT",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-001",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 1,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-002",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 2,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-003",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 3,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-004",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 4,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-005",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 5,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-006",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 6,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-007",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 7,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-008",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 8,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-009",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 9,
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-010",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "sequence": 10,
+    "region": "Melbourne CBD"
+  }
+]

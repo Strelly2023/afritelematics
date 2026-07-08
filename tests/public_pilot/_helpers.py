@@ -18,6 +18,96 @@ PUBLIC_PILOT_BUTTON_REGISTRY_PATH = ROOT / "docs/mobile/public_pilot_button_regi
 PUBLIC_PILOT_APK_MANIFESTS_PATH = ROOT / "docs/public_pilot/PUBLIC_PILOT_APK_RELEASE_MANIFESTS.json"
 PRR_PATH = ROOT / "docs/prr/PRR-001-production-readiness-review.yaml"
 
+PUBLIC_PILOT_APPROVED_LOCATIONS = [
+    "Melbourne CBD",
+    "Docklands",
+    "Southbank",
+    "Footscray",
+    "Sunshine",
+    "Werribee",
+    "Tarneit",
+    "Truganina",
+    "Hoppers Crossing",
+    "Wyndham Vale",
+    "Point Cook",
+    "Melton",
+    "Caroline Springs",
+    "Brisbane CBD",
+    "South Brisbane",
+    "Fortitude Valley",
+    "Logan",
+    "Ipswich",
+]
+
+PUBLIC_PILOT_APPROVED_REGIONS = [*PUBLIC_PILOT_APPROVED_LOCATIONS, "Melbourne"]
+
+PUBLIC_PILOT_PARTICIPANTS = {
+    "drivers": [f"public-driver-{index:03d}" for index in range(1, 11)],
+    "riders": [f"public-rider-{index:03d}" for index in range(1, 31)],
+    "merchants": [f"public-merchant-{index:03d}" for index in range(1, 3)],
+    "agents": [f"public-agent-{index:03d}" for index in range(1, 4)],
+    "businesses": [f"public-business-{index:03d}" for index in range(1, 3)],
+    "employees": [f"public-employee-{index:03d}" for index in range(1, 11)],
+}
+
+PUBLIC_PILOT_DEVICE_BINDINGS = {
+    "public-device-001": "public-driver-001",
+    "public-device-002": "public-driver-002",
+    "public-device-003": "public-driver-003",
+    "public-device-004": "public-driver-004",
+    "public-device-005": "public-driver-005",
+    "public-device-006": "public-driver-006",
+    "public-device-007": "public-driver-007",
+    "public-device-008": "public-driver-008",
+    "public-device-009": "public-driver-009",
+    "public-device-010": "public-driver-010",
+    "public-device-011": "public-rider-001",
+    "public-device-012": "public-rider-002",
+    "public-device-013": "public-rider-003",
+    "public-device-014": "public-rider-004",
+    "public-device-015": "public-rider-005",
+    "public-device-016": "public-rider-006",
+    "public-device-017": "public-rider-007",
+    "public-device-018": "public-rider-008",
+    "public-device-019": "public-rider-009",
+    "public-device-020": "public-rider-010",
+    "public-device-021": "public-rider-011",
+    "public-device-022": "public-rider-012",
+    "public-device-023": "public-rider-013",
+    "public-device-024": "public-rider-014",
+    "public-device-025": "public-rider-015",
+    "public-device-026": "public-rider-016",
+    "public-device-027": "public-rider-017",
+    "public-device-028": "public-rider-018",
+    "public-device-029": "public-merchant-001",
+    "public-device-030": "public-merchant-002",
+    "public-device-031": "public-agent-001",
+    "public-device-032": "public-agent-002",
+    "public-device-033": "public-agent-003",
+    "public-device-034": "public-business-001",
+    "public-device-035": "public-business-002",
+    "public-device-036": "public-employee-001",
+    "public-device-037": "public-employee-002",
+    "public-device-038": "public-employee-003",
+    "public-device-039": "public-employee-004",
+    "public-device-040": "public-employee-005",
+}
+
+PUBLIC_PILOT_ACCOUNTS = {
+    "rider": ("public-rider-001", "CUSTOMER", "public-device-011", "Melbourne CBD"),
+    "driver": ("public-driver-001", "DRIVER", "public-device-001", "Melbourne CBD"),
+    "operator": ("public-business-001", "OPERATOR", "public-device-034", "Melbourne CBD"),
+    "consumer": ("public-rider-002", "CUSTOMER", "public-device-012", "Melbourne CBD"),
+    "agent": ("public-agent-001", "DISPATCHER", "public-device-031", "Melbourne CBD"),
+    "merchant": ("public-merchant-001", "CLIENT", "public-device-029", "Melbourne CBD"),
+    "business": ("public-business-002", "CLIENT", "public-device-035", "Melbourne CBD"),
+    "employee": ("public-employee-001", "OBSERVER", "public-device-036", "Melbourne CBD"),
+    "identity": ("public-employee-002", "VERIFIER", "public-device-037", "Melbourne CBD"),
+    "partner": ("public-employee-003", "PARTNER", "public-device-038", "Melbourne CBD"),
+    "inspector": ("public-employee-004", "OBSERVER", "public-device-039", "Melbourne CBD"),
+}
+
+
 APK_CASES = [
     ("novaride-rider-public-pilot-release.apk", "novaride-rider-v2026.1.0-release.apk", "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35"),
     ("novaride-driver-public-pilot-release.apk", "novaride-driver-v2026.1.0-release.apk", "b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507"),
@@ -48,20 +138,6 @@ APP_SOURCE_FILES = {
     "novaid_employee": ["novaid_employee_app/src/appConfig.ts", "novaid_employee_app/App.tsx"],
     "novaid_partner": ["novaid_partner_app/src/appConfig.ts", "novaid_partner_app/App.tsx"],
     "novaid_inspector": ["novaid_inspector_app/src/appConfig.ts", "novaid_inspector_app/App.tsx"],
-}
-
-PUBLIC_PILOT_ACCOUNTS = {
-    "rider": ("public-rider-1", "CUSTOMER", "public-device-rider-1", "Melbourne"),
-    "driver": ("public-driver-1", "DRIVER", "public-device-driver-1", "Melbourne"),
-    "operator": ("public-operator-1", "OPERATOR", "public-device-operator-1", "Melbourne"),
-    "consumer": ("public-consumer-1", "CUSTOMER", "public-device-consumer-1", "Melbourne"),
-    "agent": ("public-agent-1", "DISPATCHER", "public-device-agent-1", "Melbourne"),
-    "merchant": ("public-merchant-1", "CLIENT", "public-device-merchant-1", "Melbourne"),
-    "business": ("public-business-1", "CLIENT", "public-device-business-1", "Melbourne"),
-    "employee": ("public-employee-1", "OBSERVER", "public-device-employee-1", "Melbourne"),
-    "identity": ("public-verifier-1", "VERIFIER", "public-device-verifier-1", "Melbourne"),
-    "partner": ("public-partner-1", "PARTNER", "public-device-partner-1", "Melbourne"),
-    "inspector": ("public-inspector-1", "OBSERVER", "public-device-inspector-1", "Melbourne"),
 }
 
 
@@ -102,6 +178,77 @@ def assert_contains_all(source: str, labels: list[str], *, context: str) -> None
     assert not missing, f"{context} missing labels: {missing}"
 
 
+def _approved_user_ids() -> list[str]:
+    return [
+        *PUBLIC_PILOT_PARTICIPANTS["drivers"],
+        *PUBLIC_PILOT_PARTICIPANTS["riders"],
+        *PUBLIC_PILOT_PARTICIPANTS["merchants"],
+        *PUBLIC_PILOT_PARTICIPANTS["agents"],
+        *PUBLIC_PILOT_PARTICIPANTS["businesses"],
+        *PUBLIC_PILOT_PARTICIPANTS["employees"],
+    ]
+
+
+def _approved_device_ids() -> list[str]:
+    return list(PUBLIC_PILOT_DEVICE_BINDINGS)
+
+
+def _user_objects() -> list[dict[str, Any]]:
+    objects: list[dict[str, Any]] = []
+    singular = {
+        "drivers": "driver",
+        "riders": "rider",
+        "merchants": "merchant",
+        "agents": "agent",
+        "businesses": "business",
+        "employees": "employee",
+    }
+    for group_name, role in (
+        ("drivers", "DRIVER"),
+        ("riders", "CUSTOMER"),
+        ("merchants", "CLIENT"),
+        ("agents", "DISPATCHER"),
+        ("businesses", "CLIENT"),
+        ("employees", "EMPLOYEE"),
+    ):
+        for index, user_id in enumerate(PUBLIC_PILOT_PARTICIPANTS[group_name], start=1):
+            objects.append(
+                {
+                    "user_id": user_id,
+                    "group": singular[group_name],
+                    "role": role,
+                    "sequence": index,
+                    "region": "Melbourne CBD" if group_name != "employees" else "Melbourne CBD",
+                }
+            )
+    return objects
+
+
+def _device_objects() -> list[dict[str, Any]]:
+    return [
+        {
+            "device_id": device_id,
+            "owner_id": owner_id,
+            "trusted": True,
+            "bound": True,
+            "region": "Melbourne CBD",
+        }
+        for device_id, owner_id in PUBLIC_PILOT_DEVICE_BINDINGS.items()
+    ]
+
+
+def _group_objects(group_name: str, role: str) -> list[dict[str, Any]]:
+    return [
+        {
+            "user_id": user_id,
+            "group": group_name,
+            "role": role,
+            "region": "Melbourne CBD",
+        }
+        for user_id in PUBLIC_PILOT_PARTICIPANTS[group_name]
+    ]
+
+
 def public_pilot_approval_payload(**overrides: Any) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "public_pilot_approved": True,
@@ -109,12 +256,12 @@ def public_pilot_approval_payload(**overrides: Any) -> dict[str, Any]:
         "approved_by": "public.pilot@novatech.test",
         "approved_at": "2026-07-08T00:00:00Z",
         "scope": "PUBLIC_PILOT_ONLY",
-        "approved_regions": ["Melbourne"],
-        "approved_user_limit": 25,
+        "approved_regions": list(PUBLIC_PILOT_APPROVED_REGIONS),
+        "approved_user_limit": 57,
         "limited_real_payments_approved": True,
         "real_identity_onboarding_approved": True,
         "real_ride_requests_approved": True,
-        "public_pilot_live_payment_approved": True,
+        "public_pilot_live_payment_approved": False,
         "max_transaction_amount_aud": 50,
         "daily_transaction_limit_aud": 200,
         "monthly_transaction_limit_aud": 1000,
@@ -125,37 +272,31 @@ def public_pilot_approval_payload(**overrides: Any) -> dict[str, Any]:
         "support_operations_approved": True,
         "monitoring_verified": True,
         "compliance_verified": True,
-        "approved_users": [
-            PUBLIC_PILOT_ACCOUNTS["rider"][0],
-            PUBLIC_PILOT_ACCOUNTS["driver"][0],
-            PUBLIC_PILOT_ACCOUNTS["operator"][0],
-            PUBLIC_PILOT_ACCOUNTS["consumer"][0],
-            PUBLIC_PILOT_ACCOUNTS["agent"][0],
-            PUBLIC_PILOT_ACCOUNTS["merchant"][0],
-            PUBLIC_PILOT_ACCOUNTS["business"][0],
-            PUBLIC_PILOT_ACCOUNTS["employee"][0],
-            PUBLIC_PILOT_ACCOUNTS["identity"][0],
-            PUBLIC_PILOT_ACCOUNTS["partner"][0],
-            PUBLIC_PILOT_ACCOUNTS["inspector"][0],
-        ],
-        "approved_devices": [
-            PUBLIC_PILOT_ACCOUNTS["rider"][2],
-            PUBLIC_PILOT_ACCOUNTS["driver"][2],
-            PUBLIC_PILOT_ACCOUNTS["operator"][2],
-            PUBLIC_PILOT_ACCOUNTS["consumer"][2],
-            PUBLIC_PILOT_ACCOUNTS["agent"][2],
-            PUBLIC_PILOT_ACCOUNTS["merchant"][2],
-            PUBLIC_PILOT_ACCOUNTS["business"][2],
-            PUBLIC_PILOT_ACCOUNTS["employee"][2],
-            PUBLIC_PILOT_ACCOUNTS["identity"][2],
-            PUBLIC_PILOT_ACCOUNTS["partner"][2],
-            PUBLIC_PILOT_ACCOUNTS["inspector"][2],
-        ],
-        "approved_drivers": [PUBLIC_PILOT_ACCOUNTS["driver"][0]],
+        "approved_users": _approved_user_ids(),
+        "approved_devices": _approved_device_ids(),
+        "approved_drivers": list(PUBLIC_PILOT_PARTICIPANTS["drivers"]),
+        "approved_riders": list(PUBLIC_PILOT_PARTICIPANTS["riders"]),
         "approved_operators": [PUBLIC_PILOT_ACCOUNTS["operator"][0]],
-        "approved_agents": [PUBLIC_PILOT_ACCOUNTS["agent"][0]],
-        "approved_merchants": [PUBLIC_PILOT_ACCOUNTS["merchant"][0]],
-        "approved_businesses": [PUBLIC_PILOT_ACCOUNTS["business"][0]],
+        "approved_agents": list(PUBLIC_PILOT_PARTICIPANTS["agents"]),
+        "approved_merchants": list(PUBLIC_PILOT_PARTICIPANTS["merchants"]),
+        "approved_businesses": list(PUBLIC_PILOT_PARTICIPANTS["businesses"]),
+        "approved_employees": list(PUBLIC_PILOT_PARTICIPANTS["employees"]),
     }
     payload.update(overrides)
     return payload
+
+
+def public_pilot_population_payload() -> dict[str, Any]:
+    return {
+        "total_participants": 57,
+        "groups": {
+            "drivers": _group_objects("drivers", "DRIVER"),
+            "riders": _group_objects("riders", "CUSTOMER"),
+            "merchants": _group_objects("merchants", "CLIENT"),
+            "agents": _group_objects("agents", "DISPATCHER"),
+            "businesses": _group_objects("businesses", "CLIENT"),
+            "employees": _group_objects("employees", "EMPLOYEE"),
+        },
+        "devices": _device_objects(),
+        "approved_regions": list(PUBLIC_PILOT_APPROVED_LOCATIONS),
+    }

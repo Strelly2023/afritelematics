@@ -1,0 +1,62 @@
+[
+  {
+    "user_id": "public-employee-001",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-002",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-003",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-004",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-005",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-006",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-007",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-008",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-009",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  },
+  {
+    "user_id": "public-employee-010",
+    "group": "employee",
+    "role": "EMPLOYEE",
+    "region": "Melbourne CBD"
+  }
+]

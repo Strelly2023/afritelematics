@@ -37,15 +37,18 @@ def test_public_pilot_novaride_rider_driver_operator_flow(monkeypatch: pytest.Mo
     driver_token = _token(client, "driver")
     operator_token = _token(client, "operator")
     ride_id = f"public-pilot-ride-{uuid4().hex[:8]}"
+    rider_id, _, rider_device, rider_region = PUBLIC_PILOT_ACCOUNTS["rider"]
+    driver_id, _, driver_device, _ = PUBLIC_PILOT_ACCOUNTS["driver"]
+    operator_id, _, operator_device, _ = PUBLIC_PILOT_ACCOUNTS["operator"]
 
-    assert bind_device("public-rider-1", "public-device-rider-1")["status"] == "bound"
-    assert bind_device("public-driver-1", "public-device-driver-1")["status"] == "bound"
-    assert bind_device("public-operator-1", "public-device-operator-1")["status"] == "bound"
+    assert bind_device(rider_id, rider_device)["status"] == "bound"
+    assert bind_device(driver_id, driver_device)["status"] == "bound"
+    assert bind_device(operator_id, operator_device)["status"] == "bound"
 
     access = client.post(
         "/v1/public-pilot/access/check",
         headers=auth_header(rider_token),
-        json={"device_id": "public-device-rider-1", "region": "Melbourne", "surface": "rider"},
+        json={"device_id": rider_device, "region": rider_region, "surface": "rider"},
     )
     assert access.status_code == 200
     assert access.json()["allowed"] is True
@@ -53,17 +56,17 @@ def test_public_pilot_novaride_rider_driver_operator_flow(monkeypatch: pytest.Mo
     request = client.post(
         "/passenger/request-ride",
         headers=auth_header(rider_token),
-        json={"passenger_id": "public-rider-1", "pickup": "Melbourne CBD", "destination": "Docklands", "ride_id": ride_id},
+        json={"passenger_id": rider_id, "pickup": "Melbourne CBD", "destination": "Docklands", "ride_id": ride_id},
     )
     assert request.status_code == 200
 
-    online = client.post("/driver/status", headers=auth_header(driver_token), json={"driver_id": "public-driver-1", "online": True})
+    online = client.post("/driver/status", headers=auth_header(driver_token), json={"driver_id": driver_id, "online": True})
     assert online.status_code == 200
-    assert client.get("/driver/requests/public-driver-1", headers=auth_header(driver_token)).status_code == 200
-    assert client.post("/driver/accept", headers=auth_header(driver_token), json={"driver_id": "public-driver-1", "ride_id": ride_id}).status_code == 200
-    assert client.post("/driver/arrive", headers=auth_header(driver_token), json={"driver_id": "public-driver-1", "ride_id": ride_id}).status_code == 200
-    assert client.post("/driver/start", headers=auth_header(driver_token), json={"driver_id": "public-driver-1", "ride_id": ride_id}).status_code == 200
-    complete = client.post("/driver/complete", headers=auth_header(driver_token), json={"driver_id": "public-driver-1", "ride_id": ride_id})
+    assert client.get(f"/driver/requests/{driver_id}", headers=auth_header(driver_token)).status_code == 200
+    assert client.post("/driver/accept", headers=auth_header(driver_token), json={"driver_id": driver_id, "ride_id": ride_id}).status_code == 200
+    assert client.post("/driver/arrive", headers=auth_header(driver_token), json={"driver_id": driver_id, "ride_id": ride_id}).status_code == 200
+    assert client.post("/driver/start", headers=auth_header(driver_token), json={"driver_id": driver_id, "ride_id": ride_id}).status_code == 200
+    complete = client.post("/driver/complete", headers=auth_header(driver_token), json={"driver_id": driver_id, "ride_id": ride_id})
     assert complete.status_code == 200
 
     for path in (
