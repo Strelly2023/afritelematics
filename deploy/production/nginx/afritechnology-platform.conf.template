@@ -12,7 +12,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -28,7 +28,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:3001;
+        proxy_pass http://afritech-api:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -44,7 +44,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4001;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -60,7 +60,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4002;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -76,7 +76,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4003;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -92,7 +92,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4004;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -108,7 +108,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4005;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -124,7 +124,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4006;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -140,7 +140,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4007;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -156,7 +156,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4008;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -172,7 +172,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4009;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -188,7 +188,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:4010;
+        proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

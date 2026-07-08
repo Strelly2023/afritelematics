@@ -62,7 +62,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/trust-node.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/afritechnology-platform.conf.template:/etc/nginx/templates/default.conf.template:ro
       - certbot_www:/var/www/certbot
       - certbot_certs:/etc/letsencrypt
     depends_on:
