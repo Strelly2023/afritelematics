@@ -1057,7 +1057,3 @@ export const scenarioRegistrySummary = {
   currentDocumentedJourneys:
     novaTechScenarioCatalog.length + novapayConsumerScenarioCatalog.length + novapayConsumerFeatureScenarios.length,
 } as const;
-
-export * from "./identity";
-export * from "./novapay";
-export * from "./scenario-engine";

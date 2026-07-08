@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "python3 -m pytest -q tests",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "test:internal-qa": "pytest tests/internal_qa -q"
   },
   "dependencies": {
     "expo": "~51.0.28",
