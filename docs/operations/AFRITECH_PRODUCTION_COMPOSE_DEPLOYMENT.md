@@ -20,6 +20,12 @@ and ecosystem verification access, use:
 - `deploy/production/nginx/trust-node.conf.template`
 - `docs/operations/AFRITECH_PRODUCTION_TRUST_NODE_RUNBOOK.md`
 
+For host-based AfriTechnology subdomain routing across the production-style
+EC2 surface, use:
+
+- `deploy/production/nginx/afritechnology-platform.conf.template`
+- `docs/operations/AFRITECH_NGINX_HOST_ROUTING_RUNBOOK.md`
+
 ## Files
 
 - `deploy/production/docker-compose.production.yml`
