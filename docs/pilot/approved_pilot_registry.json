@@ -1,0 +1,41 @@
+{
+  "pilot_id": "nova-controlled-pilot-001",
+  "status": "CONTROLLED_PILOT",
+  "approved_users": [
+    "pilot-rider-1",
+    "pilot-consumer-1",
+    "pilot-business-1",
+    "pilot-agent-1",
+    "pilot-merchant-1"
+  ],
+  "approved_devices": [
+    "device-rider-1",
+    "device-consumer-1",
+    "device-business-1",
+    "device-agent-1",
+    "device-merchant-1"
+  ],
+  "approved_drivers": [
+    "driver-pilot-1"
+  ],
+  "approved_operators": [
+    "operator-pilot-1"
+  ],
+  "approved_agents": [
+    "agent-pilot-1"
+  ],
+  "approved_merchants": [
+    "merchant-pilot-1"
+  ],
+  "approved_businesses": [
+    "business-pilot-1"
+  ],
+  "approved_test_locations": [
+    "Melbourne",
+    "Werribee",
+    "Docklands"
+  ],
+  "payment_mode": "SIMULATED",
+  "real_payments_approved": false,
+  "public_launch_allowed": false
+}

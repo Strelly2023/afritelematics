@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test:internal-qa": "pytest tests/internal_qa -q"
+    "test:internal-qa": "pytest tests/internal_qa -q",
+    "test:controlled-pilot": "pytest tests/controlled_pilot -q"
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",

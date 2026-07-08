@@ -13,7 +13,7 @@ Generated: `deterministic-repo-snapshot`
 
 - Startup module: `afritech.api.app`
 - Startup-safe closure size: `528`
-- Django-bound modules declared in repo: `279`
+- Django-bound modules declared in repo: `282`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `65`
 
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (279 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (282 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end

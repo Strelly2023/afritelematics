@@ -1,0 +1,16 @@
+{
+  "environment": "CONTROLLED_PILOT",
+  "pilot_enabled": true,
+  "public_launch_allowed": false,
+  "general_availability_allowed": false,
+  "unrestricted_signup_allowed": false,
+  "approved_users_only": true,
+  "approved_devices_only": true,
+  "approved_operators_only": true,
+  "payment_mode": "SIMULATED",
+  "live_payments_enabled": false,
+  "real_charging_enabled": false,
+  "external_payouts_enabled": false,
+  "pilot_payment_approval_required": true,
+  "apk_distribution": "CONTROLLED_ONLY"
+}
