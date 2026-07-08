@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from importlib import import_module
 import os
+import sqlite3
 import time
 from typing import Any
 
@@ -97,6 +98,7 @@ from afritech.execution.worker.worker_pool import WorkerPool
 from afritech.core_platform.adaptive_sla import AdaptiveSLAController
 from afritech.core_platform.autonomous_control import AutonomousControlPlane
 from afritech.middleware.distributed_governance import DistributedGovernanceMiddleware
+from afritech.middleware.request_logging import JsonRequestLoggingMiddleware
 from afritech.middleware.multi_region_redis import RegionAwareRedisBackend, parse_region_redis_urls
 from afritech.partner_registry import PartnerRegistryStore, seed_partner_registry
 from afritech.partner_certification import PartnerCertificationStore, seed_partner_certification_registry
@@ -123,6 +125,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(JsonRequestLoggingMiddleware)
 app.add_middleware(SchemaRegistryMiddleware)
 
 # ============================================================
@@ -453,8 +456,55 @@ def root() -> dict[str, Any]:
 
 @app.get("/health")
 def health() -> dict[str, Any]:
-    """Lightweight probe for container health checks."""
-    return {"status": "ok"}
+    """Lightweight readiness probe surface for container health checks."""
+    return {
+        "status": "healthy",
+        "service": "afritech-api",
+        "version": "0.7.0",
+        "environment": os.environ.get("AFRITECH_RUNTIME_ENVIRONMENT", "PUBLIC_PILOT"),
+    }
+
+
+@app.get("/live")
+def live() -> dict[str, Any]:
+    """Report liveness without dependency checks."""
+    return {
+        "alive": True,
+        "service": "afritech-api",
+    }
+
+
+def _configuration_valid() -> bool:
+    environment = os.environ.get("AFRITECH_RUNTIME_ENVIRONMENT", "PUBLIC_PILOT").strip()
+    if not environment:
+        return False
+    if environment.upper() not in {"PUBLIC_PILOT", "CONTROLLED_PILOT", "INTERNAL_QA", "PRIVATE_DEVELOPMENT", "production"}:
+        return False
+    return True
+
+
+def _database_ready() -> bool:
+    db_target = os.environ.get("AFRIRIDE_DB_PATH", ":memory:")
+    try:
+        with sqlite3.connect(db_target, timeout=1.0) as connection:
+            connection.execute("SELECT 1")
+    except Exception:
+        return False
+    return True
+
+
+@app.get("/ready")
+def ready() -> JSONResponse:
+    """Report dependency readiness for deployment health gates."""
+    database_ready = _database_ready()
+    configuration_valid = _configuration_valid()
+    payload = {
+        "ready": bool(database_ready and configuration_valid),
+        "database": "up" if database_ready else "down",
+        "configuration": "valid" if configuration_valid else "invalid",
+    }
+    status_code = 200 if payload["ready"] else 503
+    return JSONResponse(status_code=status_code, content=payload)
 
 
 # ============================================================

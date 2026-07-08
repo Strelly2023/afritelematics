@@ -11,6 +11,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -26,6 +32,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     location / {
         proxy_pass http://afritech-api:8000;
@@ -43,6 +55,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -58,6 +76,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     location / {
         proxy_pass http://afritech-dashboard:4173;
@@ -75,6 +99,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -90,6 +120,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     location / {
         proxy_pass http://afritech-dashboard:4173;
@@ -107,6 +143,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -122,6 +164,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     location / {
         proxy_pass http://afritech-dashboard:4173;
@@ -139,6 +187,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -154,6 +208,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     location / {
         proxy_pass http://afritech-dashboard:4173;
@@ -171,6 +231,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -187,6 +253,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
@@ -202,6 +274,12 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
 
     return 302 https://app.afritechnology.com;
 }

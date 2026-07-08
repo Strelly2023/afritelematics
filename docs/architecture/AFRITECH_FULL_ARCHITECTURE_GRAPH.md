@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `528`
+- Startup-safe closure size: `529`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `65`
+- Direct startup imports from `afritech.api.app`: `66`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (528 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (529 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (65)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (66)"]
 ```
 
 ## Repository Architecture Inventory
@@ -82,7 +82,7 @@ flowchart TD
     Ride --> Backend["backend (30 files)"]
     Ride --> Django["django_app (99 files)"]
     Ui --> Dashboard["src (6 files)"]
-    Deploy --> Production["production (4 files)"]
+    Deploy --> Production["production (5 files)"]
 ```
 
 ## Repo Area Counts
@@ -100,7 +100,7 @@ flowchart TD
 - `afriride_backend`: `30` files
 - `afriride_django`: `99` files
 - `dashboard_ui`: `6` files
-- `deploy_production`: `4` files
+- `deploy_production`: `5` files
 
 ## Startup Inventory
 
@@ -191,7 +191,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (433)
+### Other (434)
 
 - `afritech`
 - `afritech.afripay`
@@ -489,6 +489,7 @@ flowchart TD
 - `afritech.middleware.rate_limiter`
 - `afritech.middleware.redis_circuit_breaker`
 - `afritech.middleware.redis_rate_limiter`
+- `afritech.middleware.request_logging`
 - `afritech.mobility`
 - `afritech.mobility.cross_border_federation`
 - `afritech.mobility.federation`
@@ -714,6 +715,7 @@ flowchart TD
 - `afritech.execution.worker.worker_pool`
 - `afritech.middleware.distributed_governance`
 - `afritech.middleware.multi_region_redis`
+- `afritech.middleware.request_logging`
 - `afritech.partner_certification`
 - `afritech.partner_governance`
 - `afritech.partner_registry`
