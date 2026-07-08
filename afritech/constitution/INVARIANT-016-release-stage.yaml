@@ -1,0 +1,23 @@
+id: INVARIANT-016
+name: release_stage
+status: ACTIVE
+classification: RELEASE_STAGE_INVARIANT
+
+description: >
+  Release stages, activation gates, and readiness domains are canonical
+  governance objects. GA must remain blocked until PRR is explicitly
+  approved and release state satisfies the governance policy.
+
+constraints:
+  - Private Development precedes Internal QA
+  - Internal QA precedes Controlled Pilot
+  - Controlled Pilot precedes Public Pilot
+  - Public Pilot precedes PRR
+  - PRR precedes GA
+  - Activation gates are independent from stage maturity
+  - NovaRide owns mobility only
+  - NovaPay owns financial execution
+  - NovaID owns identity and authentication
+  - NovaTrust owns evidence
+  - NovaAI remains advisory only
+

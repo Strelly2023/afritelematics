@@ -1,0 +1,28 @@
+{
+  "release_stage": "PUBLIC_PILOT",
+  "activation_gates": {
+    "publicRegistration": false,
+    "publicOnboarding": true,
+    "realPayments": false,
+    "countryActivation": false,
+    "featureActivation": true,
+    "merchantActivation": false,
+    "agentActivation": false,
+    "driverActivation": true
+  },
+  "readiness_status": {
+    "Engineering": "PASS",
+    "Operations": "PASS",
+    "Governance": "PASS",
+    "Compliance": "PASS",
+    "Commercial": "PASS",
+    "Security": "PASS",
+    "Support": "PASS",
+    "DisasterRecovery": "PASS"
+  },
+  "trust_status": "ENABLED",
+  "current_region": "APPROVED_PUBLIC_PILOT_REGIONS",
+  "payment_mode": "PILOT_REAL_LIMITED",
+  "pilot_status": "READY_FOR_PRR"
+}
+

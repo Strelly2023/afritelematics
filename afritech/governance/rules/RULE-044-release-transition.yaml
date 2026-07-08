@@ -1,0 +1,34 @@
+id: RULE-044
+name: release_transition
+status: ACTIVE
+classification: RELEASE_TRANSITION_RULE
+
+description: >
+  Release transitions must follow the canonical lifecycle, fail closed on
+  invalid stage progression, and block GA until all readiness domains and PRR
+  requirements are satisfied.
+
+linked_artifacts:
+  adr: adr/ADR-0024-release-governance.yaml
+  binding: afritech/governance/bindings/BIND-023-release-domains.yaml
+  release_config: config/release.json
+  prr: docs/prr/PRR-001-production-readiness-review.yaml
+
+contract:
+  release_framework:
+    required_stages:
+      - PRIVATE_DEVELOPMENT
+      - INTERNAL_QA
+      - CONTROLLED_PILOT
+      - PUBLIC_PILOT
+      - PRODUCTION_READINESS_REVIEW
+      - GENERAL_AVAILABILITY
+      - REGIONAL_EXPANSION
+      - GLOBAL_MULTI_REGION_PLATFORM
+    required_prr_before_ga: true
+    ga_blocked_by_default: true
+
+enforcement:
+  level: STRICT
+  failure_mode: CI_FAIL
+

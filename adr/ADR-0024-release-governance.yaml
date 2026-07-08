@@ -1,0 +1,34 @@
+adr:
+  id: ADR-0024
+  title: Enterprise release governance framework
+  status: PROPOSED
+  classification: RELEASE_GOVERNANCE_FRAMEWORK
+  context: >
+    NovaTech release governance must distinguish lifecycle stage, activation
+    gates, and readiness domains so CI/CD, runtime controls, dashboards, and
+    mobile surfaces consume the same canonical policy.
+  decision: >
+    Introduce machine-enforceable release stages, activation gates, readiness
+    domains, and PRR certification so GA remains blocked until governance
+    approval is explicit.
+  consequences:
+    - Release stages become canonical lifecycle objects.
+    - Activation gates are enabled independently from stage progression.
+    - Readiness domains are first-class approval evidence.
+    - PRR is mandatory before GA may be enabled.
+  constraints:
+    - GA remains blocked without PRR approval
+    - public launch claims remain forbidden before PRR
+    - NovaRide does not own payment execution
+    - NovaPay does not own mobility dispatch
+    - NovaAI remains advisory only
+  rules:
+    - RULE-044
+  linked_rule: RULE-044
+  linked_binding: BIND-023
+  linked_guard: afritech/guards/guard_ga_enablement.py
+  linked_surfaces:
+    - config/release.json
+    - docs/release/ENTERPRISE_RELEASE_FRAMEWORK_2026.md
+    - docs/prr/PRR-001-production-readiness-review.yaml
+

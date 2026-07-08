@@ -1,0 +1,70 @@
+id: BIND-023
+
+description: >
+  Binds release stages, activation gates, readiness domains, and PRR
+  certification to runtime guards so CI/CD and dashboards read from a single
+  canonical source of truth.
+
+bindings:
+  - id: BIND-023-1
+    name: release_stage_guard
+    target: afritech.guards.guard_release_stage
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - validate release stage ordering
+      - reject invalid stage names
+      - preserve stage monotonicity
+
+  - id: BIND-023-2
+    name: activation_gate_guard
+    target: afritech.guards.guard_activation_gate
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - validate activation gate definitions
+      - keep capability gates explicit
+      - preserve stage and gate separation
+
+  - id: BIND-023-3
+    name: prr_guard
+    target: afritech.guards.guard_prr
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - validate PRR readiness evidence
+      - keep GA blocked until PRR is explicit
+      - preserve certification boundaries
+
+  - id: BIND-023-4
+    name: ga_enablement_guard
+    target: afritech.guards.guard_ga_enablement
+    binding_type: GUARD
+    runtime_authoritative: false
+    responsibilities:
+      - fail GA enablement without PRR
+      - reject public launch claims before approval
+      - preserve governance and commercial separation
+
+linked_rules:
+  - RULE-044
+
+linked_adr:
+  - ADR-0024
+
+linked_invariants:
+  - INVARIANT-016
+
+guards:
+  - afritech.guards.guard_release_stage
+  - afritech.guards.guard_activation_gate
+  - afritech.guards.guard_prr
+  - afritech.guards.guard_ga_enablement
+
+ci:
+  enforcement:
+    - Release stages must be canonical and ordered.
+    - Activation gates must be explicit and governed.
+    - PRR must be required before GA.
+    - GA claims remain forbidden when approval is missing.
+

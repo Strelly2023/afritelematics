@@ -4,6 +4,11 @@ export type NovaTechService = NovaTechProduct | NovaTechSharedService;
 export type AssuranceLevel = "low" | "medium" | "high" | "verified";
 export type NotificationChannel = "push" | "email" | "sms" | "in_app";
 
+export * from "./release";
+export * from "./activation";
+export * from "./readiness";
+export * from "./prr";
+
 export type ProductRegistryEntry = Readonly<{
   product: NovaTechProduct;
   displayName: "NovaID" | "NovaPay" | "NovaRide";

@@ -1,0 +1,52 @@
+{
+  "environment": "PUBLIC_PILOT",
+  "releaseStage": "PUBLIC_PILOT",
+  "publicUsersAllowed": true,
+  "publicRegistrationEnabled": false,
+  "publicOnboardingEnabled": true,
+  "pilotTransactionLimitsEnabled": true,
+  "pilotGeographyRestricted": true,
+  "pilotMonitoringRequired": true,
+  "incidentResponseRequired": true,
+  "rollbackRequired": true,
+  "supportRequired": true,
+  "productionCredentialsAllowed": true,
+  "gaEnabled": false,
+  "generalAvailabilityAllowed": false,
+  "unrestrictedSignupAllowed": false,
+  "paymentMode": "PILOT_REAL_LIMITED",
+  "productionRealPaymentMode": "disabled",
+  "maxTransactionAmountAud": 50,
+  "dailyLimitAud": 200,
+  "monthlyLimitAud": 1000,
+  "prrRequired": true,
+  "activationGates": {
+    "publicRegistration": false,
+    "publicOnboarding": true,
+    "realPayments": false,
+    "countryActivation": false,
+    "featureActivation": true,
+    "merchantActivation": false,
+    "agentActivation": false,
+    "driverActivation": true
+  },
+  "readiness": {
+    "Engineering": "PASS",
+    "Operations": "PASS",
+    "Governance": "PASS",
+    "Compliance": "PASS",
+    "Commercial": "PASS",
+    "Security": "PASS",
+    "Support": "PASS",
+    "DisasterRecovery": "PASS"
+  },
+  "requiredGovernanceArtifacts": [
+    "ADR",
+    "Invariant",
+    "Rule",
+    "Binding",
+    "Guard",
+    "PRR",
+    "Exit Report"
+  ]
+}
