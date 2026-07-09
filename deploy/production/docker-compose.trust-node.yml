@@ -69,6 +69,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/afritechnology-platform.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ../../apk:/var/www/afritech-apk:ro
       - certbot_www:/var/www/certbot
       - certbot_certs:/etc/letsencrypt
     depends_on:

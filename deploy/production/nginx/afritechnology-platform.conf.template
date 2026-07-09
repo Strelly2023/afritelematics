@@ -260,7 +260,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name developer.afritechnology.com docs.afritechnology.com download.afritechnology.com;
+    server_name developer.afritechnology.com docs.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
@@ -269,6 +269,144 @@ server {
         access_log off;
         add_header Content-Type text/plain;
         return 200 'ok';
+    }
+
+    location / {
+        proxy_pass http://afritech-dashboard:4173;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name download.afritechnology.com;
+
+    ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
+    location ~ ^/(novaride|novapay|novaid)/(?<apk_file>[A-Za-z0-9._-]+\.(apk|apk\.sha256))$ {
+        alias /var/www/afritech-apk/$apk_file;
+        types {
+            application/vnd.android.package-archive apk;
+            text/plain sha256;
+        }
+        default_type application/octet-stream;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=$apk_file";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaride/rider.apk {
+        alias /var/www/afritech-apk/novaride-rider-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaride-rider-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaride/driver.apk {
+        alias /var/www/afritech-apk/novaride-driver-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaride-driver-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaride/fleet.apk {
+        alias /var/www/afritech-apk/novaride-fleet-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaride-fleet-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaride/operator.apk {
+        alias /var/www/afritech-apk/novaride-operator-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaride-operator-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novapay/consumer.apk {
+        alias /var/www/afritech-apk/novapay-consumer-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novapay-consumer-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novapay/agent.apk {
+        alias /var/www/afritech-apk/novapay-agent-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novapay-agent-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novapay/merchant.apk {
+        alias /var/www/afritech-apk/novapay-merchant-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novapay-merchant-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novapay/business.apk {
+        alias /var/www/afritech-apk/novapay-business-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novapay-business-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaid/personal.apk {
+        alias /var/www/afritech-apk/novaid-personal-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaid-personal-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaid/business.apk {
+        alias /var/www/afritech-apk/novaid-business-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaid-business-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaid/employee.apk {
+        alias /var/www/afritech-apk/novaid-employee-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaid-employee-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaid/partner.apk {
+        alias /var/www/afritech-apk/novaid-partner-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaid-partner-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /novaid/inspector.apk {
+        alias /var/www/afritech-apk/novaid-inspector-public-pilot-release.apk;
+        default_type application/vnd.android.package-archive;
+        add_header Cache-Control "public, max-age=300";
+        add_header Content-Disposition "attachment; filename=novaid-inspector-public-pilot-release.apk";
+        add_header X-Content-Type-Options nosniff always;
     }
 
     location / {
