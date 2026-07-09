@@ -1047,11 +1047,120 @@ a {
 
 .novacodepro-app-grid,
 .novacodepro-system-grid,
-.novacodepro-ecosystem-grid {
+.novacodepro-ecosystem-grid,
+.codepro-os-map,
+.codepro-workspace-grid,
+.codepro-role-grid,
+.codepro-status-grid,
+.codepro-enterprise-grid,
+.marketplace-economy-grid,
+.trusted-positioning-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 18px;
+}
+
+.codepro-os-map {
+  position: relative;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.codepro-os-core {
+  display: grid;
+  min-height: 170px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px solid rgba(117, 214, 160, 0.55);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0f2633, #1f7a55);
+  color: #ffffff;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(24, 36, 50, 0.18);
+}
+
+.codepro-os-core span,
+.codepro-os-module .record-card-header span,
+.codepro-role-card span {
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.codepro-os-core strong {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.codepro-os-module,
+.codepro-role-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 16px;
+}
+
+.codepro-os-module .record-card-header {
+  flex-direction: column;
+}
+
+.codepro-os-module .record-card-header span {
+  color: #2f6f73;
+}
+
+.codepro-workspace-grid,
+.codepro-enterprise-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.workspace-tree {
+  overflow: auto;
+  margin: 0;
+  border-radius: 8px;
+  background: #07111f;
+  color: #d9f3e8;
+  padding: 16px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.vertical-flow {
+  grid-template-columns: 1fr;
+}
+
+.codepro-role-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.codepro-role-card span {
+  color: #2f6f73;
+}
+
+.codepro-journey-panel {
+  margin: 20px 0;
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.codepro-journey-grid {
+  margin-top: 12px;
+}
+
+.codepro-status-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.codepro-status-pill {
+  min-width: 0;
+  background: #0f2133;
 }
 
 .novacodepro-app-card {
@@ -1124,6 +1233,43 @@ a {
 
 .novacodepro-ecosystem-grid {
   grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.tenant-tree {
+  display: grid;
+  gap: 8px;
+}
+
+.tenant-tree strong {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  border-radius: 8px;
+  background: #172033;
+  color: #ffffff;
+}
+
+.tenant-tree span {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #35556e;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.marketplace-economy-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.trusted-positioning-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.trusted-positioning-grid .record-card {
+  border-color: #bfd5ce;
+  background: #f8fbfc;
 }
 
 .expansion-path {
@@ -3422,6 +3568,13 @@ a {
   .novacodepro-system-grid,
   .novacodepro-language-panel,
   .novacodepro-ecosystem-grid,
+  .codepro-os-map,
+  .codepro-workspace-grid,
+  .codepro-role-grid,
+  .codepro-status-grid,
+  .codepro-enterprise-grid,
+  .marketplace-economy-grid,
+  .trusted-positioning-grid,
   .audience-grid,
   .trust-center-grid,
   .why-grid,
@@ -3479,6 +3632,13 @@ a {
   .novacodepro-system-grid,
   .novacodepro-language-panel,
   .novacodepro-ecosystem-grid,
+  .codepro-os-map,
+  .codepro-workspace-grid,
+  .codepro-role-grid,
+  .codepro-status-grid,
+  .codepro-enterprise-grid,
+  .marketplace-economy-grid,
+  .trusted-positioning-grid,
   .trust-page-grid,
   .ecosystem-footer,
   .ecosystem-footer nav {
@@ -3558,6 +3718,13 @@ a {
   .novacodepro-system-grid,
   .novacodepro-language-panel,
   .novacodepro-ecosystem-grid,
+  .codepro-os-map,
+  .codepro-workspace-grid,
+  .codepro-role-grid,
+  .codepro-status-grid,
+  .codepro-enterprise-grid,
+  .marketplace-economy-grid,
+  .trusted-positioning-grid,
   .audience-grid,
   .trust-center-grid,
   .why-grid,
@@ -3688,6 +3855,13 @@ a {
   .novacodepro-system-grid,
   .novacodepro-language-panel,
   .novacodepro-ecosystem-grid,
+  .codepro-os-map,
+  .codepro-workspace-grid,
+  .codepro-role-grid,
+  .codepro-status-grid,
+  .codepro-enterprise-grid,
+  .marketplace-economy-grid,
+  .trusted-positioning-grid,
   .trust-page-grid,
   .ecosystem-footer,
   .ecosystem-footer nav {
