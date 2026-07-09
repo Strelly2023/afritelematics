@@ -2081,6 +2081,164 @@ const NOVACODEPRO_TRUST_WORKFLOW = [
   "Evidence Ready",
 ];
 
+const NOVACODEPRO_ENGINEERING_COMMAND_METRICS = [
+  { label: "Pipeline Health", value: "94%", detail: "42 passing, 3 running, 2 queued" },
+  { label: "Security Posture", value: "91", detail: "No critical open in release lane" },
+  { label: "Deployment Readiness", value: "Controlled", detail: "Approval gate required" },
+  { label: "Observability Health", value: "99.95%", detail: "SLO within release window" },
+  { label: "Active Incidents", value: "1", detail: "Medium severity under review" },
+  { label: "Rollback Readiness", value: "Ready", detail: "Last stable artifact pinned" },
+  { label: "Release Approval", value: "Pending", detail: "Human release owner required" },
+];
+
+const NOVACODEPRO_PIPELINES = [
+  {
+    id: "release-2026-1",
+    name: "NovaRide Release 2026.1",
+    state: "running",
+    rollback: "ready",
+    approval: "required before deploy",
+    evidence: "build, test, scan, policy evidence prepared",
+  },
+  {
+    id: "wallet-policy",
+    name: "NovaPay Wallet Policy",
+    state: "passed",
+    rollback: "ready",
+    approval: "granted for pilot",
+    evidence: "pipeline evidence sealed",
+  },
+  {
+    id: "identity-device",
+    name: "NovaID Device Trust",
+    state: "queued",
+    rollback: "pending",
+    approval: "waiting on identity owner",
+    evidence: "evidence pending first run",
+  },
+  {
+    id: "mobile-review",
+    name: "NovaCodePro Mobile Review",
+    state: "failed",
+    rollback: "ready",
+    approval: "blocked",
+    evidence: "failure evidence attached",
+  },
+];
+
+const NOVACODEPRO_PIPELINE_STAGES = [
+  { stage: "Build", state: "passed", detail: "Artifact compiled and checksum recorded" },
+  { stage: "Test", state: "passed", detail: "Unit and integration suites completed" },
+  { stage: "Lint", state: "passed", detail: "Static quality checks passed" },
+  { stage: "Security Scan", state: "running", detail: "SAST and dependency gates in progress" },
+  { stage: "Policy Validation", state: "queued", detail: "Governance policy waits for scan output" },
+  { stage: "Deploy", state: "queued", detail: "Deployment requires approval gate" },
+];
+
+const NOVACODEPRO_PIPELINE_TIMELINE = [
+  { time: "09:00", event: "Pipeline queued", state: "queued" },
+  { time: "09:04", event: "Build passed", state: "passed" },
+  { time: "09:11", event: "Tests passed", state: "passed" },
+  { time: "09:17", event: "Security scan running", state: "running" },
+  { time: "09:21", event: "Policy validation queued", state: "queued" },
+];
+
+const NOVACODEPRO_SECURITY_SCANS = [
+  { name: "SAST results", severity: "low", status: "2 low findings", score: "98" },
+  { name: "DAST results", severity: "medium", status: "1 medium finding", score: "92" },
+  { name: "Secret scanning", severity: "low", status: "clear", score: "100" },
+  { name: "Dependency scanning", severity: "high", status: "1 high pending patch", score: "84" },
+  { name: "Container scanning", severity: "medium", status: "base image review", score: "90" },
+  { name: "SBOM status", severity: "low", status: "generated", score: "100" },
+  { name: "License compliance", severity: "low", status: "approved", score: "99" },
+];
+
+const NOVACODEPRO_DEPLOYMENT_ENVIRONMENTS = [
+  { id: "development", name: "development", status: "active", approval: "automatic checks only", target: "Docker", rollback: "snapshot" },
+  { id: "staging", name: "staging", status: "active", approval: "team lead", target: "Kubernetes", rollback: "blue/green" },
+  { id: "pilot", name: "pilot", status: "controlled", approval: "release owner", target: "AWS", rollback: "last stable" },
+  { id: "production", name: "production", status: "held", approval: "not GA", target: "multi-cloud", rollback: "approval required" },
+];
+
+const NOVACODEPRO_DEPLOYMENT_TARGETS = [
+  "Docker",
+  "Kubernetes",
+  "AWS",
+  "Azure",
+  "Google Cloud",
+  "on-premise",
+  "edge",
+];
+
+const NOVACODEPRO_DEPLOYMENT_AUDIT = [
+  { time: "08:52", event: "Release candidate created", actor: "release-bot" },
+  { time: "09:17", event: "Security gate attached", actor: "NovaSecurity" },
+  { time: "09:26", event: "Approval requested", actor: "release-owner" },
+  { time: "09:34", event: "Pilot deploy prepared", actor: "NovaDeploy" },
+];
+
+const NOVACODEPRO_MONITORING_SERVICES = [
+  { id: "api-gateway", name: "API Gateway", uptime: "99.99%", latency: "42ms", errors: "0.03%", status: "healthy" },
+  { id: "pipeline-runner", name: "Pipeline Runner", uptime: "99.95%", latency: "64ms", errors: "0.07%", status: "healthy" },
+  { id: "deployment-agent", name: "Deployment Agent", uptime: "99.91%", latency: "88ms", errors: "0.11%", status: "watch" },
+  { id: "evidence-writer", name: "Evidence Writer", uptime: "100%", latency: "28ms", errors: "0%", status: "healthy" },
+];
+
+const NOVACODEPRO_MONITORING_SIGNALS = [
+  { label: "Metrics", value: "streaming" },
+  { label: "Logs", value: "indexed" },
+  { label: "Traces", value: "99.2%" },
+  { label: "Errors", value: "low" },
+  { label: "Latency", value: "p95 88ms" },
+  { label: "Uptime", value: "99.95%" },
+];
+
+const NOVACODEPRO_INCIDENT_TIMELINE = [
+  { time: "09:05", event: "Latency spike detected", severity: "medium" },
+  { time: "09:07", event: "AI anomaly panel opened investigation", severity: "low" },
+  { time: "09:12", event: "Deployment impact view shows no customer outage", severity: "low" },
+  { time: "09:20", event: "Rollback remains ready but not triggered", severity: "low" },
+];
+
+const NOVACODEPRO_RELEASE_JOURNEY = [
+  { step: "Pipeline queued", result: "Release candidate entered NovaFlow", product: "NovaFlow" },
+  { step: "Build passed", result: "Artifact generated and checksum recorded", product: "NovaFlow" },
+  { step: "Tests passed", result: "Unit and integration suites passed", product: "NovaFlow" },
+  { step: "Security passed", result: "Security posture accepted for controlled release", product: "NovaSecurity" },
+  { step: "Approval granted", result: "Human release approval recorded", product: "NovaGovernance" },
+  { step: "Deployment completed", result: "Pilot deployment completed under control", product: "NovaDeploy" },
+  { step: "Observability healthy", result: "Metrics, logs, traces, and SLOs healthy", product: "NovaMonitor" },
+  { step: "Evidence generated", result: "Release evidence packet prepared", product: "NovaTrust" },
+];
+
+const NOVACODEPRO_RELEASE_EVIDENCE = [
+  "Pipeline evidence",
+  "Security evidence",
+  "Deployment evidence",
+  "Monitoring evidence",
+  "Approval evidence",
+  "Audit trail",
+];
+
+const NOVACODEPRO_ENGINEERING_STATUS = [
+  { system: "NovaFlow", state: "Operational" },
+  { system: "NovaSecurity", state: "Operational" },
+  { system: "NovaDeploy", state: "Operational" },
+  { system: "NovaMonitor", state: "Operational" },
+  { system: "NovaTelemetry", state: "Operational" },
+  { system: "NovaTrust", state: "Operational" },
+];
+
+const NOVACODEPRO_RELEASE_WORKFLOW = [
+  "Commit",
+  "Pipeline",
+  "Security",
+  "Approval",
+  "Deploy",
+  "Monitor",
+  "Evidence Ready",
+];
+
 const NOVACODEPRO_APPS = [
   {
     name: "NovaCodePro Desktop",
@@ -6813,6 +6971,15 @@ export default function OperatorDashboard() {
   const [selectedPullRequestId, setSelectedPullRequestId] = useState(NOVACODEPRO_PULL_REQUESTS[0].id);
   const [activeAiCodingTab, setActiveAiCodingTab] = useState(NOVACODEPRO_AI_CODING_TABS[0].id);
   const [activeDocsCategory, setActiveDocsCategory] = useState(NOVACODEPRO_DOCS_CATEGORIES[0].id);
+  const [selectedPipelineId, setSelectedPipelineId] = useState(NOVACODEPRO_PIPELINES[0].id);
+  const [selectedDeploymentEnvironment, setSelectedDeploymentEnvironment] = useState(
+    NOVACODEPRO_DEPLOYMENT_ENVIRONMENTS[0].id,
+  );
+  const [selectedMonitoringService, setSelectedMonitoringService] = useState(
+    NOVACODEPRO_MONITORING_SERVICES[0].id,
+  );
+  const [releaseJourneyActive, setReleaseJourneyActive] = useState(false);
+  const [releaseJourneyStep, setReleaseJourneyStep] = useState(0);
 
   const selectedWorkspace =
     NOVACODEPRO_WORKSPACES.find((workspace) => workspace.id === selectedWorkspaceId) ||
@@ -6832,6 +6999,15 @@ export default function OperatorDashboard() {
   const activeDocsContent =
     NOVACODEPRO_DOCS_CATEGORIES.find((category) => category.id === activeDocsCategory) ||
     NOVACODEPRO_DOCS_CATEGORIES[0];
+  const selectedPipeline =
+    NOVACODEPRO_PIPELINES.find((pipeline) => pipeline.id === selectedPipelineId) ||
+    NOVACODEPRO_PIPELINES[0];
+  const selectedEnvironment =
+    NOVACODEPRO_DEPLOYMENT_ENVIRONMENTS.find((environment) => environment.id === selectedDeploymentEnvironment) ||
+    NOVACODEPRO_DEPLOYMENT_ENVIRONMENTS[0];
+  const selectedService =
+    NOVACODEPRO_MONITORING_SERVICES.find((service) => service.id === selectedMonitoringService) ||
+    NOVACODEPRO_MONITORING_SERVICES[0];
 
   useEffect(() => {
     fetchOperatorState();
@@ -6918,6 +7094,18 @@ export default function OperatorDashboard() {
     }, 780);
     return () => window.clearTimeout(timer);
   }, [repositoryJourneyActive, repositoryJourneyStep]);
+
+  useEffect(() => {
+    if (!releaseJourneyActive || releaseJourneyStep >= NOVACODEPRO_RELEASE_JOURNEY.length) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setReleaseJourneyStep((current) =>
+        Math.min(current + 1, NOVACODEPRO_RELEASE_JOURNEY.length),
+      );
+    }, 760);
+    return () => window.clearTimeout(timer);
+  }, [releaseJourneyActive, releaseJourneyStep]);
 
   async function fetchOperatorState() {
     try {
@@ -8502,6 +8690,278 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
           <section className="trust-aware-workflow" aria-label="Trust-aware developer workflow">
             {NOVACODEPRO_TRUST_WORKFLOW.map((step) => (
               <span key={step}>{step}</span>
+            ))}
+          </section>
+        </section>
+
+        <section className="codepro-engineering-platform" id="novacodepro-engineering-platform">
+          <SectionIntro
+            eyebrow="NovaCodePro Engineering Platform Phase"
+            title="Controlled release engineering for CI/CD, security, deployments, and observability"
+            question="This phase deepens NovaCodePro under the developer foundation with controlled deployment, evidence-ready release workflows, and monitoring visibility. It is not a full GA or autonomous Engineering OS claim."
+          />
+
+          <div className="engineering-command-shell">
+            <div className="codepro-command-header">
+              <div>
+                <p className="eyebrow">Engineering Command Center</p>
+                <h3>Release readiness without bypassing approval</h3>
+              </div>
+              <span>Engineering Platform phase</span>
+            </div>
+            <div className="engineering-command-grid">
+              {NOVACODEPRO_ENGINEERING_COMMAND_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <em>{metric.detail}</em>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <section className="engineering-platform-section" aria-labelledby="novaflow-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaFlow CI/CD</p>
+                <h3 id="novaflow-title">Pipeline dashboard</h3>
+              </div>
+              <span className="surface-chip">rollback-ready · approval gate before deployment</span>
+            </div>
+            <div className="engineering-pipeline-grid">
+              <div className="pipeline-list" role="list" aria-label="Pipeline runs">
+                {NOVACODEPRO_PIPELINES.map((pipeline) => (
+                  <button
+                    key={pipeline.id}
+                    type="button"
+                    className={`pipeline-run-card pipeline-state-${pipeline.state} ${selectedPipelineId === pipeline.id ? "pipeline-run-active" : ""}`}
+                    onClick={() => setSelectedPipelineId(pipeline.id)}
+                  >
+                    <span>{pipeline.state}</span>
+                    <strong>{pipeline.name}</strong>
+                    <em>{pipeline.approval}</em>
+                  </button>
+                ))}
+              </div>
+              <article className="pipeline-detail-panel">
+                <div className="record-card-header">
+                  <strong>{selectedPipeline.name}</strong>
+                  <span>{selectedPipeline.state}</span>
+                </div>
+                <div className="pipeline-stage-grid">
+                  {NOVACODEPRO_PIPELINE_STAGES.map((stage) => (
+                    <article key={stage.stage} className={`pipeline-stage pipeline-state-${stage.state}`}>
+                      <span>{stage.state}</span>
+                      <strong>{stage.stage}</strong>
+                      <p>{stage.detail}</p>
+                    </article>
+                  ))}
+                </div>
+                <div className="release-fact-row">
+                  <span>Rollback {selectedPipeline.rollback}</span>
+                  <span>{selectedPipeline.evidence}</span>
+                </div>
+              </article>
+              <article className="pipeline-timeline-panel">
+                <strong>Pipeline run timeline</strong>
+                {NOVACODEPRO_PIPELINE_TIMELINE.map((item) => (
+                  <div key={`${item.time}-${item.event}`} className={`timeline-state-${item.state}`}>
+                    <span>{item.time}</span>
+                    <strong>{item.event}</strong>
+                  </div>
+                ))}
+              </article>
+            </div>
+          </section>
+
+          <section className="engineering-platform-section" aria-labelledby="novasecurity-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaSecurity</p>
+                <h3 id="novasecurity-title">Security dashboard</h3>
+              </div>
+              <span className="surface-chip">Security posture score 91 · no critical release blockers</span>
+            </div>
+            <div className="security-scan-grid">
+              {NOVACODEPRO_SECURITY_SCANS.map((scan) => (
+                <article key={scan.name} className={`security-scan-card severity-${scan.severity}`}>
+                  <span>{scan.severity}</span>
+                  <strong>{scan.name}</strong>
+                  <p>{scan.status}</p>
+                  <em>score {scan.score}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="engineering-platform-section" aria-labelledby="novadeploy-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaDeploy</p>
+                <h3 id="novadeploy-title">Deployment control center</h3>
+              </div>
+              <span className="surface-chip">Controlled deployment badge</span>
+            </div>
+            <div className="deployment-control-grid">
+              <div className="deployment-environment-grid">
+                {NOVACODEPRO_DEPLOYMENT_ENVIRONMENTS.map((environment) => (
+                  <button
+                    key={environment.id}
+                    type="button"
+                    className={`deployment-env-card deployment-env-${environment.status} ${selectedDeploymentEnvironment === environment.id ? "deployment-env-active" : ""}`}
+                    onClick={() => setSelectedDeploymentEnvironment(environment.id)}
+                  >
+                    <span>{environment.status}</span>
+                    <strong>{environment.name}</strong>
+                    <em>{environment.approval}</em>
+                  </button>
+                ))}
+              </div>
+              <article className="deployment-detail-panel">
+                <strong>{selectedEnvironment.name} release controls</strong>
+                <div className="release-fact-row">
+                  <span>Target {selectedEnvironment.target}</span>
+                  <span>Rollback {selectedEnvironment.rollback}</span>
+                  <span>Approval {selectedEnvironment.approval}</span>
+                </div>
+                <div className="deployment-target-row">
+                  {NOVACODEPRO_DEPLOYMENT_TARGETS.map((target) => (
+                    <span key={target}>{target}</span>
+                  ))}
+                </div>
+              </article>
+              <article className="deployment-audit-panel">
+                <strong>Deployment audit trail</strong>
+                {NOVACODEPRO_DEPLOYMENT_AUDIT.map((audit) => (
+                  <div key={`${audit.time}-${audit.event}`}>
+                    <span>{audit.time}</span>
+                    <strong>{audit.event}</strong>
+                    <em>{audit.actor}</em>
+                  </div>
+                ))}
+              </article>
+            </div>
+          </section>
+
+          <section className="engineering-platform-section" aria-labelledby="novamonitor-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaMonitor</p>
+                <h3 id="novamonitor-title">Observability dashboard</h3>
+              </div>
+              <span className="surface-chip">metrics · logs · traces · errors · latency · uptime</span>
+            </div>
+            <div className="monitor-grid">
+              <div className="monitor-service-list">
+                {NOVACODEPRO_MONITORING_SERVICES.map((service) => (
+                  <button
+                    key={service.id}
+                    type="button"
+                    className={selectedMonitoringService === service.id ? "monitor-service-active" : ""}
+                    onClick={() => setSelectedMonitoringService(service.id)}
+                  >
+                    <strong>{service.name}</strong>
+                    <span>{service.status} · {service.uptime}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="monitor-detail-panel">
+                <div className="record-card-header">
+                  <strong>{selectedService.name}</strong>
+                  <span>{selectedService.status}</span>
+                </div>
+                <div className="monitor-signal-grid">
+                  <div><span>Uptime</span><strong>{selectedService.uptime}</strong></div>
+                  <div><span>Latency</span><strong>{selectedService.latency}</strong></div>
+                  <div><span>Errors</span><strong>{selectedService.errors}</strong></div>
+                </div>
+                <div className="monitor-signal-grid">
+                  {NOVACODEPRO_MONITORING_SIGNALS.map((signal) => (
+                    <div key={signal.label}><span>{signal.label}</span><strong>{signal.value}</strong></div>
+                  ))}
+                </div>
+              </article>
+              <article className="incident-timeline-panel">
+                <strong>Incident timeline and AI anomaly detection</strong>
+                {NOVACODEPRO_INCIDENT_TIMELINE.map((incident) => (
+                  <div key={`${incident.time}-${incident.event}`} className={`severity-${incident.severity}`}>
+                    <span>{incident.time}</span>
+                    <strong>{incident.event}</strong>
+                  </div>
+                ))}
+                <p>Deployment impact view: no customer outage detected; rollback remains ready.</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="engineering-journey-panel" aria-labelledby="release-journey-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Engineering Journey Demo</p>
+                <h3 id="release-journey-title">Watch a release become evidence-ready</h3>
+              </div>
+              <button
+                type="button"
+                className="button primary"
+                onClick={() => {
+                  setReleaseJourneyActive(true);
+                  setReleaseJourneyStep(0);
+                }}
+              >
+                Start Release Journey
+              </button>
+            </div>
+            <div className="release-outcome-row">
+              {releaseJourneyActive && releaseJourneyStep >= NOVACODEPRO_RELEASE_JOURNEY.length
+                ? "Release Verified · Security Passed · Deployment Approved · Monitoring Healthy · Evidence Ready"
+                : "Ready to run controlled release journey"}
+            </div>
+            <div className="release-journey-grid">
+              {NOVACODEPRO_RELEASE_JOURNEY.map((step, index) => (
+                <article
+                  key={step.step}
+                  className={`release-journey-step ${releaseJourneyStep >= index + 1 ? "release-journey-active" : ""}`}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step.step}</strong>
+                  <p>{step.result}</p>
+                  <em>{step.product}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="engineering-platform-section">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Evidence and Governance</p>
+                <h3>Every release produces reviewable evidence</h3>
+              </div>
+              <span className="surface-chip">Evidence-ready release · not full GA</span>
+            </div>
+            <div className="release-evidence-grid">
+              {NOVACODEPRO_RELEASE_EVIDENCE.map((item) => (
+                <article key={item}>
+                  <strong>{item}</strong>
+                  <p>Prepared for human review and audit trail export.</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="trust-aware-workflow engineering-release-workflow" aria-label="Trust-aware release workflow">
+            {NOVACODEPRO_RELEASE_WORKFLOW.map((step) => (
+              <span key={step}>{step}</span>
+            ))}
+          </section>
+
+          <section className="engineering-status-grid" aria-label="Engineering Platform status page">
+            {NOVACODEPRO_ENGINEERING_STATUS.map((status) => (
+              <article key={status.system} className="status-pill status-pill-active">
+                <span>{status.system}</span>
+                <strong>{status.state}</strong>
+                <em>Engineering Platform status</em>
+              </article>
             ))}
           </section>
         </section>

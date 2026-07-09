@@ -1433,6 +1433,321 @@ a {
   padding: 14px;
 }
 
+.codepro-engineering-platform,
+.engineering-platform-section,
+.engineering-command-shell,
+.engineering-journey-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.engineering-platform-section,
+.engineering-journey-panel {
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.engineering-command-shell {
+  border: 1px solid rgba(117, 214, 160, 0.38);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #07111f, #12273a 52%, #193147);
+  color: #ffffff;
+  padding: 20px;
+}
+
+.engineering-command-shell .eyebrow,
+.engineering-command-shell h3,
+.engineering-command-shell .codepro-command-header span {
+  color: #ffffff;
+}
+
+.engineering-command-grid,
+.engineering-pipeline-grid,
+.pipeline-stage-grid,
+.security-scan-grid,
+.deployment-control-grid,
+.deployment-environment-grid,
+.monitor-grid,
+.monitor-signal-grid,
+.release-journey-grid,
+.release-evidence-grid,
+.engineering-status-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.engineering-command-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.engineering-command-grid article {
+  display: grid;
+  gap: 5px;
+  min-height: 118px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+}
+
+.engineering-command-grid span,
+.engineering-command-grid em {
+  color: #b9c7d6;
+  font-size: 0.76rem;
+  font-style: normal;
+}
+
+.engineering-command-grid strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+}
+
+.engineering-pipeline-grid {
+  grid-template-columns: minmax(230px, 0.28fr) minmax(0, 0.48fr) minmax(250px, 0.24fr);
+}
+
+.pipeline-list,
+.pipeline-timeline-panel,
+.deployment-audit-panel,
+.monitor-service-list,
+.incident-timeline-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.pipeline-run-card,
+.deployment-env-card,
+.monitor-service-list button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 12px;
+  text-align: left;
+}
+
+.pipeline-run-card span,
+.deployment-env-card span,
+.monitor-service-list span,
+.pipeline-run-card em,
+.deployment-env-card em {
+  color: #59687b;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pipeline-run-active,
+.deployment-env-active,
+.monitor-service-active {
+  border-color: #1f7a55 !important;
+  box-shadow: 0 0 0 2px rgba(31, 122, 85, 0.12);
+}
+
+.pipeline-detail-panel,
+.pipeline-timeline-panel,
+.deployment-detail-panel,
+.deployment-audit-panel,
+.monitor-detail-panel,
+.incident-timeline-panel {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.pipeline-stage-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pipeline-stage,
+.security-scan-card,
+.release-journey-step,
+.release-evidence-grid article {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 12px;
+}
+
+.pipeline-stage p,
+.security-scan-card p,
+.release-journey-step p,
+.release-evidence-grid p,
+.incident-timeline-panel p {
+  margin: 0;
+  color: #59687b;
+  line-height: 1.45;
+}
+
+.pipeline-stage span,
+.security-scan-card span,
+.release-journey-step span {
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pipeline-state-passed,
+.timeline-state-passed,
+.deployment-env-active {
+  border-color: #8fd4ad !important;
+  background: #eef8f2 !important;
+}
+
+.pipeline-state-running,
+.timeline-state-running,
+.deployment-env-controlled {
+  border-color: #e2c36f !important;
+  background: #fff8e6 !important;
+}
+
+.pipeline-state-queued,
+.timeline-state-queued,
+.deployment-env-held {
+  border-color: #c7d4df !important;
+  background: #f7fafc !important;
+}
+
+.pipeline-state-failed,
+.severity-critical,
+.severity-high {
+  border-color: #e7a3a3 !important;
+  background: #fff1f1 !important;
+}
+
+.release-fact-row,
+.deployment-target-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.release-fact-row span,
+.deployment-target-row span {
+  border: 1px solid #c7d4df;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #35556e;
+  padding: 7px 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.pipeline-timeline-panel div,
+.deployment-audit-panel div,
+.incident-timeline-panel div {
+  display: grid;
+  gap: 3px;
+  border-left: 3px solid #1f7a55;
+  background: #f7fafc;
+  padding: 9px 12px;
+}
+
+.pipeline-timeline-panel span,
+.deployment-audit-panel span,
+.deployment-audit-panel em,
+.incident-timeline-panel span {
+  color: #59687b;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.security-scan-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.severity-low {
+  border-color: #8fd4ad !important;
+}
+
+.severity-medium {
+  border-color: #e2c36f !important;
+  background: #fff8e6 !important;
+}
+
+.deployment-control-grid,
+.monitor-grid {
+  grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.38fr) minmax(260px, 0.28fr);
+}
+
+.deployment-environment-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.monitor-signal-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
+.monitor-signal-grid div {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #e1e8ef;
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 10px;
+}
+
+.monitor-signal-grid span {
+  color: #59687b;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.release-outcome-row {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #f7fafc;
+  color: #172033;
+  padding: 12px;
+  font-weight: 900;
+}
+
+.release-journey-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.release-journey-step {
+  min-height: 150px;
+}
+
+.release-journey-active {
+  border-color: #1f7a55;
+  background: #e8f5ee;
+}
+
+.release-journey-step em {
+  color: #2f6f73;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.release-evidence-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.engineering-release-workflow {
+  margin-bottom: 22px;
+}
+
+.engineering-status-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
 .codepro-command-shell {
   display: grid;
   gap: 16px;
@@ -4605,6 +4920,17 @@ a {
   .download-card-grid,
   .mobile-companion-grid,
   .trust-aware-workflow,
+  .engineering-command-grid,
+  .engineering-pipeline-grid,
+  .pipeline-stage-grid,
+  .security-scan-grid,
+  .deployment-control-grid,
+  .deployment-environment-grid,
+  .monitor-grid,
+  .monitor-signal-grid,
+  .release-journey-grid,
+  .release-evidence-grid,
+  .engineering-status-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4698,6 +5024,17 @@ a {
   .download-card-grid,
   .mobile-companion-grid,
   .trust-aware-workflow,
+  .engineering-command-grid,
+  .engineering-pipeline-grid,
+  .pipeline-stage-grid,
+  .security-scan-grid,
+  .deployment-control-grid,
+  .deployment-environment-grid,
+  .monitor-grid,
+  .monitor-signal-grid,
+  .release-journey-grid,
+  .release-evidence-grid,
+  .engineering-status-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4813,6 +5150,17 @@ a {
   .download-card-grid,
   .mobile-companion-grid,
   .trust-aware-workflow,
+  .engineering-command-grid,
+  .engineering-pipeline-grid,
+  .pipeline-stage-grid,
+  .security-scan-grid,
+  .deployment-control-grid,
+  .deployment-environment-grid,
+  .monitor-grid,
+  .monitor-signal-grid,
+  .release-journey-grid,
+  .release-evidence-grid,
+  .engineering-status-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4979,6 +5327,17 @@ a {
   .download-card-grid,
   .mobile-companion-grid,
   .trust-aware-workflow,
+  .engineering-command-grid,
+  .engineering-pipeline-grid,
+  .pipeline-stage-grid,
+  .security-scan-grid,
+  .deployment-control-grid,
+  .deployment-environment-grid,
+  .monitor-grid,
+  .monitor-signal-grid,
+  .release-journey-grid,
+  .release-evidence-grid,
+  .engineering-status-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,

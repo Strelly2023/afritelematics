@@ -953,3 +953,83 @@ def test_operator_dashboard_exposes_novacodepro_developer_platform_phase() -> No
         ".trust-aware-workflow",
     ):
         assert required in styles
+
+
+def test_operator_dashboard_exposes_novacodepro_engineering_platform_phase() -> None:
+    source = read("src/App.jsx")
+    styles = read("src/styles.css")
+
+    for required in (
+        "NovaCodePro Engineering Platform Phase",
+        "Engineering Platform phase",
+        "Controlled deployment",
+        "Evidence-ready release",
+        "not full GA",
+        "NovaFlow CI/CD",
+        "NovaSecurity",
+        "NovaDeploy",
+        "NovaMonitor",
+        "NovaTelemetry",
+        "Pipeline dashboard",
+        "Security dashboard",
+        "Deployment control center",
+        "Observability dashboard",
+        "Engineering Command Center",
+        "Start Release Journey",
+        "Release Verified",
+        "Security Passed",
+        "Deployment Approved",
+        "Monitoring Healthy",
+        "Evidence Ready",
+        "Pipeline evidence",
+        "Security evidence",
+        "Deployment evidence",
+        "Monitoring evidence",
+        "Approval evidence",
+        "Audit trail",
+        "Commit",
+        "Pipeline",
+        "Security",
+        "Approval",
+        "Deploy",
+        "Monitor",
+        "SAST results",
+        "DAST results",
+        "Secret scanning",
+        "Dependency scanning",
+        "Container scanning",
+        "SBOM status",
+        "License compliance",
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "Azure",
+        "Google Cloud",
+        "on-premise",
+        "edge",
+    ):
+        assert required in source
+
+    for required in (
+        "selectedPipelineId",
+        "selectedDeploymentEnvironment",
+        "selectedMonitoringService",
+        "releaseJourneyActive",
+        "releaseJourneyStep",
+        "NOVACODEPRO_RELEASE_JOURNEY",
+        "NOVACODEPRO_RELEASE_EVIDENCE",
+    ):
+        assert required in source
+
+    for required in (
+        ".codepro-engineering-platform",
+        ".engineering-command-shell",
+        ".engineering-pipeline-grid",
+        ".security-scan-grid",
+        ".deployment-control-grid",
+        ".monitor-grid",
+        ".release-journey-grid",
+        ".release-evidence-grid",
+        ".engineering-status-grid",
+    ):
+        assert required in styles
