@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk",
+  "apk_url": "https://download.afritechnology.com/novaid/employee.apk",
   "apk_sha256": "05003f91164d7f8bed03bfee5dfe63adf33d14198b5eead4930142ecdc20f3eb",
   "required_capabilities": [
     "dashboard",
@@ -40,7 +40,7 @@
     "accessibility"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novaid-employee-v2026.1.0-release.apk",
+    "android_apk": "https://download.afritechnology.com/novaid/employee.apk",
     "android_apk_sha256": "05003f91164d7f8bed03bfee5dfe63adf33d14198b5eead4930142ecdc20f3eb"
   },
   "required_backend_contracts": [

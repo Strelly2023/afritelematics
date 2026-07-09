@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "http://192.168.20.14:8765/novaride-rider-v2026.1.0-release.apk",
+  "apk_url": "https://download.afritechnology.com/novaride/rider.apk",
   "apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35",
   "required_capabilities": [
     "rider_auth",
@@ -27,7 +27,7 @@
     "support_ticket"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novaride-rider-v2026.1.0-release.apk",
+    "android_apk": "https://download.afritechnology.com/novaride/rider.apk",
     "android_apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35"
   },
   "required_backend_contracts": [

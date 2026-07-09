@@ -120,9 +120,9 @@ Field team package:
 
 ```text
 local download page: http://127.0.0.1:8765/afriride-test-apps-download.html
-phone/LAN download page: http://192.168.20.14:8765/afriride-test-apps-download.html
-driver app link: http://192.168.20.14:8765/afriride-driver-live_pilot_002-release.apk
-rider app link: http://192.168.20.14:8765/afriride-rider-live_pilot_002-release.apk
+download page: https://download.afritechnology.com/afriride-test-apps-download.html
+driver app link: https://download.afritechnology.com/afriride/driver.apk
+rider app link: https://download.afritechnology.com/afriride/rider.apk
 operator dashboard URL
 driver IDs
 rider IDs

@@ -35,3 +35,4 @@ def test_public_pilot_apk_download_page_mentions_public_pilot() -> None:
     page = (ROOT / "docs/public_pilot/PUBLIC_PILOT_DOWNLOAD_PAGE.md").read_text(encoding="utf-8")
     assert "Public Pilot" in page
     assert "APK" in page
+    assert "https://download.afritechnology.com/" in page

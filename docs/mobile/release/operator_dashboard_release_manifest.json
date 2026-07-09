@@ -28,10 +28,10 @@
     "GET /public/architecture/anchors/mainnet-promotion-gate"
   ],
   "required_store_assets": [],
-  "apk_url": "http://192.168.20.14:8765/novaride-operator-v2026.1.0-release.apk",
+  "apk_url": "https://download.afritechnology.com/novaride/operator.apk",
   "apk_sha256": "a31b97809c80e1964c3862b75d592a4603e256e76b4030749d2f2bb5cbf7391b",
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novaride-operator-v2026.1.0-release.apk",
+    "android_apk": "https://download.afritechnology.com/novaride/operator.apk",
     "android_apk_sha256": "a31b97809c80e1964c3862b75d592a4603e256e76b4030749d2f2bb5cbf7391b"
   },
   "release_gates": [

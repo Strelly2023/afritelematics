@@ -17,7 +17,7 @@
       "version_code": 4,
       "apk_file": "novaride-rider-public-pilot-release.apk",
       "apk_sha256_file": "novaride-rider-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaride-rider-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaride/rider.apk",
       "apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35",
       "required_capabilities": ["registration", "ride_request", "trip_lifecycle", "sos", "receipt", "support"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -34,7 +34,7 @@
       "version_code": 3,
       "apk_file": "novaride-driver-public-pilot-release.apk",
       "apk_sha256_file": "novaride-driver-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaride-driver-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaride/driver.apk",
       "apk_sha256": "b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507",
       "required_capabilities": ["application", "driver_login", "accept", "start", "end", "earnings", "support"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -51,7 +51,7 @@
       "version_code": 1,
       "apk_file": "novaride-fleet-public-pilot-release.apk",
       "apk_sha256_file": "novaride-fleet-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaride-fleet-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaride/fleet.apk",
       "apk_sha256": "0c0592eac2d5b331ab2f3b3a077a296bb60ca8583e1113068acf42c401307d4d",
       "required_capabilities": ["fleet_dashboard", "vehicle_management", "driver_assignment", "compliance", "reports"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -68,7 +68,7 @@
       "version_code": 3,
       "apk_file": "novaride-operator-public-pilot-release.apk",
       "apk_sha256_file": "novaride-operator-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaride-operator-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaride/operator.apk",
       "apk_sha256": "a31b97809c80e1964c3862b75d592a4603e256e76b4030749d2f2bb5cbf7391b",
       "required_capabilities": ["overview", "fleet", "drivers", "trips", "earnings", "compliance", "support", "settings"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -85,7 +85,7 @@
       "version_code": 3,
       "apk_file": "novapay-consumer-public-pilot-release.apk",
       "apk_sha256_file": "novapay-consumer-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novapay-consumer-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novapay/consumer.apk",
       "apk_sha256": "f7a8e502f39c369d569deaa8cac1c51d52e89666a747a62af9d2fa13e4c33f85",
       "required_capabilities": ["wallet", "send", "receive", "qr", "merchant_pay", "refunds", "disputes", "history"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -102,7 +102,7 @@
       "version_code": 3,
       "apk_file": "novapay-agent-public-pilot-release.apk",
       "apk_sha256_file": "novapay-agent-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novapay-agent-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novapay/agent.apk",
       "apk_sha256": "e1d86c6bbca896cab6452d43d1297d47e302a9aa9b98497624831a83d7696b42",
       "required_capabilities": ["cash_in", "cash_out", "customers", "transactions", "float", "support", "profile"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -119,7 +119,7 @@
       "version_code": 3,
       "apk_file": "novapay-merchant-public-pilot-release.apk",
       "apk_sha256_file": "novapay-merchant-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novapay-merchant-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novapay/merchant.apk",
       "apk_sha256": "86549490c5c2f69ca50c7e467e7b9751e430453319fa282517a1104543f22aa2",
       "required_capabilities": ["accept_payment", "sales", "refunds", "settlements", "products", "profile"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -136,7 +136,7 @@
       "version_code": 3,
       "apk_file": "novapay-business-public-pilot-release.apk",
       "apk_sha256_file": "novapay-business-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novapay-business-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novapay/business.apk",
       "apk_sha256": "51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6",
       "required_capabilities": ["wallets", "payments", "approvals", "invoices", "payroll", "reports", "settings"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -153,7 +153,7 @@
       "version_code": 1,
       "apk_file": "novaid-personal-public-pilot-release.apk",
       "apk_sha256_file": "novaid-personal-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaid-personal-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaid/personal.apk",
       "apk_sha256": "249ac445c91b463d9b148d892a49057b0e97a045b912d4c8677e681b8656d21c",
       "required_capabilities": ["verify", "documents", "security", "activity", "profile", "consent", "digital_id"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -170,7 +170,7 @@
       "version_code": 1,
       "apk_file": "novaid-business-public-pilot-release.apk",
       "apk_sha256_file": "novaid-business-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaid-business-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaid/business.apk",
       "apk_sha256": "b64d06066aa8bfe66063d207242d0255dea18509d5fcf48f7d202e4a00f78ec8",
       "required_capabilities": ["business_verify", "representatives", "documents", "access", "audit", "settings"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -187,7 +187,7 @@
       "version_code": 1,
       "apk_file": "novaid-employee-public-pilot-release.apk",
       "apk_sha256_file": "novaid-employee-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaid-employee-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaid/employee.apk",
       "apk_sha256": "49941dd547fafde569ebbe50094730296686057403ea8ba823c49089fb1741ba",
       "required_capabilities": ["employment", "access", "tasks", "security", "profile"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -204,7 +204,7 @@
       "version_code": 1,
       "apk_file": "novaid-partner-public-pilot-release.apk",
       "apk_sha256_file": "novaid-partner-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaid-partner-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaid/partner.apk",
       "apk_sha256": "bf8434bde0346aebae7adad7a045e20370f3d971828c0deea194c4ba642c538b",
       "required_capabilities": ["partner_verify", "integrations", "credentials", "compliance", "support", "settings"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
@@ -221,7 +221,7 @@
       "version_code": 1,
       "apk_file": "novaid-inspector-public-pilot-release.apk",
       "apk_sha256_file": "novaid-inspector-public-pilot-release.apk.sha256",
-      "apk_url": "http://192.168.20.14:8765/novaid-inspector-public-pilot-release.apk",
+      "apk_url": "https://download.afritechnology.com/novaid/inspector.apk",
       "apk_sha256": "e727e3eba2de1d11fd384affecec616abb3520c6f5442c3e1cc905e7021cbd36",
       "required_capabilities": ["dashboard", "inspections", "cases", "evidence", "reports", "security", "profile"],
       "public_claims": ["GA false", "public launch false", "production ready false"]

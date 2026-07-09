@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "http://192.168.20.14:8765/novaid-personal-v2026.1.0-release.apk",
+  "apk_url": "https://download.afritechnology.com/novaid/personal.apk",
   "apk_sha256": "0e4a77944bab93658ec2881204b03440acc01a2236fc51105231294fe7b31443",
   "required_capabilities": [
     "home",
@@ -41,7 +41,7 @@
     "accessibility"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novaid-personal-v2026.1.0-release.apk",
+    "android_apk": "https://download.afritechnology.com/novaid/personal.apk",
     "android_apk_sha256": "0e4a77944bab93658ec2881204b03440acc01a2236fc51105231294fe7b31443"
   },
   "required_backend_contracts": [

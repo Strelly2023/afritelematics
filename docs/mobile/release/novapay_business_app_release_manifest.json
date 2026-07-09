@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "http://192.168.20.14:8765/novapay-business-v2026.1.0-release.apk",
+  "apk_url": "https://download.afritechnology.com/novapay/business.apk",
   "apk_sha256": "51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6",
   "required_capabilities": [
     "overview",
@@ -35,7 +35,7 @@
     "webhooks"
   ],
   "release_artifacts": {
-    "android_apk": "http://192.168.20.14:8765/novapay-business-v2026.1.0-release.apk",
+    "android_apk": "https://download.afritechnology.com/novapay/business.apk",
     "android_apk_sha256": "51b1cabb6552d618049a91c1954dc6edd914aac812086dd4640063c60e107ee6"
   },
   "required_backend_contracts": [
