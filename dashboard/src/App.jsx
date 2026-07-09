@@ -1570,7 +1570,7 @@ const NOVATECH_PLATFORM_NAV = [
   { label: "Journey", href: "#trust-journey", detail: "Live proof flow" },
   { label: "Score", href: "#trust-score", detail: "Evidence score" },
   { label: "NovaCodePro", href: "#novacodepro", detail: "AI engineering" },
-  { label: "Command Center", href: "/novacodepro/os#novacodepro-os", detail: "Engineering OS" },
+  { label: "Command Center", href: "/novacodepro/os#novacodepro-os", detail: "Developer Platform" },
   { label: "Global", href: "#global", detail: "Expansion map" },
   { label: "Pilots", href: "#pilots", detail: "Field evidence" },
   { label: "Trust Center", href: "#trust-center", detail: "Security + governance" },
@@ -1822,6 +1822,263 @@ const NOVACODEPRO_TARGET_USERS = [
   "Platform engineers",
   "Government and regulated organizations",
   "Universities and research institutions",
+];
+
+const NOVACODEPRO_DEV_COMMAND_METRICS = [
+  { label: "Active Workspaces", value: "38", detail: "NovaCloud IDE sessions" },
+  { label: "Repositories", value: "126", detail: "Policy-linked projects" },
+  { label: "Pull Requests", value: "41", detail: "Awaiting review" },
+  { label: "AI Suggestions", value: "2,418", detail: "Human review required" },
+  { label: "Docs Pages", value: "312", detail: "Versioned developer docs" },
+  { label: "Templates", value: "27", detail: "Starter kits and policies" },
+];
+
+const NOVACODEPRO_DEV_STATUS = [
+  { label: "IDE Operational", value: "Cloud workspaces healthy", tone: "active" },
+  { label: "Git Operational", value: "Repository controls online", tone: "active" },
+  { label: "AI Operational", value: "Proposal mode only", tone: "review" },
+  { label: "Docs Operational", value: "Portal indexed", tone: "active" },
+];
+
+const NOVACODEPRO_WORKSPACE_TEMPLATES = [
+  { name: "React", stack: "Vite + TypeScript", runtime: "Node 20", starter: "web-console" },
+  { name: "Django", stack: "Django + PostgreSQL", runtime: "Python 3.12", starter: "service-admin" },
+  { name: "FastAPI", stack: "FastAPI + OpenAPI", runtime: "Python 3.12", starter: "api-backend" },
+  { name: "Flutter", stack: "Flutter + Dart", runtime: "Android/iOS", starter: "mobile-companion" },
+  { name: "Node.js", stack: "Express + Workers", runtime: "Node 20", starter: "event-service" },
+  { name: "Python", stack: "CLI + Tests", runtime: "Python 3.12", starter: "automation-kit" },
+];
+
+const NOVACODEPRO_WORKSPACES = [
+  {
+    id: "mobility-api",
+    name: "NovaRide Mobility API",
+    template: "FastAPI",
+    status: "Active",
+    branch: "feature/dispatch-contract",
+    lastRun: "tests passing",
+    files: ["app/main.py", "app/dispatch.py", "tests/test_dispatch.py", "docs/dispatch.md"],
+  },
+  {
+    id: "wallet-console",
+    name: "NovaPay Wallet Console",
+    template: "React",
+    status: "Starting",
+    branch: "feature/wallet-review",
+    lastRun: "container warming",
+    files: ["src/App.tsx", "src/wallet.ts", "src/routes.ts", "README.md"],
+  },
+  {
+    id: "trust-verifier",
+    name: "NovaTrust Verifier",
+    template: "Python",
+    status: "Paused",
+    branch: "main",
+    lastRun: "evidence fixture cached",
+    files: ["verifier.py", "proofs/", "tests/test_verifier.py", "ADR-001.md"],
+  },
+  {
+    id: "mobile-review",
+    name: "Mobile Review Companion",
+    template: "Flutter",
+    status: "Failed",
+    branch: "fix/build-monitoring",
+    lastRun: "dependency policy failed",
+    files: ["lib/main.dart", "lib/reviews.dart", "android/", "ios/"],
+  },
+];
+
+const NOVACODEPRO_WORKSPACE_FLOW = [
+  "Choose template",
+  "Name workspace",
+  "Attach repo policy",
+  "Start container",
+  "Evidence ready",
+];
+
+const NOVACODEPRO_REPOSITORIES = [
+  {
+    id: "novaride-dispatch",
+    name: "novaride-dispatch",
+    language: "Python",
+    branch: "main",
+    prs: 8,
+    protection: "Required reviews + status checks",
+    signed: "98%",
+    approval: "2 reviewers",
+    badges: ["Protected", "Signed commits", "SAST", "Evidence linked"],
+  },
+  {
+    id: "novapay-wallet",
+    name: "novapay-wallet",
+    language: "TypeScript",
+    branch: "release/2026.1",
+    prs: 5,
+    protection: "Linear history + owner review",
+    signed: "100%",
+    approval: "Finance + security",
+    badges: ["Protected", "SBOM", "Policy gate", "Docs required"],
+  },
+  {
+    id: "novaid-service",
+    name: "novaid-service",
+    language: "Python",
+    branch: "main",
+    prs: 3,
+    protection: "Identity owner approval",
+    signed: "100%",
+    approval: "Identity council",
+    badges: ["Protected", "PII review", "Threat model", "Evidence linked"],
+  },
+  {
+    id: "novatrust-verifier",
+    name: "novatrust-verifier",
+    language: "Go",
+    branch: "main",
+    prs: 2,
+    protection: "Proof owner review",
+    signed: "99%",
+    approval: "Governance review",
+    badges: ["Protected", "Replay tests", "Signed commits", "Audit trail"],
+  },
+];
+
+const NOVACODEPRO_PULL_REQUESTS = [
+  { id: "PR-418", repo: "novaride-dispatch", title: "Add dispatch contract fixtures", status: "Review", reviewers: "2/3", checks: "12 passing" },
+  { id: "PR-219", repo: "novapay-wallet", title: "Wallet policy badge surface", status: "Docs required", reviewers: "1/2", checks: "9 passing" },
+  { id: "PR-144", repo: "novaid-service", title: "Device trust migration", status: "Security review", reviewers: "2/2", checks: "11 passing" },
+  { id: "PR-088", repo: "novatrust-verifier", title: "Evidence packet hash display", status: "Ready", reviewers: "3/3", checks: "14 passing" },
+];
+
+const NOVACODEPRO_AI_CODING_TABS = [
+  {
+    id: "generate",
+    label: "Code generation",
+    prompt: "Generate a FastAPI route for dispatch policy review with typed response models.",
+    output: "Creates route, schemas, tests, and OpenAPI notes as a proposal.",
+  },
+  {
+    id: "refactor",
+    label: "Refactoring",
+    prompt: "Refactor this service into repository, policy, and transport layers.",
+    output: "Suggests a layered diff and highlights migration risk.",
+  },
+  {
+    id: "tests",
+    label: "Test generation",
+    prompt: "Create deterministic tests for branch protection and signed commit checks.",
+    output: "Adds unit and integration test proposals with edge cases.",
+  },
+  {
+    id: "docs",
+    label: "Documentation",
+    prompt: "Write Quick Start docs for the NovaRide starter kit.",
+    output: "Produces tutorial steps, API notes, and governance caveats.",
+  },
+  {
+    id: "security",
+    label: "Security suggestions",
+    prompt: "Explain the risk in this dependency upgrade and suggest mitigations.",
+    output: "Summarizes vulnerability, blast radius, and approval path.",
+  },
+];
+
+const NOVACODEPRO_AI_ACTIVITY = [
+  "Explained failed dependency policy for mobile-review",
+  "Generated dispatch contract tests for PR-418",
+  "Suggested docs additions for wallet policy badges",
+  "Flagged missing reviewer approval on novaid-service",
+];
+
+const NOVACODEPRO_DOCS_CATEGORIES = [
+  {
+    id: "quick-start",
+    label: "Quick Start",
+    summary: "Create a workspace, choose a starter kit, connect a repository, and run checks.",
+    links: ["Create first workspace", "Connect Git", "Run validation"],
+  },
+  {
+    id: "api-reference",
+    label: "API Reference",
+    summary: "Versioned APIs for workspace, repositories, templates, docs, AI proposals, and evidence metadata.",
+    links: ["Workspace API", "Repository API", "Evidence API"],
+  },
+  {
+    id: "sdks",
+    label: "SDKs",
+    summary: "SDKs for JavaScript, Python, mobile clients, and backend automation.",
+    links: ["JavaScript SDK", "Python SDK", "Mobile SDK"],
+  },
+  {
+    id: "tutorials",
+    label: "Tutorials",
+    summary: "Guided build paths for NovaRide, NovaPay, NovaID, and NovaTrust developer workflows.",
+    links: ["Build NovaRide app", "Create verifier", "Approve deployment"],
+  },
+  {
+    id: "architecture",
+    label: "Architecture",
+    summary: "Reference architecture, workspace lifecycle, repository policies, and trust-aware delivery patterns.",
+    links: ["Platform layers", "Workspace lifecycle", "Evidence flow"],
+  },
+  {
+    id: "adrs",
+    label: "ADRs",
+    summary: "Decision records that connect design intent to code, review, docs, and evidence.",
+    links: ["ADR template", "Decision lifecycle", "Review checklist"],
+  },
+  {
+    id: "governance",
+    label: "Governance",
+    summary: "Human approval, policy badges, review gates, traceability, and evidence readiness.",
+    links: ["Policy gates", "Reviewer roles", "Evidence packet"],
+  },
+  {
+    id: "security",
+    label: "Security",
+    summary: "Signed commits, branch protection, dependency scanning, secret checks, and security review.",
+    links: ["Signed commits", "SAST basics", "Secret detection"],
+  },
+  {
+    id: "cicd",
+    label: "CI/CD Basics",
+    summary: "Build, test, scan, review, document, and prepare evidence without autonomous deployment authority.",
+    links: ["Pipeline basics", "Status checks", "Approval gates"],
+  },
+];
+
+const NOVACODEPRO_TEMPLATE_CATALOG = [
+  { name: "NovaRide App", stack: "React + FastAPI", runtime: "Web + Python", target: "Mobility cloud", governance: "Policy badges", trust: "Evidence flow" },
+  { name: "NovaPay App", stack: "TypeScript + Node.js", runtime: "Web + Workers", target: "Payments sandbox", governance: "Finance review", trust: "Receipt-ready" },
+  { name: "NovaID Service", stack: "Python + PostgreSQL", runtime: "API service", target: "Identity tenant", governance: "PII review", trust: "Device evidence" },
+  { name: "NovaTrust Verifier", stack: "Go + CLI", runtime: "Verifier runtime", target: "Audit tooling", governance: "Replay review", trust: "Proof-ready" },
+  { name: "SaaS Admin Portal", stack: "React + Node.js", runtime: "Web app", target: "Enterprise tenant", governance: "RBAC policy", trust: "Audit-ready" },
+  { name: "Mobile App", stack: "Flutter", runtime: "iOS + Android", target: "Companion app", governance: "Release review", trust: "Device-bound" },
+  { name: "API Backend", stack: "FastAPI", runtime: "Python service", target: "Kubernetes", governance: "OpenAPI review", trust: "Trace-ready" },
+];
+
+const NOVACODEPRO_DESKTOP_DOWNLOADS = [
+  { platform: "macOS", version: "2026.1", channel: "Developer Platform Preview", compatibility: "Apple Silicon + Intel" },
+  { platform: "Windows", version: "2026.1", channel: "Developer Platform Preview", compatibility: "Windows 11 x64" },
+  { platform: "Linux", version: "2026.1", channel: "Developer Platform Preview", compatibility: "Ubuntu, Debian, Fedora" },
+];
+
+const NOVACODEPRO_MOBILE_COMPANION = [
+  { title: "Code review", detail: "Review diffs, approvals, policy badges, and reviewer status." },
+  { title: "Build monitoring", detail: "Track builds, tests, scans, and failed checks from mobile." },
+  { title: "Deployment approval", detail: "Approve governed releases after evidence and review are visible." },
+  { title: "Alerts", detail: "Receive pipeline, security, docs, and evidence readiness alerts." },
+  { title: "AI chat", detail: "Ask for summaries, bug explanations, and next-step recommendations." },
+];
+
+const NOVACODEPRO_TRUST_WORKFLOW = [
+  "Create Workspace",
+  "Generate Code",
+  "Commit",
+  "Pull Request",
+  "Review",
+  "Docs",
+  "Evidence Ready",
 ];
 
 const NOVACODEPRO_APPS = [
@@ -6549,6 +6806,32 @@ export default function OperatorDashboard() {
   const [repositoryJourneyActive, setRepositoryJourneyActive] = useState(false);
   const [repositoryJourneyStep, setRepositoryJourneyStep] = useState(0);
   const [activeCodeproAgent, setActiveCodeproAgent] = useState(NOVACODEPRO_AI_STUDIO[0].name);
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(NOVACODEPRO_WORKSPACES[0].id);
+  const [selectedWorkspaceTemplate, setSelectedWorkspaceTemplate] = useState(NOVACODEPRO_WORKSPACE_TEMPLATES[0].name);
+  const [workspaceFlowStep, setWorkspaceFlowStep] = useState(0);
+  const [selectedRepositoryId, setSelectedRepositoryId] = useState(NOVACODEPRO_REPOSITORIES[0].id);
+  const [selectedPullRequestId, setSelectedPullRequestId] = useState(NOVACODEPRO_PULL_REQUESTS[0].id);
+  const [activeAiCodingTab, setActiveAiCodingTab] = useState(NOVACODEPRO_AI_CODING_TABS[0].id);
+  const [activeDocsCategory, setActiveDocsCategory] = useState(NOVACODEPRO_DOCS_CATEGORIES[0].id);
+
+  const selectedWorkspace =
+    NOVACODEPRO_WORKSPACES.find((workspace) => workspace.id === selectedWorkspaceId) ||
+    NOVACODEPRO_WORKSPACES[0];
+  const selectedTemplate =
+    NOVACODEPRO_WORKSPACE_TEMPLATES.find((template) => template.name === selectedWorkspaceTemplate) ||
+    NOVACODEPRO_WORKSPACE_TEMPLATES[0];
+  const selectedRepository =
+    NOVACODEPRO_REPOSITORIES.find((repository) => repository.id === selectedRepositoryId) ||
+    NOVACODEPRO_REPOSITORIES[0];
+  const selectedPullRequest =
+    NOVACODEPRO_PULL_REQUESTS.find((pullRequest) => pullRequest.id === selectedPullRequestId) ||
+    NOVACODEPRO_PULL_REQUESTS[0];
+  const activeAiCodingMode =
+    NOVACODEPRO_AI_CODING_TABS.find((tab) => tab.id === activeAiCodingTab) ||
+    NOVACODEPRO_AI_CODING_TABS[0];
+  const activeDocsContent =
+    NOVACODEPRO_DOCS_CATEGORIES.find((category) => category.id === activeDocsCategory) ||
+    NOVACODEPRO_DOCS_CATEGORIES[0];
 
   useEffect(() => {
     fetchOperatorState();
@@ -7878,12 +8161,13 @@ export default function OperatorDashboard() {
       <section className="section-band novacodepro-band" id="novacodepro">
         <div className="novacodepro-hero">
           <div>
-            <p className="eyebrow">NovaCodePro X</p>
-            <h2>The World's First Trusted Engineering Operating System.</h2>
+            <p className="eyebrow">NovaCodePro Developer Platform Phase</p>
+            <h2>Build. Govern. Deploy. Verify.</h2>
             <p>
-              NovaCodePro X is the engineering system of record for
-              architecture, source code, AI, governance, evidence, deployment,
-              and compliance across NovaTech and regulated enterprise teams.
+              NovaCodePro is the trusted engineering developer platform for
+              IDEs, repositories, documentation, AI coding, and evidence-aware
+              workflows. This phase establishes the developer foundation without
+              claiming full Engineering OS production readiness.
             </p>
             <div className="chip-row">
               {NOVACODEPRO_TARGET_USERS.map((user) => (
@@ -7893,8 +8177,8 @@ export default function OperatorDashboard() {
           </div>
           <div className="novacodepro-command-panel">
             <div className="record-card-header">
-              <strong>Engineering Control Plane</strong>
-              <span>governed delivery</span>
+              <strong>Trusted Engineering</strong>
+              <span>developer platform readiness</span>
             </div>
             <div className="codepro-flow">
               {["Build", "Govern", "Deploy", "Verify"].map((step) => (
@@ -7903,16 +8187,330 @@ export default function OperatorDashboard() {
             </div>
             <pre>{`nova codepro run --workspace mobility-api
   checks: ai_review, sast, tests, replay
-  deploy: controlled
-  evidence: generated`}</pre>
+  deploy: approval_required
+  evidence: prepared`}</pre>
           </div>
         </div>
+
+        <section className="codepro-developer-platform" id="novacodepro-developer-platform">
+          <SectionIntro
+            eyebrow="Trusted Engineering"
+            title="Developer Platform phase for IDEs, repos, docs, and AI coding"
+            question="NovaCodePro now exposes the developer foundation under the broader roadmap: cloud workspaces, native IDE, mobile review, repositories, AI coding, documentation, templates, and evidence-ready workflow."
+          />
+
+          <div className="codepro-dev-command">
+            <div className="codepro-command-header">
+              <div>
+                <p className="eyebrow">Developer Command Center</p>
+                <h3>Build. Govern. Deploy. Verify.</h3>
+              </div>
+              <span>Developer Platform Phase</span>
+            </div>
+            <div className="codepro-dev-metrics">
+              {NOVACODEPRO_DEV_COMMAND_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <em>{metric.detail}</em>
+                </article>
+              ))}
+            </div>
+            <div className="codepro-dev-status-grid">
+              {NOVACODEPRO_DEV_STATUS.map((status) => (
+                <article key={status.label} className={`codepro-widget codepro-widget-${status.tone}`}>
+                  <span>{status.label}</span>
+                  <strong>{status.value}</strong>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <section className="codepro-dev-section" aria-labelledby="novacloud-ide-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaCloud IDE</p>
+                <h3 id="novacloud-ide-title">Browser workspace console</h3>
+              </div>
+              <button
+                type="button"
+                className="button primary"
+                onClick={() => setWorkspaceFlowStep((step) => (step + 1) % NOVACODEPRO_WORKSPACE_FLOW.length)}
+              >
+                Create Workspace
+              </button>
+            </div>
+            <div className="workspace-template-row" role="list" aria-label="Workspace templates">
+              {NOVACODEPRO_WORKSPACE_TEMPLATES.map((template) => (
+                <button
+                  key={template.name}
+                  type="button"
+                  className={selectedWorkspaceTemplate === template.name ? "workspace-template-active" : ""}
+                  onClick={() => setSelectedWorkspaceTemplate(template.name)}
+                >
+                  <strong>{template.name}</strong>
+                  <span>{template.stack}</span>
+                </button>
+              ))}
+            </div>
+            <div className="workspace-flow-row">
+              {NOVACODEPRO_WORKSPACE_FLOW.map((step, index) => (
+                <span key={step} className={workspaceFlowStep >= index ? "workspace-flow-active" : ""}>
+                  {step}
+                </span>
+              ))}
+            </div>
+            <div className="novacloud-ide-grid">
+              <div className="workspace-card-list">
+                {NOVACODEPRO_WORKSPACES.map((workspace) => (
+                  <button
+                    key={workspace.id}
+                    type="button"
+                    className={`workspace-card workspace-status-${workspace.status.toLowerCase()} ${selectedWorkspaceId === workspace.id ? "workspace-card-active" : ""}`}
+                    onClick={() => setSelectedWorkspaceId(workspace.id)}
+                  >
+                    <span>{workspace.status}</span>
+                    <strong>{workspace.name}</strong>
+                    <em>{workspace.template} · {workspace.branch}</em>
+                  </button>
+                ))}
+              </div>
+              <article className="ide-surface">
+                <div className="ide-topbar">
+                  <strong>{selectedWorkspace.name}</strong>
+                  <span>{selectedWorkspace.status}</span>
+                </div>
+                <div className="ide-body">
+                  <aside className="project-explorer" aria-label="Project explorer">
+                    <strong>Explorer</strong>
+                    {selectedWorkspace.files.map((file) => (
+                      <span key={file}>{file}</span>
+                    ))}
+                  </aside>
+                  <pre className="editor-preview">{`// ${selectedTemplate.starter}
+export const platform = "NovaCodePro";
+export const template = "${selectedTemplate.name}";
+export const workflow = "Build. Govern. Deploy. Verify.";
+
+function prepareEvidence(change) {
+  return {
+    status: "proposal_only",
+    checks: ["tests", "security", "docs", "review"],
+    evidence: "ready_for_human_approval",
+  };
+}`}</pre>
+                  <pre className="terminal-panel">{`$ nova workspace start ${selectedWorkspace.id}
+template: ${selectedTemplate.stack}
+runtime: ${selectedTemplate.runtime}
+status: ${selectedWorkspace.status.toLowerCase()}
+last_run: ${selectedWorkspace.lastRun}`}</pre>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="codepro-dev-section" aria-labelledby="novagit-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaGit</p>
+                <h3 id="novagit-title">Repository governance dashboard</h3>
+              </div>
+              <span className="surface-chip">Signed commits · Branch protection · Reviewer approval</span>
+            </div>
+            <div className="novagit-grid">
+              <div className="repository-list" role="list" aria-label="Repositories">
+                {NOVACODEPRO_REPOSITORIES.map((repository) => (
+                  <button
+                    key={repository.id}
+                    type="button"
+                    className={selectedRepositoryId === repository.id ? "repository-active" : ""}
+                    onClick={() => setSelectedRepositoryId(repository.id)}
+                  >
+                    <strong>{repository.name}</strong>
+                    <span>{repository.language} · {repository.prs} PRs</span>
+                  </button>
+                ))}
+              </div>
+              <article className="repository-detail">
+                <div className="record-card-header">
+                  <strong>{selectedRepository.name}</strong>
+                  <span>{selectedRepository.branch}</span>
+                </div>
+                <div className="repo-policy-grid">
+                  <div><span>Branch protection</span><strong>{selectedRepository.protection}</strong></div>
+                  <div><span>Signed commits</span><strong>{selectedRepository.signed}</strong></div>
+                  <div><span>Reviewer approval</span><strong>{selectedRepository.approval}</strong></div>
+                </div>
+                <div className="chip-row">
+                  {selectedRepository.badges.map((badge) => (
+                    <span key={badge} className="surface-chip">{badge}</span>
+                  ))}
+                </div>
+              </article>
+              <article className="pull-request-panel">
+                <strong>Pull request queue</strong>
+                {NOVACODEPRO_PULL_REQUESTS.map((pullRequest) => (
+                  <button
+                    key={pullRequest.id}
+                    type="button"
+                    className={selectedPullRequestId === pullRequest.id ? "pull-request-active" : ""}
+                    onClick={() => setSelectedPullRequestId(pullRequest.id)}
+                  >
+                    <span>{pullRequest.id} · {pullRequest.repo}</span>
+                    <strong>{pullRequest.title}</strong>
+                    <em>{pullRequest.status} · {pullRequest.reviewers} · {pullRequest.checks}</em>
+                  </button>
+                ))}
+                <div className="reason-chip reason-chip-success">
+                  Selected: {selectedPullRequest.id} remains human-reviewed before merge.
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="codepro-dev-split">
+            <article className="codepro-dev-section">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">NovaAI Coding</p>
+                  <h3>Assistant panel</h3>
+                </div>
+                <span className="surface-chip">proposal mode</span>
+              </div>
+              <div className="ai-tab-row" role="tablist" aria-label="AI coding modes">
+                {NOVACODEPRO_AI_CODING_TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeAiCodingTab === tab.id}
+                    className={activeAiCodingTab === tab.id ? "ai-tab-active" : ""}
+                    onClick={() => setActiveAiCodingTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div className="ai-assistant-panel">
+                <span>Prompt example</span>
+                <strong>{activeAiCodingMode.prompt}</strong>
+                <p>{activeAiCodingMode.output}</p>
+              </div>
+              <div className="ai-activity-timeline">
+                {NOVACODEPRO_AI_ACTIVITY.map((activity) => (
+                  <div key={activity}>{activity}</div>
+                ))}
+              </div>
+            </article>
+
+            <article className="codepro-dev-section">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">NovaDocs</p>
+                  <h3>Developer portal</h3>
+                </div>
+                <span className="surface-chip">docs.novacodepro.com</span>
+              </div>
+              <div className="docs-selector-row" role="tablist" aria-label="Documentation categories">
+                {NOVACODEPRO_DOCS_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeDocsCategory === category.id}
+                    className={activeDocsCategory === category.id ? "docs-category-active" : ""}
+                    onClick={() => setActiveDocsCategory(category.id)}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+              <div className="docs-content-card">
+                <strong>{activeDocsContent.label}</strong>
+                <p>{activeDocsContent.summary}</p>
+                <div className="chip-row">
+                  {activeDocsContent.links.map((link) => (
+                    <span key={link} className="surface-chip">{link}</span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <section className="codepro-dev-section">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Developer Templates</p>
+                <h3>Starter kits for trusted engineering</h3>
+              </div>
+              <span className="surface-chip">governance and trust posture visible</span>
+            </div>
+            <div className="template-catalog-grid">
+              {NOVACODEPRO_TEMPLATE_CATALOG.map((template) => (
+                <article key={template.name} className="template-card">
+                  <span>{template.target}</span>
+                  <strong>{template.name}</strong>
+                  <p>{template.stack} · {template.runtime}</p>
+                  <div className="chip-row">
+                    <span className="surface-chip">{template.governance}</span>
+                    <span className="surface-chip">{template.trust}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="codepro-dev-split">
+            <article className="codepro-dev-section">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">NovaCodePro Desktop</p>
+                  <h3>Native IDE downloads</h3>
+                </div>
+                <span className="surface-chip">Git · terminal · debugger · extensions · local AI · remote dev</span>
+              </div>
+              <div className="download-card-grid">
+                {NOVACODEPRO_DESKTOP_DOWNLOADS.map((download) => (
+                  <article key={download.platform} className="download-card">
+                    <span>{download.channel}</span>
+                    <strong>{download.platform}</strong>
+                    <p>Version {download.version} · {download.compatibility}</p>
+                  </article>
+                ))}
+              </div>
+            </article>
+
+            <article className="codepro-dev-section">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">NovaCodePro Mobile</p>
+                  <h3>Companion app workflow</h3>
+                </div>
+                <span className="surface-chip">review and approve from mobile</span>
+              </div>
+              <div className="mobile-companion-grid">
+                {NOVACODEPRO_MOBILE_COMPANION.map((feature) => (
+                  <article key={feature.title}>
+                    <strong>{feature.title}</strong>
+                    <p>{feature.detail}</p>
+                  </article>
+                ))}
+              </div>
+            </article>
+          </section>
+
+          <section className="trust-aware-workflow" aria-label="Trust-aware developer workflow">
+            {NOVACODEPRO_TRUST_WORKFLOW.map((step) => (
+              <span key={step}>{step}</span>
+            ))}
+          </section>
+        </section>
 
         <section className="codepro-command-center" id="novacodepro-os">
           <SectionIntro
             eyebrow="NovaCodePro Command Center"
-            title="Mission Control for trusted engineering"
-            question="/novacodepro/os gives enterprise teams a living operating view across repositories, pipelines, AI, deployments, evidence, marketplace, and security."
+            title="Mission control for the developer platform roadmap"
+            question="/novacodepro/os shows how the Developer Platform foundation can expand into broader engineering operations over time, while this release remains bounded to developer platform readiness."
           />
           <div className="codepro-command-shell">
             <div className="codepro-command-header">
@@ -7942,13 +8540,13 @@ export default function OperatorDashboard() {
         </section>
 
         <SectionIntro
-          eyebrow="Operating System Architecture"
-          title="From developer product to full engineering OS"
-          question="NovaCodePro X converges source control, cloud workspaces, AI engineering, CI/CD, deployments, monitoring, security, documentation, marketplace, and governance."
+          eyebrow="Platform Architecture Roadmap"
+          title="From developer platform foundation to governed engineering operations"
+          question="NovaCodePro connects source control, cloud workspaces, AI coding, CI/CD, documentation, marketplace, and governance as a roadmap without claiming full production Engineering OS readiness."
         />
         <div className="codepro-os-map">
           <div className="codepro-os-core">
-            <span>Engineering OS</span>
+            <span>Developer Platform</span>
             <strong>NovaCodePro</strong>
           </div>
           {NOVACODEPRO_X_MODULES.map((module) => (

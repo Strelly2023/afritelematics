@@ -1074,6 +1074,365 @@ a {
   margin: 10px 0 28px;
 }
 
+.codepro-developer-platform,
+.codepro-dev-section,
+.codepro-dev-command {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.codepro-dev-command,
+.codepro-dev-section {
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.codepro-dev-command {
+  background:
+    linear-gradient(135deg, #07111f, #13293d 58%, #173246);
+  color: #ffffff;
+}
+
+.codepro-dev-command .eyebrow,
+.codepro-dev-command h3,
+.codepro-dev-command .codepro-command-header span {
+  color: #ffffff;
+}
+
+.codepro-dev-metrics,
+.codepro-dev-status-grid,
+.novacloud-ide-grid,
+.novagit-grid,
+.codepro-dev-split,
+.template-catalog-grid,
+.download-card-grid,
+.mobile-companion-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.codepro-dev-metrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.codepro-dev-metrics article {
+  display: grid;
+  gap: 5px;
+  min-height: 112px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px;
+}
+
+.codepro-dev-metrics span,
+.codepro-dev-metrics em {
+  color: #b9c7d6;
+  font-size: 0.78rem;
+  font-style: normal;
+}
+
+.codepro-dev-metrics strong {
+  color: #ffffff;
+  font-size: 1.8rem;
+}
+
+.codepro-dev-status-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.workspace-template-row,
+.workspace-flow-row,
+.ai-tab-row,
+.docs-selector-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workspace-template-row button,
+.ai-tab-row button,
+.docs-selector-row button {
+  min-height: 42px;
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #f7fafc;
+  color: #172033;
+  padding: 9px 12px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.workspace-template-row button {
+  display: grid;
+  min-width: 150px;
+  gap: 4px;
+}
+
+.workspace-template-row span {
+  color: #59687b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.workspace-template-active,
+.ai-tab-active,
+.docs-category-active {
+  border-color: #1f7a55 !important;
+  background: #e8f5ee !important;
+  color: #155d42 !important;
+}
+
+.workspace-flow-row span,
+.trust-aware-workflow span {
+  display: inline-grid;
+  min-height: 38px;
+  place-items: center;
+  border: 1px solid #c7d4df;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #59687b;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.workspace-flow-row .workspace-flow-active,
+.trust-aware-workflow span {
+  border-color: #1f7a55;
+  background: #e8f5ee;
+  color: #155d42;
+}
+
+.novacloud-ide-grid {
+  grid-template-columns: minmax(240px, 0.34fr) minmax(0, 1fr);
+}
+
+.workspace-card-list,
+.repository-list,
+.pull-request-panel,
+.ai-activity-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.workspace-card,
+.repository-list button,
+.pull-request-panel button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 12px;
+  text-align: left;
+}
+
+.workspace-card span,
+.repository-list span,
+.pull-request-panel span,
+.pull-request-panel em {
+  color: #59687b;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.workspace-card-active,
+.repository-active,
+.pull-request-active {
+  border-color: #1f7a55 !important;
+  box-shadow: 0 0 0 2px rgba(31, 122, 85, 0.12);
+}
+
+.workspace-status-active > span {
+  color: #155d42;
+}
+
+.workspace-status-starting > span,
+.workspace-status-paused > span {
+  color: #946200;
+}
+
+.workspace-status-failed > span {
+  color: #a12b2b;
+}
+
+.ide-surface {
+  overflow: hidden;
+  border: 1px solid #26374f;
+  border-radius: 8px;
+  background: #07111f;
+  color: #ffffff;
+}
+
+.ide-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0 14px;
+}
+
+.ide-topbar span {
+  color: #75d6a0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ide-body {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.24fr) minmax(0, 1fr);
+  grid-template-rows: minmax(250px, auto) minmax(130px, auto);
+  min-height: 430px;
+}
+
+.project-explorer {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  grid-row: 1 / span 2;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d1b2c;
+  padding: 14px;
+}
+
+.project-explorer span {
+  color: #d7e2ea;
+  font-size: 0.82rem;
+}
+
+.editor-preview,
+.terminal-panel {
+  overflow: auto;
+  margin: 0;
+  padding: 16px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre;
+}
+
+.editor-preview {
+  background: #091524;
+  color: #d9f3e8;
+}
+
+.terminal-panel {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: #030913;
+  color: #b7c7d9;
+}
+
+.novagit-grid {
+  grid-template-columns: minmax(230px, 0.28fr) minmax(0, 0.42fr) minmax(260px, 0.3fr);
+}
+
+.repository-detail,
+.pull-request-panel,
+.ai-assistant-panel,
+.docs-content-card,
+.template-card,
+.mobile-companion-grid article {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.repo-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.repo-policy-grid div {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #e1e8ef;
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 10px;
+}
+
+.repo-policy-grid span,
+.ai-assistant-panel span,
+.template-card span {
+  color: #2f6f73;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.codepro-dev-split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ai-assistant-panel {
+  display: grid;
+  gap: 8px;
+  background: #f7fafc;
+}
+
+.ai-assistant-panel p,
+.docs-content-card p,
+.template-card p,
+.mobile-companion-grid p {
+  margin: 0;
+  color: #59687b;
+  line-height: 1.5;
+}
+
+.ai-activity-timeline div {
+  border-left: 3px solid #1f7a55;
+  background: #f7fafc;
+  padding: 9px 12px;
+  color: #35556e;
+  font-size: 0.86rem;
+}
+
+.template-catalog-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.template-card {
+  display: grid;
+  gap: 8px;
+}
+
+.download-card-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mobile-companion-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mobile-companion-grid article {
+  display: grid;
+  gap: 6px;
+}
+
+.trust-aware-workflow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 14px;
+}
+
 .codepro-command-shell {
   display: grid;
   gap: 16px;
@@ -4236,6 +4595,16 @@ a {
   .codepro-enterprise-grid,
   .codepro-command-metrics,
   .codepro-widget-grid,
+  .codepro-dev-metrics,
+  .codepro-dev-status-grid,
+  .novacloud-ide-grid,
+  .novagit-grid,
+  .codepro-dev-split,
+  .repo-policy-grid,
+  .template-catalog-grid,
+  .download-card-grid,
+  .mobile-companion-grid,
+  .trust-aware-workflow,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4319,6 +4688,16 @@ a {
   .codepro-enterprise-grid,
   .codepro-command-metrics,
   .codepro-widget-grid,
+  .codepro-dev-metrics,
+  .codepro-dev-status-grid,
+  .novacloud-ide-grid,
+  .novagit-grid,
+  .codepro-dev-split,
+  .repo-policy-grid,
+  .template-catalog-grid,
+  .download-card-grid,
+  .mobile-companion-grid,
+  .trust-aware-workflow,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4424,6 +4803,16 @@ a {
   .codepro-enterprise-grid,
   .codepro-command-metrics,
   .codepro-widget-grid,
+  .codepro-dev-metrics,
+  .codepro-dev-status-grid,
+  .novacloud-ide-grid,
+  .novagit-grid,
+  .codepro-dev-split,
+  .repo-policy-grid,
+  .template-catalog-grid,
+  .download-card-grid,
+  .mobile-companion-grid,
+  .trust-aware-workflow,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4580,6 +4969,16 @@ a {
   .codepro-enterprise-grid,
   .codepro-command-metrics,
   .codepro-widget-grid,
+  .codepro-dev-metrics,
+  .codepro-dev-status-grid,
+  .novacloud-ide-grid,
+  .novagit-grid,
+  .codepro-dev-split,
+  .repo-policy-grid,
+  .template-catalog-grid,
+  .download-card-grid,
+  .mobile-companion-grid,
+  .trust-aware-workflow,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -4599,6 +4998,17 @@ a {
 
   .global-map {
     min-height: 520px;
+  }
+
+  .ide-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(220px, auto) minmax(130px, auto);
+  }
+
+  .project-explorer {
+    grid-row: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .map-pin {

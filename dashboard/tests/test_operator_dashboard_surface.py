@@ -894,3 +894,62 @@ def test_operator_dashboard_exposes_afriprog_workspace_surfaces() -> None:
         "Next boundary step",
     ):
         assert required in source
+
+
+def test_operator_dashboard_exposes_novacodepro_developer_platform_phase() -> None:
+    source = read("src/App.jsx")
+    styles = read("src/styles.css")
+
+    for required in (
+        "NovaCodePro Developer Platform Phase",
+        "Build. Govern. Deploy. Verify.",
+        "Trusted Engineering",
+        "Developer Platform phase for IDEs, repos, docs, and AI coding",
+        "claiming full Engineering OS production readiness",
+        "NovaCloud IDE",
+        "NovaCodePro Desktop",
+        "NovaCodePro Mobile",
+        "NovaGit",
+        "NovaAI Coding",
+        "NovaDocs",
+        "Developer Templates",
+        "Developer Command Center",
+        "Create Workspace",
+        "Generate Code",
+        "Pull Request",
+        "Evidence Ready",
+        "React",
+        "Django",
+        "FastAPI",
+        "Flutter",
+        "Node.js",
+        "Python",
+        "macOS",
+        "Windows",
+        "Linux",
+        "NovaRide App",
+        "NovaPay App",
+        "NovaID Service",
+        "NovaTrust Verifier",
+    ):
+        assert required in source
+
+    for required in (
+        "selectedWorkspaceTemplate",
+        "selectedRepositoryId",
+        "activeAiCodingTab",
+        "activeDocsCategory",
+        "workspaceFlowStep",
+        "NOVACODEPRO_TRUST_WORKFLOW",
+    ):
+        assert required in source
+
+    for required in (
+        ".codepro-developer-platform",
+        ".novacloud-ide-grid",
+        ".novagit-grid",
+        ".ai-assistant-panel",
+        ".docs-selector-row",
+        ".trust-aware-workflow",
+    ):
+        assert required in styles
