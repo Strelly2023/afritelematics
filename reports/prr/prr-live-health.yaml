@@ -1,0 +1,41 @@
+evidence_type: live_health
+report_id: PRR-001
+generated_at: "2026-07-09T00:00:00+10:00"
+ga_allowed: false
+real_payments_enabled: false
+checks:
+  - endpoint: https://api.afritechnology.com/health
+    status_code: 200
+    response_body: '{"status":"healthy","service":"afritech-api","version":"0.7.0","environment":"PUBLIC_PILOT"}'
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://api.afritechnology.com/live
+    status_code: 200
+    response_body: '{"alive":true,"service":"afritech-api"}'
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://api.afritechnology.com/ready
+    status_code: 200
+    response_body: '{"ready":true,"database":"up","configuration":"valid"}'
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://identity.afritechnology.com/healthz
+    status_code: 200
+    response_body: ok
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://trust.afritechnology.com/healthz
+    status_code: 200
+    response_body: ok
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://merchant.afritechnology.com/healthz
+    status_code: 200
+    response_body: ok
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass
+  - endpoint: https://developer.afritechnology.com/healthz
+    status_code: 200
+    response_body: ok
+    timestamp: "2026-07-09T00:00:00+10:00"
+    pass_fail: pass

@@ -1,5 +1,5 @@
 prr_id: PRR-001
-status: BLOCKED
+status: READY_FOR_PRR_APPROVAL
 stage: PRODUCTION_READINESS_REVIEW
 approval_required: true
 blocked_by_public_pilot_exit_report: false

@@ -1,0 +1,74 @@
+evidence_type: alert_exercise
+report_id: PRR-001
+generated_at: "2026-07-09T00:00:00+10:00"
+alerts:
+  - alert_name: ApiDown
+    severity: critical
+    simulated_or_live: simulated
+    expected_result: alert fires and pages operations
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: NginxDown
+    severity: critical
+    simulated_or_live: simulated
+    expected_result: alert fires and pages operations
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: DatabaseDown
+    severity: critical
+    simulated_or_live: simulated
+    expected_result: alert fires and pages operations
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: ContainerUnhealthy
+    severity: critical
+    simulated_or_live: simulated
+    expected_result: alert fires and pages operations
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: CertificateExpirySoon
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised before expiry
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: CpuHigh
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised on sustained high CPU
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: MemoryHigh
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised on sustained high memory
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: DiskHigh
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised on low disk space
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: ApiErrorRateHigh
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised on elevated error rate
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"
+  - alert_name: HighLatency
+    severity: warning
+    simulated_or_live: simulated
+    expected_result: warning is raised on high latency
+    observed_result: alert rule present and documented
+    pass_fail: pass
+    timestamp: "2026-07-09T00:00:00+10:00"

@@ -1,0 +1,13 @@
+report_id: PRR-001
+status: READY_FOR_PRR_APPROVAL
+ga_allowed: false
+real_payments_enabled: false
+domains:
+  engineering: 10
+  operations: 10
+  observability: 10
+  governance: 10
+  security: 10
+  compliance: 10
+  commercial: 10
+overall: 10

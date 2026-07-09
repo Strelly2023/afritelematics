@@ -14,12 +14,15 @@ def test_prr_report_and_document_exist() -> None:
     assert REPORT.exists()
 
     doc = DOC.read_text(encoding="utf-8")
-    for item in ("PRR-001 Production Readiness Review", "READY_FOR_PRR", "GA allowed: false"):
+    for item in ("PRR-001 Production Readiness Review", "READY_FOR_PRR_APPROVAL", "GA allowed: false"):
         assert item in doc
 
     report = yaml.safe_load(REPORT.read_text(encoding="utf-8"))
     assert report["report_id"] == "PRR-001"
-    assert report["status"] == "READY_FOR_PRR"
+    assert report["status"] == "READY_FOR_PRR_APPROVAL"
     assert report["ga_allowed"] is False
-    for domain in ("engineering", "operations", "security", "governance", "compliance", "commercial"):
+    assert report["ga_approval"] == "PENDING"
+    assert report["real_payments_enabled"] is False
+    assert report["real_payment_approval"] == "PENDING"
+    for domain in ("engineering", "operations", "observability", "security", "governance", "compliance", "commercial"):
         assert report["domains"][domain] == "PASS"

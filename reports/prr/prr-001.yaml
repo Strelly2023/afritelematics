@@ -1,9 +1,13 @@
 report_id: PRR-001
-status: READY_FOR_PRR
+status: READY_FOR_PRR_APPROVAL
 ga_allowed: false
+ga_approval: PENDING
+real_payments_enabled: false
+real_payment_approval: PENDING
 domains:
   engineering: PASS
   operations: PASS
+  observability: PASS
   security: PASS
   governance: PASS
   compliance: PASS
@@ -16,3 +20,6 @@ evidence:
   grafana_configured: true
   structured_logging: true
   trace_correlation: true
+  alert_exercise: true
+  tracing_evidence: true
+  live_health_evidence: true

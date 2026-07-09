@@ -16,12 +16,17 @@ def validate() -> dict[str, object]:
     prr_text = PRR.read_text(encoding="utf-8")
     if not config.get("prrRequired", False):
         raise RuntimeError("prr must be required")
-    if "status: BLOCKED" not in prr_text and "status: APPROVED" not in prr_text:
+    if (
+        "status: BLOCKED" not in prr_text
+        and "status: APPROVED" not in prr_text
+        and "status: READY_FOR_PRR_APPROVAL" not in prr_text
+    ):
         raise RuntimeError("prr placeholder must state a status")
     return {
         "status": "PASS",
         "prr_required": bool(config.get("prrRequired")),
         "prr_blocked": "status: BLOCKED" in prr_text,
+        "prr_ready_for_approval": "status: READY_FOR_PRR_APPROVAL" in prr_text,
     }
 
 
@@ -38,4 +43,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

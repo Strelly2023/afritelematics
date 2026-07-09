@@ -1,0 +1,16 @@
+evidence_type: tracing
+report_id: PRR-001
+generated_at: "2026-07-09T00:00:00+10:00"
+trace_pipeline:
+  traces: true
+  metrics: true
+collector_config_present: true
+headers:
+  X-Request-ID: true
+  X-Trace-Id: true
+  X-Span-Id: true
+  traceparent: true
+generation:
+  request_id: true
+  trace_id: true
+  span_id: true
