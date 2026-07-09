@@ -1566,17 +1566,241 @@ const PRODUCTIZED_TRUST_FEATURE_IDS = [
 ];
 
 const NOVATECH_PLATFORM_NAV = [
-  { label: "Main", href: "#home", detail: "NovaTech home" },
-  { label: "Organization OS", href: "#organization", detail: "Intranet + extranet" },
-  { label: "SaaS / Tenants", href: "#saas", detail: "Organizations + billing" },
-  { label: "Outcome Intelligence", href: "#outcomes", detail: "Outcome + trust network" },
-  { label: "NovaProgramming", href: "/v1/novaprogramming/dashboard", detail: "Engineering layer" },
-  { label: "NovaScript", href: "/v1/novascript/dashboard", detail: "AI + trust layer" },
-  { label: "NovaTrust", href: "/public/trust/dashboard", detail: "Verification layer" },
-  { label: "NovaPower", href: "#power", detail: "Infrastructure layer" },
-  { label: "NovaID / AfriID", href: "#identity", detail: "Identity layer" },
-  { label: "NovaPay / AfriPay", href: "#payments", detail: "Payments layer" },
-  { label: "Products", href: "#products", detail: "Business apps" },
+  { label: "Platform", href: "#platform", detail: "NovaTech map" },
+  { label: "Journey", href: "#trust-journey", detail: "Live proof flow" },
+  { label: "Score", href: "#trust-score", detail: "Evidence score" },
+  { label: "Global", href: "#global", detail: "Expansion map" },
+  { label: "Pilots", href: "#pilots", detail: "Field evidence" },
+  { label: "Trust Center", href: "#trust-center", detail: "Security + governance" },
+  { label: "Cases", href: "#case-studies", detail: "Proof stories" },
+  { label: "Developers", href: "#developers", detail: "APIs + SDKs" },
+  { label: "Downloads", href: "#downloads", detail: "Enterprise assets" },
+];
+
+const PLATFORM_PRODUCTS = [
+  {
+    name: "NovaRide",
+    purpose: "Trusted mobility operations",
+    features: ["Dispatch", "Fleet monitoring", "Ride replay", "Incident evidence"],
+    useCases: ["City pilots", "Fleet operators", "Driver verification"],
+    industries: ["Mobility", "Logistics", "Public transport"],
+    docs: "/v1/operator/dashboard",
+  },
+  {
+    name: "NovaPay",
+    purpose: "Auditable payments and receipts",
+    features: ["Payment proof", "Settlement visibility", "Treasury controls", "Receipt replay"],
+    useCases: ["Wallets", "Merchant payments", "Agent networks"],
+    industries: ["Fintech", "Retail", "Remittance"],
+    docs: "#payments",
+  },
+  {
+    name: "NovaID",
+    purpose: "Verified identity and device trust",
+    features: ["Digital identity", "Device binding", "Roles", "KYC posture"],
+    useCases: ["Rider onboarding", "Driver checks", "Enterprise access"],
+    industries: ["Identity", "Mobility", "Financial services"],
+    docs: "#identity",
+  },
+  {
+    name: "NovaTrust",
+    purpose: "Proof, replay, and audit evidence",
+    features: ["Evidence packets", "Replay validation", "Audit trails", "Trust scores"],
+    useCases: ["Disputes", "Compliance reviews", "Partner verification"],
+    industries: ["Enterprise", "Government", "Insurance"],
+    docs: "/public/trust/dashboard",
+  },
+  {
+    name: "NovaAI",
+    purpose: "Human-approved operational intelligence",
+    features: ["Fleet insights", "Payment insights", "Risk insights", "Support intelligence"],
+    useCases: ["Recommendations", "Anomaly review", "Decision support"],
+    industries: ["Operations", "Compliance", "Customer support"],
+    docs: "/v1/novascript/dashboard",
+  },
+];
+
+const HERO_FLOW_PRODUCTS = ["NovaID", "NovaRide", "NovaPay", "NovaTrust", "NovaAI"];
+
+const HERO_FLOW_STEPS = [
+  "Identity",
+  "Operations",
+  "Payments",
+  "Evidence",
+  "AI Insights",
+  "Trust Score",
+];
+
+const PLATFORM_HOVER_FEATURES = {
+  NovaRide: ["Trips", "Dispatch", "Drivers", "Replay Events"],
+  NovaPay: ["Payments", "Wallets", "Refunds", "Settlement"],
+  NovaID: ["Identity", "Device Trust", "KYC", "Access Controls"],
+  NovaTrust: ["Evidence", "Replay", "Audit", "Compliance"],
+  NovaAI: ["Insights", "Recommendations", "Risk Detection", "Decision Support"],
+};
+
+const AUDIENCE_PORTALS = [
+  {
+    audience: "Operators",
+    promise: "Run live mobility operations with replay, monitoring, and incident control.",
+    capabilities: ["Dispatch", "Fleet management", "Monitoring", "Replay", "Incidents"],
+  },
+  {
+    audience: "Enterprises",
+    promise: "Adopt trusted identity, payments, compliance records, and auditable workflows.",
+    capabilities: ["Digital identity", "Payments", "Auditability", "Compliance"],
+  },
+  {
+    audience: "Developers",
+    promise: "Build integrations with APIs, SDKs, sandbox flows, and proof documentation.",
+    capabilities: ["APIs", "SDKs", "Sandbox", "Documentation"],
+  },
+  {
+    audience: "Investors & Partners",
+    promise: "See the platform vision, market wedge, roadmap, pilots, and growth strategy.",
+    capabilities: ["Vision", "Market", "Roadmap", "Pilot results", "Growth strategy"],
+  },
+];
+
+const RIDE_REPLAY_STEPS = [
+  { step: "Ride Requested", product: "NovaRide", proof: "Request Event Generated" },
+  { step: "Driver Verified", product: "NovaID", proof: "NovaID panel lights up" },
+  { step: "Ride Started", product: "NovaRide", proof: "NovaRide state updates" },
+  { step: "Payment Processed", product: "NovaPay", proof: "NovaPay receipt activates" },
+  { step: "Evidence Created", product: "NovaTrust", proof: "Evidence Packet generated" },
+  { step: "AI Review", product: "NovaAI", proof: "Trust Insights produced" },
+];
+
+const TRUST_SCORE_DETAILS = [
+  { label: "Identity Confidence", value: "98%" },
+  { label: "Device Binding", value: "100%" },
+  { label: "Replay Integrity", value: "99.9%" },
+  { label: "Missing Events", value: "0" },
+  { label: "Audit Coverage", value: "100%" },
+];
+
+const PLATFORM_STATUS = [
+  { system: "NovaRide", value: "99.9%", state: "Operational", tone: "active" },
+  { system: "NovaPay", value: "99.98%", state: "Operational", tone: "active" },
+  { system: "NovaID", value: "100%", state: "Operational", tone: "active" },
+  { system: "NovaTrust", value: "100%", state: "Operational", tone: "active" },
+  { system: "NovaAI", value: "Advisory Mode", state: "Human approval required", tone: "pilot" },
+];
+
+const PILOT_METRICS = [
+  { label: "Approved users", value: "57" },
+  { label: "Trusted devices", value: "40" },
+  { label: "Drivers", value: "10" },
+  { label: "Riders", value: "30" },
+  { label: "Merchants", value: "2" },
+  { label: "Agents", value: "3" },
+  { label: "Businesses", value: "2" },
+  { label: "PRR", value: "Completed" },
+];
+
+const TRUST_CENTER_PILLARS = [
+  {
+    title: "Security",
+    items: ["Device trust", "Identity controls", "RBAC", "Encryption"],
+  },
+  {
+    title: "Governance",
+    items: ["Replay validation", "Audit trails", "Evidence integrity", "State machines"],
+  },
+  {
+    title: "Compliance",
+    items: ["Audit records", "Data protection", "Financial controls", "Operator approvals"],
+  },
+];
+
+const WHY_AFRITECHNOLOGY = [
+  {
+    title: "Verified Identity",
+    example: "Drivers, riders, staff, and partners operate with identity and device checks.",
+  },
+  {
+    title: "Trusted Payments",
+    example: "Payments produce receipts that can be replayed and audited.",
+  },
+  {
+    title: "Replayable Operations",
+    example: "Every key workflow can be reconstructed from events, not assumptions.",
+  },
+  {
+    title: "Governed AI",
+    example: "AI recommends. Humans approve. Critical actions remain controlled.",
+  },
+  {
+    title: "Audit-Ready Evidence",
+    example: "Operators and partners can export proof packets for review.",
+  },
+];
+
+const EXPANSION_PATH = [
+  "Australia",
+  "Burundi",
+  "DR Congo",
+  "East Africa",
+  "Africa",
+  "Global Platform",
+];
+
+const GLOBAL_PRESENCE = [
+  { market: "Australia", status: "Public Pilot", tone: "pilot", x: 78, y: 72 },
+  { market: "Burundi", status: "Agricultural Expansion", tone: "partner", x: 52, y: 58 },
+  { market: "DRC", status: "Strategic Market", tone: "future", x: 48, y: 61 },
+  { market: "East Africa", status: "Expansion Pipeline", tone: "active", x: 55, y: 54 },
+];
+
+const CASE_STUDIES = [
+  {
+    title: "Driver Verification",
+    problem: "Unknown driver identity",
+    solution: "NovaID verification",
+    result: "Verified onboarding",
+  },
+  {
+    title: "Payment Dispute",
+    problem: "Customer dispute",
+    solution: "NovaPay receipt replay",
+    result: "Evidence produced in seconds",
+  },
+  {
+    title: "Ride Investigation",
+    problem: "Ride complaint",
+    solution: "NovaRide + NovaTrust replay",
+    result: "Full event reconstruction",
+  },
+];
+
+const ENTERPRISE_DOWNLOADS = [
+  "Architecture Whitepaper",
+  "Trust Framework",
+  "Security Overview",
+  "Governance Guide",
+  "API Book",
+];
+
+const DOCS_PORTAL_SECTIONS = [
+  "Getting Started",
+  "NovaRide",
+  "NovaPay",
+  "NovaID",
+  "NovaTrust",
+  "NovaAI",
+  "SDKs",
+  "APIs",
+  "Architecture",
+  "Replay Engine",
+  "Security",
+];
+
+const TRUST_CENTER_PAGES = [
+  { path: "/trust", title: "Trust Center", items: ["Security", "Governance", "Compliance", "Evidence"] },
+  { path: "/trust/security", title: "Security", items: ["Device Trust", "RBAC", "Encryption", "Identity Controls"] },
+  { path: "/trust/governance", title: "Governance", items: ["Replay", "State Machines", "Audit Controls", "Approvals"] },
+  { path: "/trust/compliance", title: "Compliance", items: ["Records", "Retention", "Data Protection", "Financial Controls"] },
+  { path: "/trust/evidence", title: "Evidence", items: ["Evidence Packets", "Replay Hashes", "Receipts", "Audit Exports"] },
 ];
 
 const NOVATECH_CORE_LAYERS = [
@@ -5734,6 +5958,9 @@ export default function OperatorDashboard() {
   const [governanceSubmission, setGovernanceSubmission] = useState(null);
   const [walkthroughMode, setWalkthroughMode] = useState(false);
   const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const [trustJourneyActive, setTrustJourneyActive] = useState(false);
+  const [trustJourneyStep, setTrustJourneyStep] = useState(0);
+  const [trustScoreExpanded, setTrustScoreExpanded] = useState(false);
 
   useEffect(() => {
     fetchOperatorState();
@@ -5786,6 +6013,16 @@ export default function OperatorDashboard() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!trustJourneyActive || trustJourneyStep >= RIDE_REPLAY_STEPS.length) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setTrustJourneyStep((current) => Math.min(current + 1, RIDE_REPLAY_STEPS.length));
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [trustJourneyActive, trustJourneyStep]);
 
   async function fetchOperatorState() {
     try {
@@ -6681,58 +6918,75 @@ export default function OperatorDashboard() {
 
   return (
     <main className="app-shell">
-      <header className="os-topbar" aria-label="AfriTech OS command shell">
+      <header className="os-topbar" aria-label="AfriTechnology navigation">
         <div>
-          <strong>NOVATECH OS</strong>
-          <span>NovaTechSol / Nova Technology Solution</span>
+          <strong>AFRITECHNOLOGY</strong>
+          <span>NovaTech Platform</span>
         </div>
         <label className="os-search">
-          <span>Search product, layer, route</span>
-          <input defaultValue="NovaScript" aria-label="Search product, layer, route" />
+          <span>Search product, proof, route</span>
+          <input defaultValue="NovaTrust" aria-label="Search product, proof, route" />
         </label>
-        <div className="verified-lock">Intranet ready</div>
+        <div className="verified-lock">Trust OS online</div>
       </header>
 
-      <section className="section-band novatech-home-band" id="home">
+      <section className="section-band novatech-home-band nextgen-hero-band" id="home">
+        <div className="pilot-badge">PRR Complete · Public Pilot</div>
         <div className="novatech-home-grid">
           <div className="hero-copy">
-            <p className="eyebrow">NovaTech Platform</p>
-            <h1>NovaTechSol / Nova Technology Solution</h1>
+            <p className="eyebrow">The Trust Operating System for Africa and Emerging Markets</p>
+            <h1>Trusted Infrastructure for Mobility, Payments, Identity and AI Operations</h1>
             <p className="hero-summary">
-              One browser entrypoint for NovaProgramming, NovaScript, trust,
-              infrastructure, identity, payments, and product lines. The browser
-              shows the platform architecture first, then links into the live
-              dashboards below.
+              AfriTechnology builds trusted digital infrastructure for mobility,
+              payments, identity, and AI-powered operations. Every ride, every
+              payment, and every decision can be proven, replayed, and audited.
             </p>
             <div className="hero-actions" aria-label="NovaTech navigation">
-              <a className="button primary" href="/novatech/intranet/">
-                Open Intranet
+              <a className="button primary" href="#platform">
+                View Platform
               </a>
-              <a className="button secondary" href="/v1/novascript/dashboard">
-                NovaScript
+              <a className="button secondary" href="#contact">
+                Start Pilot
               </a>
-              <a className="button secondary" href="/v1/novaprogramming/dashboard">
-                NovaProgramming
+              <a className="button secondary" href="#proof">
+                View Replay Demo
               </a>
-              <a className="button secondary" href="/v1/operator/dashboard">
-                AfriRide Ops
+              <a className="button secondary" href="#trust-center">
+                Trust Center
               </a>
             </div>
           </div>
 
-          <div className="trust-status">
-            <p>Platform Snapshot</p>
-            <strong>Core layers linked</strong>
-            <span>
-              NovaProgramming, NovaScript, NovaTrust, NovaPower, NovaID, and
-              NovaPay are organized as a browser-first platform shell.
-            </span>
-            <div className="trust-meta">
-              <span>Home: NovaTechSol</span>
-              <span>Access: authenticated staff</span>
-              <span>Authority: read-only portal</span>
+          <div className="hero-trust-visual" aria-label="AfriTechnology trust operating system diagram">
+            <div className="hero-node hero-node-core">AfriTechnology</div>
+            <div className="hero-node hero-node-id">NovaID</div>
+            <div className="hero-node hero-node-ride">NovaRide</div>
+            <div className="hero-node hero-node-pay">NovaPay</div>
+            <div className="hero-node hero-node-trust">NovaTrust</div>
+            <div className="hero-node hero-node-ai">NovaAI</div>
+            <div className="hero-trust-score">Trust Score 98.7%</div>
+            <svg className="hero-flow-lines" viewBox="0 0 520 380" role="presentation" aria-hidden="true">
+              <path d="M260 84 L140 154 L158 252 L260 305 L374 252 L390 154 Z" />
+              <path d="M140 154 L260 84 L390 154 L374 252 L260 305 L158 252 Z" />
+              <path d="M260 84 L260 305" />
+              <path d="M140 154 L390 154" />
+              <path d="M158 252 L374 252" />
+            </svg>
+            <div className="hero-flow-strip">
+              {HERO_FLOW_STEPS.map((step) => (
+                <span key={step}>{step}</span>
+              ))}
             </div>
           </div>
+        </div>
+        <div className="platform-status-strip">
+          {PLATFORM_STATUS.map((item) => (
+            <div key={item.system} className={`status-pill status-pill-${item.tone}`}>
+              <span>{item.system}</span>
+              <strong>{item.value}</strong>
+              <em>{item.state}</em>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -6745,95 +6999,363 @@ export default function OperatorDashboard() {
         ))}
       </nav>
 
-      <section className="section-band platform-band">
+      <section className="section-band platform-band" id="platform">
         <SectionIntro
           eyebrow="Platform Architecture"
-          title="Core layers and product surfaces"
-          question="Browser navigation is structured around the control layers first, then the vertical products underneath."
+          title="One platform, five trust products"
+          question="AfriTechnology is the company. NovaTech is the platform. NovaRide, NovaPay, NovaID, NovaTrust, and NovaAI are the product layers."
         />
-        <OperatorPanel title="Unified Trust Operating Console">
-          <div className="stack">
-            <div className="record-card">
-              <div className="record-card-header">
-                <strong>NovaTechSol Core Flow</strong>
-                <span>2026 platform wiring</span>
-              </div>
-              <p>
-                Identity to authority to execution to payment to proof to intelligence to evolution,
-                exposed as one browser entrypoint for the core platform only.
-              </p>
-              <div className="chip-row">
-                {NOVATECH_CORE_FLOW.map((step) => (
-                  <span key={step} className="surface-chip">{step}</span>
-                ))}
-              </div>
-            </div>
-            <div className="operator-grid dense-grid">
-              {NOVATECH_CORE_CONSOLE_MODULES.map((module) => (
-                <article key={module.key} className="record-card">
-                  <div className="record-card-header">
-                    <strong>{module.label}</strong>
-                    <span>{module.metric}</span>
-                  </div>
-                  <p>{module.path}</p>
-                </article>
-              ))}
-            </div>
+        <div className="platform-map">
+          <div className="platform-map-root">
+            <span>Company</span>
+            <strong>AfriTechnology</strong>
           </div>
-        </OperatorPanel>
-        <OperatorPanel title="Console Wireframes">
-          <div className="operator-grid dense-grid">
-            {NOVATECH_CONSOLE_WIREFRAMES.map((wireframe) => (
-              <article key={wireframe.screen} className="record-card">
+          <div className="platform-map-line" aria-hidden="true" />
+          <div className="platform-map-root platform-map-platform">
+            <span>Platform</span>
+            <strong>NovaTech Platform</strong>
+          </div>
+          <div className="interactive-ecosystem" id="products">
+            {PLATFORM_PRODUCTS.map((product) => (
+              <article key={product.name} className={`ecosystem-product ecosystem-product-${product.name.toLowerCase()}`}>
                 <div className="record-card-header">
-                  <strong>{wireframe.title}</strong>
-                  <span>{wireframe.screen}</span>
+                  <strong>{product.name}</strong>
+                  <span>{product.purpose}</span>
                 </div>
-                <div className="chip-row">
-                  {wireframe.zones.map((zone) => (
-                    <span key={zone} className="surface-chip">{zone}</span>
+                <p>{product.useCases.join(" • ")}</p>
+                <div className="ecosystem-hover">
+                  {(PLATFORM_HOVER_FEATURES[product.name] || product.features).map((feature) => (
+                    <span key={feature} className="surface-chip">{feature}</span>
                   ))}
+                </div>
+                <div className="record-card-footer">
+                  {product.industries.join(" / ")} · Docs {product.docs}
                 </div>
               </article>
             ))}
+            <div className="ecosystem-center">
+              <span>Flow</span>
+              <strong>Identity → Operations → Payments → Evidence → AI Insights</strong>
+            </div>
           </div>
-        </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band audience-band" id="solutions">
+        <SectionIntro
+          eyebrow="Customer Journey"
+          title="From problem to proof to pilot"
+          question="The website now starts with customer outcomes before exposing the full operator dashboard and engineering depth."
+        />
+        <div className="journey-row">
+          {["Problem", "Solution", "Products", "Proof", "Pilot", "Contact"].map((step) => (
+            <span key={step}>{step}</span>
+          ))}
+        </div>
+        <div className="audience-grid">
+          {AUDIENCE_PORTALS.map((portal) => (
+            <article key={portal.audience} className="operator-panel audience-card">
+              <h3>{portal.audience}</h3>
+              <p>{portal.promise}</p>
+              <div className="chip-row">
+                {portal.capabilities.map((capability) => (
+                  <span key={capability} className="surface-chip">{capability}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band proof-band" id="trust-journey">
+        <SectionIntro
+          eyebrow="Live Trust Journey"
+          title="Watch a ride become verified evidence"
+          question="The signature demo shows identity, mobility, payment, evidence, and AI trust controls in one short journey."
+        />
+        <div className="journey-control-row">
+          <button
+            type="button"
+            className="button primary"
+            onClick={() => {
+              setTrustJourneyActive(true);
+              setTrustJourneyStep(0);
+            }}
+          >
+            ▶ Start Trust Journey
+          </button>
+          <span>{trustJourneyActive && trustJourneyStep >= RIDE_REPLAY_STEPS.length ? "Trust Score: 98.7% · Evidence Complete · Replay Verified · Audit Ready" : "Ready to generate proof"}</span>
+        </div>
+        <div className="replay-demo">
+          {RIDE_REPLAY_STEPS.map((step, index) => (
+            <article
+              key={step.step}
+              className={`replay-step ${trustJourneyStep >= index + 1 ? "replay-step-active" : ""}`}
+            >
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step.step}</strong>
+              <p>{step.proof}</p>
+              <em>{step.product}</em>
+            </article>
+          ))}
+        </div>
+        <div className="trust-score-panel" id="trust-score">
+          <div>
+            <p className="eyebrow">Signature Feature</p>
+            <h3>Transaction Trust Score</h3>
+            <p>
+              Calculated from live evidence: identity confidence, device binding,
+              replay integrity, event completeness, and audit coverage.
+            </p>
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => setTrustScoreExpanded((current) => !current)}
+            >
+              {trustScoreExpanded ? "Hide score evidence" : "Expand score evidence"}
+            </button>
+          </div>
+          <div>
+            <div className="trust-score-number">
+              <span>Trust Score</span>
+              <strong>98.7</strong>
+            </div>
+            {trustScoreExpanded && (
+              <div className="trust-score-grid">
+                {TRUST_SCORE_DETAILS.map((item) => (
+                  <div key={item.label}>
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-band global-band" id="global">
+        <SectionIntro
+          eyebrow="Global Expansion"
+          title="From public pilot to regional trust infrastructure"
+          question="The global presence map shows current footprint, next markets, and partnership strategy for investors and enterprise partners."
+        />
+        <div className="global-map-panel">
+          <div className="global-map">
+            {GLOBAL_PRESENCE.map((market) => (
+              <div
+                key={market.market}
+                className={`map-pin map-pin-${market.tone}`}
+                style={{ left: `${market.x}%`, top: `${market.y}%` }}
+              >
+                <span />
+                <strong>{market.market}</strong>
+                <em>{market.status}</em>
+              </div>
+            ))}
+          </div>
+          <div className="global-legend">
+            <span><i className="legend-active" /> Active</span>
+            <span><i className="legend-pilot" /> Pilot</span>
+            <span><i className="legend-partner" /> Partnership</span>
+            <span><i className="legend-future" /> Future market</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-band pilot-band" id="pilots">
+        <SectionIntro
+          eyebrow="Pilot Evidence"
+          title="Real pilot readiness, presented plainly"
+          question="Enterprise and investor audiences need concrete proof before they need the full internal dashboard."
+        />
+        <div className="metric-grid pilot-metric-grid">
+          {PILOT_METRICS.map((metric) => (
+            <TrustMetric
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              helper="Controlled pilot registry evidence"
+              tone="success"
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band case-study-band" id="case-studies">
+        <SectionIntro
+          eyebrow="Case Studies"
+          title="Real trust problems, solved with evidence"
+          question="Short proof stories make the platform understandable for enterprise buyers, operators, partners, and investors."
+        />
+        <div className="case-study-grid">
+          {CASE_STUDIES.map((study) => (
+            <article key={study.title} className="case-study-card">
+              <strong>{study.title}</strong>
+              <div><span>Problem</span><p>{study.problem}</p></div>
+              <div><span>Solution</span><p>{study.solution}</p></div>
+              <div><span>Result</span><p>{study.result}</p></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band trust-center-band" id="trust-center">
+        <SectionIntro
+          eyebrow="Trust Center"
+          title="Security, governance, and compliance built into the platform"
+          question="Deep governance language belongs here and in documentation, while the homepage keeps the customer story simple."
+        />
+        <div className="trust-center-grid">
+          {TRUST_CENTER_PILLARS.map((pillar) => (
+            <article key={pillar.title} className="operator-panel">
+              <h3>{pillar.title}</h3>
+              <div className="stack compact-stack">
+                {pillar.items.map((item) => (
+                  <div key={item} className="reason-chip reason-chip-success">{item}</div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="trust-page-grid">
+          {TRUST_CENTER_PAGES.map((page) => (
+            <a key={page.path} className="trust-page-card" href={page.path}>
+              <span>{page.path}</span>
+              <strong>{page.title}</strong>
+              <p>{page.items.join(" · ")}</p>
+            </a>
+          ))}
+        </div>
+        <div className="operator-grid why-grid">
+          {WHY_AFRITECHNOLOGY.map((pillar) => (
+            <article key={pillar.title} className="record-card">
+              <strong>{pillar.title}</strong>
+              <p>{pillar.example}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band developers-band" id="developers">
+        <SectionIntro
+          eyebrow="Developers"
+          title="APIs, SDKs, sandbox, and documentation"
+          question="The developer portal is separated from marketing so builders can get started without reading investor or operator copy."
+        />
         <div className="operator-grid">
-          <OperatorPanel title="Core Platform Layers">
-            <div className="stack">
-              {NOVATECH_CORE_LAYERS.map((layer) => (
-                <article key={layer.name} className="record-card">
-                  <div className="record-card-header">
-                    <strong>{layer.name}</strong>
-                    <span>{layer.status}</span>
-                  </div>
-                  <p>{layer.summary}</p>
-                  <div className="chip-row">
-                    <span className="surface-chip">{layer.route}</span>
-                  </div>
-                </article>
+          <OperatorPanel title="Documentation Portal">
+            <p className="section-note">docs.afritechnology.com</p>
+            <div className="docs-grid">
+              {DOCS_PORTAL_SECTIONS.map((item) => (
+                <div key={item} className="reason-chip reason-chip-success">{item}</div>
               ))}
             </div>
           </OperatorPanel>
-
-          <OperatorPanel title="Vertical Products">
-            <div className="stack">
-              {NOVATECH_PRODUCT_LAYERS.map((product) => (
-                <article key={product.name} className="record-card">
-                  <div className="record-card-header">
-                    <strong>{product.name}</strong>
-                    <span>{product.status}</span>
-                  </div>
-                  <p>{product.summary}</p>
-                  <div className="chip-row">
-                    <span className="surface-chip">{product.route}</span>
-                  </div>
-                </article>
+          <OperatorPanel title="NovaAI Experience">
+            <p className="section-note">AI recommends. Humans approve.</p>
+            <div className="chip-row">
+              {["Operational Assistant", "Payment Insights", "Fleet Insights", "Risk Insights", "Support Intelligence"].map((item) => (
+                <span key={item} className="surface-chip">{item}</span>
               ))}
             </div>
           </OperatorPanel>
         </div>
       </section>
+
+      <section className="section-band downloads-band" id="downloads">
+        <SectionIntro
+          eyebrow="Enterprise Downloads"
+          title="Boardroom-ready trust infrastructure material"
+          question="Professional buyers need downloadable architecture, security, governance, and API material before procurement or partnership review."
+        />
+        <div className="download-grid">
+          {ENTERPRISE_DOWNLOADS.map((download) => (
+            <article key={download} className="download-card">
+              <span>PDF</span>
+              <strong>{download}</strong>
+              <p>Prepared for enterprise, investor, partner, and compliance review.</p>
+              <a href="#contact">Request download</a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band investor-band" id="investors">
+        <SectionIntro
+          eyebrow="Investors & Partners"
+          title="A trust platform growth story"
+          question="AfriTechnology scales from controlled pilots into a regional trust infrastructure network for mobility, payments, identity, and AI operations."
+        />
+        <div className="expansion-path">
+          {EXPANSION_PATH.map((market) => (
+            <span key={market}>{market}</span>
+          ))}
+        </div>
+        <div className="pitch-grid">
+          {["Platform Metrics", "Pilot Metrics", "Roadmap", "Market Opportunity", "Revenue Streams", "Strategic Partnerships"].map((item) => (
+            <article key={item} className="investor-claim">
+              <span>Investor Readiness</span>
+              <strong>{item}</strong>
+              <p>Prepared as a dedicated partner and investor surface rather than buried in the operator dashboard.</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-band contact-band" id="contact">
+        <div className="contact-panel">
+          <div>
+            <p className="eyebrow">Start Pilot</p>
+            <h2>Build trusted operations with AfriTechnology.</h2>
+            <p>
+              Start with one controlled pilot flow, prove the evidence trail,
+              then expand into payments, identity, audit exports, and governed AI.
+            </p>
+          </div>
+          <div className="hero-actions">
+            <a className="button primary" href="mailto:hello@afritechnology.com">Contact AfriTechnology</a>
+            <a className="button secondary" href="/v1/operator/dashboard">Open Operator Demo</a>
+          </div>
+        </div>
+      </section>
+
+      <footer className="ecosystem-footer" aria-label="AfriTechnology ecosystem footer">
+        <div>
+          <strong>AFRITECHNOLOGY</strong>
+          <span>Trust Infrastructure Experience Platform</span>
+        </div>
+        <nav>
+          <section>
+            <h3>Platform</h3>
+            <a href="#platform">NovaTech</a>
+          </section>
+          <section>
+            <h3>Products</h3>
+            {PLATFORM_PRODUCTS.map((product) => (
+              <a key={product.name} href={product.docs}>{product.name}</a>
+            ))}
+          </section>
+          <section>
+            <h3>Resources</h3>
+            <a href="#developers">Documentation</a>
+            <a href="#trust-center">Trust Center</a>
+            <a href="#case-studies">Case Studies</a>
+            <a href="#downloads">Downloads</a>
+          </section>
+          <section>
+            <h3>Company</h3>
+            <a href="#investors">Partners</a>
+            <a href="#investors">Investors</a>
+            <a href="#global">Roadmap</a>
+            <a href="#contact">Contact</a>
+          </section>
+          <section>
+            <h3>Status</h3>
+            <a href="#home">system.afritechnology.com</a>
+          </section>
+        </nav>
+      </footer>
 
       <section className="section-band organization-band" id="organization">
         <SectionIntro
