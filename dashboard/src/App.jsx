@@ -2125,6 +2125,132 @@ const NOVACODEPRO_TRUST_SCORE = [
   { label: "Evidence", value: 98, weight: "10%" },
 ];
 
+const NOVACODEPRO_DESKTOP_MODULES = [
+  "NovaEditor",
+  "NovaAI Studio",
+  "NovaGit",
+  "NovaFlow",
+  "NovaDeploy",
+  "NovaMonitor",
+  "NovaTelemetry",
+  "NovaSecurity",
+  "NovaDocs",
+  "NovaTrust",
+  "NovaMarketplace",
+];
+
+const NOVACODEPRO_DESKTOP_LANGUAGES = [
+  "Python",
+  "JavaScript",
+  "TypeScript",
+  "Django",
+  "React",
+  "Flutter",
+  "Go",
+  "Rust",
+  "Java",
+  "C#",
+];
+
+const NOVAEDITOR_FEATURES = [
+  "IntelliSense",
+  "AI Code Completion",
+  "Refactoring",
+  "Visual Debugging",
+  "Architecture Explorer",
+  "Governance Explorer",
+];
+
+const NOVACODEPRO_DESKTOP_DASHBOARD = [
+  { label: "Repositories", value: "45" },
+  { label: "Live Pipelines", value: "12" },
+  { label: "AI Tasks", value: "62" },
+  { label: "Deployments", value: "8" },
+  { label: "Trust Score", value: "98.7" },
+  { label: "Evidence Packets", value: "2,134" },
+];
+
+const NOVACODEPRO_DESKTOP_TRUST_FACTORS = [
+  "Code Quality",
+  "Security",
+  "Governance",
+  "Evidence Coverage",
+  "Pipeline Reliability",
+];
+
+const NOVACODEPRO_DESKTOP_EVIDENCE_EVENTS = [
+  "Commit Created",
+  "Review Approved",
+  "Pipeline Passed",
+  "Deployment Approved",
+  "Evidence Packet",
+];
+
+const NOVACODEPRO_DESKTOP_MARKETPLACE = [
+  "AI Agents",
+  "Themes",
+  "Templates",
+  "Policies",
+  "Compliance Packs",
+  "Deploy Connectors",
+];
+
+const NOVACODEPRO_MOBILE_AUDIENCES = [
+  "Engineering Managers",
+  "DevOps",
+  "Security Teams",
+  "CTOs",
+  "Solution Architects",
+  "Platform Engineers",
+];
+
+const NOVACODEPRO_MOBILE_METRICS = [
+  { label: "Pipelines", value: "124" },
+  { label: "Deployments", value: "89" },
+  { label: "Open Reviews", value: "41" },
+  { label: "Security Issues", value: "2" },
+  { label: "Trust Score", value: "99.4" },
+];
+
+const NOVACODEPRO_MOBILE_COMMANDS = [
+  "Show failing pipelines",
+  "Generate ADR",
+  "Summarize deployment",
+  "Review security findings",
+  "Show trust score",
+];
+
+const NOVACODEPRO_MOBILE_SECURITY = [
+  "Critical Vulnerabilities",
+  "Secrets Exposure",
+  "Suspicious Activity",
+  "Compliance Issues",
+];
+
+const NOVACODEPRO_MOBILE_EVIDENCE = [
+  "Repository History",
+  "Deployment History",
+  "Pipeline History",
+  "Audit Events",
+];
+
+const NOVACODEPRO_MOBILE_NOTIFICATIONS = [
+  "Pipeline Failed",
+  "Deployment Complete",
+  "Security Alert",
+  "Evidence Generated",
+  "Approval Required",
+];
+
+const NOVACODEPRO_MOBILE_ENTERPRISE = [
+  "Biometric Login",
+  "Device Trust",
+  "RBAC",
+  "SSO",
+  "MFA",
+  "Audit Logging",
+];
+
 const NOVATRUST_VERIFICATION_LEVELS = [
   { level: "Bronze", appliesTo: "Repositories", standard: "Basic policy and ownership verified" },
   { level: "Silver", appliesTo: "Extensions", standard: "Security scan and dependency review complete" },
@@ -8099,6 +8225,185 @@ export default function OperatorDashboard() {
                 </dl>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="codepro-product-suite" id="novacodepro-desktop">
+          <SectionIntro
+            eyebrow="NovaCodePro Desktop"
+            title="The Trusted Engineering Desktop"
+            question="Build. Govern. Deploy. Verify. The trusted engineering desktop for modern software teams."
+          />
+          <div className="desktop-workstation-grid">
+            <article className="desktop-workstation-hero">
+              <p className="eyebrow">Trusted Engineering Workstation</p>
+              <h3>IDE, AI engineering, Git, CI/CD, security, governance, observability, and evidence in one desktop.</h3>
+              <div className="desktop-dashboard-grid">
+                {NOVACODEPRO_DESKTOP_DASHBOARD.map((metric) => (
+                  <div key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <OperatorPanel title="Desktop Architecture">
+              <div className="desktop-module-tree">
+                <strong>NovaCodePro Desktop</strong>
+                {NOVACODEPRO_DESKTOP_MODULES.map((module) => (
+                  <span key={module}>{module}</span>
+                ))}
+              </div>
+            </OperatorPanel>
+          </div>
+
+          <div className="desktop-capability-grid">
+            <OperatorPanel title="NovaEditor">
+              <p className="section-note">Next-generation IDE for governed software delivery.</p>
+              <div className="language-grid">
+                {NOVACODEPRO_DESKTOP_LANGUAGES.map((language) => (
+                  <span key={language}>{language}</span>
+                ))}
+              </div>
+              <div className="docs-grid">
+                {NOVAEDITOR_FEATURES.map((feature) => (
+                  <div key={feature} className="reason-chip reason-chip-success">{feature}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="NovaGit Desktop">
+              <div className="docs-grid">
+                {["Repositories", "Pull Requests", "Branch Management", "Evidence-based Commits", "Code Reviews"].map((item) => (
+                  <div key={item} className="reason-chip">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="NovaFlow Desktop">
+              <div className="codepro-flow vertical-flow desktop-pipeline-flow">
+                {["Code", "Build", "Test", "Security", "Policy Validation", "Deploy"].map((step) => (
+                  <span key={step}>{step}</span>
+                ))}
+              </div>
+            </OperatorPanel>
+          </div>
+
+          <div className="desktop-trust-grid">
+            <article className="desktop-score-card">
+              <span>Engineering Trust Score</span>
+              <strong>98.7</strong>
+              <p>Displayed continuously from code quality, security, governance, evidence coverage, and pipeline reliability.</p>
+              <div className="chip-row">
+                {NOVACODEPRO_DESKTOP_TRUST_FACTORS.map((factor) => (
+                  <span key={factor} className="surface-chip">{factor}</span>
+                ))}
+              </div>
+            </article>
+            <OperatorPanel title="NovaTrust Desktop">
+              <p className="section-note">Every action generates evidence.</p>
+              <div className="desktop-evidence-flow">
+                {NOVACODEPRO_DESKTOP_EVIDENCE_EVENTS.map((event) => (
+                  <span key={event}>{event}</span>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="NovaMarketplace Desktop">
+              <p className="section-note">Every trusted extension can carry a Verified by NovaTrust badge.</p>
+              <div className="docs-grid">
+                {NOVACODEPRO_DESKTOP_MARKETPLACE.map((item) => (
+                  <div key={item} className="reason-chip reason-chip-success">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+          </div>
+        </section>
+
+        <section className="codepro-product-suite mobile-command-section" id="novacodepro-mobile">
+          <SectionIntro
+            eyebrow="NovaCodePro Mobile"
+            title="Engineering Control Anywhere"
+            question="NovaCodePro Mobile is the trusted engineering command center for approvals, monitoring, AI summaries, evidence review, security, and alerts."
+          />
+          <div className="mobile-command-grid">
+            <article className="mobile-device-frame">
+              <div className="mobile-device-top">NovaCodePro Mobile</div>
+              <p>Your engineering platform in your pocket.</p>
+              <div className="mobile-metric-list">
+                {NOVACODEPRO_MOBILE_METRICS.map((metric) => (
+                  <div key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <div className="mobile-command-panels">
+              <OperatorPanel title="Designed For">
+                <div className="docs-grid">
+                  {NOVACODEPRO_MOBILE_AUDIENCES.map((audience) => (
+                    <div key={audience} className="reason-chip reason-chip-success">{audience}</div>
+                  ))}
+                </div>
+              </OperatorPanel>
+              <OperatorPanel title="Mobile AI Assistant">
+                <div className="docs-grid">
+                  {NOVACODEPRO_MOBILE_COMMANDS.map((command) => (
+                    <div key={command} className="reason-chip">{command}</div>
+                  ))}
+                </div>
+              </OperatorPanel>
+              <OperatorPanel title="Deployment Approval">
+                <div className="codepro-flow vertical-flow mobile-approval-flow">
+                  {["Deployment Request", "Mobile Review", "Approval", "Deployment"].map((step) => (
+                    <span key={step}>{step}</span>
+                  ))}
+                </div>
+              </OperatorPanel>
+            </div>
+          </div>
+
+          <div className="mobile-ops-grid">
+            <OperatorPanel title="Security Center">
+              <div className="docs-grid">
+                {NOVACODEPRO_MOBILE_SECURITY.map((item) => (
+                  <div key={item} className="reason-chip">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="NovaTrust Mobile">
+              <div className="docs-grid">
+                {NOVACODEPRO_MOBILE_EVIDENCE.map((item) => (
+                  <div key={item} className="reason-chip reason-chip-success">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="Repository Digital Twin">
+              <div className="digital-twin-flow">
+                {["Repository", "Architecture", "Changes", "Deployments", "Evidence"].map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="Push Notifications">
+              <div className="docs-grid">
+                {NOVACODEPRO_MOBILE_NOTIFICATIONS.map((item) => (
+                  <div key={item} className="reason-chip">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="Offline Mode">
+              <div className="docs-grid">
+                {["Documentation", "Architecture", "Evidence History", "Repository Metadata"].map((item) => (
+                  <div key={item} className="reason-chip reason-chip-success">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="Enterprise Mobile">
+              <div className="docs-grid">
+                {NOVACODEPRO_MOBILE_ENTERPRISE.map((item) => (
+                  <div key={item} className="reason-chip">{item}</div>
+                ))}
+              </div>
+            </OperatorPanel>
           </div>
         </section>
 

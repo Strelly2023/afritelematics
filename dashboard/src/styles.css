@@ -1051,6 +1051,11 @@ a {
 .codepro-os-map,
 .codepro-workspace-grid,
 .codepro-living-grid,
+.desktop-workstation-grid,
+.desktop-capability-grid,
+.desktop-trust-grid,
+.mobile-command-grid,
+.mobile-ops-grid,
 .codepro-role-grid,
 .codepro-ai-studio,
 .codepro-status-grid,
@@ -1554,6 +1559,215 @@ a {
 
 .cloud-region-expansion {
   box-shadow: inset 4px 0 0 #f1a23a;
+}
+
+.codepro-product-suite {
+  margin: 28px 0;
+}
+
+.desktop-workstation-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+}
+
+.desktop-workstation-hero {
+  display: grid;
+  align-content: space-between;
+  gap: 20px;
+  min-height: 360px;
+  border: 1px solid rgba(117, 214, 160, 0.36);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(7, 17, 31, 0.98), rgba(19, 53, 73, 0.94)),
+    #07111f;
+  color: #ffffff;
+  padding: 22px;
+  box-shadow: 0 28px 70px rgba(24, 36, 50, 0.2);
+}
+
+.desktop-workstation-hero h3 {
+  max-width: 880px;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.8rem, 3.4vw, 3.4rem);
+  line-height: 1.04;
+}
+
+.desktop-dashboard-grid,
+.mobile-metric-list {
+  display: grid;
+  gap: 10px;
+}
+
+.desktop-dashboard-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.desktop-dashboard-grid div {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 12px;
+}
+
+.desktop-dashboard-grid span,
+.mobile-metric-list span,
+.desktop-score-card > span {
+  color: #6b7b8e;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.desktop-dashboard-grid span {
+  color: #b9c7d6;
+}
+
+.desktop-dashboard-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.desktop-module-tree {
+  display: grid;
+  gap: 8px;
+}
+
+.desktop-module-tree strong {
+  display: grid;
+  min-height: 46px;
+  place-items: center;
+  border-radius: 8px;
+  background: #172033;
+  color: #ffffff;
+}
+
+.desktop-module-tree span {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #35556e;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.desktop-capability-grid,
+.desktop-trust-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.desktop-capability-grid .language-grid {
+  margin-bottom: 12px;
+}
+
+.desktop-pipeline-flow span,
+.mobile-approval-flow span {
+  color: #172033;
+  background: #f8fbfc;
+}
+
+.desktop-score-card {
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  border: 1px solid #bfd5ce;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.desktop-score-card strong {
+  color: #1f7a55;
+  font-size: clamp(3rem, 6vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.desktop-score-card p {
+  margin: 0;
+  color: #59687b;
+  line-height: 1.55;
+}
+
+.desktop-evidence-flow {
+  display: grid;
+  gap: 8px;
+}
+
+.desktop-evidence-flow span {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #f8fbfc;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+
+.mobile-command-section {
+  border-top: 1px solid #d8e1e8;
+  padding-top: 26px;
+}
+
+.mobile-command-grid {
+  grid-template-columns: minmax(280px, 0.48fr) minmax(0, 1.52fr);
+  align-items: stretch;
+}
+
+.mobile-device-frame {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  max-width: 390px;
+  min-height: 600px;
+  border: 1px solid #26374f;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, #07111f, #102235);
+  color: #ffffff;
+  padding: 18px;
+  box-shadow: 0 28px 70px rgba(24, 36, 50, 0.24);
+}
+
+.mobile-device-top {
+  display: grid;
+  min-height: 54px;
+  place-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-weight: 900;
+}
+
+.mobile-device-frame p {
+  margin: 0;
+  color: #d7e2ea;
+  line-height: 1.55;
+}
+
+.mobile-metric-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 12px;
+}
+
+.mobile-metric-list span {
+  color: #b9c7d6;
+}
+
+.mobile-metric-list strong {
+  color: #ffffff;
+}
+
+.mobile-command-panels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mobile-ops-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .novacodepro-app-card {
@@ -4010,6 +4224,12 @@ a {
   .codepro-os-map,
   .codepro-workspace-grid,
   .codepro-living-grid,
+  .desktop-workstation-grid,
+  .desktop-capability-grid,
+  .desktop-trust-grid,
+  .mobile-command-grid,
+  .mobile-command-panels,
+  .mobile-ops-grid,
   .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
@@ -4087,6 +4307,12 @@ a {
   .codepro-os-map,
   .codepro-workspace-grid,
   .codepro-living-grid,
+  .desktop-workstation-grid,
+  .desktop-capability-grid,
+  .desktop-trust-grid,
+  .mobile-command-grid,
+  .mobile-command-panels,
+  .mobile-ops-grid,
   .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
@@ -4186,6 +4412,12 @@ a {
   .codepro-os-map,
   .codepro-workspace-grid,
   .codepro-living-grid,
+  .desktop-workstation-grid,
+  .desktop-capability-grid,
+  .desktop-trust-grid,
+  .mobile-command-grid,
+  .mobile-command-panels,
+  .mobile-ops-grid,
   .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
@@ -4336,6 +4568,12 @@ a {
   .codepro-os-map,
   .codepro-workspace-grid,
   .codepro-living-grid,
+  .desktop-workstation-grid,
+  .desktop-capability-grid,
+  .desktop-trust-grid,
+  .mobile-command-grid,
+  .mobile-command-panels,
+  .mobile-ops-grid,
   .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
