@@ -13,8 +13,8 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "https://download.afritechnology.com/novaride/rider.apk",
-  "apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35",
+  "apk_url": "https://download.afritechnology.com/novaride/novaride-rider-v2026.1.0-release.apk",
+  "apk_sha256": "515f9bcb464da46cb125bae9c4c50dbe6c73ddb9e2b2c61fa570e1cf32e2d76b",
   "required_capabilities": [
     "rider_auth",
     "pickup_destination_entry",
@@ -24,11 +24,18 @@
     "live_tracking",
     "receipt_display",
     "replay_status",
-    "support_ticket"
+    "support_ticket",
+    "ai_journey_agent",
+    "multimodal_planning",
+    "autonomous_ride_matching",
+    "carbon_aware_routing",
+    "digital_twin_eta",
+    "mobility_cloud_profile",
+    "city_mobility_exchange"
   ],
   "release_artifacts": {
-    "android_apk": "https://download.afritechnology.com/novaride/rider.apk",
-    "android_apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35"
+    "android_apk": "https://download.afritechnology.com/novaride/novaride-rider-v2026.1.0-release.apk",
+    "android_apk_sha256": "515f9bcb464da46cb125bae9c4c50dbe6c73ddb9e2b2c61fa570e1cf32e2d76b"
   },
   "required_backend_contracts": [
     "POST /v1/mobile/auth/session",
@@ -37,7 +44,10 @@
     "GET /v1/rider/rides/{ride_id}/receipt",
     "GET /v1/rider/rides/{ride_id}/replay",
     "GET /v1/rider/rides/{ride_id}/ledger-receipt",
-    "GET /v1/rider/rides/{ride_id}/price-explanation"
+    "GET /v1/rider/rides/{ride_id}/price-explanation",
+    "GET /v1/mobility-cloud/rider/profile",
+    "POST /v1/mobility-cloud/journeys/plan",
+    "GET /v1/mobility-cloud/digital-twins/eta"
   ],
   "required_store_assets": [
     "app_icon_512",

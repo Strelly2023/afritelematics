@@ -18,7 +18,7 @@
       "apk_file": "novaride-rider-public-pilot-release.apk",
       "apk_sha256_file": "novaride-rider-public-pilot-release.apk.sha256",
       "apk_url": "https://download.afritechnology.com/novaride/rider.apk",
-      "apk_sha256": "59955032bac42f92e612af8002dbfd80e555f6644f54a10d7792d535ed8d2e35",
+      "apk_sha256": "515f9bcb464da46cb125bae9c4c50dbe6c73ddb9e2b2c61fa570e1cf32e2d76b",
       "required_capabilities": ["registration", "ride_request", "trip_lifecycle", "sos", "receipt", "support"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
     },
@@ -35,7 +35,7 @@
       "apk_file": "novaride-driver-public-pilot-release.apk",
       "apk_sha256_file": "novaride-driver-public-pilot-release.apk.sha256",
       "apk_url": "https://download.afritechnology.com/novaride/driver.apk",
-      "apk_sha256": "b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507",
+      "apk_sha256": "9874831ea208c401f83cee9cf65704fccb17362d41398fc0b6f8fe2e79eb5943",
       "required_capabilities": ["application", "driver_login", "accept", "start", "end", "earnings", "support"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
     },
@@ -52,7 +52,7 @@
       "apk_file": "novaride-fleet-public-pilot-release.apk",
       "apk_sha256_file": "novaride-fleet-public-pilot-release.apk.sha256",
       "apk_url": "https://download.afritechnology.com/novaride/fleet.apk",
-      "apk_sha256": "0c0592eac2d5b331ab2f3b3a077a296bb60ca8583e1113068acf42c401307d4d",
+      "apk_sha256": "506d695bfd48bf06cfba6d67e073c97239800f3aabc7c1a71381f263845ae933",
       "required_capabilities": ["fleet_dashboard", "vehicle_management", "driver_assignment", "compliance", "reports"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
     },
@@ -69,7 +69,7 @@
       "apk_file": "novaride-operator-public-pilot-release.apk",
       "apk_sha256_file": "novaride-operator-public-pilot-release.apk.sha256",
       "apk_url": "https://download.afritechnology.com/novaride/operator.apk",
-      "apk_sha256": "a31b97809c80e1964c3862b75d592a4603e256e76b4030749d2f2bb5cbf7391b",
+      "apk_sha256": "9a3ee2c30070bd38ae2fc7cd4cb33c0fba22cffd8b2e56894242e61d09bfa17c",
       "required_capabilities": ["overview", "fleet", "drivers", "trips", "earnings", "compliance", "support", "settings"],
       "public_claims": ["GA false", "public launch false", "production ready false"]
     },

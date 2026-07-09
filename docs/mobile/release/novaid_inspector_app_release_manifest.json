@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "https://download.afritechnology.com/novaid/inspector.apk",
+  "apk_url": "https://download.afritechnology.com/novaid/novaid-inspector-v2026.1.0-release.apk",
   "apk_sha256": "39c640e7c3dfc7b68bc9ed2c800f0346a39d6ed98b127411d9aa5d1d2dafc205",
   "required_capabilities": [
     "dashboard",
@@ -42,7 +42,7 @@
     "accessibility"
   ],
   "release_artifacts": {
-    "android_apk": "https://download.afritechnology.com/novaid/inspector.apk",
+    "android_apk": "https://download.afritechnology.com/novaid/novaid-inspector-v2026.1.0-release.apk",
     "android_apk_sha256": "39c640e7c3dfc7b68bc9ed2c800f0346a39d6ed98b127411d9aa5d1d2dafc205"
   },
   "required_backend_contracts": [

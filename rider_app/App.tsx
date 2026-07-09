@@ -14,6 +14,18 @@ export const NOVARIDE_RIDER_FEATURES = [
   "Live Tracking", "Driver Profile", "Trip Safety", "Emergency/SOS", "NovaPay Payment",
   "QR Ride Verification", "Digital Receipt", "Trip Replay", "Rating", "Support", "Dispute Flow",
 ] as const;
+export const NOVARIDE_X_RIDER_MOS_FEATURES = [
+  "AI Journey Agent", "Multimodal Planning", "Autonomous Ride Matching", "Carbon-Aware Routing",
+  "NovaPay Wallet", "NovaID Zero Trust", "Accessibility Optimizer", "Automatic Rebooking",
+  "Digital Twin ETA", "Safety Intelligence", "Fraud Protection", "Expense Reports",
+  "Public Transit Connector", "Mobility Cloud Profile", "City Mobility Exchange",
+] as const;
+const MOBILITY_CLOUD_LAYERS = [
+  "Experience Cloud", "Mobility Cloud", "Intelligence Cloud", "Data Cloud", "Infrastructure Cloud",
+] as const;
+const AI_DECISION_PIPELINE = [
+  "Identity", "Context", "Demand", "Supply", "Pricing", "Matching", "Risk", "Route", "Dispatch", "Learning",
+] as const;
 
 const LEGACY_RIDER_BUTTON_MARKERS = [
   'label="Request Ride"',
@@ -175,6 +187,7 @@ export default function NovaRideRiderApp() {
             <Text style={styles.mapPin}>●</Text><Text style={styles.mapRoad}>╱━━━━━━●━━━━━━╲</Text>
             <Text style={styles.mapLabel}>Map-first live city view · Low-bandwidth ready</Text>
           </View>
+          <RiderMOSPanel palette={palette} onAction={action} />
           {(tab === "Home" || tab === "Book Ride") && (
             <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
               <Text style={[styles.title, { color: palette.text }]}>Where are you going?</Text>
@@ -288,6 +301,38 @@ function Action({ label, onPress, primary, danger }: { label: string; onPress: (
   return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={[styles.button, primary && styles.primary, danger && styles.danger]}><Text style={primary || danger ? styles.buttonInverse : styles.buttonText}>{label}</Text></Pressable>;
 }
 function DriverTrustCard() { return <View style={styles.trust}><Text style={styles.trustTitle}>✓ Driver & vehicle verified</Text><Text>Amara K. · 4.96 ★ · Toyota Camry · NOVA-26</Text><Text>NovaID · Vehicle compliance · Trust score 96</Text></View>; }
+function RiderMOSPanel({ palette, onAction }: { palette: typeof lightTheme; onAction: (label: string, next?: BookingStage) => void }) {
+  return (
+    <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
+      <Text style={styles.kicker}>NOVARIDE X 2035+ MOS</Text>
+      <Text style={[styles.title, { color: palette.text }]}>AI-native mobility operating system</Text>
+      <View style={styles.mosGrid}>
+        {[
+          ["ETA", "3.8m"],
+          ["Carbon", "-21%"],
+          ["Risk", "Low"],
+          ["Wallet", "Ready"],
+        ].map(([label, value]) => (
+          <View key={label} style={styles.mosMetric}>
+            <Text style={styles.mosValue}>{value}</Text>
+            <Text style={styles.mosLabel}>{label}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.pipeline}>
+        {AI_DECISION_PIPELINE.map((stage) => <Text key={stage} style={styles.pipelineStep}>{stage}</Text>)}
+      </View>
+      <View style={styles.pipeline}>
+        {MOBILITY_CLOUD_LAYERS.map((layer) => <Text key={layer} style={styles.cloudStep}>{layer}</Text>)}
+      </View>
+      <View style={styles.row}>
+        {NOVARIDE_X_RIDER_MOS_FEATURES.map((feature) => (
+          <Action key={feature} label={feature} onPress={() => onAction(`${feature} opened`, "matching")} />
+        ))}
+      </View>
+    </View>
+  );
+}
 function FeaturePanel({ tab, palette, onSOS }: { tab: RiderTab; palette: typeof lightTheme; onSOS: () => void }) {
   const items = tab === "Trips" ? ["Scheduled rides", "Active trip", "Trip replay", "Support"] : tab === "Safety" ? ["Safety Center", "Share live trip", "Emergency contacts", "SOS"] : tab === "Receipts" ? ["Digital receipt", "Proof-of-payment", "Fare breakdown", "Open dispute"] : ["NovaID identity", "Saved places", "NovaPay wallet", "Accessibility"];
   return <View style={[styles.sheet, { backgroundColor: palette.surface }]}><Text style={[styles.title, { color: palette.text }]}>{tab}</Text>{items.map((item) => <Pressable accessibilityRole="button" accessibilityLabel={item} key={item} onPress={item === "SOS" ? onSOS : () => undefined} style={[styles.listItem, { borderBottomColor: palette.border }]}><Text style={{ color: palette.text }}>{item}</Text><Text style={{ color: palette.muted }}>›</Text></Pressable>)}</View>;
@@ -307,6 +352,13 @@ const styles = StyleSheet.create({
   rideType: { flexDirection: "row", justifyContent: "space-between", padding: 13, borderRadius: 14 }, selected: { backgroundColor: "#EEEAFD" }, itemTitle: { fontWeight: "800" }, fare: { fontWeight: "900" },
   fareCard: { backgroundColor: "#EEF7F3", padding: 14, borderRadius: 14 }, fareTitle: { color: "#087A50", fontWeight: "900" }, fareDetail: { color: "#345448", marginTop: 5 },
   trust: { backgroundColor: "#E8FBF2", borderRadius: 14, padding: 14, gap: 4 }, trustTitle: { color: "#087A50", fontWeight: "900" },
+  mosGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  mosMetric: { backgroundColor: "#EEF7F3", borderRadius: 12, padding: 12, minWidth: "22%", flexGrow: 1 },
+  mosValue: { color: "#087A50", fontWeight: "900", fontSize: 18 },
+  mosLabel: { color: "#345448", fontWeight: "800", fontSize: 11 },
+  pipeline: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  pipelineStep: { backgroundColor: "#15182A", color: "#FFFFFF", borderRadius: 10, paddingHorizontal: 9, paddingVertical: 6, fontSize: 11, fontWeight: "800" },
+  cloudStep: { backgroundColor: "#E8FBF2", color: "#087A50", borderRadius: 10, paddingHorizontal: 9, paddingVertical: 6, fontSize: 11, fontWeight: "800" },
   timeline: { borderRadius: 20, padding: 18, gap: 8 }, success: { backgroundColor: "#E8FBF2", color: "#087A50", padding: 14, borderRadius: 12, fontWeight: "800" },
   listItem: { paddingVertical: 14, borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between" },
   tabs: { padding: 18, flexDirection: "row", justifyContent: "space-around" },

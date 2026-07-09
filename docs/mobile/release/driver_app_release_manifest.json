@@ -13,8 +13,8 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "https://download.afritechnology.com/novaride/driver.apk",
-  "apk_sha256": "b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507",
+  "apk_url": "https://download.afritechnology.com/novaride/novaride-driver-v2026.1.0-release.apk",
+  "apk_sha256": "9874831ea208c401f83cee9cf65704fccb17362d41398fc0b6f8fe2e79eb5943",
   "required_capabilities": [
     "driver_auth",
     "availability_toggle",
@@ -24,11 +24,19 @@
     "earnings_dashboard",
     "replay_history",
     "pilot_diagnostics",
-    "support_ticket"
+    "support_ticket",
+    "driver_agent",
+    "earnings_forecasting",
+    "demand_heatmap",
+    "energy_aware_routing",
+    "charging_recommendations",
+    "maintenance_agent",
+    "fatigue_scoring",
+    "resource_marketplace"
   ],
   "release_artifacts": {
-    "android_apk": "https://download.afritechnology.com/novaride/driver.apk",
-    "android_apk_sha256": "b594204c13d9d2a8d1bf35658b60207dc5ce62768d0bbff08105928c6cbd3507"
+    "android_apk": "https://download.afritechnology.com/novaride/novaride-driver-v2026.1.0-release.apk",
+    "android_apk_sha256": "9874831ea208c401f83cee9cf65704fccb17362d41398fc0b6f8fe2e79eb5943"
   },
   "required_backend_contracts": [
     "POST /v1/mobile/auth/session",
@@ -42,7 +50,10 @@
     "POST /v1/driver/rides/{ride_id}/complete",
     "GET /v1/driver/{driver_id}/earnings",
     "GET /v1/driver/{driver_id}/replay-history",
-    "GET /v1/operator/dashboard"
+    "GET /v1/operator/dashboard",
+    "GET /v1/mobility-cloud/driver/{driver_id}/forecast",
+    "GET /v1/mobility-cloud/driver/{driver_id}/energy-plan",
+    "GET /v1/mobility-cloud/driver/{driver_id}/resource-profile"
   ],
   "required_store_assets": [
     "app_icon_512",

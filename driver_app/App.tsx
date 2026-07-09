@@ -57,6 +57,11 @@ export const NOVARIDE_DRIVER_FEATURES = [
   "Driver Trust Profile", "Safety/SOS", "Trip Replay", "Proof Recorder",
   "Vehicle Documents", "Support",
 ] as const;
+export const NOVARIDE_X_DRIVER_CLOUD_FEATURES = [
+  "Driver Agent", "Earnings Forecasting", "Demand Heatmap", "Energy-Aware Routing",
+  "Charging Recommendations", "Maintenance Agent", "Safety Coaching", "Fatigue Scoring",
+  "Tax Estimate", "Expense Management", "Mobility Graph Profile", "Resource Marketplace",
+] as const;
 
 export const NOVARIDE_DRIVER_FLOW = [
   "go online", "receive request", "accept/reject", "navigate to pickup", "arrived",
@@ -311,6 +316,7 @@ export default function App() {
                     }}
                     onStartShift={startShift}
                   />
+                  <DriverCloudPanel />
                 </>
               ) : null}
               {activeTab === "requests" ? (
@@ -392,6 +398,33 @@ export default function App() {
   );
 }
 
+function DriverCloudPanel() {
+  return (
+    <View style={styles.cloudCard}>
+      <Text style={styles.cloudKicker}>NOVARIDE X DRIVER CLOUD</Text>
+      <Text style={styles.cloudTitle}>AI driver, energy, safety, and earnings workspace</Text>
+      <View style={styles.cloudMetrics}>
+        {[
+          ["Forecast", "AUD 420"],
+          ["Demand", "High"],
+          ["Fatigue", "Low"],
+          ["Charge", "76%"],
+        ].map(([label, value]) => (
+          <View key={label} style={styles.cloudMetric}>
+            <Text style={styles.cloudValue}>{value}</Text>
+            <Text style={styles.cloudLabel}>{label}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.cloudActions}>
+        {NOVARIDE_X_DRIVER_CLOUD_FEATURES.map((feature) => (
+          <Text key={feature} style={styles.cloudPill}>{feature}</Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   content: {
     gap: spacing.lg,
@@ -433,6 +466,60 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     borderTopWidth: 1,
     padding: spacing.md,
+  },
+  cloudActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cloudCard: {
+    backgroundColor: "#ffffff",
+    borderColor: colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
+  cloudKicker: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: "900",
+  },
+  cloudLabel: {
+    color: "#345448",
+    fontSize: 11,
+    fontWeight: "800",
+  },
+  cloudMetric: {
+    backgroundColor: "#eef7f3",
+    borderRadius: 12,
+    flexGrow: 1,
+    minWidth: "46%",
+    padding: spacing.md,
+  },
+  cloudMetrics: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cloudPill: {
+    backgroundColor: "#eeeafd",
+    borderRadius: 12,
+    color: "#4a35b5",
+    fontSize: 12,
+    fontWeight: "800",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  cloudTitle: {
+    color: colors.ink,
+    fontSize: 18,
+    fontWeight: "900",
+  },
+  cloudValue: {
+    color: colors.success,
+    fontSize: 18,
+    fontWeight: "900",
   },
   shell: {
     flex: 1,

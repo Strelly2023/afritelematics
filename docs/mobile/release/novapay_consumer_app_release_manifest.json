@@ -13,7 +13,7 @@
     "play_store_track": "internal_testing",
     "app_store_track": "testflight"
   },
-  "apk_url": "https://download.afritechnology.com/novapay/consumer.apk",
+  "apk_url": "https://download.afritechnology.com/novapay/novapay-consumer-v2026.1.0-release.apk",
   "apk_sha256": "f7a8e502f39c369d569deaa8cac1c51d52e89666a747a62af9d2fa13e4c33f85",
   "required_capabilities": [
     "home",
@@ -40,7 +40,7 @@
     "accessibility"
   ],
   "release_artifacts": {
-    "android_apk": "https://download.afritechnology.com/novapay/consumer.apk",
+    "android_apk": "https://download.afritechnology.com/novapay/novapay-consumer-v2026.1.0-release.apk",
     "android_apk_sha256": "f7a8e502f39c369d569deaa8cac1c51d52e89666a747a62af9d2fa13e4c33f85"
   },
   "required_backend_contracts": [
