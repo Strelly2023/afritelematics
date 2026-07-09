@@ -1,0 +1,12 @@
+groups:
+  - name: platform-recordings
+    rules:
+      - record: afritech_api:request_rate:5m
+        expr: rate(http_requests_total[5m])
+
+      - record: afritech_api:error_rate:5m
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+
+      - record: afritech_api:p95_latency_seconds
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+

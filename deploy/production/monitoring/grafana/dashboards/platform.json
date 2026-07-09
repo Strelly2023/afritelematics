@@ -1,0 +1,13 @@
+{
+  "title": "Platform Dashboard",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {"type": "timeseries", "title": "CPU", "targets": [{"expr": "rate(node_cpu_seconds_total{mode!='idle'}[5m])"}]},
+    {"type": "timeseries", "title": "Memory", "targets": [{"expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))"}]},
+    {"type": "timeseries", "title": "Disk", "targets": [{"expr": "(1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes))"}]},
+    {"type": "timeseries", "title": "Network", "targets": [{"expr": "rate(node_network_receive_bytes_total[5m])"}]},
+    {"type": "timeseries", "title": "Containers", "targets": [{"expr": "container_memory_working_set_bytes"}]}
+  ]
+}
+

@@ -28,14 +28,14 @@ def test_trust_node_compose_defines_nginx_certbot_api_and_dashboard() -> None:
         "certbot:",
         "80:80",
         "443:443",
-        "trust-node.conf.template",
+        "afritechnology-platform.conf.template",
         "certbot_certs",
         "afritech_anchor_index",
         ".env.production.trust-node",
         "AFRIRIDE_DB_PATH: /var/lib/afritech/pilot_state.sqlite3",
         "AFRITECH_RUNTIME_ENVIRONMENT: production",
         "AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3",
-        '127.0.0.1:8000:8000',
+        '127.0.0.1:8001:8000',
     ):
         assert item in text
 

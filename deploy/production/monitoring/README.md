@@ -1,14 +1,15 @@
 # Monitoring Foundation
 
-This directory defines the public-pilot monitoring baseline for AfriTechnology.
+This directory contains the production-observability stack for AfriTechnology.
 
-## Planned Stack
+## Components
 
-- Prometheus for metrics collection
-- Grafana for dashboards
-- Exporters for API, NGINX, and host metrics when deployed
+- Prometheus: `deploy/production/monitoring/prometheus/`
+- Alertmanager: `deploy/production/monitoring/alertmanager/`
+- Grafana: `deploy/production/monitoring/grafana/`
+- OpenTelemetry collector: `deploy/production/monitoring/opentelemetry/`
 
-## What to Observe
+## Coverage
 
 - API latency
 - request count
@@ -16,15 +17,10 @@ This directory defines the public-pilot monitoring baseline for AfriTechnology.
 - container health
 - host metrics
 - TLS certificate expiry
-
-## Current Targets
-
-- `afritech-api:8000`
-- `nginx` exporter when introduced later
-- `node_exporter` when introduced later
+- platform dashboards for NovaRide, NovaPay, and NovaID
 
 ## Notes
 
-- The Prometheus and Grafana services are intentionally profile-gated in compose.
-- Health endpoints and Docker health checks provide the first-line operational probe surface.
-- Structured request logs should carry request_id, client_ip, duration, status, method, and path.
+- Monitoring services are profile-gated and disabled by default.
+- Structured request logs carry request_id and trace correlation fields.
+- `/health`, `/live`, `/ready`, and `/healthz` remain the health surfaces for operational checks.

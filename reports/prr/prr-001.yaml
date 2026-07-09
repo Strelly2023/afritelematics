@@ -1,0 +1,18 @@
+report_id: PRR-001
+status: READY_FOR_PRR
+ga_allowed: false
+domains:
+  engineering: PASS
+  operations: PASS
+  security: PASS
+  governance: PASS
+  compliance: PASS
+  commercial: PASS
+evidence:
+  health_endpoints: true
+  docker_healthchecks: true
+  prometheus_configured: true
+  alertmanager_configured: true
+  grafana_configured: true
+  structured_logging: true
+  trace_correlation: true

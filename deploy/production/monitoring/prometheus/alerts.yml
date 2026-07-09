@@ -1,0 +1,85 @@
+groups:
+  - name: platform-critical
+    rules:
+      - alert: ApiDown
+        expr: up{job="afritech-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "afritech-api is down"
+
+      - alert: NginxDown
+        expr: up{job="nginx-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "nginx exporter is down"
+
+      - alert: DatabaseDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "postgres exporter is down"
+
+      - alert: ContainerUnhealthy
+        expr: up{job="cadvisor"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "container monitoring lost"
+
+      - alert: CertificateExpirySoon
+        expr: certificate_manager_tls_cert_days_remaining < 14
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TLS certificate expires in less than 14 days"
+
+  - name: platform-warning
+    rules:
+      - alert: CpuHigh
+        expr: avg(rate(node_cpu_seconds_total{mode!="idle"}[5m])) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 80%"
+
+      - alert: MemoryHigh
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 80%"
+
+      - alert: DiskHigh
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk usage above 85%"
+
+      - alert: ApiErrorRateHigh
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API error rate above 2%"
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 request latency above 1s"
+

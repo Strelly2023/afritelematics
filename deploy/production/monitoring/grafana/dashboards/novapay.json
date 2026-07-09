@@ -1,0 +1,12 @@
+{
+  "title": "NovaPay Dashboard",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {"type": "timeseries", "title": "Transfer requests", "targets": [{"expr": "rate(novapay_transfer_requests_total[5m])"}]},
+    {"type": "timeseries", "title": "Successful transfers", "targets": [{"expr": "rate(novapay_transfer_success_total[5m])"}]},
+    {"type": "timeseries", "title": "Failed transfers", "targets": [{"expr": "rate(novapay_transfer_failure_total[5m])"}]},
+    {"type": "timeseries", "title": "Reconciliation latency", "targets": [{"expr": "novapay_reconciliation_latency_seconds"}]}
+  ]
+}
+

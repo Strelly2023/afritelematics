@@ -38,7 +38,14 @@ def test_fastapi_health_endpoints_are_exposed(monkeypatch, tmp_path) -> None:
 
     ready = client.get("/ready")
     assert ready.status_code == 200
-    assert ready.json() == {"ready": True, "database": "up", "configuration": "valid"}
+    ready_payload = ready.json()
+    assert ready_payload["ready"] is True
+    assert ready_payload["database"] == "up"
+    assert ready_payload["configuration"] == "valid"
+    assert ready_payload["disk"] == "ok"
+    assert ready_payload["tls"] == "ok"
+    assert ready_payload["migrations"] == "applied"
+    assert ready_payload["monitoring"] == "available"
 
 
 def test_fastapi_ready_endpoint_returns_503_when_configuration_invalid(monkeypatch, tmp_path) -> None:
@@ -67,7 +74,7 @@ def test_nginx_template_contains_healthz_probe() -> None:
 
 def test_docker_compose_contains_healthchecks() -> None:
     text = COMPOSE.read_text(encoding="utf-8")
-    assert 'test: ["CMD", "curl", "-fsS", "--max-time", "10", "http://127.0.0.1:8000/health"]' in text
+    assert 'test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]' in text
     assert 'test: ["CMD", "wget", "-qO-", "http://localhost:4173"]' in text
     assert 'test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]' in text
     assert "interval: 30s" in text

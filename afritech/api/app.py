@@ -6,6 +6,7 @@ from importlib import import_module
 import os
 import sqlite3
 import time
+from pathlib import Path
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -493,15 +494,69 @@ def _database_ready() -> bool:
     return True
 
 
+def _disk_ready() -> bool:
+    db_target = Path(os.environ.get("AFRIRIDE_DB_PATH", "/var/lib/afritech/pilot_state.sqlite3"))
+    target_dir = db_target.parent if db_target.parent.exists() else Path("/tmp")
+    try:
+        stats = os.statvfs(target_dir)
+    except OSError:
+        return False
+    free_bytes = stats.f_bavail * stats.f_frsize
+    return free_bytes >= 50 * 1024 * 1024
+
+
+def _tls_ready() -> bool:
+    cert_path = os.environ.get("AFRITECH_TLS_CERT_PATH")
+    key_path = os.environ.get("AFRITECH_TLS_KEY_PATH")
+    if not cert_path and not key_path:
+        return True
+    if not cert_path or not key_path:
+        return False
+    return Path(cert_path).exists() and Path(key_path).exists()
+
+
+def _migration_ready() -> bool:
+    migration_state = os.environ.get("AFRITECH_MIGRATION_STATE_PATH")
+    if not migration_state:
+        return True
+    path = Path(migration_state)
+    if not path.exists():
+        return False
+    text = path.read_text(encoding="utf-8").strip().lower()
+    return text in {"applied", "ready", "complete", "completed"}
+
+
+def _monitoring_ready() -> bool:
+    root = Path(__file__).resolve().parents[2]
+    required = (
+        root / "deploy/production/monitoring/prometheus/prometheus.yml",
+        root / "deploy/production/monitoring/prometheus/alerts.yml",
+        root / "deploy/production/monitoring/prometheus/recording_rules.yml",
+        root / "deploy/production/monitoring/grafana/provisioning/datasources/datasources.yml",
+        root / "deploy/production/monitoring/grafana/provisioning/dashboards/dashboards.yml",
+        root / "deploy/production/monitoring/alertmanager/alertmanager.yml",
+        root / "deploy/production/monitoring/opentelemetry/otel-collector.yml",
+    )
+    return all(path.exists() for path in required)
+
+
 @app.get("/ready")
 def ready() -> JSONResponse:
     """Report dependency readiness for deployment health gates."""
     database_ready = _database_ready()
     configuration_valid = _configuration_valid()
+    disk_ready = _disk_ready()
+    tls_ready = _tls_ready()
+    migration_ready = _migration_ready()
+    monitoring_ready = _monitoring_ready()
     payload = {
-        "ready": bool(database_ready and configuration_valid),
+        "ready": bool(database_ready and configuration_valid and disk_ready and tls_ready and migration_ready and monitoring_ready),
         "database": "up" if database_ready else "down",
         "configuration": "valid" if configuration_valid else "invalid",
+        "disk": "ok" if disk_ready else "low",
+        "tls": "ok" if tls_ready else "missing",
+        "migrations": "applied" if migration_ready else "pending",
+        "monitoring": "available" if monitoring_ready else "unavailable",
     }
     status_code = 200 if payload["ready"] else 503
     return JSONResponse(status_code=status_code, content=payload)

@@ -1,0 +1,14 @@
+{
+  "title": "API Dashboard",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {"type": "timeseries", "title": "Requests/sec", "targets": [{"expr": "afritech_api:request_rate:5m"}]},
+    {"type": "timeseries", "title": "P50 latency", "targets": [{"expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))"}]},
+    {"type": "timeseries", "title": "P95 latency", "targets": [{"expr": "afritech_api:p95_latency_seconds"}]},
+    {"type": "timeseries", "title": "P99 latency", "targets": [{"expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))"}]},
+    {"type": "timeseries", "title": "Error rate", "targets": [{"expr": "afritech_api:error_rate:5m"}]},
+    {"type": "timeseries", "title": "Active requests", "targets": [{"expr": "sum(http_inprogress_requests)"}]}
+  ]
+}
+

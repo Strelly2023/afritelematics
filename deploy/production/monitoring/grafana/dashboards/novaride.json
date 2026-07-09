@@ -1,0 +1,12 @@
+{
+  "title": "NovaRide Dashboard",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {"type": "timeseries", "title": "Ride requests", "targets": [{"expr": "rate(ride_requests_total[5m])"}]},
+    {"type": "timeseries", "title": "Active rides", "targets": [{"expr": "active_rides"}]},
+    {"type": "timeseries", "title": "Driver availability", "targets": [{"expr": "driver_available_count"}]},
+    {"type": "timeseries", "title": "Dispatch latency", "targets": [{"expr": "dispatch_latency_seconds"}]}
+  ]
+}
+

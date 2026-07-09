@@ -1,0 +1,11 @@
+{
+  "title": "NovaID Dashboard",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {"type": "timeseries", "title": "Identity requests", "targets": [{"expr": "rate(novaid_identity_requests_total[5m])"}]},
+    {"type": "timeseries", "title": "Verification success", "targets": [{"expr": "rate(novaid_verification_success_total[5m])"}]},
+    {"type": "timeseries", "title": "Verification latency", "targets": [{"expr": "novaid_verification_latency_seconds"}]}
+  ]
+}
+
