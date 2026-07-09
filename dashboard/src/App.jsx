@@ -2239,6 +2239,240 @@ const NOVACODEPRO_RELEASE_WORKFLOW = [
   "Evidence Ready",
 ];
 
+const NOVACODEPRO_ENTERPRISE_TABS = [
+  "Command Center",
+  "Tenants",
+  "Identity",
+  "Governance",
+  "Compliance",
+  "Billing",
+  "Marketplace",
+  "Audit",
+  "Reports",
+  "Trust",
+];
+
+const NOVACODEPRO_ENTERPRISE_COMMAND_METRICS = [
+  { label: "Organizations", value: "48", detail: "multi-tenant enterprise accounts" },
+  { label: "Enterprise Users", value: "18,420", detail: "SSO and SCIM managed" },
+  { label: "Projects", value: "1,284", detail: "linked to governance records" },
+  { label: "Repositories", value: "3,812", detail: "policy and evidence enabled" },
+  { label: "Monthly Builds", value: "214k", detail: "NovaFlow usage" },
+  { label: "Compliance Score", value: "93", detail: "framework controls tracked" },
+  { label: "Trust Score", value: "96.4", detail: "enterprise trust posture" },
+  { label: "Marketplace Revenue", value: "$428k", detail: "partner and publisher activity" },
+];
+
+const NOVACODEPRO_ENTERPRISE_ORGANIZATIONS = [
+  { id: "novatech", name: "NovaTech Global", status: "active", owner: "Platform Office", users: "8,420", plan: "Enterprise", health: "96", usage: "72%" },
+  { id: "city-mobility", name: "City Mobility Authority", status: "controlled", owner: "Public Sector Team", users: "2,180", plan: "Government", health: "94", usage: "61%" },
+  { id: "atlas-bank", name: "Atlas Bank Engineering", status: "review", owner: "Financial Services", users: "4,910", plan: "Business", health: "91", usage: "83%" },
+  { id: "university-lab", name: "University Research Lab", status: "trial", owner: "Education Team", users: "640", plan: "Professional", health: "88", usage: "45%" },
+];
+
+const NOVACODEPRO_ENTERPRISE_DEPARTMENTS = [
+  { id: "platform", name: "Platform Engineering", owner: "CTO Office", permissions: "admin", status: "active", usage: "81%", health: "97" },
+  { id: "security", name: "Security", owner: "CISO Office", permissions: "security", status: "active", usage: "64%", health: "95" },
+  { id: "finance", name: "Finance Operations", owner: "CFO Office", permissions: "billing", status: "active", usage: "39%", health: "93" },
+  { id: "compliance", name: "Compliance", owner: "Governance Office", permissions: "auditor", status: "review", usage: "58%", health: "92" },
+];
+
+const NOVACODEPRO_ENTERPRISE_PROJECTS = [
+  { id: "mobility-cloud", name: "Mobility Cloud", owner: "Platform Engineering", repositories: 42, workspaces: 118, pipelines: 64, health: "96" },
+  { id: "wallet-platform", name: "Wallet Platform", owner: "Finance Operations", repositories: 31, workspaces: 76, pipelines: 44, health: "94" },
+  { id: "identity-fabric", name: "Identity Fabric", owner: "Security", repositories: 28, workspaces: 52, pipelines: 39, health: "97" },
+  { id: "trust-verification", name: "Trust Verification", owner: "Compliance", repositories: 19, workspaces: 41, pipelines: 33, health: "95" },
+];
+
+const NOVACODEPRO_TENANT_HIERARCHY = [
+  { level: "Tenant", status: "active", permissions: "owner", owner: "Enterprise Admin", usage: "72%", health: "96" },
+  { level: "Organizations", status: "active", permissions: "org admin", owner: "Platform Office", usage: "68%", health: "95" },
+  { level: "Business Units", status: "active", permissions: "business owner", owner: "Operations", usage: "61%", health: "94" },
+  { level: "Teams", status: "active", permissions: "team admin", owner: "Engineering Managers", usage: "77%", health: "96" },
+  { level: "Projects", status: "active", permissions: "project admin", owner: "Project Owners", usage: "82%", health: "95" },
+  { level: "Workspaces", status: "active", permissions: "developer", owner: "Developers", usage: "73%", health: "93" },
+  { level: "Repositories", status: "active", permissions: "maintainer", owner: "Repo Owners", usage: "79%", health: "96" },
+  { level: "Pipelines", status: "active", permissions: "release owner", owner: "DevOps", usage: "66%", health: "94" },
+  { level: "Deployments", status: "controlled", permissions: "approver", owner: "Release Board", usage: "48%", health: "92" },
+  { level: "Marketplace", status: "review", permissions: "publisher admin", owner: "Marketplace Ops", usage: "54%", health: "91" },
+  { level: "Billing", status: "active", permissions: "billing admin", owner: "Finance", usage: "62%", health: "93" },
+  { level: "Evidence", status: "active", permissions: "auditor", owner: "NovaTrust", usage: "88%", health: "98" },
+];
+
+const NOVACODEPRO_ENTERPRISE_ROLES = [
+  "Owner",
+  "Administrator",
+  "Platform Admin",
+  "Engineering Manager",
+  "Developer",
+  "Reviewer",
+  "Auditor",
+  "Security",
+  "Billing",
+  "Read Only",
+];
+
+const NOVACODEPRO_ENTERPRISE_IAM = [
+  "SSO",
+  "OIDC",
+  "SAML",
+  "SCIM",
+  "MFA",
+  "API Keys",
+  "Personal Access Tokens",
+  "Service Accounts",
+  "Robot Accounts",
+  "Session Management",
+  "RBAC",
+];
+
+const NOVACODEPRO_GOVERNANCE_APPROVALS = [
+  { stage: "Proposal", status: "submitted", owner: "Product Owner" },
+  { stage: "ADR", status: "drafted", owner: "Architecture Council" },
+  { stage: "Implementation", status: "in review", owner: "Engineering" },
+  { stage: "Review", status: "required", owner: "Reviewer Group" },
+  { stage: "Evidence", status: "prepared", owner: "NovaTrust" },
+  { stage: "Approval", status: "pending", owner: "Release Board" },
+  { stage: "Deployment", status: "controlled", owner: "NovaDeploy" },
+  { stage: "Audit", status: "ready", owner: "Audit Office" },
+];
+
+const NOVACODEPRO_COMPLIANCE_FRAMEWORKS = [
+  { id: "iso27001", name: "ISO 27001", score: "94", open: 3, resolved: 87, audits: "Aug 2026", certification: "in progress", risk: "low" },
+  { id: "soc2", name: "SOC 2", score: "91", open: 5, resolved: 74, audits: "Sep 2026", certification: "readiness", risk: "medium" },
+  { id: "gdpr", name: "GDPR", score: "96", open: 2, resolved: 61, audits: "continuous", certification: "mapped", risk: "low" },
+  { id: "pci", name: "PCI DSS", score: "89", open: 7, resolved: 54, audits: "Oct 2026", certification: "review", risk: "medium" },
+  { id: "hipaa", name: "HIPAA", score: "86", open: 9, resolved: 43, audits: "planned", certification: "planned", risk: "medium" },
+  { id: "nist", name: "NIST", score: "93", open: 4, resolved: 68, audits: "continuous", certification: "mapped", risk: "low" },
+  { id: "cis", name: "CIS Controls", score: "92", open: 4, resolved: 72, audits: "monthly", certification: "tracked", risk: "low" },
+  { id: "owasp", name: "OWASP", score: "95", open: 2, resolved: 91, audits: "weekly", certification: "tracked", risk: "low" },
+];
+
+const NOVACODEPRO_BILLING_PLANS = [
+  { id: "free", name: "Free", price: "$0", usage: "starter", forecast: "$0" },
+  { id: "professional", name: "Professional", price: "$29/user", usage: "team", forecast: "$8.4k" },
+  { id: "business", name: "Business", price: "$79/user", usage: "department", forecast: "$42k" },
+  { id: "enterprise", name: "Enterprise", price: "contract", usage: "organization", forecast: "$218k" },
+  { id: "government", name: "Government", price: "contract", usage: "regulated", forecast: "$162k" },
+];
+
+const NOVACODEPRO_ENTERPRISE_INVOICES = [
+  { id: "INV-1042", org: "NovaTech Global", amount: "$86,420", status: "open", due: "2026-08-01" },
+  { id: "INV-1043", org: "City Mobility Authority", amount: "$31,900", status: "approved", due: "2026-08-10" },
+  { id: "INV-1044", org: "Atlas Bank Engineering", amount: "$74,210", status: "review", due: "2026-08-15" },
+];
+
+const NOVACODEPRO_ENTERPRISE_BUDGETS = [
+  { center: "Platform", budget: "$420k", usage: "71%", forecast: "$392k" },
+  { center: "Security", budget: "$180k", usage: "58%", forecast: "$166k" },
+  { center: "AI Tokens", budget: "$95k", usage: "83%", forecast: "$101k" },
+  { center: "Marketplace", budget: "$120k", usage: "46%", forecast: "$88k" },
+];
+
+const NOVACODEPRO_MARKETPLACE_CATEGORIES = [
+  { id: "extensions", name: "Extensions", revenue: "$84k", downloads: "42k", rating: "4.8", trust: "verified" },
+  { id: "ai-agents", name: "AI Agents", revenue: "$132k", downloads: "18k", rating: "4.7", trust: "review" },
+  { id: "templates", name: "Templates", revenue: "$38k", downloads: "61k", rating: "4.6", trust: "verified" },
+  { id: "sdks", name: "SDKs", revenue: "$26k", downloads: "74k", rating: "4.9", trust: "verified" },
+  { id: "themes", name: "Themes", revenue: "$12k", downloads: "29k", rating: "4.5", trust: "community" },
+  { id: "automation", name: "Automation Packs", revenue: "$58k", downloads: "14k", rating: "4.6", trust: "verified" },
+  { id: "deploy", name: "Deployment Connectors", revenue: "$46k", downloads: "11k", rating: "4.7", trust: "enterprise" },
+  { id: "security", name: "Security Plugins", revenue: "$52k", downloads: "9k", rating: "4.8", trust: "verified" },
+  { id: "observability", name: "Observability Plugins", revenue: "$41k", downloads: "13k", rating: "4.7", trust: "verified" },
+];
+
+const NOVACODEPRO_PUBLISHERS = [
+  { name: "NovaTech Labs", status: "Verified Publisher", revenue: "$148k", approvals: 6 },
+  { name: "SecureOps Studio", status: "Trust review", revenue: "$62k", approvals: 3 },
+  { name: "CloudBridge", status: "Enterprise approved", revenue: "$91k", approvals: 8 },
+];
+
+const NOVACODEPRO_MARKETPLACE_ECONOMY_LABELS = [
+  "Free",
+  "Professional",
+  "Enterprise",
+  "Government",
+  "Marketplace Revenue Share",
+  "Partner Programs",
+  "Publisher Analytics",
+  "Verified Publishers",
+  "Trusted Extensions",
+];
+
+const NOVACODEPRO_PROCUREMENT_FLOW = [
+  "Request",
+  "Approval",
+  "Budget",
+  "Purchase",
+  "Provision",
+  "Audit",
+];
+
+const NOVACODEPRO_LICENSE_MANAGEMENT = [
+  { type: "Seat management", assigned: "14,820", available: "3,600", renewal: "2026-12-01" },
+  { type: "Enterprise licenses", assigned: "48 orgs", available: "12 orgs", renewal: "2027-01-15" },
+  { type: "Trial licenses", assigned: "640", available: "1,200", renewal: "rolling" },
+  { type: "Government licenses", assigned: "2,180", available: "820", renewal: "2026-11-30" },
+];
+
+const NOVACODEPRO_AUDIT_EVENTS = [
+  { id: "audit-001", type: "User activity", org: "NovaTech Global", severity: "low", detail: "SSO login from trusted device" },
+  { id: "audit-002", type: "Repository activity", org: "Atlas Bank Engineering", severity: "medium", detail: "Protected branch policy changed" },
+  { id: "audit-003", type: "Security event", org: "City Mobility Authority", severity: "high", detail: "API key rotation required" },
+  { id: "audit-004", type: "Deployment", org: "NovaTech Global", severity: "low", detail: "Pilot deployment approved" },
+  { id: "audit-005", type: "Marketplace install", org: "University Research Lab", severity: "low", detail: "Template pack installed" },
+  { id: "audit-006", type: "Billing event", org: "NovaTech Global", severity: "low", detail: "Invoice generated" },
+];
+
+const NOVACODEPRO_AUDIT_FILTERS = ["User", "Organization", "Date", "Project", "Severity"];
+
+const NOVACODEPRO_EXECUTIVE_REPORTS = [
+  { id: "engineering", name: "Engineering", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+  { id: "security", name: "Security", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+  { id: "compliance", name: "Compliance", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "review" },
+  { id: "marketplace", name: "Marketplace", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+  { id: "billing", name: "Billing", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+  { id: "trust", name: "Trust", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+  { id: "governance", name: "Governance", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "review" },
+  { id: "health", name: "Organization health", exports: ["PDF", "DOCX", "XLSX", "CSV"], status: "ready" },
+];
+
+const NOVACODEPRO_ENTERPRISE_TRUST_METRICS = [
+  { label: "Identity", value: 97 },
+  { label: "Governance", value: 94 },
+  { label: "Compliance", value: 93 },
+  { label: "Security", value: 91 },
+  { label: "Marketplace", value: 89 },
+  { label: "Billing", value: 95 },
+  { label: "Operations", value: 96 },
+  { label: "Evidence", value: 98 },
+];
+
+const NOVACODEPRO_ENTERPRISE_AI_ASSISTANT = [
+  "Organization insights",
+  "Compliance recommendations",
+  "Cost optimization",
+  "Governance advice",
+  "Risk summaries",
+  "Marketplace recommendations",
+  "Policy explanations",
+  "Executive summaries",
+];
+
+const NOVACODEPRO_ENTERPRISE_ACTIVITY = [
+  "Atlas Bank requested branch policy exception",
+  "City Mobility Authority uploaded SAML metadata",
+  "NovaTech Global exceeded AI token budget threshold",
+  "SecureOps Studio marketplace plugin entered trust review",
+];
+
+const NOVACODEPRO_ENTERPRISE_RISKS = [
+  { label: "API key rotation", severity: "high" },
+  { label: "Marketplace vendor review", severity: "medium" },
+  { label: "AI token forecast over budget", severity: "medium" },
+  { label: "SOC 2 evidence gap", severity: "low" },
+];
+
 const NOVACODEPRO_APPS = [
   {
     name: "NovaCodePro Desktop",
@@ -6980,6 +7214,30 @@ export default function OperatorDashboard() {
   );
   const [releaseJourneyActive, setReleaseJourneyActive] = useState(false);
   const [releaseJourneyStep, setReleaseJourneyStep] = useState(0);
+  const [activeEnterpriseTab, setActiveEnterpriseTab] = useState(NOVACODEPRO_ENTERPRISE_TABS[0]);
+  const [selectedEnterpriseOrg, setSelectedEnterpriseOrg] = useState(
+    NOVACODEPRO_ENTERPRISE_ORGANIZATIONS[0].id,
+  );
+  const [selectedEnterpriseDepartment, setSelectedEnterpriseDepartment] = useState(
+    NOVACODEPRO_ENTERPRISE_DEPARTMENTS[0].id,
+  );
+  const [selectedEnterpriseProject, setSelectedEnterpriseProject] = useState(
+    NOVACODEPRO_ENTERPRISE_PROJECTS[0].id,
+  );
+  const [selectedMarketplaceCategory, setSelectedMarketplaceCategory] = useState(
+    NOVACODEPRO_MARKETPLACE_CATEGORIES[0].id,
+  );
+  const [selectedComplianceFramework, setSelectedComplianceFramework] = useState(
+    NOVACODEPRO_COMPLIANCE_FRAMEWORKS[0].id,
+  );
+  const [selectedBillingPlan, setSelectedBillingPlan] = useState(NOVACODEPRO_BILLING_PLANS[3].id);
+  const [selectedGovernanceApproval, setSelectedGovernanceApproval] = useState(
+    NOVACODEPRO_GOVERNANCE_APPROVALS[0].stage,
+  );
+  const [selectedAuditFilter, setSelectedAuditFilter] = useState(NOVACODEPRO_AUDIT_FILTERS[0]);
+  const [selectedExecutiveReport, setSelectedExecutiveReport] = useState(
+    NOVACODEPRO_EXECUTIVE_REPORTS[0].id,
+  );
 
   const selectedWorkspace =
     NOVACODEPRO_WORKSPACES.find((workspace) => workspace.id === selectedWorkspaceId) ||
@@ -7008,6 +7266,30 @@ export default function OperatorDashboard() {
   const selectedService =
     NOVACODEPRO_MONITORING_SERVICES.find((service) => service.id === selectedMonitoringService) ||
     NOVACODEPRO_MONITORING_SERVICES[0];
+  const selectedEnterpriseOrganization =
+    NOVACODEPRO_ENTERPRISE_ORGANIZATIONS.find((org) => org.id === selectedEnterpriseOrg) ||
+    NOVACODEPRO_ENTERPRISE_ORGANIZATIONS[0];
+  const selectedDepartment =
+    NOVACODEPRO_ENTERPRISE_DEPARTMENTS.find((department) => department.id === selectedEnterpriseDepartment) ||
+    NOVACODEPRO_ENTERPRISE_DEPARTMENTS[0];
+  const selectedProject =
+    NOVACODEPRO_ENTERPRISE_PROJECTS.find((project) => project.id === selectedEnterpriseProject) ||
+    NOVACODEPRO_ENTERPRISE_PROJECTS[0];
+  const selectedMarketplace =
+    NOVACODEPRO_MARKETPLACE_CATEGORIES.find((category) => category.id === selectedMarketplaceCategory) ||
+    NOVACODEPRO_MARKETPLACE_CATEGORIES[0];
+  const selectedCompliance =
+    NOVACODEPRO_COMPLIANCE_FRAMEWORKS.find((framework) => framework.id === selectedComplianceFramework) ||
+    NOVACODEPRO_COMPLIANCE_FRAMEWORKS[0];
+  const selectedPlan =
+    NOVACODEPRO_BILLING_PLANS.find((plan) => plan.id === selectedBillingPlan) ||
+    NOVACODEPRO_BILLING_PLANS[3];
+  const selectedApproval =
+    NOVACODEPRO_GOVERNANCE_APPROVALS.find((approval) => approval.stage === selectedGovernanceApproval) ||
+    NOVACODEPRO_GOVERNANCE_APPROVALS[0];
+  const selectedReport =
+    NOVACODEPRO_EXECUTIVE_REPORTS.find((report) => report.id === selectedExecutiveReport) ||
+    NOVACODEPRO_EXECUTIVE_REPORTS[0];
 
   useEffect(() => {
     fetchOperatorState();
@@ -8963,6 +9245,444 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
                 <em>Engineering Platform status</em>
               </article>
             ))}
+          </section>
+        </section>
+
+        <section className="codepro-enterprise-platform" id="novacodepro-enterprise-platform">
+          <SectionIntro
+            eyebrow="NovaCodePro Enterprise Platform Phase"
+            title="Enterprise SaaS administration for organizations, governance, compliance, billing, marketplace, and trust"
+            question="This layer sits above the Developer Platform and Engineering Platform as an enterprise management surface. It is a platform phase UI and does not claim full GA readiness without backend services, APIs, controls, procedures, and production validation."
+          />
+
+          <div className="enterprise-tab-row" role="tablist" aria-label="Enterprise dashboard tabs">
+            {NOVACODEPRO_ENTERPRISE_TABS.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={activeEnterpriseTab === tab}
+                className={activeEnterpriseTab === tab ? "enterprise-tab-active" : ""}
+                onClick={() => setActiveEnterpriseTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <section className="enterprise-command-shell" aria-labelledby="enterprise-command-title">
+            <div className="codepro-command-header">
+              <div>
+                <p className="eyebrow">Enterprise Command Center</p>
+                <h3 id="enterprise-command-title">Executive dashboard for enterprise administration</h3>
+              </div>
+              <span>Enterprise Platform phase · {activeEnterpriseTab}</span>
+            </div>
+            <div className="enterprise-metric-grid">
+              {NOVACODEPRO_ENTERPRISE_COMMAND_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <em>{metric.detail}</em>
+                </article>
+              ))}
+            </div>
+            <div className="enterprise-ops-grid">
+              <article>
+                <strong>Recent activity</strong>
+                {NOVACODEPRO_ENTERPRISE_ACTIVITY.map((activity) => (
+                  <span key={activity}>{activity}</span>
+                ))}
+              </article>
+              <article>
+                <strong>Approval queue</strong>
+                {NOVACODEPRO_GOVERNANCE_APPROVALS.slice(0, 4).map((approval) => (
+                  <button
+                    key={approval.stage}
+                    type="button"
+                    className={selectedGovernanceApproval === approval.stage ? "enterprise-list-active" : ""}
+                    onClick={() => setSelectedGovernanceApproval(approval.stage)}
+                  >
+                    {approval.stage}: {approval.status}
+                  </button>
+                ))}
+              </article>
+              <article>
+                <strong>Risk indicators</strong>
+                {NOVACODEPRO_ENTERPRISE_RISKS.map((risk) => (
+                  <span key={risk.label} className={`severity-${risk.severity}`}>{risk.label}</span>
+                ))}
+              </article>
+              <article>
+                <strong>Governance notifications</strong>
+                <span>{selectedApproval.stage} is {selectedApproval.status}</span>
+                <span>Owner: {selectedApproval.owner}</span>
+                <span>Evidence remains reviewable before execution.</span>
+              </article>
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="tenant-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Multi-Tenant SaaS</p>
+                <h3 id="tenant-title">Tenant hierarchy and enterprise scope</h3>
+              </div>
+              <span className="surface-chip">Tenant → Organizations → Evidence</span>
+            </div>
+            <div className="tenant-hierarchy-grid">
+              {NOVACODEPRO_TENANT_HIERARCHY.map((node) => (
+                <article key={node.level}>
+                  <span>{node.status}</span>
+                  <strong>{node.level}</strong>
+                  <p>Permissions {node.permissions}</p>
+                  <em>{node.owner} · Usage {node.usage} · Health {node.health}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="org-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Organization Management</p>
+                <h3 id="org-title">Organizations, departments, teams, members, owners, projects, and invitations</h3>
+              </div>
+              <span className="surface-chip">Search · Filtering · Bulk actions · Organization switching · Branding</span>
+            </div>
+            <div className="enterprise-admin-grid">
+              <div className="enterprise-list-panel">
+                {NOVACODEPRO_ENTERPRISE_ORGANIZATIONS.map((org) => (
+                  <button
+                    key={org.id}
+                    type="button"
+                    className={selectedEnterpriseOrg === org.id ? "enterprise-list-active" : ""}
+                    onClick={() => setSelectedEnterpriseOrg(org.id)}
+                  >
+                    <strong>{org.name}</strong>
+                    <span>{org.plan} · {org.status}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="enterprise-detail-panel">
+                <div className="record-card-header">
+                  <strong>{selectedEnterpriseOrganization.name}</strong>
+                  <span>{selectedEnterpriseOrganization.status}</span>
+                </div>
+                <div className="enterprise-fact-grid">
+                  <div><span>Owner</span><strong>{selectedEnterpriseOrganization.owner}</strong></div>
+                  <div><span>Users</span><strong>{selectedEnterpriseOrganization.users}</strong></div>
+                  <div><span>Usage</span><strong>{selectedEnterpriseOrganization.usage}</strong></div>
+                  <div><span>Health</span><strong>{selectedEnterpriseOrganization.health}</strong></div>
+                </div>
+              </article>
+              <article className="enterprise-detail-panel">
+                <strong>Department and project context</strong>
+                <div className="enterprise-selector-row">
+                  {NOVACODEPRO_ENTERPRISE_DEPARTMENTS.map((department) => (
+                    <button
+                      key={department.id}
+                      type="button"
+                      className={selectedEnterpriseDepartment === department.id ? "enterprise-chip-active" : ""}
+                      onClick={() => setSelectedEnterpriseDepartment(department.id)}
+                    >
+                      {department.name}
+                    </button>
+                  ))}
+                </div>
+                <p>{selectedDepartment.owner} owns {selectedDepartment.name} with {selectedDepartment.permissions} permissions.</p>
+                <div className="enterprise-selector-row">
+                  {NOVACODEPRO_ENTERPRISE_PROJECTS.map((project) => (
+                    <button
+                      key={project.id}
+                      type="button"
+                      className={selectedEnterpriseProject === project.id ? "enterprise-chip-active" : ""}
+                      onClick={() => setSelectedEnterpriseProject(project.id)}
+                    >
+                      {project.name}
+                    </button>
+                  ))}
+                </div>
+                <p>{selectedProject.name}: {selectedProject.repositories} repositories, {selectedProject.workspaces} workspaces, {selectedProject.pipelines} pipelines.</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="iam-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Identity & Access</p>
+                <h3 id="iam-title">Enterprise IAM dashboard</h3>
+              </div>
+              <span className="surface-chip">NovaID integrated</span>
+            </div>
+            <div className="enterprise-iam-grid">
+              {NOVACODEPRO_ENTERPRISE_IAM.map((item) => (
+                <article key={item}><strong>{item}</strong><span>configured surface</span></article>
+              ))}
+            </div>
+            <div className="enterprise-role-row">
+              {NOVACODEPRO_ENTERPRISE_ROLES.map((role) => (
+                <span key={role}>{role}</span>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="governance-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Governance Center</p>
+                <h3 id="governance-title">ADRs, policies, standards, approvals, evidence, reviews, exceptions, risk register, and decision history</h3>
+              </div>
+              <span className="surface-chip">Proposal → Audit</span>
+            </div>
+            <div className="enterprise-governance-flow">
+              {NOVACODEPRO_GOVERNANCE_APPROVALS.map((approval) => (
+                <button
+                  key={approval.stage}
+                  type="button"
+                  className={selectedGovernanceApproval === approval.stage ? "enterprise-flow-active" : ""}
+                  onClick={() => setSelectedGovernanceApproval(approval.stage)}
+                >
+                  <strong>{approval.stage}</strong>
+                  <span>{approval.status}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="compliance-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Compliance Center</p>
+                <h3 id="compliance-title">Enterprise compliance portal</h3>
+              </div>
+              <span className="surface-chip">ISO 27001 · SOC 2 · GDPR · PCI DSS · HIPAA · NIST · CIS Controls · OWASP</span>
+            </div>
+            <div className="compliance-framework-row">
+              {NOVACODEPRO_COMPLIANCE_FRAMEWORKS.map((framework) => (
+                <button
+                  key={framework.id}
+                  type="button"
+                  className={selectedComplianceFramework === framework.id ? "enterprise-chip-active" : ""}
+                  onClick={() => setSelectedComplianceFramework(framework.id)}
+                >
+                  {framework.name}
+                </button>
+              ))}
+            </div>
+            <div className="enterprise-fact-grid">
+              <div><span>Compliance score</span><strong>{selectedCompliance.score}</strong></div>
+              <div><span>Open findings</span><strong>{selectedCompliance.open}</strong></div>
+              <div><span>Resolved findings</span><strong>{selectedCompliance.resolved}</strong></div>
+              <div><span>Upcoming audits</span><strong>{selectedCompliance.audits}</strong></div>
+              <div><span>Certification status</span><strong>{selectedCompliance.certification}</strong></div>
+              <div><span>Risk score</span><strong>{selectedCompliance.risk}</strong></div>
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="billing-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Enterprise Billing</p>
+                <h3 id="billing-title">Subscriptions, invoices, usage, budgets, forecast, and revenue analytics</h3>
+              </div>
+              <span className="surface-chip">Storage · AI Tokens · Compute Hours · Marketplace Purchases · Cost Centers</span>
+            </div>
+            <div className="billing-plan-row">
+              {NOVACODEPRO_BILLING_PLANS.map((plan) => (
+                <button
+                  key={plan.id}
+                  type="button"
+                  className={selectedBillingPlan === plan.id ? "enterprise-chip-active" : ""}
+                  onClick={() => setSelectedBillingPlan(plan.id)}
+                >
+                  <strong>{plan.name}</strong>
+                  <span>{plan.price}</span>
+                </button>
+              ))}
+            </div>
+            <div className="enterprise-billing-grid">
+              <article><strong>{selectedPlan.name}</strong><p>{selectedPlan.usage} usage · Forecast {selectedPlan.forecast}</p></article>
+              {NOVACODEPRO_ENTERPRISE_INVOICES.map((invoice) => (
+                <article key={invoice.id}><strong>{invoice.id}</strong><p>{invoice.org} · {invoice.amount} · {invoice.status}</p></article>
+              ))}
+              {NOVACODEPRO_ENTERPRISE_BUDGETS.map((budget) => (
+                <article key={budget.center}><strong>{budget.center}</strong><p>{budget.budget} · Usage {budget.usage} · Forecast {budget.forecast}</p></article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="marketplace-admin-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Marketplace Administration</p>
+                <h3 id="marketplace-admin-title">Extensions, AI Agents, Templates, SDKs, Themes, Automation Packs, Deployment Connectors, Security Plugins, and Observability Plugins</h3>
+              </div>
+              <span className="surface-chip">NovaMarketplace integrated</span>
+            </div>
+            <div className="marketplace-admin-grid">
+              <div className="enterprise-list-panel">
+                {NOVACODEPRO_MARKETPLACE_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    className={selectedMarketplaceCategory === category.id ? "enterprise-list-active" : ""}
+                    onClick={() => setSelectedMarketplaceCategory(category.id)}
+                  >
+                    <strong>{category.name}</strong>
+                    <span>{category.revenue} · {category.trust}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="enterprise-detail-panel">
+                <strong>{selectedMarketplace.name}</strong>
+                <div className="enterprise-fact-grid">
+                  <div><span>Revenue</span><strong>{selectedMarketplace.revenue}</strong></div>
+                  <div><span>Downloads</span><strong>{selectedMarketplace.downloads}</strong></div>
+                  <div><span>Ratings</span><strong>{selectedMarketplace.rating}</strong></div>
+                  <div><span>Trust verification</span><strong>{selectedMarketplace.trust}</strong></div>
+                </div>
+                <p>Publisher dashboard, approval queue, enterprise approval, vendor management, and revenue share are visible for review.</p>
+              </article>
+              <article className="enterprise-detail-panel">
+                <strong>Publisher analytics</strong>
+                {NOVACODEPRO_PUBLISHERS.map((publisher) => (
+                  <p key={publisher.name}>{publisher.name}: {publisher.status} · {publisher.revenue} · approvals {publisher.approvals}</p>
+                ))}
+                <div className="enterprise-selector-row">
+                  {NOVACODEPRO_MARKETPLACE_ECONOMY_LABELS.map((label) => (
+                    <span key={label} className="surface-chip">{label}</span>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="procurement-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Enterprise Procurement & License Management</p>
+                <h3 id="procurement-title">Purchasing, approvals, license assignment, usage monitoring, renewals, and expiration alerts</h3>
+              </div>
+              <span className="surface-chip">Purchase Orders · Invoices · Departments · Approvals</span>
+            </div>
+            <div className="procurement-flow-row">
+              {NOVACODEPRO_PROCUREMENT_FLOW.map((step) => (
+                <span key={step}>{step}</span>
+              ))}
+            </div>
+            <div className="license-grid">
+              {NOVACODEPRO_LICENSE_MANAGEMENT.map((license) => (
+                <article key={license.type}>
+                  <strong>{license.type}</strong>
+                  <p>Assigned {license.assigned} · Available {license.available} · Renewal {license.renewal}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="audit-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Audit Center</p>
+                <h3 id="audit-title">User activity, repository activity, security events, policy changes, deployments, evidence packets, marketplace installs, billing events, downloads, and exports</h3>
+              </div>
+              <span className="surface-chip">Filters: User · Organization · Date · Project · Severity</span>
+            </div>
+            <div className="enterprise-selector-row">
+              {NOVACODEPRO_AUDIT_FILTERS.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={selectedAuditFilter === filter ? "enterprise-chip-active" : ""}
+                  onClick={() => setSelectedAuditFilter(filter)}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+            <div className="audit-event-grid">
+              {NOVACODEPRO_AUDIT_EVENTS.map((event) => (
+                <article key={event.id} className={`severity-${event.severity}`}>
+                  <span>{event.type}</span>
+                  <strong>{event.org}</strong>
+                  <p>{event.detail}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="reporting-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Executive Reporting</p>
+                <h3 id="reporting-title">Engineering, security, compliance, marketplace, billing, trust, governance, and organization health reports</h3>
+              </div>
+              <span className="surface-chip">Export PDF · DOCX · XLSX · CSV</span>
+            </div>
+            <div className="report-grid">
+              {NOVACODEPRO_EXECUTIVE_REPORTS.map((report) => (
+                <button
+                  key={report.id}
+                  type="button"
+                  className={selectedExecutiveReport === report.id ? "enterprise-list-active" : ""}
+                  onClick={() => setSelectedExecutiveReport(report.id)}
+                >
+                  <strong>{report.name}</strong>
+                  <span>{report.status} · {report.exports.join(", ")}</span>
+                </button>
+              ))}
+            </div>
+            <p className="section-note">Selected report: {selectedReport.name} with export support for {selectedReport.exports.join(", ")}.</p>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="enterprise-ai-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Enterprise AI Assistant</p>
+                <h3 id="enterprise-ai-title">Executive summaries, risk summaries, cost optimization, governance advice, and policy explanations</h3>
+              </div>
+              <span className="surface-chip">advisory only</span>
+            </div>
+            <div className="enterprise-ai-grid">
+              {NOVACODEPRO_ENTERPRISE_AI_ASSISTANT.map((capability) => (
+                <article key={capability}><strong>{capability}</strong><p>AI suggests; enterprise owners approve.</p></article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section" aria-labelledby="enterprise-trust-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Enterprise Trust Dashboard</p>
+                <h3 id="enterprise-trust-title">Overall Enterprise Trust Score 96.4</h3>
+              </div>
+              <span className="surface-chip">NovaTrust evidence layer</span>
+            </div>
+            <div className="enterprise-trust-grid">
+              {NOVACODEPRO_ENTERPRISE_TRUST_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="enterprise-platform-section">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Integration Layer</p>
+                <h3>Enterprise Platform manages the operational layer above Developer and Engineering Platform surfaces</h3>
+              </div>
+              <span className="surface-chip">conceptual surface until backend validation exists</span>
+            </div>
+            <div className="enterprise-integration-grid">
+              {["NovaCloud IDE", "NovaGit", "NovaAI", "NovaFlow", "NovaDeploy", "NovaSecurity", "NovaMonitor", "NovaTelemetry", "NovaDocs", "NovaMarketplace", "NovaTrust", "NovaID"].map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
           </section>
         </section>
 

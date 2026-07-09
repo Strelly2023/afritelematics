@@ -1748,6 +1748,285 @@ a {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
+.codepro-enterprise-platform,
+.enterprise-platform-section,
+.enterprise-command-shell {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.enterprise-platform-section {
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.enterprise-command-shell {
+  border: 1px solid rgba(117, 214, 160, 0.38);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #06111f, #13233b 50%, #16384a);
+  color: #ffffff;
+  padding: 20px;
+}
+
+.enterprise-command-shell .eyebrow,
+.enterprise-command-shell h3,
+.enterprise-command-shell .codepro-command-header span {
+  color: #ffffff;
+}
+
+.enterprise-tab-row,
+.enterprise-selector-row,
+.enterprise-role-row,
+.compliance-framework-row,
+.billing-plan-row,
+.procurement-flow-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.enterprise-tab-row button,
+.enterprise-selector-row button,
+.compliance-framework-row button,
+.billing-plan-row button,
+.report-grid button {
+  border: 1px solid #c7d4df;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 9px 12px;
+  font-weight: 900;
+}
+
+.enterprise-tab-active,
+.enterprise-chip-active {
+  border-color: #1f7a55 !important;
+  background: #e8f5ee !important;
+  color: #155d42 !important;
+}
+
+.enterprise-metric-grid,
+.enterprise-ops-grid,
+.tenant-hierarchy-grid,
+.enterprise-admin-grid,
+.enterprise-fact-grid,
+.enterprise-iam-grid,
+.enterprise-governance-flow,
+.enterprise-billing-grid,
+.marketplace-admin-grid,
+.license-grid,
+.audit-event-grid,
+.report-grid,
+.enterprise-ai-grid,
+.enterprise-trust-grid,
+.enterprise-integration-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.enterprise-metric-grid {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.enterprise-metric-grid article {
+  display: grid;
+  gap: 5px;
+  min-height: 116px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+}
+
+.enterprise-metric-grid span,
+.enterprise-metric-grid em {
+  color: #b9c7d6;
+  font-size: 0.76rem;
+  font-style: normal;
+}
+
+.enterprise-metric-grid strong {
+  color: #ffffff;
+  font-size: 1.28rem;
+}
+
+.enterprise-ops-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.enterprise-ops-grid article,
+.enterprise-detail-panel,
+.enterprise-billing-grid article,
+.license-grid article,
+.report-grid button,
+.enterprise-ai-grid article,
+.audit-event-grid article {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 14px;
+  text-align: left;
+}
+
+.enterprise-ops-grid span,
+.enterprise-ops-grid button,
+.enterprise-list-panel button {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #f7fafc;
+  color: #35556e;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.enterprise-list-active {
+  border-color: #1f7a55 !important;
+  background: #e8f5ee !important;
+  color: #155d42 !important;
+}
+
+.tenant-hierarchy-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tenant-hierarchy-grid article,
+.enterprise-iam-grid article,
+.enterprise-trust-grid article,
+.release-evidence-grid article {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 12px;
+}
+
+.tenant-hierarchy-grid span,
+.enterprise-fact-grid span,
+.audit-event-grid span,
+.enterprise-trust-grid span {
+  color: #2f6f73;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.tenant-hierarchy-grid p,
+.tenant-hierarchy-grid em,
+.enterprise-detail-panel p,
+.enterprise-billing-grid p,
+.license-grid p,
+.enterprise-ai-grid p,
+.audit-event-grid p {
+  margin: 0;
+  color: #59687b;
+  line-height: 1.45;
+  font-style: normal;
+}
+
+.enterprise-admin-grid,
+.marketplace-admin-grid {
+  grid-template-columns: minmax(250px, 0.28fr) minmax(0, 0.4fr) minmax(280px, 0.32fr);
+}
+
+.enterprise-list-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.enterprise-list-panel button,
+.report-grid button,
+.billing-plan-row button {
+  display: grid;
+  gap: 5px;
+}
+
+.enterprise-list-panel span,
+.report-grid span,
+.billing-plan-row span {
+  color: #59687b;
+  font-size: 0.78rem;
+}
+
+.enterprise-fact-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.enterprise-fact-grid div {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #e1e8ef;
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 10px;
+}
+
+.enterprise-iam-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.enterprise-role-row span,
+.procurement-flow-row span,
+.enterprise-integration-grid span {
+  display: inline-grid;
+  min-height: 34px;
+  place-items: center;
+  border: 1px solid #c7d4df;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #35556e;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.enterprise-governance-flow {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.enterprise-governance-flow button {
+  display: grid;
+  gap: 6px;
+  min-height: 98px;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #f7fafc;
+  color: #172033;
+  padding: 12px;
+}
+
+.enterprise-flow-active {
+  border-color: #1f7a55 !important;
+  background: #e8f5ee !important;
+}
+
+.enterprise-billing-grid,
+.audit-event-grid,
+.enterprise-ai-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.license-grid,
+.report-grid,
+.enterprise-trust-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.enterprise-trust-grid strong {
+  font-size: 1.7rem;
+}
+
+.enterprise-integration-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
 .codepro-command-shell {
   display: grid;
   gap: 16px;
@@ -4931,6 +5210,21 @@ a {
   .release-journey-grid,
   .release-evidence-grid,
   .engineering-status-grid,
+  .enterprise-metric-grid,
+  .enterprise-ops-grid,
+  .tenant-hierarchy-grid,
+  .enterprise-admin-grid,
+  .enterprise-fact-grid,
+  .enterprise-iam-grid,
+  .enterprise-governance-flow,
+  .enterprise-billing-grid,
+  .marketplace-admin-grid,
+  .license-grid,
+  .audit-event-grid,
+  .report-grid,
+  .enterprise-ai-grid,
+  .enterprise-trust-grid,
+  .enterprise-integration-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -5035,6 +5329,21 @@ a {
   .release-journey-grid,
   .release-evidence-grid,
   .engineering-status-grid,
+  .enterprise-metric-grid,
+  .enterprise-ops-grid,
+  .tenant-hierarchy-grid,
+  .enterprise-admin-grid,
+  .enterprise-fact-grid,
+  .enterprise-iam-grid,
+  .enterprise-governance-flow,
+  .enterprise-billing-grid,
+  .marketplace-admin-grid,
+  .license-grid,
+  .audit-event-grid,
+  .report-grid,
+  .enterprise-ai-grid,
+  .enterprise-trust-grid,
+  .enterprise-integration-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -5161,6 +5470,21 @@ a {
   .release-journey-grid,
   .release-evidence-grid,
   .engineering-status-grid,
+  .enterprise-metric-grid,
+  .enterprise-ops-grid,
+  .tenant-hierarchy-grid,
+  .enterprise-admin-grid,
+  .enterprise-fact-grid,
+  .enterprise-iam-grid,
+  .enterprise-governance-flow,
+  .enterprise-billing-grid,
+  .marketplace-admin-grid,
+  .license-grid,
+  .audit-event-grid,
+  .report-grid,
+  .enterprise-ai-grid,
+  .enterprise-trust-grid,
+  .enterprise-integration-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
@@ -5338,6 +5662,21 @@ a {
   .release-journey-grid,
   .release-evidence-grid,
   .engineering-status-grid,
+  .enterprise-metric-grid,
+  .enterprise-ops-grid,
+  .tenant-hierarchy-grid,
+  .enterprise-admin-grid,
+  .enterprise-fact-grid,
+  .enterprise-iam-grid,
+  .enterprise-governance-flow,
+  .enterprise-billing-grid,
+  .marketplace-admin-grid,
+  .license-grid,
+  .audit-event-grid,
+  .report-grid,
+  .enterprise-ai-grid,
+  .enterprise-trust-grid,
+  .enterprise-integration-grid,
   .repository-journey-grid,
   .codepro-trust-score-panel,
   .trust-score-breakdown,
