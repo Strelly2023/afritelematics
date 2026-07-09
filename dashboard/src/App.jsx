@@ -2473,6 +2473,284 @@ const NOVACODEPRO_ENTERPRISE_RISKS = [
   { label: "SOC 2 evidence gap", severity: "low" },
 ];
 
+const NOVACODEPRO_EOS_COMMAND_METRICS = [
+  { label: "Organizations", value: "48", detail: "enterprise tenants visible" },
+  { label: "Repositories", value: "3,812", detail: "digital twins indexed" },
+  { label: "Developers", value: "18,420", detail: "NovaID governed users" },
+  { label: "AI Sessions", value: "26.8k", detail: "assistant activity today" },
+  { label: "Pipelines", value: "1,940", detail: "running, queued, or complete" },
+  { label: "Deployments", value: "312", detail: "controlled release lanes" },
+  { label: "Evidence Packets", value: "82.4k", detail: "NovaTrust reviewable" },
+  { label: "Security Findings", value: "29", detail: "no critical release bypass" },
+  { label: "Infrastructure Regions", value: "10", detail: "primary, secondary, pilot" },
+  { label: "Engineering Trust Score", value: "96.8", detail: "identity, governance, evidence" },
+];
+
+const NOVACODEPRO_EOS_LIVE_STATUS = [
+  "Global Engineering Overview",
+  "Live Repository Health",
+  "Active Workspaces",
+  "AI Activity",
+  "Running Pipelines",
+  "Security Posture",
+  "Deployments",
+  "Global Infrastructure",
+  "Evidence Status",
+  "Trust Score",
+];
+
+const NOVACODEPRO_EOS_ACTIVITY = [
+  "Nova Architect linked ADR-218 to mobility-dispatch-api",
+  "NovaFlow completed policy validation for wallet-platform",
+  "NovaSecurity opened dependency review on identity-fabric",
+  "NovaTrust generated replay packet for pilot deployment",
+];
+
+const NOVACODEPRO_EOS_ALERTS = [
+  { label: "Singapore pipeline capacity at 82%", severity: "medium" },
+  { label: "Atlas Bank security exception requires review", severity: "high" },
+  { label: "Germany expansion cluster remains pilot-only", severity: "low" },
+  { label: "Marketplace publisher trust review queued", severity: "medium" },
+];
+
+const NOVACODEPRO_DIGITAL_TWINS = [
+  { id: "repository", name: "Repository Twin", state: "active", health: "97", risk: "low", trust: "98", evidence: "commits, PRs, branch policy" },
+  { id: "architecture", name: "Architecture Twin", state: "mapped", health: "95", risk: "low", trust: "96", evidence: "ADRs, dependency graph" },
+  { id: "pipeline", name: "Pipeline Twin", state: "running", health: "94", risk: "medium", trust: "95", evidence: "builds, tests, scans" },
+  { id: "deployment", name: "Deployment Twin", state: "controlled", health: "93", risk: "medium", trust: "94", evidence: "approvals, audit trail" },
+  { id: "security", name: "Security Twin", state: "watch", health: "91", risk: "medium", trust: "92", evidence: "SAST, DAST, SBOM" },
+  { id: "evidence", name: "Evidence Twin", state: "sealed", health: "99", risk: "low", trust: "99", evidence: "trust, audit, replay packets" },
+  { id: "runtime", name: "Runtime Twin", state: "observed", health: "96", risk: "low", trust: "97", evidence: "deployments, incidents" },
+  { id: "observability", name: "Observability Twin", state: "streaming", health: "98", risk: "low", trust: "98", evidence: "metrics, logs, traces" },
+];
+
+const NOVACODEPRO_EOS_TWIN_TIMELINE = [
+  "Idea",
+  "Architecture",
+  "Repository",
+  "Code",
+  "Tests",
+  "Pipeline",
+  "Security",
+  "Approval",
+  "Deployment",
+  "Monitoring",
+  "Evidence",
+];
+
+const NOVACODEPRO_ENGINEERING_GRAPH_NODES = [
+  { id: "developers", label: "Developers", status: "active", health: "96", owner: "Engineering Managers", evidence: "NovaID activity" },
+  { id: "repositories", label: "Repositories", status: "indexed", health: "97", owner: "Repo Owners", evidence: "commit and PR packets" },
+  { id: "services", label: "Services", status: "mapped", health: "94", owner: "Platform Teams", evidence: "service catalog" },
+  { id: "apis", label: "APIs", status: "versioned", health: "95", owner: "API Council", evidence: "OpenAPI review" },
+  { id: "infrastructure", label: "Infrastructure", status: "observed", health: "93", owner: "SRE", evidence: "region telemetry" },
+  { id: "deployments", label: "Deployments", status: "controlled", health: "94", owner: "Release Board", evidence: "deployment audit" },
+  { id: "policies", label: "Policies", status: "enforced", health: "96", owner: "Governance", evidence: "policy decisions" },
+  { id: "evidence", label: "Evidence", status: "sealed", health: "99", owner: "NovaTrust", evidence: "trust packets" },
+  { id: "organizations", label: "Organizations", status: "tenant-aware", health: "95", owner: "Enterprise Admin", evidence: "tenant audit" },
+  { id: "ai-agents", label: "AI Agents", status: "advisory", health: "94", owner: "AI Operations", evidence: "agent outputs" },
+  { id: "security", label: "Security", status: "watch", health: "91", owner: "Security", evidence: "scan packets" },
+  { id: "observability", label: "Observability", status: "streaming", health: "98", owner: "SRE", evidence: "telemetry packet" },
+];
+
+const NOVACODEPRO_AI_WORKFORCE = [
+  { id: "architect", name: "Nova Architect", activity: "Mapping ADR dependencies", repos: "18", tasks: "42", outputs: "decision graph", evidence: "ADR packet", confidence: "94%" },
+  { id: "developer", name: "Nova Developer", activity: "Drafting controlled code proposals", repos: "31", tasks: "86", outputs: "patch suggestions", evidence: "proposal packet", confidence: "91%" },
+  { id: "reviewer", name: "Nova Reviewer", activity: "Reviewing PR risk and policy fit", repos: "24", tasks: "57", outputs: "review notes", evidence: "review packet", confidence: "93%" },
+  { id: "security", name: "Nova Security", activity: "Explaining dependency findings", repos: "19", tasks: "38", outputs: "risk summaries", evidence: "security packet", confidence: "92%" },
+  { id: "performance", name: "Nova Performance", activity: "Profiling latency regressions", repos: "12", tasks: "21", outputs: "perf notes", evidence: "trace packet", confidence: "90%" },
+  { id: "database", name: "Nova Database", activity: "Checking migration safety", repos: "9", tasks: "17", outputs: "migration review", evidence: "schema packet", confidence: "89%" },
+  { id: "platform", name: "Nova Platform", activity: "Preparing cluster capacity plans", repos: "16", tasks: "33", outputs: "infra plan", evidence: "capacity packet", confidence: "92%" },
+  { id: "documentation", name: "Nova Documentation", activity: "Updating API reference drafts", repos: "27", tasks: "49", outputs: "docs diffs", evidence: "docs packet", confidence: "95%" },
+  { id: "compliance", name: "Nova Compliance", activity: "Mapping controls to evidence", repos: "14", tasks: "29", outputs: "control mapping", evidence: "compliance packet", confidence: "93%" },
+  { id: "auditor", name: "Nova Auditor", activity: "Assembling replay trails", repos: "11", tasks: "22", outputs: "audit summary", evidence: "replay packet", confidence: "96%" },
+  { id: "sre", name: "Nova SRE", activity: "Watching regional health", repos: "20", tasks: "44", outputs: "SLO summary", evidence: "ops packet", confidence: "94%" },
+  { id: "release", name: "Nova Release Manager", activity: "Coordinating approval gates", repos: "15", tasks: "28", outputs: "release notes", evidence: "approval packet", confidence: "92%" },
+];
+
+const NOVACODEPRO_ENGINEERING_MISSION_STEPS = [
+  "Requirement",
+  "Architecture",
+  "Repository",
+  "AI Coding",
+  "Tests",
+  "Review",
+  "Pipeline",
+  "Security",
+  "Approval",
+  "Deployment",
+  "Monitoring",
+  "Evidence",
+  "Digital Twin Updated",
+  "Mission Complete",
+];
+
+const NOVACODEPRO_EVIDENCE_PACKETS = [
+  { type: "Repository Created", packet: "Evidence Packet", trust: "98", links: "architecture, owner, policy" },
+  { type: "Commit", packet: "Trust Packet", trust: "97", links: "developer, repository, tests" },
+  { type: "Review", packet: "Audit Packet", trust: "96", links: "reviewer, PR, policy" },
+  { type: "Pipeline", packet: "Replay Packet", trust: "95", links: "build, test, scan" },
+  { type: "Security", packet: "Evidence Packet", trust: "92", links: "SAST, DAST, SBOM" },
+  { type: "Approval", packet: "Audit Packet", trust: "96", links: "release board, exception" },
+  { type: "Deployment", packet: "Trust Packet", trust: "94", links: "environment, target, rollback" },
+  { type: "Monitoring", packet: "Replay Packet", trust: "98", links: "metrics, logs, traces" },
+  { type: "Incident", packet: "Evidence Packet", trust: "91", links: "alert, response, owner" },
+  { type: "Recovery", packet: "Audit Packet", trust: "94", links: "rollback, remediation" },
+  { type: "Architecture", packet: "Trust Packet", trust: "97", links: "ADR, dependency" },
+  { type: "Documentation", packet: "Evidence Packet", trust: "96", links: "docs, tutorials, APIs" },
+];
+
+const NOVACODEPRO_UNIFIED_TIMELINE_FILTERS = [
+  "Repository",
+  "Developer",
+  "Organization",
+  "Date",
+  "Environment",
+];
+
+const NOVACODEPRO_UNIFIED_TIMELINE = [
+  { type: "Architecture", title: "ADR-218 approved for dispatch service split", scope: "NovaRide", time: "08:10" },
+  { type: "Repository", title: "mobility-dispatch-api twin refreshed", scope: "Platform Engineering", time: "08:36" },
+  { type: "Pull Requests", title: "PR-418 passed reviewer approval", scope: "NovaGit", time: "09:05" },
+  { type: "Pipelines", title: "NovaFlow completed policy validation", scope: "pilot", time: "09:22" },
+  { type: "Deployments", title: "Pilot deployment prepared with rollback", scope: "Australia", time: "09:40" },
+  { type: "Incidents", title: "Latency watch opened and contained", scope: "Singapore", time: "10:02" },
+  { type: "Evidence", title: "Replay packet sealed by NovaTrust", scope: "release-2026-1", time: "10:14" },
+];
+
+const NOVACODEPRO_INFRASTRUCTURE_REGIONS = [
+  { id: "australia", region: "Australia", role: "Primary", availability: "99.99%", latency: "31ms", capacity: "76%", deployments: "84", throughput: "14k/hr", trust: "98", compliance: "mapped" },
+  { id: "singapore", region: "Singapore", role: "Secondary", availability: "99.97%", latency: "44ms", capacity: "82%", deployments: "61", throughput: "11k/hr", trust: "96", compliance: "mapped" },
+  { id: "japan", region: "Japan", role: "Expansion", availability: "99.95%", latency: "58ms", capacity: "49%", deployments: "22", throughput: "4k/hr", trust: "94", compliance: "review" },
+  { id: "india", region: "India", role: "Pilot", availability: "99.92%", latency: "67ms", capacity: "53%", deployments: "19", throughput: "3k/hr", trust: "93", compliance: "pilot" },
+  { id: "germany", region: "Germany", role: "Expansion", availability: "99.96%", latency: "52ms", capacity: "57%", deployments: "28", throughput: "5k/hr", trust: "95", compliance: "mapped" },
+  { id: "united-kingdom", region: "United Kingdom", role: "Secondary", availability: "99.96%", latency: "49ms", capacity: "63%", deployments: "34", throughput: "6k/hr", trust: "95", compliance: "mapped" },
+  { id: "united-states", region: "United States", role: "Primary", availability: "99.98%", latency: "36ms", capacity: "79%", deployments: "92", throughput: "16k/hr", trust: "97", compliance: "mapped" },
+  { id: "canada", region: "Canada", role: "Maintenance", availability: "99.94%", latency: "61ms", capacity: "41%", deployments: "17", throughput: "2k/hr", trust: "93", compliance: "review" },
+  { id: "south-africa", region: "South Africa", role: "Pilot", availability: "99.90%", latency: "72ms", capacity: "38%", deployments: "13", throughput: "1.8k/hr", trust: "92", compliance: "pilot" },
+  { id: "kenya", region: "Kenya", role: "Expansion", availability: "99.91%", latency: "69ms", capacity: "45%", deployments: "15", throughput: "2.2k/hr", trust: "92", compliance: "pilot" },
+  { id: "brazil", region: "Brazil", role: "Expansion", availability: "99.93%", latency: "64ms", capacity: "47%", deployments: "18", throughput: "2.6k/hr", trust: "93", compliance: "review" },
+];
+
+const NOVACODEPRO_OPERATIONS_WIDGETS = [
+  { label: "Pipeline Health", value: "94", status: "operational" },
+  { label: "Deployment Health", value: "93", status: "controlled" },
+  { label: "Infrastructure Health", value: "95", status: "watch" },
+  { label: "Security Health", value: "91", status: "review" },
+  { label: "Compliance Health", value: "93", status: "mapped" },
+  { label: "Marketplace Health", value: "89", status: "review" },
+  { label: "AI Health", value: "94", status: "advisory" },
+  { label: "Repository Health", value: "97", status: "indexed" },
+  { label: "Workspace Health", value: "96", status: "active" },
+  { label: "Evidence Health", value: "99", status: "sealed" },
+];
+
+const NOVACODEPRO_OBSERVABILITY_EVENTS = [
+  { signal: "Metrics", source: "NovaMonitor", status: "streaming" },
+  { signal: "Logs", source: "NovaTelemetry", status: "indexed" },
+  { signal: "Events", source: "NovaFlow", status: "live" },
+  { signal: "Traces", source: "Runtime Twin", status: "sampled" },
+  { signal: "Evidence", source: "NovaTrust", status: "sealed" },
+  { signal: "AI Activity", source: "NovaAI Studio", status: "advisory" },
+  { signal: "Deployments", source: "NovaDeploy", status: "controlled" },
+  { signal: "Infrastructure", source: "Control Plane", status: "observed" },
+  { signal: "Repository Events", source: "NovaGit", status: "indexed" },
+  { signal: "Digital Twin Updates", source: "Twin Fabric", status: "synced" },
+];
+
+const NOVACODEPRO_CONTROL_PLANE = [
+  { layer: "Global", capacity: "78%", health: "96", replication: "active-active", failover: "regional", recovery: "tested scenario" },
+  { layer: "Region", capacity: "72%", health: "95", replication: "cross-region", failover: "warm standby", recovery: "runbook" },
+  { layer: "Cluster", capacity: "69%", health: "94", replication: "zonal", failover: "rolling", recovery: "automated proposal" },
+  { layer: "Workspace", capacity: "63%", health: "96", replication: "snapshot", failover: "recreate", recovery: "developer approval" },
+  { layer: "Repository", capacity: "58%", health: "97", replication: "mirrored", failover: "read-only", recovery: "owner approval" },
+  { layer: "Pipeline", capacity: "81%", health: "94", replication: "runner pool", failover: "queued", recovery: "retry with evidence" },
+  { layer: "Deployment", capacity: "54%", health: "93", replication: "blue/green", failover: "rollback", recovery: "release board" },
+  { layer: "Runtime", capacity: "67%", health: "95", replication: "service mesh", failover: "traffic shift", recovery: "SRE review" },
+  { layer: "Evidence", capacity: "43%", health: "99", replication: "immutable copy", failover: "read replica", recovery: "audit verified" },
+];
+
+const NOVACODEPRO_ENGINEERING_MISSIONS = [
+  { id: "build-novaride", name: "Build NovaRide", progress: "82%", dependencies: "NovaGit, NovaFlow, NovaTrust", risk: "medium", evidence: "ready", owner: "Mobility Platform", status: "active" },
+  { id: "deploy-novapay", name: "Deploy NovaPay", progress: "68%", dependencies: "NovaSecurity, NovaDeploy", risk: "high", evidence: "review", owner: "Payments Engineering", status: "approval" },
+  { id: "upgrade-novaid", name: "Upgrade NovaID", progress: "74%", dependencies: "NovaID, NovaDocs", risk: "medium", evidence: "draft", owner: "Identity Fabric", status: "running" },
+  { id: "validate-novatrust", name: "Validate NovaTrust", progress: "91%", dependencies: "Evidence Twin, Replay", risk: "low", evidence: "sealed", owner: "Trust Office", status: "verified" },
+  { id: "publish-marketplace", name: "Publish Marketplace", progress: "57%", dependencies: "Publisher review", risk: "medium", evidence: "pending", owner: "Marketplace Ops", status: "review" },
+  { id: "expand-region", name: "Expand Region", progress: "46%", dependencies: "Control plane, compliance", risk: "medium", evidence: "planned", owner: "SRE", status: "pilot" },
+];
+
+const NOVACODEPRO_ENGINEERING_TRUST_METRICS = [
+  { label: "Identity", value: 98, explanation: "NovaID, sessions, service accounts" },
+  { label: "Governance", value: 95, explanation: "ADR, approvals, policy gates" },
+  { label: "Security", value: 91, explanation: "scan posture and exceptions" },
+  { label: "Quality", value: 94, explanation: "tests, reviews, linting" },
+  { label: "Compliance", value: 93, explanation: "framework mappings" },
+  { label: "Observability", value: 98, explanation: "metrics, logs, traces" },
+  { label: "Operations", value: 95, explanation: "release and incident controls" },
+  { label: "Evidence", value: 99, explanation: "trust, audit, replay packets" },
+];
+
+const NOVACODEPRO_ADR_EXPLORER = [
+  { id: "adr-218", title: "Dispatch service separation", dependencies: "NovaRide API, NovaFlow", repositories: "mobility-dispatch-api", evidence: "ADR packet", policies: "service-boundary", deployments: "pilot", timeline: "approved" },
+  { id: "adr-229", title: "Wallet audit packet format", dependencies: "NovaPay, NovaTrust", repositories: "wallet-policy", evidence: "audit packet", policies: "financial-evidence", deployments: "staging", timeline: "review" },
+  { id: "adr-241", title: "Identity device trust model", dependencies: "NovaID, NovaSecurity", repositories: "identity-fabric", evidence: "security packet", policies: "identity-control", deployments: "planned", timeline: "draft" },
+];
+
+const NOVACODEPRO_EOS_TENANT_HIERARCHY = [
+  { layer: "Global Platform", permissions: "platform owner", health: "96", capacity: "78%", trust: "97" },
+  { layer: "Organization", permissions: "org admin", health: "95", capacity: "72%", trust: "96" },
+  { layer: "Business Unit", permissions: "business owner", health: "94", capacity: "61%", trust: "95" },
+  { layer: "Team", permissions: "team admin", health: "96", capacity: "77%", trust: "96" },
+  { layer: "Workspace", permissions: "developer", health: "96", capacity: "63%", trust: "95" },
+  { layer: "Repository", permissions: "maintainer", health: "97", capacity: "58%", trust: "97" },
+  { layer: "Deployment", permissions: "release owner", health: "93", capacity: "54%", trust: "94" },
+  { layer: "Evidence", permissions: "auditor", health: "99", capacity: "43%", trust: "99" },
+];
+
+const NOVACODEPRO_EOS_MARKETPLACE = [
+  { label: "Extensions", value: "184", detail: "approved and review queues" },
+  { label: "Agents", value: "42", detail: "advisory AI workforce packs" },
+  { label: "Templates", value: "96", detail: "trusted starter kits" },
+  { label: "SDKs", value: "28", detail: "versioned developer kits" },
+  { label: "Automation Packs", value: "37", detail: "controlled workflows" },
+  { label: "Verified Publishers", value: "61", detail: "NovaTrust verified" },
+  { label: "Revenue", value: "$428k", detail: "monthly marketplace activity" },
+  { label: "Downloads", value: "272k", detail: "enterprise installs" },
+  { label: "Trust", value: "96", detail: "publisher trust score" },
+  { label: "Approval queue", value: "14", detail: "human review required" },
+];
+
+const NOVACODEPRO_EXECUTIVE_ENGINEERING_KPIS = [
+  { label: "Engineering throughput", value: "+18%", detail: "verified delivery trend" },
+  { label: "Lead time", value: "2.4d", detail: "commit to evidence-ready" },
+  { label: "Deployment frequency", value: "42/day", detail: "controlled deployments" },
+  { label: "Change failure rate", value: "3.1%", detail: "pilot and staging lanes" },
+  { label: "Recovery time", value: "18m", detail: "rollback-ready lanes" },
+  { label: "AI productivity", value: "31%", detail: "accepted advisory output" },
+  { label: "Repository growth", value: "+7.8%", detail: "governed repositories" },
+  { label: "Marketplace activity", value: "+22%", detail: "trusted extensions" },
+  { label: "Compliance", value: "93", detail: "framework posture" },
+  { label: "Trust", value: "96.8", detail: "engineering trust score" },
+];
+
+const NOVACODEPRO_EOS_INTEGRATIONS = [
+  "NovaCloud IDE",
+  "NovaCodePro Desktop",
+  "NovaCodePro Mobile",
+  "NovaGit",
+  "NovaAI Studio",
+  "NovaFlow",
+  "NovaDeploy",
+  "NovaSecurity",
+  "NovaMonitor",
+  "NovaTelemetry",
+  "NovaDocs",
+  "NovaMarketplace",
+  "NovaGovernance",
+  "NovaTrust",
+  "NovaID",
+];
+
 const NOVACODEPRO_APPS = [
   {
     name: "NovaCodePro Desktop",
@@ -7238,6 +7516,23 @@ export default function OperatorDashboard() {
   const [selectedExecutiveReport, setSelectedExecutiveReport] = useState(
     NOVACODEPRO_EXECUTIVE_REPORTS[0].id,
   );
+  const [selectedEosRegion, setSelectedEosRegion] = useState(NOVACODEPRO_INFRASTRUCTURE_REGIONS[0].id);
+  const [selectedDigitalTwin, setSelectedDigitalTwin] = useState(NOVACODEPRO_DIGITAL_TWINS[0].id);
+  const [selectedEosAiAgent, setSelectedEosAiAgent] = useState(NOVACODEPRO_AI_WORKFORCE[0].id);
+  const [engineeringMissionActive, setEngineeringMissionActive] = useState(false);
+  const [engineeringMissionStep, setEngineeringMissionStep] = useState(0);
+  const [selectedTimelineFilter, setSelectedTimelineFilter] = useState(NOVACODEPRO_UNIFIED_TIMELINE_FILTERS[0]);
+  const [selectedEvidencePacket, setSelectedEvidencePacket] = useState(NOVACODEPRO_EVIDENCE_PACKETS[0].type);
+  const [selectedInfrastructureView, setSelectedInfrastructureView] = useState(NOVACODEPRO_CONTROL_PLANE[0].layer);
+  const [selectedEngineeringTrustMetric, setSelectedEngineeringTrustMetric] = useState(
+    NOVACODEPRO_ENGINEERING_TRUST_METRICS[0].label,
+  );
+  const [selectedEngineeringGraphNode, setSelectedEngineeringGraphNode] = useState(
+    NOVACODEPRO_ENGINEERING_GRAPH_NODES[0].id,
+  );
+  const [selectedArchitectureDecision, setSelectedArchitectureDecision] = useState(
+    NOVACODEPRO_ADR_EXPLORER[0].id,
+  );
 
   const selectedWorkspace =
     NOVACODEPRO_WORKSPACES.find((workspace) => workspace.id === selectedWorkspaceId) ||
@@ -7290,6 +7585,30 @@ export default function OperatorDashboard() {
   const selectedReport =
     NOVACODEPRO_EXECUTIVE_REPORTS.find((report) => report.id === selectedExecutiveReport) ||
     NOVACODEPRO_EXECUTIVE_REPORTS[0];
+  const selectedRegion =
+    NOVACODEPRO_INFRASTRUCTURE_REGIONS.find((region) => region.id === selectedEosRegion) ||
+    NOVACODEPRO_INFRASTRUCTURE_REGIONS[0];
+  const selectedTwin =
+    NOVACODEPRO_DIGITAL_TWINS.find((twin) => twin.id === selectedDigitalTwin) ||
+    NOVACODEPRO_DIGITAL_TWINS[0];
+  const selectedEosAgent =
+    NOVACODEPRO_AI_WORKFORCE.find((agent) => agent.id === selectedEosAiAgent) ||
+    NOVACODEPRO_AI_WORKFORCE[0];
+  const selectedEvidence =
+    NOVACODEPRO_EVIDENCE_PACKETS.find((packet) => packet.type === selectedEvidencePacket) ||
+    NOVACODEPRO_EVIDENCE_PACKETS[0];
+  const selectedControlPlaneLayer =
+    NOVACODEPRO_CONTROL_PLANE.find((layer) => layer.layer === selectedInfrastructureView) ||
+    NOVACODEPRO_CONTROL_PLANE[0];
+  const selectedTrustMetric =
+    NOVACODEPRO_ENGINEERING_TRUST_METRICS.find((metric) => metric.label === selectedEngineeringTrustMetric) ||
+    NOVACODEPRO_ENGINEERING_TRUST_METRICS[0];
+  const selectedGraphNode =
+    NOVACODEPRO_ENGINEERING_GRAPH_NODES.find((node) => node.id === selectedEngineeringGraphNode) ||
+    NOVACODEPRO_ENGINEERING_GRAPH_NODES[0];
+  const selectedAdr =
+    NOVACODEPRO_ADR_EXPLORER.find((adr) => adr.id === selectedArchitectureDecision) ||
+    NOVACODEPRO_ADR_EXPLORER[0];
 
   useEffect(() => {
     fetchOperatorState();
@@ -7388,6 +7707,18 @@ export default function OperatorDashboard() {
     }, 760);
     return () => window.clearTimeout(timer);
   }, [releaseJourneyActive, releaseJourneyStep]);
+
+  useEffect(() => {
+    if (!engineeringMissionActive || engineeringMissionStep >= NOVACODEPRO_ENGINEERING_MISSION_STEPS.length) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setEngineeringMissionStep((current) =>
+        Math.min(current + 1, NOVACODEPRO_ENGINEERING_MISSION_STEPS.length),
+      );
+    }, 640);
+    return () => window.clearTimeout(timer);
+  }, [engineeringMissionActive, engineeringMissionStep]);
 
   async function fetchOperatorState() {
     try {
@@ -9683,6 +10014,519 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
                 <span key={item}>{item}</span>
               ))}
             </div>
+          </section>
+        </section>
+
+        <section className="codepro-eos-platform" id="novacodepro-engineering-operating-system">
+          <SectionIntro
+            eyebrow="NovaCodePro Engineering Operating System Experience"
+            title="Mission control for governed engineering, evidence, digital twins, and global infrastructure"
+            question="This is the highest-level EOS experience over the Developer, Engineering, and Enterprise Platform phases. It does not claim production maturity for capabilities that require implemented services, APIs, operational controls, runtime infrastructure, and production validation."
+          />
+
+          <section className="eos-command-shell" aria-labelledby="eos-command-title">
+            <div className="codepro-command-header">
+              <div>
+                <p className="eyebrow">Engineering Operating System Command Center</p>
+                <h3 id="eos-command-title">Full-screen mission control dashboard</h3>
+              </div>
+              <span>Engineering Operating System experience · concept/runtime boundary visible</span>
+            </div>
+            <div className="eos-status-row" aria-label="Live EOS status indicators">
+              {NOVACODEPRO_EOS_LIVE_STATUS.map((status) => (
+                <span key={status}>{status}</span>
+              ))}
+            </div>
+            <div className="eos-command-metric-grid">
+              {NOVACODEPRO_EOS_COMMAND_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <em>{metric.detail}</em>
+                </article>
+              ))}
+            </div>
+            <div className="eos-command-briefing-grid">
+              <article>
+                <strong>Executive summaries</strong>
+                <p>Developer workflows, release operations, enterprise governance, and NovaTrust evidence are unified into one EOS surface.</p>
+              </article>
+              <article>
+                <strong>Recent engineering activity</strong>
+                {NOVACODEPRO_EOS_ACTIVITY.map((activity) => (
+                  <span key={activity}>{activity}</span>
+                ))}
+              </article>
+              <article>
+                <strong>Risk indicators and global alerts</strong>
+                {NOVACODEPRO_EOS_ALERTS.map((alert) => (
+                  <span key={alert.label} className={`severity-${alert.severity}`}>{alert.label}</span>
+                ))}
+              </article>
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="twins-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Engineering Digital Twins</p>
+                <h3 id="twins-title">Repository, architecture, pipeline, deployment, security, evidence, runtime, and observability twins</h3>
+              </div>
+              <span className="surface-chip">conceptual twin layer pending backend synchronization</span>
+            </div>
+            <div className="eos-twin-grid">
+              {NOVACODEPRO_DIGITAL_TWINS.map((twin) => (
+                <button
+                  key={twin.id}
+                  type="button"
+                  className={selectedDigitalTwin === twin.id ? "eos-card-active" : ""}
+                  onClick={() => setSelectedDigitalTwin(twin.id)}
+                >
+                  <span>{twin.state}</span>
+                  <strong>{twin.name}</strong>
+                  <em>health {twin.health} · trust {twin.trust}</em>
+                </button>
+              ))}
+            </div>
+            <article className="eos-detail-panel">
+              <div className="record-card-header">
+                <strong>{selectedTwin.name}</strong>
+                <span>risk {selectedTwin.risk}</span>
+              </div>
+              <div className="eos-fact-grid">
+                <div><span>Current State</span><strong>{selectedTwin.state}</strong></div>
+                <div><span>Health</span><strong>{selectedTwin.health}</strong></div>
+                <div><span>Trust</span><strong>{selectedTwin.trust}</strong></div>
+                <div><span>Evidence</span><strong>{selectedTwin.evidence}</strong></div>
+              </div>
+              <div className="eos-timeline-flow" aria-label="Digital twin historical timeline">
+                {NOVACODEPRO_EOS_TWIN_TIMELINE.map((step) => (
+                  <span key={step}>{step}</span>
+                ))}
+              </div>
+            </article>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="graph-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Unified Engineering Graph</p>
+                <h3 id="graph-title">Developers, repositories, services, APIs, infrastructure, policies, evidence, AI agents, security, and observability</h3>
+              </div>
+              <span className="surface-chip">select a node for metadata, dependencies, status, ownership, and evidence</span>
+            </div>
+            <div className="eos-graph-grid">
+              <div className="eos-graph-map">
+                {NOVACODEPRO_ENGINEERING_GRAPH_NODES.map((node) => (
+                  <button
+                    key={node.id}
+                    type="button"
+                    className={selectedEngineeringGraphNode === node.id ? "eos-node-active" : ""}
+                    onClick={() => setSelectedEngineeringGraphNode(node.id)}
+                  >
+                    {node.label}
+                  </button>
+                ))}
+              </div>
+              <article className="eos-detail-panel">
+                <strong>{selectedGraphNode.label}</strong>
+                <div className="eos-fact-grid">
+                  <div><span>Status</span><strong>{selectedGraphNode.status}</strong></div>
+                  <div><span>Health</span><strong>{selectedGraphNode.health}</strong></div>
+                  <div><span>Ownership</span><strong>{selectedGraphNode.owner}</strong></div>
+                  <div><span>Evidence</span><strong>{selectedGraphNode.evidence}</strong></div>
+                </div>
+                <p>Dependencies are visualized as graph relationships in this UI; live dependency traversal requires backend graph services.</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="ai-workforce-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">AI Engineering Operating Center</p>
+                <h3 id="ai-workforce-title">Living AI workforce with advisory evidence output</h3>
+              </div>
+              <span className="surface-chip">NovaAI Studio expanded · AI suggests, governance decides</span>
+            </div>
+            <div className="eos-ai-grid">
+              <div className="eos-list-panel">
+                {NOVACODEPRO_AI_WORKFORCE.map((agent) => (
+                  <button
+                    key={agent.id}
+                    type="button"
+                    className={selectedEosAiAgent === agent.id ? "eos-card-active" : ""}
+                    onClick={() => setSelectedEosAiAgent(agent.id)}
+                  >
+                    <strong>{agent.name}</strong>
+                    <span>{agent.activity}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="eos-detail-panel">
+                <div className="record-card-header">
+                  <strong>{selectedEosAgent.name}</strong>
+                  <span>confidence {selectedEosAgent.confidence}</span>
+                </div>
+                <div className="eos-fact-grid">
+                  <div><span>Assigned repositories</span><strong>{selectedEosAgent.repos}</strong></div>
+                  <div><span>Tasks</span><strong>{selectedEosAgent.tasks}</strong></div>
+                  <div><span>Generated outputs</span><strong>{selectedEosAgent.outputs}</strong></div>
+                  <div><span>Evidence</span><strong>{selectedEosAgent.evidence}</strong></div>
+                </div>
+                <p>{selectedEosAgent.activity}</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="eos-platform-section eos-mission-demo" aria-labelledby="mission-demo-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Autonomous Engineering Workflows</p>
+                <h3 id="mission-demo-title">Start an engineering mission and watch evidence accumulate</h3>
+              </div>
+              <button
+                type="button"
+                className="button primary"
+                onClick={() => {
+                  setEngineeringMissionActive(true);
+                  setEngineeringMissionStep(0);
+                }}
+              >
+                Start Engineering Mission
+              </button>
+            </div>
+            <div className="release-outcome-row">
+              {engineeringMissionActive && engineeringMissionStep >= NOVACODEPRO_ENGINEERING_MISSION_STEPS.length
+                ? "Engineering Mission Verified · Evidence Generated · Digital Twin Updated · Deployment Healthy"
+                : "Ready to run governed engineering mission"}
+            </div>
+            <div className="eos-mission-step-grid">
+              {NOVACODEPRO_ENGINEERING_MISSION_STEPS.map((step, index) => (
+                <article
+                  key={step}
+                  className={`release-journey-step ${engineeringMissionStep >= index + 1 ? "release-journey-active" : ""}`}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step}</strong>
+                  <p>{index < 11 ? "Governed action prepares reviewable evidence." : "Mission state is recorded for replay."}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="evidence-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Engineering Evidence Platform</p>
+                <h3 id="evidence-title">Every action produces evidence, trust, audit, and replay context</h3>
+              </div>
+              <span className="surface-chip">Evidence Packet · Trust Packet · Audit Packet · Replay Packet</span>
+            </div>
+            <div className="eos-evidence-grid">
+              <div className="eos-list-panel">
+                {NOVACODEPRO_EVIDENCE_PACKETS.map((packet) => (
+                  <button
+                    key={packet.type}
+                    type="button"
+                    className={selectedEvidencePacket === packet.type ? "eos-card-active" : ""}
+                    onClick={() => setSelectedEvidencePacket(packet.type)}
+                  >
+                    <strong>{packet.type}</strong>
+                    <span>{packet.packet}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="eos-detail-panel">
+                <strong>{selectedEvidence.type}</strong>
+                <div className="eos-fact-grid">
+                  <div><span>Packet</span><strong>{selectedEvidence.packet}</strong></div>
+                  <div><span>Trust</span><strong>{selectedEvidence.trust}</strong></div>
+                  <div><span>Relationships</span><strong>{selectedEvidence.links}</strong></div>
+                  <div><span>Explorer</span><strong>relationship view</strong></div>
+                </div>
+                <p>Evidence relationships are visualized here; immutable storage and replay verification require NovaTrust backend services.</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="timeline-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Unified Engineering Timeline</p>
+                <h3 id="timeline-title">Architecture, repositories, commits, PRs, reviews, pipelines, deployments, incidents, recoveries, evidence, and replay</h3>
+              </div>
+              <span className="surface-chip">Searchable by repository, developer, organization, date, and environment</span>
+            </div>
+            <div className="enterprise-selector-row">
+              {NOVACODEPRO_UNIFIED_TIMELINE_FILTERS.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={selectedTimelineFilter === filter ? "enterprise-chip-active" : ""}
+                  onClick={() => setSelectedTimelineFilter(filter)}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+            <div className="eos-timeline-event-grid">
+              {NOVACODEPRO_UNIFIED_TIMELINE.map((event) => (
+                <article key={`${event.time}-${event.title}`}>
+                  <span>{event.time} · {event.type}</span>
+                  <strong>{event.title}</strong>
+                  <p>{event.scope} · filter by {selectedTimelineFilter}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="regions-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Global Engineering Infrastructure</p>
+                <h3 id="regions-title">World engineering regions with availability, latency, capacity, throughput, trust, and compliance</h3>
+              </div>
+              <span className="surface-chip">Primary · Secondary · Expansion · Pilot · Maintenance</span>
+            </div>
+            <div className="eos-region-grid">
+              {NOVACODEPRO_INFRASTRUCTURE_REGIONS.map((region) => (
+                <button
+                  key={region.id}
+                  type="button"
+                  className={selectedEosRegion === region.id ? "eos-card-active" : ""}
+                  onClick={() => setSelectedEosRegion(region.id)}
+                >
+                  <span>{region.role}</span>
+                  <strong>{region.region}</strong>
+                  <em>{region.availability} · {region.latency}</em>
+                </button>
+              ))}
+            </div>
+            <article className="eos-detail-panel">
+              <strong>{selectedRegion.region} engineering region</strong>
+              <div className="eos-fact-grid">
+                <div><span>Availability</span><strong>{selectedRegion.availability}</strong></div>
+                <div><span>Capacity</span><strong>{selectedRegion.capacity}</strong></div>
+                <div><span>Deployments</span><strong>{selectedRegion.deployments}</strong></div>
+                <div><span>Pipeline Throughput</span><strong>{selectedRegion.throughput}</strong></div>
+                <div><span>Trust</span><strong>{selectedRegion.trust}</strong></div>
+                <div><span>Compliance</span><strong>{selectedRegion.compliance}</strong></div>
+              </div>
+            </article>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="ops-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Engineering Operations Center</p>
+                <h3 id="ops-title">Pipeline, deployment, infrastructure, security, compliance, marketplace, AI, repository, workspace, and evidence health</h3>
+              </div>
+              <span className="surface-chip">operational dashboards</span>
+            </div>
+            <div className="eos-ops-grid">
+              {NOVACODEPRO_OPERATIONS_WIDGETS.map((widget) => (
+                <article key={widget.label}>
+                  <span>{widget.status}</span>
+                  <strong>{widget.label}</strong>
+                  <em>{widget.value}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="observability-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Global Observability</p>
+                <h3 id="observability-title">Unified telemetry for metrics, logs, events, traces, evidence, AI activity, deployments, infrastructure, repository events, and digital twin updates</h3>
+              </div>
+              <span className="surface-chip">interactive filtering surface</span>
+            </div>
+            <div className="eos-observability-grid">
+              {NOVACODEPRO_OBSERVABILITY_EVENTS.map((event) => (
+                <article key={event.signal}>
+                  <span>{event.status}</span>
+                  <strong>{event.signal}</strong>
+                  <p>{event.source}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="control-plane-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Multi-Region Control Plane</p>
+                <h3 id="control-plane-title">Global to evidence infrastructure hierarchy</h3>
+              </div>
+              <span className="surface-chip">capacity · health · replication · failover · recovery</span>
+            </div>
+            <div className="eos-control-plane-grid">
+              {NOVACODEPRO_CONTROL_PLANE.map((layer) => (
+                <button
+                  key={layer.layer}
+                  type="button"
+                  className={selectedInfrastructureView === layer.layer ? "eos-card-active" : ""}
+                  onClick={() => setSelectedInfrastructureView(layer.layer)}
+                >
+                  <strong>{layer.layer}</strong>
+                  <span>{layer.health} health · {layer.capacity}</span>
+                </button>
+              ))}
+            </div>
+            <article className="eos-detail-panel">
+              <strong>{selectedControlPlaneLayer.layer} control layer</strong>
+              <div className="eos-fact-grid">
+                <div><span>Replication</span><strong>{selectedControlPlaneLayer.replication}</strong></div>
+                <div><span>Failover</span><strong>{selectedControlPlaneLayer.failover}</strong></div>
+                <div><span>Recovery</span><strong>{selectedControlPlaneLayer.recovery}</strong></div>
+                <div><span>Capacity</span><strong>{selectedControlPlaneLayer.capacity}</strong></div>
+              </div>
+            </article>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="missions-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Engineering Mission Control</p>
+                <h3 id="missions-title">Build NovaRide, Deploy NovaPay, Upgrade NovaID, Validate NovaTrust, Publish Marketplace, and Expand Region</h3>
+              </div>
+              <span className="surface-chip">mission cards</span>
+            </div>
+            <div className="eos-mission-card-grid">
+              {NOVACODEPRO_ENGINEERING_MISSIONS.map((mission) => (
+                <article key={mission.id} className={`severity-${mission.risk}`}>
+                  <span>{mission.status}</span>
+                  <strong>{mission.name}</strong>
+                  <p>Progress {mission.progress} · Owner {mission.owner}</p>
+                  <em>{mission.dependencies} · Evidence {mission.evidence}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="trust-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Live Trust Center</p>
+                <h3 id="trust-title">Overall Engineering Trust Score 96.8</h3>
+              </div>
+              <span className="surface-chip">score composition explained</span>
+            </div>
+            <div className="eos-trust-grid">
+              {NOVACODEPRO_ENGINEERING_TRUST_METRICS.map((metric) => (
+                <button
+                  key={metric.label}
+                  type="button"
+                  className={selectedEngineeringTrustMetric === metric.label ? "eos-card-active" : ""}
+                  onClick={() => setSelectedEngineeringTrustMetric(metric.label)}
+                >
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </button>
+              ))}
+            </div>
+            <p className="section-note">{selectedTrustMetric.label}: {selectedTrustMetric.explanation} contributes to the Engineering Trust Score.</p>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="adr-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Architecture Decision Center</p>
+                <h3 id="adr-title">Interactive ADR explorer for decision graph, dependencies, repositories, evidence, policies, deployments, and timeline</h3>
+              </div>
+              <span className="surface-chip">NovaGovernance integrated</span>
+            </div>
+            <div className="eos-adr-grid">
+              <div className="eos-list-panel">
+                {NOVACODEPRO_ADR_EXPLORER.map((adr) => (
+                  <button
+                    key={adr.id}
+                    type="button"
+                    className={selectedArchitectureDecision === adr.id ? "eos-card-active" : ""}
+                    onClick={() => setSelectedArchitectureDecision(adr.id)}
+                  >
+                    <strong>{adr.id}</strong>
+                    <span>{adr.title}</span>
+                  </button>
+                ))}
+              </div>
+              <article className="eos-detail-panel">
+                <strong>{selectedAdr.title}</strong>
+                <div className="eos-fact-grid">
+                  <div><span>Dependencies</span><strong>{selectedAdr.dependencies}</strong></div>
+                  <div><span>Linked repositories</span><strong>{selectedAdr.repositories}</strong></div>
+                  <div><span>Evidence</span><strong>{selectedAdr.evidence}</strong></div>
+                  <div><span>Policies</span><strong>{selectedAdr.policies}</strong></div>
+                  <div><span>Affected deployments</span><strong>{selectedAdr.deployments}</strong></div>
+                  <div><span>Timeline</span><strong>{selectedAdr.timeline}</strong></div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="tenant-os-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Multi-Tenant Engineering OS</p>
+                <h3 id="tenant-os-title">Global Platform to Evidence hierarchy</h3>
+              </div>
+              <span className="surface-chip">permissions · health · capacity · trust</span>
+            </div>
+            <div className="eos-tenant-grid">
+              {NOVACODEPRO_EOS_TENANT_HIERARCHY.map((item) => (
+                <article key={item.layer}>
+                  <span>{item.permissions}</span>
+                  <strong>{item.layer}</strong>
+                  <p>Health {item.health} · Capacity {item.capacity} · Trust {item.trust}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="marketplace-os-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Enterprise Marketplace OS</p>
+                <h3 id="marketplace-os-title">Extensions, agents, templates, SDKs, automation packs, verified publishers, revenue, downloads, trust, and approval queue</h3>
+              </div>
+              <span className="surface-chip">NovaMarketplace command center</span>
+            </div>
+            <div className="eos-marketplace-grid">
+              {NOVACODEPRO_EOS_MARKETPLACE.map((item) => (
+                <article key={item.label}>
+                  <span>{item.detail}</span>
+                  <strong>{item.label}</strong>
+                  <em>{item.value}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="eos-platform-section" aria-labelledby="executive-kpis-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Executive Engineering Intelligence</p>
+                <h3 id="executive-kpis-title">Throughput, lead time, deployment frequency, change failure rate, recovery time, AI productivity, repository growth, marketplace activity, compliance, and trust</h3>
+              </div>
+              <span className="surface-chip">Export PDF · DOCX · CSV · XLSX</span>
+            </div>
+            <div className="eos-kpi-grid">
+              {NOVACODEPRO_EXECUTIVE_ENGINEERING_KPIS.map((kpi) => (
+                <article key={kpi.label}>
+                  <span>{kpi.detail}</span>
+                  <strong>{kpi.label}</strong>
+                  <em>{kpi.value}</em>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="trust-aware-workflow eos-integration-flow" aria-label="NovaCodePro EOS integration layer">
+            {NOVACODEPRO_EOS_INTEGRATIONS.map((integration) => (
+              <span key={integration}>{integration}</span>
+            ))}
           </section>
         </section>
 
