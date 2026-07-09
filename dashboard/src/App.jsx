@@ -1570,6 +1570,7 @@ const NOVATECH_PLATFORM_NAV = [
   { label: "Journey", href: "#trust-journey", detail: "Live proof flow" },
   { label: "Score", href: "#trust-score", detail: "Evidence score" },
   { label: "NovaCodePro", href: "#novacodepro", detail: "AI engineering" },
+  { label: "Command Center", href: "/novacodepro/os#novacodepro-os", detail: "Engineering OS" },
   { label: "Global", href: "#global", detail: "Expansion map" },
   { label: "Pilots", href: "#pilots", detail: "Field evidence" },
   { label: "Trust Center", href: "#trust-center", detail: "Security + governance" },
@@ -2041,6 +2042,50 @@ const NOVACODEPRO_AI_ROLES = [
   { role: "Nova Auditor", action: "Check trust readiness", outputs: ["Evidence", "Replayability", "Governance", "Trust controls"] },
 ];
 
+const NOVACODEPRO_COMMAND_METRICS = [
+  { label: "Active Repositories", value: "842" },
+  { label: "Live Pipelines", value: "124" },
+  { label: "AI Reviews Today", value: "2,391" },
+  { label: "Deployments", value: "89" },
+  { label: "Trust Score", value: "99.8" },
+  { label: "Evidence Packets", value: "14,521" },
+];
+
+const NOVACODEPRO_COMMAND_WIDGETS = [
+  { name: "Pipeline Status", signal: "118 passing", tone: "active" },
+  { name: "System Status", signal: "All core services operational", tone: "active" },
+  { name: "Security Findings", signal: "3 low-priority items", tone: "review" },
+  { name: "AI Activity", signal: "Nova Reviewer processing 42 PRs", tone: "active" },
+  { name: "Marketplace Activity", signal: "19 verified installs today", tone: "active" },
+  { name: "Evidence Generation", signal: "376 packets sealed today", tone: "active" },
+];
+
+const NOVACODEPRO_REPOSITORY_TWIN = [
+  "Repository",
+  "Architecture",
+  "ADR",
+  "Code",
+  "Pipeline",
+  "Deployment",
+  "Evidence",
+];
+
+const NOVACODEPRO_TWIN_TIMELINE = [
+  { date: "Jan 01", event: "Feature Created", detail: "Business request linked to repository twin" },
+  { date: "Jan 02", event: "ADR Approved", detail: "Nova Architect creates decision record" },
+  { date: "Jan 03", event: "Implementation", detail: "Nova Developer proposes services, tests, and docs" },
+  { date: "Jan 04", event: "Pipeline Approved", detail: "NovaFlow validates test, lint, policy, and security gates" },
+  { date: "Jan 04", event: "Deployment", detail: "NovaDeploy releases through approval gate" },
+  { date: "Jan 04", event: "Evidence Generated", detail: "NovaTrust stores replayable evidence packet" },
+];
+
+const NOVACODEPRO_AI_STUDIO = [
+  { name: "Nova Architect", focus: "Creates system design", actions: ["Generates ADRs", "Suggests patterns", "Maps domain boundaries"], activity: "Drafting mobility payment service architecture" },
+  { name: "Nova Developer", focus: "Generates implementation", actions: ["Generates code", "Refactors modules", "Creates tests"], activity: "Creating typed API client and unit tests" },
+  { name: "Nova Reviewer", focus: "Reviews engineering quality", actions: ["Reviews pull requests", "Detects issues", "Checks standards"], activity: "Reviewing 42 pull requests for policy drift" },
+  { name: "Nova Auditor", focus: "Verifies trust posture", actions: ["Verifies evidence", "Checks governance", "Calculates trust posture"], activity: "Comparing deployment record against approval trail" },
+];
+
 const NOVACODEPRO_ENGINEERING_JOURNEY = [
   { step: "Create Repository", product: "NovaGit", result: "Repository policies attached" },
   { step: "Generate Code", product: "NovaAI", result: "Service, tests, and docs proposed" },
@@ -2048,6 +2093,16 @@ const NOVACODEPRO_ENGINEERING_JOURNEY = [
   { step: "Security Validation", product: "NovaSecurity", result: "SAST, dependencies, and secrets pass" },
   { step: "Deploy", product: "NovaDeploy", result: "Approval gate releases controlled deployment" },
   { step: "Evidence Generated", product: "NovaTrust", result: "Evidence Packet stored for audit" },
+];
+
+const NOVACODEPRO_REPOSITORY_JOURNEY = [
+  { step: "Repository Created", product: "NovaGit", log: "REPOSITORY CREATED" },
+  { step: "Code Generated", product: "NovaAI", log: "CODE PROPOSED" },
+  { step: "Tests Created", product: "NovaAI", log: "TEST PASSED" },
+  { step: "Security Scan", product: "NovaSecurity", log: "SECURITY PASSED" },
+  { step: "Approval", product: "NovaGovernance", log: "APPROVAL GRANTED" },
+  { step: "Deployment", product: "NovaDeploy", log: "PIPELINE PASSED" },
+  { step: "Evidence Created", product: "NovaTrust", log: "EVIDENCE STORED" },
 ];
 
 const NOVACODEPRO_STATUS = [
@@ -2059,6 +2114,100 @@ const NOVACODEPRO_STATUS = [
   { system: "NovaSecurity", state: "Operational" },
   { system: "NovaDocs", state: "Operational" },
   { system: "NovaMarketplace", state: "Operational" },
+];
+
+const NOVACODEPRO_TRUST_SCORE = [
+  { label: "Identity", value: 99, weight: "20%" },
+  { label: "Security", value: 100, weight: "20%" },
+  { label: "Governance", value: 98, weight: "20%" },
+  { label: "Quality", value: 96, weight: "15%" },
+  { label: "Reliability", value: 97, weight: "15%" },
+  { label: "Evidence", value: 98, weight: "10%" },
+];
+
+const NOVATRUST_VERIFICATION_LEVELS = [
+  { level: "Bronze", appliesTo: "Repositories", standard: "Basic policy and ownership verified" },
+  { level: "Silver", appliesTo: "Extensions", standard: "Security scan and dependency review complete" },
+  { level: "Gold", appliesTo: "AI Agents", standard: "Governance, evidence, and audit checks complete" },
+  { level: "Platinum", appliesTo: "Marketplace Vendors", standard: "Enterprise trust framework and replay evidence complete" },
+];
+
+const NOVACODEPRO_MARKETPLACE_2 = [
+  { category: "AI Agents", label: "Trending" },
+  { category: "Governance Packs", label: "Enterprise Ready" },
+  { category: "Security Packs", label: "Verified" },
+  { category: "Pipeline Templates", label: "Most Installed" },
+  { category: "Themes", label: "Trending" },
+  { category: "Language Packs", label: "Most Installed" },
+  { category: "Deployment Connectors", label: "Enterprise Ready" },
+  { category: "Monitoring Extensions", label: "Verified" },
+];
+
+const NOVACODEPRO_ACADEMY_TRACKS = [
+  "Developer",
+  "Architect",
+  "DevOps",
+  "Security",
+  "AI",
+  "Governance",
+];
+
+const NOVACODEPRO_CERTIFICATIONS = [
+  "NovaCodePro Associate",
+  "NovaCodePro Professional",
+  "NovaCodePro Expert",
+  "NovaCodePro Enterprise Architect",
+];
+
+const NOVACODEPRO_ENTERPRISE_READINESS = [
+  "Security Whitepaper",
+  "Trust Framework",
+  "Governance Guide",
+  "Architecture Guide",
+  "Operational Controls",
+  "Compliance Controls",
+];
+
+const NOVATELEMETRY_SERVICES = [
+  "Metrics",
+  "Logs",
+  "Traces",
+  "Events",
+  "Evidence Analytics",
+];
+
+const NOVATELEMETRY_HEALTH = [
+  { health: "Application Health", score: "99.9%" },
+  { health: "Pipeline Health", score: "99.4%" },
+  { health: "Trust Health", score: "99.8%" },
+  { health: "Infrastructure Health", score: "99.7%" },
+];
+
+const NOVACODEPRO_CLOUD_REGIONS = [
+  { market: "Australia", status: "Pilot", availability: "99.9%", latency: "28ms", deployments: 89, capacity: "Ready", trust: "99.8" },
+  { market: "Burundi", status: "Expansion", availability: "99.2%", latency: "86ms", deployments: 14, capacity: "Partner", trust: "98.9" },
+  { market: "DR Congo", status: "Planned", availability: "Planning", latency: "TBD", deployments: 0, capacity: "Discovery", trust: "Design" },
+  { market: "Kenya", status: "Active", availability: "99.6%", latency: "42ms", deployments: 31, capacity: "Regional", trust: "99.3" },
+  { market: "Uganda", status: "Planned", availability: "Planning", latency: "TBD", deployments: 0, capacity: "Pipeline", trust: "Design" },
+  { market: "Global Edge", status: "Expansion", availability: "99.95%", latency: "18ms", deployments: 217, capacity: "Edge", trust: "99.7" },
+];
+
+const NOVACODEPRO_STARTER_KITS = [
+  { name: "Build NovaRide Integration", includes: ["Architecture", "Repository Template", "API Guide", "Deployment Guide", "Evidence Flow"] },
+  { name: "Build NovaPay Service", includes: ["Architecture", "Repository Template", "API Guide", "Deployment Guide", "Evidence Flow"] },
+  { name: "Build NovaTrust Verifier", includes: ["Architecture", "Repository Template", "API Guide", "Deployment Guide", "Evidence Flow"] },
+  { name: "Build NovaAI Agent", includes: ["Architecture", "Repository Template", "API Guide", "Deployment Guide", "Evidence Flow"] },
+];
+
+const NOVACODEPRO_LIVING_GOVERNANCE = [
+  { stage: "Feature", time: "09:00", state: "Created" },
+  { stage: "ADR", time: "09:18", state: "Approved" },
+  { stage: "Implementation", time: "10:42", state: "Generated" },
+  { stage: "Review", time: "11:15", state: "Passed" },
+  { stage: "Evidence", time: "11:44", state: "Sealed" },
+  { stage: "Approval", time: "12:05", state: "Granted" },
+  { stage: "Deployment", time: "12:17", state: "Released" },
+  { stage: "Audit Trail", time: "12:18", state: "Replayable" },
 ];
 
 const NOVACODEPRO_ENTERPRISE_CONTROL_CENTER = [
@@ -6271,6 +6420,9 @@ export default function OperatorDashboard() {
   const [trustScoreExpanded, setTrustScoreExpanded] = useState(false);
   const [engineeringJourneyActive, setEngineeringJourneyActive] = useState(false);
   const [engineeringJourneyStep, setEngineeringJourneyStep] = useState(0);
+  const [repositoryJourneyActive, setRepositoryJourneyActive] = useState(false);
+  const [repositoryJourneyStep, setRepositoryJourneyStep] = useState(0);
+  const [activeCodeproAgent, setActiveCodeproAgent] = useState(NOVACODEPRO_AI_STUDIO[0].name);
 
   useEffect(() => {
     fetchOperatorState();
@@ -6345,6 +6497,18 @@ export default function OperatorDashboard() {
     }, 850);
     return () => window.clearTimeout(timer);
   }, [engineeringJourneyActive, engineeringJourneyStep]);
+
+  useEffect(() => {
+    if (!repositoryJourneyActive || repositoryJourneyStep >= NOVACODEPRO_REPOSITORY_JOURNEY.length) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setRepositoryJourneyStep((current) =>
+        Math.min(current + 1, NOVACODEPRO_REPOSITORY_JOURNEY.length),
+      );
+    }, 780);
+    return () => window.clearTimeout(timer);
+  }, [repositoryJourneyActive, repositoryJourneyStep]);
 
   async function fetchOperatorState() {
     try {
@@ -7589,11 +7753,11 @@ export default function OperatorDashboard() {
         <div className="novacodepro-hero">
           <div>
             <p className="eyebrow">NovaCodePro X</p>
-            <h2>Build. Govern. Deploy. Verify.</h2>
+            <h2>The World's First Trusted Engineering Operating System.</h2>
             <p>
-              NovaCodePro X is the Engineering Operating System powering
-              NovaRide, NovaPay, NovaID, NovaTrust, NovaAI, internal apps,
-              partner applications, and third-party integrations.
+              NovaCodePro X is the engineering system of record for
+              architecture, source code, AI, governance, evidence, deployment,
+              and compliance across NovaTech and regulated enterprise teams.
             </p>
             <div className="chip-row">
               {NOVACODEPRO_TARGET_USERS.map((user) => (
@@ -7617,6 +7781,39 @@ export default function OperatorDashboard() {
   evidence: generated`}</pre>
           </div>
         </div>
+
+        <section className="codepro-command-center" id="novacodepro-os">
+          <SectionIntro
+            eyebrow="NovaCodePro Command Center"
+            title="Mission Control for trusted engineering"
+            question="/novacodepro/os gives enterprise teams a living operating view across repositories, pipelines, AI, deployments, evidence, marketplace, and security."
+          />
+          <div className="codepro-command-shell">
+            <div className="codepro-command-header">
+              <div>
+                <p className="eyebrow">Engineering System of Record</p>
+                <h3>NovaCodePro Command Center</h3>
+              </div>
+              <span>Verified by NovaTrust</span>
+            </div>
+            <div className="codepro-command-metrics">
+              {NOVACODEPRO_COMMAND_METRICS.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </article>
+              ))}
+            </div>
+            <div className="codepro-widget-grid">
+              {NOVACODEPRO_COMMAND_WIDGETS.map((widget) => (
+                <article key={widget.name} className={`codepro-widget codepro-widget-${widget.tone}`}>
+                  <span>{widget.name}</span>
+                  <strong>{widget.signal}</strong>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <SectionIntro
           eyebrow="Operating System Architecture"
@@ -7670,11 +7867,59 @@ export default function OperatorDashboard() {
           </OperatorPanel>
         </div>
 
+        <section className="codepro-living-grid">
+          <OperatorPanel title="Engineering Digital Twin">
+            <p className="section-note">Every repository gets a live twin that links intent, architecture, code, pipeline, deployment, and evidence.</p>
+            <div className="digital-twin-flow">
+              {NOVACODEPRO_REPOSITORY_TWIN.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          </OperatorPanel>
+          <OperatorPanel title="Repository Twin Timeline">
+            <div className="twin-timeline">
+              {NOVACODEPRO_TWIN_TIMELINE.map((item) => (
+                <article key={`${item.date}-${item.event}`}>
+                  <span>{item.date}</span>
+                  <strong>{item.event}</strong>
+                  <p>{item.detail}</p>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </section>
+
         <SectionIntro
-          eyebrow="NovaAI Engineering"
-          title="Specialized AI roles for governed software delivery"
+          eyebrow="NovaAI Studio"
+          title="Living AI agents for governed software delivery"
           question="NovaAI does not replace governance. It proposes, reviews, documents, and audits while NovaCodePro records the evidence trail."
         />
+        <div className="codepro-ai-studio">
+          <div className="codepro-agent-list">
+            {NOVACODEPRO_AI_STUDIO.map((agent) => (
+              <button
+                key={agent.name}
+                type="button"
+                className={activeCodeproAgent === agent.name ? "codepro-agent-active" : ""}
+                onClick={() => setActiveCodeproAgent(agent.name)}
+              >
+                <strong>{agent.name}</strong>
+                <span>{agent.focus}</span>
+              </button>
+            ))}
+          </div>
+          {NOVACODEPRO_AI_STUDIO.filter((agent) => agent.name === activeCodeproAgent).map((agent) => (
+            <article key={agent.name} className="codepro-agent-detail">
+              <span>Live agent activity</span>
+              <strong>{agent.activity}</strong>
+              <div className="chip-row">
+                {agent.actions.map((action) => (
+                  <span key={action} className="surface-chip">{action}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
         <div className="codepro-role-grid">
           {NOVACODEPRO_AI_ROLES.map((role) => (
             <article key={role.role} className="codepro-role-card">
@@ -7727,6 +7972,70 @@ export default function OperatorDashboard() {
           </div>
         </section>
 
+        <section className="codepro-journey-panel codepro-repository-journey">
+          <SectionIntro
+            eyebrow="Interactive Repository Journey"
+            title="Start building and watch engineering evidence form"
+            question="A repository is created, code and tests are generated, security passes, approval is granted, deployment completes, and NovaTrust stores evidence."
+          />
+          <div className="journey-control-row">
+            <button
+              type="button"
+              className="button primary"
+              onClick={() => {
+                setRepositoryJourneyActive(true);
+                setRepositoryJourneyStep(0);
+              }}
+            >
+              ▶ Start Building
+            </button>
+            <span>
+              {repositoryJourneyActive && repositoryJourneyStep >= NOVACODEPRO_REPOSITORY_JOURNEY.length
+                ? "Repository verified · Security passed · Approval granted · Evidence stored"
+                : "Ready to create a verified repository"}
+            </span>
+          </div>
+          <div className="repository-journey-grid">
+            <div className="replay-demo codepro-journey-grid">
+              {NOVACODEPRO_REPOSITORY_JOURNEY.map((step, index) => (
+                <article
+                  key={step.step}
+                  className={`replay-step ${repositoryJourneyStep >= index + 1 ? "replay-step-active" : ""}`}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step.step}</strong>
+                  <p>{step.product}</p>
+                  <em>{step.log}</em>
+                </article>
+              ))}
+            </div>
+            <pre className="live-log-panel">{NOVACODEPRO_REPOSITORY_JOURNEY
+              .slice(0, repositoryJourneyStep)
+              .map((step) => step.log)
+              .join("\n") || "WAITING FOR BUILD START"}</pre>
+          </div>
+        </section>
+
+        <section className="codepro-trust-score-panel">
+          <div>
+            <p className="eyebrow">Engineering Trust Score</p>
+            <h3>97.8</h3>
+            <p>
+              Trust = 20% Identity + 20% Security + 20% Governance + 15%
+              Quality + 15% Reliability + 10% Evidence.
+            </p>
+          </div>
+          <div className="trust-score-breakdown">
+            {NOVACODEPRO_TRUST_SCORE.map((item) => (
+              <article key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <em>{item.weight}</em>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <div className="codepro-status-grid">
           {NOVACODEPRO_STATUS.map((status) => (
             <article key={status.system} className="status-pill status-pill-active codepro-status-pill">
@@ -7736,6 +8045,62 @@ export default function OperatorDashboard() {
             </article>
           ))}
         </div>
+
+        <section className="codepro-living-grid">
+          <OperatorPanel title="NovaTrust Verified System">
+            <p className="section-note">Verified by NovaTrust applies to repositories, extensions, AI agents, templates, and marketplace vendors.</p>
+            <div className="verification-level-grid">
+              {NOVATRUST_VERIFICATION_LEVELS.map((level) => (
+                <article key={level.level}>
+                  <span>{level.level}</span>
+                  <strong>{level.appliesTo}</strong>
+                  <p>{level.standard}</p>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+          <OperatorPanel title="NovaTelemetry">
+            <p className="section-note">NovaMonitor plus NovaTelemetry combines metrics, logs, traces, events, and evidence analytics.</p>
+            <div className="docs-grid">
+              {NOVATELEMETRY_SERVICES.map((service) => (
+                <div key={service} className="reason-chip reason-chip-success">{service}</div>
+              ))}
+            </div>
+            <div className="telemetry-health-grid">
+              {NOVATELEMETRY_HEALTH.map((item) => (
+                <article key={item.health}>
+                  <span>{item.health}</span>
+                  <strong>{item.score}</strong>
+                </article>
+              ))}
+            </div>
+          </OperatorPanel>
+        </section>
+
+        <section className="codepro-cloud-panel">
+          <SectionIntro
+            eyebrow="NovaCodePro Global Cloud"
+            title="Trusted engineering regions and edge capacity"
+            question="Global cloud status shows availability, latency, deployments, capacity, and regional trust score for active, pilot, planned, and expansion markets."
+          />
+          <div className="codepro-cloud-grid">
+            {NOVACODEPRO_CLOUD_REGIONS.map((region) => (
+              <article key={region.market} className={`cloud-region cloud-region-${region.status.toLowerCase()}`}>
+                <div className="record-card-header">
+                  <strong>{region.market}</strong>
+                  <span>{region.status}</span>
+                </div>
+                <dl>
+                  <div><dt>Availability</dt><dd>{region.availability}</dd></div>
+                  <div><dt>Latency</dt><dd>{region.latency}</dd></div>
+                  <div><dt>Deployments</dt><dd>{region.deployments}</dd></div>
+                  <div><dt>Capacity</dt><dd>{region.capacity}</dd></div>
+                  <div><dt>Trust</dt><dd>{region.trust}</dd></div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <SectionIntro
           eyebrow="Core Applications"
@@ -7850,6 +8215,80 @@ export default function OperatorDashboard() {
           ))}
         </div>
 
+        <SectionIntro
+          eyebrow="NovaMarketplace 2.0"
+          title="A verified engineering ecosystem"
+          question="Marketplace listings are labeled for trust posture, enterprise readiness, install momentum, and NovaTrust verification."
+        />
+        <div className="marketplace-v2-grid">
+          {NOVACODEPRO_MARKETPLACE_2.map((entry) => (
+            <article key={entry.category} className="download-card">
+              <span>{entry.label}</span>
+              <strong>{entry.category}</strong>
+              <p>Verified marketplace category for governed engineering teams.</p>
+            </article>
+          ))}
+        </div>
+
+        <section className="codepro-living-grid">
+          <OperatorPanel title="NovaCodePro University">
+            <p className="section-note">academy.novacodepro.com</p>
+            <div className="docs-grid">
+              {NOVACODEPRO_ACADEMY_TRACKS.map((track) => (
+                <div key={track} className="reason-chip reason-chip-success">{track}</div>
+              ))}
+            </div>
+            <div className="academy-cert-grid">
+              {NOVACODEPRO_CERTIFICATIONS.map((cert) => (
+                <span key={cert}>{cert}</span>
+              ))}
+            </div>
+          </OperatorPanel>
+          <OperatorPanel title="Enterprise Readiness Center">
+            <p className="section-note">Route: /enterprise · Downloads: PDF, DOCX, PowerPoint</p>
+            <div className="docs-grid">
+              {NOVACODEPRO_ENTERPRISE_READINESS.map((item) => (
+                <div key={item} className="reason-chip">{item}</div>
+              ))}
+            </div>
+          </OperatorPanel>
+        </section>
+
+        <SectionIntro
+          eyebrow="Developer Portal 2.0"
+          title="Runnable starter kits for NovaTech builders"
+          question="docs.novacodepro.com includes starter kits with architecture, repository templates, API guides, deployment guides, and evidence flows."
+        />
+        <div className="starter-kit-grid">
+          {NOVACODEPRO_STARTER_KITS.map((kit) => (
+            <article key={kit.name} className="record-card">
+              <strong>{kit.name}</strong>
+              <div className="chip-row">
+                {kit.includes.map((item) => (
+                  <span key={item} className="surface-chip">{item}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <section className="living-governance-panel">
+          <SectionIntro
+            eyebrow="Living Governance"
+            title="Every stage visible, timestamped, and replayable"
+            question="Feature, ADR, implementation, review, evidence, approval, deployment, and audit trail remain connected in one engineering record."
+          />
+          <div className="living-governance-grid">
+            {NOVACODEPRO_LIVING_GOVERNANCE.map((stage) => (
+              <article key={stage.stage}>
+                <span>{stage.time}</span>
+                <strong>{stage.stage}</strong>
+                <em>{stage.state}</em>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <div className="trusted-positioning-grid">
           {TRUSTED_PRODUCT_POSITIONING.map(([product, positioning]) => (
             <article key={product} className="record-card">
@@ -7920,11 +8359,11 @@ export default function OperatorDashboard() {
       <footer className="ecosystem-footer" aria-label="AfriTechnology ecosystem footer">
         <div>
           <strong>AFRITECHNOLOGY</strong>
-          <span>Trust Infrastructure Experience Platform</span>
+          <span>The Trust Operating System Company</span>
         </div>
         <nav>
           <section>
-            <h3>Platform</h3>
+            <h3>NovaTech Platform</h3>
             <a href="#platform">NovaTech</a>
           </section>
           <section>
@@ -7934,10 +8373,17 @@ export default function OperatorDashboard() {
             ))}
           </section>
           <section>
+            <h3>Engineering</h3>
+            {["NovaCloud IDE", "NovaGit", "NovaFlow", "NovaDeploy", "NovaMonitor", "NovaTelemetry", "NovaSecurity"].map((item) => (
+              <a key={item} href="#novacodepro-os">{item}</a>
+            ))}
+          </section>
+          <section>
             <h3>Resources</h3>
             <a href="#developers">Documentation</a>
+            <a href="#novacodepro">Academy</a>
             <a href="#trust-center">Trust Center</a>
-            <a href="#case-studies">Case Studies</a>
+            <a href="#novacodepro">Marketplace</a>
             <a href="#downloads">Downloads</a>
           </section>
           <section>
@@ -7949,7 +8395,7 @@ export default function OperatorDashboard() {
           </section>
           <section>
             <h3>Status</h3>
-            <a href="#home">system.afritechnology.com</a>
+            <a href="#novacodepro-os">status.afritechnology.com</a>
           </section>
         </nav>
       </footer>

@@ -1050,15 +1050,147 @@ a {
 .novacodepro-ecosystem-grid,
 .codepro-os-map,
 .codepro-workspace-grid,
+.codepro-living-grid,
 .codepro-role-grid,
+.codepro-ai-studio,
 .codepro-status-grid,
 .codepro-enterprise-grid,
 .marketplace-economy-grid,
+.marketplace-v2-grid,
+.starter-kit-grid,
 .trusted-positioning-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 18px;
+}
+
+.codepro-command-center {
+  margin: 10px 0 28px;
+}
+
+.codepro-command-shell {
+  display: grid;
+  gap: 16px;
+  border: 1px solid rgba(117, 214, 160, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(7, 17, 31, 0.98), rgba(15, 38, 51, 0.96)),
+    #07111f;
+  color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 28px 70px rgba(24, 36, 50, 0.22);
+}
+
+.codepro-command-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.codepro-command-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.7rem, 3.3vw, 3rem);
+  line-height: 1.05;
+}
+
+.codepro-command-header > span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border: 1px solid rgba(241, 196, 83, 0.65);
+  border-radius: 999px;
+  background: rgba(241, 196, 83, 0.14);
+  color: #ffe2a0;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.codepro-command-metrics,
+.codepro-widget-grid,
+.codepro-cloud-grid,
+.verification-level-grid,
+.telemetry-health-grid,
+.trust-score-breakdown,
+.living-governance-grid,
+.academy-cert-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.codepro-command-metrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.codepro-command-metrics article,
+.codepro-widget,
+.codepro-trust-score-panel,
+.cloud-region,
+.verification-level-grid article,
+.telemetry-health-grid article,
+.living-governance-grid article {
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.codepro-command-metrics article {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.codepro-command-metrics span,
+.codepro-widget span,
+.codepro-trust-score-panel span,
+.cloud-region dt,
+.verification-level-grid span,
+.telemetry-health-grid span,
+.living-governance-grid span {
+  color: #6b7b8e;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.codepro-command-metrics span,
+.codepro-widget span {
+  color: #b9c7d6;
+}
+
+.codepro-command-metrics strong {
+  display: block;
+  margin-top: 6px;
+  color: #ffffff;
+  font-size: clamp(1.45rem, 2.4vw, 2.4rem);
+}
+
+.codepro-widget-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.codepro-widget {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.codepro-widget strong {
+  display: block;
+  margin-top: 8px;
+  color: #ffffff;
+}
+
+.codepro-widget-active {
+  box-shadow: inset 4px 0 0 #75d6a0;
+}
+
+.codepro-widget-review {
+  box-shadow: inset 4px 0 0 #f1c453;
 }
 
 .codepro-os-map {
@@ -1114,8 +1246,67 @@ a {
 }
 
 .codepro-workspace-grid,
+.codepro-living-grid,
 .codepro-enterprise-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.codepro-living-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.digital-twin-flow {
+  display: grid;
+  gap: 8px;
+}
+
+.digital-twin-flow span {
+  position: relative;
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #f8fbfc;
+  color: #172033;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+
+.digital-twin-flow span:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  bottom: -9px;
+  width: 2px;
+  height: 9px;
+  background: #75d6a0;
+}
+
+.twin-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.twin-timeline article {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 4px 12px;
+  border-bottom: 1px solid #e6edf2;
+  padding-bottom: 10px;
+}
+
+.twin-timeline span {
+  color: #2f6f73;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.twin-timeline strong {
+  color: #172033;
+}
+
+.twin-timeline p {
+  grid-column: 2;
+  margin: 0;
+  color: #59687b;
 }
 
 .workspace-tree {
@@ -1136,6 +1327,64 @@ a {
 
 .codepro-role-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.codepro-ai-studio {
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+}
+
+.codepro-agent-list {
+  display: grid;
+  gap: 10px;
+}
+
+.codepro-agent-list button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  border: 1px solid #d1dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.codepro-agent-list button span {
+  color: #59687b;
+}
+
+.codepro-agent-list .codepro-agent-active {
+  border-color: #75d6a0;
+  background: #ecfff4;
+  box-shadow: inset 4px 0 0 #1f7a55;
+}
+
+.codepro-agent-detail {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  min-height: 240px;
+  border: 1px solid #bfd5ce;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(117, 214, 160, 0.22), transparent 28%),
+    #ffffff;
+  padding: 20px;
+}
+
+.codepro-agent-detail > span {
+  color: #2f6f73;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.codepro-agent-detail > strong {
+  max-width: 760px;
+  font-size: clamp(1.45rem, 2.7vw, 2.5rem);
+  line-height: 1.08;
 }
 
 .codepro-role-card span {
@@ -1161,6 +1410,150 @@ a {
 .codepro-status-pill {
   min-width: 0;
   background: #0f2133;
+}
+
+.repository-journey-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.live-log-panel {
+  min-height: 100%;
+  overflow: auto;
+  margin: 0;
+  border-radius: 8px;
+  background: #07111f;
+  color: #75d6a0;
+  padding: 16px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.codepro-trust-score-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.55fr) minmax(0, 1.45fr);
+  gap: 18px;
+  align-items: center;
+  margin: 20px 0;
+  border-color: #bfd5ce;
+}
+
+.codepro-trust-score-panel h3 {
+  margin: 0;
+  color: #1f7a55;
+  font-size: clamp(3rem, 7vw, 5.6rem);
+  line-height: 0.95;
+}
+
+.codepro-trust-score-panel p {
+  color: #59687b;
+  line-height: 1.55;
+}
+
+.trust-score-breakdown {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.trust-score-breakdown article {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #f8fbfc;
+  padding: 12px;
+}
+
+.trust-score-breakdown strong {
+  display: block;
+  color: #172033;
+  font-size: 1.6rem;
+}
+
+.trust-score-breakdown em {
+  color: #2f6f73;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.verification-level-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.verification-level-grid article {
+  background: #f8fbfc;
+}
+
+.verification-level-grid p {
+  margin: 6px 0 0;
+  color: #59687b;
+  line-height: 1.45;
+}
+
+.telemetry-health-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.telemetry-health-grid article {
+  background: #f8fbfc;
+}
+
+.telemetry-health-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: #172033;
+}
+
+.codepro-cloud-panel {
+  margin: 24px 0;
+}
+
+.codepro-cloud-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.cloud-region {
+  min-height: 100%;
+}
+
+.cloud-region dl {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.cloud-region div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #e6edf2;
+  padding-top: 7px;
+}
+
+.cloud-region dd {
+  margin: 0;
+  color: #172033;
+  font-weight: 900;
+  text-align: right;
+}
+
+.cloud-region-pilot {
+  box-shadow: inset 4px 0 0 #2d7dd2;
+}
+
+.cloud-region-active {
+  box-shadow: inset 4px 0 0 #1f7a55;
+}
+
+.cloud-region-planned {
+  box-shadow: inset 4px 0 0 #8b98a9;
+}
+
+.cloud-region-expansion {
+  box-shadow: inset 4px 0 0 #f1a23a;
 }
 
 .novacodepro-app-card {
@@ -1263,6 +1656,52 @@ a {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
+.marketplace-v2-grid,
+.starter-kit-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.academy-cert-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.academy-cert-grid span {
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 10px;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.living-governance-panel {
+  margin: 24px 0;
+}
+
+.living-governance-grid {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.living-governance-grid article {
+  background: #ffffff;
+}
+
+.living-governance-grid strong,
+.living-governance-grid em {
+  display: block;
+  margin-top: 6px;
+}
+
+.living-governance-grid em {
+  color: #1f7a55;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .trusted-positioning-grid {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
@@ -1317,7 +1756,7 @@ a {
 
 .ecosystem-footer nav {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -3570,10 +4009,23 @@ a {
   .novacodepro-ecosystem-grid,
   .codepro-os-map,
   .codepro-workspace-grid,
+  .codepro-living-grid,
+  .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
   .codepro-enterprise-grid,
+  .codepro-command-metrics,
+  .codepro-widget-grid,
+  .repository-journey-grid,
+  .codepro-trust-score-panel,
+  .trust-score-breakdown,
+  .verification-level-grid,
+  .telemetry-health-grid,
+  .codepro-cloud-grid,
   .marketplace-economy-grid,
+  .marketplace-v2-grid,
+  .starter-kit-grid,
+  .living-governance-grid,
   .trusted-positioning-grid,
   .audience-grid,
   .trust-center-grid,
@@ -3634,10 +4086,23 @@ a {
   .novacodepro-ecosystem-grid,
   .codepro-os-map,
   .codepro-workspace-grid,
+  .codepro-living-grid,
+  .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
   .codepro-enterprise-grid,
+  .codepro-command-metrics,
+  .codepro-widget-grid,
+  .repository-journey-grid,
+  .codepro-trust-score-panel,
+  .trust-score-breakdown,
+  .verification-level-grid,
+  .telemetry-health-grid,
+  .codepro-cloud-grid,
   .marketplace-economy-grid,
+  .marketplace-v2-grid,
+  .starter-kit-grid,
+  .living-governance-grid,
   .trusted-positioning-grid,
   .trust-page-grid,
   .ecosystem-footer,
@@ -3720,10 +4185,23 @@ a {
   .novacodepro-ecosystem-grid,
   .codepro-os-map,
   .codepro-workspace-grid,
+  .codepro-living-grid,
+  .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
   .codepro-enterprise-grid,
+  .codepro-command-metrics,
+  .codepro-widget-grid,
+  .repository-journey-grid,
+  .codepro-trust-score-panel,
+  .trust-score-breakdown,
+  .verification-level-grid,
+  .telemetry-health-grid,
+  .codepro-cloud-grid,
   .marketplace-economy-grid,
+  .marketplace-v2-grid,
+  .starter-kit-grid,
+  .living-governance-grid,
   .trusted-positioning-grid,
   .audience-grid,
   .trust-center-grid,
@@ -3857,10 +4335,23 @@ a {
   .novacodepro-ecosystem-grid,
   .codepro-os-map,
   .codepro-workspace-grid,
+  .codepro-living-grid,
+  .codepro-ai-studio,
   .codepro-role-grid,
   .codepro-status-grid,
   .codepro-enterprise-grid,
+  .codepro-command-metrics,
+  .codepro-widget-grid,
+  .repository-journey-grid,
+  .codepro-trust-score-panel,
+  .trust-score-breakdown,
+  .verification-level-grid,
+  .telemetry-health-grid,
+  .codepro-cloud-grid,
   .marketplace-economy-grid,
+  .marketplace-v2-grid,
+  .starter-kit-grid,
+  .living-governance-grid,
   .trusted-positioning-grid,
   .trust-page-grid,
   .ecosystem-footer,
