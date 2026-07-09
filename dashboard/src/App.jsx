@@ -1569,6 +1569,7 @@ const NOVATECH_PLATFORM_NAV = [
   { label: "Platform", href: "#platform", detail: "NovaTech map" },
   { label: "Journey", href: "#trust-journey", detail: "Live proof flow" },
   { label: "Score", href: "#trust-score", detail: "Evidence score" },
+  { label: "NovaCodePro", href: "#novacodepro", detail: "AI engineering" },
   { label: "Global", href: "#global", detail: "Expansion map" },
   { label: "Pilots", href: "#pilots", detail: "Field evidence" },
   { label: "Trust Center", href: "#trust-center", detail: "Security + governance" },
@@ -1618,6 +1619,14 @@ const PLATFORM_PRODUCTS = [
     industries: ["Operations", "Compliance", "Customer support"],
     docs: "/v1/novascript/dashboard",
   },
+  {
+    name: "NovaCodePro",
+    purpose: "AI engineering platform",
+    features: ["AI coding", "Governance", "CI/CD", "Security", "Deployments"],
+    useCases: ["Enterprise engineering", "DevOps", "Regulated software delivery"],
+    industries: ["Software", "Government", "Universities", "Enterprise"],
+    docs: "#novacodepro",
+  },
 ];
 
 const HERO_FLOW_PRODUCTS = ["NovaID", "NovaRide", "NovaPay", "NovaTrust", "NovaAI"];
@@ -1637,6 +1646,7 @@ const PLATFORM_HOVER_FEATURES = {
   NovaID: ["Identity", "Device Trust", "KYC", "Access Controls"],
   NovaTrust: ["Evidence", "Replay", "Audit", "Compliance"],
   NovaAI: ["Insights", "Recommendations", "Risk Detection", "Decision Support"],
+  NovaCodePro: ["Code", "Review", "Deploy", "Verify"],
 };
 
 const AUDIENCE_PORTALS = [
@@ -1801,6 +1811,213 @@ const TRUST_CENTER_PAGES = [
   { path: "/trust/governance", title: "Governance", items: ["Replay", "State Machines", "Audit Controls", "Approvals"] },
   { path: "/trust/compliance", title: "Compliance", items: ["Records", "Retention", "Data Protection", "Financial Controls"] },
   { path: "/trust/evidence", title: "Evidence", items: ["Evidence Packets", "Replay Hashes", "Receipts", "Audit Exports"] },
+];
+
+const NOVACODEPRO_TARGET_USERS = [
+  "Individual developers",
+  "Enterprise engineering teams",
+  "DevOps engineers",
+  "AI engineers",
+  "Platform engineers",
+  "Government and regulated organizations",
+  "Universities and research institutions",
+];
+
+const NOVACODEPRO_APPS = [
+  {
+    name: "NovaCodePro Desktop",
+    type: "Cross-platform IDE",
+    summary: "A governed local development environment for serious engineering teams.",
+    features: [
+      "AI-assisted coding",
+      "Multi-language support",
+      "Intelligent refactoring",
+      "Project explorer",
+      "Terminal",
+      "Git integration",
+      "Integrated debugger",
+      "Plugin marketplace",
+      "Local AI support",
+      "Remote development",
+    ],
+  },
+  {
+    name: "NovaCodePro Mobile",
+    type: "Developer companion",
+    summary: "Review, approve, monitor, and coordinate engineering work from mobile.",
+    features: [
+      "Code review",
+      "Notifications",
+      "Build monitoring",
+      "Merge approval",
+      "Deployment status",
+      "GitHub/GitLab integration",
+      "AI chat",
+      "Project management",
+    ],
+  },
+  {
+    name: "NovaCloud IDE",
+    type: "Browser workspace",
+    summary: "Zero-install cloud workspaces with collaborative engineering and instant preview.",
+    features: [
+      "Zero installation",
+      "Cloud workspaces",
+      "Collaborative editing",
+      "AI programming",
+      "Terminal",
+      "Containers",
+      "Kubernetes access",
+      "Instant preview",
+    ],
+  },
+  {
+    name: "NovaAI Assistant",
+    type: "Engineering AI",
+    summary: "AI support for code, tests, architecture, security, documentation, SQL, and DevOps.",
+    features: [
+      "Code generation",
+      "Bug fixing",
+      "Architecture reviews",
+      "Security analysis",
+      "Documentation generation",
+      "Test generation",
+      "API design",
+      "SQL generation",
+      "DevOps assistance",
+    ],
+  },
+  {
+    name: "NovaFlow",
+    type: "Workflow automation",
+    summary: "Governed CI/CD, build orchestration, testing, release automation, and rollbacks.",
+    features: [
+      "CI/CD pipelines",
+      "Build orchestration",
+      "Testing",
+      "Release automation",
+      "Infrastructure provisioning",
+      "GitOps",
+      "Rollbacks",
+    ],
+  },
+  {
+    name: "NovaDeploy",
+    type: "Deployment platform",
+    summary: "Deploy across Docker, Kubernetes, hyperscalers, on-premises, and edge targets.",
+    features: ["Docker", "Kubernetes", "AWS", "Azure", "Google Cloud", "On-premises", "Edge deployments"],
+  },
+  {
+    name: "NovaMonitor",
+    type: "Observability",
+    summary: "Logs, metrics, traces, dashboards, anomalies, and incident timelines.",
+    features: [
+      "Logs",
+      "Metrics",
+      "Traces",
+      "Error monitoring",
+      "Performance dashboards",
+      "AI anomaly detection",
+      "Incident timelines",
+    ],
+  },
+  {
+    name: "NovaSecurity",
+    type: "Security platform",
+    summary: "Security and compliance controls across source, dependencies, containers, and runtime.",
+    features: [
+      "SAST",
+      "DAST",
+      "Dependency scanning",
+      "Secret detection",
+      "License compliance",
+      "SBOM generation",
+      "Container scanning",
+      "Runtime protection",
+    ],
+  },
+  {
+    name: "NovaDocs",
+    type: "Developer portal",
+    summary: "Versioned documentation, architecture diagrams, ADRs, tutorials, and SDK references.",
+    features: [
+      "API documentation",
+      "Architecture diagrams",
+      "ADR management",
+      "Tutorials",
+      "SDK references",
+      "Knowledge base",
+      "Versioned documentation",
+    ],
+  },
+  {
+    name: "NovaMarketplace",
+    type: "Engineering marketplace",
+    summary: "Extensions, templates, themes, AI agents, SDKs, components, and enterprise connectors.",
+    features: ["Extensions", "Templates", "Themes", "AI agents", "SDKs", "Components", "Enterprise connectors"],
+  },
+];
+
+const NOVACODEPRO_AI_AGENTS = [
+  "Autonomous coding agents",
+  "Code review agents",
+  "Test generation agents",
+  "Security agents",
+  "Documentation agents",
+  "Refactoring agents",
+  "Performance optimization agents",
+  "Infrastructure agents",
+  "Database agents",
+  "Release management agents",
+];
+
+const NOVACODEPRO_ENTERPRISE_FEATURES = [
+  "Multi-tenant organizations",
+  "SSO (SAML/OIDC)",
+  "Role-based access control",
+  "Audit logging",
+  "Governance policies",
+  "Approval workflows",
+  "Compliance reporting",
+  "Cost management",
+  "Workspace templates",
+];
+
+const NOVACODEPRO_DEVELOPER_SERVICES = [
+  "Git repositories",
+  "Package registry",
+  "Container registry",
+  "Artifact storage",
+  "Build cache",
+  "Secrets management",
+  "API gateway",
+  "Webhooks",
+];
+
+const NOVACODEPRO_LANGUAGES = [
+  "Python",
+  "TypeScript",
+  "JavaScript",
+  "Java",
+  "Kotlin",
+  "C#",
+  "Go",
+  "Rust",
+  "C++",
+  "Swift",
+  "Dart",
+  "PHP",
+  "Ruby",
+];
+
+const NOVACODEPRO_ECOSYSTEM = [
+  { product: "NovaRide", role: "Mobility application development and APIs" },
+  { product: "NovaPay", role: "Payment services, SDKs, and financial integrations" },
+  { product: "NovaID", role: "Identity, authentication, and access management" },
+  { product: "NovaTrust", role: "Governance, compliance, and verification workflows" },
+  { product: "NovaAI", role: "AI services and model integration" },
+  { product: "NovaCloud", role: "Infrastructure, containers, and deployment" },
+  { product: "NovaMonitor", role: "Observability and operational insights" },
 ];
 
 const NOVATECH_CORE_LAYERS = [
@@ -6948,7 +7165,7 @@ export default function OperatorDashboard() {
               <a className="button secondary" href="#contact">
                 Start Pilot
               </a>
-              <a className="button secondary" href="#proof">
+              <a className="button secondary" href="#trust-journey">
                 View Replay Demo
               </a>
               <a className="button secondary" href="#trust-center">
@@ -7002,8 +7219,8 @@ export default function OperatorDashboard() {
       <section className="section-band platform-band" id="platform">
         <SectionIntro
           eyebrow="Platform Architecture"
-          title="One platform, five trust products"
-          question="AfriTechnology is the company. NovaTech is the platform. NovaRide, NovaPay, NovaID, NovaTrust, and NovaAI are the product layers."
+          title="One platform, six trust products"
+          question="AfriTechnology is the company. NovaTech is the platform. NovaRide, NovaPay, NovaID, NovaTrust, NovaAI, and NovaCodePro are the product layers."
         />
         <div className="platform-map">
           <div className="platform-map-root">
@@ -7260,6 +7477,113 @@ export default function OperatorDashboard() {
               ))}
             </div>
           </OperatorPanel>
+        </div>
+      </section>
+
+      <section className="section-band novacodepro-band" id="novacodepro">
+        <div className="novacodepro-hero">
+          <div>
+            <p className="eyebrow">NovaCodePro Platform</p>
+            <h2>Build. Govern. Deploy. Verify.</h2>
+            <p>
+              NovaCodePro is the developer and AI engineering product inside the
+              NovaTech ecosystem: a complete software engineering platform for
+              developers, enterprise teams, DevOps, AI engineers, platform
+              engineers, regulated organizations, universities, and research labs.
+            </p>
+            <div className="chip-row">
+              {NOVACODEPRO_TARGET_USERS.map((user) => (
+                <span key={user} className="surface-chip">{user}</span>
+              ))}
+            </div>
+          </div>
+          <div className="novacodepro-command-panel">
+            <div className="record-card-header">
+              <strong>Engineering Control Plane</strong>
+              <span>governed delivery</span>
+            </div>
+            <div className="codepro-flow">
+              {["Build", "Govern", "Deploy", "Verify"].map((step) => (
+                <span key={step}>{step}</span>
+              ))}
+            </div>
+            <pre>{`nova codepro run --workspace mobility-api
+  checks: ai_review, sast, tests, replay
+  deploy: controlled
+  evidence: generated`}</pre>
+          </div>
+        </div>
+
+        <SectionIntro
+          eyebrow="Core Applications"
+          title="A full engineering suite, not just an IDE"
+          question="Desktop, mobile, cloud IDE, AI assistant, automation, deployment, monitoring, security, docs, and marketplace operate as one governed engineering platform."
+        />
+        <div className="novacodepro-app-grid">
+          {NOVACODEPRO_APPS.map((app) => (
+            <article key={app.name} className="novacodepro-app-card">
+              <div className="record-card-header">
+                <strong>{app.name}</strong>
+                <span>{app.type}</span>
+              </div>
+              <p>{app.summary}</p>
+              <div className="chip-row">
+                {app.features.map((feature) => (
+                  <span key={feature} className="surface-chip">{feature}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="novacodepro-system-grid">
+          <OperatorPanel title="AI Engineering Agents">
+            <div className="docs-grid">
+              {NOVACODEPRO_AI_AGENTS.map((agent) => (
+                <div key={agent} className="reason-chip reason-chip-success">{agent}</div>
+              ))}
+            </div>
+          </OperatorPanel>
+          <OperatorPanel title="Enterprise Controls">
+            <div className="docs-grid">
+              {NOVACODEPRO_ENTERPRISE_FEATURES.map((feature) => (
+                <div key={feature} className="reason-chip">{feature}</div>
+              ))}
+            </div>
+          </OperatorPanel>
+          <OperatorPanel title="Developer Services">
+            <div className="docs-grid">
+              {NOVACODEPRO_DEVELOPER_SERVICES.map((service) => (
+                <div key={service} className="reason-chip reason-chip-success">{service}</div>
+              ))}
+            </div>
+          </OperatorPanel>
+        </div>
+
+        <div className="novacodepro-language-panel">
+          <div>
+            <p className="eyebrow">Supported Languages</p>
+            <h3>Multi-language engineering from day one.</h3>
+          </div>
+          <div className="language-grid">
+            {NOVACODEPRO_LANGUAGES.map((language) => (
+              <span key={language}>{language}</span>
+            ))}
+          </div>
+        </div>
+
+        <SectionIntro
+          eyebrow="Ecosystem Integration"
+          title="The engineering platform for every NovaTech product"
+          question="NovaCodePro powers software delivery across mobility, payments, identity, trust, AI, cloud, and monitoring while remaining a standalone enterprise engineering platform."
+        />
+        <div className="novacodepro-ecosystem-grid">
+          {NOVACODEPRO_ECOSYSTEM.map((integration) => (
+            <article key={integration.product} className="record-card">
+              <strong>{integration.product}</strong>
+              <p>{integration.role}</p>
+            </article>
+          ))}
         </div>
       </section>
 
