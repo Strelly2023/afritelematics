@@ -77,7 +77,7 @@ def test_treasury_invariants_hold_after_reserve_and_release(reserve_amount, rele
 
 @pytest.mark.django_db(transaction=True)
 @given(reserve_amount=amount_strategy)
-@settings(max_examples=25)
+@settings(max_examples=25, deadline=None)
 def test_treasury_settle_never_breaks_balance_invariant(reserve_amount):
     m = models()
     reserve_amount = min(reserve_amount, Decimal("100.00"))

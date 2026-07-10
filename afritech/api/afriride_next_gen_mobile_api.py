@@ -10,10 +10,11 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, Field
 
-from afritech.api.auth.jwt_device_auth import JWT, require_roles
+from afritech.api.auth.jwt_device_auth import JWT, JWTClaims, get_current_claims, require_roles
 from afritech.afriprogramming.control_plane import get_control_plane
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afritech.afriprogramming.rbac import canonical_role_name
+from afritech.dispatch.presence import list_driver_presence
 from afritech.architecture.novaride_architecture import (
     novaride_architecture_app_store,
     novaride_architecture_changelog,
@@ -117,6 +118,47 @@ class MobilePushRegistrationRequest(BaseModel):
 
 _DRIVER_LOCATIONS: dict[str, DriverLocationRequest] = {}
 _RIDE_PICKUP_LOCATIONS: dict[str, tuple[float, float]] = {}
+
+
+def _driver_organization_id(driver_id: str) -> str | None:
+    matches = [
+        presence
+        for presence in list_driver_presence(limit=1000)
+        if str(presence.get("driver_id")) == driver_id
+    ]
+    if not matches:
+        return None
+    return str(matches[0].get("organization_id") or "")
+
+
+def _require_driver_self_or_roles(
+    driver_id: str,
+    *,
+    claims: JWTClaims,
+    allowed_roles: tuple[str, ...] = ("OPERATOR", "FLEET_OWNER"),
+) -> JWTClaims:
+    target_organization_id = _driver_organization_id(driver_id)
+    if target_organization_id and target_organization_id != claims.organization_id:
+        raise HTTPException(status_code=403, detail="organization_isolation_violation")
+    if claims.role == "CUSTOMER":
+        raise HTTPException(status_code=403, detail="driver_role_required")
+    if claims.role == "DRIVER":
+        if claims.sub != driver_id:
+            raise HTTPException(status_code=403, detail="driver_identity_mismatch")
+        return claims
+    if canonical_role_name(claims.role) in {canonical_role_name(role) for role in allowed_roles}:
+        return claims
+    raise HTTPException(status_code=403, detail="insufficient_role")
+
+
+def require_driver_self_or_roles(*allowed_roles: str):
+    def dependency(
+        driver_id: str,
+        claims: JWTClaims = Depends(get_current_claims),
+    ) -> JWTClaims:
+        return _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=allowed_roles or ("OPERATOR", "FLEET_OWNER"))
+
+    return dependency
 
 
 NOVARIDE_APP_SURFACES: tuple[dict[str, Any], ...] = (
@@ -2828,7 +2870,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     ) -> dict[str, Any]:
         gateway = get_gateway()
         availability = _driver_availability_payload(claims.sub, gateway)
-        queue = driver_ride_queue(claims.sub, gateway)
+        queue = _driver_ride_queue_payload(claims.sub, gateway)
         completed = gateway.dispatcher.ride_repository.completed_count_for_driver(claims.sub)
         return {
             "view": "driver_profile",
@@ -3094,12 +3136,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             ],
         }
 
-    @router.get("/driver/{driver_id}/availability")
-    def driver_availability(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
-        return _driver_availability_payload(driver_id, gateway)
-
-    @router.post("/drivers/location")
-    def update_driver_location(payload: DriverLocationRequest, gateway=Depends(get_gateway)) -> dict[str, Any]:
+    def _update_driver_location(payload: DriverLocationRequest, gateway) -> dict[str, Any]:
         from afritech.mobility.fleet_twin import TrustSafetyEngine
 
         _DRIVER_LOCATIONS[payload.driver_id] = payload
@@ -3193,6 +3230,27 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             )
         return response
 
+    @router.post("/driver/{driver_id}/location")
+    def update_driver_location(
+        driver_id: str,
+        payload: DriverLocationRequest,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        if payload.driver_id != driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_mismatch")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        return _update_driver_location(payload, gateway)
+
+    @router.post("/drivers/location")
+    def update_driver_location_compat(
+        payload: DriverLocationRequest,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(payload.driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        return _update_driver_location(payload, gateway)
+
     @router.post("/mobile/devices/push")
     def register_mobile_push(payload: MobilePushRegistrationRequest, gateway=Depends(get_gateway)) -> dict[str, Any]:
         """Upsert a device token; provider delivery remains server-side only."""
@@ -3208,12 +3266,23 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         }
 
     @router.get("/driver/{driver_id}/availability")
-    def driver_availability_get(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
+    def driver_availability_get(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         return _driver_availability_payload(driver_id, gateway)
 
     @router.put("/driver/{driver_id}/availability")
     @router.post("/driver/{driver_id}/availability")
-    def update_driver_availability(driver_id: str, payload: dict[str, Any], gateway=Depends(get_gateway)) -> dict[str, Any]:
+    def update_driver_availability(
+        driver_id: str,
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         status = str(payload.get("status", "offline")).strip().lower()
         online = status == "available"
         gateway.driver.status({"driver_id": driver_id, "online": online})
@@ -3226,32 +3295,27 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.get("/driver/{driver_id}/ride-queue")
-    def driver_ride_queue(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
-        driver = gateway.dispatcher.drivers.get(driver_id)
-        rides = gateway.dispatcher.ride_repository.requested()
-        items = [
-            {
-                "ride_id": ride.ride_id,
-                "pickup_text": ride.pickup,
-                "dropoff_text": ride.destination,
-                "rider_name": ride.passenger_id or "Rider",
-                "rider_trust_score": 91,
-                "status": "pending",
-                "quoted_total_text": _fare_total(ride.pickup, ride.destination, "Economy"),
-                "eta_text": "15 min",
-            }
-            for ride in rides
-        ]
-        return {
-            "driver_id": driver_id,
-            "driver_status": "available" if driver and driver.online else "offline",
-            "requested_count": len(items),
-            "items": items,
-        }
+    def driver_ride_queue(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
+        return _driver_ride_queue_payload(driver_id, gateway)
 
     @router.post("/driver/rides/{ride_id}/accept")
-    def driver_accept(ride_id: str, payload: dict[str, Any], background_tasks: BackgroundTasks, gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_accept(
+        ride_id: str,
+        payload: dict[str, Any],
+        background_tasks: BackgroundTasks,
+        claims: JWTClaims = Depends(get_current_claims),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
         driver_id = str(payload.get("driver_id", ""))
+        if not driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_required")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         ride = gateway.driver.accept({"driver_id": driver_id, "ride_id": ride_id})
         _log_trace_event(
             trace_log,
@@ -3288,13 +3352,21 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.post("/driver/rides/{ride_id}/reject")
-    def driver_reject(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_reject(
+        ride_id: str,
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(get_current_claims),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
         ride = _require_ride(gateway, ride_id)
         gateway.dispatcher.cancel_ride(
             passenger_id=ride["passenger_id"],
             ride_id=ride_id,
         )
         driver_id = str(payload.get("driver_id", ""))
+        if not driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_required")
         _log_trace_event(
             trace_log,
             ride_id=ride_id,
@@ -3313,8 +3385,17 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.post("/driver/rides/{ride_id}/arrive")
-    def driver_arrive(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_arrive(
+        ride_id: str,
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(get_current_claims),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
         driver_id = str(payload.get("driver_id", ""))
+        if not driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_required")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         ride = gateway.driver.arrive({"driver_id": driver_id, "ride_id": ride_id})
         _log_trace_event(
             trace_log,
@@ -3334,8 +3415,17 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.post("/driver/rides/{ride_id}/start")
-    def driver_start(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_start(
+        ride_id: str,
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(get_current_claims),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
         driver_id = str(payload.get("driver_id", ""))
+        if not driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_required")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         ride = gateway.driver.start({"driver_id": driver_id, "ride_id": ride_id})
         _log_trace_event(
             trace_log,
@@ -3355,8 +3445,17 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.post("/driver/rides/{ride_id}/complete")
-    def driver_complete(ride_id: str, payload: dict[str, Any], gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_complete(
+        ride_id: str,
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(get_current_claims),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
         driver_id = str(payload.get("driver_id", ""))
+        if not driver_id:
+            raise HTTPException(status_code=400, detail="driver_id_required")
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         ride = gateway.driver.complete({"driver_id": driver_id, "ride_id": ride_id})
         _log_trace_event(
             trace_log,
@@ -3378,7 +3477,12 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         return response
 
     @router.get("/driver/{driver_id}/earnings")
-    def driver_earnings(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
+    def driver_earnings(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         completed = gateway.dispatcher.ride_repository.completed_for_driver(driver_id)
         total = float(len(completed) * 10)
         return {
@@ -3393,7 +3497,13 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
         }
 
     @router.get("/driver/{driver_id}/replay-history")
-    def driver_replay_history(driver_id: str, gateway=Depends(get_gateway), trace_log=Depends(get_trace_log)) -> dict[str, Any]:
+    def driver_replay_history(
+        driver_id: str,
+        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        gateway=Depends(get_gateway),
+        trace_log=Depends(get_trace_log),
+    ) -> dict[str, Any]:
+        _require_driver_self_or_roles(driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))
         items = []
         for ride in gateway.dispatcher.rides.values():
             if ride.assigned_driver != driver_id or ride.status != "COMPLETED":
@@ -3737,6 +3847,30 @@ def _driver_availability_payload(driver_id: str, gateway) -> dict[str, Any]:
         "trust_score": 94 if completed else 90,
         "verified_rides": completed,
         "replay_consistency_pct": 100,
+    }
+
+
+def _driver_ride_queue_payload(driver_id: str, gateway) -> dict[str, Any]:
+    driver = gateway.dispatcher.drivers.get(driver_id)
+    rides = gateway.dispatcher.ride_repository.requested()
+    items = [
+        {
+            "ride_id": ride.ride_id,
+            "pickup_text": ride.pickup,
+            "dropoff_text": ride.destination,
+            "rider_name": ride.passenger_id or "Rider",
+            "rider_trust_score": 91,
+            "status": "pending",
+            "quoted_total_text": _fare_total(ride.pickup, ride.destination, "Economy"),
+            "eta_text": "15 min",
+        }
+        for ride in rides
+    ]
+    return {
+        "driver_id": driver_id,
+        "driver_status": "available" if driver and driver.online else "offline",
+        "requested_count": len(items),
+        "items": items,
     }
 
 

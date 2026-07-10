@@ -10,7 +10,8 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, WebSocket, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Security, WebSocket, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from afritech.afriprogramming.rbac import AUTH_ROLE_ORDER, canonical_role_name, role_implies_role
 from afritech.security.device_identity import DeviceIdentity, DeviceRegistry
@@ -125,6 +126,7 @@ class DeviceBindingService:
 AUTH_ROLES = frozenset(AUTH_ROLE_ORDER)
 _EPHEMERAL_JWT_SECRET = secrets.token_urlsafe(48)
 JWT = JWTService(os.environ.get("AFRITECH_JWT_SECRET", _EPHEMERAL_JWT_SECRET))
+BEARER_SCHEME = HTTPBearer(auto_error=False, scheme_name="bearerAuth", bearerFormat="JWT")
 
 
 def build_auth_router(
@@ -172,7 +174,7 @@ def build_auth_router(
 
     @router.post("/devices/register")
     def register_device(payload: dict[str, Any], authorization: str = Header(default="")) -> dict[str, Any]:
-        claims = _claims_from_header(jwt, authorization)
+        claims = _claims_from_authorization(jwt, authorization)
         user_id = str(payload.get("user_id", claims.sub))
         if user_id != claims.sub:
             raise HTTPException(status_code=403, detail="device user mismatch")
@@ -191,18 +193,32 @@ def build_auth_router(
     return router
 
 
-def _claims_from_header(jwt: JWTService, authorization: str) -> JWTClaims:
-    prefix = "Bearer "
-    if not authorization.startswith(prefix):
+def _claims_from_credentials(
+    jwt: JWTService,
+    credentials: HTTPAuthorizationCredentials | None,
+) -> JWTClaims:
+    if credentials is None or not credentials.credentials:
         raise HTTPException(status_code=401, detail="bearer token required")
     try:
-        return jwt.verify_token(authorization[len(prefix) :])
+        return jwt.verify_token(credentials.credentials)
     except ValueError as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
 
 
-def get_current_claims(authorization: str = Header(default="")) -> JWTClaims:
-    return _claims_from_header(JWT, authorization)
+def _claims_from_authorization(jwt: JWTService, authorization: str) -> JWTClaims:
+    prefix = "Bearer "
+    if not authorization.startswith(prefix):
+        raise HTTPException(status_code=401, detail="bearer token required")
+    return _claims_from_credentials(
+        jwt,
+        HTTPAuthorizationCredentials(scheme="Bearer", credentials=authorization[len(prefix) :]),
+    )
+
+
+def get_current_claims(
+    credentials: HTTPAuthorizationCredentials | None = Security(BEARER_SCHEME),
+) -> JWTClaims:
+    return _claims_from_credentials(JWT, credentials)
 
 
 def require_roles(*roles: str):

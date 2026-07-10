@@ -22,6 +22,11 @@ reset_gateway = _runtime.reset_gateway
 reset_trace_log = _runtime.reset_trace_log
 
 
+def _auth_headers(role: str, user_id: str, organization_id: str) -> dict[str, str]:
+    token = JWT.create_token(user_id, role=role, organization_id=organization_id)
+    return {"Authorization": f"Bearer {token}"}
+
+
 def test_novaride_api_uses_canonical_architecture_contract() -> None:
     module = import_module("afritech.api.afriride_next_gen_mobile_api")
 
@@ -246,6 +251,144 @@ def test_novaride_api_exposes_compatibility_health_aliases() -> None:
     assert "ready" in ready.json()
 
 
+def test_novaride_driver_operational_routes_require_auth_and_enforce_identity_and_org(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("AFRIRIDE_DB_PATH", str(tmp_path / "driver-guard.sqlite3"))
+    monkeypatch.setenv("AFRITECH_RUNTIME_ENVIRONMENT", "production")
+    monkeypatch.setenv("AFRITECH_ENV", "production")
+    original_store = control_plane._STORE
+    control_plane._STORE = PlatformStore(tmp_path / "driver-guard-control.sqlite3")
+    reset_gateway()
+    reset_trace_log()
+
+    try:
+        same_org = "org-driver-guard"
+        other_org = "org-driver-foreign"
+        control_plane._STORE.store_driver_presence(
+            organization_id=same_org,
+            driver_id="driver-1",
+            status="offline",
+        )
+        control_plane._STORE.store_driver_presence(
+            organization_id=other_org,
+            driver_id="driver-2",
+            status="offline",
+        )
+
+        client = TestClient(app)
+        driver_headers = _auth_headers("DRIVER", "driver-1", same_org)
+        other_driver_headers = _auth_headers("DRIVER", "driver-2", same_org)
+        operator_headers = _auth_headers("OPERATOR", "operator-1", same_org)
+        fleet_headers = _auth_headers("FLEET_OWNER", "fleet-1", same_org)
+        customer_headers = _auth_headers("CUSTOMER", "customer-1", same_org)
+
+        assert client.get("/v1/driver/driver-1/availability").status_code == 401
+        assert client.post("/v1/driver/driver-1/availability", json={"status": "available"}).status_code == 401
+        assert client.put("/v1/driver/driver-1/availability", json={"status": "available"}).status_code == 401
+        assert client.get("/v1/driver/driver-1/ride-queue").status_code == 401
+        assert client.post(
+            "/v1/driver/driver-1/location",
+            json={
+                "driver_id": "driver-1",
+                "lat": -37.81,
+                "lng": 144.96,
+                "timestamp": "2026-07-10T00:00:00Z",
+            },
+        ).status_code == 401
+
+        self_online = client.post(
+            "/v1/driver/driver-1/availability",
+            headers=driver_headers,
+            json={"status": "available"},
+        )
+        assert self_online.status_code == 200
+        assert self_online.json()["status"] == "available"
+
+        self_get = client.get("/v1/driver/driver-1/availability", headers=driver_headers)
+        assert self_get.status_code == 200
+        assert self_get.json()["driver_id"] == "driver-1"
+
+        cross_driver = client.get("/v1/driver/driver-1/availability", headers=other_driver_headers)
+        assert cross_driver.status_code == 403
+        assert cross_driver.json()["error"]["code"] == "DRIVER_IDENTITY_MISMATCH"
+
+        org_mismatch = client.get("/v1/driver/driver-2/availability", headers=driver_headers)
+        assert org_mismatch.status_code == 403
+        assert org_mismatch.json()["error"]["code"] == "ORGANIZATION_ISOLATION_VIOLATION"
+
+        wrong_role = client.get("/v1/driver/driver-1/availability", headers=customer_headers)
+        assert wrong_role.status_code == 403
+        assert wrong_role.json()["error"]["code"] == "DRIVER_ROLE_REQUIRED"
+
+        operator_read = client.get("/v1/driver/driver-1/availability", headers=operator_headers)
+        assert operator_read.status_code == 200
+        assert operator_read.json()["driver_id"] == "driver-1"
+
+        fleet_read = client.get("/v1/driver/driver-1/ride-queue", headers=fleet_headers)
+        assert fleet_read.status_code == 200
+        assert fleet_read.json()["driver_id"] == "driver-1"
+
+        location = client.post(
+            "/v1/driver/driver-1/location",
+            headers=driver_headers,
+            json={
+                "driver_id": "driver-1",
+                "lat": -37.81,
+                "lng": 144.96,
+                "timestamp": "2026-07-10T00:00:00Z",
+            },
+        )
+        assert location.status_code == 200
+        assert location.json()["driver_id"] == "driver-1"
+
+        openapi = client.get("/openapi.json").json()
+        availability_op = openapi["paths"]["/v1/driver/{driver_id}/availability"]["get"]
+        assert availability_op["security"][0]["bearerAuth"] == []
+        assert "bearerAuth" in openapi["components"]["securitySchemes"]
+    finally:
+        control_plane._STORE = original_store
+
+
+def test_novaride_readiness_reports_valid_production_configuration_and_monitoring(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("AFRIRIDE_DB_PATH", str(tmp_path / "ready.sqlite3"))
+    monkeypatch.setenv("AFRITECH_RUNTIME_ENVIRONMENT", "production")
+    monkeypatch.setenv("AFRITECH_ENV", "production")
+    monkeypatch.delenv("AFRITECH_TLS_CERT_PATH", raising=False)
+    monkeypatch.delenv("AFRITECH_TLS_KEY_PATH", raising=False)
+    monkeypatch.delenv("AFRITECH_MIGRATION_STATE_PATH", raising=False)
+
+    client = TestClient(app)
+
+    ready = client.get("/v1/ready")
+    metrics = client.get("/metrics")
+
+    assert ready.status_code == 200
+    payload = ready.json()
+    assert payload["ready"] is True
+    assert payload["configuration"] == "valid"
+    assert payload["monitoring"] == "available"
+    assert metrics.status_code == 200
+    assert "afritech_api_ready" in metrics.text
+    assert metrics.headers["content-type"].startswith("text/plain")
+    assert all("valid" in item for item in payload["diagnostics"])
+
+
+def test_novaride_readiness_reports_invalid_configuration_with_redacted_diagnostics(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("AFRIRIDE_DB_PATH", str(tmp_path / "ready-invalid.sqlite3"))
+    monkeypatch.setenv("AFRITECH_RUNTIME_ENVIRONMENT", "staging")
+    monkeypatch.setenv("AFRITECH_ENV", "staging")
+
+    client = TestClient(app)
+
+    ready = client.get("/v1/ready")
+
+    assert ready.status_code == 503
+    payload = ready.json()
+    assert payload["ready"] is False
+    assert payload["configuration"] == "invalid"
+    assert any(item["name"] == "AFRITECH_RUNTIME_ENVIRONMENT" for item in payload["diagnostics"])
+    assert all("value" not in item for item in payload["diagnostics"])
+
+
 def test_novaride_architecture_verify_accepts_valid_contract_hash() -> None:
     client = TestClient(app)
 
@@ -460,15 +603,17 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         driver_online = client.post(
             "/v1/driver/driver-1/availability",
+            headers=driver_headers,
             json={"status": "available"},
         )
         assert driver_online.status_code == 200
         assert driver_online.json()["status"] == "available"
-        driver_availability = client.get("/v1/driver/driver-1/availability")
+        driver_availability = client.get("/v1/driver/driver-1/availability", headers=driver_headers)
         assert driver_availability.status_code == 200
         assert driver_availability.json() == driver_online.json()
         driver_available_via_put = client.put(
             "/v1/driver/driver-1/availability",
+            headers=driver_headers,
             json={"status": "available"},
         )
         assert driver_available_via_put.status_code == 200
@@ -476,14 +621,16 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         driver_offline = client.post(
             "/v1/driver/driver-1/availability",
+            headers=driver_headers,
             json={"status": "offline"},
         )
         assert driver_offline.status_code == 200
         assert driver_offline.json()["status"] == "offline"
-        assert client.get("/v1/driver/driver-1/availability").json()["status"] == "offline"
+        assert client.get("/v1/driver/driver-1/availability", headers=driver_headers).json()["status"] == "offline"
 
         driver_back_online = client.post(
             "/v1/driver/driver-1/availability",
+            headers=driver_headers,
             json={"status": "available"},
         )
         assert driver_back_online.status_code == 200
@@ -505,7 +652,7 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         assert requested.status_code == 200
         assert requested.json()["status"] == "requested"
 
-        queue = client.get("/v1/driver/driver-1/ride-queue")
+        queue = client.get("/v1/driver/driver-1/ride-queue", headers=driver_headers)
         assert queue.status_code == 200
         assert queue.json()["driver_id"] == "driver-1"
         assert queue.json()["driver_status"] == "available"
@@ -514,13 +661,15 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         accepted = client.post(
             "/v1/driver/rides/ride-next-gen-001/accept",
+            headers=driver_headers,
             json={"driver_id": "driver-1"},
         )
         assert accepted.status_code == 200
         assert accepted.json()["status"] == "accepted"
 
         location = client.post(
-            "/v1/drivers/location",
+            "/v1/driver/driver-1/location",
+            headers=driver_headers,
             json={
                 "driver_id": "driver-1",
                 "lat": -37.8136,
@@ -538,6 +687,7 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         arrived = client.post(
             "/v1/driver/rides/ride-next-gen-001/arrive",
+            headers=driver_headers,
             json={"driver_id": "driver-1"},
         )
         assert arrived.status_code == 200
@@ -545,6 +695,7 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         started = client.post(
             "/v1/driver/rides/ride-next-gen-001/start",
+            headers=driver_headers,
             json={"driver_id": "driver-1"},
         )
         assert started.status_code == 200
@@ -552,6 +703,7 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
 
         completed = client.post(
             "/v1/driver/rides/ride-next-gen-001/complete",
+            headers=driver_headers,
             json={"driver_id": "driver-1"},
         )
         assert completed.status_code == 200

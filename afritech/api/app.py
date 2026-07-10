@@ -11,7 +11,7 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 # ============================================================
 # API LAYERS
@@ -488,10 +488,14 @@ def v1_live() -> dict[str, Any]:
 
 
 def _configuration_valid() -> bool:
-    environment = os.environ.get("AFRITECH_RUNTIME_ENVIRONMENT", "PUBLIC_PILOT").strip()
+    environment = (
+        os.environ.get("AFRITECH_RUNTIME_ENVIRONMENT")
+        or os.environ.get("AFRITECH_ENV")
+        or ""
+    ).strip().lower()
     if not environment:
         return False
-    if environment.upper() not in {"PUBLIC_PILOT", "CONTROLLED_PILOT", "INTERNAL_QA", "PRIVATE_DEVELOPMENT", "production"}:
+    if environment not in {"public_pilot", "controlled_pilot", "internal_qa", "private_development", "production"}:
         return False
     return True
 
@@ -539,17 +543,57 @@ def _migration_ready() -> bool:
 
 
 def _monitoring_ready() -> bool:
-    root = Path(__file__).resolve().parents[2]
-    required = (
-        root / "deploy/production/monitoring/prometheus/prometheus.yml",
-        root / "deploy/production/monitoring/prometheus/alerts.yml",
-        root / "deploy/production/monitoring/prometheus/recording_rules.yml",
-        root / "deploy/production/monitoring/grafana/provisioning/datasources/datasources.yml",
-        root / "deploy/production/monitoring/grafana/provisioning/dashboards/dashboards.yml",
-        root / "deploy/production/monitoring/alertmanager/alertmanager.yml",
-        root / "deploy/production/monitoring/opentelemetry/otel-collector.yml",
+    return bool(_prometheus_metrics_text())
+
+
+def _readiness_diagnostics(
+    *,
+    database_ready: bool,
+    configuration_valid: bool,
+    disk_ready: bool,
+    tls_ready: bool,
+    migration_ready: bool,
+    monitoring_ready: bool,
+) -> list[dict[str, Any]]:
+    return [
+        {"name": "AFRITECH_RUNTIME_ENVIRONMENT", "valid": configuration_valid},
+        {"name": "AFRITECH_ENV", "valid": configuration_valid},
+        {"name": "AFRIRIDE_DB_PATH", "valid": database_ready},
+        {"name": "AFRITECH_TLS_CERT_PATH", "valid": tls_ready},
+        {"name": "AFRITECH_TLS_KEY_PATH", "valid": tls_ready},
+        {"name": "AFRITECH_MIGRATION_STATE_PATH", "valid": migration_ready},
+        {"name": "AFRITECH_METRICS_ENDPOINT", "valid": monitoring_ready},
+        {"name": "AFRITECH_MONITORING_READY", "valid": monitoring_ready},
+        {"name": "DISK_SPACE", "valid": disk_ready},
+    ]
+
+
+def _prometheus_metrics_text() -> str:
+    environment = (
+        os.environ.get("AFRITECH_RUNTIME_ENVIRONMENT")
+        or os.environ.get("AFRITECH_ENV")
+        or "PUBLIC_PILOT"
+    ).strip().lower()
+    ready_flag = int(
+        _configuration_valid()
+        and _database_ready()
+        and _disk_ready()
+        and _tls_ready()
+        and _migration_ready()
     )
-    return all(path.exists() for path in required)
+    return "\n".join(
+        (
+            "# HELP afritech_api_up API process liveness.",
+            "# TYPE afritech_api_up gauge",
+            "afritech_api_up 1",
+            "# HELP afritech_api_ready API readiness gate.",
+            "# TYPE afritech_api_ready gauge",
+            f"afritech_api_ready {ready_flag}",
+            "# HELP afritech_api_build_info Static build metadata.",
+            "# TYPE afritech_api_build_info gauge",
+            f'afritech_api_build_info{{service="afritech-api",environment="{environment}",version="0.7.0"}} 1',
+        )
+    )
 
 
 @app.get("/ready")
@@ -569,9 +613,32 @@ def ready() -> JSONResponse:
         "tls": "ok" if tls_ready else "missing",
         "migrations": "applied" if migration_ready else "pending",
         "monitoring": "available" if monitoring_ready else "unavailable",
+        "diagnostics": _readiness_diagnostics(
+            database_ready=database_ready,
+            configuration_valid=configuration_valid,
+            disk_ready=disk_ready,
+            tls_ready=tls_ready,
+            migration_ready=migration_ready,
+            monitoring_ready=monitoring_ready,
+        ),
     }
     status_code = 200 if payload["ready"] else 503
     return JSONResponse(status_code=status_code, content=payload)
+
+
+@app.get("/metrics")
+def metrics() -> Response:
+    """Expose Prometheus-compatible metrics for readiness and monitoring."""
+    return Response(
+        content=_prometheus_metrics_text(),
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
+
+
+@app.get("/v1/metrics")
+def v1_metrics() -> Response:
+    """Compatibility alias for the public metrics surface."""
+    return metrics()
 
 
 @app.get("/v1/ready")
