@@ -165,3 +165,42 @@ Attempting to rebuild the local production compose stack failed because the Dock
 ## Notes
 
 This session repaired the repository contract layer and verified the source-level changes with tests. It did not claim the release is finished because live deployment and device validation were not completed here.
+
+## Addendum 2026.1.2 release signing
+
+Release signing was completed with a persistent NovaRide keystore stored at:
+
+- `.secrets/novaride-release-keystore.jks`
+
+The 2026.1.2 Android release APKs were rebuilt locally and verified with `apksigner` against the NovaRide release certificate:
+
+- Certificate DN: `CN=NovaRide Release, OU=NovaTech, O=NovaTech, L=Melbourne, ST=Victoria, C=AU`
+- Certificate SHA-256: `117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc`
+
+Artifacts rebuilt locally:
+
+- Rider: `novaride-rider-v2026.1.2-public-pilot.apk`
+- Driver: `novaride-driver-v2026.1.2-public-pilot.apk`
+- Fleet: `novaride-fleet-v2026.1.2-public-pilot.apk`
+- Operator: `novaride-operator-v2026.1.2-public-pilot.apk`
+
+Local immutable release tree:
+
+- `apk/`
+- `apk-public/novaride/releases/2026.1.2/`
+
+Local artifact checks:
+
+- Package IDs and version metadata matched the release targets.
+- `apksigner verify --verbose --print-certs` succeeded for all four APKs.
+- SHA-256 checksums were generated for all four APKs and matched the immutable copies.
+
+Current publication blocker:
+
+- Public URLs at `https://download.afritechnology.com/novaride/releases/2026.1.2/...` returned `404 Not Found` from the live host during this session.
+- That indicates the live download host has not yet been redeployed or pulled the new release tree.
+
+Current status:
+
+- The release is locally built and release-signed.
+- Public-pilot publication is still blocked until the deployed download host is updated to serve the 2026.1.2 immutable files.

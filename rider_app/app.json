@@ -2,7 +2,7 @@
   "expo": {
     "name": "NovaRide Rider",
     "slug": "novaride-rider",
-    "version": "2026.1.1",
+    "version": "2026.1.2",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"

@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = "2026.1.1"
+VERSION = "2026.1.2"
 
 
 def version_code(path: Path) -> int:
@@ -19,12 +19,18 @@ def version_code(path: Path) -> int:
 
 
 def main() -> int:
-    for app in ("rider_app", "driver_app"):
+    expected_codes = {
+        "rider_app": 5,
+        "driver_app": 5,
+        "novaride_fleet_app": 4,
+        "novaride_operator_app": 4,
+    }
+    for app, minimum_version_code in expected_codes.items():
         app_json = json.loads((ROOT / app / "app.json").read_text(encoding="utf-8"))["expo"]
         if app_json["version"] != VERSION:
             raise SystemExit(f"{app} version {app_json['version']} != {VERSION}")
         code = version_code(ROOT / app / "android" / "app" / "build.gradle")
-        if code < 4:
+        if code < minimum_version_code:
             raise SystemExit(f"{app} versionCode {code} is not incremented")
     print("NovaRide mobile version increment verified")
     return 0
@@ -32,4 +38,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

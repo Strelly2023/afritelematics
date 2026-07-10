@@ -29,7 +29,7 @@ export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
 
 export const APP_VERSION =
-  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.1";
+  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.2";
 
 export const RELEASE_CHANNEL =
   process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";

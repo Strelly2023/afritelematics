@@ -2,7 +2,7 @@
   "expo": {
     "name": "NovaRide Driver",
     "slug": "novaride-driver",
-    "version": "2026.1.1",
+    "version": "2026.1.2",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"

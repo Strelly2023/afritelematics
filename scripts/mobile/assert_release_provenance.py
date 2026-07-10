@@ -7,14 +7,14 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PROVENANCE = ROOT / "reports/mobile/releases/2026.1.1/novaride-release-provenance.json"
+PROVENANCE = ROOT / "reports/mobile/releases/2026.1.2/novaride-release-provenance.json"
 
 
 def main() -> int:
     if not PROVENANCE.exists():
         raise SystemExit(f"missing provenance {PROVENANCE}")
     data = json.loads(PROVENANCE.read_text(encoding="utf-8"))
-    for app in ("rider", "driver"):
+    for app in ("rider", "driver", "fleet", "operator"):
         entry = data.get(app)
         if not isinstance(entry, dict):
             raise SystemExit(f"missing {app} provenance")
@@ -27,4 +27,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

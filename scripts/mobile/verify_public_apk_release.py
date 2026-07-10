@@ -15,7 +15,7 @@ IPA_CONTENT_TYPES = {"application/octet-stream", "application/x-itunes-ipa"}
 
 
 def download(url: str) -> tuple[int, str, bytes]:
-    request = urllib.request.Request(url, headers={"User-Agent": "novaride-release-verifier/2026.1.1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "novaride-release-verifier/2026.1.2"})
     with urllib.request.urlopen(request, timeout=20, context=ssl.create_default_context()) as response:
         return response.status, response.headers.get("content-type", "").split(";")[0], response.read()
 

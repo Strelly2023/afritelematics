@@ -2,7 +2,7 @@
   "expo": {
     "name": "NovaRide Operator",
     "slug": "novaride-operator",
-    "version": "2026.1.0",
+    "version": "2026.1.2",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"
@@ -14,7 +14,7 @@
     ],
     "extra": {
       "test_mode": true,
-      "api_url": "https://your-backend-url",
+      "api_url": "https://api.afritechnology.com",
       "eas": {
         "projectId": "d75288c7-a122-43ca-8c25-2a7443e6f499"
       }

@@ -14,6 +14,7 @@ venv/
 # Logs / temp
 *.log
 .tmp/
+.secrets/
 
 # Legacy scratch documents (explicit)
 AfriTech_Progress.txt
