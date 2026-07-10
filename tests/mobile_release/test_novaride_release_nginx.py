@@ -19,4 +19,4 @@ def test_download_host_is_not_dashboard_proxy() -> None:
 
 def test_download_root_is_mounted_read_only() -> None:
     compose = (ROOT / "deploy/production/docker-compose.trust-node.yml").read_text(encoding="utf-8")
-    assert "./apk-public:/var/www/afritechnology-downloads:ro" in compose
+    assert "../../apk-public:/var/www/afritechnology-downloads:ro" in compose

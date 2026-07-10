@@ -70,7 +70,7 @@ services:
     volumes:
       - ./nginx/afritechnology-platform.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ../../apk:/var/www/afritech-apk:ro
-      - ./apk-public:/var/www/afritechnology-downloads:ro
+      - ../../apk-public:/var/www/afritechnology-downloads:ro
       - certbot_www:/var/www/certbot
       - certbot_certs:/etc/letsencrypt
     depends_on:
