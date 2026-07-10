@@ -78,6 +78,10 @@ export async function queueDriverOperation(
   ]);
 }
 
+export async function getPendingDriverQueueCount() {
+  return (await readQueue()).length;
+}
+
 export async function synchronizeDriverQueue() {
   const [network, queue] = await Promise.all([
     Network.getNetworkStateAsync(),

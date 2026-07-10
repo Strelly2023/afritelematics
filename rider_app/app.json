@@ -2,7 +2,7 @@
   "expo": {
     "name": "NovaRide Rider",
     "slug": "novaride-rider",
-    "version": "2026.1.0",
+    "version": "2026.1.1",
     "orientation": "portrait",
     "splash": {
       "backgroundColor": "#FFFFFF"
@@ -15,6 +15,7 @@
     "android": {
       "package": "com.novatech.novaride.rider",
       "permissions": [
+        "ACCESS_NETWORK_STATE",
         "CAMERA",
         "POST_NOTIFICATIONS"
       ]
@@ -29,7 +30,7 @@
     },
     "extra": {
       "test_mode": true,
-      "api_url": "https://your-backend-url",
+      "api_url": "https://api.afritechnology.com",
       "eas": {
         "projectId": "e36e1093-11c0-4606-b2fb-846e982c9b24"
       }

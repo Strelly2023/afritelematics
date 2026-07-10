@@ -11,7 +11,8 @@
       "ios": { "simulator": false },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "false",
-        "EXPO_PUBLIC_AFRIRIDE_USE_MOCKS": "false"
+        "EXPO_PUBLIC_AFRIRIDE_USE_MOCKS": "false",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com"
       }
     },
     "pilot-apk": {
@@ -22,7 +23,10 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "0.1",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
+        "EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL": "PUBLIC_PILOT",
+        "EXPO_PUBLIC_NOVARIDE_ENVIRONMENT": "PUBLIC_PILOT",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "rider-pilot-device"
       }
     },
@@ -34,7 +38,10 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "0.1",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
+        "EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL": "PUBLIC_PILOT",
+        "EXPO_PUBLIC_NOVARIDE_ENVIRONMENT": "PUBLIC_PILOT",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "rider-pilot-ios-device"
       }
     },
@@ -49,7 +56,10 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "0.1",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
+        "EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL": "PUBLIC_PILOT",
+        "EXPO_PUBLIC_NOVARIDE_ENVIRONMENT": "PUBLIC_PILOT",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "rider-test-device"
       }
     }

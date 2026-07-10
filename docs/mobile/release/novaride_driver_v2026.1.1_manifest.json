@@ -1,0 +1,35 @@
+{
+  "product": "NovaRide",
+  "app": "NovaRide Driver",
+  "release_version": "2026.1.1",
+  "android_versionCode": 4,
+  "package_id": "com.novatech.novaride.driver",
+  "release_channel": "PUBLIC_PILOT",
+  "environment": "PUBLIC_PILOT",
+  "api_base_url": "https://api.afritechnology.com",
+  "immutable_apk_url": "https://download.afritechnology.com/novaride/releases/2026.1.1/novaride-driver-v2026.1.1-public-pilot.apk",
+  "alias_url": "https://download.afritechnology.com/novaride/driver-latest-public-pilot.apk",
+  "apk_sha256": "3f75542afb0413a2f380428d7bb4582f843a0834f436990a1af8205888e01226",
+  "sha256_url": "https://download.afritechnology.com/novaride/releases/2026.1.1/novaride-driver-v2026.1.1-public-pilot.apk.sha256",
+  "signing_certificate_fingerprint": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c (Android Debug certificate - release blocked)",
+  "git_commit": "05522508",
+  "build_timestamp": "2026-07-10T01:50:52Z",
+  "minimum_android_version": "23",
+  "supported_regions": [
+    "Australia",
+    "Public pilot regions"
+  ],
+  "release_approval": "blocked_debug_signing_and_api_tls_preflight",
+  "rollback_release": "2026.1.0",
+  "known_limitations": [
+    "Public pilot release; backend contract and physical-device smoke tests must pass before approval.",
+    "Driver dispatchable state requires server-confirmed availability and ride queue synchronization."
+  ],
+  "ga_allowed": false,
+  "real_payments_enabled": false,
+  "apk_byte_size": 62314281,
+  "immutable_ipa_url": "https://download.afritechnology.com/novaride/releases/2026.1.1/novaride-driver-v2026.1.1-public-pilot.ipa",
+  "ipa_alias_url": "https://download.afritechnology.com/novaride/driver-latest-public-pilot.ipa",
+  "ipa_sha256": "pending-ios-build",
+  "ipa_status": "not_built_in_this_release_run"
+}

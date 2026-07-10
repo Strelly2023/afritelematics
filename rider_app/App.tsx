@@ -4,6 +4,7 @@ import {
 } from "react-native";
 
 import { useRideFlow } from "./state/providers/useRideFlow";
+import { runtimeConfig } from "./core/config/runtimeConfig";
 
 type RiderTab = "Home" | "Book Ride" | "Trips" | "Wallet" | "Safety" | "Receipts" | "Profile";
 type BookingStage = "places" | "category" | "fare" | "matching" | "tracking" | "trip" | "payment" | "receipt";
@@ -179,7 +180,13 @@ export default function NovaRideRiderApp() {
       <StatusBar barStyle={dark ? "light-content" : "dark-content"} />
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
-          <View><Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text><Text style={styles.kicker}>RIDER · NOVAID VERIFIED</Text></View>
+          <View>
+            <Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text>
+            <Text style={styles.kicker}>RIDER · NOVAID VERIFIED · {runtimeConfig.releaseChannel}</Text>
+            <Text style={[styles.versionLabel, { color: palette.muted }]}>
+              v{runtimeConfig.releaseVersion} · API {runtimeConfig.apiBaseUrl}
+            </Text>
+          </View>
           <Pressable accessibilityRole="button" accessibilityLabel="Toggle dark or light mode" onPress={() => setDark(!dark)} style={[styles.icon, { backgroundColor: palette.surface }]}><Text>{dark ? "☀" : "☾"}</Text></Pressable>
         </View>
         <ScrollView contentContainerStyle={styles.content}>
@@ -187,7 +194,6 @@ export default function NovaRideRiderApp() {
             <Text style={styles.mapPin}>●</Text><Text style={styles.mapRoad}>╱━━━━━━●━━━━━━╲</Text>
             <Text style={styles.mapLabel}>Map-first live city view · Low-bandwidth ready</Text>
           </View>
-          <RiderMOSPanel palette={palette} onAction={action} />
           {(tab === "Home" || tab === "Book Ride") && (
             <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
               <Text style={[styles.title, { color: palette.text }]}>Where are you going?</Text>
@@ -221,6 +227,9 @@ export default function NovaRideRiderApp() {
               <View style={styles.row}><Action label="Rate Driver" onPress={() => action("Driver rated 5 stars")} /><Action label="Open Dispute" onPress={() => action("Dispute case opened")} /></View>
               <View style={styles.row}><Action label="View Receipt" onPress={() => action("Digital proof receipt NRR-2026-001")} /><Action label="View Replay" onPress={() => action("Signed trip replay verified")} /></View>
             </View>
+          )}
+          {tab === "Home" && (
+            <SmartMobilityBenefitsPanel palette={palette} onAction={action} />
           )}
           {tab === "Book Ride" && (
             <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
@@ -301,16 +310,19 @@ function Action({ label, onPress, primary, danger }: { label: string; onPress: (
   return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={[styles.button, primary && styles.primary, danger && styles.danger]}><Text style={primary || danger ? styles.buttonInverse : styles.buttonText}>{label}</Text></Pressable>;
 }
 function DriverTrustCard() { return <View style={styles.trust}><Text style={styles.trustTitle}>✓ Driver & vehicle verified</Text><Text>Amara K. · 4.96 ★ · Toyota Camry · NOVA-26</Text><Text>NovaID · Vehicle compliance · Trust score 96</Text></View>; }
-function RiderMOSPanel({ palette, onAction }: { palette: typeof lightTheme; onAction: (label: string, next?: BookingStage) => void }) {
+function SmartMobilityBenefitsPanel({ palette, onAction }: { palette: typeof lightTheme; onAction: (label: string, next?: BookingStage) => void }) {
   return (
     <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
-      <Text style={styles.kicker}>NOVARIDE X 2035+ MOS</Text>
-      <Text style={[styles.title, { color: palette.text }]}>AI-native mobility operating system</Text>
+      <Text style={styles.kicker}>SMART MOBILITY BENEFITS</Text>
+      <Text style={[styles.title, { color: palette.text }]}>Helpful ride features</Text>
+      <Text style={{ color: palette.muted }}>
+        Advanced NovaRide capabilities stay here as supporting information while booking stays focused on pickup, destination, fare, safety, and payment.
+      </Text>
       <View style={styles.mosGrid}>
         {[
-          ["ETA", "3.8m"],
-          ["Carbon", "-21%"],
-          ["Risk", "Low"],
+          ["ETA", "3.8 min"],
+          ["Lower emissions", "-21%"],
+          ["Safety", "Ready"],
           ["Wallet", "Ready"],
         ].map(([label, value]) => (
           <View key={label} style={styles.mosMetric}>
@@ -318,12 +330,6 @@ function RiderMOSPanel({ palette, onAction }: { palette: typeof lightTheme; onAc
             <Text style={styles.mosLabel}>{label}</Text>
           </View>
         ))}
-      </View>
-      <View style={styles.pipeline}>
-        {AI_DECISION_PIPELINE.map((stage) => <Text key={stage} style={styles.pipelineStep}>{stage}</Text>)}
-      </View>
-      <View style={styles.pipeline}>
-        {MOBILITY_CLOUD_LAYERS.map((layer) => <Text key={layer} style={styles.cloudStep}>{layer}</Text>)}
       </View>
       <View style={styles.row}>
         {NOVARIDE_X_RIDER_MOS_FEATURES.map((feature) => (
@@ -342,6 +348,7 @@ const darkTheme = { background: "#101321", surface: "#1B2033", text: "#F8F9FC", 
 const styles = StyleSheet.create({
   screen: { flex: 1 }, safe: { flex: 1 }, header: { padding: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   brand: { fontSize: 28, fontWeight: "900" }, kicker: { color: "#5B3DF5", fontSize: 10, fontWeight: "900", letterSpacing: 1 },
+  versionLabel: { fontSize: 11, fontWeight: "700", marginTop: 3 },
   icon: { width: 42, height: 42, borderRadius: 21, justifyContent: "center", alignItems: "center" }, content: { padding: 14, paddingBottom: 110, gap: 14 },
   map: { height: 210, borderRadius: 24, backgroundColor: "#DDEBE5", overflow: "hidden", justifyContent: "center", alignItems: "center" },
   mapPin: { color: "#5B3DF5", fontSize: 35 }, mapRoad: { color: "#7BA99A", fontSize: 22 }, mapLabel: { color: "#345448", position: "absolute", bottom: 16, fontWeight: "700" },

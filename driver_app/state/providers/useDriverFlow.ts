@@ -27,6 +27,16 @@ import {
 import { queueDriverOperation } from "../../core/services/mobility.service";
 
 const QUEUE_POLL_INTERVAL_MS = 4000;
+export const DRIVER_CONNECTIVITY_STATES = [
+  "NETWORK_OFFLINE",
+  "API_UNAVAILABLE",
+  "AUTH_REQUIRED",
+  "SYNCING",
+  "ONLINE_NOT_CONFIRMED",
+  "DISPATCHABLE",
+  "ON_TRIP",
+  "OFF_DUTY",
+] as const;
 
 export function useDriverFlow(driverId: string) {
   const [state, setState] = useState<DriverAppState>(initialDriverAppState);
@@ -67,11 +77,27 @@ export function useDriverFlow(driverId: string) {
       await queueDriverOperation(`/v1/driver/${encodeURIComponent(driverId)}/availability`, {
         status,
       });
+      const safeAvailability =
+        previous?.status === "available"
+          ? {
+              ...previous,
+              status: "offline" as const,
+              updatedAt: new Date().toISOString(),
+            }
+          : previous || {
+              driverId,
+              status: "offline" as const,
+              updatedAt: new Date().toISOString(),
+            };
       setState((current) => ({
         ...current,
-        availability: current.availability || previous,
+        availability: safeAvailability,
+        requests: [],
         loading: false,
-        error: "Availability saved and will sync automatically.",
+        error:
+          status === "available"
+            ? "Availability saved locally. Server confirmation is required before dispatchable status."
+            : "Availability saved and will sync automatically.",
       }));
     }
   }
@@ -124,7 +150,22 @@ export function useDriverFlow(driverId: string) {
           }));
         }
       } catch (error) {
-        if (active) setError(error, "ride_queue_unavailable");
+        if (active) {
+          setState((current) => ({
+            ...current,
+            availability: current.availability
+              ? {
+                  ...current.availability,
+                  status: "offline",
+                  updatedAt: new Date().toISOString(),
+                }
+              : current.availability,
+            requests: [],
+            loading: false,
+            error:
+              "Ride queue sync failed. Driver is online-not-confirmed and not dispatchable until the server confirms availability.",
+          }));
+        }
       } finally {
         if (active) {
           timeout = setTimeout(refreshQueue, QUEUE_POLL_INTERVAL_MS);

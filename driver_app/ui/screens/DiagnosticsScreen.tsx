@@ -8,12 +8,14 @@ import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 import type { ConnectivityCheck } from "../../core/api/client";
+import type { runtimeConfig } from "../../core/config/runtimeConfig";
 
 type DiagnosticsScreenProps = {
   diagnostics: DiagnosticsSnapshot;
   loading: boolean;
   onStartShift: () => void;
   apiBaseUrl: string;
+  runtimeIdentity: typeof runtimeConfig;
   connectionChecks: ConnectivityCheck[];
   checkingConnection: boolean;
   onTestConnection: () => void;
@@ -24,6 +26,7 @@ export function DiagnosticsScreen({
   loading,
   onStartShift,
   apiBaseUrl,
+  runtimeIdentity,
   connectionChecks,
   checkingConnection,
   onTestConnection,
@@ -62,6 +65,13 @@ export function DiagnosticsScreen({
         <View style={styles.header}>
           <Text style={styles.panelTitle}>API connectivity</Text>
           <Text style={styles.muted}>{apiBaseUrl}</Text>
+          <Text style={styles.muted}>
+            {runtimeIdentity.appName} {runtimeIdentity.releaseVersion} · code{" "}
+            {runtimeIdentity.versionCode} · {runtimeIdentity.releaseChannel}
+          </Text>
+          <Text style={styles.muted}>
+            Build {runtimeIdentity.buildId} · commit {runtimeIdentity.gitCommit}
+          </Text>
         </View>
         <PrimaryButton
           label={checkingConnection ? "Testing connection..." : "Test Connection"}

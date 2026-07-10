@@ -287,22 +287,62 @@ server {
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
 
-    location /healthz {
-        access_log off;
-        add_header Content-Type text/plain;
-        return 200 'ok';
+    root /var/www/afritechnology-downloads;
+
+    types {
+        application/vnd.android.package-archive apk;
+        application/octet-stream ipa;
+        text/plain sha256;
+        application/json json;
+        text/html html;
     }
 
-    location ~ ^/(novaride|novapay|novaid)/(?<apk_file>[A-Za-z0-9._-]+\.(apk|apk\.sha256))$ {
-        alias /var/www/afritech-apk/$apk_file;
-        types {
-            application/vnd.android.package-archive apk;
-            text/plain sha256;
-        }
-        default_type application/octet-stream;
-        add_header Cache-Control "public, max-age=300";
-        add_header Content-Disposition "attachment; filename=$apk_file";
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
+
+    location /novaride/releases/ {
+        try_files $uri =404;
         add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
+    }
+
+    location /novaride/ {
+        try_files $uri =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
+    }
+
+    location /novapay/releases/ {
+        try_files $uri =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
+    }
+
+    location /novapay/ {
+        try_files $uri =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
+    }
+
+    location /novaid/releases/ {
+        try_files $uri =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
+    }
+
+    location /novaid/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=300";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location ~* \.(apk|ipa|sha256|json)$ {
+        try_files $uri =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control "public, max-age=300";
     }
 
     location = /novaride/rider.apk {
@@ -410,11 +450,8 @@ server {
     }
 
     location / {
-        proxy_pass http://afritech-dashboard:4173;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        try_files $uri $uri/ /index.html =404;
+        add_header X-Content-Type-Options nosniff always;
     }
 }
 

@@ -24,6 +24,7 @@ import {
   REGION_ID,
   TEST_MODE,
 } from "./core/config/environment";
+import { runtimeConfig } from "./core/config/runtimeConfig";
 import {
   apiRequest,
   runApiConnectivityDiagnostics,
@@ -296,6 +297,10 @@ export default function App() {
           <Text style={styles.apiStatus}>
             NovaRide API: {API_BASE_URL}
           </Text>
+          <Text style={styles.apiStatus}>
+            {runtimeConfig.appName} v{runtimeConfig.releaseVersion} · code{" "}
+            {runtimeConfig.versionCode} · {runtimeConfig.releaseChannel}
+          </Text>
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
@@ -396,6 +401,7 @@ export default function App() {
                     loading={loading}
                     onStartShift={startShift}
                     apiBaseUrl={API_BASE_URL}
+                    runtimeIdentity={runtimeConfig}
                     connectionChecks={connectivityChecks}
                     checkingConnection={checkingConnection}
                     onTestConnection={testApiConnection}

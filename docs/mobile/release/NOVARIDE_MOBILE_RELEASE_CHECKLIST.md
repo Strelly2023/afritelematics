@@ -1,0 +1,38 @@
+# NovaRide Mobile Release Checklist
+
+- [ ] API health 200
+- [ ] API readiness 200
+- [ ] OpenAPI available
+- [ ] Driver contracts exist
+- [ ] Rider contracts exist
+- [ ] Rider typecheck passes
+- [ ] Driver typecheck passes
+- [ ] Rider tests pass
+- [ ] Driver tests pass
+- [ ] version incremented
+- [ ] versionCode incremented
+- [ ] clean build completed
+- [ ] package IDs verified
+- [ ] signing verified
+- [ ] APK integrity verified
+- [ ] SHA256 generated
+- [ ] release manifests generated
+- [ ] immutable URLs published
+- [ ] aliases updated atomically
+- [ ] public URLs return 200
+- [ ] Content-Type is APK
+- [ ] response is not HTML
+- [ ] downloaded SHA256 matches
+- [ ] installed on physical test device
+- [ ] version displayed correctly
+- [ ] diagnostics pass
+- [ ] Rider booking works
+- [ ] Driver availability works
+- [ ] Driver ride queue works
+- [ ] offline recovery works
+- [ ] GPS works
+- [ ] release approved
+- [ ] rollback confirmed
+- [ ] GA remains false
+- [ ] real payments remain false
+

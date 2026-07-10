@@ -55,6 +55,12 @@ export const TEST_MODE =
 export const APP_VERSION =
   process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.1";
 
+export const RELEASE_CHANNEL =
+  process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";
+
+export const RUNTIME_ENVIRONMENT =
+  process.env.EXPO_PUBLIC_NOVARIDE_ENVIRONMENT || "PUBLIC_PILOT";
+
 export const DEVICE_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_DEVICE_ID || "driver-test-device";
 

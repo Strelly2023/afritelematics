@@ -1,0 +1,53 @@
+{
+  "release": "2026.1.1",
+  "channel": "PUBLIC_PILOT",
+  "environment": "PUBLIC_PILOT",
+  "branch": "afriride-live-pilot-001",
+  "source_tree_state": "dirty_release_build_worktree",
+  "tests_executed": [
+    "npm run typecheck (rider_app)",
+    "npm run typecheck (driver_app)",
+    "python3 -m pytest -q tests/mobile_release",
+    "python3 -m pytest -q rider_app/tests driver_app/tests",
+    "git diff --check",
+    "./gradlew clean assembleRelease (rider_app)",
+    "./gradlew clean assembleRelease (driver_app)",
+    "file APK",
+    "unzip -t APK",
+    "aapt dump badging",
+    "apksigner verify --verbose --print-certs"
+  ],
+  "publication_verification_status": "blocked_api_tls_preflight_and_debug_signing",
+  "rider": {
+    "app": "NovaRide Rider",
+    "version": "2026.1.1",
+    "versionCode": 4,
+    "packageId": "com.novatech.novaride.rider",
+    "gitCommit": "05522508",
+    "buildTimestamp": "2026-07-10T01:50:52Z",
+    "builder": "local-codex",
+    "environment": "PUBLIC_PILOT",
+    "apiHost": "https://api.afritechnology.com",
+    "signingCertificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c (Android Debug certificate - release blocked)",
+    "apkSha256": "af9d82e9724e9ebb4b41936994add8ef01be74b74baac1145da509b50cde1c43",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.1/novaride-rider-v2026.1.1-public-pilot.apk",
+    "apkByteSize": 73313995,
+    "publicationVerificationStatus": "not_publicly_verified"
+  },
+  "driver": {
+    "app": "NovaRide Driver",
+    "version": "2026.1.1",
+    "versionCode": 4,
+    "packageId": "com.novatech.novaride.driver",
+    "gitCommit": "05522508",
+    "buildTimestamp": "2026-07-10T01:50:52Z",
+    "builder": "local-codex",
+    "environment": "PUBLIC_PILOT",
+    "apiHost": "https://api.afritechnology.com",
+    "signingCertificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c (Android Debug certificate - release blocked)",
+    "apkSha256": "3f75542afb0413a2f380428d7bb4582f843a0834f436990a1af8205888e01226",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.1/novaride-driver-v2026.1.1-public-pilot.apk",
+    "apkByteSize": 62314281,
+    "publicationVerificationStatus": "not_publicly_verified"
+  }
+}

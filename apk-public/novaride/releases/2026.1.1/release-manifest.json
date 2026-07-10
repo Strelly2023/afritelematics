@@ -1,0 +1,24 @@
+{
+  "release": "2026.1.1",
+  "channel": "PUBLIC_PILOT",
+  "environment": "PUBLIC_PILOT",
+  "approval_status": "blocked_debug_signing_and_api_tls_preflight",
+  "ga_allowed": false,
+  "real_payments_enabled": false,
+  "artifacts": {
+    "rider": {
+      "file": "novaride-rider-v2026.1.1-public-pilot.apk",
+      "sha256": "af9d82e9724e9ebb4b41936994add8ef01be74b74baac1145da509b50cde1c43",
+      "byte_size": 73313995,
+      "ipa_file": "novaride-rider-v2026.1.1-public-pilot.ipa",
+      "ipa_status": "not_built_in_this_release_run"
+    },
+    "driver": {
+      "file": "novaride-driver-v2026.1.1-public-pilot.apk",
+      "sha256": "3f75542afb0413a2f380428d7bb4582f843a0834f436990a1af8205888e01226",
+      "byte_size": 62314281,
+      "ipa_file": "novaride-driver-v2026.1.1-public-pilot.ipa",
+      "ipa_status": "not_built_in_this_release_run"
+    }
+  }
+}
