@@ -1,6 +1,6 @@
 import { apiRequest } from "./client";
-import { setAuthToken } from "./session";
-import { DEVICE_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
+import { setAuthSession } from "./session";
+import { DEVICE_ID, DRIVER_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
 import { attestDevice } from "../../../afriride_system/mobile/shared/deviceAttestation";
 
 type AuthRole = "CUSTOMER" | "DRIVER" | "OPERATOR";
@@ -24,6 +24,7 @@ export async function loginPilot(
     },
   });
 
-  await setAuthToken(result.token);
+  const driverId = DRIVER_ID || (TEST_MODE ? userId : "");
+  await setAuthSession(result.token, { driverId, role, organizationId });
   return result.token;
 }

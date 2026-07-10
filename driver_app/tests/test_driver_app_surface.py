@@ -256,8 +256,10 @@ def test_driver_product_completion_surfaces_are_wired() -> None:
     assert "EXPO_PUBLIC_API_URL" in environment
     assert "process.env.API_BASE_URL" in environment
     assert "https://api.afritechnology.com" in environment
-    assert "Unable to connect to the NovaRide service" in client
+    assert "DriverApiError" in client
+    assert "Connection unavailable" in client
     assert "network_unreachable" in client
+    assert "server_unavailable" in client
     assert "Health endpoint" in client
     assert "ScrollView" in tabs
     assert "horizontal" in tabs

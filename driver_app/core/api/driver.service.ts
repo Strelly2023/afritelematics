@@ -203,7 +203,7 @@ export async function getRideRequests(
 
 export async function acceptRide(
   rideId: string,
-  driverId = "D001",
+  driverId = "",
 ): Promise<TripSnapshot> {
   const startedAt = Date.now();
   if (USE_MOCK_API) {
@@ -236,7 +236,7 @@ export async function acceptRide(
 
 export async function rejectRide(
   rideId: string,
-  driverId = "D001",
+  driverId = "",
 ): Promise<TripSnapshot> {
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "cancelled");
@@ -255,7 +255,7 @@ export async function rejectRide(
 
 export async function markArrived(
   rideId: string,
-  driverId = "D001",
+  driverId = "",
 ): Promise<TripSnapshot> {
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "arrived");
@@ -274,7 +274,7 @@ export async function markArrived(
 
 export async function startTrip(
   rideId: string,
-  driverId = "D001",
+  driverId = "",
 ): Promise<TripSnapshot> {
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "started");
@@ -293,7 +293,7 @@ export async function startTrip(
 
 export async function completeTrip(
   rideId: string,
-  driverId = "D001",
+  driverId = "",
 ): Promise<TripSnapshot> {
   if (USE_MOCK_API) {
     return mockRideAction(rideId, "completed");

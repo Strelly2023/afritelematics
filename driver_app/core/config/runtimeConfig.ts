@@ -1,6 +1,7 @@
 import {
   API_BASE_URL,
   API_HEALTH_PATH,
+  DRIVER_ID,
   APP_VERSION,
   RELEASE_CHANNEL,
   RUNTIME_ENVIRONMENT,
@@ -15,9 +16,9 @@ export const runtimeConfig = {
   apiBaseUrl: API_BASE_URL,
   apiHealthUrl: `${API_BASE_URL}${API_HEALTH_PATH}`,
   authenticationUrl: `${API_BASE_URL}/v1/auth/token`,
+  driverId: DRIVER_ID,
   buildTimestamp: process.env.EXPO_PUBLIC_NOVARIDE_BUILD_TIMESTAMP || "build-time-generated",
   gitCommit: process.env.EXPO_PUBLIC_NOVARIDE_GIT_COMMIT || "local",
   buildId: process.env.EXPO_PUBLIC_NOVARIDE_BUILD_ID || `novaride-driver-${APP_VERSION}`,
   apkSha256: process.env.EXPO_PUBLIC_NOVARIDE_APK_SHA256 || "published-with-release-manifest",
 } as const;
-

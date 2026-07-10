@@ -32,6 +32,49 @@ export type ConnectivityCheck = {
   detail: string;
 };
 
+export type DriverApiErrorCode =
+  | "dns_failure"
+  | "connection_refused"
+  | "network_unreachable"
+  | "tls_failure"
+  | "request_timeout"
+  | "authentication_required"
+  | "authorization_denied"
+  | "endpoint_not_found"
+  | "server_unavailable"
+  | "invalid_content_type"
+  | "invalid_response"
+  | "request_cancelled"
+  | "unknown_network_error";
+
+export class DriverApiError extends Error {
+  code: DriverApiErrorCode;
+  endpoint: string;
+  status?: number;
+  requestId: string;
+  durationMs: number;
+  technicalDetails: string;
+
+  constructor(args: {
+    code: DriverApiErrorCode;
+    message: string;
+    endpoint: string;
+    requestId: string;
+    durationMs: number;
+    status?: number;
+    technicalDetails?: string;
+  }) {
+    super(args.message);
+    this.name = "DriverApiError";
+    this.code = args.code;
+    this.endpoint = args.endpoint;
+    this.requestId = args.requestId;
+    this.durationMs = args.durationMs;
+    this.status = args.status;
+    this.technicalDetails = args.technicalDetails || "";
+  }
+}
+
 function buildRequestUrl(path: string): string {
   return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
@@ -50,38 +93,125 @@ function sanitizeErrorMessage(message: string): string {
   return message.replace(/\s+/g, " ").slice(0, 180);
 }
 
+function makeApiError(
+  code: DriverApiErrorCode,
+  endpoint: string,
+  requestId: string,
+  durationMs: number,
+  message: string,
+  technicalDetails?: string,
+  status?: number,
+): DriverApiError {
+  return new DriverApiError({
+    code,
+    endpoint,
+    requestId,
+    durationMs,
+    message,
+    technicalDetails,
+    status,
+  });
+}
+
 export function toDriverFacingApiError(
   error: unknown,
   path: string,
   durationMs: number,
+  requestId = "unknown",
 ): Error {
   if (error instanceof Error && error.name === "AbortError") {
-    return new Error(
-      `Unable to connect to the NovaRide service. Request timed out after ${REQUEST_TIMEOUT_MS}ms. Technical details: request_timeout after ${REQUEST_TIMEOUT_MS}ms endpoint=${path} api_host=${API_BASE_URL} duration_ms=${durationMs}`,
+    return makeApiError(
+      "request_timeout",
+      path,
+      requestId,
+      durationMs,
+      "Connection unavailable. Request timed out. Try again.",
+      `request_timeout after ${REQUEST_TIMEOUT_MS}ms endpoint=${path} api_host=${API_BASE_URL}`,
     );
   }
 
   if (isNetworkFailure(error)) {
-    return new Error(
-      `Unable to connect to the NovaRide service. Check the internet connection or try again later. Technical details: network_unreachable endpoint=${path} api_host=${API_BASE_URL} duration_ms=${durationMs}`,
+    return makeApiError(
+      "network_unreachable",
+      path,
+      requestId,
+      durationMs,
+      "Connection unavailable. Check your internet connection and try again.",
+      `network_unreachable endpoint=${path} api_host=${API_BASE_URL}`,
     );
   }
 
   if (error instanceof Error) {
-    return new Error(sanitizeErrorMessage(error.message));
+    return makeApiError(
+      "unknown_network_error",
+      path,
+      requestId,
+      durationMs,
+      "Connection unavailable. Try again.",
+      sanitizeErrorMessage(error.message),
+    );
   }
 
-  return new Error("Unable to connect to the NovaRide service. Technical details: unknown_client_error");
+  return makeApiError(
+    "unknown_network_error",
+    path,
+    requestId,
+    durationMs,
+    "Connection unavailable. Try again.",
+    "unknown_client_error",
+  );
 }
 
-function toApiError(payload: unknown, fallback: string): Error {
+function toApiError(
+  payload: unknown,
+  fallback: string,
+  status: number,
+  endpoint: string,
+  requestId: string,
+  durationMs: number,
+): Error {
   if (payload && typeof payload === "object" && "detail" in payload) {
-    return new Error(String(payload.detail));
+    const detail = String(payload.detail);
+    if (status === 401) {
+      return makeApiError("authentication_required", endpoint, requestId, durationMs, "Sign in again.", detail, status);
+    }
+    if (status === 403) {
+      return makeApiError("authorization_denied", endpoint, requestId, durationMs, "Access denied.", detail, status);
+    }
+    if (status === 404) {
+      return makeApiError("endpoint_not_found", endpoint, requestId, durationMs, "Service endpoint not found.", detail, status);
+    }
+    if (status >= 500) {
+      return makeApiError("server_unavailable", endpoint, requestId, durationMs, "Service unavailable. Try again later.", detail, status);
+    }
+    return makeApiError("invalid_response", endpoint, requestId, durationMs, "Unexpected response from the service.", detail, status);
   }
-  return new Error(fallback);
+  return makeApiError(
+    status >= 500 ? "server_unavailable" : "invalid_response",
+    endpoint,
+    requestId,
+    durationMs,
+    fallback,
+    `status=${status}`,
+    status,
+  );
 }
 
 async function readResponsePayload(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType && !/json/i.test(contentType)) {
+    const body = await response.text();
+    const preview = body.replace(/\s+/g, " ").slice(0, 160);
+    throw new DriverApiError({
+      code: "invalid_content_type",
+      endpoint: response.url || "unknown",
+      requestId: "unknown",
+      durationMs: 0,
+      message: "Unexpected response format from the service.",
+      technicalDetails: `content_type=${contentType} body=${preview}`,
+      status: response.status,
+    });
+  }
   const body = await response.text();
   if (!body) {
     return {};
@@ -110,6 +240,7 @@ export async function apiRequest<T>(
     method,
     payload: options.body,
   });
+  const requestId = clientEvent.event_id;
   const startedAt = Date.now();
   assertSecureTransport(API_BASE_URL, TEST_MODE);
 
@@ -133,7 +264,14 @@ export async function apiRequest<T>(
     const payload = await readResponsePayload(response);
 
     if (!response.ok) {
-      throw toApiError(payload, "api_request_failed");
+      throw toApiError(
+        payload,
+        "Service unavailable. Try again later.",
+        response.status,
+        path,
+        requestId,
+        Date.now() - startedAt,
+      );
     }
 
     recordNetworkLatency(
@@ -146,14 +284,21 @@ export async function apiRequest<T>(
 
     return payload as T;
   } catch (error) {
-    const requestError = toDriverFacingApiError(error, path, Date.now() - startedAt);
+    const requestError =
+      error instanceof DriverApiError
+        ? error
+        : toDriverFacingApiError(error, path, Date.now() - startedAt, requestId);
     recordNetworkLatency(
       clientEvent.actor_id,
       path,
       method,
       0,
       Date.now() - startedAt,
-      requestError instanceof Error ? requestError.message : "network_error",
+      requestError instanceof DriverApiError
+        ? `${requestError.code} ${requestError.technicalDetails}`.trim()
+        : requestError instanceof Error
+          ? requestError.message
+          : "network_error",
     );
     throw requestError;
   } finally {

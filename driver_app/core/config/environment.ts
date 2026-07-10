@@ -20,6 +20,9 @@ export const API_HEALTH_PATH =
 export const ORGANIZATION_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_ORGANIZATION_ID || "afritech-core";
 
+export const DRIVER_ID =
+  process.env.EXPO_PUBLIC_AFRIRIDE_DRIVER_ID || "";
+
 export const REQUEST_TIMEOUT_MS = 8000;
 
 export const LOCATION_SAMPLE_INTERVAL_MS = Number(

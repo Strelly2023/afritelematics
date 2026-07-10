@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, type AppStateStatus } from "react-native";
 
 import {
@@ -34,6 +34,14 @@ export function usePilotEvidence(driverId: string) {
   const [diagnostics, setDiagnostics] =
     useState<DiagnosticsSnapshot>(initialDiagnostics);
   const [lastPosition, setLastPosition] = useState<PositionSnapshot>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const markSubmitted = useCallback((event: PilotEvidenceEvent) => {
     setDiagnostics((current) => ({
@@ -110,12 +118,14 @@ export function usePilotEvidence(driverId: string) {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       };
-      setLastPosition(position);
-      setDiagnostics((current) => ({
-        ...current,
-        locationSamples: current.locationSamples + 1,
-        lastLocation: location,
-      }));
+      if (mountedRef.current) {
+        setLastPosition(position);
+        setDiagnostics((current) => ({
+          ...current,
+          locationSamples: current.locationSamples + 1,
+          lastLocation: location,
+        }));
+      }
       void updateDriverLocation(driverId, {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
@@ -127,11 +137,13 @@ export function usePilotEvidence(driverId: string) {
         .then((events) => events.forEach(markSubmitted))
         .catch(markFailed);
     } catch (error) {
-      markFailed(error);
-      setDiagnostics((current) => ({
-        ...current,
-        gpsSignalLossEvents: current.gpsSignalLossEvents + 1,
-      }));
+      if (mountedRef.current) {
+        markFailed(error);
+        setDiagnostics((current) => ({
+          ...current,
+          gpsSignalLossEvents: current.gpsSignalLossEvents + 1,
+        }));
+      }
     }
   }, [
     capture,
@@ -178,6 +190,9 @@ export function usePilotEvidence(driverId: string) {
           return captureLocationEvidence(driverId, lastPosition, position);
         })
         .then((events) => {
+          if (!mountedRef.current) {
+            return;
+          }
           events.forEach(markSubmitted);
           const locationEvent = events.find(
             (event) => event.type === "driver_location_event",
@@ -235,6 +250,9 @@ export function usePilotEvidence(driverId: string) {
           }
         })
         .catch(async (error) => {
+          if (!mountedRef.current) {
+            return;
+          }
           markFailed(error);
           setDiagnostics((current) => ({
             ...current,
@@ -278,7 +296,7 @@ export function usePilotEvidence(driverId: string) {
     }, NETWORK_SAMPLE_INTERVAL_MS);
 
     return () => clearInterval(id);
-  }, [diagnostics.shiftStarted]);
+  }, [diagnostics.shiftStarted, lastPosition, markFailed, markSubmitted, driverId, capture]);
 
   return {
     diagnostics,

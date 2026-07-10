@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   SafeAreaView,
   Pressable,
@@ -115,13 +115,65 @@ type ErrorUtilsLike = {
   ) => void;
 };
 
-export default function App() {
+type DriverAppErrorBoundaryState = {
+  hasError: boolean;
+  message: string;
+};
+
+class DriverAppErrorBoundary extends Component<{ children: React.ReactNode }, DriverAppErrorBoundaryState> {
+  state: DriverAppErrorBoundaryState = {
+    hasError: false,
+    message: "",
+  };
+
+  static getDerivedStateFromError(error: Error): DriverAppErrorBoundaryState {
+    return {
+      hasError: true,
+      message: error.message || "Unexpected driver app failure",
+    };
+  }
+
+  override componentDidCatch(error: Error) {
+    void clearSession().catch(() => undefined);
+    console.error("NovaRide Driver crash boundary", error);
+  }
+
+  override render() {
+    if (this.state.hasError) {
+      return (
+        <SafeAreaView style={styles.screen}>
+          <View style={styles.crashShell}>
+            <Text style={styles.crashTitle}>Connection unavailable</Text>
+            <Text style={styles.crashSubtitle}>
+              NovaRide Driver recovered from an unexpected failure. Sign in again or retry after
+              checking your connection.
+            </Text>
+            <Text style={styles.crashDetail}>Diagnostic reference: DRIVER-RECOVERY</Text>
+            <Text style={styles.crashDetail}>State: {this.state.message}</Text>
+            <View style={styles.crashActions}>
+              <Pressable accessibilityRole="button" onPress={() => this.setState({ hasError: false, message: "" })} style={styles.crashButton}>
+                <Text style={styles.crashButtonLabel}>Retry</Text>
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={() => this.setState({ hasError: false, message: "" })} style={styles.crashButton}>
+                <Text style={styles.crashButtonLabel}>Return to login</Text>
+              </Pressable>
+            </View>
+          </View>
+        </SafeAreaView>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function DriverApp() {
   const [activeTab, setActiveTab] = useState<DriverTab>("dashboard");
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("driver@novaride.test");
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [driverId, setDriverId] = useState(runtimeConfig.driverId || DRIVER_ID);
   const [connectivityChecks, setConnectivityChecks] = useState<ConnectivityCheck[]>([]);
   const [checkingConnection, setCheckingConnection] = useState(false);
   const globalRuntime = useGlobalRuntime(
@@ -152,11 +204,11 @@ export default function App() {
     startTrip,
     trip,
     updateAvailability,
-  } = useDriverFlow(DRIVER_ID);
+  } = useDriverFlow(driverId);
   const operator = useOperatorDashboard();
-  const { capture, diagnostics, startShift } = usePilotEvidence(DRIVER_ID);
+  const { capture, diagnostics, startShift } = usePilotEvidence(driverId);
   const mobility = useDriverMobility(
-    DRIVER_ID,
+    driverId,
     authenticated,
     diagnostics.shiftStarted,
   );
@@ -175,13 +227,27 @@ export default function App() {
   useEffect(() => {
     let active = true;
     void (async () => {
-      const restored = await restoreSession();
-      if (!restored.token || !active) return;
-      const unlock = TEST_MODE
-        ? { success: true }
-        : await requireBiometricUnlock("Unlock NovaRide Driver");
-      if (active && unlock.success) setAuthenticated(true);
-      else if (!unlock.success) await clearSession();
+      try {
+        const restored = await restoreSession();
+        if (!restored.token || !active) return;
+        const restoredDriverId =
+          typeof restored.metadata?.driverId === "string" && restored.metadata.driverId
+            ? restored.metadata.driverId
+            : runtimeConfig.driverId || DRIVER_ID;
+        if (active) {
+          setDriverId(restoredDriverId);
+        }
+        const unlock = TEST_MODE
+          ? { success: true }
+          : await requireBiometricUnlock("Unlock NovaRide Driver");
+        if (active && unlock.success) setAuthenticated(true);
+        else if (!unlock.success) await clearSession();
+      } catch (error) {
+        if (active) {
+          setLoginError(error instanceof Error ? error.message : "session_restore_failed");
+          await clearSession().catch(() => undefined);
+        }
+      }
     })();
     return () => {
       active = false;
@@ -205,6 +271,24 @@ export default function App() {
       if (previousHandler) {
         errorUtils?.setGlobalHandler?.(previousHandler);
       }
+    };
+  }, [capture]);
+
+  useEffect(() => {
+    const rejectionHandler = (event: { reason?: unknown }) => {
+      void capture("crash_event", {
+        message: event.reason instanceof Error ? event.reason.message : "unhandled_rejection",
+        stack: event.reason instanceof Error ? event.reason.stack || null : null,
+        is_fatal: true,
+      });
+    };
+    const globalAny = globalThis as unknown as {
+      addEventListener?: (event: string, listener: (event: { reason?: unknown }) => void) => void;
+      removeEventListener?: (event: string, listener: (event: { reason?: unknown }) => void) => void;
+    };
+    globalAny.addEventListener?.("unhandledrejection", rejectionHandler);
+    return () => {
+      globalAny.removeEventListener?.("unhandledrejection", rejectionHandler);
     };
   }, [capture]);
 
@@ -307,7 +391,7 @@ export default function App() {
           {authenticating ? <SkeletonBlock height={132} /> : null}
 
           {!authenticated ? (
-            <DriverLoginScreen
+              <DriverLoginScreen
               email={email}
               password={password}
               onEmailChange={setEmail}
@@ -317,7 +401,9 @@ export default function App() {
                 setAuthenticating(true);
                 setLoginError("");
                 try {
-                  await loginPilot("driver-demo-001", "DRIVER", ORGANIZATION_ID);
+                  const nextDriverId = runtimeConfig.driverId || DRIVER_ID;
+                  await loginPilot(nextDriverId, "DRIVER", ORGANIZATION_ID);
+                  setDriverId(nextDriverId);
                   setAuthenticated(true);
                 } catch (authError) {
                   if (TEST_MODE) {
@@ -336,18 +422,26 @@ export default function App() {
             <AnimatedEntrance>
               {activeTab === "dashboard" ? (
                 <>
-                  <DriverHomeScreen
-                    availability={availability}
-                    earnings={earnings}
-                    diagnostics={diagnostics}
-                    loading={loading}
-                    onGoAvailable={() => updateAvailability("available")}
-                    onGoOffline={async () => {
-                      await updateAvailability("offline");
-                      await mobility.stop();
-                    }}
-                    onStartShift={startShift}
-                  />
+                    <DriverHomeScreen
+                      availability={availability}
+                      earnings={earnings}
+                      diagnostics={diagnostics}
+                      loading={loading}
+                      onGoAvailable={() => updateAvailability("available")}
+                      onGoOffline={async () => {
+                        try {
+                          await updateAvailability("offline");
+                          await mobility.stop();
+                        } catch (offlineError) {
+                          setLoginError(
+                            offlineError instanceof Error
+                              ? offlineError.message
+                              : "offline_transition_failed",
+                          );
+                        }
+                      }}
+                      onStartShift={startShift}
+                    />
                   <DriverCloudPanel />
                 </>
               ) : null}
@@ -661,6 +755,48 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     flex: 1,
   },
+  crashActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  crashButton: {
+    alignItems: "center",
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    minHeight: 48,
+    justifyContent: "center",
+    paddingHorizontal: spacing.lg,
+  },
+  crashButtonLabel: {
+    color: colors.panel,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  crashDetail: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  crashShell: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: spacing.md,
+    margin: spacing.lg,
+    padding: spacing.lg,
+  },
+  crashSubtitle: {
+    color: colors.muted,
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  crashTitle: {
+    color: colors.ink,
+    fontSize: 24,
+    fontWeight: "900",
+  },
   subtitle: {
     color: colors.muted,
     fontSize: 15,
@@ -671,3 +807,11 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 });
+
+export default function App() {
+  return (
+    <DriverAppErrorBoundary>
+      <DriverApp />
+    </DriverAppErrorBoundary>
+  );
+}
