@@ -235,13 +235,34 @@ def test_driver_product_completion_surfaces_are_wired() -> None:
         assert screen in app
 
     tabs = read("ui/widgets/BottomTabs.tsx")
+    diagnostics = read("ui/screens/DiagnosticsScreen.tsx")
+    environment = read("core/config/environment.ts")
+    client = read("core/api/client.ts")
 
     assert "BottomTabs" in app
-    assert '"home"' in app
-    assert '"trips"' in app
+    assert '"dashboard"' in app
+    assert '"requests"' in app
+    assert '"activeTrip"' in app
     assert '"earnings"' in app
-    assert '"trust"' in app
     assert '"profile"' in app
+    assert '"more"' in app
+    assert "MoreScreen" in app
+    assert "Vehicle, safety, settings, support, and diagnostics" in app
+    assert "API_BASE_URL" in app
+    assert "runApiConnectivityDiagnostics" in app
+    assert "Test Connection" in diagnostics
+    assert "API connectivity" in diagnostics
+    assert "EXPO_PUBLIC_NOVARIDE_API_URL" in environment
+    assert "EXPO_PUBLIC_API_URL" in environment
+    assert "process.env.API_BASE_URL" in environment
+    assert "https://api.afritechnology.com" in environment
+    assert "Unable to connect to the NovaRide service" in client
+    assert "network_unreachable" in client
+    assert "Health endpoint" in client
+    assert "ScrollView" in tabs
+    assert "horizontal" in tabs
+    assert "minWidth: 88" in tabs
+    assert "numberOfLines={1}" in tabs
     assert "setAuthenticated(true)" in app
     assert "availability?.status" in app
     assert "getDriverIntelligence" in home_source

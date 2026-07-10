@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,11 +19,16 @@ import {
 } from "./core/api/session";
 import {
   APP_LOCALE,
+  API_BASE_URL,
   ORGANIZATION_ID,
   REGION_ID,
   TEST_MODE,
 } from "./core/config/environment";
-import { apiRequest } from "./core/api/client";
+import {
+  apiRequest,
+  runApiConnectivityDiagnostics,
+  type ConnectivityCheck,
+} from "./core/api/client";
 import { BottomTabs } from "./ui/widgets/BottomTabs";
 import { AvailabilityScreen } from "./ui/screens/AvailabilityScreen";
 import { DiagnosticsScreen } from "./ui/screens/DiagnosticsScreen";
@@ -89,16 +95,16 @@ const DRIVER_REQUIREMENT_MARKERS = [
 ] as const;
 
 const DRIVER_ID = "driver-demo-001";
-type DriverTab = "dashboard" | "requests" | "activeTrip" | "earnings" | "vehicle" | "safety" | "profile";
+type DriverTab = "dashboard" | "requests" | "activeTrip" | "earnings" | "vehicle" | "safety" | "profile" | "more";
+type PrimaryDriverTab = Exclude<DriverTab, "vehicle" | "safety">;
 
-const driverTabs: Array<{ key: DriverTab; label: string }> = [
+const driverTabs: Array<{ key: PrimaryDriverTab; label: string }> = [
   { key: "dashboard", label: "Dashboard" },
   { key: "requests", label: "Requests" },
   { key: "activeTrip", label: "Active Trip" },
   { key: "earnings", label: "Earnings" },
-  { key: "vehicle", label: "Vehicle" },
-  { key: "safety", label: "Safety" },
   { key: "profile", label: "Profile" },
+  { key: "more", label: "More" },
 ];
 
 type ErrorUtilsLike = {
@@ -115,20 +121,21 @@ export default function App() {
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [connectivityChecks, setConnectivityChecks] = useState<ConnectivityCheck[]>([]);
+  const [checkingConnection, setCheckingConnection] = useState(false);
   const globalRuntime = useGlobalRuntime(
     apiRequest,
     ORGANIZATION_ID,
     REGION_ID,
     APP_LOCALE || undefined,
   );
-  const localizedDriverTabs: Array<{ key: DriverTab; label: string }> = [
+  const localizedDriverTabs: Array<{ key: PrimaryDriverTab; label: string }> = [
     { key: "dashboard", label: "Dashboard" },
     { key: "requests", label: "Requests" },
     { key: "activeTrip", label: "Active Trip" },
     { key: "earnings", label: globalRuntime.t("nav.earnings") },
-    { key: "vehicle", label: "Vehicle" },
-    { key: "safety", label: "Safety" },
     { key: "profile", label: globalRuntime.t("nav.profile") },
+    { key: "more", label: "More" },
   ];
   const {
     acceptRequest,
@@ -152,6 +159,17 @@ export default function App() {
     authenticated,
     diagnostics.shiftStarted,
   );
+  const selectedPrimaryTab: PrimaryDriverTab =
+    activeTab === "vehicle" || activeTab === "safety" ? "more" : activeTab;
+
+  async function testApiConnection() {
+    setCheckingConnection(true);
+    try {
+      setConnectivityChecks(await runApiConnectivityDiagnostics());
+    } finally {
+      setCheckingConnection(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -245,7 +263,13 @@ export default function App() {
         navigation={
           authenticated ? (
             <View style={styles.bottomNav}>
-              <BottomTabs tabs={localizedDriverTabs} activeTab={activeTab} onChange={setActiveTab} />
+              <BottomTabs
+                tabs={localizedDriverTabs}
+                activeTab={selectedPrimaryTab}
+                onChange={(tab) => {
+                  setActiveTab(tab === "more" ? "more" : tab);
+                }}
+              />
             </View>
           ) : undefined
         }
@@ -269,6 +293,9 @@ export default function App() {
             online={mobility.health?.networkConnected !== false}
             pending={mobility.health?.pendingSync || 0}
           />
+          <Text style={styles.apiStatus}>
+            NovaRide API: {API_BASE_URL}
+          </Text>
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
@@ -368,6 +395,10 @@ export default function App() {
                     diagnostics={diagnostics}
                     loading={loading}
                     onStartShift={startShift}
+                    apiBaseUrl={API_BASE_URL}
+                    connectionChecks={connectivityChecks}
+                    checkingConnection={checkingConnection}
+                    onTestConnection={testApiConnection}
                   />
                 </>
               ) : null}
@@ -382,6 +413,13 @@ export default function App() {
                   <DriverNotificationsScreen notifications={notifications} />
                 </>
               ) : null}
+              {activeTab === "more" ? (
+                <MoreScreen
+                  onVehicle={() => setActiveTab("vehicle")}
+                  onSafety={() => setActiveTab("safety")}
+                  onDiagnostics={() => setActiveTab("safety")}
+                />
+              ) : null}
             </AnimatedEntrance>
           )}
         </ScrollView>
@@ -395,6 +433,48 @@ export default function App() {
         onClose={() => undefined}
       />
     </SafeAreaView>
+  );
+}
+
+function MoreScreen({
+  onVehicle,
+  onSafety,
+  onDiagnostics,
+}: {
+  onVehicle: () => void;
+  onSafety: () => void;
+  onDiagnostics: () => void;
+}) {
+  return (
+    <View style={styles.moreCard}>
+      <Text style={styles.moreTitle}>More driver tools</Text>
+      <Text style={styles.moreSubtitle}>
+        Vehicle, safety, settings, support, and diagnostics stay available without crowding the primary navigation.
+      </Text>
+      <View style={styles.moreGrid}>
+        <MoreAction label="Vehicle" detail="Documents and compliance" onPress={onVehicle} />
+        <MoreAction label="Safety" detail="Trust profile and replay" onPress={onSafety} />
+        <MoreAction label="Settings" detail="Profile and account controls" onPress={onDiagnostics} />
+        <MoreAction label="Support" detail="Diagnostics and connection checks" onPress={onDiagnostics} />
+      </View>
+    </View>
+  );
+}
+
+function MoreAction({
+  label,
+  detail,
+  onPress,
+}: {
+  label: string;
+  detail: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} style={styles.moreAction}>
+      <Text style={styles.moreActionLabel}>{label}</Text>
+      <Text style={styles.moreActionDetail}>{detail}</Text>
+    </Pressable>
   );
 }
 
@@ -435,6 +515,11 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontWeight: "800",
   },
+  apiStatus: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "800",
+  },
   header: {
     gap: spacing.xs,
     paddingTop: spacing.md,
@@ -461,6 +546,48 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 12,
     fontWeight: "700",
+  },
+  moreAction: {
+    backgroundColor: colors.soft,
+    borderColor: colors.border,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 4,
+    minWidth: "46%",
+    padding: spacing.md,
+  },
+  moreActionDetail: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  moreActionLabel: {
+    color: colors.ink,
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  moreCard: {
+    backgroundColor: "#ffffff",
+    borderColor: colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
+  moreGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  moreSubtitle: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  moreTitle: {
+    color: colors.ink,
+    fontSize: 22,
+    fontWeight: "900",
   },
   bottomNav: {
     borderTopColor: colors.border,

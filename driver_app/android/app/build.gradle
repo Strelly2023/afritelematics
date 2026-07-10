@@ -114,8 +114,8 @@ android {
         applicationId 'com.novatech.novaride.driver'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "2026.1.0"
+        versionCode 4
+        versionName "2026.1.1"
     }
     signingConfigs {
         debug {

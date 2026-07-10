@@ -22,7 +22,8 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.0",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "driver-pilot-device"
       }
     },
@@ -34,7 +35,8 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.0",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "driver-pilot-ios-device"
       }
     },
@@ -49,7 +51,8 @@
       },
       "env": {
         "EXPO_PUBLIC_AFRIRIDE_TEST_MODE": "true",
-        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.0",
+        "EXPO_PUBLIC_AFRIRIDE_APP_VERSION": "2026.1.1",
+        "EXPO_PUBLIC_NOVARIDE_API_URL": "https://api.afritechnology.com",
         "EXPO_PUBLIC_AFRIRIDE_DEVICE_ID": "driver-test-device"
       }
     }

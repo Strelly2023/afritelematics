@@ -7,17 +7,26 @@ import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import type { ConnectivityCheck } from "../../core/api/client";
 
 type DiagnosticsScreenProps = {
   diagnostics: DiagnosticsSnapshot;
   loading: boolean;
   onStartShift: () => void;
+  apiBaseUrl: string;
+  connectionChecks: ConnectivityCheck[];
+  checkingConnection: boolean;
+  onTestConnection: () => void;
 };
 
 export function DiagnosticsScreen({
   diagnostics,
   loading,
   onStartShift,
+  apiBaseUrl,
+  connectionChecks,
+  checkingConnection,
+  onTestConnection,
 }: DiagnosticsScreenProps) {
   return (
     <SurfacePanel>
@@ -48,6 +57,41 @@ export function DiagnosticsScreen({
         onPress={onStartShift}
         disabled={loading || diagnostics.shiftStarted}
       />
+
+      <View style={styles.connectionPanel}>
+        <View style={styles.header}>
+          <Text style={styles.panelTitle}>API connectivity</Text>
+          <Text style={styles.muted}>{apiBaseUrl}</Text>
+        </View>
+        <PrimaryButton
+          label={checkingConnection ? "Testing connection..." : "Test Connection"}
+          onPress={onTestConnection}
+          disabled={checkingConnection}
+        />
+        {connectionChecks.length === 0 ? (
+          <Text style={styles.muted}>
+            Run a connection test to verify API host, TLS policy, and health endpoint reachability.
+          </Text>
+        ) : (
+          <View style={styles.connectionGrid}>
+            {connectionChecks.map((check) => (
+              <View
+                key={check.label}
+                style={[
+                  styles.connectionCheck,
+                  check.status === "pass" ? styles.connectionPass : styles.connectionFail,
+                ]}
+              >
+                <Text style={styles.connectionLabel}>{check.label}</Text>
+                <Text style={check.status === "pass" ? styles.online : styles.error}>
+                  {check.status.toUpperCase()}
+                </Text>
+                <Text style={styles.muted}>{check.detail}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
 
       <View style={styles.grid}>
         <Metric label="Location samples" value={diagnostics.locationSamples} />
@@ -114,6 +158,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "800",
   },
+  connectionCheck: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    minWidth: 150,
+    padding: spacing.md,
+  },
+  connectionFail: {
+    backgroundColor: "#fff1f1",
+    borderColor: "#e8a4a4",
+  },
+  connectionGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  connectionLabel: {
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  connectionPanel: {
+    backgroundColor: colors.soft,
+    borderColor: colors.border,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: spacing.md,
+    padding: spacing.md,
+  },
+  connectionPass: {
+    backgroundColor: "#eef7f3",
+    borderColor: "#b7e3cc",
+  },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -150,6 +227,11 @@ const styles = StyleSheet.create({
   pending: {
     color: colors.secondary,
     fontSize: 14,
+    fontWeight: "900",
+  },
+  panelTitle: {
+    color: colors.ink,
+    fontSize: 16,
     fontWeight: "900",
   },
   title: {
