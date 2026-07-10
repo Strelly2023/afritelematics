@@ -146,7 +146,7 @@ def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
     assert "gpsSignalLossEvents" in diagnostics
     assert "describePilotEvidenceError" in pilot_hook
     assert "extractPilotEvidenceError" in pilot_hook
-    assert "if (!diagnostics.shiftStarted)" in pilot_hook
+    assert "if (!diagnostics.shiftStarted || !hasDriverIdentity)" in pilot_hook
     assert "lastEvidenceError" in pilot_hook
     assert 'type: "timeout" | "network" | "validation" | "shift_gated" | "server" | "unknown"' in models
     assert 'severity: EvidenceErrorSeverity' in models

@@ -1824,6 +1824,38 @@ const NOVACODEPRO_TARGET_USERS = [
   "Universities and research institutions",
 ];
 
+const NOVACODEPRO_PORTAL_URL = "https://novacodepro.afritechnology.com";
+
+const NOVACODEPRO_PORTAL_NAV = [
+  "Overview",
+  "Projects",
+  "Repositories",
+  "UX Studio",
+  "AI Studio",
+  "Architecture",
+  "Quality",
+  "Security",
+  "Releases",
+  "Deployments",
+  "Observability",
+  "Governance",
+  "Evidence",
+  "PRR",
+  "Administration",
+];
+
+const NOVACODEPRO_PORTAL_SUBDOMAINS = [
+  "ux.novacodepro.afritechnology.com",
+  "ai.novacodepro.afritechnology.com",
+  "release.novacodepro.afritechnology.com",
+  "deploy.novacodepro.afritechnology.com",
+  "observe.novacodepro.afritechnology.com",
+  "governance.novacodepro.afritechnology.com",
+  "evidence.novacodepro.afritechnology.com",
+  "prr.novacodepro.afritechnology.com",
+  "api.novacodepro.afritechnology.com",
+];
+
 const NOVACODEPRO_DEV_COMMAND_METRICS = [
   { label: "Active Workspaces", value: "38", detail: "NovaCloud IDE sessions" },
   { label: "Repositories", value: "126", detail: "Policy-linked projects" },
@@ -8981,9 +9013,26 @@ export default function OperatorDashboard() {
               <strong>Trusted Engineering</strong>
               <span>developer platform readiness</span>
             </div>
+            <p className="section-note">
+              Portal: <a href={NOVACODEPRO_PORTAL_URL}>{NOVACODEPRO_PORTAL_URL}</a>
+            </p>
             <div className="codepro-flow">
               {["Build", "Govern", "Deploy", "Verify"].map((step) => (
                 <span key={step}>{step}</span>
+              ))}
+            </div>
+            <div className="chip-row" aria-label="NovaCodePro portal navigation">
+              {NOVACODEPRO_PORTAL_NAV.map((item) => (
+                <span key={item} className="surface-chip">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <div className="chip-row" aria-label="NovaCodePro portal subdomains">
+              {NOVACODEPRO_PORTAL_SUBDOMAINS.map((item) => (
+                <span key={item} className="surface-chip">
+                  {item}
+                </span>
               ))}
             </div>
             <pre>{`nova codepro run --workspace mobility-api
@@ -10544,6 +10593,12 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
               </div>
               <span>Verified by NovaTrust</span>
             </div>
+            <div className="record-card-header">
+              <strong>Unified Trust Operating Console</strong>
+              <span>Console Wireframes</span>
+            </div>
+            <p className="section-note">NovaTechSol Core Flow</p>
+            <p className="section-note">Identity to authority to execution to payment to proof to intelligence to evolution</p>
             <div className="codepro-command-metrics">
               {NOVACODEPRO_COMMAND_METRICS.map((metric) => (
                 <article key={metric.label}>

@@ -4,7 +4,11 @@ import {
 } from "react-native";
 
 import { useRideFlow } from "./state/providers/useRideFlow";
+import { loginPilot, extractAuthIdentity } from "./core/api/auth.service";
+import { clearSession, restoreSession } from "./core/api/session";
+import { ORGANIZATION_ID, TEST_MODE } from "./core/config/environment";
 import { runtimeConfig } from "./core/config/runtimeConfig";
+import { RiderLoginScreen } from "./ui/screens/RiderLoginScreen";
 
 type RiderTab = "Home" | "Book Ride" | "Trips" | "Wallet" | "Safety" | "Receipts" | "Profile";
 type BookingStage = "places" | "category" | "fare" | "matching" | "tracking" | "trip" | "payment" | "receipt";
@@ -132,8 +136,6 @@ export const RIDER_FLOW = [
   "receive proof receipt", "rate/dispute/support",
 ] as const;
 
-const RIDER_ID = "rider-demo-001";
-
 export default function NovaRideRiderApp() {
   const [dark, setDark] = useState(false);
   const [tab, setTab] = useState<RiderTab>("Home");
@@ -143,8 +145,76 @@ export default function NovaRideRiderApp() {
   const [rideType, setRideType] = useState("NovaRide Standard");
   const [state, setState] = useState<ViewState>("success");
   const [message, setMessage] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticating, setAuthenticating] = useState(false);
+  const [email, setEmail] = useState("rider@novaride.test");
+  const [password, setPassword] = useState("pilot");
+  const [loginError, setLoginError] = useState("");
+  const [riderId, setRiderId] = useState("");
   const palette = dark ? darkTheme : lightTheme;
-  const { requestedRide, submitRideRequest } = useRideFlow();
+  const { requestedRide, submitRideRequest } = useRideFlow(riderId);
+
+  React.useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const restored = await restoreSession();
+        if (!active || !restored.token) return;
+        const restoredRiderId =
+          typeof restored.metadata?.riderId === "string" && restored.metadata.riderId
+            ? restored.metadata.riderId
+            : extractAuthIdentity(restored.token, TEST_MODE ? email.trim() || "rider" : "");
+        if (!restoredRiderId && !TEST_MODE) {
+          throw new Error("Rider identity is unavailable. Sign in again.");
+        }
+        if (active) {
+          setRiderId(restoredRiderId);
+          setAuthenticated(true);
+        }
+      } catch {
+        await clearSession().catch(() => undefined);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const login = async () => {
+    setAuthenticating(true);
+    setLoginError("");
+    try {
+      const principal = email.trim() || "rider";
+      const token = await loginPilot(principal, "CUSTOMER", ORGANIZATION_ID);
+      const nextRiderId = extractAuthIdentity(token, TEST_MODE ? principal : "");
+      if (!nextRiderId && !TEST_MODE) {
+        throw new Error("Rider identity is unavailable. Sign in again.");
+      }
+      setRiderId(nextRiderId);
+      setAuthenticated(true);
+      setTab("Home");
+    } catch (error) {
+      if (TEST_MODE) {
+        setRiderId(email.trim() || "rider");
+        setAuthenticated(true);
+      } else {
+        setLoginError(error instanceof Error ? error.message : "login_failed");
+      }
+    } finally {
+      setAuthenticating(false);
+    }
+  };
+
+  const logout = async () => {
+    await clearSession().catch(() => undefined);
+    setAuthenticated(false);
+    setRiderId("");
+    setLoginError("");
+    setPassword("pilot");
+    setTab("Home");
+    setStage("places");
+    setMessage("Logged out");
+  };
 
   const action = (label: string, next?: BookingStage) => {
     setMessage(label);
@@ -158,10 +228,15 @@ export default function NovaRideRiderApp() {
   };
 
   const requestRide = async () => {
+    if (!authenticated || !riderId) {
+      setState("error");
+      setMessage("Please sign in to request a ride.");
+      return;
+    }
     setState("loading");
     setMessage("Submitting ride request to dispatch");
     const requested = await submitRideRequest({
-      riderId: RIDER_ID,
+      riderId,
       pickup,
       dropoff: destination || "Destination pending",
     });
@@ -179,6 +254,39 @@ export default function NovaRideRiderApp() {
     <View style={[styles.screen, { backgroundColor: palette.background }]}>
       <StatusBar barStyle={dark ? "light-content" : "dark-content"} />
       <SafeAreaView style={styles.safe}>
+        {!authenticated ? (
+          <View style={styles.loginShell}>
+            <View style={styles.header}>
+              <View>
+                <Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text>
+                <Text style={styles.kicker}>
+                  RIDER · NOVAID VERIFIED · {runtimeConfig.releaseChannel}
+                </Text>
+                <Text style={[styles.versionLabel, { color: palette.muted }]}>
+                  v{runtimeConfig.releaseVersion} · API {runtimeConfig.apiBaseUrl}
+                </Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Toggle dark or light mode"
+                onPress={() => setDark(!dark)}
+                style={[styles.icon, { backgroundColor: palette.surface }]}
+              >
+                <Text>{dark ? "☀" : "☾"}</Text>
+              </Pressable>
+            </View>
+            <RiderLoginScreen
+              email={email}
+              password={password}
+              loading={authenticating}
+              onEmailChange={setEmail}
+              onPasswordChange={setPassword}
+              onContinue={login}
+            />
+            {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+          </View>
+        ) : (
+          <>
         <View style={styles.header}>
           <View>
             <Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text>
@@ -287,7 +395,12 @@ export default function NovaRideRiderApp() {
               <Text style={[styles.title, { color: palette.text }]}>Profile</Text>
               <View style={styles.row}>
                 {PROFILE_ACTIONS.map((label) => (
-                  <Action key={label} label={label} onPress={() => action(label)} />
+                  <Action
+                    key={label}
+                    label={label}
+                    onPress={label === "Logout" ? logout : () => action(label)}
+                    danger={label === "Logout"}
+                  />
                 ))}
               </View>
             </View>
@@ -300,7 +413,9 @@ export default function NovaRideRiderApp() {
           {requestedRide ? <Text style={{ color: palette.muted, textAlign: "center" }}>Request ID: {requestedRide.rideId}</Text> : null}
           <Text style={{ color: palette.muted, textAlign: "center" }}>{state === "offline" ? "Offline · request queued safely" : "Online · Live tracking available"}</Text>
         </ScrollView>
-        <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Home", "Book Ride", "Trips", "Wallet", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
+          <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Home", "Book Ride", "Trips", "Wallet", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
+          </>
+        )}
       </SafeAreaView>
     </View>
   );
@@ -346,8 +461,13 @@ function FeaturePanel({ tab, palette, onSOS }: { tab: RiderTab; palette: typeof 
 const lightTheme = { background: "#F3F5FA", surface: "#FFFFFF", text: "#15182A", muted: "#6E7486", border: "#DFE3EC" };
 const darkTheme = { background: "#101321", surface: "#1B2033", text: "#F8F9FC", muted: "#ABB3C8", border: "#363D52" };
 const styles = StyleSheet.create({
-  screen: { flex: 1 }, safe: { flex: 1 }, header: { padding: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  screen: { flex: 1 },
+  safe: { flex: 1 },
+  header: { padding: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  headerActions: { flexDirection: "row", gap: 10 },
   brand: { fontSize: 28, fontWeight: "900" }, kicker: { color: "#5B3DF5", fontSize: 10, fontWeight: "900", letterSpacing: 1 },
+  loginShell: { flex: 1, gap: 14, paddingTop: 4 },
+  error: { color: "#B42318", fontWeight: "800", paddingHorizontal: 18 },
   versionLabel: { fontSize: 11, fontWeight: "700", marginTop: 3 },
   icon: { width: 42, height: 42, borderRadius: 21, justifyContent: "center", alignItems: "center" }, content: { padding: 14, paddingBottom: 110, gap: 14 },
   map: { height: 210, borderRadius: 24, backgroundColor: "#DDEBE5", overflow: "hidden", justifyContent: "center", alignItems: "center" },

@@ -23,6 +23,8 @@ def test_novaride_rider_branding_and_android_identity() -> None:
 
 def test_rider_map_first_tabs_and_required_actions() -> None:
     app = read("App.tsx")
+    assert "RiderLoginScreen" in app
+    assert "Logout" in app
     for tab in ["Home", "Trips", "Safety", "Receipts", "Profile"]:
         assert tab in app
     for action in [

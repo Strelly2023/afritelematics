@@ -27,13 +27,13 @@ import {
 import { queueDriverOperation } from "../../core/services/mobility.service";
 
 const QUEUE_POLL_INTERVAL_MS = 4000;
+const DRIVER_IDENTITY_REQUIRED_MESSAGE = "Driver identity is unavailable. Sign in again.";
 export const DRIVER_CONNECTIVITY_STATES = [
   "NETWORK_OFFLINE",
   "API_UNAVAILABLE",
   "AUTH_REQUIRED",
   "SYNCING",
-  "ONLINE_NOT_CONFIRMED",
-  "DISPATCHABLE",
+  "ONLINE_CONFIRMED",
   "ON_TRIP",
   "OFF_DUTY",
 ] as const;
@@ -43,6 +43,8 @@ export function useDriverFlow(driverId: string) {
   const [realtimeState, setRealtimeState] =
     useState<RealtimeConnectionState>("idle");
 
+  const hasDriverIdentity = Boolean(driverId);
+
   function setError(error: unknown, fallback: string) {
     setState((current) => ({
       ...current,
@@ -51,7 +53,15 @@ export function useDriverFlow(driverId: string) {
     }));
   }
 
+  function setIdentityError() {
+    setError(new Error(DRIVER_IDENTITY_REQUIRED_MESSAGE), DRIVER_IDENTITY_REQUIRED_MESSAGE);
+  }
+
   async function updateAvailability(status: AvailabilityStatus) {
+    if (!hasDriverIdentity) {
+      setIdentityError();
+      return;
+    }
     const previous = state.availability;
     setState((current) => ({
       ...current,
@@ -96,13 +106,18 @@ export function useDriverFlow(driverId: string) {
         loading: false,
         error:
           status === "available"
-            ? "Availability saved locally. Server confirmation is required before dispatchable status."
+            ? "Availability saved locally. Server confirmation is required before online status."
             : "Availability saved and will sync automatically.",
       }));
     }
   }
 
   useEffect(() => {
+    if (!hasDriverIdentity) {
+      setState(initialDriverAppState);
+      return undefined;
+    }
+
     let active = true;
 
     const hydrateAvailability = async () => {
@@ -121,7 +136,22 @@ export function useDriverFlow(driverId: string) {
           error: "",
         }));
       } catch (error) {
-        if (active) setError(error, "availability_unavailable");
+        if (active) {
+          setState((current) => ({
+            ...current,
+            availability: {
+              ...(current.availability || { driverId }),
+              status: "offline",
+              updatedAt: new Date().toISOString(),
+            },
+            requests: [],
+            loading: false,
+            error:
+              error instanceof Error && error.message
+                ? "Connection unavailable. Driver status could not be confirmed."
+                : "Connection unavailable. Driver status could not be confirmed.",
+          }));
+        }
       }
     };
 
@@ -129,10 +159,10 @@ export function useDriverFlow(driverId: string) {
     return () => {
       active = false;
     };
-  }, [driverId]);
+  }, [driverId, hasDriverIdentity]);
 
   useEffect(() => {
-    if (state.availability?.status !== "available") {
+    if (!hasDriverIdentity || state.availability?.status !== "available") {
       return undefined;
     }
 
@@ -163,7 +193,7 @@ export function useDriverFlow(driverId: string) {
             requests: [],
             loading: false,
             error:
-              "Ride queue sync failed. Driver is online-not-confirmed and not dispatchable until the server confirms availability.",
+              "Connection unavailable. Driver status remains offline until the server confirms availability.",
           }));
         }
       } finally {
@@ -178,11 +208,16 @@ export function useDriverFlow(driverId: string) {
       active = false;
       if (timeout) clearTimeout(timeout);
     };
-  }, [driverId, state.availability?.status]);
+  }, [driverId, hasDriverIdentity, state.availability?.status]);
 
   useEffect(() => {
     const token = getAuthToken();
-    if (!token || USE_MOCK_API || state.availability?.status !== "available") {
+    if (
+      !hasDriverIdentity ||
+      !token ||
+      USE_MOCK_API ||
+      state.availability?.status !== "available"
+    ) {
       return undefined;
     }
     const client = new AfriRideRealtimeClient({
@@ -212,9 +247,13 @@ export function useDriverFlow(driverId: string) {
     });
     void client.start();
     return () => client.stop();
-  }, [driverId, state.availability?.status, state.trip?.rideId]);
+  }, [driverId, hasDriverIdentity, state.availability?.status, state.trip?.rideId]);
 
   async function acceptRequest(rideId: string) {
+    if (!hasDriverIdentity) {
+      setIdentityError();
+      return;
+    }
     const acceptedRequest = state.requests.find((request) => request.rideId === rideId);
     setState((current) => ({
       ...current,
@@ -242,6 +281,10 @@ export function useDriverFlow(driverId: string) {
   }
 
   async function rejectRequest(rideId: string) {
+    if (!hasDriverIdentity) {
+      setIdentityError();
+      return;
+    }
     setState((current) => ({ ...current, loading: true, error: "" }));
 
     try {
@@ -258,6 +301,10 @@ export function useDriverFlow(driverId: string) {
   }
 
   async function moveTrip(action: "arrived" | "started" | "completed") {
+    if (!hasDriverIdentity) {
+      setIdentityError();
+      return;
+    }
     const rideId = state.trip?.rideId;
     if (!rideId) {
       return;

@@ -38,7 +38,11 @@ export function DriverHomeScreen({
     : isAvailable
       ? "ACTIVE"
       : "SHIFT STARTED";
-  const tripStateLabel = isAvailable ? "Awaiting dispatch" : "No active trip";
+  const tripStateLabel = isAvailable
+    ? "Server-confirmed dispatchable"
+    : diagnostics.shiftStarted
+      ? "Server confirmation pending"
+      : "No active trip";
   const [intelligence, setIntelligence] = useState<DriverIntelligenceFeed | null>(null);
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export function DriverHomeScreen({
     <View style={styles.stack}>
       <SurfacePanel>
         <Text style={isAvailable ? styles.online : styles.offline}>
-          {isAvailable ? "ONLINE" : "OFFLINE"}
+          {isAvailable ? "SERVER ONLINE" : "OFFLINE"}
         </Text>
         <Text style={styles.title}>Driver dashboard</Text>
         <Text style={styles.subtitle}>Fast status, cleaner controls, and trust-first operations.</Text>
@@ -205,7 +209,13 @@ export function DriverHomeScreen({
         progressPct={diagnostics.lastLocation ? 72 : diagnostics.shiftStarted ? 35 : 10}
         statusLabel={diagnostics.shiftStarted ? "Driver telemetry" : "Driver setup"}
         etaText={availability?.updatedAt ? `Updated ${new Date(availability.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Shift ready"}
-        liveLabel={isAvailable ? "Dispatchable" : diagnostics.shiftStarted ? "Shift active" : "Idle"}
+        liveLabel={
+          isAvailable
+            ? "Server confirmed"
+            : diagnostics.shiftStarted
+              ? "Shift active"
+              : "Idle"
+        }
         pickupConfirmed={diagnostics.locationSamples > 0}
         dropoffConfirmed={diagnostics.shiftStarted}
         gpsTraceAvailable={diagnostics.locationSamples > 0}

@@ -12,7 +12,7 @@ export async function runLocationDiagnostics(): Promise<DiagnosticCheck[]> {
       status: foreground?.granted ? "PASS" : "FAIL",
       safeSummary: foreground?.granted
         ? "Foreground location permission is granted."
-        : "Location permission is required before a dispatchable state.",
+        : "Location permission is required before live dispatch can start.",
     },
     {
       key: "location_service",
@@ -26,8 +26,7 @@ export async function runLocationDiagnostics(): Promise<DiagnosticCheck[]> {
       key: "background_location",
       label: "Background location",
       status: foreground?.granted ? "READY" : "DEGRADED",
-      safeSummary: "Background location is only required for active Driver shifts.",
+      safeSummary: "Background location is only required during active Driver shifts.",
     },
   ];
 }
-

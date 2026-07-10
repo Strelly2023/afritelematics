@@ -1,6 +1,6 @@
 import { apiRequest } from "./client";
 import { setAuthSession } from "./session";
-import { DEVICE_ID, DRIVER_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
+import { DEVICE_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
 import { attestDevice } from "../../../afriride_system/mobile/shared/deviceAttestation";
 
 type AuthRole = "CUSTOMER" | "DRIVER" | "OPERATOR";
@@ -8,6 +8,30 @@ type AuthRole = "CUSTOMER" | "DRIVER" | "OPERATOR";
 type AuthResponse = {
   token: string;
 };
+
+type JwtPayload = {
+  sub?: unknown;
+  role?: unknown;
+};
+
+export function extractAuthIdentity(token: string, fallback = ""): string {
+  try {
+    const [, encodedPayload] = token.split(".");
+    if (!encodedPayload) return fallback;
+    const normalizedPayload = encodedPayload.replace(/-/g, "+").replace(/_/g, "/");
+    const paddedPayload = normalizedPayload.padEnd(
+      normalizedPayload.length + ((4 - (normalizedPayload.length % 4)) % 4),
+      "=",
+    );
+    const decoder = (globalThis as { atob?: (value: string) => string }).atob;
+    if (!decoder) return fallback;
+    const payload = JSON.parse(decoder(paddedPayload)) as JwtPayload;
+    const sub = typeof payload.sub === "string" ? payload.sub.trim() : "";
+    return sub || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export async function loginPilot(
   userId: string,
@@ -24,7 +48,10 @@ export async function loginPilot(
     },
   });
 
-  const driverId = DRIVER_ID || (TEST_MODE ? userId : "");
+  const driverId = extractAuthIdentity(result.token, TEST_MODE ? userId : "");
+  if (!driverId && !TEST_MODE) {
+    throw new Error("Driver identity is unavailable. Sign in again.");
+  }
   await setAuthSession(result.token, { driverId, role, organizationId });
   return result.token;
 }

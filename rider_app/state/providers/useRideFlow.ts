@@ -22,12 +22,28 @@ import { enqueueRiderOperation } from "../../core/services/mobility.service";
 
 const POLL_INTERVAL_MS = 4000;
 
-export function useRideFlow() {
+export function useRideFlow(riderId: string) {
   const [state, setState] = useState<RiderAppState>(initialRiderAppState);
   const [realtimeState, setRealtimeState] =
     useState<RealtimeConnectionState>("idle");
+  const hasRiderIdentity = Boolean(riderId);
+
+  useEffect(() => {
+    if (!hasRiderIdentity) {
+      setState(initialRiderAppState);
+      setRealtimeState("idle");
+    }
+  }, [hasRiderIdentity]);
 
   async function submitRideRequest(payload: RequestRidePayload): Promise<RideRequestResult | null> {
+    if (!hasRiderIdentity) {
+      setState((current) => ({
+        ...current,
+        error: "Please sign in to request a ride.",
+        loading: false,
+      }));
+      return null;
+    }
     const optimisticRide = {
       rideId: `optimistic-${Date.now()}`,
       status: "requested" as const,
@@ -75,7 +91,7 @@ export function useRideFlow() {
 
   useEffect(() => {
     const rideId = state.requestedRide?.rideId;
-    if (!rideId || rideId.startsWith("optimistic-") || state.evidence) {
+    if (!hasRiderIdentity || !rideId || rideId.startsWith("optimistic-") || state.evidence) {
       return undefined;
     }
 
@@ -119,15 +135,15 @@ export function useRideFlow() {
       active = false;
       if (timeout) clearTimeout(timeout);
     };
-  }, [state.evidence, state.requestedRide?.rideId]);
+  }, [hasRiderIdentity, state.evidence, state.requestedRide?.rideId]);
 
   useEffect(() => {
     const rideId = state.requestedRide?.rideId;
     const token = getAuthToken();
-    if (!rideId || rideId.startsWith("optimistic-") || !token || USE_MOCK_API) return undefined;
+    if (!hasRiderIdentity || !rideId || rideId.startsWith("optimistic-") || !token || USE_MOCK_API) return undefined;
     const client = new AfriRideRealtimeClient({
       apiBaseUrl: API_BASE_URL,
-      actorId: "rider-demo-001",
+      actorId: riderId,
       token,
       rideId,
       storage: AsyncStorage,
@@ -146,7 +162,7 @@ export function useRideFlow() {
     });
     void client.start();
     return () => client.stop();
-  }, [state.requestedRide?.rideId]);
+  }, [hasRiderIdentity, riderId, state.requestedRide?.rideId]);
 
   return {
     ...state,

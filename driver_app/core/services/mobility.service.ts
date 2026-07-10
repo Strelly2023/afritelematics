@@ -34,6 +34,8 @@ type QueueItem = {
   body: Record<string, unknown>;
   createdAt: string;
   attempts: number;
+  nextRetryAt: string;
+  operationType: "availability" | "location" | "push" | "trip" | "unknown";
 };
 
 export type DriverMobilityHealth = {
@@ -61,19 +63,35 @@ async function storeQueue(queue: QueueItem[]) {
   await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(queue.slice(-1000)));
 }
 
+function classifyOperation(path: string): QueueItem["operationType"] {
+  if (path.includes("/availability")) return "availability";
+  if (path.includes("/location")) return "location";
+  if (path.includes("/push")) return "push";
+  if (path.includes("/ride") || path.includes("/trip")) return "trip";
+  return "unknown";
+}
+
 export async function queueDriverOperation(
   path: string,
   body: Record<string, unknown>,
 ) {
   const queue = await readQueue();
+  const operationType = classifyOperation(path);
+  const nextRetryAt = new Date(Date.now() + 30_000).toISOString();
+  const nextQueue =
+    operationType === "availability"
+      ? queue.filter((item) => item.operationType !== "availability" || item.path !== path)
+      : queue;
   await storeQueue([
-    ...queue,
+    ...nextQueue,
     {
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       path,
       body,
       createdAt: new Date().toISOString(),
       attempts: 0,
+      nextRetryAt,
+      operationType,
     },
   ]);
 }
@@ -88,8 +106,13 @@ export async function synchronizeDriverQueue() {
     readQueue(),
   ]);
   if (!network.isConnected || queue.length === 0) return queue.length;
+  const now = Date.now();
   const remaining: QueueItem[] = [];
   for (const item of queue) {
+    if (Date.parse(item.nextRetryAt || item.createdAt || "") > now) {
+      remaining.push(item);
+      continue;
+    }
     try {
       await apiRequest(item.path, {
         method: "POST",
@@ -97,7 +120,14 @@ export async function synchronizeDriverQueue() {
         body: { ...item.body, offline_created_at: item.createdAt },
       });
     } catch {
-      remaining.push({ ...item, attempts: item.attempts + 1 });
+      const attempts = item.attempts + 1;
+      remaining.push({
+        ...item,
+        attempts,
+        nextRetryAt: new Date(
+          Date.now() + Math.min(15 * 60_000, 30_000 * 2 ** Math.min(attempts, 4)),
+        ).toISOString(),
+      });
     }
   }
   await storeQueue(remaining);

@@ -12,6 +12,7 @@ import { useDriverFlow } from "./state/providers/useDriverFlow";
 import { useOperatorDashboard } from "./state/providers/useOperatorDashboard";
 import { usePilotEvidence } from "./state/providers/usePilotEvidence";
 import { loginPilot } from "./core/api/auth.service";
+import { extractAuthIdentity } from "./core/api/auth.service";
 import {
   clearSession,
   requireBiometricUnlock,
@@ -95,7 +96,6 @@ const DRIVER_REQUIREMENT_MARKERS = [
   "Manage NovaPay wallet",
 ] as const;
 
-const DRIVER_ID = "driver-demo-001";
 type DriverTab = "dashboard" | "requests" | "activeTrip" | "earnings" | "vehicle" | "safety" | "profile" | "more";
 type PrimaryDriverTab = Exclude<DriverTab, "vehicle" | "safety">;
 
@@ -173,7 +173,7 @@ function DriverApp() {
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const [driverId, setDriverId] = useState(runtimeConfig.driverId || DRIVER_ID);
+  const [driverId, setDriverId] = useState(runtimeConfig.driverId || "");
   const [connectivityChecks, setConnectivityChecks] = useState<ConnectivityCheck[]>([]);
   const [checkingConnection, setCheckingConnection] = useState(false);
   const globalRuntime = useGlobalRuntime(
@@ -233,7 +233,10 @@ function DriverApp() {
         const restoredDriverId =
           typeof restored.metadata?.driverId === "string" && restored.metadata.driverId
             ? restored.metadata.driverId
-            : runtimeConfig.driverId || DRIVER_ID;
+            : extractAuthIdentity(restored.token, TEST_MODE ? runtimeConfig.driverId || "" : "");
+        if (!restoredDriverId && !TEST_MODE) {
+          throw new Error("Driver identity is unavailable. Sign in again.");
+        }
         if (active) {
           setDriverId(restoredDriverId);
         }
@@ -401,8 +404,12 @@ function DriverApp() {
                 setAuthenticating(true);
                 setLoginError("");
                 try {
-                  const nextDriverId = runtimeConfig.driverId || DRIVER_ID;
-                  await loginPilot(nextDriverId, "DRIVER", ORGANIZATION_ID);
+                  const loginPrincipal = email.trim() || "driver";
+                  const token = await loginPilot(loginPrincipal, "DRIVER", ORGANIZATION_ID);
+                  const nextDriverId = extractAuthIdentity(token, TEST_MODE ? loginPrincipal : "");
+                  if (!nextDriverId && !TEST_MODE) {
+                    throw new Error("Driver identity is unavailable. Sign in again.");
+                  }
                   setDriverId(nextDriverId);
                   setAuthenticated(true);
                 } catch (authError) {

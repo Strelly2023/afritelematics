@@ -13,9 +13,10 @@ export function useDriverMobility(driverId: string, authenticated: boolean, shif
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [health, setHealth] = useState<DriverMobilityHealth | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasDriverIdentity = Boolean(driverId);
 
   useEffect(() => {
-    if (!authenticated) return;
+    if (!authenticated || !hasDriverIdentity) return;
     let active = true;
     void registerDriverPush(driverId).catch(() => undefined);
     const interval = setInterval(() => {
@@ -26,10 +27,10 @@ export function useDriverMobility(driverId: string, authenticated: boolean, shif
       active = false;
       clearInterval(interval);
     };
-  }, [authenticated, driverId]);
+  }, [authenticated, driverId, hasDriverIdentity]);
 
   useEffect(() => {
-    if (!authenticated || !shiftActive) return;
+    if (!authenticated || !shiftActive || !hasDriverIdentity) return;
     let active = true;
     let subscription: Location.LocationSubscription | null = null;
     void startDriverBackgroundMobility(driverId)
@@ -56,7 +57,7 @@ export function useDriverMobility(driverId: string, authenticated: boolean, shif
       active = false;
       subscription?.remove();
     };
-  }, [authenticated, driverId, shiftActive]);
+  }, [authenticated, driverId, hasDriverIdentity, shiftActive]);
 
   async function stop() {
     try {

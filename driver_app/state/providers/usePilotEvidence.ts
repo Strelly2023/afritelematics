@@ -28,6 +28,8 @@ const initialDiagnostics: DiagnosticsSnapshot = {
   gpsSignalLossEvents: 0,
 };
 
+const DRIVER_IDENTITY_REQUIRED_MESSAGE = "Driver identity is unavailable. Sign in again.";
+
 type PositionSnapshot = Parameters<typeof captureLocationEvidence>[1];
 
 export function usePilotEvidence(driverId: string) {
@@ -35,6 +37,7 @@ export function usePilotEvidence(driverId: string) {
     useState<DiagnosticsSnapshot>(initialDiagnostics);
   const [lastPosition, setLastPosition] = useState<PositionSnapshot>(null);
   const mountedRef = useRef(true);
+  const hasDriverIdentity = Boolean(driverId);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -70,6 +73,9 @@ export function usePilotEvidence(driverId: string) {
       constraints?: Record<string, unknown>,
       verdict?: Parameters<typeof capturePilotEvidence>[4],
     ) => {
+      if (!hasDriverIdentity) {
+        return null;
+      }
       try {
         const event = await capturePilotEvidence(
           driverId,
@@ -85,10 +91,17 @@ export function usePilotEvidence(driverId: string) {
         return null;
       }
     },
-    [driverId, markFailed, markSubmitted],
+    [driverId, hasDriverIdentity, markFailed, markSubmitted],
   );
 
   const startShift = useCallback(async () => {
+    if (!hasDriverIdentity) {
+      setDiagnostics((current) => ({
+        ...current,
+        lastError: DRIVER_IDENTITY_REQUIRED_MESSAGE,
+      }));
+      return;
+    }
     if (diagnostics.shiftStarted) {
       return;
     }
@@ -149,13 +162,14 @@ export function usePilotEvidence(driverId: string) {
     capture,
     diagnostics.shiftStarted,
     driverId,
+    hasDriverIdentity,
     lastPosition,
     markFailed,
     markSubmitted,
   ]);
 
   useEffect(() => {
-    if (!diagnostics.shiftStarted) {
+    if (!diagnostics.shiftStarted || !hasDriverIdentity) {
       return undefined;
     }
 
@@ -171,10 +185,10 @@ export function usePilotEvidence(driverId: string) {
       },
     );
     return () => subscription.remove();
-  }, [capture, diagnostics.shiftStarted]);
+  }, [capture, diagnostics.shiftStarted, hasDriverIdentity]);
 
   useEffect(() => {
-    if (!diagnostics.shiftStarted) {
+    if (!diagnostics.shiftStarted || !hasDriverIdentity) {
       return undefined;
     }
 
@@ -278,13 +292,14 @@ export function usePilotEvidence(driverId: string) {
     capture,
     diagnostics.shiftStarted,
     driverId,
+    hasDriverIdentity,
     lastPosition,
     markFailed,
     markSubmitted,
   ]);
 
   useEffect(() => {
-    if (!diagnostics.shiftStarted) {
+    if (!diagnostics.shiftStarted || !hasDriverIdentity) {
       return undefined;
     }
 
@@ -296,7 +311,7 @@ export function usePilotEvidence(driverId: string) {
     }, NETWORK_SAMPLE_INTERVAL_MS);
 
     return () => clearInterval(id);
-  }, [diagnostics.shiftStarted, lastPosition, markFailed, markSubmitted, driverId, capture]);
+  }, [diagnostics.shiftStarted, hasDriverIdentity, lastPosition, markFailed, markSubmitted, driverId, capture]);
 
   return {
     diagnostics,
