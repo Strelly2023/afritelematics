@@ -466,6 +466,12 @@ def health() -> dict[str, Any]:
     }
 
 
+@app.get("/v1/health")
+def v1_health() -> dict[str, Any]:
+    """Compatibility alias for release gating and mobile smoke tests."""
+    return health()
+
+
 @app.get("/live")
 def live() -> dict[str, Any]:
     """Report liveness without dependency checks."""
@@ -473,6 +479,12 @@ def live() -> dict[str, Any]:
         "alive": True,
         "service": "afritech-api",
     }
+
+
+@app.get("/v1/live")
+def v1_live() -> dict[str, Any]:
+    """Compatibility alias for liveness checks."""
+    return live()
 
 
 def _configuration_valid() -> bool:
@@ -560,6 +572,12 @@ def ready() -> JSONResponse:
     }
     status_code = 200 if payload["ready"] else 503
     return JSONResponse(status_code=status_code, content=payload)
+
+
+@app.get("/v1/ready")
+def v1_ready() -> JSONResponse:
+    """Compatibility alias for readiness gates."""
+    return ready()
 
 
 # ============================================================

@@ -2781,7 +2781,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "role": role,
             "requested_role": str(payload.get("role", "")).strip(),
             "expires_at": expires_at.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-            "api_base_url": "https://api.afrtechnology.com",
+            "api_base_url": "https://api.afritechnology.com",
             "token": JWT.create_token(actor_id, role=role),
             "client_event": {
                 "device_id": device_id or None,
@@ -2797,6 +2797,53 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
                 "visible_panels": role_profile["role"]["visible_panels"],
                 "api_surfaces": role_profile["role"]["api_surfaces"],
                 "dashboard_surface": role_profile["role"]["dashboard_surface"],
+            },
+        }
+
+    @router.get("/rider/me")
+    def rider_me(
+        claims = Depends(require_roles("CUSTOMER")),
+    ) -> dict[str, Any]:
+        gateway = get_gateway()
+        ride_count = sum(
+            1
+            for ride in gateway.dispatcher.ride_repository.all()
+            if ride.passenger_id == claims.sub
+        )
+        return {
+            "view": "rider_profile",
+            "role": "CUSTOMER",
+            "rider_id": claims.sub,
+            "organization_id": claims.organization_id,
+            "status": "authenticated",
+            "ride_count": ride_count,
+            "supports_booking": True,
+            "supports_receipts": True,
+            "supports_safety": True,
+        }
+
+    @router.get("/driver/me")
+    def driver_me(
+        claims = Depends(require_roles("DRIVER")),
+    ) -> dict[str, Any]:
+        gateway = get_gateway()
+        availability = _driver_availability_payload(claims.sub, gateway)
+        queue = driver_ride_queue(claims.sub, gateway)
+        completed = gateway.dispatcher.ride_repository.completed_count_for_driver(claims.sub)
+        return {
+            "view": "driver_profile",
+            "role": "DRIVER",
+            "driver_id": claims.sub,
+            "organization_id": claims.organization_id,
+            "status": "authenticated",
+            "availability": availability,
+            "ride_queue": {
+                "requested_count": queue["requested_count"],
+                "items": queue["items"],
+            },
+            "trip_history": {
+                "completed_count": completed,
+                "earnings_available": completed > 0,
             },
         }
 
@@ -3160,6 +3207,11 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
             "registered_at": datetime.now(UTC).isoformat(),
         }
 
+    @router.get("/driver/{driver_id}/availability")
+    def driver_availability_get(driver_id: str, gateway=Depends(get_gateway)) -> dict[str, Any]:
+        return _driver_availability_payload(driver_id, gateway)
+
+    @router.put("/driver/{driver_id}/availability")
     @router.post("/driver/{driver_id}/availability")
     def update_driver_availability(driver_id: str, payload: dict[str, Any], gateway=Depends(get_gateway)) -> dict[str, Any]:
         status = str(payload.get("status", "offline")).strip().lower()

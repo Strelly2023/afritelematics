@@ -5,6 +5,7 @@ from importlib import import_module
 from fastapi.testclient import TestClient
 
 from afritech.api.app import app
+from afritech.api.auth.jwt_device_auth import JWT
 from afritech.afriprogramming import control_plane
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID, PlatformStore
 from afritech.architecture.novaride_architecture import (
@@ -230,6 +231,21 @@ def test_novaride_architecture_publication_surface_is_signed_and_verifiable() ->
     assert verify_payload["contract_valid"] is True
 
 
+def test_novaride_api_exposes_compatibility_health_aliases() -> None:
+    client = TestClient(app)
+
+    health = client.get("/v1/health")
+    live = client.get("/v1/live")
+    ready = client.get("/v1/ready")
+
+    assert health.status_code == 200
+    assert health.json()["status"] == "healthy"
+    assert live.status_code == 200
+    assert live.json()["alive"] is True
+    assert ready.status_code in {200, 503}
+    assert "ready" in ready.json()
+
+
 def test_novaride_architecture_verify_accepts_valid_contract_hash() -> None:
     client = TestClient(app)
 
@@ -405,6 +421,17 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         )
         assert rider_session.status_code == 200
         assert rider_session.json()["actor_id"] == "rider-1"
+        assert rider_session.json()["api_base_url"] == "https://api.afritechnology.com"
+
+        rider_headers = {
+            "Authorization": f"Bearer {JWT.create_token('rider-1', role='CUSTOMER', organization_id=DEFAULT_ORGANIZATION_ID)}"
+        }
+        rider_me = client.get("/v1/rider/me", headers=rider_headers)
+        assert rider_me.status_code == 200
+        rider_me_payload = rider_me.json()
+        assert rider_me_payload["rider_id"] == "rider-1"
+        assert rider_me_payload["role"] == "CUSTOMER"
+        assert rider_me_payload["status"] == "authenticated"
 
         operator_session = client.post(
             "/v1/mobile/auth/session",
@@ -419,6 +446,18 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         assert operator_session.status_code == 200
         assert operator_session.json()["actor_id"] == "operator-1"
 
+        driver_headers = {
+            "Authorization": f"Bearer {JWT.create_token('driver-1', role='DRIVER', organization_id=DEFAULT_ORGANIZATION_ID)}"
+        }
+        driver_me = client.get("/v1/driver/me", headers=driver_headers)
+        assert driver_me.status_code == 200
+        driver_me_payload = driver_me.json()
+        assert driver_me_payload["driver_id"] == "driver-1"
+        assert driver_me_payload["role"] == "DRIVER"
+        assert driver_me_payload["availability"]["driver_id"] == "driver-1"
+        assert "ride_queue" in driver_me_payload
+        assert "trip_history" in driver_me_payload
+
         driver_online = client.post(
             "/v1/driver/driver-1/availability",
             json={"status": "available"},
@@ -428,6 +467,12 @@ def test_next_gen_mobile_api_supports_rider_driver_and_operator_flows(tmp_path, 
         driver_availability = client.get("/v1/driver/driver-1/availability")
         assert driver_availability.status_code == 200
         assert driver_availability.json() == driver_online.json()
+        driver_available_via_put = client.put(
+            "/v1/driver/driver-1/availability",
+            json={"status": "available"},
+        )
+        assert driver_available_via_put.status_code == 200
+        assert driver_available_via_put.json()["status"] == "available"
 
         driver_offline = client.post(
             "/v1/driver/driver-1/availability",
