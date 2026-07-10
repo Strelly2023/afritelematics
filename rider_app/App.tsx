@@ -136,6 +136,33 @@ export const RIDER_FLOW = [
   "receive proof receipt", "rate/dispute/support",
 ] as const;
 
+type LoginFailure = {
+  message: string;
+  diagnostic: string;
+};
+
+function describeLoginFailure(error: unknown): LoginFailure {
+  if (error instanceof Error) {
+    if (
+      error.message === "native_device_attestation_provider_required" ||
+      error.message === "device_attestation_platform_required"
+    ) {
+      return {
+        message: "Device verification unavailable",
+        diagnostic: error.message,
+      };
+    }
+    return {
+      message: "Sign in failed",
+      diagnostic: error.message || "login_failed",
+    };
+  }
+  return {
+    message: "Sign in failed",
+    diagnostic: "login_failed",
+  };
+}
+
 export default function NovaRideRiderApp() {
   const [dark, setDark] = useState(false);
   const [tab, setTab] = useState<RiderTab>("Home");
@@ -150,6 +177,7 @@ export default function NovaRideRiderApp() {
   const [email, setEmail] = useState("rider@novaride.test");
   const [password, setPassword] = useState("pilot");
   const [loginError, setLoginError] = useState("");
+  const [loginDiagnostic, setLoginDiagnostic] = useState("");
   const [riderId, setRiderId] = useState("");
   const palette = dark ? darkTheme : lightTheme;
   const { requestedRide, submitRideRequest } = useRideFlow(riderId);
@@ -183,6 +211,7 @@ export default function NovaRideRiderApp() {
   const login = async () => {
     setAuthenticating(true);
     setLoginError("");
+    setLoginDiagnostic("");
     try {
       const principal = email.trim() || "rider";
       const token = await loginPilot(principal, "CUSTOMER", ORGANIZATION_ID);
@@ -198,7 +227,9 @@ export default function NovaRideRiderApp() {
         setRiderId(email.trim() || "rider");
         setAuthenticated(true);
       } else {
-        setLoginError(error instanceof Error ? error.message : "login_failed");
+        const failure = describeLoginFailure(error);
+        setLoginError(failure.message);
+        setLoginDiagnostic(failure.diagnostic);
       }
     } finally {
       setAuthenticating(false);
@@ -210,6 +241,7 @@ export default function NovaRideRiderApp() {
     setAuthenticated(false);
     setRiderId("");
     setLoginError("");
+    setLoginDiagnostic("");
     setPassword("pilot");
     setTab("Home");
     setStage("places");
@@ -284,6 +316,7 @@ export default function NovaRideRiderApp() {
               onContinue={login}
             />
             {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+            {loginDiagnostic ? <Text style={styles.diagnostic}>Reference: {loginDiagnostic}</Text> : null}
           </View>
         ) : (
           <>
@@ -468,6 +501,7 @@ const styles = StyleSheet.create({
   brand: { fontSize: 28, fontWeight: "900" }, kicker: { color: "#5B3DF5", fontSize: 10, fontWeight: "900", letterSpacing: 1 },
   loginShell: { flex: 1, gap: 14, paddingTop: 4 },
   error: { color: "#B42318", fontWeight: "800", paddingHorizontal: 18 },
+  diagnostic: { color: "#6E7486", fontSize: 12, fontWeight: "700", paddingHorizontal: 18 },
   versionLabel: { fontSize: 11, fontWeight: "700", marginTop: 3 },
   icon: { width: 42, height: 42, borderRadius: 21, justifyContent: "center", alignItems: "center" }, content: { padding: 14, paddingBottom: 110, gap: 14 },
   map: { height: 210, borderRadius: 24, backgroundColor: "#DDEBE5", overflow: "hidden", justifyContent: "center", alignItems: "center" },

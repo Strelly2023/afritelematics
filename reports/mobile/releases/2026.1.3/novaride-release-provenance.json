@@ -1,0 +1,43 @@
+{
+  "release": "2026.1.3",
+  "generated_at": "pending-release-build",
+  "builder": "pending-release-build",
+  "branch": "afriride-live-pilot-001",
+  "commit": "pending-release-build",
+  "environment": "PUBLIC_PILOT",
+  "apiHost": "https://api.afritechnology.com",
+  "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.3/",
+  "publicationVerified": false,
+  "rider": {
+    "version": "2026.1.3",
+    "versionCode": 6,
+    "packageId": "com.novatech.novaride.rider",
+    "apiHost": "https://api.afritechnology.com",
+    "apkSha256": "pending-release-build",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-rider-v2026.1.3-public-pilot.apk"
+  },
+  "driver": {
+    "version": "2026.1.3",
+    "versionCode": 6,
+    "packageId": "com.novatech.novaride.driver",
+    "apiHost": "https://api.afritechnology.com",
+    "apkSha256": "pending-release-build",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-driver-v2026.1.3-public-pilot.apk"
+  },
+  "fleet": {
+    "version": "2026.1.3",
+    "versionCode": 5,
+    "packageId": "com.novatech.novaride.fleet",
+    "apiHost": "https://api.afritechnology.com",
+    "apkSha256": "pending-release-build",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-fleet-v2026.1.3-public-pilot.apk"
+  },
+  "operator": {
+    "version": "2026.1.3",
+    "versionCode": 5,
+    "packageId": "com.novatech.novaride.operator",
+    "apiHost": "https://api.afritechnology.com",
+    "apkSha256": "pending-release-build",
+    "publicationUrl": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-operator-v2026.1.3-public-pilot.apk"
+  }
+}

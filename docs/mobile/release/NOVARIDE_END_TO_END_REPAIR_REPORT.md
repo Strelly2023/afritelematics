@@ -166,6 +166,14 @@ Attempting to rebuild the local production compose stack failed because the Dock
 
 This session repaired the repository contract layer and verified the source-level changes with tests. It did not claim the release is finished because live deployment and device validation were not completed here.
 
+## Portfolio split update
+
+- NovaRide Rider remains a native Android/iOS mobile application.
+- NovaRide Driver remains a native Android/iOS mobile application.
+- NovaRide Fleet Manager is treated as the secure web portal at `fleet.afritechnology.com`.
+- NovaRide Operator is treated as the secure web dashboard at `operator.afritechnology.com`.
+- Public Pilot mobile login now supports an explicit degraded attestation path when the release policy allows it, rather than throwing a raw native provider error.
+
 ## Addendum 2026.1.2 release signing
 
 Release signing was completed with a persistent NovaRide keystore stored at:
@@ -204,3 +212,14 @@ Current status:
 
 - The release is locally built and release-signed.
 - Public-pilot publication is still blocked until the deployed download host is updated to serve the 2026.1.2 immutable files.
+
+## Addendum 2026.1.3 release line
+
+The release spine has now been advanced to `2026.1.3` in the repository:
+
+- Rider versionCode `6`
+- Driver versionCode `6`
+- Fleet versionCode `5`
+- Operator versionCode `5`
+
+The new `2026.1.3` release metadata, publish script targets, and release index are in place. The corresponding APK binaries still need to be rebuilt and published before the public download URLs can return `200 OK`.

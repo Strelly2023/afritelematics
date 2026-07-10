@@ -120,6 +120,33 @@ type DriverAppErrorBoundaryState = {
   message: string;
 };
 
+type LoginFailure = {
+  message: string;
+  diagnostic: string;
+};
+
+function describeLoginFailure(error: unknown): LoginFailure {
+  if (error instanceof Error) {
+    if (
+      error.message === "native_device_attestation_provider_required" ||
+      error.message === "device_attestation_platform_required"
+    ) {
+      return {
+        message: "Device verification unavailable",
+        diagnostic: error.message,
+      };
+    }
+    return {
+      message: "Sign in failed",
+      diagnostic: error.message || "login_failed",
+    };
+  }
+  return {
+    message: "Sign in failed",
+    diagnostic: "login_failed",
+  };
+}
+
 class DriverAppErrorBoundary extends Component<{ children: React.ReactNode }, DriverAppErrorBoundaryState> {
   state: DriverAppErrorBoundaryState = {
     hasError: false,
@@ -173,6 +200,7 @@ function DriverApp() {
   const [password, setPassword] = useState("pilot");
   const [authenticating, setAuthenticating] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [loginDiagnostic, setLoginDiagnostic] = useState("");
   const [driverId, setDriverId] = useState(runtimeConfig.driverId || "");
   const [connectivityChecks, setConnectivityChecks] = useState<ConnectivityCheck[]>([]);
   const [checkingConnection, setCheckingConnection] = useState(false);
@@ -247,7 +275,9 @@ function DriverApp() {
         else if (!unlock.success) await clearSession();
       } catch (error) {
         if (active) {
-          setLoginError(error instanceof Error ? error.message : "session_restore_failed");
+          const failure = describeLoginFailure(error);
+          setLoginError(failure.message);
+          setLoginDiagnostic(failure.diagnostic);
           await clearSession().catch(() => undefined);
         }
       }
@@ -391,6 +421,7 @@ function DriverApp() {
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {loginError ? <Text style={styles.error}>{loginError}</Text> : null}
+          {loginDiagnostic ? <Text style={styles.diagnostic}>Reference: {loginDiagnostic}</Text> : null}
           {authenticating ? <SkeletonBlock height={132} /> : null}
 
           {!authenticated ? (
@@ -403,6 +434,7 @@ function DriverApp() {
               onContinue={async () => {
                 setAuthenticating(true);
                 setLoginError("");
+                setLoginDiagnostic("");
                 try {
                   const loginPrincipal = email.trim() || "driver";
                   const token = await loginPilot(loginPrincipal, "DRIVER", ORGANIZATION_ID);
@@ -416,9 +448,9 @@ function DriverApp() {
                   if (TEST_MODE) {
                     setAuthenticated(true);
                   } else {
-                    setLoginError(
-                      authError instanceof Error ? authError.message : "login_failed",
-                    );
+                    const failure = describeLoginFailure(authError);
+                    setLoginError(failure.message);
+                    setLoginDiagnostic(failure.diagnostic);
                   }
                 } finally {
                   setAuthenticating(false);
@@ -621,6 +653,11 @@ const styles = StyleSheet.create({
   error: {
     color: colors.danger,
     fontWeight: "800",
+  },
+  diagnostic: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
   },
   apiStatus: {
     color: colors.muted,

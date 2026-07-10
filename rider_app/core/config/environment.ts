@@ -28,8 +28,12 @@ export const USE_MOCK_API =
 export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
 
+export const ATTESTATION_POLICY =
+  process.env.EXPO_PUBLIC_NOVARIDE_ATTESTATION_POLICY ||
+  (TEST_MODE ? "public_pilot_fallback" : "strict");
+
 export const APP_VERSION =
-  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.2";
+  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.3";
 
 export const RELEASE_CHANNEL =
   process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";

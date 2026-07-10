@@ -9,7 +9,7 @@ import {
 export const runtimeConfig = {
   appName: "NovaRide Rider",
   releaseVersion: APP_VERSION,
-  versionCode: 5,
+  versionCode: 6,
   releaseChannel: RELEASE_CHANNEL,
   environment: RUNTIME_ENVIRONMENT,
   apiBaseUrl: API_BASE_URL,

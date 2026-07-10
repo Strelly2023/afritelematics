@@ -1,6 +1,6 @@
 import { apiRequest } from "./client";
 import { setAuthSession } from "./session";
-import { DEVICE_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
+import { ATTESTATION_POLICY, DEVICE_ID, ORGANIZATION_ID, TEST_MODE } from "../config/environment";
 import { attestDevice } from "../../../afriride_system/mobile/shared/deviceAttestation";
 
 type AuthRole = "CUSTOMER" | "DRIVER" | "OPERATOR";
@@ -38,7 +38,12 @@ export async function loginPilot(
   role: AuthRole,
   organizationId: string = ORGANIZATION_ID,
 ): Promise<string> {
-  await attestDevice({ apiRequest, deviceId: DEVICE_ID, testMode: TEST_MODE });
+  const attestation = await attestDevice({
+    apiRequest,
+    deviceId: DEVICE_ID,
+    testMode: TEST_MODE,
+    policy: ATTESTATION_POLICY,
+  });
   const result = await apiRequest<AuthResponse>("/v1/auth/token", {
     method: "POST",
     body: {
@@ -52,6 +57,13 @@ export async function loginPilot(
   if (!driverId && !TEST_MODE) {
     throw new Error("Driver identity is unavailable. Sign in again.");
   }
-  await setAuthSession(result.token, { driverId, role, organizationId });
+  await setAuthSession(result.token, {
+    driverId,
+    role,
+    organizationId,
+    attestation_policy: ATTESTATION_POLICY,
+    attestation_state: attestation.skipped ? "public_pilot_fallback" : "verified",
+    attestation_reason: attestation.skipped ? attestation.reason : null,
+  });
   return result.token;
 }

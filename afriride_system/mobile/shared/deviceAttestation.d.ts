@@ -18,4 +18,11 @@ export function attestDevice(options: {
   apiRequest: Requester;
   deviceId: string;
   testMode: boolean;
-}): Promise<Record<string, unknown>>;
+  policy?: "strict" | "public_pilot_fallback" | "public_pilot_degraded";
+}): Promise<{
+  trusted?: boolean;
+  skipped?: boolean;
+  reason?: string;
+  policy?: string;
+  [key: string]: unknown;
+}>;

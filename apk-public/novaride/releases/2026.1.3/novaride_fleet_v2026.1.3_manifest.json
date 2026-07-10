@@ -1,0 +1,35 @@
+{
+  "product": "NovaRide",
+  "app": "NovaRide Fleet",
+  "release_version": "2026.1.3",
+  "android_versionCode": 5,
+  "package_id": "com.novatech.novaride.fleet",
+  "release_channel": "PUBLIC_PILOT",
+  "environment": "PUBLIC_PILOT",
+  "api_base_url": "https://api.afritechnology.com",
+  "immutable_apk_url": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-fleet-v2026.1.3-public-pilot.apk",
+  "alias_url": "https://download.afritechnology.com/novaride/fleet-latest-public-pilot.apk",
+  "apk_sha256": "pending-release-build",
+  "sha256_url": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-fleet-v2026.1.3-public-pilot.apk.sha256",
+  "signing_certificate_fingerprint": "pending-release-build",
+  "git_commit": "pending-release-build",
+  "build_timestamp": "pending-release-build",
+  "minimum_android_version": "23",
+  "supported_regions": [
+    "Australia",
+    "Public pilot regions"
+  ],
+  "release_approval": "pending-release-build",
+  "rollback_release": "2026.1.1",
+  "known_limitations": [
+    "Pending release build, signing, publication, and device verification.",
+    "Fleet manager source is separate from the operator dashboard and must be validated independently."
+  ],
+  "ga_allowed": false,
+  "real_payments_enabled": false,
+  "apk_byte_size": 0,
+  "immutable_ipa_url": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-fleet-v2026.1.3-public-pilot.ipa",
+  "ipa_alias_url": "https://download.afritechnology.com/novaride/fleet-latest-public-pilot.ipa",
+  "ipa_sha256": "pending-ios-build",
+  "ipa_status": "not_built_in_this_release_run"
+}

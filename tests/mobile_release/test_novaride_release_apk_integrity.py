@@ -17,10 +17,10 @@ def test_apk_validation_script_uses_integrity_and_signing_tools() -> None:
 
 def test_public_pilot_apks_are_valid_zip_when_present() -> None:
     for apk in [
-        ROOT / "apk/novaride-rider-v2026.1.2-public-pilot.apk",
-        ROOT / "apk/novaride-driver-v2026.1.2-public-pilot.apk",
-        ROOT / "apk/novaride-fleet-v2026.1.2-public-pilot.apk",
-        ROOT / "apk/novaride-operator-v2026.1.2-public-pilot.apk",
+        ROOT / "apk/novaride-rider-v2026.1.3-public-pilot.apk",
+        ROOT / "apk/novaride-driver-v2026.1.3-public-pilot.apk",
+        ROOT / "apk/novaride-fleet-v2026.1.3-public-pilot.apk",
+        ROOT / "apk/novaride-operator-v2026.1.3-public-pilot.apk",
     ]:
         if apk.exists():
             assert zipfile.is_zipfile(apk)

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PROVENANCE = ROOT / "reports/mobile/releases/2026.1.2/novaride-release-provenance.json"
+PROVENANCE = ROOT / "reports/mobile/releases/2026.1.3/novaride-release-provenance.json"
 
 
 def main() -> int:

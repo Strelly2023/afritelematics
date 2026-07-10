@@ -1,2 +1,31 @@
-export const portal={name:"NovaRide Operations",role:"operator",features:["Live Rides Map","Incident Management","Rider Lookup","Driver Lookup","City Operations","Safety Monitoring","Trust Alerts","Performance Analytics"]} as const;
-export const render=()=>`<main aria-label="${portal.name}"><h1>${portal.name}</h1>${portal.features.map(feature=>`<button aria-label="Open ${feature}">${feature}</button>`).join("")}</main>`;
+export const portal={
+  name:"NovaRide Operator Dashboard",
+  role:"operator",
+  channel:"web",
+  features:[
+    "Live trip map",
+    "Ride requests",
+    "Active drivers",
+    "Rider Lookup",
+    "Driver Lookup",
+    "Availability status",
+    "Dispatch queue",
+    "Assignment override",
+    "Incident management",
+    "Safety escalation",
+    "Safety Monitoring",
+    "Fare Review",
+    "Refund/Dispute Review",
+    "Trust evidence",
+    "Replay Verification",
+    "API health",
+    "Queue health",
+    "GPS freshness",
+    "Regional status",
+    "Audit log",
+    "Performance Analytics",
+    "Evidence Package Review",
+    "City Operations",
+  ]
+} as const;
+export const render=()=>`<main aria-label="${portal.name}"><h1>${portal.name}</h1><p>authenticated web dashboard · secure web product · secure online access only</p>${portal.features.map(feature=>`<button aria-label="Open ${feature}">${feature}</button>`).join("")}</main>`;

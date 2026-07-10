@@ -6,9 +6,20 @@ export function registerAttestationTokenProvider(provider) {
   tokenProvider = provider;
 }
 
-export async function attestDevice({ apiRequest, deviceId, testMode }) {
+function canUsePublicPilotFallback(policy) {
+  return policy === "public_pilot_fallback" || policy === "public_pilot_degraded";
+}
+
+export async function attestDevice({ apiRequest, deviceId, testMode, policy = "strict" }) {
   if (Platform.OS !== "android" && Platform.OS !== "ios") {
-    if (testMode) return { trusted: false, skipped: true, reason: "unsupported_platform" };
+    if (canUsePublicPilotFallback(policy) || testMode) {
+      return {
+        trusted: false,
+        skipped: true,
+        reason: "unsupported_platform",
+        policy,
+      };
+    }
     throw new Error("device_attestation_platform_required");
   }
   const nativeProvider =
@@ -19,7 +30,16 @@ export async function attestDevice({ apiRequest, deviceId, testMode }) {
           NativeModules.AfriRideIntegrity.requestToken(nonce, cloudProjectNumber)
       : null);
   if (!nativeProvider) {
-    if (testMode) return { trusted: false, skipped: true, reason: "test_attestation_provider_absent" };
+    if (canUsePublicPilotFallback(policy) || testMode) {
+      return {
+        trusted: false,
+        skipped: true,
+        reason: canUsePublicPilotFallback(policy)
+          ? "public_pilot_fallback_no_provider"
+          : "test_attestation_provider_absent",
+        policy,
+      };
+    }
     throw new Error("native_device_attestation_provider_required");
   }
   const challenge = await apiRequest("/v1/security/attestation/challenge", {
