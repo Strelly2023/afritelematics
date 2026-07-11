@@ -566,12 +566,80 @@ const TOPICS = [
   },
 ];
 
+const PLATFORM_CENTERS = [
+  {
+    title: "Trust Center",
+    summary: "Identities, receipts, certificates, releases, and audit evidence in one governed surface.",
+    chips: ["Identities", "Receipts", "Certificates", "Evidence", "Audit"],
+  },
+  {
+    title: "Release Center",
+    summary: "Validate, build, test, sign, publish, deploy, observe, and roll back from a single flow.",
+    chips: ["Validate", "Build", "Tests", "Sign", "Publish"],
+  },
+  {
+    title: "Observability Center",
+    summary: "Latency, error rate, regions, logs, metrics, traces, and alerts remain visible together.",
+    chips: ["CPU", "Memory", "Latency", "Logs", "Tracing"],
+  },
+  {
+    title: "Data Center",
+    summary: "SQL, NoSQL, storage, analytics, streaming, backups, and replication with shared context.",
+    chips: ["SQL", "Warehouse", "Streaming", "Backups", "Replication"],
+  },
+  {
+    title: "Security Center",
+    summary: "Zero Trust, NovaID, RBAC, MFA, certificates, secrets, threats, and policies are governed here.",
+    chips: ["Zero Trust", "RBAC", "MFA", "Secrets", "Policies"],
+  },
+  {
+    title: "Executive Center",
+    summary: "Revenue, MRR, ARR, growth, trust score, and regional performance drive leadership review.",
+    chips: ["Revenue", "MRR", "ARR", "Trust", "Forecast"],
+  },
+];
+
+const WORKFLOW_STEPS = [
+  "User",
+  "AI Planning",
+  "Development",
+  "Testing",
+  "Security",
+  "Approval",
+  "Deployment",
+  "Monitoring",
+];
+
+const MARKETPLACE = [
+  "Engineering",
+  "Business",
+  "Finance",
+  "Healthcare",
+  "Ride",
+  "Payments",
+  "Identity",
+  "Logistics",
+  "CRM",
+  "HR",
+  "AI",
+  "IoT",
+];
+
+const DIGITAL_TWIN_LAYERS = [
+  ["Australia", "Active region"],
+  ["Africa", "Pilot region"],
+  ["Europe", "Scaling region"],
+  ["Asia", "Expansion region"],
+  ["America", "Growth region"],
+];
+
 function App() {
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
   const [search, setSearch] = useState("");
   const [environment, setEnvironment] = useState("Production");
   const [focusNav, setFocusNav] = useState("Dashboard");
   const [selectedWindowId, setSelectedWindowId] = useState(ROLE_PROFILES[0].windows[0].id);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   const activeRole = useMemo(
     () => ROLE_PROFILES.find((role) => role.id === roleId) ?? ROLE_PROFILES[0],
@@ -623,7 +691,7 @@ function App() {
         </label>
 
         <div className="topbar-actions">
-          <button type="button" className="toolbar-chip">
+          <button type="button" className="toolbar-chip" onClick={() => setPaletteOpen(true)}>
             Command Palette
           </button>
           <div className="environment-switch">
@@ -745,6 +813,53 @@ function App() {
             </div>
           </section>
 
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Universal workspace</p>
+                <h2>Command-centered enterprise home</h2>
+              </div>
+              <div className="layout-hint">
+                <span>NovaID-first access</span>
+                <span>Layouts persist across devices</span>
+              </div>
+            </div>
+
+            <div className="universal-grid">
+              <article className="universal-card">
+                <p className="section-label">Home workspace</p>
+                <strong>Dashboard, Projects, Engineering, Operations, Business, AI</strong>
+                <p>
+                  One governed workspace that assembles role-specific tools without changing the
+                  platform boundary for the current NovaTech dashboard.
+                </p>
+              </article>
+              <article className="universal-card">
+                <p className="section-label">Workspace rules</p>
+                <strong>Dock, detach, split, stack, pin, and save layouts</strong>
+                <p>
+                  Every session can be restored as a workspace profile for developers, DevOps,
+                  executives, support, or administrators.
+                </p>
+              </article>
+              <article className="universal-card">
+                <p className="section-label">Command palette</p>
+                <strong>Search everything, launch anything</strong>
+                <p>
+                  Users can open tools, run workflows, and switch contexts without hunting through
+                  menus or leaving the governed workspace.
+                </p>
+              </article>
+              <article className="universal-card">
+                <p className="section-label">Filtered actions</p>
+                <strong>{appCatalog.length} actions available in this role</strong>
+                <p>
+                  {appCatalog.slice(0, 4).join(", ") || "No action matched the current query."}
+                </p>
+              </article>
+            </div>
+          </section>
+
           <section className="workspace-band">
             <div className="band-header">
               <div>
@@ -826,6 +941,100 @@ function App() {
                 <p>{topic.detail}</p>
               </article>
             ))}
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Platform centers</p>
+                <h2>Operational modules that behave like first-class apps</h2>
+              </div>
+            </div>
+            <div className="center-grid">
+              {PLATFORM_CENTERS.map((center) => (
+                <article className="center-card" key={center.title}>
+                  <p className="section-label">{center.title}</p>
+                  <p>{center.summary}</p>
+                  <div className="chip-cloud">
+                    {center.chips.map((chip) => (
+                      <span className="context-chip" key={chip}>
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Workflow builder</p>
+                <h2>Drag-and-drop release and governance pipeline</h2>
+              </div>
+            </div>
+            <div className="workflow-track" aria-label="AI and release workflow">
+              {WORKFLOW_STEPS.map((step, index) => (
+                <React.Fragment key={step}>
+                  <div className="workflow-step">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{step}</strong>
+                  </div>
+                  {index < WORKFLOW_STEPS.length - 1 ? <div className="workflow-arrow">→</div> : null}
+                </React.Fragment>
+              ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Marketplace</p>
+                <h2>Install capabilities like apps on a device</h2>
+              </div>
+            </div>
+            <div className="marketplace-grid">
+              {MARKETPLACE.map((item) => (
+                <article className="marketplace-card" key={item}>
+                  <strong>{item}</strong>
+                  <p>Install, govern, certify, and remove from the NovaCodePro workspace.</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Digital twin</p>
+                <h2>Real-time operational map from region to transaction</h2>
+              </div>
+            </div>
+            <div className="twin-shell">
+              <div className="twin-map">
+                {DIGITAL_TWIN_LAYERS.map(([name, detail], index) => (
+                  <div className="twin-node" key={name} style={{ "--node-delay": `${index * 80}ms` }}>
+                    <strong>{name}</strong>
+                    <span>{detail}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="twin-metrics">
+                {[
+                  ["Clusters", "18"],
+                  ["Services", "412"],
+                  ["Databases", "86"],
+                  ["Users", "221K"],
+                  ["Transactions", "9.8M"],
+                ].map(([label, value]) => (
+                  <div className="metric-card" key={label}>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         </main>
 
@@ -909,6 +1118,37 @@ function App() {
         <span>Separate from the current NovaTech dashboard surface.</span>
         <span>Role-aware workspace, governed access, synchronized state, and NovaID login.</span>
       </footer>
+
+      {paletteOpen ? (
+        <div
+          role="presentation"
+          className="palette-overlay"
+          onClick={() => setPaletteOpen(false)}
+        >
+          <div className="palette-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="band-header">
+              <div>
+                <p className="section-label">Command palette</p>
+                <h2>Deploy, inspect, navigate, and govern</h2>
+              </div>
+              <button type="button" className="toolbar-chip" onClick={() => setPaletteOpen(false)}>
+                Close
+              </button>
+            </div>
+            <div className="command-list large">
+              {filteredCommands.map((command) => (
+                <button type="button" className="command-chip" key={command}>
+                  {command}
+                </button>
+              ))}
+            </div>
+            <div className="palette-meta">
+              <span>Current role: {activeRole.label}</span>
+              <span>Environment: {environment}</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

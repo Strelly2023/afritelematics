@@ -29,6 +29,15 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
         "Command palette",
         "Multi-window dock",
         "NovaID",
+        "Trust Center",
+        "Release Center",
+        "Observability Center",
+        "Data Center",
+        "Security Center",
+        "Executive Center",
+        "Workflow builder",
+        "Digital twin",
+        "Marketplace",
     ]:
         assert token in text
 
