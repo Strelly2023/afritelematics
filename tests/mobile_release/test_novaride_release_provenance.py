@@ -14,7 +14,7 @@ def test_release_provenance_exists_for_rider_and_driver() -> None:
         )
     )
     assert data["release"] == "2026.1.3"
-    for app in ("rider", "driver", "fleet", "operator"):
+    for app in ("rider", "driver"):
         assert data[app]["version"] == "2026.1.3"
         assert data[app]["versionCode"] >= 4
         assert data[app]["apiHost"] == "https://api.afritechnology.com"

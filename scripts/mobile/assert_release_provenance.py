@@ -14,7 +14,7 @@ def main() -> int:
     if not PROVENANCE.exists():
         raise SystemExit(f"missing provenance {PROVENANCE}")
     data = json.loads(PROVENANCE.read_text(encoding="utf-8"))
-    for app in ("rider", "driver", "fleet", "operator"):
+    for app in ("rider", "driver"):
         entry = data.get(app)
         if not isinstance(entry, dict):
             raise SystemExit(f"missing {app} provenance")

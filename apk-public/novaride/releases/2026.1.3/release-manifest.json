@@ -19,20 +19,6 @@
       "byte_size": 62318877,
       "ipa_file": "novaride-driver-v2026.1.3-public-pilot.ipa",
       "ipa_status": "not_built_in_this_release_run"
-    },
-    "fleet": {
-      "file": "novaride-fleet-v2026.1.3-public-pilot.apk",
-      "sha256": "664793bec69af87a97d1d0f37c3f63a5ed8d50299fe36e37c5c959954bfdc65b",
-      "byte_size": 62170907,
-      "ipa_file": "novaride-fleet-v2026.1.3-public-pilot.ipa",
-      "ipa_status": "not_built_in_this_release_run"
-    },
-    "operator": {
-      "file": "novaride-operator-v2026.1.3-public-pilot.apk",
-      "sha256": "c8e00c01cf1bc204da733cf6b013def2b8cb9a95314440d1f1d8f91cd7c1afb7",
-      "byte_size": 62171426,
-      "ipa_file": "novaride-operator-v2026.1.3-public-pilot.ipa",
-      "ipa_status": "not_built_in_this_release_run"
     }
   }
 }

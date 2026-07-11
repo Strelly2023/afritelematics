@@ -17,8 +17,6 @@ def test_novaride_apps_versions_are_2026_1_2() -> None:
     expected_codes = {
         "rider_app": 6,
         "driver_app": 6,
-        "novaride_fleet_app": 5,
-        "novaride_operator_app": 5,
     }
     for app, expected_code in expected_codes.items():
         config = json.loads(read(f"{app}/app.json"))["expo"]

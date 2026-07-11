@@ -11,8 +11,6 @@ def test_manifests_define_immutable_and_alias_urls() -> None:
     for name, app in [
         ("novaride_rider_v2026.1.3_manifest.json", "rider"),
         ("novaride_driver_v2026.1.3_manifest.json", "driver"),
-        ("novaride_fleet_v2026.1.3_manifest.json", "fleet"),
-        ("novaride_operator_v2026.1.3_manifest.json", "operator"),
     ]:
         manifest = json.loads((ROOT / "docs/mobile/release" / name).read_text(encoding="utf-8"))
         assert manifest["immutable_apk_url"].endswith(

@@ -5,6 +5,8 @@ apk_path="${1:?usage: verify_apk_artifact.sh APK_PATH PACKAGE_ID VERSION_NAME VE
 expected_package="${2:?missing package id}"
 expected_version="${3:?missing version name}"
 expected_code="${4:?missing version code}"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+expected_signing_sha256="${NOVARIDE_EXPECTED_SIGNING_SHA256:-$("$root/scripts/mobile/release_lineage.py" fingerprint)}"
 
 test -f "$apk_path"
 file "$apk_path"
@@ -24,6 +26,13 @@ if command -v apksigner >/dev/null 2>&1; then
   printf '%s\n' "$signing_output"
   if printf '%s\n' "$signing_output" | grep -q "CN=Android Debug" && [ "${NOVARIDE_ALLOW_DEBUG_SIGNING:-0}" != "1" ]; then
     echo "debug signing certificate is not allowed for public pilot artifacts" >&2
+    exit 1
+  fi
+  normalized_signing_output="$(printf '%s\n' "$signing_output" | tr '[:upper:]' '[:lower:]' | tr -d ':[:space:]')"
+  normalized_expected_sha="$(printf '%s' "$expected_signing_sha256" | tr '[:upper:]' '[:lower:]' | tr -d ':[:space:]')"
+  if ! printf '%s' "$normalized_signing_output" | grep -q "$normalized_expected_sha"; then
+    echo "APK signing certificate does not match the NovaRide release lineage" >&2
+    echo "expected SHA-256: $expected_signing_sha256" >&2
     exit 1
   fi
 else

@@ -33,7 +33,9 @@ export const DRIVER_CONNECTIVITY_STATES = [
   "API_UNAVAILABLE",
   "AUTH_REQUIRED",
   "SYNCING",
+  "ONLINE_NOT_CONFIRMED",
   "ONLINE_CONFIRMED",
+  "DISPATCHABLE",
   "ON_TRIP",
   "OFF_DUTY",
 ] as const;
@@ -106,7 +108,7 @@ export function useDriverFlow(driverId: string) {
         loading: false,
         error:
           status === "available"
-            ? "Availability saved locally. Server confirmation is required before online status."
+            ? "Availability saved locally. Server confirmation is required before dispatchable status."
             : "Availability saved and will sync automatically.",
       }));
     }
@@ -193,7 +195,7 @@ export function useDriverFlow(driverId: string) {
             requests: [],
             loading: false,
             error:
-              "Connection unavailable. Driver status remains offline until the server confirms availability.",
+              "Ride queue sync failed. Driver status remains offline until the server confirms availability.",
           }));
         }
       } finally {

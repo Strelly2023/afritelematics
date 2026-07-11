@@ -1,0 +1,41 @@
+release_lineage:
+  product: NovaRide
+  active: true
+
+  android:
+    package_ids:
+      rider: com.novatech.novaride.rider
+      driver: com.novatech.novaride.driver
+
+    lineages:
+      - id: legacy
+        active: false
+        alias: novaride-release
+        certificate_sha256: 117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc
+        status: retired-unrecoverable
+        custody_status: password_unrecoverable
+        verified_release_versions:
+          - 2026.1.2
+        notes: "Existing public pilot APK lineage. Continue only if credentials are recovered and fingerprint verification passes."
+
+      - id: v2
+        active: true
+        alias: novaride-release
+        certificate_sha256: 3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472
+        status: production
+        custody_status: escrowed-macos-keychain-pending-secondary-backup
+        verified_release_versions: []
+        notes: "New public pilot signing lineage. Existing legacy installs require one-time reinstall."
+
+  policy:
+    public_pilot_requires_release_signing: true
+    debug_signing_allowed: false
+    unsigned_artifacts_allowed: false
+    secret_provider_required: true
+    allowed_secret_providers:
+      - github-actions
+      - 1password
+      - bitwarden
+      - aws-secrets-manager
+      - vault
+      - macos-keychain

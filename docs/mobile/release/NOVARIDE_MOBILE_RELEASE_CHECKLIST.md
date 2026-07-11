@@ -11,6 +11,16 @@
 - [ ] Driver tests pass
 - [ ] version incremented
 - [ ] versionCode incremented
+- [ ] `AFRIRIDE_ANDROID_KEYSTORE_BASE64` configured for GitHub Actions
+- [ ] `AFRIRIDE_ANDROID_KEYSTORE_PATH` configured
+- [ ] `AFRIRIDE_ANDROID_KEYSTORE_PASSWORD` configured in a secret manager
+- [ ] `AFRIRIDE_ANDROID_KEY_ALIAS=novaride-release`
+- [ ] `AFRIRIDE_ANDROID_KEY_PASSWORD` configured in a secret manager
+- [ ] `SIGNING_SECRET_PROVIDER` set to an approved provider
+- [ ] release keystore fingerprint verified as `117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc`
+- [ ] `scripts/mobile/release_health_check.sh` passes
+- [ ] Rider APK built
+- [ ] Driver APK built
 - [ ] clean build completed
 - [ ] package IDs verified
 - [ ] signing verified
@@ -35,4 +45,3 @@
 - [ ] rollback confirmed
 - [ ] GA remains false
 - [ ] real payments remain false
-

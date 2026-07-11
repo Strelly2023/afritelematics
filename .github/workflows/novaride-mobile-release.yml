@@ -23,6 +23,7 @@ jobs:
         run: |
           python3 scripts/mobile/assert_version_increment.py
           python3 scripts/mobile/assert_no_stale_api_hosts.py
+          python3 scripts/mobile/verify_release_manifest.py
 
   typecheck:
     runs-on: ubuntu-latest
@@ -85,8 +86,20 @@ jobs:
     needs: android-build
     steps:
       - uses: actions/checkout@v4
-      - name: Signing validation placeholder
-        run: echo "apksigner validation runs when signed artifacts are attached"
+      - name: Materialize signing keystore
+        env:
+          AFRIRIDE_ANDROID_KEYSTORE_BASE64: ${{ secrets.AFRIRIDE_ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          export AFRIRIDE_ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/novaride-release-keystore.jks"
+          scripts/mobile/materialize_android_keystore.sh "$AFRIRIDE_ANDROID_KEYSTORE_PATH"
+          echo "AFRIRIDE_ANDROID_KEYSTORE_PATH=$AFRIRIDE_ANDROID_KEYSTORE_PATH" >> "$GITHUB_ENV"
+      - name: Verify signing credentials
+        env:
+          AFRIRIDE_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEYSTORE_PASSWORD }}
+          AFRIRIDE_ANDROID_KEY_ALIAS: ${{ secrets.AFRIRIDE_ANDROID_KEY_ALIAS }}
+          AFRIRIDE_ANDROID_KEY_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEY_PASSWORD }}
+          SIGNING_SECRET_PROVIDER: github-actions
+        run: scripts/mobile/verify_release_signing_credentials.sh
 
   publication-staging:
     runs-on: ubuntu-latest
@@ -131,5 +144,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: post-publication-smoke-test
     steps:
-      - run: echo "generate release report"
-
+      - uses: actions/checkout@v4
+      - name: Generate release audit report
+        run: python3 scripts/mobile/generate_release_audit_report.py

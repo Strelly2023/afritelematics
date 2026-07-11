@@ -22,8 +22,6 @@ def main() -> int:
     expected_codes = {
         "rider_app": 6,
         "driver_app": 6,
-        "novaride_fleet_app": 5,
-        "novaride_operator_app": 5,
     }
     for app, minimum_version_code in expected_codes.items():
         app_json = json.loads((ROOT / app / "app.json").read_text(encoding="utf-8"))["expo"]
