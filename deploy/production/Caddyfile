@@ -31,6 +31,11 @@ http://api.afritechnology.com {
 	reverse_proxy afritech-api:8000
 }
 
+http://novacodepro.afritechnology.com {
+	encode gzip zstd
+	reverse_proxy novacodepro-portal:4174
+}
+
 http://verify.afritechnology.com {
 	encode gzip zstd
 	reverse_proxy afritech-api:8000

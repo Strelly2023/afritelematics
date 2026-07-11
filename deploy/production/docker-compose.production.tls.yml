@@ -41,6 +41,19 @@ services:
       afritech-api:
         condition: service_healthy
 
+  novacodepro-portal:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.novacodepro_portal
+    restart: unless-stopped
+    env_file:
+      - .env.production.tls
+    expose:
+      - "4174"
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+
   edge:
     image: caddy:2
     restart: unless-stopped
@@ -57,6 +70,8 @@ services:
       afritech-api:
         condition: service_healthy
       afritech-dashboard:
+        condition: service_started
+      novacodepro-portal:
         condition: service_started
 
 volumes:

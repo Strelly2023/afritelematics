@@ -21,6 +21,11 @@ api.{$AFRITECH_DOMAIN} {
 	reverse_proxy afritech-api:8000
 }
 
+novacodepro.{$AFRITECH_DOMAIN} {
+	encode gzip zstd
+	reverse_proxy novacodepro-portal:4174
+}
+
 verify.{$AFRITECH_DOMAIN} {
 	encode gzip zstd
 	reverse_proxy afritech-api:8000

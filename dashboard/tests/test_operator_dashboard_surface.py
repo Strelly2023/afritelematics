@@ -4,10 +4,15 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = ROOT.parent
 
 
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
+
+
+def read_repo(path: str) -> str:
+    return (REPO_ROOT / path).read_text(encoding="utf-8")
 
 
 def test_operator_dashboard_reads_required_ga_test_endpoints() -> None:
@@ -1520,3 +1525,45 @@ def test_operator_dashboard_exposes_novacodepro_next_generation_service_platform
         ".nextgen-fit-stack",
     ):
         assert required in styles
+
+
+def test_novacodepro_portal_is_first_class_production_service() -> None:
+    dockerfile = read_repo("deploy/staging/Dockerfile.novacodepro_portal")
+    production_compose = read_repo("deploy/production/docker-compose.production.yml")
+    tls_compose = read_repo("deploy/production/docker-compose.production.tls.yml")
+    trust_node_compose = read_repo("deploy/production/docker-compose.trust-node.yml")
+    caddyfile = read_repo("deploy/production/Caddyfile")
+    caddyfile_tls = read_repo("deploy/production/Caddyfile.tls")
+    trust_nginx = read_repo("deploy/production/nginx/trust-node.conf.template")
+    platform_nginx = read_repo("deploy/production/nginx/afritechnology-platform.conf.template")
+    vite_config = read_repo("novacodepro_portal/vite.config.js")
+
+    for required in (
+        "COPY novacodepro_portal/package*.json /app/",
+        "COPY novacodepro_portal /app",
+        "RUN npm run build",
+        'EXPOSE 4174',
+        '"--port", "4174"',
+    ):
+        assert required in dockerfile
+
+    for compose in (production_compose, tls_compose, trust_node_compose):
+        assert "novacodepro-portal:" in compose
+        assert "dockerfile: deploy/staging/Dockerfile.novacodepro_portal" in compose
+        assert '"4174"' in compose
+        assert "novacodepro-portal:" in compose
+        assert "condition: service_started" in compose
+
+    assert "http://novacodepro.afritechnology.com" in caddyfile
+    assert "reverse_proxy novacodepro-portal:4174" in caddyfile
+    assert "novacodepro.{$AFRITECH_DOMAIN}" in caddyfile_tls
+    assert "reverse_proxy novacodepro-portal:4174" in caddyfile_tls
+
+    assert "novacodepro.${AFRITECH_DOMAIN}" in trust_nginx
+    assert "set $novacodepro_portal novacodepro-portal:4174;" in trust_nginx
+    assert "proxy_pass http://$novacodepro_portal;" in trust_nginx
+    assert "server_name novacodepro.afritechnology.com;" in platform_nginx
+    assert "proxy_pass http://novacodepro-portal:4174;" in platform_nginx
+
+    assert '"novacodepro.afritechnology.com"' in vite_config
+    assert "allowedHosts" in vite_config

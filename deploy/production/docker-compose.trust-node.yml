@@ -59,6 +59,25 @@ services:
       retries: 5
       start_period: 20s
 
+  novacodepro-portal:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.novacodepro_portal
+    restart: unless-stopped
+    env_file:
+      - .env.production.trust-node
+    expose:
+      - "4174"
+    depends_on:
+      afritech-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4174"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
@@ -77,6 +96,8 @@ services:
       afritech-api:
         condition: service_healthy
       afritech-dashboard:
+        condition: service_started
+      novacodepro-portal:
         condition: service_started
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]

@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY novacodepro_portal/package*.json /app/
+RUN npm ci
+
+COPY novacodepro_portal /app
+
+RUN npm run build
+
+EXPOSE 4174
+
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "4174"]
