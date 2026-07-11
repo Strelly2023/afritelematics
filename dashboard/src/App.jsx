@@ -2783,6 +2783,186 @@ const NOVACODEPRO_EOS_INTEGRATIONS = [
   "NovaID",
 ];
 
+const NOVACODEPRO_PLATFORM_ACCESS_LAYER = [
+  "Web Dashboard",
+  "Desktop Application",
+  "Mobile Application",
+  "IDE Extensions",
+  "Terminal / CLI",
+  "REST API",
+  "GraphQL API",
+  "SDKs",
+  "Voice Interface",
+  "Collaboration Workspace",
+  "Partner Portal",
+  "Customer Portal",
+];
+
+const NOVACODEPRO_PLATFORM_DOMAINS = [
+  {
+    name: "Executive Domain",
+    summary: "Portfolio, strategy, finance, risk, KPI reporting, and enterprise leadership intelligence.",
+    capabilities: ["Enterprise Dashboard", "Portfolio Management", "Strategic Roadmaps", "Financial Insights", "Risk Management", "Executive Reporting", "KPI Management"],
+  },
+  {
+    name: "Engineering Domain",
+    summary: "Design, build, test, secure, release, and deploy NovaTech software and customer solutions.",
+    capabilities: ["Project Management", "Requirements", "ADR Management", "Architecture Studio", "UI/UX Design Studio", "Repository Manager", "Development Workspace", "Build Center", "Test Center", "Security Center", "Release Center", "Deployment Center"],
+  },
+  {
+    name: "Operations Domain",
+    summary: "Operate products, support customers, manage tenants, monitor services, and coordinate incidents.",
+    capabilities: ["Service Desk", "Incident Management", "Change Management", "Monitoring", "Alerting", "Customer Organizations", "Tenant Management", "Customer Support", "SLA Management", "Service Health"],
+  },
+  {
+    name: "Governance Domain",
+    summary: "Control policy, compliance, evidence, approvals, audit, security governance, and reporting.",
+    capabilities: ["Policy Management", "Compliance", "Risk Controls", "Evidence Collection", "Audit", "Approval Workflows", "Security Governance", "Data Governance", "Regulatory Reporting"],
+  },
+  {
+    name: "AI Domain",
+    summary: "Coordinate multi-agent work, knowledge retrieval, automation, model governance, and human approval gates.",
+    capabilities: ["Agent Marketplace", "Multi-Agent Orchestration", "Knowledge Graph", "Prompt Library", "RAG Engine", "Automation Workflows", "Model Registry", "AI Governance", "Human Approval Gates"],
+  },
+  {
+    name: "Marketplace Domain",
+    summary: "Distribute trusted agents, templates, integrations, compliance packs, workflows, and partner extensions.",
+    capabilities: ["AI Agents", "Templates", "Plugins", "Integrations", "Workflows", "Compliance Packs", "Industry Solutions", "Partner Extensions"],
+  },
+];
+
+const NOVACODEPRO_PLATFORM_SERVICES = [
+  "Identity & Access Management",
+  "RBAC / ABAC",
+  "Organization & Tenant Management",
+  "Workflow Engine",
+  "Event Bus",
+  "API Gateway",
+  "Search",
+  "Notifications",
+  "Billing",
+  "Licensing",
+  "Audit Logging",
+  "Observability",
+  "Feature Flags",
+  "Configuration",
+  "Secrets Management",
+  "Object Storage",
+  "Artifact Registry",
+  "Model Gateway",
+  "Integration Framework",
+];
+
+const NOVACODEPRO_PLATFORM_MODES = [
+  { mode: "Engineering Mode", description: "Design, develop, test, secure, and release governed software.", steps: ["Design", "Develop", "Test", "Secure", "Release"] },
+  { mode: "Operations Mode", description: "Deploy, monitor, support, improve, and govern active services.", steps: ["Deploy", "Monitor", "Support", "Improve", "Govern"] },
+  { mode: "Service Delivery Mode", description: "Run customer success, partner enablement, professional services, tenant administration, and enterprise operations.", steps: ["Customer Success", "Partner Enablement", "Professional Services", "Tenant Administration", "Enterprise Operations"] },
+];
+
+const NOVACODEPRO_PLATFORM_USER_GROUPS = [
+  { group: "Engineering", users: ["Software Engineers", "Platform Engineers", "Mobile Developers", "QA Engineers", "DevOps Engineers", "Security Engineers", "Architects", "UX/UI Designers"] },
+  { group: "Business Operations", users: ["Customer Support", "Operations Managers", "Service Delivery Teams", "Release Managers", "Product Managers", "Compliance Officers", "Finance Teams", "Sales Engineers"] },
+  { group: "Leadership", users: ["CTO", "CIO", "Engineering Managers", "Operations Managers", "Executive Leadership"] },
+  { group: "External Users", users: ["Partners", "Integrators", "Enterprise Customers", "API Consumers", "Contractors", "Marketplace Vendors"] },
+];
+
+const NOVACODEPRO_SERVICE_DELIVERY_FLOW = [
+  "Customer requests a service",
+  "NovaTech staff use NovaCodePro",
+  "AI proposes and governance controls the work",
+  "Operations execute across NovaRide, NovaPay, NovaID, NovaHealth, APIs, and Marketplace",
+  "Customer or partner receives a verified service outcome",
+];
+
+const NOVACODEPRO_AI_AGENT_LAYER = [
+  "Executive Agent",
+  "Product Manager Agent",
+  "Business Analyst Agent",
+  "Architecture Agent",
+  "UX/UI Agent",
+  "Frontend Agent",
+  "Backend Agent",
+  "Mobile Agent",
+  "QA Agent",
+  "Security Agent",
+  "DevOps Agent",
+  "Documentation Agent",
+  "Operations Agent",
+  "Support Agent",
+  "Compliance Agent",
+  "Release Agent",
+];
+
+const NOVACODEPRO_CLOUD_FOUNDATION = [
+  "Kubernetes",
+  "Containers",
+  "PostgreSQL",
+  "Redis",
+  "Object Storage",
+  "Event Streaming",
+  "API Infrastructure",
+  "Service Mesh",
+  "Networking",
+  "Identity Services",
+  "Security Services",
+  "Observability Stack",
+];
+
+const NOVACODEPRO_SERVICE_CATALOG = [
+  { category: "Software Development", services: ["Custom Software Development", "Enterprise Applications", "SaaS Platforms", "Business Applications", "Internal Business Systems", "Desktop Applications", "Cross-platform Applications", "Cloud-native Applications", "AI-powered Applications", "API Development"] },
+  { category: "Website Development", services: ["Corporate Websites", "Business Websites", "Government Portals", "eCommerce Websites", "Landing Pages", "Customer Portals", "Partner Portals", "Membership Websites", "Booking Platforms", "Progressive Web Apps (PWA)"] },
+  { category: "Mobile App Development", services: ["Native Android Apps", "Enterprise Android Apps", "Consumer Applications", "Native iPhone Apps", "Native iPad Apps", "Flutter Apps", "React Native Apps", "Kotlin Multiplatform Apps", "Field Service Apps"] },
+  { category: "UI/UX Design", services: ["User Experience Design", "User Interface Design", "Product Design", "Design Systems", "Wireframes", "Interactive Prototypes", "Accessibility Reviews", "UX Research", "Journey Mapping", "Branding & Visual Design"] },
+  { category: "AI Solutions", services: ["AI Assistants", "Chatbots", "Enterprise AI", "Agentic AI Systems", "AI Automation", "Knowledge Assistants", "RAG Solutions", "AI Search", "AI Analytics", "AI Integration"] },
+  { category: "Cloud Services", services: ["Cloud Migration", "Cloud Architecture", "Cloud Deployment", "Kubernetes", "Docker", "Serverless Solutions", "Multi-cloud", "Cloud Security", "Cloud Optimization"] },
+  { category: "DevSecOps", services: ["CI/CD Pipelines", "Release Automation", "Infrastructure as Code", "Platform Engineering", "DevOps Consulting", "Secure SDLC", "Supply Chain Security", "Environment Management"] },
+  { category: "Cybersecurity", services: ["Security Assessments", "Penetration Testing", "Vulnerability Management", "Identity & Access Management", "Zero Trust Architecture", "Compliance Readiness", "Security Monitoring", "Secure Architecture Reviews"] },
+  { category: "Data & Analytics", services: ["Business Intelligence", "Dashboards", "Reporting", "Data Warehousing", "Data Engineering", "ETL Pipelines", "Data Governance", "AI Analytics"] },
+  { category: "Digital Transformation", services: ["Legacy Modernization", "Process Automation", "Workflow Automation", "Enterprise Integration", "Technology Strategy", "Digital Roadmaps", "Change Management"] },
+  { category: "Platform Integration", services: ["API Integration", "Payment Integration", "CRM Integration", "ERP Integration", "Identity Integration", "Third-party Integrations", "Workflow Integration", "Messaging Integration"] },
+  { category: "Managed Services", services: ["Application Management", "Platform Operations", "Infrastructure Management", "Monitoring", "Incident Response", "Release Management", "Customer Support", "Managed DevOps"] },
+  { category: "Quality Engineering", services: ["Test Automation", "Manual Testing", "Performance Testing", "API Testing", "Mobile Testing", "Accessibility Testing", "Security Testing", "Regression Testing"] },
+  { category: "Professional Services", services: ["Technology Consulting", "Enterprise Architecture", "Solution Architecture", "Technical Audits", "Project Delivery", "Project Rescue", "Code Reviews", "System Assessments"] },
+  { category: "Training & Enablement", services: ["Developer Training", "Administrator Training", "DevOps Training", "AI Training", "Security Training", "Architecture Workshops", "Product Training", "Documentation"] },
+  { category: "Industry Solutions", services: ["Financial Services", "Healthcare", "Transportation", "Logistics", "Government", "Education", "Retail", "Manufacturing", "Non-profit", "Smart Cities"] },
+];
+
+const NOVACODEPRO_SERVICE_DELIVERY_MODEL = [
+  "Consult",
+  "Discover",
+  "Design",
+  "Develop",
+  "Test",
+  "Deploy",
+  "Operate",
+  "Support",
+  "Optimize",
+];
+
+const NOVACODEPRO_CUSTOMER_ENGAGEMENT_MODELS = [
+  "Fixed-price projects",
+  "Time and materials",
+  "Dedicated development teams",
+  "Managed services",
+  "Platform subscriptions",
+  "Technical consulting",
+  "Staff augmentation",
+  "Training and certification",
+];
+
+const NOVACODEPRO_PROFESSIONAL_SERVICES = [
+  "Consulting",
+  "Design",
+  "Development",
+  "AI",
+  "Cloud",
+  "Security",
+  "Integration",
+  "Managed Services",
+  "Support",
+  "Training",
+];
+
 const NOVACODEPRO_APPS = [
   {
     name: "NovaCodePro Desktop",
@@ -9259,7 +9439,7 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
                   <p className="eyebrow">NovaDocs</p>
                   <h3>Developer portal</h3>
                 </div>
-                <span className="surface-chip">docs.novacodepro.com</span>
+                <span className="surface-chip">docs.novacodepro.afritechnology.com</span>
               </div>
               <div className="docs-selector-row" role="tablist" aria-label="Documentation categories">
                 {NOVACODEPRO_DOCS_CATEGORIES.map((category) => (
@@ -10579,6 +10759,250 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
           </section>
         </section>
 
+        <section className="codepro-nextgen-platform" id="novacodepro-nextgen-platform">
+          <SectionIntro
+            eyebrow="NovaCodePro Next Generation Platform"
+            title="Unified Engineering and Service Delivery Platform"
+            question="NovaCodePro is positioned as NovaTech's system of work: internal engineering platform, operational service delivery platform, and AI-governed control plane for staff, partners, and enterprise customers."
+          />
+          <div className="codepro-nextgen-mission">
+            <div>
+              <p className="eyebrow">Mission</p>
+              <h3>Design. Build. Secure. Deploy. Operate. Govern. Improve.</h3>
+              <p>
+                Customers interact with NovaRide, NovaPay, NovaID, NovaHealth,
+                APIs, and Marketplace services. NovaTech employees and partners
+                use NovaCodePro to design, operate, support, govern, and improve
+                those customer-facing products.
+              </p>
+            </div>
+            <div className="nextgen-reference-stack" aria-label="NovaCodePro enterprise reference architecture">
+              {[
+                "Customers & Partners",
+                "NovaTech Products & Services",
+                "NovaCodePro Platform",
+                "Access Layer",
+                "Business Domains",
+                "Cross-Cutting Platform Services",
+                "AI Orchestration",
+                "NovaTech Cloud Foundation",
+              ].map((layer) => (
+                <span key={layer}>{layer}</span>
+              ))}
+            </div>
+          </div>
+
+          <section className="nextgen-platform-section" aria-labelledby="nextgen-access-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Access Layer</p>
+                <h3 id="nextgen-access-title">Consistent interfaces for employees, partners, integrators, API consumers, and enterprise customers</h3>
+              </div>
+              <span className="surface-chip">web · desktop · mobile · IDE · CLI · API · voice</span>
+            </div>
+            <div className="nextgen-access-grid">
+              {NOVACODEPRO_PLATFORM_ACCESS_LAYER.map((access) => (
+                <span key={access}>{access}</span>
+              ))}
+            </div>
+          </section>
+
+          <section className="nextgen-platform-section" aria-labelledby="nextgen-domains-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Business Domains</p>
+                <h3 id="nextgen-domains-title">Executive, engineering, operations, governance, AI, and marketplace capabilities</h3>
+              </div>
+              <span className="surface-chip">primary platform domains</span>
+            </div>
+            <div className="nextgen-domain-grid">
+              {NOVACODEPRO_PLATFORM_DOMAINS.map((domain) => (
+                <article key={domain.name}>
+                  <strong>{domain.name}</strong>
+                  <p>{domain.summary}</p>
+                  <div className="chip-row">
+                    {domain.capabilities.map((capability) => (
+                      <span key={capability} className="surface-chip">{capability}</span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="nextgen-platform-section" aria-labelledby="nextgen-services-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Cross-Cutting Platform Services</p>
+                <h3 id="nextgen-services-title">Identity, audit, notifications, search, observability, workflow, billing, and integration services underpin every domain</h3>
+              </div>
+              <span className="surface-chip">shared services, not separate business silos</span>
+            </div>
+            <div className="nextgen-service-grid">
+              {NOVACODEPRO_PLATFORM_SERVICES.map((service) => (
+                <span key={service}>{service}</span>
+              ))}
+            </div>
+          </section>
+
+          <div className="nextgen-mode-grid">
+            {NOVACODEPRO_PLATFORM_MODES.map((mode) => (
+              <article key={mode.mode}>
+                <span>{mode.mode}</span>
+                <strong>{mode.description}</strong>
+                <div className="codepro-flow vertical-flow">
+                  {mode.steps.map((step) => (
+                    <em key={step}>{step}</em>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <section className="nextgen-platform-section" aria-labelledby="nextgen-users-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Primary Users</p>
+                <h3 id="nextgen-users-title">NovaCodePro serves more than software engineers</h3>
+              </div>
+              <span className="surface-chip">internal and external workspaces</span>
+            </div>
+            <div className="nextgen-user-grid">
+              {NOVACODEPRO_PLATFORM_USER_GROUPS.map((group) => (
+                <article key={group.group}>
+                  <strong>{group.group}</strong>
+                  <div className="chip-row">
+                    {group.users.map((user) => (
+                      <span key={user} className="surface-chip">{user}</span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="nextgen-platform-section nextgen-service-flow" aria-labelledby="nextgen-service-flow-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">Customer Relationship</p>
+                <h3 id="nextgen-service-flow-title">Customer request to verified service outcome</h3>
+              </div>
+              <span className="surface-chip">service delivery mode</span>
+            </div>
+            <div className="nextgen-flow-grid">
+              {NOVACODEPRO_SERVICE_DELIVERY_FLOW.map((step, index) => (
+                <article key={step}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="nextgen-foundation-grid">
+            <OperatorPanel title="AI Multi-Agent Layer">
+              <div className="docs-grid">
+                {NOVACODEPRO_AI_AGENT_LAYER.map((agent) => (
+                  <div key={agent} className="reason-chip reason-chip-success">{agent}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+            <OperatorPanel title="NovaTech Cloud Foundation">
+              <div className="docs-grid">
+                {NOVACODEPRO_CLOUD_FOUNDATION.map((service) => (
+                  <div key={service} className="reason-chip">{service}</div>
+                ))}
+              </div>
+            </OperatorPanel>
+          </div>
+
+          <section className="nextgen-platform-section" aria-labelledby="service-catalog-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">NovaCodePro Services</p>
+                <h3 id="service-catalog-title">Design. Build. Deploy. Operate. Transform.</h3>
+              </div>
+              <span className="surface-chip">technology, engineering, AI, cloud, and managed digital services</span>
+            </div>
+            <div className="nextgen-service-catalog-grid">
+              {NOVACODEPRO_SERVICE_CATALOG.map((category) => (
+                <article key={category.category}>
+                  <strong>{category.category}</strong>
+                  <div className="chip-row">
+                    {category.services.map((service) => (
+                      <span key={service} className="surface-chip">{service}</span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className="nextgen-delivery-grid">
+            <section className="nextgen-platform-section" aria-labelledby="delivery-model-title">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">Service Delivery Model</p>
+                  <h3 id="delivery-model-title">Consult to optimize</h3>
+                </div>
+                <span className="surface-chip">lifecycle delivery</span>
+              </div>
+              <div className="nextgen-delivery-flow">
+                {NOVACODEPRO_SERVICE_DELIVERY_MODEL.map((step, index) => (
+                  <span key={step}>{String(index + 1).padStart(2, "0")} · {step}</span>
+                ))}
+              </div>
+            </section>
+
+            <section className="nextgen-platform-section" aria-labelledby="engagement-model-title">
+              <div className="record-card-header">
+                <div>
+                  <p className="eyebrow">Customer Engagement Models</p>
+                  <h3 id="engagement-model-title">Project, subscription, consulting, team, and training models</h3>
+                </div>
+                <span className="surface-chip">commercial delivery options</span>
+              </div>
+              <div className="nextgen-engagement-grid">
+                {NOVACODEPRO_CUSTOMER_ENGAGEMENT_MODELS.map((model) => (
+                  <span key={model}>{model}</span>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <section className="nextgen-platform-section" aria-labelledby="professional-services-title">
+            <div className="record-card-header">
+              <div>
+                <p className="eyebrow">How This Fits Into NovaTech</p>
+                <h3 id="professional-services-title">Professional services run through NovaCodePro and deliver NovaTech digital products</h3>
+              </div>
+              <span className="surface-chip">focused on technology services, not unrelated business domains</span>
+            </div>
+            <div className="nextgen-fit-stack">
+              <article>
+                <span>Customers & Partners</span>
+                <strong>Service demand</strong>
+              </article>
+              <article>
+                <span>NovaCodePro Professional Services</span>
+                <div className="chip-row">
+                  {NOVACODEPRO_PROFESSIONAL_SERVICES.map((service) => (
+                    <em key={service}>{service}</em>
+                  ))}
+                </div>
+              </article>
+              <article>
+                <span>NovaCodePro Platform</span>
+                <strong>Engineering · Operations · Governance · AI · Collaboration</strong>
+              </article>
+              <article>
+                <span>NovaTech Digital Products</span>
+                <strong>NovaRide · NovaPay · NovaID · NovaHealth · APIs · Marketplace</strong>
+              </article>
+            </div>
+          </section>
+        </section>
+
         <section className="codepro-command-center" id="novacodepro-os">
           <SectionIntro
             eyebrow="NovaCodePro Command Center"
@@ -11178,7 +11602,7 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
             </div>
           </OperatorPanel>
           <OperatorPanel title="Developer Portal">
-            <p className="section-note">docs.novacodepro.com</p>
+            <p className="section-note">docs.novacodepro.afritechnology.com</p>
             <div className="docs-grid">
               {NOVACODEPRO_DOCS_PORTAL.map((item) => (
                 <div key={item} className="reason-chip">{item}</div>
@@ -11214,7 +11638,7 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
 
         <section className="codepro-living-grid">
           <OperatorPanel title="NovaCodePro University">
-            <p className="section-note">academy.novacodepro.com</p>
+            <p className="section-note">academy.novacodepro.afritechnology.com</p>
             <div className="docs-grid">
               {NOVACODEPRO_ACADEMY_TRACKS.map((track) => (
                 <div key={track} className="reason-chip reason-chip-success">{track}</div>
@@ -11239,7 +11663,7 @@ last_run: ${selectedWorkspace.lastRun}`}</pre>
         <SectionIntro
           eyebrow="Developer Portal 2.0"
           title="Runnable starter kits for NovaTech builders"
-          question="docs.novacodepro.com includes starter kits with architecture, repository templates, API guides, deployment guides, and evidence flows."
+          question="docs.novacodepro.afritechnology.com includes starter kits with architecture, repository templates, API guides, deployment guides, and evidence flows."
         />
         <div className="starter-kit-grid">
           {NOVACODEPRO_STARTER_KITS.map((kit) => (
