@@ -200,6 +200,118 @@ function seedState() {
         detail: "Seeded workflow at architecture approval gate.",
       }),
     ],
+    evidenceBundles: [
+      {
+        id: "evidence-req-001",
+        actor: "NovaID",
+        action: "requirements.approved",
+        timestamp: createdAtMinus(3),
+        policy: "REQ-GOV-001",
+        artifacts: ["art-business", "art-architecture"],
+        hash: "ev-req-001",
+        verified: true,
+        summary: "Requirements and architecture evidence bundled for review.",
+      },
+      {
+        id: "evidence-rel-001",
+        actor: "NovaTech Governance",
+        action: "release.prepared",
+        timestamp: createdAtMinus(1),
+        policy: "REL-PROD-001",
+        artifacts: ["release-manifest", "test-report", "sbom"],
+        hash: "ev-rel-001",
+        verified: true,
+        summary: "Release evidence bundle prepared for controlled promotion.",
+      },
+    ],
+    riskRegister: [
+      {
+        id: "risk-deploy-001",
+        title: "Unauthorized production access",
+        likelihood: "medium",
+        impact: "high",
+        exposure: "medium",
+        score: calculateRiskScore("medium", "high", "medium"),
+        owner: "Security Team",
+        treatment: ["MFA required", "Conditional access", "Audit monitoring"],
+        status: "open",
+      },
+      {
+        id: "risk-supply-001",
+        title: "Supply chain dependency delay",
+        likelihood: "medium",
+        impact: "medium",
+        exposure: "high",
+        score: calculateRiskScore("medium", "medium", "high"),
+        owner: "Platform Engineering",
+        treatment: ["Secondary supplier", "Release buffer", "Dependency review"],
+        status: "open",
+      },
+    ],
+    approvalPolicies: [
+      {
+        id: "policy-prod-release",
+        name: "Production Release",
+        required: ["CTO", "Security Lead"],
+        quorum: 2,
+        timeout: "48h",
+        escalation: "CEO",
+      },
+      {
+        id: "policy-risk-acceptance",
+        name: "Risk Acceptance",
+        required: ["Risk Owner", "Security Lead"],
+        quorum: 2,
+        timeout: "24h",
+        escalation: "CISO",
+      },
+    ],
+    approvalRoutes: [
+      {
+        id: "route-prod-release",
+        policyId: "policy-prod-release",
+        subject: "NovaRide public pilot release",
+        required: ["CTO", "Security Lead"],
+        quorum: 2,
+        timeout: "48h",
+        escalation: "CEO",
+        status: "ready",
+        generatedAt: createdAtMinus(1),
+      },
+    ],
+    digitalTwinScenarios: [
+      {
+        id: "twin-east-failure",
+        title: "Region East Failure",
+        expectedImpact: "8 services",
+        revenueRisk: "$125,000",
+        recovery: "23 minutes",
+        affectedCustomers: "3,212",
+        region: "East",
+      },
+    ],
+    executiveInsights: [
+      {
+        id: "exec-q3-risk",
+        question: "What threatens Q3 objectives?",
+        risks: ["Deployment delays", "Vendor dependency", "Security remediation backlog"],
+        recommendations: ["Increase staffing", "Prioritize release train", "Accelerate remediation"],
+        generatedAt: createdAtMinus(2),
+      },
+    ],
+    commandCenterSnapshots: [
+      {
+        id: "cmd-001",
+        enterpriseHealth: "96",
+        trustScore: "94",
+        riskScore: "Medium",
+        securityScore: "92",
+        complianceScore: "98",
+        deliveryScore: "89",
+        incidentCount: 2,
+        generatedAt: createdAtMinus(1),
+      },
+    ],
     commandHistory: [],
     developerSurfaces: DEVELOPER_SURFACES,
   };
@@ -230,6 +342,13 @@ function loadState() {
       projects: parsed.projects ?? base.projects,
       collaborationThreads: parsed.collaborationThreads ?? base.collaborationThreads,
       knowledgeGraph: parsed.knowledgeGraph ?? base.knowledgeGraph,
+      evidenceBundles: parsed.evidenceBundles ?? base.evidenceBundles,
+      riskRegister: parsed.riskRegister ?? base.riskRegister,
+      approvalPolicies: parsed.approvalPolicies ?? base.approvalPolicies,
+      approvalRoutes: parsed.approvalRoutes ?? base.approvalRoutes,
+      digitalTwinScenarios: parsed.digitalTwinScenarios ?? base.digitalTwinScenarios,
+      executiveInsights: parsed.executiveInsights ?? base.executiveInsights,
+      commandCenterSnapshots: parsed.commandCenterSnapshots ?? base.commandCenterSnapshots,
       automationRuns: parsed.automationRuns ?? base.automationRuns,
       connectedIntegrations: parsed.connectedIntegrations ?? base.connectedIntegrations,
       installedAgents: parsed.installedAgents ?? base.installedAgents,
@@ -286,6 +405,20 @@ function traceGraphPath(graph, startId, targetId) {
     }
   }
   return [startId, targetId];
+}
+
+function scaleRiskValue(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (normalized === "critical") return 4;
+  if (normalized === "high") return 3;
+  if (normalized === "medium") return 2;
+  if (normalized === "low") return 1;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+function calculateRiskScore(likelihood, impact, exposure) {
+  return scaleRiskValue(likelihood) * scaleRiskValue(impact) * scaleRiskValue(exposure);
 }
 
 function createRuntime() {
@@ -573,6 +706,334 @@ function createSolution(payload) {
       }),
     );
     return path;
+  }
+
+  function createEvidenceBundle(input = {}) {
+    const bundle = {
+      id: `evidence-${Math.random().toString(36).slice(2, 10)}`,
+      actor: input.actor || "NovaID",
+      action: input.action || "evidence.created",
+      timestamp: nowIso(),
+      policy: input.policy || "UNSPECIFIED",
+      artifacts: input.artifacts || [],
+      hash: `hash-${Math.random().toString(36).slice(2, 10)}`,
+      verified: true,
+      summary: input.summary || "Immutable evidence bundle created from the shared interaction model.",
+    };
+    setState({
+      ...state,
+      evidenceBundles: [bundle, ...state.evidenceBundles],
+    });
+    emit(
+      appendAudit({
+        actor: bundle.actor,
+        action: bundle.action,
+        service: "Evidence Engine",
+        subject: bundle.policy,
+        evidence: bundle.artifacts.join(", ") || bundle.hash,
+        detail: bundle.summary,
+      }),
+    );
+    return bundle;
+  }
+
+  function evaluateRisk(input = {}) {
+    const risk = {
+      id: `risk-${Math.random().toString(36).slice(2, 10)}`,
+      title: input.title || "Operational risk",
+      likelihood: input.likelihood || "medium",
+      impact: input.impact || "medium",
+      exposure: input.exposure || "medium",
+      score: calculateRiskScore(input.likelihood || "medium", input.impact || "medium", input.exposure || "medium"),
+      owner: input.owner || "Risk Team",
+      treatment: input.treatment || ["Review controls", "Attach evidence", "Escalate if needed"],
+      status: input.status || "open",
+    };
+    setState({
+      ...state,
+      riskRegister: [risk, ...state.riskRegister],
+    });
+    emit(
+      appendAudit({
+        actor: "Risk Engine",
+        action: "risk.evaluated",
+        service: "Risk Engine",
+        subject: risk.title,
+        evidence: `${risk.likelihood} × ${risk.impact} × ${risk.exposure} = ${risk.score}`,
+        detail: `Risk owned by ${risk.owner}.`,
+      }),
+    );
+    return risk;
+  }
+
+  function routeApprovalPolicy(policyId, subject = "workflow", context = {}) {
+    const policy = state.approvalPolicies.find((item) => item.id === policyId) ?? state.approvalPolicies[0];
+    const route = {
+      id: `route-${Math.random().toString(36).slice(2, 10)}`,
+      policyId: policy?.id || policyId,
+      subject,
+      required: policy?.required || [],
+      quorum: policy?.quorum || 1,
+      timeout: policy?.timeout || "24h",
+      escalation: policy?.escalation || "CEO",
+      status: "ready",
+      generatedAt: nowIso(),
+      context,
+    };
+    setState({
+      ...state,
+      approvalRoutes: [route, ...state.approvalRoutes],
+    });
+    emit(
+      appendAudit({
+        actor: "Policy Engine",
+        action: "approval.policy.routed",
+        service: "Policy Engine",
+        subject,
+        evidence: `${route.required.join(", ")} | quorum ${route.quorum}`,
+        detail: `Policy ${route.policyId} routed for authorization.`,
+      }),
+    );
+    return route;
+  }
+
+  function simulateDigitalTwinScenario(input = {}) {
+    const scenario = {
+      id: `twin-${Math.random().toString(36).slice(2, 10)}`,
+      title: input.title || "Operational scenario",
+      expectedImpact: input.expectedImpact || "1 service",
+      revenueRisk: input.revenueRisk || "$0",
+      recovery: input.recovery || "5 minutes",
+      affectedCustomers: input.affectedCustomers || "0",
+      region: input.region || "Global",
+      generatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      digitalTwinScenarios: [scenario, ...state.digitalTwinScenarios],
+    });
+    emit(
+      appendAudit({
+        actor: "Digital Twin Engine",
+        action: "digital.twin.scenario.simulated",
+        service: "Digital Twin Engine",
+        subject: scenario.title,
+        evidence: `${scenario.region} · ${scenario.expectedImpact}`,
+        detail: `Estimated recovery ${scenario.recovery} for ${scenario.affectedCustomers} customers.`,
+      }),
+    );
+    return scenario;
+  }
+
+  function askExecutiveAI(question) {
+    const risks = state.riskRegister.slice(0, 3).map((risk) => risk.title);
+    const recommendations = [
+      "Increase operational capacity on the critical path.",
+      "Prioritize the highest-scoring risk treatment.",
+      "Maintain gated approvals for production changes.",
+    ];
+    const insight = {
+      id: `exec-${Math.random().toString(36).slice(2, 10)}`,
+      question,
+      risks,
+      recommendations,
+      generatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      executiveInsights: [insight, ...state.executiveInsights],
+    });
+    emit(
+      appendAudit({
+        actor: "Executive AI Platform",
+        action: "executive.ai.advised",
+        service: "Executive AI Platform",
+        subject: question,
+        evidence: recommendations.join(" | "),
+        detail: "Advisory output only. No authority to approve or deploy.",
+      }),
+    );
+    return insight;
+  }
+
+  function refreshCommandCenter() {
+    const openRisks = state.riskRegister.filter((risk) => risk.status === "open").length;
+    const incidentCount = state.commandCenterSnapshots[0]?.incidentCount ?? 0;
+    const snapshot = {
+      id: `cmd-${Math.random().toString(36).slice(2, 10)}`,
+      enterpriseHealth: String(Math.max(84, 100 - openRisks * 3)),
+      trustScore: String(Math.max(88, 100 - openRisks * 2)),
+      riskScore: openRisks > 2 ? "High" : openRisks > 0 ? "Medium" : "Low",
+      securityScore: String(Math.max(90, 98 - openRisks)),
+      complianceScore: "98",
+      deliveryScore: String(Math.max(82, 92 - state.automationRuns.length)),
+      incidentCount,
+      generatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      commandCenterSnapshots: [snapshot, ...state.commandCenterSnapshots],
+    });
+    emit(
+      appendAudit({
+        actor: "Command Service",
+        action: "command.center.refreshed",
+        service: "Command Service",
+        subject: "Enterprise command center",
+        evidence: `${snapshot.enterpriseHealth}/${snapshot.trustScore}/${snapshot.riskScore}`,
+        detail: "Mission-control snapshot recalculated from shared enterprise services.",
+      }),
+    );
+    return snapshot;
+  }
+
+  function runEnterpriseInteraction(input = {}) {
+    const subject = input.subject || "Enterprise request";
+    const policy = state.approvalPolicies.find((item) => item.id === (input.policyId || "policy-prod-release")) ?? state.approvalPolicies[0];
+    const evidence = {
+      id: `evidence-${Math.random().toString(36).slice(2, 10)}`,
+      actor: input.actor || "NovaID",
+      action: input.action || "enterprise.interaction.routed",
+      timestamp: nowIso(),
+      policy: policy?.id || "UNSPECIFIED",
+      artifacts: input.artifacts || [],
+      hash: `hash-${Math.random().toString(36).slice(2, 10)}`,
+      verified: true,
+      summary: input.summary || `Evidence bundle generated for ${subject}.`,
+    };
+    const risk = {
+      id: `risk-${Math.random().toString(36).slice(2, 10)}`,
+      title: input.riskTitle || `${subject} risk`,
+      likelihood: input.likelihood || "medium",
+      impact: input.impact || "medium",
+      exposure: input.exposure || "medium",
+      score: calculateRiskScore(
+        input.likelihood || "medium",
+        input.impact || "medium",
+        input.exposure || "medium",
+      ),
+      owner: input.owner || "Risk Team",
+      treatment: input.treatment || ["Review controls", "Attach evidence", "Route approval"],
+      status: "open",
+    };
+    const route = {
+      id: `route-${Math.random().toString(36).slice(2, 10)}`,
+      policyId: policy?.id || "policy-prod-release",
+      subject,
+      required: policy?.required || [],
+      quorum: policy?.quorum || 1,
+      timeout: policy?.timeout || "24h",
+      escalation: policy?.escalation || "CEO",
+      status: "ready",
+      generatedAt: nowIso(),
+      context: {
+        environment: input.environment || "production",
+        region: input.region || "global",
+      },
+    };
+    const twin = {
+      id: `twin-${Math.random().toString(36).slice(2, 10)}`,
+      title: input.scenarioTitle || `${subject} scenario`,
+      expectedImpact: input.expectedImpact || "4 services",
+      revenueRisk: input.revenueRisk || "$0",
+      recovery: input.recovery || "15 minutes",
+      affectedCustomers: input.affectedCustomers || "0",
+      region: input.region || "Global",
+      generatedAt: nowIso(),
+    };
+    const insight = {
+      id: `exec-${Math.random().toString(36).slice(2, 10)}`,
+      question: input.question || `What threatens ${subject}?`,
+      risks: [risk.title, ...state.riskRegister.slice(0, 2).map((item) => item.title)],
+      recommendations: input.recommendations || [
+        "Increase operational capacity on the critical path.",
+        "Prioritize the highest-scoring risk treatment.",
+        "Maintain gated approvals for production changes.",
+      ],
+      generatedAt: nowIso(),
+    };
+    const openRisks = [risk, ...state.riskRegister].filter((item) => item.status === "open").length;
+    const snapshot = {
+      id: `cmd-${Math.random().toString(36).slice(2, 10)}`,
+      enterpriseHealth: String(Math.max(84, 100 - openRisks * 3)),
+      trustScore: String(Math.max(88, 100 - openRisks * 2)),
+      riskScore: openRisks > 2 ? "High" : openRisks > 0 ? "Medium" : "Low",
+      securityScore: String(Math.max(90, 98 - openRisks)),
+      complianceScore: "98",
+      deliveryScore: String(Math.max(82, 92 - state.automationRuns.length)),
+      incidentCount: state.commandCenterSnapshots[0]?.incidentCount ?? 0,
+      generatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      evidenceBundles: [evidence, ...state.evidenceBundles],
+      riskRegister: [risk, ...state.riskRegister],
+      approvalRoutes: [route, ...state.approvalRoutes],
+      digitalTwinScenarios: [twin, ...state.digitalTwinScenarios],
+      executiveInsights: [insight, ...state.executiveInsights],
+      commandCenterSnapshots: [snapshot, ...state.commandCenterSnapshots],
+    });
+    emit(
+      appendAudit({
+        actor: evidence.actor,
+        action: evidence.action,
+        service: "Evidence Engine",
+        subject,
+        evidence: evidence.hash,
+        detail: evidence.summary,
+      }),
+    );
+    emit(
+      appendAudit({
+        actor: "Risk Engine",
+        action: "risk.evaluated",
+        service: "Risk Engine",
+        subject: risk.title,
+        evidence: `${risk.likelihood} × ${risk.impact} × ${risk.exposure} = ${risk.score}`,
+        detail: `Risk owned by ${risk.owner}.`,
+      }),
+    );
+    emit(
+      appendAudit({
+        actor: "Policy Engine",
+        action: "approval.policy.routed",
+        service: "Policy Engine",
+        subject,
+        evidence: `${route.required.join(", ")} | quorum ${route.quorum}`,
+        detail: `Policy ${route.policyId} routed for authorization.`,
+      }),
+    );
+    emit(
+      appendAudit({
+        actor: "Digital Twin Engine",
+        action: "digital.twin.scenario.simulated",
+        service: "Digital Twin Engine",
+        subject: twin.title,
+        evidence: `${twin.region} · ${twin.expectedImpact}`,
+        detail: `Estimated recovery ${twin.recovery} for ${twin.affectedCustomers} customers.`,
+      }),
+    );
+    emit(
+      appendAudit({
+        actor: "Executive AI Platform",
+        action: "executive.ai.advised",
+        service: "Executive AI Platform",
+        subject: insight.question,
+        evidence: insight.recommendations.join(" | "),
+        detail: "Advisory output only. No authority to approve or deploy.",
+      }),
+    );
+    emit(
+      appendAudit({
+        actor: "Command Service",
+        action: "command.center.refreshed",
+        service: "Command Service",
+        subject: "Enterprise command center",
+        evidence: `${snapshot.enterpriseHealth}/${snapshot.trustScore}/${snapshot.riskScore}`,
+        detail: "Mission-control snapshot recalculated from shared enterprise services.",
+      }),
+    );
+    return { evidence, risk, route, twin, insight, snapshot };
   }
 
   function runAutomationTemplate(templateId) {
@@ -966,6 +1427,13 @@ function createSolution(payload) {
     focusKnowledgeNode,
     queryKnowledgeGraph,
     traceKnowledgePath,
+    createEvidenceBundle,
+    evaluateRisk,
+    routeApprovalPolicy,
+    simulateDigitalTwinScenario,
+    askExecutiveAI,
+    refreshCommandCenter,
+    runEnterpriseInteraction,
     runAutomationTemplate,
     advanceWorkflow,
     approveGate,

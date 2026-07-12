@@ -1767,6 +1767,12 @@ function App() {
   const activeAutomationTemplate =
     AUTOMATION_TEMPLATES.find((template) => template.id === automationTemplateId) ??
     AUTOMATION_TEMPLATES[0];
+  const latestEvidenceBundle = runtime.evidenceBundles[0];
+  const latestRiskItem = runtime.riskRegister[0];
+  const latestApprovalRoute = runtime.approvalRoutes[0];
+  const latestTwinScenario = runtime.digitalTwinScenarios[0];
+  const latestExecutiveInsight = runtime.executiveInsights[0];
+  const latestCommandSnapshot = runtime.commandCenterSnapshots[0];
   const workflowJourneyStages = selectedRequest?.workflow?.length ? selectedRequest.workflow : WORKFLOW_STAGES;
   const selectedJourneyStage =
     workflowJourneyStages.find((stage) => stage.id === selectedJourneyStageId) ??
@@ -1944,6 +1950,36 @@ function App() {
     setKnowledgeTracePath(runtime.traceKnowledgePath(activeKnowledgeNode.id, knowledgeTraceTargetId));
   };
 
+  const runSharedInteraction = () => {
+    const subject = activeRequest?.title || suggestedTitle;
+    runtime.runEnterpriseInteraction({
+      subject,
+      actor: "NovaID",
+      action: "enterprise.interaction.routed",
+      policyId: "policy-prod-release",
+      artifacts: activeRequest?.artifacts?.slice(0, 3).map((artifact) => artifact.id) ?? [],
+      environment,
+      region: activeTenant?.regions?.[0] || "Global",
+      question: `What threatens ${subject}?`,
+      summary: `Shared interaction bundle generated for ${subject}.`,
+      scenarioTitle: `${subject} scenario`,
+      expectedImpact: `${Math.max(2, (activeRequest?.workflow?.length || 4) - 2)} services`,
+      revenueRisk: activeProject?.budget || "$0",
+      recovery: "23 minutes",
+      affectedCustomers: "3,212",
+      likelihood: activeRequest?.compliance === "very high" ? "high" : "medium",
+      impact: activeRequest?.compliance === "very high" ? "high" : "medium",
+      exposure: activeRequest?.region === "Australia" ? "medium" : "high",
+      owner: "Enterprise Risk",
+      recommendations: [
+        "Preserve approval gates and evidence capture.",
+        "Correlate operations data with the knowledge graph.",
+        "Update the command center snapshot after execution.",
+      ],
+    });
+    setSelectedOutputTab("Evidence");
+  };
+
   const handleAttachmentUpload = (event) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) {
@@ -1998,7 +2034,6 @@ function App() {
   };
 
   function renderOutputTabContent() {
-    const currentApprovals = activeRequest?.approvals ?? [];
     const currentArtifacts = activeRequest?.artifacts ?? [];
     const currentWorkflow = activeRequest?.workflow ?? [];
 
@@ -2156,14 +2191,12 @@ function App() {
               <p className="section-label">Security findings</p>
               <strong>Threat model, dependency review, and approval gates remain enforced</strong>
               <div className="artifact-list">
-                {[
-                  "Secrets scanned before release",
-                  "Policy checks executed against the target environment",
-                  "Production deployment remains approval-gated",
-                ].map((item) => (
-                  <div className="artifact-row" key={item}>
-                    <strong>{item}</strong>
-                    <span>Governed</span>
+                {runtime.riskRegister.slice(0, 3).map((risk) => (
+                  <div className="artifact-row" key={risk.id}>
+                    <strong>{risk.title}</strong>
+                    <span>
+                      {risk.likelihood} × {risk.impact} × {risk.exposure} = {risk.score}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -2171,11 +2204,13 @@ function App() {
             <article className="output-card">
               <p className="section-label">Current approvals</p>
               <div className="artifact-list">
-                {currentApprovals.length ? (
-                  currentApprovals.map((approval) => (
-                    <div className="artifact-row" key={approval.id}>
-                      <strong>{approval.gate}</strong>
-                      <span>{approval.by}</span>
+                {runtime.approvalRoutes.length ? (
+                  runtime.approvalRoutes.slice(0, 4).map((route) => (
+                    <div className="artifact-row" key={route.id}>
+                      <strong>{route.subject}</strong>
+                      <span>
+                        {route.policyId} · {route.required.join(", ")}
+                      </span>
                     </div>
                   ))
                 ) : (
@@ -2224,10 +2259,12 @@ function App() {
               <p className="section-label">Evidence summary</p>
               <strong>Artifacts, approvals, and audit events are preserved for review</strong>
               <div className="artifact-list">
-                {currentArtifacts.slice(0, 4).map((artifact) => (
-                  <div className="artifact-row" key={artifact.id}>
-                    <strong>{artifact.title}</strong>
-                    <span>{artifact.stage}</span>
+                {(runtime.evidenceBundles || []).slice(0, 4).map((bundle) => (
+                  <div className="artifact-row" key={bundle.id}>
+                    <strong>{bundle.summary}</strong>
+                    <span>
+                      {bundle.actor} · {bundle.policy}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -2358,6 +2395,12 @@ function App() {
                     ["Region", activeRequest?.region || "Unspecified"],
                     ["Target", activeRequest?.surfaces?.join(", ") || "Workspace"],
                     ["Stage", activeStage?.label || "Intent Analysis"],
+                    [
+                      "Command center",
+                      latestCommandSnapshot
+                        ? `${latestCommandSnapshot.enterpriseHealth} / ${latestCommandSnapshot.trustScore} / ${latestCommandSnapshot.riskScore}`
+                        : "Pending",
+                    ],
                   ].map(([label, value]) => (
                     <div className="artifact-row" key={label}>
                       <strong>{label}</strong>
@@ -3853,6 +3896,129 @@ function App() {
                   <p>{summary}</p>
                 </article>
               ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Shared interaction model</p>
+                <h2>Identity, graph, policy, risk, approvals, evidence, twin, executive, command</h2>
+              </div>
+              <div className="layout-hint">
+                <span>One flow across 29 windows</span>
+                <span>Atomic service updates and audit trails</span>
+              </div>
+            </div>
+            <div className="service-grid">
+              <article className="service-card">
+                <p className="section-label">Enterprise Knowledge Graph Service</p>
+                <strong>Search and trace relationships</strong>
+                <p>Locate ownership, dependencies, and impact paths before execution.</p>
+                <div className="studio-actions">
+                  <button type="button" className="toolbar-chip" onClick={runKnowledgeQuery}>
+                    Run query
+                  </button>
+                  <button type="button" className="toolbar-chip" onClick={refreshKnowledgeTrace}>
+                    Trace path
+                  </button>
+                </div>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Enterprise Evidence Engine</p>
+                <strong>Bundle and verify proof</strong>
+                <p>Every significant action emits immutable evidence and audit metadata.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Generate evidence
+                </button>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Enterprise Risk Engine</p>
+                <strong>Score impact before action</strong>
+                <p>Likelihood, impact, and exposure are scored before protected work continues.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Evaluate risk
+                </button>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Approval engine</p>
+                <strong>Route to the right approvers</strong>
+                <p>Policy, quorum, timeout, and escalation stay under governance control.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Route approval
+                </button>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Enterprise Digital Twin</p>
+                <strong>Simulate operational impact</strong>
+                <p>Forecast service, revenue, and customer impact before rollout or recovery.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Simulate twin
+                </button>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Executive AI Services</p>
+                <strong>Explain threats and options</strong>
+                <p>Strategy, operations, and finance consume the same governed evidence layer.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Ask executive AI
+                </button>
+              </article>
+              <article className="service-card">
+                <p className="section-label">Command center</p>
+                <strong>Refresh mission control</strong>
+                <p>Situational awareness is recalculated from shared enterprise services.</p>
+                <button type="button" className="toolbar-chip" onClick={runSharedInteraction}>
+                  Refresh command center
+                </button>
+              </article>
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Latest evidence</p>
+                <strong>{latestEvidenceBundle?.summary || "No evidence yet"}</strong>
+                <p className="studio-note">
+                  {latestEvidenceBundle ? `${latestEvidenceBundle.actor} · ${latestEvidenceBundle.policy}` : "Generate a bundle from the shared interaction model."}
+                </p>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Latest risk and route</p>
+                <strong>{latestRiskItem?.title || "No risk evaluated"}</strong>
+                <p className="studio-note">
+                  {latestRiskItem
+                    ? `${latestRiskItem.likelihood} × ${latestRiskItem.impact} × ${latestRiskItem.exposure} = ${latestRiskItem.score}`
+                    : "Run the risk engine to create a scored item."}
+                </p>
+                <div className="chip-cloud compact">
+                  <span className="context-chip">
+                    {latestApprovalRoute?.policyId || "No approval route"}
+                  </span>
+                  <span className="context-chip">
+                    {latestApprovalRoute?.required?.join(", ") || "No approvers"}
+                  </span>
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Twin, executive, command</p>
+                <strong>{latestTwinScenario?.title || "No twin scenario"}</strong>
+                <p className="studio-note">
+                  {latestExecutiveInsight?.question || "Ask an executive question to generate a briefing."}
+                </p>
+                <div className="artifact-list">
+                  <div className="artifact-row">
+                    <strong>Enterprise health</strong>
+                    <span>{latestCommandSnapshot?.enterpriseHealth || "n/a"}</span>
+                  </div>
+                  <div className="artifact-row">
+                    <strong>Trust score</strong>
+                    <span>{latestCommandSnapshot?.trustScore || "n/a"}</span>
+                  </div>
+                  <div className="artifact-row">
+                    <strong>Risk score</strong>
+                    <span>{latestCommandSnapshot?.riskScore || "n/a"}</span>
+                  </div>
+                </div>
+              </article>
             </div>
           </section>
 
