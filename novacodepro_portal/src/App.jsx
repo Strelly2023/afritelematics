@@ -83,6 +83,243 @@ const DISCOVERY_PROMPTS = [
   "Which languages, currencies, and payment methods are required?",
 ];
 
+const ENTERPRISE_WINDOWS = [
+  {
+    id: "window-01",
+    label: "Window 1",
+    title: "NovaID Identity Center",
+    phase: "Identity and trust",
+    service: "Identity Service",
+    summary: "Unified identity, authentication, authorization, session intelligence, and trust.",
+  },
+  {
+    id: "window-02",
+    label: "Window 2",
+    title: "Unified Workspace",
+    phase: "Workspace",
+    service: "Workspace Service",
+    summary: "Persistent role-aware workspace with shared conversations, memory, files, and layouts.",
+  },
+  {
+    id: "window-03",
+    label: "Window 3",
+    title: "Multimodal Request Composer",
+    phase: "Request",
+    service: "Conversation Service",
+    summary: "Universal request input for text, files, diagrams, repositories, logs, and voice.",
+  },
+  {
+    id: "window-04",
+    label: "Window 4",
+    title: "AI Discovery Center",
+    phase: "Discovery",
+    service: "Discovery Agent",
+    summary: "Dynamic interviews that convert incomplete ideas into structured intent and constraints.",
+  },
+  {
+    id: "window-05",
+    label: "Window 5",
+    title: "Requirements Studio",
+    phase: "Definition",
+    service: "Requirements Service",
+    summary: "Versioned requirements, baselines, coverage, traceability, and approval-ready analysis.",
+  },
+  {
+    id: "window-06",
+    label: "Window 6",
+    title: "Architecture Center",
+    phase: "Architecture",
+    service: "Architecture Service",
+    summary: "Enterprise and solution architecture, fitness functions, ADRs, and trust boundaries.",
+  },
+  {
+    id: "window-07",
+    label: "Window 7",
+    title: "UX and Experience Studio",
+    phase: "Design",
+    service: "Design Service",
+    summary: "Research, journeys, wireframes, prototypes, responsive layouts, and accessibility.",
+  },
+  {
+    id: "window-08",
+    label: "Window 8",
+    title: "Data and API Center",
+    phase: "Data and APIs",
+    service: "Integration API Service",
+    summary: "API contracts, schemas, data models, lineage, compatibility, and contract testing.",
+  },
+  {
+    id: "window-09",
+    label: "Window 9",
+    title: "Solution Factory",
+    phase: "Engineering",
+    service: "Solution Orchestrator Engine",
+    summary: "Repository-aware generation for web, mobile, data, infrastructure, docs, and tests.",
+  },
+  {
+    id: "window-10",
+    label: "Window 10",
+    title: "Agent Orchestrator",
+    phase: "Orchestration",
+    service: "Agent Orchestrator",
+    summary: "Specialized agents execute within verified identities, budgets, scopes, and data boundaries.",
+  },
+  {
+    id: "window-11",
+    label: "Window 11",
+    title: "Enterprise Knowledge Graph",
+    phase: "Memory",
+    service: "Knowledge Graph",
+    summary: "Semantic graph for traceability, impact analysis, search, and institutional memory.",
+  },
+  {
+    id: "window-12",
+    label: "Window 12",
+    title: "Workflow and Decision Engine",
+    phase: "Automation",
+    service: "Workflow Engine",
+    summary: "Long-running workflows, decisions, compensations, approvals, replays, and evidence.",
+  },
+  {
+    id: "window-13",
+    label: "Window 13",
+    title: "Test and Quality Center",
+    phase: "Quality",
+    service: "Verification Service",
+    summary: "Unified quality engineering for software, infrastructure, data, AI, and accessibility.",
+  },
+  {
+    id: "window-14",
+    label: "Window 14",
+    title: "Security Center",
+    phase: "Security",
+    service: "Security Review Service",
+    summary: "Threat modelling, SAST, DAST, SBOM, runtime protection, and supply-chain defense.",
+  },
+  {
+    id: "window-15",
+    label: "Window 15",
+    title: "Compliance and Assurance Center",
+    phase: "Compliance",
+    service: "Compliance Service",
+    summary: "Control mapping, evidence capture, readiness, exceptions, and continuous compliance.",
+  },
+  {
+    id: "window-16",
+    label: "Window 16",
+    title: "Human Approval Center",
+    phase: "Human review",
+    service: "Approval Service",
+    summary:
+      "Reviewer workspace for human authorization of requirements, architecture, security, release, deployment, and risk actions.",
+  },
+  {
+    id: "window-17",
+    label: "Window 17",
+    title: "Release Factory",
+    phase: "Release",
+    service: "Release Factory",
+    summary: "Build, sign, attest, package, verify, promote, and archive governed release artifacts.",
+  },
+  {
+    id: "window-18",
+    label: "Window 18",
+    title: "Deployment Center",
+    phase: "Deployment",
+    service: "Deployment Service",
+    summary: "Progressive delivery across governed environments with validation, rollback, and evidence.",
+  },
+  {
+    id: "window-19",
+    label: "Window 19",
+    title: "Observability Platform",
+    phase: "Operations",
+    service: "Observability Service",
+    summary: "Unified metrics, logs, traces, RUM, business telemetry, and service maps.",
+  },
+  {
+    id: "window-20",
+    label: "Window 20",
+    title: "Enterprise Digital Twin",
+    phase: "Simulation",
+    service: "Digital Twin Engine",
+    summary: "Live computational model for scenario simulation, forecasting, and impact analysis.",
+  },
+  {
+    id: "window-21",
+    label: "Window 21",
+    title: "Operations Center",
+    phase: "Operations",
+    service: "Operations Center",
+    summary: "Incident response, runbooks, continuity, problem management, and operational evidence.",
+  },
+  {
+    id: "window-22",
+    label: "Window 22",
+    title: "Enterprise Marketplace",
+    phase: "Ecosystem",
+    service: "Marketplace Service",
+    summary: "Governed distribution for solutions, agents, templates, packs, and connectors.",
+  },
+  {
+    id: "window-23",
+    label: "Window 23",
+    title: "Executive Dashboard",
+    phase: "Executive",
+    service: "Executive Analytics",
+    summary: "Real-time business, technology, risk, and AI performance intelligence for executives.",
+  },
+  {
+    id: "window-24",
+    label: "Window 24",
+    title: "Continuous Improvement Center",
+    phase: "Optimization",
+    service: "Improvement Engine",
+    summary: "Closed-loop measurement, prioritization, implementation, and learning from outcomes.",
+  },
+  {
+    id: "window-25",
+    label: "Window 25",
+    title: "Enterprise Risk Center",
+    phase: "Risk",
+    service: "Risk Engine",
+    summary: "Unified risk taxonomy, control effectiveness, treatment plans, and board reporting.",
+  },
+  {
+    id: "window-26",
+    label: "Window 26",
+    title: "Approval Policy and Routing Engine",
+    phase: "Policy orchestration",
+    service: "Policy Engine",
+    summary:
+      "Routing, quorum, separation of duties, escalation, time bounds, and policy enforcement beneath human review.",
+  },
+  {
+    id: "window-27",
+    label: "Window 27",
+    title: "Executive AI Agents",
+    phase: "Advisory AI",
+    service: "Executive AI Platform",
+    summary: "Role-specific strategic assistants that advise without replacing accountable executives.",
+  },
+  {
+    id: "window-28",
+    label: "Window 28",
+    title: "Board Portal",
+    phase: "Governance",
+    service: "Board Service",
+    summary: "Secure board packs, voting, resolutions, decisions, and fiduciary evidence.",
+  },
+  {
+    id: "window-29",
+    label: "Window 29",
+    title: "Enterprise Command Center",
+    phase: "Command",
+    service: "Command Service",
+    summary: "Unified command room across strategy, operations, security, finance, risk, and AI.",
+  },
+];
+
 const COMPOSER_MODES = [
   { id: "ask", label: "Ask", description: "Explain without changing files." },
   { id: "plan", label: "Plan", description: "Produce a governed execution plan." },
@@ -136,64 +373,6 @@ const STARTER_REQUESTS = [
   "Build a modern customer-service portal with authentication, case management, analytics, and an AI support assistant.",
   "Analyse this repository, identify production blockers, fix the critical issues, run validation, and prepare a release report.",
   "Design and implement a mobile payment application for consumers, agents, merchants, and businesses.",
-];
-
-const OPERATING_WINDOWS = [
-  {
-    name: "Test Center",
-    summary: "Unit, integration, UI, API, security, performance, and accessibility results stay visible.",
-    action: "Open Test Center",
-  },
-  {
-    name: "Security Center",
-    summary: "Threat models, SBOMs, dependencies, secrets, policies, and risk scores are reviewed here.",
-    action: "Open Security Center",
-  },
-  {
-    name: "Compliance Center",
-    summary: "ISO, SOC2, PCI, privacy, regional laws, and data residency posture are consolidated.",
-    action: "Open Compliance Center",
-  },
-  {
-    name: "Human Approval Center",
-    summary: "Architecture, security, compliance, executive, and release approvals are captured with evidence.",
-    action: "Open Approval Center",
-  },
-  {
-    name: "Release Factory",
-    summary: "Build, test, sign, package, publish, and verify release artifacts from one governed surface.",
-    action: "Open Release Factory",
-  },
-  {
-    name: "Deployment Center",
-    summary: "Promotion across development, testing, staging, pilot, and production is managed here.",
-    action: "Open Deployment Center",
-  },
-  {
-    name: "Digital Twin",
-    summary: "Services, clusters, databases, queues, users, transactions, and KPI health are modelled live.",
-    action: "Open Digital Twin",
-  },
-  {
-    name: "Operations Center",
-    summary: "Logs, traces, metrics, incidents, alerts, uptime, and deployment health are monitored continuously.",
-    action: "Open Operations Center",
-  },
-  {
-    name: "Marketplace",
-    summary: "Solution packs, templates, agents, governance packs, and integrations can be installed safely.",
-    action: "Open Marketplace",
-  },
-  {
-    name: "Executive Dashboard",
-    summary: "Revenue, velocity, adoption, risk score, trust score, and release performance remain strategic.",
-    action: "Open Executive Dashboard",
-  },
-  {
-    name: "Continuous Improvement",
-    summary: "Monitoring feeds back into AI analysis, issue detection, improvement, testing, and release.",
-    action: "Open Improvement Loop",
-  },
 ];
 
 const ROLE_PROFILES = [
@@ -1644,15 +1823,16 @@ function App() {
       service_registry:
         serviceRegistry.length > 0
           ? serviceRegistry
-          : [
-              { name: "NovaCodePro Gateway", status: "healthy", category: "control-plane" },
-              { name: "Workflow Service", status: "healthy", category: "orchestration" },
-              { name: "Agent Orchestrator", status: "healthy", category: "execution" },
-              { name: "Artifact Service", status: "healthy", category: "storage" },
-              { name: "Approval Service", status: "healthy", category: "governance" },
-              { name: "Release Factory", status: "healthy", category: "delivery" },
-              { name: "Digital Twin Engine", status: "healthy", category: "observability" },
-            ],
+              : [
+                  { name: "NovaCodePro Gateway", status: "healthy", category: "control-plane" },
+                  { name: "Workflow Service", status: "healthy", category: "orchestration" },
+                  { name: "Agent Orchestrator", status: "healthy", category: "execution" },
+                  { name: "Artifact Service", status: "healthy", category: "storage" },
+                  { name: "Approval Service", status: "healthy", category: "governance" },
+                  { name: "Policy Engine", status: "healthy", category: "routing" },
+                  { name: "Release Factory", status: "healthy", category: "delivery" },
+                  { name: "Digital Twin Engine", status: "healthy", category: "observability" },
+                ],
     };
   }, [platformSummary, runtime.connectedIntegrations.length, runtime.auditTrail.length, runtime.solutionRequests.length, runtime.tenants.length]);
 
@@ -2258,6 +2438,14 @@ function App() {
                 </div>
               </div>
 
+              <article className="output-card doctrine-card">
+                <p className="section-label">Platform doctrine</p>
+                <strong>AI proposes. Policies constrain. Humans authorize. Systems execute.</strong>
+                <p className="studio-note">
+                  Evidence proves, operations verify, and governance supervises every protected action.
+                </p>
+              </article>
+
               {!composerPrompt.trim() ? (
                 <article className="empty-console">
                   <strong>Start with a request</strong>
@@ -2794,27 +2982,26 @@ function App() {
           <section className="surface-band">
             <div className="band-header">
               <div>
-                <p className="section-label">Operating windows</p>
-                <h2>Real workflow stages with tangible outputs</h2>
+                <p className="section-label">29-window enterprise maturity model</p>
+                <h2>One governed platform across identity, execution, governance, and command</h2>
               </div>
               <div className="layout-hint">
-                <span>All stages are navigable</span>
-                <span>Each window maps to a real workflow stage</span>
+                <span>Window 16 is human review</span>
+                <span>Window 26 is approval routing and policy orchestration</span>
               </div>
             </div>
 
-            <div className="center-grid">
-              {OPERATING_WINDOWS.map((window) => (
-                <article className="center-card" key={window.name}>
-                  <p className="section-label">{window.name}</p>
+            <div className="maturity-grid">
+              {ENTERPRISE_WINDOWS.map((window) => (
+                <article className="maturity-card" key={window.id}>
+                  <p className="section-label">{window.label}</p>
+                  <strong>{window.title}</strong>
+                  <span>{window.phase}</span>
                   <p>{window.summary}</p>
-                  <button
-                    type="button"
-                    className="toolbar-chip"
-                    onClick={() => runtime.runCommand(window.action)}
-                  >
-                    {window.action}
-                  </button>
+                  <div className="chip-cloud compact">
+                    <span className="context-chip">{window.service}</span>
+                    <span className="context-chip">Evidence producing</span>
+                  </div>
                 </article>
               ))}
             </div>
