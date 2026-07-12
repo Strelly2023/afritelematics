@@ -1,8 +1,15 @@
 import {
   AGENT_MARKETPLACE,
+  AUTOMATION_TEMPLATES,
+  COLLABORATION_THREADS,
+  DEVELOPER_SURFACES,
+  INTEGRATIONS,
+  KNOWLEDGE_GRAPH,
   PLATFORM_CENTERS,
+  PROJECTS,
   SERVICE_CATALOG,
   SOLUTION_TEMPLATES,
+  TENANTS,
   WORKFLOW_SEQUENCE,
   WORKFLOW_STAGES,
 } from "./catalog.js";
@@ -98,8 +105,30 @@ function seedState() {
     environment: "Production",
     selectedWorkspace: "Solution Studio",
     selectedRequestId: first.id,
+    activeTenantId: TENANTS[0].id,
+    activeProjectId: PROJECTS[0].id,
+    activeThreadId: COLLABORATION_THREADS[0].id,
+    selectedKnowledgeNodeId: KNOWLEDGE_GRAPH[0].id,
     search: "",
     installedAgents: ["banking-agent", "healthcare-agent", "ride-hailing-agent"],
+    connectedIntegrations: INTEGRATIONS.filter((integration) => integration.status === "connected").map(
+      (integration) => integration.id,
+    ),
+    tenants: TENANTS,
+    projects: PROJECTS,
+    collaborationThreads: COLLABORATION_THREADS.map((thread, index) => ({
+      ...thread,
+      messages: [
+        {
+          id: `msg-${index + 1}`,
+          author: "NovaCodePro",
+          body: thread.message,
+          at: createdAtMinus(index + 10),
+        },
+      ],
+    })),
+    knowledgeGraph: KNOWLEDGE_GRAPH,
+    automationRuns: [],
     solutionRequests: [
       first,
       {
@@ -160,6 +189,7 @@ function seedState() {
       }),
     ],
     commandHistory: [],
+    developerSurfaces: DEVELOPER_SURFACES,
   };
 }
 
@@ -168,14 +198,33 @@ function createdAtMinus(minutes) {
 }
 
 function loadState() {
+  const base = seedState();
   if (typeof localStorage === "undefined") {
-    return seedState();
+    return base;
   }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : seedState();
+    if (!raw) {
+      return base;
+    }
+    const parsed = JSON.parse(raw);
+    return {
+      ...base,
+      ...parsed,
+      solutionRequests: parsed.solutionRequests ?? base.solutionRequests,
+      auditTrail: parsed.auditTrail ?? base.auditTrail,
+      commandHistory: parsed.commandHistory ?? base.commandHistory,
+      tenants: parsed.tenants ?? base.tenants,
+      projects: parsed.projects ?? base.projects,
+      collaborationThreads: parsed.collaborationThreads ?? base.collaborationThreads,
+      knowledgeGraph: parsed.knowledgeGraph ?? base.knowledgeGraph,
+      automationRuns: parsed.automationRuns ?? base.automationRuns,
+      connectedIntegrations: parsed.connectedIntegrations ?? base.connectedIntegrations,
+      installedAgents: parsed.installedAgents ?? base.installedAgents,
+      developerSurfaces: parsed.developerSurfaces ?? base.developerSurfaces,
+    };
   } catch {
-    return seedState();
+    return base;
   }
 }
 
@@ -251,6 +300,43 @@ function createRuntime() {
     });
   }
 
+  function switchTenant(tenantId) {
+    const tenantProjects = state.projects.filter((project) => project.tenantId === tenantId);
+    setState({
+      ...state,
+      activeTenantId: tenantId,
+      activeProjectId: tenantProjects[0]?.id ?? state.activeProjectId,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "workspace.tenant.switched",
+        service: "Tenant Manager",
+        subject: tenantId,
+        evidence: `Tenant switched to ${tenantId}.`,
+        detail: "Workspace context updated for the selected tenant.",
+      }),
+    );
+  }
+
+  function selectProject(projectId) {
+    setState({
+      ...state,
+      activeProjectId: projectId,
+    });
+    const project = state.projects.find((item) => item.id === projectId);
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "project.selected",
+        service: "Project Workspace",
+        subject: project?.name || projectId,
+        evidence: project?.solution || "Project selected from workspace catalog.",
+        detail: "Project context activated in NovaCodePro.",
+      }),
+    );
+  }
+
   function switchRole(roleId) {
     setState({
       ...state,
@@ -302,6 +388,140 @@ function createRuntime() {
         subject: agent?.title || agentId,
         evidence: agent?.api || "No API metadata",
         detail: "Agent enabled in the active enterprise workspace.",
+      }),
+    );
+  }
+
+  function installIntegration(integrationId) {
+    if (state.connectedIntegrations.includes(integrationId)) {
+      return;
+    }
+    const integration = INTEGRATIONS.find((item) => item.id === integrationId);
+    setState({
+      ...state,
+      connectedIntegrations: [integrationId, ...state.connectedIntegrations],
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "integration.connected",
+        service: "Integration Hub",
+        subject: integration?.name || integrationId,
+        evidence: integration?.purpose || "Integration enabled.",
+        detail: "External service connected to the enterprise platform.",
+      }),
+    );
+  }
+
+  function createProject(payload) {
+    const project = {
+      id: `project-${Math.random().toString(36).slice(2, 10)}`,
+      name: payload.name,
+      tenantId: payload.tenantId || state.activeTenantId,
+      status: payload.status || "Discovery",
+      owner: payload.owner || "NovaCodePro",
+      solution: payload.solution || "Generated solution",
+      region: payload.region || "Australia",
+      budget: payload.budget || "$0",
+    };
+    setState({
+      ...state,
+      projects: [project, ...state.projects],
+      activeProjectId: project.id,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "project.created",
+        service: "Project Workspace",
+        subject: project.name,
+        evidence: project.solution,
+        detail: "Project created through NovaCodePro governance flow.",
+      }),
+    );
+  }
+
+  function postComment(threadId, body) {
+    const thread = state.collaborationThreads.find((item) => item.id === threadId);
+    if (!thread) {
+      return;
+    }
+    const updatedThread = {
+      ...thread,
+      messages: [
+        {
+          id: `msg-${Math.random().toString(36).slice(2, 10)}`,
+          author: "NovaCodePro",
+          body,
+          at: nowIso(),
+        },
+        ...thread.messages,
+      ],
+      state: "active",
+    };
+    setState({
+      ...state,
+      activeThreadId: threadId,
+      collaborationThreads: state.collaborationThreads.map((item) =>
+        item.id === threadId ? updatedThread : item,
+      ),
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "collaboration.comment.posted",
+        service: "Collaboration Service",
+        subject: thread.scope,
+        evidence: body,
+        detail: "Collaborative note captured and synchronized with the workspace.",
+      }),
+    );
+  }
+
+  function focusKnowledgeNode(nodeId) {
+    setState({
+      ...state,
+      selectedKnowledgeNodeId: nodeId,
+    });
+    const node = state.knowledgeGraph.find((item) => item.id === nodeId);
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "knowledge.graph.focused",
+        service: "Knowledge Graph",
+        subject: node?.label || nodeId,
+        evidence: node?.links?.join(", ") || "Knowledge node focused.",
+        detail: "Enterprise knowledge graph inspected from the workspace.",
+      }),
+    );
+  }
+
+  function runAutomationTemplate(templateId) {
+    const template = AUTOMATION_TEMPLATES.find((item) => item.id === templateId);
+    if (!template) {
+      return;
+    }
+    const run = {
+      id: `run-${Math.random().toString(36).slice(2, 10)}`,
+      templateId: template.id,
+      title: template.title,
+      stages: template.stages,
+      status: "queued",
+      createdAt: nowIso(),
+    };
+    setState({
+      ...state,
+      automationRuns: [run, ...state.automationRuns],
+      commandHistory: [template.title, ...state.commandHistory].slice(0, 30),
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "automation.template.run",
+        service: "Workflow Engine",
+        subject: template.title,
+        evidence: template.stages.join(" → "),
+        detail: "Reusable automation template started from the enterprise workspace.",
       }),
     );
   }
@@ -494,9 +714,16 @@ function createRuntime() {
     },
     createSolution,
     selectRequest,
+    switchTenant,
+    selectProject,
     switchRole,
     setEnvironment,
     installAgent,
+    installIntegration,
+    createProject,
+    postComment,
+    focusKnowledgeNode,
+    runAutomationTemplate,
     advanceWorkflow,
     approveGate,
     attachArtifact,
@@ -509,9 +736,16 @@ export const platformRuntime = createRuntime();
 
 export {
   AGENT_MARKETPLACE,
+  AUTOMATION_TEMPLATES,
+  COLLABORATION_THREADS,
+  DEVELOPER_SURFACES,
+  INTEGRATIONS,
+  KNOWLEDGE_GRAPH,
   PLATFORM_CENTERS,
+  PROJECTS,
   SERVICE_CATALOG,
   SOLUTION_TEMPLATES,
+  TENANTS,
   WORKFLOW_SEQUENCE,
   WORKFLOW_STAGES,
 };

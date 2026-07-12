@@ -2,6 +2,9 @@ import React, { useMemo, useState } from "react";
 
 import {
   AGENT_MARKETPLACE,
+  AUTOMATION_TEMPLATES,
+  DEVELOPER_SURFACES,
+  INTEGRATIONS,
   PLATFORM_CENTERS,
   SERVICE_CATALOG,
   SOLUTION_TEMPLATES,
@@ -36,6 +39,9 @@ const COMMANDS = [
   "Open Partner Portal",
   "Find customer invoice",
   "Create project",
+  "Switch tenant",
+  "Post collaboration note",
+  "Run automation template",
   "Summarize incidents",
   "Inspect audit trail",
   "Launch customer workspace",
@@ -627,6 +633,16 @@ function App() {
   const [solutionSurfaces, setSolutionSurfaces] = useState(
     SOLUTION_TEMPLATES[0].surfaces,
   );
+  const [projectName, setProjectName] = useState("NovaCodePro Solution");
+  const [projectOwner, setProjectOwner] = useState("Platform Engineering");
+  const [projectBudget, setProjectBudget] = useState("$250K");
+  const [projectRegion, setProjectRegion] = useState("Melbourne");
+  const [commentDraft, setCommentDraft] = useState(
+    "Architecture and requirements are ready for review.",
+  );
+  const [automationTemplateId, setAutomationTemplateId] = useState(
+    AUTOMATION_TEMPLATES[0].id,
+  );
 
   const activeRole = useMemo(
     () => ROLE_PROFILES.find((role) => role.id === roleId) ?? ROLE_PROFILES[0],
@@ -657,6 +673,19 @@ function App() {
   const currentStage = selectedRequest?.workflow[selectedRequest?.stageIndex ?? 0];
   const pendingSolutions = runtime.solutionRequests.filter((request) => request.status !== "operating");
   const liveSolutions = runtime.solutionRequests.filter((request) => request.status === "operating");
+  const activeTenant =
+    runtime.tenants.find((tenant) => tenant.id === runtime.activeTenantId) ?? runtime.tenants[0];
+  const activeProject =
+    runtime.projects.find((project) => project.id === runtime.activeProjectId) ?? runtime.projects[0];
+  const activeThread =
+    runtime.collaborationThreads.find((thread) => thread.id === runtime.activeThreadId) ??
+    runtime.collaborationThreads[0];
+  const activeKnowledgeNode =
+    runtime.knowledgeGraph.find((node) => node.id === runtime.selectedKnowledgeNodeId) ??
+    runtime.knowledgeGraph[0];
+  const activeAutomationTemplate =
+    AUTOMATION_TEMPLATES.find((template) => template.id === automationTemplateId) ??
+    AUTOMATION_TEMPLATES[0];
 
   const solutionBlueprint = useMemo(() => {
     const template =
@@ -786,6 +815,8 @@ function App() {
                 <span className="badge">Environment: {environment}</span>
                 <span className="badge">Subscription: {activeRole.subscription}</span>
                 <span className="badge">Presence: {activeRole.presence}</span>
+                <span className="badge">Tenant: {activeTenant.name}</span>
+                <span className="badge">Project: {activeProject.name}</span>
               </div>
             </div>
 
@@ -872,6 +903,165 @@ function App() {
                 <p>
                   {appCatalog.slice(0, 4).join(", ") || "No action matched the current query."}
                 </p>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Enterprise foundation</p>
+                <h2>Tenants, projects, and collaboration are backed by real platform state</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Multi-tenant service layer</span>
+                <span>Audit trail updated on every action</span>
+              </div>
+            </div>
+
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Tenants</p>
+                <strong>{activeTenant.name}</strong>
+                <p className="studio-note">
+                  The workspace switches tenant context without affecting the current NovaTech dashboard.
+                </p>
+                <div className="chip-cloud compact">
+                  {runtime.tenants.map((tenant) => (
+                    <button
+                      type="button"
+                      key={tenant.id}
+                      className={tenant.id === activeTenant.id ? "context-chip active" : "context-chip"}
+                      onClick={() => runtime.switchTenant(tenant.id)}
+                    >
+                      {tenant.name}
+                    </button>
+                  ))}
+                </div>
+                <dl className="service-meta">
+                  <div>
+                    <dt>Tier</dt>
+                    <dd>{activeTenant.tier}</dd>
+                  </div>
+                  <div>
+                    <dt>Regions</dt>
+                    <dd>{activeTenant.regions.join(", ")}</dd>
+                  </div>
+                  <div>
+                    <dt>Quota</dt>
+                    <dd>{activeTenant.quota}</dd>
+                  </div>
+                  <div>
+                    <dt>Residency</dt>
+                    <dd>{activeTenant.residency}</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Projects</p>
+                <strong>{activeProject.name}</strong>
+                <p className="studio-note">
+                  Projects are stored, versioned, and linked to tenant identity and budget context.
+                </p>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Project name</span>
+                    <input
+                      value={projectName}
+                      onChange={(event) => setProjectName(event.target.value)}
+                      placeholder="NovaCodePro Portal"
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Owner</span>
+                    <input
+                      value={projectOwner}
+                      onChange={(event) => setProjectOwner(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Budget</span>
+                    <input
+                      value={projectBudget}
+                      onChange={(event) => setProjectBudget(event.target.value)}
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Region</span>
+                    <input
+                      value={projectRegion}
+                      onChange={(event) => setProjectRegion(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="primary-action"
+                  onClick={() =>
+                    runtime.createProject({
+                      name: projectName,
+                      tenantId: activeTenant.id,
+                      owner: projectOwner,
+                      budget: projectBudget,
+                      region: projectRegion,
+                      solution: solutionBlueprint.title,
+                      status: "Discovery",
+                    })
+                  }
+                >
+                  Create project
+                </button>
+                <div className="artifact-list">
+                  {runtime.projects
+                    .filter((project) => project.tenantId === activeTenant.id)
+                    .slice(0, 4)
+                    .map((project) => (
+                      <button
+                        type="button"
+                        className="artifact-row project-row"
+                        key={project.id}
+                        onClick={() => runtime.selectProject(project.id)}
+                      >
+                        <strong>{project.name}</strong>
+                        <span>{project.owner}</span>
+                      </button>
+                    ))}
+                </div>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Collaboration</p>
+                <strong>{activeThread.scope}</strong>
+                <p className="studio-note">
+                  Notes, approvals, and review requests are captured against the active thread.
+                </p>
+                <div className="artifact-list">
+                  {activeThread.messages.map((message) => (
+                    <div className="audit-row" key={message.id}>
+                      <span>{message.at}</span>
+                      <strong>{message.author}</strong>
+                      <p>{message.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <label className="field">
+                  <span>New comment</span>
+                  <textarea
+                    rows="3"
+                    value={commentDraft}
+                    onChange={(event) => setCommentDraft(event.target.value)}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="toolbar-chip"
+                  onClick={() => runtime.postComment(activeThread.id, commentDraft)}
+                >
+                  Post comment
+                </button>
               </article>
             </div>
           </section>
@@ -1073,6 +1263,127 @@ function App() {
           <section className="surface-band">
             <div className="band-header">
               <div>
+                <p className="section-label">Knowledge graph</p>
+                <h2>Requirements, architecture, code, tests, release, and operations stay linked</h2>
+              </div>
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Graph focus</p>
+                <strong>{activeKnowledgeNode.label}</strong>
+                <p className="studio-note">
+                  Nodes remain traceable from the business request through deployment and audit evidence.
+                </p>
+                <div className="bullet-grid">
+                  {activeKnowledgeNode.links.map((link) => {
+                    const linked = runtime.knowledgeGraph.find((node) => node.id === link);
+                    return (
+                      <button
+                        type="button"
+                        className="bullet"
+                        key={link}
+                        onClick={() => runtime.focusKnowledgeNode(link)}
+                      >
+                        {linked?.label || link}
+                      </button>
+                    );
+                  })}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Enterprise graph</p>
+                <div className="service-grid compact">
+                  {runtime.knowledgeGraph.map((node) => (
+                    <button
+                      type="button"
+                      className={node.id === activeKnowledgeNode.id ? "service-card active" : "service-card"}
+                      key={node.id}
+                      onClick={() => runtime.focusKnowledgeNode(node.id)}
+                    >
+                      <p className="section-label">{node.type}</p>
+                      <strong>{node.label}</strong>
+                      <p>{node.links.length} linked nodes</p>
+                    </button>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Automation engine</p>
+                <h2>Reusable workflows turn requests into governed solution deliveries</h2>
+              </div>
+            </div>
+            <div className="template-strip">
+              {AUTOMATION_TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  className={template.id === activeAutomationTemplate.id ? "template-chip active" : "template-chip"}
+                  onClick={() => setAutomationTemplateId(template.id)}
+                >
+                  <strong>{template.title}</strong>
+                  <span>{template.description}</span>
+                </button>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Run template</p>
+                <strong>{activeAutomationTemplate.title}</strong>
+                <p className="studio-note">
+                  {activeAutomationTemplate.stages.length} workflow stages, each with audit and state.
+                </p>
+                <div className="workflow-track compact">
+                  {activeAutomationTemplate.stages.map((stage, index) => (
+                    <React.Fragment key={stage}>
+                      <div className="workflow-step">
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <strong>{stage}</strong>
+                      </div>
+                      {index < activeAutomationTemplate.stages.length - 1 ? (
+                        <div className="workflow-arrow">→</div>
+                      ) : null}
+                    </React.Fragment>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="primary-action"
+                  onClick={() => runtime.runAutomationTemplate(activeAutomationTemplate.id)}
+                >
+                  Run automation template
+                </button>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Recent automation runs</p>
+                <strong>Workflow execution history</strong>
+                <div className="artifact-list">
+                  {runtime.automationRuns.length ? (
+                    runtime.automationRuns.slice(0, 4).map((run) => (
+                      <div className="artifact-row" key={run.id}>
+                        <strong>{run.title}</strong>
+                        <span>{run.status}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="audit-row">
+                      <span>None</span>
+                      <strong>Queue is idle</strong>
+                      <p>Run a template to create a governed execution record.</p>
+                    </div>
+                  )}
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
                 <p className="section-label">Platform services</p>
                 <h2>Each AI agent is backed by a service, API, storage layer, audit, and UI</h2>
               </div>
@@ -1107,6 +1418,59 @@ function App() {
                   </dl>
                 </article>
               ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Developer platform</p>
+                <h2>Integrations, APIs, SDKs, and policy packs remain first-class platform surfaces</h2>
+              </div>
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Integrations</p>
+                <strong>Connected enterprise services</strong>
+                <div className="service-grid compact">
+                  {INTEGRATIONS.map((integration) => {
+                    const connected = runtime.connectedIntegrations.includes(integration.id);
+                    return (
+                      <button
+                        type="button"
+                        className={connected ? "service-card active" : "service-card"}
+                        key={integration.id}
+                        onClick={() => runtime.installIntegration(integration.id)}
+                      >
+                        <p className="section-label">{integration.kind}</p>
+                        <strong>{integration.name}</strong>
+                        <p>{integration.purpose}</p>
+                        <span className="status-pill">{connected ? "Connected" : integration.status}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Developer surfaces</p>
+                <strong>APIs and extension points</strong>
+                <div className="chip-cloud">
+                  {DEVELOPER_SURFACES.map((surface) => (
+                    <span className="context-chip" key={surface.name}>
+                      {surface.name}
+                    </span>
+                  ))}
+                </div>
+                <div className="artifact-list">
+                  {DEVELOPER_SURFACES.map((surface) => (
+                    <div className="artifact-row" key={surface.name}>
+                      <strong>{surface.name}</strong>
+                      <span>{surface.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
             </div>
           </section>
 

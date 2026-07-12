@@ -438,3 +438,261 @@ export const WORKFLOW_LABELS = Object.fromEntries(
   WORKFLOW_STAGES.map((stage) => [stage.id, stage.label]),
 );
 
+export const TENANTS = [
+  {
+    id: "novatech",
+    name: "NovaTech",
+    tier: "Enterprise",
+    regions: ["Australia", "Africa", "Europe"],
+    billing: "active",
+    quota: "12,000 seats",
+    branding: "NovaTech Blue",
+    residency: "AU + EU",
+  },
+  {
+    id: "pilot-mobility",
+    name: "Pilot Mobility",
+    tier: "Pilot",
+    regions: ["Australia"],
+    billing: "metered",
+    quota: "500 seats",
+    branding: "NovaRide",
+    residency: "AU",
+  },
+  {
+    id: "partner-labs",
+    name: "Partner Labs",
+    tier: "Sandbox",
+    regions: ["Australia", "Asia"],
+    billing: "sandbox",
+    quota: "200 seats",
+    branding: "NovaPartner",
+    residency: "AU + APAC",
+  },
+];
+
+export const PROJECTS = [
+  {
+    id: "nova-ride-platform",
+    name: "NovaRide Platform",
+    tenantId: "novatech",
+    status: "Active",
+    owner: "Platform Engineering",
+    solution: "Ride-hailing platform",
+    region: "Melbourne",
+    budget: "$1.8M",
+  },
+  {
+    id: "nova-pay-core",
+    name: "NovaPay Core",
+    tenantId: "novatech",
+    status: "Review",
+    owner: "Payments Engineering",
+    solution: "Money transfer platform",
+    region: "Sydney",
+    budget: "$2.4M",
+  },
+  {
+    id: "health-ops",
+    name: "Health Operations",
+    tenantId: "partner-labs",
+    status: "Discovery",
+    owner: "Solutions Team",
+    solution: "Hospital management system",
+    region: "Johannesburg",
+    budget: "$640K",
+  },
+];
+
+export const COLLABORATION_THREADS = [
+  {
+    id: "thread-req",
+    scope: "Requirements review",
+    participants: ["Product", "Finance", "Security"],
+    message: "Requirements need a privacy note before the next approval gate.",
+    state: "waiting-approval",
+  },
+  {
+    id: "thread-arch",
+    scope: "Architecture discussion",
+    participants: ["Architecture", "DevOps", "Governance"],
+    message: "The trust boundary should remain explicit in the C4 export.",
+    state: "active",
+  },
+  {
+    id: "thread-release",
+    scope: "Release coordination",
+    participants: ["Release", "Operations", "QA"],
+    message: "Rollback plan and smoke tests are ready for the staging window.",
+    state: "ready",
+  },
+];
+
+export const KNOWLEDGE_GRAPH = [
+  {
+    id: "kg-request",
+    label: "Business Request",
+    type: "intent",
+    links: ["kg-requirements", "kg-approval"],
+  },
+  {
+    id: "kg-requirements",
+    label: "Requirements",
+    type: "artifact",
+    links: ["kg-architecture", "kg-design"],
+  },
+  {
+    id: "kg-architecture",
+    label: "Architecture",
+    type: "artifact",
+    links: ["kg-api", "kg-deployment"],
+  },
+  {
+    id: "kg-api",
+    label: "API Spec",
+    type: "artifact",
+    links: ["kg-tests", "kg-release"],
+  },
+  {
+    id: "kg-tests",
+    label: "Test Report",
+    type: "evidence",
+    links: ["kg-security", "kg-audit"],
+  },
+  {
+    id: "kg-security",
+    label: "Security Review",
+    type: "evidence",
+    links: ["kg-audit"],
+  },
+  {
+    id: "kg-deployment",
+    label: "Deployment",
+    type: "runtime",
+    links: ["kg-operations"],
+  },
+  {
+    id: "kg-release",
+    label: "Release",
+    type: "artifact",
+    links: ["kg-operations", "kg-audit"],
+  },
+  {
+    id: "kg-operations",
+    label: "Operations",
+    type: "runtime",
+    links: ["kg-audit"],
+  },
+  {
+    id: "kg-audit",
+    label: "Audit Trail",
+    type: "governance",
+    links: [],
+  },
+  {
+    id: "kg-design",
+    label: "UI/UX",
+    type: "artifact",
+    links: ["kg-implementation"],
+  },
+  {
+    id: "kg-implementation",
+    label: "Code",
+    type: "artifact",
+    links: ["kg-tests", "kg-deployment"],
+  },
+  {
+    id: "kg-approval",
+    label: "Approval Gate",
+    type: "governance",
+    links: ["kg-audit", "kg-release"],
+  },
+];
+
+export const AUTOMATION_TEMPLATES = [
+  {
+    id: "template-mobile-app",
+    title: "Create mobile app",
+    description: "Request a mobile product, scaffold apps, tests, and deployment artifacts.",
+    stages: ["intent", "business", "architecture", "design", "implementation", "testing", "security", "deployment"],
+  },
+  {
+    id: "template-banking-backend",
+    title: "Generate banking backend",
+    description: "Produce APIs, data models, controls, and release artifacts for a regulated backend.",
+    stages: ["intent", "business", "architecture", "implementation", "testing", "security", "compliance-approval", "deployment"],
+  },
+  {
+    id: "template-staging-deploy",
+    title: "Deploy to staging",
+    description: "Run the approval, packaging, deployment, and verification workflow for staging.",
+    stages: ["intent", "requirements-approval", "deployment", "monitoring"],
+  },
+  {
+    id: "template-security-scan",
+    title: "Run security scan",
+    description: "Execute dependency, container, and secret scanning with audit output.",
+    stages: ["intent", "testing", "security", "compliance-approval"],
+  },
+];
+
+export const INTEGRATIONS = [
+  {
+    id: "github",
+    name: "GitHub",
+    kind: "source control",
+    status: "connected",
+    purpose: "repositories and pull requests",
+  },
+  {
+    id: "gitlab",
+    name: "GitLab",
+    kind: "source control",
+    status: "available",
+    purpose: "mirrored repositories",
+  },
+  {
+    id: "jira",
+    name: "Jira",
+    kind: "workflow",
+    status: "available",
+    purpose: "issue tracking and approvals",
+  },
+  {
+    id: "slack",
+    name: "Slack",
+    kind: "notifications",
+    status: "connected",
+    purpose: "review alerts and approvals",
+  },
+  {
+    id: "kubernetes",
+    name: "Kubernetes",
+    kind: "runtime",
+    status: "connected",
+    purpose: "deployment targets and rollouts",
+  },
+  {
+    id: "postgres",
+    name: "PostgreSQL",
+    kind: "storage",
+    status: "connected",
+    purpose: "solution and audit storage",
+  },
+  {
+    id: "grafana",
+    name: "Grafana",
+    kind: "observability",
+    status: "available",
+    purpose: "dashboards and service health",
+  },
+];
+
+export const DEVELOPER_SURFACES = [
+  { name: "REST APIs", description: "Solution, workflow, audit, and artifact APIs." },
+  { name: "GraphQL", description: "Cross-surface query model for the enterprise graph." },
+  { name: "Webhooks", description: "Event delivery for approvals, deployments, and incidents." },
+  { name: "CLI", description: "Command-line access for automation and local workflows." },
+  { name: "SDKs", description: "TypeScript, Python, Java, and Go integration kits." },
+  { name: "Policy Packs", description: "Reusable governance rules for solution execution." },
+];
