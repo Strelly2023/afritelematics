@@ -40,7 +40,7 @@ def _display_name(user_id: str) -> str:
 def _workspace_slug(role: str) -> str:
     mapping = {
         "ADMIN": "admin",
-        "DEVELOPER": "engineering",
+        "DEVELOPER": "developer",
         "OPERATOR": "operations",
         "VERIFIER": "security",
         "CLIENT": "partner",
@@ -54,7 +54,7 @@ def _workspace_slug(role: str) -> str:
 def _workspace_label(role: str) -> str:
     mapping = {
         "ADMIN": "Platform Administrator",
-        "DEVELOPER": "Software Engineer",
+        "DEVELOPER": "Developer",
         "OPERATOR": "DevOps Engineer",
         "VERIFIER": "Security Engineer",
         "CLIENT": "Partner",
@@ -69,7 +69,7 @@ def _workspace_label(role: str) -> str:
 def _workspace_title(role: str) -> str:
     mapping = {
         "ADMIN": "Platform Administration Workspace",
-        "DEVELOPER": "Engineering Workspace",
+        "DEVELOPER": "Developer Workspace",
         "OPERATOR": "Operations Workspace",
         "VERIFIER": "Security Workspace",
         "CLIENT": "Partner Workspace",
@@ -83,7 +83,7 @@ def _workspace_title(role: str) -> str:
 def _workspace_description(role: str) -> str:
     mapping = {
         "ADMIN": "Govern platform services, tenants, identity, evidence, approvals, and operational readiness.",
-        "DEVELOPER": "Build solution packages, inspect project context, and move work toward release.",
+        "DEVELOPER": "Turn approved requirements into secure, tested, documented, traceable, and release-ready software.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
         "CLIENT": "Coordinate partner integrations, shared resources, and certified interfaces.",
@@ -104,6 +104,18 @@ def _base_cards(service: NovaCodeProPlatform) -> dict[str, Any]:
         "workflow_statuses": summary.get("workflow_statuses", {}),
         "deployment_statuses": summary.get("deployment_statuses", {}),
         "status": summary,
+    }
+
+
+def _developer_health(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "repositories_healthy": "18/20",
+        "open_pull_requests": int(summary.get("pull_request_count", 12) or 12),
+        "failing_pipelines": int(summary.get("failing_pipeline_count", 2) or 2),
+        "test_pass_rate": "98.7%",
+        "coverage": "94.2%",
+        "critical_vulnerabilities": int(summary.get("critical_vulnerability_count", 0) or 0),
+        "release_blockers": int(summary.get("release_blocker_count", 3) or 3),
     }
 
 
@@ -536,6 +548,380 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         primary_actions=("Manage Tenant", "Open Service Registry", "Review Access"),
     ),
     ToolDefinition(
+        id="developer-workspace",
+        name="Developer Workspace",
+        description="Track assigned work, sprint context, reviews, and release blockers.",
+        icon="⌁",
+        route="/novacodepro/tools/developer-workspace",
+        required_permissions=("workspace.read", "project.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Developer Experience",
+        help_url="/docs/novacodepro/tools/developer-workspace",
+        audit_category="workspace",
+        group="HOME",
+        overview=("My Work", "Projects", "Reviews", "Builds", "Releases"),
+        primary_actions=("Resume Work", "Open Sprint", "Review Blockers"),
+    ),
+    ToolDefinition(
+        id="project-center",
+        name="Project Center",
+        description="Manage milestones, epics, stories, dependencies, and delivery status.",
+        icon="▦",
+        route="/novacodepro/tools/project-center",
+        required_permissions=("project.read", "project.create", "project.update"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Engineering",
+        help_url="/docs/novacodepro/tools/project-center",
+        audit_category="project",
+        group="HOME",
+        overview=("Projects", "Milestones", "Epics", "Stories", "Blockers"),
+        primary_actions=("Create Project", "Update Milestone", "Review Blockers"),
+    ),
+    ToolDefinition(
+        id="code-workspace",
+        name="Code Workspace",
+        description="Browse, edit, refactor, debug, and test governed source code.",
+        icon="</>",
+        route="/novacodepro/tools/code-workspace",
+        required_permissions=("code.read", "code.write"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Engineering",
+        help_url="/docs/novacodepro/tools/code-workspace",
+        audit_category="code",
+        group="BUILD",
+        overview=("Files", "Symbols", "Branches", "Changes", "Terminal"),
+        primary_actions=("Open File", "Create Branch", "Run Debug"),
+    ),
+    ToolDefinition(
+        id="repository-explorer",
+        name="Repository Explorer",
+        description="Inspect files, branches, commits, ownership, and repository health.",
+        icon="▤",
+        route="/novacodepro/tools/repository-explorer",
+        required_permissions=("repository.read",),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Source Control",
+        help_url="/docs/novacodepro/tools/repository-explorer",
+        audit_category="repository",
+        group="BUILD",
+        overview=("Files", "Branches", "Commits", "Ownership", "Health"),
+        primary_actions=("Open Repository", "Compare Branches", "Inspect Ownership"),
+    ),
+    ToolDefinition(
+        id="branch-change-center",
+        name="Branch and Change Center",
+        description="Create branches, inspect diffs, resolve conflicts, and prepare change sets.",
+        icon="⇄",
+        route="/novacodepro/tools/branch-change-center",
+        required_permissions=("repository.branch_create", "repository.commit"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Engineering",
+        help_url="/docs/novacodepro/tools/branch-change-center",
+        audit_category="change",
+        group="BUILD",
+        overview=("Branches", "Diffs", "Conflicts", "Commit Standards", "Change Sets"),
+        primary_actions=("Create Branch", "Review Diff", "Open Change Set"),
+    ),
+    ToolDefinition(
+        id="review-center",
+        name="Pull Request and Review Center",
+        description="Create pull requests, inspect checks, and manage review feedback.",
+        icon="❮❯",
+        route="/novacodepro/tools/review-center",
+        required_permissions=("repository.pull_request_create", "code.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Engineering",
+        help_url="/docs/novacodepro/tools/review-center",
+        audit_category="review",
+        group="DELIVER",
+        overview=("Pull Requests", "Reviews", "Checks", "Comments", "Approvals"),
+        primary_actions=("Create Pull Request", "Request Review", "Inspect Checks"),
+    ),
+    ToolDefinition(
+        id="build-center",
+        name="Build Center",
+        description="Build web, backend, mobile, and infrastructure artifacts.",
+        icon="⚒",
+        route="/novacodepro/tools/build-center",
+        required_permissions=("build.execute", "build.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Build Engineering",
+        help_url="/docs/novacodepro/tools/build-center",
+        audit_category="build",
+        group="BUILD",
+        overview=("Queues", "Profiles", "Logs", "Artifacts", "Reproducibility"),
+        primary_actions=("Start Build", "Inspect Logs", "Download Artifact"),
+    ),
+    ToolDefinition(
+        id="test-center",
+        name="Test Center",
+        description="Run and inspect unit, integration, contract, UI, and accessibility tests.",
+        icon="✓",
+        route="/novacodepro/tools/test-center",
+        required_permissions=("test.execute", "test.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Engineering",
+        help_url="/docs/novacodepro/tools/test-center",
+        audit_category="test",
+        group="BUILD",
+        overview=("Unit", "Integration", "Contract", "UI", "Coverage"),
+        primary_actions=("Run Tests", "View Coverage", "Inspect Failure"),
+    ),
+    ToolDefinition(
+        id="api-studio",
+        name="API Studio",
+        description="Design API contracts, schemas, mocks, and compatibility checks.",
+        icon="{}",
+        route="/novacodepro/tools/api-studio",
+        required_permissions=("api.design", "api.test"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="API Platform",
+        help_url="/docs/novacodepro/tools/api-studio",
+        audit_category="api",
+        group="DESIGN",
+        overview=("OpenAPI", "Schemas", "Mocking", "Versions", "Compatibility"),
+        primary_actions=("Design API", "Test Request", "Generate SDK"),
+    ),
+    ToolDefinition(
+        id="data-studio",
+        name="Data Studio",
+        description="Design schemas, migrations, lineage, and tenant-safe queries.",
+        icon="◧",
+        route="/novacodepro/tools/data-studio",
+        required_permissions=("code.read", "code.write"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Data Engineering",
+        help_url="/docs/novacodepro/tools/data-studio",
+        audit_category="data",
+        group="DESIGN",
+        overview=("Schemas", "Migrations", "Indexes", "Lineage", "Retention"),
+        primary_actions=("Create Migration", "Review Lineage", "Validate Isolation"),
+    ),
+    ToolDefinition(
+        id="mobile-app-studio",
+        name="Mobile App Studio",
+        description="Manage mobile projects, permissions, builds, and release candidates.",
+        icon="◉",
+        route="/novacodepro/tools/mobile-app-studio",
+        required_permissions=("code.write", "build.execute"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Mobile Engineering",
+        help_url="/docs/novacodepro/tools/mobile-app-studio",
+        audit_category="mobile",
+        group="DESIGN",
+        overview=("Platforms", "Identifiers", "Devices", "Builds", "Release Candidates"),
+        primary_actions=("Open Emulator", "Build Package", "Prepare Release"),
+    ),
+    ToolDefinition(
+        id="ui-ux-studio",
+        name="UI/UX Studio",
+        description="Review wireframes, component states, accessibility, and responsive layouts.",
+        icon="◌",
+        route="/novacodepro/tools/ui-ux-studio",
+        required_permissions=("workspace.read", "code.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Systems",
+        help_url="/docs/novacodepro/tools/ui-ux-studio",
+        audit_category="design",
+        group="DESIGN",
+        overview=("Wireframes", "Tokens", "Components", "Accessibility", "Responsiveness"),
+        primary_actions=("Review Design", "Inspect Tokens", "Validate Responsive"),
+    ),
+    ToolDefinition(
+        id="novaai-engineering-assistant",
+        name="NovaAI Engineering Assistant",
+        description="Generate implementation plans, code suggestions, tests, and documentation.",
+        icon="AI",
+        route="/novacodepro/tools/novaai-engineering-assistant",
+        required_permissions=("code.read", "documentation.write"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="AI Engineering",
+        help_url="/docs/novacodepro/tools/novaai-engineering-assistant",
+        audit_category="ai",
+        group="ASSURE",
+        overview=("Plans", "Code", "Tests", "Docs", "Logs"),
+        primary_actions=("Ask NovaAI", "Refactor Code", "Generate Tests"),
+    ),
+    ToolDefinition(
+        id="dependency-center",
+        name="Dependency Center",
+        description="Inspect dependencies, licenses, conflicts, and vulnerability exposure.",
+        icon="∿",
+        route="/novacodepro/tools/dependency-center",
+        required_permissions=("artifact.read", "security.finding_read_assigned"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Supply Chain Security",
+        help_url="/docs/novacodepro/tools/dependency-center",
+        audit_category="dependency",
+        group="ASSURE",
+        overview=("Packages", "Licenses", "Vulnerabilities", "Conflicts", "SBOM"),
+        primary_actions=("Review Package", "Check Vulnerability", "Generate SBOM"),
+    ),
+    ToolDefinition(
+        id="secure-development-center",
+        name="Secure Development Center",
+        description="Review static analysis, secret scanning, and security remediation tasks.",
+        icon="⛨",
+        route="/novacodepro/tools/secure-development-center",
+        required_permissions=("security.finding_read_assigned", "security.remediation_submit"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Application Security",
+        help_url="/docs/novacodepro/tools/secure-development-center",
+        audit_category="security",
+        group="ASSURE",
+        overview=("Findings", "Secrets", "Containers", "Threats", "Evidence"),
+        primary_actions=("Review Finding", "Submit Remediation", "Request Security Review"),
+    ),
+    ToolDefinition(
+        id="developer-environments",
+        name="Developer Environments",
+        description="Manage isolated dev workspaces, preview systems, and approved services.",
+        icon="⟁",
+        route="/novacodepro/tools/developer-environments",
+        required_permissions=("environment.development_manage", "environment.preview_create"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Platform Enablement",
+        help_url="/docs/novacodepro/tools/developer-environments",
+        audit_category="environment",
+        group="ASSURE",
+        overview=("Workspaces", "Variables", "Services", "Datasets", "Health"),
+        primary_actions=("Start Environment", "Reset Data", "Open Preview"),
+    ),
+    ToolDefinition(
+        id="pipeline-center",
+        name="Pipeline Center",
+        description="Inspect CI/CD workflows, gates, failures, and pipeline settings.",
+        icon="⤴",
+        route="/novacodepro/tools/pipeline-center",
+        required_permissions=("pipeline.read", "pipeline.execute_eligible_jobs"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Delivery Engineering",
+        help_url="/docs/novacodepro/tools/pipeline-center",
+        audit_category="pipeline",
+        group="DELIVER",
+        overview=("Stages", "Runs", "Logs", "Artifacts", "Eligibility"),
+        primary_actions=("Open Pipeline", "Retry Job", "Inspect Gate"),
+    ),
+    ToolDefinition(
+        id="artifact-center",
+        name="Artifact Center",
+        description="Inspect packages, checksums, signatures, and build provenance.",
+        icon="⧉",
+        route="/novacodepro/tools/artifact-center",
+        required_permissions=("artifact.read", "artifact.submit_for_release"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Release Engineering",
+        help_url="/docs/novacodepro/tools/artifact-center",
+        audit_category="artifact",
+        group="DELIVER",
+        overview=("Packages", "Checksums", "Signatures", "SBOM", "Provenance"),
+        primary_actions=("Inspect Artifact", "Verify Signature", "Submit for Release"),
+    ),
+    ToolDefinition(
+        id="documentation-center",
+        name="Documentation Center",
+        description="Create and publish technical documentation, guides, and release notes.",
+        icon="☰",
+        route="/novacodepro/tools/documentation-center",
+        required_permissions=("documentation.write", "documentation.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Developer Experience",
+        help_url="/docs/novacodepro/tools/documentation-center",
+        audit_category="documentation",
+        group="KNOWLEDGE",
+        overview=("Docs", "APIs", "Guides", "Runbooks", "Release Notes"),
+        primary_actions=("Write Doc", "Publish Docs", "Review Coverage"),
+    ),
+    ToolDefinition(
+        id="developer-diagnostics",
+        name="Developer Diagnostics",
+        description="Inspect traces, logs, metrics, flags, and dependency state for owned work.",
+        icon="⌘",
+        route="/novacodepro/tools/developer-diagnostics",
+        required_permissions=("observability.read_authorized", "workspace.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Developer Experience",
+        help_url="/docs/novacodepro/tools/developer-diagnostics",
+        audit_category="diagnostics",
+        group="ASSURE",
+        overview=("Traces", "Logs", "Metrics", "Flags", "Dependencies"),
+        primary_actions=("Inspect Trace", "Open Log Stream", "Compare Deployments"),
+    ),
+    ToolDefinition(
+        id="release-request-center",
+        name="Release Request Center",
+        description="Prepare release candidates, attach evidence, and request approval.",
+        icon="⟶",
+        route="/novacodepro/tools/release-request-center",
+        required_permissions=("release.request", "artifact.submit_for_release"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Release Operations",
+        help_url="/docs/novacodepro/tools/release-request-center",
+        audit_category="release-request",
+        group="DELIVER",
+        overview=("Candidates", "Evidence", "Notes", "Approvals", "Status"),
+        primary_actions=("Create Release Request", "Attach Evidence", "Review Blockers"),
+    ),
+    ToolDefinition(
+        id="engineering-knowledge-graph",
+        name="Engineering Knowledge Graph",
+        description="Trace ownership, APIs, services, data flows, and change impact.",
+        icon="⟐",
+        route="/novacodepro/tools/engineering-knowledge-graph",
+        required_permissions=("observability.read_authorized", "repository.read"),
+        supported_roles=("DEVELOPER",),
+        supported_environments=("development", "staging", "pilot"),
+        version="v1",
+        ownership_team="Knowledge Fabric",
+        help_url="/docs/novacodepro/tools/engineering-knowledge-graph",
+        audit_category="knowledge",
+        group="KNOWLEDGE",
+        overview=("Ownership", "Lineage", "Impact", "Dependencies", "Search"),
+        primary_actions=("Trace Change", "Inspect Impact", "Open Graph"),
+    ),
+    ToolDefinition(
         id="tenant-management",
         name="Tenant Management",
         description="Create, suspend, restore, and review tenant health and isolation.",
@@ -744,7 +1130,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
 
 ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "ADMIN": ("HOME", "BUILD", "DELIVER", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"),
-    "DEVELOPER": ("HOME", "BUILD", "DELIVER", "GOVERN"),
+    "DEVELOPER": ("HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -766,10 +1152,12 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Generate Audit Export",
     ),
     "DEVELOPER": (
-        "Open Solution Studio",
-        "Create Project",
-        "Run Build and Test",
-        "Open Release Center",
+        "Open Developer Workspace",
+        "Open Code Workspace",
+        "Create Branch",
+        "Run Tests",
+        "Open Review Center",
+        "Submit Release Request",
     ),
     "OPERATOR": (
         "Open Operations Center",
@@ -815,21 +1203,36 @@ def _visible_tools(role: str, environment: str) -> list[ToolDefinition]:
     ]
 
 
-def _navigation_groups(tools: list[ToolDefinition]) -> list[dict[str, Any]]:
+def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str, Any]]:
     grouped: dict[str, list[ToolDefinition]] = {}
     for tool in tools:
         grouped.setdefault(tool.group, []).append(tool)
-    order = ["HOME", "BUILD", "DELIVER", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"]
-    labels = {
-        "HOME": "Home",
-        "BUILD": "Build",
-        "DELIVER": "Deliver",
-        "OPERATE": "Operate",
-        "BUSINESS": "Business",
-        "GOVERN": "Govern",
-        "LEADERSHIP": "Leadership",
-        "ADMINISTRATION": "Administration",
-    }
+    canonical = canonical_role_name(role)
+    if canonical == "DEVELOPER":
+        order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE"]
+        labels = {
+            "HOME": "My Work",
+            "BUILD": "Build",
+            "DESIGN": "Design",
+            "DELIVER": "Deliver",
+            "ASSURE": "Assure",
+            "KNOWLEDGE": "Knowledge",
+        }
+    else:
+        order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"]
+        labels = {
+            "HOME": "Home",
+            "BUILD": "Build",
+            "DESIGN": "Design",
+            "DELIVER": "Deliver",
+            "ASSURE": "Assure",
+            "KNOWLEDGE": "Knowledge",
+            "OPERATE": "Operate",
+            "BUSINESS": "Business",
+            "GOVERN": "Govern",
+            "LEADERSHIP": "Leadership",
+            "ADMINISTRATION": "Administration",
+        }
     groups: list[dict[str, Any]] = []
     for group in order:
         entries = grouped.get(group, [])
@@ -904,13 +1307,14 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             },
         ]
     if canonical == "DEVELOPER":
+        health = _developer_health(summary)
         return [
-            {"title": "Projects", "value": summary.get("project_count", 0), "meta": "Active solution portfolios"},
-            {"title": "Workflows", "value": summary.get("workflow_count", 0), "meta": "Requests in motion"},
-            {"title": "Releases", "value": summary.get("release_count", 0), "meta": "Release packages and approvals"},
-            {"title": "Evidence", "value": summary.get("evidence_bundle_count", 0), "meta": "Build and verification evidence"},
-            {"title": "Approvals", "value": len(pending_approvals), "meta": "Waiting for review"},
-            {"title": "Tool access", "value": len(_visible_tools(role, "staging")), "meta": "Authorized developer tools"},
+            {"title": "My work", "value": summary.get("workflow_statuses", {}).get("active", 0) + len(pending_approvals), "meta": "Assigned issues, active tasks, and pending reviews"},
+            {"title": "Active projects", "value": summary.get("project_count", 0), "meta": "Solutions and repositories under active delivery"},
+            {"title": "Engineering health", "value": health["repositories_healthy"], "meta": f"{health['open_pull_requests']} open PRs · {health['failing_pipelines']} failing pipelines"},
+            {"title": "Test pass rate", "value": health["test_pass_rate"], "meta": f"Coverage {health['coverage']} · blockers {health['release_blockers']}"},
+            {"title": "Security posture", "value": health["critical_vulnerabilities"], "meta": "Critical vulnerabilities in assigned scope"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "development")), "meta": "Authorized developer tools"},
         ]
     if canonical == "OPERATOR":
         return [
@@ -968,9 +1372,16 @@ def build_workspace_manifest(
 ) -> dict[str, Any]:
     canonical = canonical_role_name(role)
     summary = service.admin_summary()
-    environment = (environment or ("production" if canonical == "ADMIN" else "staging")).lower()
+    if environment is None:
+        if canonical == "ADMIN":
+            environment = "production"
+        elif canonical == "DEVELOPER":
+            environment = "development"
+        else:
+            environment = "staging"
+    environment = environment.lower()
     visible_tools = _visible_tools(canonical, environment)
-    navigation_groups = _navigation_groups(visible_tools)
+    navigation_groups = _navigation_groups(canonical, visible_tools)
     profile_label = _workspace_label(canonical)
     workspace_slug = _workspace_slug(canonical)
     workspace_id = f"enterprise-{workspace_slug}"
@@ -1036,9 +1447,9 @@ def build_workspace_manifest(
             "description": _workspace_description(canonical),
             "tenant": organization_id,
             "organization": _organization_label(organization_id),
-            "environments": ["production", "staging", "pilot"] if canonical == "ADMIN" else ["staging", "pilot", "development"],
+            "environments": ["production", "staging", "pilot"] if canonical == "ADMIN" else ["development", "staging", "pilot"],
             "selected_environment": environment,
-            "authority_level": "platform-admin" if canonical == "ADMIN" else "role-scoped",
+            "authority_level": "platform-admin" if canonical == "ADMIN" else ("developer" if canonical == "DEVELOPER" else "role-scoped"),
             "navigation": navigation_groups,
             "tools": tool_manifest,
             "dashboard_cards": _workspace_cards(canonical, summary),
@@ -1047,6 +1458,33 @@ def build_workspace_manifest(
                 {"id": "task-2", "title": "Inspect current operational state", "status": "active"},
             ],
             "pending_approvals": summary.get("pending_approvals", [])[:4],
+            "current_sprint": "Sprint 24" if canonical == "DEVELOPER" else None,
+            "active_projects": service.projects()[:5] if canonical == "DEVELOPER" else service.projects()[:4],
+            "recent_repositories": [
+                {
+                    "id": f"repo-{index + 1}",
+                    "name": f"{project['name'].replace(' ', '-').lower()}-repo",
+                    "project": project["name"],
+                    "branch": "develop" if canonical == "DEVELOPER" else "main",
+                }
+                for index, project in enumerate(service.projects()[:4])
+            ]
+            if canonical == "DEVELOPER"
+            else [],
+            "developer_health": _developer_health(summary) if canonical == "DEVELOPER" else {},
+            "developer_work_items": [
+                {"label": "Assigned issues", "value": summary.get("workflow_statuses", {}).get("active", 0)},
+                {"label": "Active tasks", "value": summary.get("workflow_statuses", {}).get("waiting-approval", 0) + summary.get("workflow_statuses", {}).get("paused", 0)},
+                {"label": "Pull requests", "value": 12},
+                {"label": "Code reviews", "value": 8},
+                {"label": "Build failures", "value": _developer_health(summary)["failing_pipelines"]},
+                {"label": "Test failures", "value": 1},
+                {"label": "Release requests", "value": summary.get("ready_release_queue_count", len(summary.get("ready_release_queue", [])))},
+                {"label": "Security findings", "value": _developer_health(summary)["critical_vulnerabilities"]},
+                {"label": "Documentation tasks", "value": 4},
+            ]
+            if canonical == "DEVELOPER"
+            else [],
             "administrator_attention": [
                 {"label": "Pending privileged approvals", "value": summary.get("pending_approvals_count", len(summary.get("pending_approvals", [])))},
                 {"label": "Expiring certificates", "value": summary.get("expiring_certificates_count", 0)},
@@ -1064,6 +1502,7 @@ def build_workspace_manifest(
                 "workspace_composition_api": True,
                 "executive_workspace": canonical == "ADMIN",
                 "board_workspace": canonical == "ADMIN",
+                "developer_workspace": canonical == "DEVELOPER",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
@@ -1163,6 +1602,99 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
         """
         for item in actions
     )
+    canonical = user["primary_role"]
+    if canonical == "DEVELOPER":
+        developer_work_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item['value']))}</span></li>"
+            for item in workspace.get("developer_work_items", [])
+        ) or "<li>No assigned work.</li>"
+        developer_projects_html = "".join(
+            f"<li><strong>{html.escape(item.get('name', item.get('id', 'Project')))}</strong><span>{html.escape(item.get('branch', 'develop'))}</span></li>"
+            for item in workspace.get("active_projects", [])
+        ) or "<li>No active projects.</li>"
+        developer_repositories_html = "".join(
+            f"<li><strong>{html.escape(item.get('name', item.get('id', 'Repository')))}</strong><span>{html.escape(item.get('project', ''))}</span></li>"
+            for item in workspace.get("recent_repositories", [])
+        ) or "<li>No recent repositories.</li>"
+        developer_health = workspace.get("developer_health", {})
+        developer_health_html = "\n".join(
+            (
+                f"<li><strong>Repositories healthy</strong><span>{html.escape(str(developer_health.get('repositories_healthy', '18/20')))}</span></li>",
+                f"<li><strong>Open pull requests</strong><span>{html.escape(str(developer_health.get('open_pull_requests', 12)))}</span></li>",
+                f"<li><strong>Failing pipelines</strong><span>{html.escape(str(developer_health.get('failing_pipelines', 2)))}</span></li>",
+                f"<li><strong>Test pass rate</strong><span>{html.escape(str(developer_health.get('test_pass_rate', '98.7%')))}</span></li>",
+                f"<li><strong>Coverage</strong><span>{html.escape(str(developer_health.get('coverage', '94.2%')))}</span></li>",
+                f"<li><strong>Critical vulnerabilities</strong><span>{html.escape(str(developer_health.get('critical_vulnerabilities', 0)))}</span></li>",
+                f"<li><strong>Release blockers</strong><span>{html.escape(str(developer_health.get('release_blockers', 3)))}</span></li>",
+            )
+        )
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>My work</h2></header>
+              <ul>{developer_work_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Active projects</h2></header>
+              <ul>{developer_projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Engineering health</h2></header>
+              <ul>{developer_health_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent repositories</h2></header>
+              <ul>{developer_repositories_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent incidents</h2></header>
+              <ul>{incidents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    else:
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Approvals</h2></header>
+              <ul>{approvals_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Administrator attention</h2></header>
+              <ul>
+                {"".join(f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item['value']))}</span></li>" for item in admin_attention)}
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent incidents</h2></header>
+              <ul>{incidents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent projects</h2></header>
+              <ul>{projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Active work</h2></header>
+              <ul>{work_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
     return f"""<!doctype html>
 <html lang=\"en\">
   <head>
@@ -1542,38 +2074,7 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
           </section>
         </main>
         <aside class=\"context-panel\">
-          <div class=\"right-stack\">
-            <section class=\"panel\">
-              <header><h2>Approvals</h2></header>
-              <ul>{approvals_html}</ul>
-            </section>
-            <section class=\"panel\">
-              <header><h2>Administrator attention</h2></header>
-              <ul>
-                {"".join(f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item['value']))}</span></li>" for item in admin_attention)}
-              </ul>
-            </section>
-            <section class=\"panel\">
-              <header><h2>Recent incidents</h2></header>
-              <ul>{incidents_html}</ul>
-            </section>
-            <section class=\"panel\">
-              <header><h2>Recent projects</h2></header>
-              <ul>{projects_html}</ul>
-            </section>
-            <section class=\"panel\">
-              <header><h2>Active work</h2></header>
-              <ul>{work_html}</ul>
-            </section>
-            <section class=\"panel\">
-              <header><h2>Enterprise signals</h2></header>
-              <ul>
-                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
-                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
-                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
-              </ul>
-            </section>
-          </div>
+          {right_stack_html}
         </aside>
       </div>
       <footer class=\"bottombar\">
