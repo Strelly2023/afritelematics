@@ -27,6 +27,17 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
     )
     for token in [
         "NovaCodePro",
+        "Turn a business problem into an approved operating solution",
+        "Solution journey",
+        "Business request",
+        "AI discovery",
+        "Understanding score",
+        "Workflow Monitor",
+        "Release Factory",
+        "Deployment Center",
+        "Digital Twin",
+        "Operations Center",
+        "Continuous Improvement",
         "Board of Directors",
         "Chief Executive Officer",
         "Chief Operating Officer",

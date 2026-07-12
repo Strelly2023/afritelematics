@@ -66,6 +66,11 @@ function createRequest(payload) {
     title: payload.title || template.title,
     request: payload.request || template.request,
     domain: payload.domain || template.domain,
+    industry: payload.industry || template.domain,
+    country: payload.country || "Australia",
+    budget: payload.budget || "$0",
+    timeline: payload.timeline || "TBD",
+    stakeholders: payload.stakeholders || "",
     region: payload.region || "Australia",
     compliance: payload.compliance || "enterprise",
     surfaces: payload.surfaces?.length ? payload.surfaces : template.surfaces,
@@ -273,7 +278,7 @@ function createRuntime() {
     listeners.forEach((listener) => listener());
   }
 
-  function createSolution(payload) {
+function createSolution(payload) {
     const request = createRequest(payload);
     const event = appendAudit({
       actor: "NovaID",
@@ -662,6 +667,168 @@ function createRuntime() {
     );
   }
 
+  function pauseWorkflow(requestId, note = "Paused by operator.") {
+    const request = state.solutionRequests.find((item) => item.id === requestId);
+    if (!request) {
+      return;
+    }
+    const currentStage = request.workflow[request.stageIndex];
+    const updatedRequest = {
+      ...request,
+      status: "paused",
+      updatedAt: nowIso(),
+      workflow: request.workflow.map((stage, index) =>
+        index === request.stageIndex ? { ...stage, status: "paused" } : stage,
+      ),
+      evidenceTrail: [
+        ...request.evidenceTrail,
+        {
+          at: nowIso(),
+          action: "paused",
+          note,
+        },
+      ],
+    };
+    setState({
+      ...state,
+      solutionRequests: state.solutionRequests.map((item) => (item.id === requestId ? updatedRequest : item)),
+      selectedRequestId: requestId,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "workflow.paused",
+        service: "Workflow Engine",
+        subject: request.title,
+        evidence: currentStage?.label || "workflow",
+        detail: note,
+      }),
+    );
+  }
+
+  function resumeWorkflow(requestId, note = "Resumed by operator.") {
+    const request = state.solutionRequests.find((item) => item.id === requestId);
+    if (!request) {
+      return;
+    }
+    const currentStage = request.workflow[request.stageIndex];
+    const activeStatus = currentStage?.kind === "human" ? "waiting-approval" : "active";
+    const updatedRequest = {
+      ...request,
+      status: activeStatus,
+      updatedAt: nowIso(),
+      workflow: request.workflow.map((stage, index) =>
+        index === request.stageIndex
+          ? { ...stage, status: currentStage?.kind === "human" ? "waiting-approval" : "in_progress" }
+          : stage,
+      ),
+      evidenceTrail: [
+        ...request.evidenceTrail,
+        {
+          at: nowIso(),
+          action: "resumed",
+          note,
+        },
+      ],
+    };
+    setState({
+      ...state,
+      solutionRequests: state.solutionRequests.map((item) => (item.id === requestId ? updatedRequest : item)),
+      selectedRequestId: requestId,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "workflow.resumed",
+        service: "Workflow Engine",
+        subject: request.title,
+        evidence: currentStage?.label || "workflow",
+        detail: note,
+      }),
+    );
+  }
+
+  function retryWorkflow(requestId, note = "Retry requested by operator.") {
+    const request = state.solutionRequests.find((item) => item.id === requestId);
+    if (!request) {
+      return;
+    }
+    const currentStage = request.workflow[request.stageIndex];
+    const updatedRequest = {
+      ...request,
+      status: currentStage?.kind === "human" ? "waiting-approval" : "active",
+      retries: (request.retries || 0) + 1,
+      updatedAt: nowIso(),
+      workflow: request.workflow.map((stage, index) =>
+        index === request.stageIndex
+          ? { ...stage, status: currentStage?.kind === "human" ? "waiting-approval" : "in_progress" }
+          : stage,
+      ),
+      evidenceTrail: [
+        ...request.evidenceTrail,
+        {
+          at: nowIso(),
+          action: "retried",
+          note,
+        },
+      ],
+    };
+    setState({
+      ...state,
+      solutionRequests: state.solutionRequests.map((item) => (item.id === requestId ? updatedRequest : item)),
+      selectedRequestId: requestId,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "workflow.retried",
+        service: "Workflow Engine",
+        subject: request.title,
+        evidence: currentStage?.label || "workflow",
+        detail: note,
+      }),
+    );
+  }
+
+  function rejectWorkflow(requestId, note = "Rejected by governance.") {
+    const request = state.solutionRequests.find((item) => item.id === requestId);
+    if (!request) {
+      return;
+    }
+    const currentStage = request.workflow[request.stageIndex];
+    const updatedRequest = {
+      ...request,
+      status: "rejected",
+      updatedAt: nowIso(),
+      workflow: request.workflow.map((stage, index) =>
+        index === request.stageIndex ? { ...stage, status: "rejected" } : stage,
+      ),
+      evidenceTrail: [
+        ...request.evidenceTrail,
+        {
+          at: nowIso(),
+          action: "rejected",
+          note,
+        },
+      ],
+    };
+    setState({
+      ...state,
+      solutionRequests: state.solutionRequests.map((item) => (item.id === requestId ? updatedRequest : item)),
+      selectedRequestId: requestId,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaTech Governance",
+        action: "workflow.rejected",
+        service: "Workflow Engine",
+        subject: request.title,
+        evidence: currentStage?.label || "workflow",
+        detail: note,
+      }),
+    );
+  }
+
   function attachArtifact(requestId, artifact) {
     const request = state.solutionRequests.find((item) => item.id === requestId);
     if (!request) {
@@ -726,6 +893,10 @@ function createRuntime() {
     runAutomationTemplate,
     advanceWorkflow,
     approveGate,
+    pauseWorkflow,
+    resumeWorkflow,
+    retryWorkflow,
+    rejectWorkflow,
     attachArtifact,
     runCommand,
   };

@@ -75,6 +75,72 @@ const LEADERSHIP_ROLE_IDS = new Set([
   "chief-legal-compliance-officer",
 ]);
 
+const DISCOVERY_PROMPTS = [
+  "Who are the primary users?",
+  "Which countries and regions must be supported?",
+  "Which regulations, policies, or data residency rules apply?",
+  "Which channels are required: mobile, web, APIs, partners?",
+  "Which languages, currencies, and payment methods are required?",
+];
+
+const OPERATING_WINDOWS = [
+  {
+    name: "Test Center",
+    summary: "Unit, integration, UI, API, security, performance, and accessibility results stay visible.",
+    action: "Open Test Center",
+  },
+  {
+    name: "Security Center",
+    summary: "Threat models, SBOMs, dependencies, secrets, policies, and risk scores are reviewed here.",
+    action: "Open Security Center",
+  },
+  {
+    name: "Compliance Center",
+    summary: "ISO, SOC2, PCI, privacy, regional laws, and data residency posture are consolidated.",
+    action: "Open Compliance Center",
+  },
+  {
+    name: "Human Approval Center",
+    summary: "Architecture, security, compliance, executive, and release approvals are captured with evidence.",
+    action: "Open Approval Center",
+  },
+  {
+    name: "Release Factory",
+    summary: "Build, test, sign, package, publish, and verify release artifacts from one governed surface.",
+    action: "Open Release Factory",
+  },
+  {
+    name: "Deployment Center",
+    summary: "Promotion across development, testing, staging, pilot, and production is managed here.",
+    action: "Open Deployment Center",
+  },
+  {
+    name: "Digital Twin",
+    summary: "Services, clusters, databases, queues, users, transactions, and KPI health are modelled live.",
+    action: "Open Digital Twin",
+  },
+  {
+    name: "Operations Center",
+    summary: "Logs, traces, metrics, incidents, alerts, uptime, and deployment health are monitored continuously.",
+    action: "Open Operations Center",
+  },
+  {
+    name: "Marketplace",
+    summary: "Solution packs, templates, agents, governance packs, and integrations can be installed safely.",
+    action: "Open Marketplace",
+  },
+  {
+    name: "Executive Dashboard",
+    summary: "Revenue, velocity, adoption, risk score, trust score, and release performance remain strategic.",
+    action: "Open Executive Dashboard",
+  },
+  {
+    name: "Continuous Improvement",
+    summary: "Monitoring feeds back into AI analysis, issue detection, improvement, testing, and release.",
+    action: "Open Improvement Loop",
+  },
+];
+
 const ROLE_PROFILES = [
   {
     id: "platform-admin",
@@ -1352,6 +1418,13 @@ function App() {
   const [solutionTitle, setSolutionTitle] = useState("");
   const [solutionRequest, setSolutionRequest] = useState(SOLUTION_TEMPLATES[0].request);
   const [solutionDomain, setSolutionDomain] = useState(SOLUTION_TEMPLATES[0].domain);
+  const [solutionIndustry, setSolutionIndustry] = useState(SOLUTION_TEMPLATES[0].domain);
+  const [solutionCountry, setSolutionCountry] = useState("Australia");
+  const [solutionBudget, setSolutionBudget] = useState("$1M");
+  const [solutionTimeline, setSolutionTimeline] = useState("12 weeks");
+  const [solutionStakeholders, setSolutionStakeholders] = useState(
+    "CEO, Product, Security, Finance",
+  );
   const [solutionRegion, setSolutionRegion] = useState("Australia");
   const [solutionCompliance, setSolutionCompliance] = useState("enterprise");
   const [solutionSurfaces, setSolutionSurfaces] = useState(
@@ -1367,6 +1440,16 @@ function App() {
   const [automationTemplateId, setAutomationTemplateId] = useState(
     AUTOMATION_TEMPLATES[0].id,
   );
+  const [selectedJourneyStageId, setSelectedJourneyStageId] = useState(
+    WORKFLOW_STAGES[0]?.id ?? "intent",
+  );
+  const [discoveryAnswers, setDiscoveryAnswers] = useState({
+    users: "Customers, operations, and support teams.",
+    regions: "Australia, Kenya, and DR Congo.",
+    controls: "Regulated payments, privacy, and audit controls.",
+    channels: "Mobile apps, web portal, partner APIs.",
+    languages: "English, French, and Swahili.",
+  });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -1431,6 +1514,11 @@ function App() {
   const activeAutomationTemplate =
     AUTOMATION_TEMPLATES.find((template) => template.id === automationTemplateId) ??
     AUTOMATION_TEMPLATES[0];
+  const workflowJourneyStages = selectedRequest?.workflow?.length ? selectedRequest.workflow : WORKFLOW_STAGES;
+  const selectedJourneyStage =
+    workflowJourneyStages.find((stage) => stage.id === selectedJourneyStageId) ??
+    selectedRequest?.workflow?.[selectedRequest.stageIndex] ??
+    workflowJourneyStages[0];
 
   const solutionBlueprint = useMemo(() => {
     const template =
@@ -1440,13 +1528,23 @@ function App() {
       title: solutionTitle || template.title,
       request: solutionRequest || template.request,
       domain: solutionDomain || template.domain,
+      industry: solutionIndustry || template.domain,
+      country: solutionCountry,
+      budget: solutionBudget,
+      timeline: solutionTimeline,
+      stakeholders: solutionStakeholders,
       region: solutionRegion,
       compliance: solutionCompliance,
       surfaces: solutionSurfaces,
     };
   }, [
     solutionCompliance,
+    solutionCountry,
     solutionDomain,
+    solutionBudget,
+    solutionIndustry,
+    solutionStakeholders,
+    solutionTimeline,
     solutionRegion,
     solutionRequest,
     solutionSurfaces,
@@ -1487,6 +1585,10 @@ function App() {
             ],
     };
   }, [platformSummary, runtime.connectedIntegrations.length, runtime.auditTrail.length, runtime.solutionRequests.length, runtime.tenants.length]);
+
+  useEffect(() => {
+    setSelectedJourneyStageId(selectedRequest?.workflow?.[selectedRequest.stageIndex]?.id ?? workflowJourneyStages[0]?.id ?? "intent");
+  }, [selectedRequest?.id, selectedRequest?.stageIndex, workflowJourneyStages]);
 
   return (
     <div className="app-shell">
@@ -1580,9 +1682,13 @@ function App() {
         <main className="content">
           <section className="hero-card">
             <div className="hero-copy">
-              <p className="eyebrow">Unified digital workplace and engineering platform</p>
-              <h1>{activeRole.label} workspace for the NovaTech ecosystem</h1>
-              <p className="hero-summary">{activeRole.summary}</p>
+              <p className="eyebrow">Business-first enterprise operating workflow</p>
+              <h1>Turn a business problem into an approved operating solution</h1>
+              <p className="hero-summary">
+                NovaCodePro starts with the request, moves through discovery, requirements,
+                architecture, design, engineering, review, release, deployment, and operations,
+                and keeps every step governed.
+              </p>
 
               <div className="hero-badges">
                 <span className="badge">Organization: {activeRole.organization}</span>
@@ -1599,17 +1705,305 @@ function App() {
                 <span className="dot" style={{ background: activeRole.accent }} />
                 <div>
                   <p className="section-label">Current context</p>
-                  <strong>{activeRole.domain}</strong>
+                  <strong>{selectedRequest?.title || "No solution selected"}</strong>
                 </div>
               </div>
               <div className="metric-grid">
-                {activeRole.metrics.map(([label, value]) => (
+                {[
+                  ["Stage", selectedRequest?.current_stage?.label || selectedRequest?.workflow?.[selectedRequest?.stageIndex ?? 0]?.label || "Discovery"],
+                  ["Status", selectedRequest?.status || "active"],
+                  ["Artifacts", String(selectedRequest?.artifacts?.length || 0)],
+                  ["Approvals", String(selectedRequest?.approvals?.length || 0)],
+                ].map(([label, value]) => (
                   <article className="metric-card" key={label}>
                     <span>{label}</span>
                     <strong>{value}</strong>
                   </article>
                 ))}
               </div>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Solution journey</p>
+                <h2>Business request to operating solution</h2>
+              </div>
+              <div className="layout-hint">
+                <span>AI discovery first</span>
+                <span>Human approval at sensitive gates</span>
+              </div>
+            </div>
+
+            <div className="workflow-track" aria-label="End-to-end solution journey">
+              {workflowJourneyStages.map((stage, index) => (
+                <React.Fragment key={stage.id}>
+                  <button
+                    type="button"
+                    className={
+                      stage.id === selectedJourneyStage?.id ? "workflow-step active" : "workflow-step"
+                    }
+                    onClick={() => setSelectedJourneyStageId(stage.id)}
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{stage.label}</strong>
+                    <em>{stage.output}</em>
+                  </button>
+                  {index < workflowJourneyStages.length - 1 ? <div className="workflow-arrow">→</div> : null}
+                </React.Fragment>
+              ))}
+            </div>
+
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Business request</p>
+                <strong>{solutionBlueprint.title}</strong>
+                <p className="studio-note">{solutionBlueprint.request}</p>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Solution name</span>
+                    <input value={solutionTitle} onChange={(event) => setSolutionTitle(event.target.value)} />
+                  </label>
+                  <label className="field">
+                    <span>Industry</span>
+                    <input value={solutionIndustry} onChange={(event) => setSolutionIndustry(event.target.value)} />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Country</span>
+                    <input value={solutionCountry} onChange={(event) => setSolutionCountry(event.target.value)} />
+                  </label>
+                  <label className="field">
+                    <span>Budget</span>
+                    <input value={solutionBudget} onChange={(event) => setSolutionBudget(event.target.value)} />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Timeline</span>
+                    <input value={solutionTimeline} onChange={(event) => setSolutionTimeline(event.target.value)} />
+                  </label>
+                  <label className="field">
+                    <span>Stakeholders</span>
+                    <input
+                      value={solutionStakeholders}
+                      onChange={(event) => setSolutionStakeholders(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="primary-action"
+                  onClick={() =>
+                    platformRuntime.createSolution({
+                      title: solutionBlueprint.title,
+                      request: solutionBlueprint.request,
+                      domain: solutionBlueprint.domain,
+                      industry: solutionBlueprint.industry,
+                      country: solutionBlueprint.country,
+                      budget: solutionBlueprint.budget,
+                      timeline: solutionBlueprint.timeline,
+                      stakeholders: solutionBlueprint.stakeholders,
+                      region: solutionBlueprint.region,
+                      compliance: solutionBlueprint.compliance,
+                      surfaces: solutionBlueprint.surfaces,
+                      template: solutionBlueprint.template,
+                    })
+                  }
+                >
+                  Generate solution
+                </button>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">AI discovery</p>
+                <strong>Discovery interview</strong>
+                <p className="studio-note">
+                  NovaCodePro interviews the user before generating the requirements model.
+                </p>
+                <div className="artifact-list">
+                  {DISCOVERY_PROMPTS.map((prompt) => (
+                    <div className="audit-row" key={prompt}>
+                      <strong>{prompt}</strong>
+                    </div>
+                  ))}
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Users</span>
+                    <textarea
+                      rows="2"
+                      value={discoveryAnswers.users}
+                      onChange={(event) =>
+                        setDiscoveryAnswers((current) => ({ ...current, users: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Regions</span>
+                    <textarea
+                      rows="2"
+                      value={discoveryAnswers.regions}
+                      onChange={(event) =>
+                        setDiscoveryAnswers((current) => ({ ...current, regions: event.target.value }))
+                      }
+                    />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Controls</span>
+                    <textarea
+                      rows="2"
+                      value={discoveryAnswers.controls}
+                      onChange={(event) =>
+                        setDiscoveryAnswers((current) => ({ ...current, controls: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Channels</span>
+                    <textarea
+                      rows="2"
+                      value={discoveryAnswers.channels}
+                      onChange={(event) =>
+                        setDiscoveryAnswers((current) => ({ ...current, channels: event.target.value }))
+                      }
+                    />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Languages</span>
+                    <textarea
+                      rows="2"
+                      value={discoveryAnswers.languages}
+                      onChange={(event) =>
+                        setDiscoveryAnswers((current) => ({ ...current, languages: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <article className="metric-card">
+                    <span>Understanding score</span>
+                    <strong>
+                      {Math.min(
+                        100,
+                        Object.values(discoveryAnswers).filter((value) => value.trim().length > 0).length * 20,
+                      )}
+                      %
+                    </strong>
+                  </article>
+                </div>
+                <button
+                  type="button"
+                  className="toolbar-chip"
+                  onClick={() => platformRuntime.runCommand("Generate intent model")}
+                >
+                  Generate intent model
+                </button>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Workflow Monitor</p>
+                <strong>{selectedJourneyStage?.label || "Workflow stage"}</strong>
+                <p className="studio-note">
+                  {selectedJourneyStage?.service || "Workflow service"} · {selectedJourneyStage?.ui || "Workspace"} ·{" "}
+                  {selectedJourneyStage?.output || "Output"}
+                </p>
+                <dl className="service-meta">
+                  <div>
+                    <dt>API</dt>
+                    <dd>{selectedJourneyStage?.api || "n/a"}</dd>
+                  </div>
+                  <div>
+                    <dt>Storage</dt>
+                    <dd>{selectedJourneyStage?.storage || "n/a"}</dd>
+                  </div>
+                  <div>
+                    <dt>Audit</dt>
+                    <dd>{selectedJourneyStage?.audit || "n/a"}</dd>
+                  </div>
+                  <div>
+                    <dt>Kind</dt>
+                    <dd>{selectedJourneyStage?.kind || "automation"}</dd>
+                  </div>
+                </dl>
+                <div className="studio-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.advanceWorkflow(selectedRequest.id)}
+                  >
+                    Advance
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.approveGate(selectedRequest.id, "Approved in workflow monitor.")}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.pauseWorkflow(selectedRequest.id)}
+                  >
+                    Pause
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.resumeWorkflow(selectedRequest.id)}
+                  >
+                    Resume
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.retryWorkflow(selectedRequest.id)}
+                  >
+                    Retry
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.rejectWorkflow(selectedRequest.id)}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Operating windows</p>
+                <h2>Real workflow stages with tangible outputs</h2>
+              </div>
+              <div className="layout-hint">
+                <span>All stages are navigable</span>
+                <span>Each window maps to a real workflow stage</span>
+              </div>
+            </div>
+
+            <div className="center-grid">
+              {OPERATING_WINDOWS.map((window) => (
+                <article className="center-card" key={window.name}>
+                  <p className="section-label">{window.name}</p>
+                  <p>{window.summary}</p>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => runtime.runCommand(window.action)}
+                  >
+                    {window.action}
+                  </button>
+                </article>
+              ))}
             </div>
           </section>
 
