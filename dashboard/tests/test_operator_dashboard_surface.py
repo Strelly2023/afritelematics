@@ -1564,7 +1564,11 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     assert "novacodepro.${AFRITECH_DOMAIN}" in trust_nginx
     assert "/etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/fullchain.pem" in trust_nginx
     assert "/etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/privkey.pem" in trust_nginx
+    assert "set $afritech_api afritech-api:8000;" in trust_nginx
+    assert "location /v1/" in trust_nginx
+    assert "location /api/" in trust_nginx
     assert "set $novacodepro_portal novacodepro-portal:4174;" in trust_nginx
+    assert "proxy_pass http://$afritech_api;" in trust_nginx
     assert "proxy_pass http://$novacodepro_portal;" in trust_nginx
     assert "location /.well-known/acme-challenge/" in platform_nginx
     assert "root /var/www/certbot;" in platform_nginx
@@ -1572,7 +1576,12 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     assert "server_name novacodepro.afritechnology.com;" in platform_nginx
     assert "ssl_certificate ${NOVACODEPRO_SSL_CERTIFICATE};" in platform_nginx
     assert "ssl_certificate_key ${NOVACODEPRO_SSL_CERTIFICATE_KEY};" in platform_nginx
+    assert "set $afritech_api afritech-api:8000;" in platform_nginx
+    assert "location /v1/" in platform_nginx
+    assert "location /api/" in platform_nginx
     assert "proxy_pass http://novacodepro-portal:4174;" in platform_nginx
+    assert "HEALTHCHECK --interval=30s --timeout=10s --retries=3" in dockerfile
+    assert "wget --spider -q http://127.0.0.1:4174/" in read_repo("deploy/staging/Dockerfile.novacodepro_portal")
     assert "./nginx/15-novacodepro-cert.envsh:/docker-entrypoint.d/15-novacodepro-cert.envsh:ro" in trust_node_compose
     assert "NOVACODEPRO_SSL_CERTIFICATE" in novacodepro_cert_selector
     assert "/etc/letsencrypt/live/novacodepro.afritechnology.com" in novacodepro_cert_selector
