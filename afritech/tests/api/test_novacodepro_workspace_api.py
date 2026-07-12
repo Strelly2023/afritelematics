@@ -83,6 +83,39 @@ def test_workspace_manifest_personalizes_developer_workspace(tmp_path: Path) -> 
     assert body["workspace"]["developer_work_items"]
 
 
+def test_workspace_manifest_personalizes_product_manager_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["display_name"] == "Djuma"
+    assert body["user"]["primary_role"] == "PRODUCT_MANAGER"
+    assert body["workspace"]["title"] == "Product Management Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/product"
+    assert body["workspace"]["selected_environment"] == "business-planning"
+    assert body["workspace"]["authority_level"] == "product-manager"
+    assert body["workspace"]["portfolio_name"] == "Mobility and Payments"
+    assert body["workspace"]["feature_flags"]["product_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["My Work", "Strategy", "Discover", "Plan", "Deliver", "Measure", "Knowledge"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Product Workspace" in tool_names
+    assert "Product Portfolio" in tool_names
+    assert "Roadmap Center" in tool_names
+    assert "Requirements Center" in tool_names
+    assert "Backlog and Prioritization Center" in tool_names
+    assert "Product Documentation Center" in tool_names
+    assert "Platform Administration" not in tool_names
+    assert body["workspace"]["product_portfolio"]
+    assert body["workspace"]["customer_signals"]
+
+
 def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
@@ -117,12 +150,38 @@ def test_developer_workspace_html_renders_engineering_summary(tmp_path: Path) ->
     assert "Test pass rate" in response.text
 
 
+def test_product_manager_workspace_html_renders_product_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/product",
+        headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Product Management Workspace" in response.text
+    assert "Product portfolio" in response.text
+    assert "My priorities" in response.text
+    assert "Customer signals" in response.text
+    assert "/novacodepro/tools/platform-administration" not in response.text
+
+
 def test_developer_role_does_not_expose_admin_window(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
     response = client.get(
         "/v1/novacodepro/tools/platform-administration",
         headers=_headers("DEVELOPER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_product_manager_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "tool_not_found"
@@ -189,3 +248,19 @@ def test_command_execution_is_auditable_and_role_gated(tmp_path: Path) -> None:
     assert developer_queued.status_code == 200
     assert developer_queued.json()["status"] == "queued"
     assert developer_queued.json()["requires_confirmation"] is False
+
+    product_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
+    )
+    assert product_commands.status_code == 200
+    assert any(item["label"] == "Open Product Portfolio" for item in product_commands.json())
+
+    product_queued = client.post(
+        "/v1/novacodepro/commands/execute",
+        headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
+        json={"command": "Open Product Portfolio"},
+    )
+    assert product_queued.status_code == 200
+    assert product_queued.json()["status"] == "queued"
+    assert product_queued.json()["requires_confirmation"] is False

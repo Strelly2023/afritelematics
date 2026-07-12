@@ -41,6 +41,7 @@ def _workspace_slug(role: str) -> str:
     mapping = {
         "ADMIN": "admin",
         "DEVELOPER": "developer",
+        "PRODUCT_MANAGER": "product",
         "OPERATOR": "operations",
         "VERIFIER": "security",
         "CLIENT": "partner",
@@ -55,6 +56,7 @@ def _workspace_label(role: str) -> str:
     mapping = {
         "ADMIN": "Platform Administrator",
         "DEVELOPER": "Developer",
+        "PRODUCT_MANAGER": "Product Manager",
         "OPERATOR": "DevOps Engineer",
         "VERIFIER": "Security Engineer",
         "CLIENT": "Partner",
@@ -70,6 +72,7 @@ def _workspace_title(role: str) -> str:
     mapping = {
         "ADMIN": "Platform Administration Workspace",
         "DEVELOPER": "Developer Workspace",
+        "PRODUCT_MANAGER": "Product Management Workspace",
         "OPERATOR": "Operations Workspace",
         "VERIFIER": "Security Workspace",
         "CLIENT": "Partner Workspace",
@@ -84,6 +87,7 @@ def _workspace_description(role: str) -> str:
     mapping = {
         "ADMIN": "Govern platform services, tenants, identity, evidence, approvals, and operational readiness.",
         "DEVELOPER": "Turn approved requirements into secure, tested, documented, traceable, and release-ready software.",
+        "PRODUCT_MANAGER": "Define the right product, prioritize the right work, align delivery teams, and ensure each release creates measurable value.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
         "CLIENT": "Coordinate partner integrations, shared resources, and certified interfaces.",
@@ -116,6 +120,23 @@ def _developer_health(summary: dict[str, Any]) -> dict[str, Any]:
         "coverage": "94.2%",
         "critical_vulnerabilities": int(summary.get("critical_vulnerability_count", 0) or 0),
         "release_blockers": int(summary.get("release_blocker_count", 3) or 3),
+    }
+
+
+def _product_health(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "active_products": int(summary.get("product_count", 8) or 8),
+        "roadmap_confidence": "87%",
+        "features_on_schedule": int(summary.get("features_on_schedule", 42) or 42),
+        "features_at_risk": int(summary.get("features_at_risk", 6) or 6),
+        "blocked_initiatives": int(summary.get("blocked_initiatives", 3) or 3),
+        "open_customer_escalations": int(summary.get("open_customer_escalations", 4) or 4),
+        "upcoming_releases": int(summary.get("upcoming_releases", 5) or 5),
+        "new_feedback_items": int(summary.get("new_feedback_items", 38) or 38),
+        "critical_usability_issues": int(summary.get("critical_usability_issues", 2) or 2),
+        "top_requested_feature": str(summary.get("top_requested_feature", "Faster agent onboarding")),
+        "support_trend": str(summary.get("support_trend", "Payment verification delays")),
+        "adoption_trend": str(summary.get("adoption_trend", "Increasing")),
     }
 
 
@@ -922,6 +943,397 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         primary_actions=("Trace Change", "Inspect Impact", "Open Graph"),
     ),
     ToolDefinition(
+        id="product-workspace",
+        name="Product Workspace",
+        description="Track priorities, products, signals, decisions, and delivery context.",
+        icon="⌂",
+        route="/novacodepro/tools/product-workspace",
+        required_permissions=("workspace.read", "product.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Operations",
+        help_url="/docs/novacodepro/tools/product-workspace",
+        audit_category="workspace",
+        group="HOME",
+        overview=("Priorities", "Products", "Signals", "Decisions", "Readiness"),
+        primary_actions=("Review Priorities", "Open Product Portfolio", "Inspect Launch Readiness"),
+    ),
+    ToolDefinition(
+        id="product-portfolio",
+        name="Product Portfolio",
+        description="Manage product portfolio health, lifecycle stage, and investment posture.",
+        icon="▣",
+        route="/novacodepro/tools/product-portfolio",
+        required_permissions=("product.read", "portfolio.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Portfolio Strategy",
+        help_url="/docs/novacodepro/tools/product-portfolio",
+        audit_category="portfolio",
+        group="HOME",
+        overview=("Products", "Lifecycle", "Investment", "Overlap", "Retirement"),
+        primary_actions=("Register Product", "Review Lifecycle", "Compare Portfolio"),
+    ),
+    ToolDefinition(
+        id="product-strategy-center",
+        name="Product Strategy Center",
+        description="Define product vision, target segments, themes, and success measures.",
+        icon="◆",
+        route="/novacodepro/tools/product-strategy-center",
+        required_permissions=("strategy.read", "strategy.write", "strategy.submit"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Strategy",
+        help_url="/docs/novacodepro/tools/product-strategy-center",
+        audit_category="strategy",
+        group="STRATEGY",
+        overview=("Vision", "Segments", "Value", "Themes", "Measures"),
+        primary_actions=("Draft Vision", "Review Theme", "Submit Strategy"),
+    ),
+    ToolDefinition(
+        id="roadmap-center",
+        name="Roadmap Center",
+        description="Build and publish product roadmaps across time, markets, and dependencies.",
+        icon="↦",
+        route="/novacodepro/tools/roadmap-center",
+        required_permissions=("roadmap.read", "roadmap.create", "roadmap.update"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Planning",
+        help_url="/docs/novacodepro/tools/roadmap-center",
+        audit_category="roadmap",
+        group="STRATEGY",
+        overview=("Now", "Next", "Later", "Quarterly", "Annual"),
+        primary_actions=("Add Initiative", "Review Dependency", "Publish Roadmap"),
+    ),
+    ToolDefinition(
+        id="market-regional-planning",
+        name="Market and Regional Planning",
+        description="Compare regions, regulatory constraints, localization needs, and launch order.",
+        icon="◫",
+        route="/novacodepro/tools/market-regional-planning",
+        required_permissions=("roadmap.read", "product.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Market Strategy",
+        help_url="/docs/novacodepro/tools/market-regional-planning",
+        audit_category="market",
+        group="STRATEGY",
+        overview=("Regions", "Markets", "Localization", "Constraints", "Sequencing"),
+        primary_actions=("Compare Region", "Review Constraint", "Plan Launch"),
+    ),
+    ToolDefinition(
+        id="pricing-packaging-center",
+        name="Pricing and Packaging Center",
+        description="Define packaging, pricing, tiers, entitlements, and approval-ready proposals.",
+        icon="¤",
+        route="/novacodepro/tools/pricing-packaging-center",
+        required_permissions=("pricing.read", "pricing.propose"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Monetization Strategy",
+        help_url="/docs/novacodepro/tools/pricing-packaging-center",
+        audit_category="pricing",
+        group="STRATEGY",
+        overview=("Packages", "Tiers", "Entitlements", "Scenarios", "Approval"),
+        primary_actions=("Propose Pricing", "Review Tier", "Publish Package"),
+    ),
+    ToolDefinition(
+        id="discovery-studio",
+        name="Discovery Studio",
+        description="Run discovery interviews, capture hypotheses, and validate opportunities.",
+        icon="⌖",
+        route="/novacodepro/tools/discovery-studio",
+        required_permissions=("insight.create", "research.read_authorized"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Discovery",
+        help_url="/docs/novacodepro/tools/discovery-studio",
+        audit_category="discovery",
+        group="DISCOVER",
+        overview=("Hypotheses", "Interviews", "Validation", "Decision", "Evidence"),
+        primary_actions=("Plan Discovery", "Review Insight", "Decide Next Step"),
+    ),
+    ToolDefinition(
+        id="customer-insights-center",
+        name="Customer Insights Center",
+        description="Review customer feedback, support signals, and evidence-backed themes.",
+        icon="◉",
+        route="/novacodepro/tools/customer-insights-center",
+        required_permissions=("insight.create", "analytics.read_aggregated"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Customer Intelligence",
+        help_url="/docs/novacodepro/tools/customer-insights-center",
+        audit_category="insights",
+        group="DISCOVER",
+        overview=("Interviews", "Support", "Themes", "Segments", "Trends"),
+        primary_actions=("Open Insight", "Group Theme", "Review Evidence"),
+    ),
+    ToolDefinition(
+        id="user-journey-studio",
+        name="User Journey Studio",
+        description="Map journeys, pain points, trust moments, and accessibility gaps.",
+        icon="⇢",
+        route="/novacodepro/tools/user-journey-studio",
+        required_permissions=("requirements.read", "requirements.create"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Experience Strategy",
+        help_url="/docs/novacodepro/tools/user-journey-studio",
+        audit_category="journey",
+        group="DISCOVER",
+        overview=("Actors", "Stages", "Pain Points", "Trust", "Accessibility"),
+        primary_actions=("Create Journey", "Review Pain Point", "Inspect Accessibility"),
+    ),
+    ToolDefinition(
+        id="customer-segmentation-center",
+        name="Customer Segmentation Center",
+        description="Define segments, personas, needs, and eligibility assumptions.",
+        icon="◧",
+        route="/novacodepro/tools/customer-segmentation-center",
+        required_permissions=("insight.create", "product.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Market Insights",
+        help_url="/docs/novacodepro/tools/customer-segmentation-center",
+        audit_category="segmentation",
+        group="DISCOVER",
+        overview=("Segments", "Personas", "Needs", "Eligibility", "Performance"),
+        primary_actions=("Create Segment", "Review Persona", "Compare Need"),
+    ),
+    ToolDefinition(
+        id="requirements-center",
+        name="Requirements Center",
+        description="Write product requirements, stories, criteria, and release scope.",
+        icon="▤",
+        route="/novacodepro/tools/requirements-center",
+        required_permissions=("requirements.read", "requirements.create", "requirements.update"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Operations",
+        help_url="/docs/novacodepro/tools/requirements-center",
+        audit_category="requirements",
+        group="PLAN",
+        overview=("Problems", "Stories", "Criteria", "Dependencies", "Approvals"),
+        primary_actions=("Write Requirement", "Attach Evidence", "Submit for Approval"),
+    ),
+    ToolDefinition(
+        id="backlog-prioritization-center",
+        name="Backlog and Prioritization Center",
+        description="Score, rank, and sequence backlog items using governed prioritization.",
+        icon="≡",
+        route="/novacodepro/tools/backlog-prioritization-center",
+        required_permissions=("backlog.read", "backlog.prioritize"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Planning",
+        help_url="/docs/novacodepro/tools/backlog-prioritization-center",
+        audit_category="backlog",
+        group="PLAN",
+        overview=("Epics", "Scoring", "Value", "Effort", "Risk"),
+        primary_actions=("Prioritize Backlog", "Re-score Item", "Review Blocker"),
+    ),
+    ToolDefinition(
+        id="cross-functional-planning-center",
+        name="Cross-Functional Planning Center",
+        description="Coordinate product, design, engineering, support, security, and finance.",
+        icon="⇄",
+        route="/novacodepro/tools/cross-functional-planning-center",
+        required_permissions=("roadmap.update", "product.update"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Program Planning",
+        help_url="/docs/novacodepro/tools/cross-functional-planning-center",
+        audit_category="planning",
+        group="PLAN",
+        overview=("Owners", "Dependencies", "Commitments", "Risks", "Reviews"),
+        primary_actions=("Open Planning Review", "Add Dependency", "Track Commitment"),
+    ),
+    ToolDefinition(
+        id="product-risk-center",
+        name="Product Risk Center",
+        description="Track customer, operational, compliance, and delivery risks for products.",
+        icon="⚠",
+        route="/novacodepro/tools/product-risk-center",
+        required_permissions=("risk.read", "risk.create", "risk.escalate"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Risk",
+        help_url="/docs/novacodepro/tools/product-risk-center",
+        audit_category="risk",
+        group="PLAN",
+        overview=("Risks", "Mitigations", "Owners", "Launch Blockers", "Acceptance"),
+        primary_actions=("Create Risk", "Review Mitigation", "Escalate Risk"),
+    ),
+    ToolDefinition(
+        id="design-collaboration-center",
+        name="Design Collaboration Center",
+        description="Review wireframes, feedback, accessibility, and product intent alignment.",
+        icon="◌",
+        route="/novacodepro/tools/design-collaboration-center",
+        required_permissions=("requirements.read", "workspace.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Design",
+        help_url="/docs/novacodepro/tools/design-collaboration-center",
+        audit_category="design",
+        group="DELIVER",
+        overview=("Wireframes", "Feedback", "Accessibility", "Versions", "Coverage"),
+        primary_actions=("Review Design", "Add Feedback", "Approve Intent"),
+    ),
+    ToolDefinition(
+        id="engineering-delivery-view",
+        name="Engineering Delivery View",
+        description="Monitor engineering progress, blockers, dependencies, and forecasts.",
+        icon="</>",
+        route="/novacodepro/tools/engineering-delivery-view",
+        required_permissions=("project.read", "analytics.read_aggregated"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Delivery Engineering",
+        help_url="/docs/novacodepro/tools/engineering-delivery-view",
+        audit_category="delivery",
+        group="DELIVER",
+        overview=("Progress", "Blockers", "Forecasts", "Dependencies", "Checks"),
+        primary_actions=("Inspect Delivery", "Review Blocker", "Request Clarification"),
+    ),
+    ToolDefinition(
+        id="release-planning-center",
+        name="Release Planning Center",
+        description="Define release scope, readiness, comms, and rollback planning.",
+        icon="⟶",
+        route="/novacodepro/tools/release-planning-center",
+        required_permissions=("release.read", "release.scope_propose", "release.readiness_recommend"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Release Management",
+        help_url="/docs/novacodepro/tools/release-planning-center",
+        audit_category="release-planning",
+        group="DELIVER",
+        overview=("Scope", "Readiness", "Comms", "Rollback", "Dependencies"),
+        primary_actions=("Review Scope", "Recommend Readiness", "Open Rollout"),
+    ),
+    ToolDefinition(
+        id="pilot-management-center",
+        name="Pilot Management Center",
+        description="Manage pilot participants, limits, success criteria, and expansion decisions.",
+        icon="⧉",
+        route="/novacodepro/tools/pilot-management-center",
+        required_permissions=("pilot.read", "pilot.plan", "pilot.recommend_transition"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Go-To-Market",
+        help_url="/docs/novacodepro/tools/pilot-management-center",
+        audit_category="pilot",
+        group="DELIVER",
+        overview=("Participants", "Limits", "Criteria", "Risks", "Exit"),
+        primary_actions=("Plan Pilot", "Review Feedback", "Recommend Transition"),
+    ),
+    ToolDefinition(
+        id="customer-launch-center",
+        name="Customer Launch Center",
+        description="Prepare launch plans, messaging, training, and support readiness.",
+        icon="✦",
+        route="/novacodepro/tools/customer-launch-center",
+        required_permissions=("product.read", "documentation.write"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Launch Operations",
+        help_url="/docs/novacodepro/tools/customer-launch-center",
+        audit_category="launch",
+        group="DELIVER",
+        overview=("Audience", "Messaging", "Support", "Training", "Monitoring"),
+        primary_actions=("Review Launch", "Open FAQ", "Track Readiness"),
+    ),
+    ToolDefinition(
+        id="product-analytics-center",
+        name="Product Analytics Center",
+        description="Review adoption, funnels, cohorts, retention, and release outcomes.",
+        icon="↗",
+        route="/novacodepro/tools/product-analytics-center",
+        required_permissions=("analytics.read_aggregated",),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Analytics",
+        help_url="/docs/novacodepro/tools/product-analytics-center",
+        audit_category="analytics",
+        group="MEASURE",
+        overview=("Adoption", "Funnels", "Retention", "Cohorts", "Outcomes"),
+        primary_actions=("Review Metric", "Inspect Cohort", "Compare Release"),
+    ),
+    ToolDefinition(
+        id="experiment-center",
+        name="Experiment Center",
+        description="Define controlled experiments, rollout plans, and guardrail metrics.",
+        icon="◈",
+        route="/novacodepro/tools/experiment-center",
+        required_permissions=("experiment.create", "experiment.submit"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Experimentation",
+        help_url="/docs/novacodepro/tools/experiment-center",
+        audit_category="experiment",
+        group="MEASURE",
+        overview=("Hypotheses", "Rollouts", "Metrics", "Guardrails", "Results"),
+        primary_actions=("Create Experiment", "Review Result", "Stop Rollout"),
+    ),
+    ToolDefinition(
+        id="product-documentation-center",
+        name="Product Documentation Center",
+        description="Publish product briefs, launch notes, lifecycle docs, and enablement material.",
+        icon="☰",
+        route="/novacodepro/tools/product-documentation-center",
+        required_permissions=("documentation.write", "documentation.read"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Operations",
+        help_url="/docs/novacodepro/tools/product-documentation-center",
+        audit_category="documentation",
+        group="KNOWLEDGE",
+        overview=("Briefs", "Launch Notes", "Guides", "Lifecycle", "Enablement"),
+        primary_actions=("Write Brief", "Publish Notes", "Review Coverage"),
+    ),
+    ToolDefinition(
+        id="novaai-product-assistant",
+        name="NovaAI Product Assistant",
+        description="Summarize feedback, draft requirements, compare roadmap options, and surface risk.",
+        icon="AI",
+        route="/novacodepro/tools/novaai-product-assistant",
+        required_permissions=("product.read", "requirements.create"),
+        supported_roles=("PRODUCT_MANAGER",),
+        supported_environments=("business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="AI Product",
+        help_url="/docs/novacodepro/tools/novaai-product-assistant",
+        audit_category="ai",
+        group="KNOWLEDGE",
+        overview=("Feedback", "Requirements", "Options", "Risks", "Reports"),
+        primary_actions=("Ask NovaAI", "Draft Requirement", "Compare Option"),
+    ),
+    ToolDefinition(
         id="tenant-management",
         name="Tenant Management",
         description="Create, suspend, restore, and review tenant health and isolation.",
@@ -1131,6 +1543,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
 ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "ADMIN": ("HOME", "BUILD", "DELIVER", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"),
     "DEVELOPER": ("HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE"),
+    "PRODUCT_MANAGER": ("HOME", "STRATEGY", "DISCOVER", "PLAN", "DELIVER", "MEASURE", "KNOWLEDGE"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -1158,6 +1571,17 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Run Tests",
         "Open Review Center",
         "Submit Release Request",
+    ),
+    "PRODUCT_MANAGER": (
+        "Create product initiative",
+        "Add roadmap item",
+        "Write requirements",
+        "Open customer insight",
+        "Prioritize backlog",
+        "Start discovery",
+        "Review release readiness",
+        "Request product approval",
+        "Generate product brief",
     ),
     "OPERATOR": (
         "Open Operations Center",
@@ -1216,6 +1640,17 @@ def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str,
             "DESIGN": "Design",
             "DELIVER": "Deliver",
             "ASSURE": "Assure",
+            "KNOWLEDGE": "Knowledge",
+        }
+    elif canonical == "PRODUCT_MANAGER":
+        order = ["HOME", "STRATEGY", "DISCOVER", "PLAN", "DELIVER", "MEASURE", "KNOWLEDGE"]
+        labels = {
+            "HOME": "My Work",
+            "STRATEGY": "Strategy",
+            "DISCOVER": "Discover",
+            "PLAN": "Plan",
+            "DELIVER": "Deliver",
+            "MEASURE": "Measure",
             "KNOWLEDGE": "Knowledge",
         }
     else:
@@ -1316,6 +1751,16 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {"title": "Security posture", "value": health["critical_vulnerabilities"], "meta": "Critical vulnerabilities in assigned scope"},
             {"title": "Tool access", "value": len(_visible_tools(role, "development")), "meta": "Authorized developer tools"},
         ]
+    if canonical == "PRODUCT_MANAGER":
+        health = _product_health(summary)
+        return [
+            {"title": "Product portfolio", "value": health["active_products"], "meta": "Assigned products and lifecycle stage"},
+            {"title": "My priorities", "value": 6, "meta": "Evidence-backed roadmap, requirement, and launch work"},
+            {"title": "Product health", "value": health["roadmap_confidence"], "meta": f"{health['features_on_schedule']} on schedule · {health['features_at_risk']} at risk"},
+            {"title": "Customer signals", "value": health["new_feedback_items"], "meta": f"{health['critical_usability_issues']} critical usability issues · {health['adoption_trend']} adoption"},
+            {"title": "Upcoming releases", "value": health["upcoming_releases"], "meta": f"{health['open_customer_escalations']} customer escalations · support trend {health['support_trend']}"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "business-planning")), "meta": "Authorized product tools"},
+        ]
     if canonical == "OPERATOR":
         return [
             {"title": "Deployments", "value": summary.get("deployment_count", 0), "meta": "Change and rollout visibility"},
@@ -1377,6 +1822,8 @@ def build_workspace_manifest(
             environment = "production"
         elif canonical == "DEVELOPER":
             environment = "development"
+        elif canonical == "PRODUCT_MANAGER":
+            environment = "business-planning"
         else:
             environment = "staging"
     environment = environment.lower()
@@ -1447,9 +1894,13 @@ def build_workspace_manifest(
             "description": _workspace_description(canonical),
             "tenant": organization_id,
             "organization": _organization_label(organization_id),
-            "environments": ["production", "staging", "pilot"] if canonical == "ADMIN" else ["development", "staging", "pilot"],
+            "environments": ["production", "staging", "pilot"]
+            if canonical == "ADMIN"
+            else (["business-planning", "staging", "pilot"] if canonical == "PRODUCT_MANAGER" else ["development", "staging", "pilot"]),
             "selected_environment": environment,
-            "authority_level": "platform-admin" if canonical == "ADMIN" else ("developer" if canonical == "DEVELOPER" else "role-scoped"),
+            "authority_level": "platform-admin"
+            if canonical == "ADMIN"
+            else ("developer" if canonical == "DEVELOPER" else ("product-manager" if canonical == "PRODUCT_MANAGER" else "role-scoped")),
             "navigation": navigation_groups,
             "tools": tool_manifest,
             "dashboard_cards": _workspace_cards(canonical, summary),
@@ -1459,19 +1910,59 @@ def build_workspace_manifest(
             ],
             "pending_approvals": summary.get("pending_approvals", [])[:4],
             "current_sprint": "Sprint 24" if canonical == "DEVELOPER" else None,
-            "active_projects": service.projects()[:5] if canonical == "DEVELOPER" else service.projects()[:4],
+            "portfolio_name": "Mobility and Payments" if canonical == "PRODUCT_MANAGER" else None,
+            "product_stage": "Discovery" if canonical == "PRODUCT_MANAGER" else None,
+            "active_products": service.projects()[:5] if canonical == "PRODUCT_MANAGER" else (service.projects()[:5] if canonical == "DEVELOPER" else service.projects()[:4]),
+            "product_health": _product_health(summary) if canonical == "PRODUCT_MANAGER" else {},
+            "customer_signals": [
+                {"label": "New feedback items", "value": _product_health(summary)["new_feedback_items"]},
+                {"label": "Critical usability issues", "value": _product_health(summary)["critical_usability_issues"]},
+                {"label": "Top requested feature", "value": _product_health(summary)["top_requested_feature"]},
+                {"label": "Support trend", "value": _product_health(summary)["support_trend"]},
+                {"label": "Adoption trend", "value": _product_health(summary)["adoption_trend"]},
+            ]
+            if canonical == "PRODUCT_MANAGER"
+            else [],
+            "my_priorities": [
+                {"label": "Approve NovaRide pilot requirements", "status": "pending"},
+                {"label": "Review NovaPay onboarding journey", "status": "active"},
+                {"label": "Resolve identity-verification dependency", "status": "blocked"},
+                {"label": "Confirm Q3 roadmap", "status": "review"},
+                {"label": "Review public-pilot feedback", "status": "pending"},
+                {"label": "Prepare executive product update", "status": "pending"},
+            ]
+            if canonical == "PRODUCT_MANAGER"
+            else [],
+            "active_projects": service.projects()[:5] if canonical in {"DEVELOPER", "PRODUCT_MANAGER"} else service.projects()[:4],
             "recent_repositories": [
                 {
                     "id": f"repo-{index + 1}",
                     "name": f"{project['name'].replace(' ', '-').lower()}-repo",
                     "project": project["name"],
-                    "branch": "develop" if canonical == "DEVELOPER" else "main",
+                    "branch": "develop" if canonical in {"DEVELOPER", "PRODUCT_MANAGER"} else "main",
                 }
                 for index, project in enumerate(service.projects()[:4])
             ]
-            if canonical == "DEVELOPER"
+            if canonical in {"DEVELOPER", "PRODUCT_MANAGER"}
             else [],
             "developer_health": _developer_health(summary) if canonical == "DEVELOPER" else {},
+            "product_portfolio": [
+                {"label": "NovaRide", "status": "On track"},
+                {"label": "NovaPay Agent App", "status": "At risk"},
+                {"label": "NovaID Federation", "status": "On track"},
+                {"label": "NovaCodePro Workspace", "status": "In discovery"},
+                {"label": "Customer Portal", "status": "In pilot"},
+            ]
+            if canonical == "PRODUCT_MANAGER"
+            else [],
+            "product_decisions": [
+                {"label": "Approve NovaRide pilot requirements", "value": "Pending"},
+                {"label": "Review NovaPay onboarding journey", "value": "In progress"},
+                {"label": "Resolve identity-verification dependency", "value": "Blocked"},
+                {"label": "Confirm Q3 roadmap", "value": "Review"},
+            ]
+            if canonical == "PRODUCT_MANAGER"
+            else [],
             "developer_work_items": [
                 {"label": "Assigned issues", "value": summary.get("workflow_statuses", {}).get("active", 0)},
                 {"label": "Active tasks", "value": summary.get("workflow_statuses", {}).get("waiting-approval", 0) + summary.get("workflow_statuses", {}).get("paused", 0)},
@@ -1503,13 +1994,14 @@ def build_workspace_manifest(
                 "executive_workspace": canonical == "ADMIN",
                 "board_workspace": canonical == "ADMIN",
                 "developer_workspace": canonical == "DEVELOPER",
+                "product_workspace": canonical == "PRODUCT_MANAGER",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
             "enterprise_signals": {
                 "platform_health": summary.get("platform_health", "healthy"),
                 "service_health": summary.get("service_health", {}),
-                "evidence_completeness": "98%",
+                "evidence_completeness": "97%" if canonical == "PRODUCT_MANAGER" else "98%",
                 "operational_risk": "Low" if summary.get("platform_health") == "healthy" else "Attention",
             },
             "recent_projects": service.projects()[:4],
@@ -1649,6 +2141,51 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
             <section class=\"panel\">
               <header><h2>Recent incidents</h2></header>
               <ul>{incidents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "PRODUCT_MANAGER":
+        priorities_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("my_priorities", [])
+        ) or "<li>No priorities assigned.</li>"
+        portfolio_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("product_portfolio", [])
+        ) or "<li>No products assigned.</li>"
+        product_signals_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item['value']))}</span></li>"
+            for item in workspace.get("customer_signals", [])
+        ) or "<li>No customer signals.</li>"
+        product_decisions_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['value'])}</span></li>"
+            for item in workspace.get("product_decisions", [])
+        ) or "<li>No recent decisions.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Product portfolio</h2></header>
+              <ul>{portfolio_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>My priorities</h2></header>
+              <ul>{priorities_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Customer signals</h2></header>
+              <ul>{product_signals_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Product decisions</h2></header>
+              <ul>{product_decisions_html}</ul>
             </section>
             <section class=\"panel\">
               <header><h2>Enterprise signals</h2></header>
