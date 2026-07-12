@@ -24,8 +24,30 @@ def _service() -> NovaCodeProPlatform:
 def build_novacodepro_workspace_router(platform: NovaCodeProPlatform | None = None) -> APIRouter:
     service = platform or _service()
     router = APIRouter(tags=["novacodepro-workspace"])
-    observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER", "PRODUCT_MANAGER", "CLIENT", "PARTNER", "CUSTOMER")
-    editor = require_roles("OPERATOR", "ADMIN", "VERIFIER", "DEVELOPER", "PRODUCT_MANAGER")
+    observer = require_roles(
+        "OPERATOR",
+        "ADMIN",
+        "VERIFIER",
+        "OBSERVER",
+        "DEVELOPER",
+        "PRODUCT_MANAGER",
+        "BUSINESS_ANALYST",
+        "UI_UX_DESIGNER",
+        "PROJECT_MANAGER",
+        "CLIENT",
+        "PARTNER",
+        "CUSTOMER",
+    )
+    editor = require_roles(
+        "OPERATOR",
+        "ADMIN",
+        "VERIFIER",
+        "DEVELOPER",
+        "PRODUCT_MANAGER",
+        "BUSINESS_ANALYST",
+        "UI_UX_DESIGNER",
+        "PROJECT_MANAGER",
+    )
 
     def _workspace_manifest(
         claims: JWTClaims,

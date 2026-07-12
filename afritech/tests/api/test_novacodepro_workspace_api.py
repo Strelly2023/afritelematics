@@ -116,6 +116,95 @@ def test_workspace_manifest_personalizes_product_manager_workspace(tmp_path: Pat
     assert body["workspace"]["customer_signals"]
 
 
+def test_workspace_manifest_personalizes_business_analyst_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "BUSINESS_ANALYST"
+    assert body["workspace"]["title"] == "Business Analysis Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/business-analyst"
+    assert body["workspace"]["selected_environment"] == "analysis"
+    assert body["workspace"]["authority_level"] == "business-analyst"
+    assert body["workspace"]["portfolio_name"] == "Mobility & Financial Services"
+    assert body["workspace"]["feature_flags"]["business_analyst_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Analysis", "Stakeholders", "Planning", "Governance", "Intelligence"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Business Analysis Workspace" in tool_names
+    assert "Requirements Management Center" in tool_names
+    assert "Business Process Modeling Studio" in tool_names
+    assert "Business Rules Center" in tool_names
+    assert "Business Reporting Center" in tool_names
+    assert "Platform Administration" not in tool_names
+    assert body["workspace"]["analysis_tasks"]
+
+
+def test_workspace_manifest_personalizes_ui_ux_designer_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "UI_UX_DESIGNER"
+    assert body["workspace"]["title"] == "Design Studio"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/design"
+    assert body["workspace"]["selected_environment"] == "design"
+    assert body["workspace"]["authority_level"] == "designer"
+    assert body["workspace"]["feature_flags"]["design_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Design", "System", "Research", "Delivery", "Creative"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Design Workspace" in tool_names
+    assert "Wireframe Studio" in tool_names
+    assert "NovaTech Design System" in tool_names
+    assert "Accessibility Center" in tool_names
+    assert "NovaAI Design Assistant" in tool_names
+    assert "Platform Administration" not in tool_names
+    assert body["workspace"]["design_projects"]
+
+
+def test_workspace_manifest_personalizes_project_manager_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("PROJECT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "PROJECT_MANAGER"
+    assert body["workspace"]["title"] == "Project Delivery Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/project-manager"
+    assert body["workspace"]["selected_environment"] == "delivery"
+    assert body["workspace"]["authority_level"] == "project-manager"
+    assert body["workspace"]["portfolio_name"] == "Projects Portfolio"
+    assert body["workspace"]["feature_flags"]["project_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Projects", "Delivery", "Governance", "Communication", "Operations"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Project Workspace" in tool_names
+    assert "Project Portfolio Center" in tool_names
+    assert "Project Planning Center" in tool_names
+    assert "Project Delivery Command Center" in tool_names
+    assert "Project Documentation Center" in tool_names
+    assert "Platform Administration" not in tool_names
+    assert body["workspace"]["project_portfolio"]
+
+
 def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
@@ -165,6 +254,51 @@ def test_product_manager_workspace_html_renders_product_summary(tmp_path: Path) 
     assert "/novacodepro/tools/platform-administration" not in response.text
 
 
+def test_business_analyst_workspace_html_renders_analysis_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/business-analyst",
+        headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Business Analysis Workspace" in response.text
+    assert "Assigned projects" in response.text
+    assert "Analysis health" in response.text
+    assert "Requirements completed" in response.text
+    assert "/novacodepro/tools/platform-administration" not in response.text
+
+
+def test_ui_ux_designer_workspace_html_renders_design_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/design",
+        headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Design Studio" in response.text
+    assert "My design projects" in response.text
+    assert "Design health" in response.text
+    assert "Accessibility score" in response.text
+    assert "/novacodepro/tools/platform-administration" not in response.text
+
+
+def test_project_manager_workspace_html_renders_project_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/project-manager",
+        headers=_headers("PROJECT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Project Delivery Workspace" in response.text
+    assert "Project portfolio" in response.text
+    assert "Portfolio health" in response.text
+    assert "Budget utilization" in response.text
+    assert "/novacodepro/tools/platform-administration" not in response.text
+
+
 def test_developer_role_does_not_expose_admin_window(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
@@ -182,6 +316,39 @@ def test_product_manager_role_does_not_expose_admin_window(tmp_path: Path) -> No
     response = client.get(
         "/v1/novacodepro/tools/platform-administration",
         headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_business_analyst_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_ui_ux_designer_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_project_manager_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("PROJECT_MANAGER", "usr_djuma"),
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "tool_not_found"
@@ -264,3 +431,52 @@ def test_command_execution_is_auditable_and_role_gated(tmp_path: Path) -> None:
     assert product_queued.status_code == 200
     assert product_queued.json()["status"] == "queued"
     assert product_queued.json()["requires_confirmation"] is False
+
+
+def test_command_execution_supports_business_analyst_and_project_roles(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    business_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
+    )
+    assert business_commands.status_code == 200
+    assert any(item["label"] == "Create Business Requirement" for item in business_commands.json())
+
+    business_queued = client.post(
+        "/v1/novacodepro/commands/execute",
+        headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
+        json={"command": "Create Business Requirement"},
+    )
+    assert business_queued.status_code == 200
+    assert business_queued.json()["status"] == "queued"
+
+    design_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
+    )
+    assert design_commands.status_code == 200
+    assert any(item["label"] == "Create Wireframe" for item in design_commands.json())
+
+    design_queued = client.post(
+        "/v1/novacodepro/commands/execute",
+        headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
+        json={"command": "Create Wireframe"},
+    )
+    assert design_queued.status_code == 200
+    assert design_queued.json()["status"] == "queued"
+
+    project_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("PROJECT_MANAGER", "usr_djuma"),
+    )
+    assert project_commands.status_code == 200
+    assert any(item["label"] == "Create Project" for item in project_commands.json())
+
+    project_queued = client.post(
+        "/v1/novacodepro/commands/execute",
+        headers=_headers("PROJECT_MANAGER", "usr_djuma"),
+        json={"command": "Create Project"},
+    )
+    assert project_queued.status_code == 200
+    assert project_queued.json()["status"] == "queued"

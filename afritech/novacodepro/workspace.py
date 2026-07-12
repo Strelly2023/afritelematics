@@ -42,6 +42,9 @@ def _workspace_slug(role: str) -> str:
         "ADMIN": "admin",
         "DEVELOPER": "developer",
         "PRODUCT_MANAGER": "product",
+        "BUSINESS_ANALYST": "business-analyst",
+        "UI_UX_DESIGNER": "design",
+        "PROJECT_MANAGER": "project-manager",
         "OPERATOR": "operations",
         "VERIFIER": "security",
         "CLIENT": "partner",
@@ -57,6 +60,9 @@ def _workspace_label(role: str) -> str:
         "ADMIN": "Platform Administrator",
         "DEVELOPER": "Developer",
         "PRODUCT_MANAGER": "Product Manager",
+        "BUSINESS_ANALYST": "Business Analyst",
+        "UI_UX_DESIGNER": "UI/UX Designer",
+        "PROJECT_MANAGER": "Project Manager",
         "OPERATOR": "DevOps Engineer",
         "VERIFIER": "Security Engineer",
         "CLIENT": "Partner",
@@ -73,6 +79,9 @@ def _workspace_title(role: str) -> str:
         "ADMIN": "Platform Administration Workspace",
         "DEVELOPER": "Developer Workspace",
         "PRODUCT_MANAGER": "Product Management Workspace",
+        "BUSINESS_ANALYST": "Business Analysis Workspace",
+        "UI_UX_DESIGNER": "Design Studio",
+        "PROJECT_MANAGER": "Project Delivery Workspace",
         "OPERATOR": "Operations Workspace",
         "VERIFIER": "Security Workspace",
         "CLIENT": "Partner Workspace",
@@ -88,6 +97,9 @@ def _workspace_description(role: str) -> str:
         "ADMIN": "Govern platform services, tenants, identity, evidence, approvals, and operational readiness.",
         "DEVELOPER": "Turn approved requirements into secure, tested, documented, traceable, and release-ready software.",
         "PRODUCT_MANAGER": "Define the right product, prioritize the right work, align delivery teams, and ensure each release creates measurable value.",
+        "BUSINESS_ANALYST": "Translate business needs into clear, testable, and traceable requirements that deliver measurable value.",
+        "UI_UX_DESIGNER": "Transform business and customer requirements into accessible, consistent, user-centered experiences.",
+        "PROJECT_MANAGER": "Plan, coordinate, and deliver NovaTech projects within scope, schedule, budget, quality, and governance.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
         "CLIENT": "Coordinate partner integrations, shared resources, and certified interfaces.",
@@ -137,6 +149,40 @@ def _product_health(summary: dict[str, Any]) -> dict[str, Any]:
         "top_requested_feature": str(summary.get("top_requested_feature", "Faster agent onboarding")),
         "support_trend": str(summary.get("support_trend", "Payment verification delays")),
         "adoption_trend": str(summary.get("adoption_trend", "Increasing")),
+    }
+
+
+def _business_analysis_health(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "active_projects": int(summary.get("project_count", 8) or 8),
+        "requirements_completed": int(summary.get("requirements_completed", 126) or 126),
+        "pending_reviews": int(summary.get("pending_reviews", 14) or 14),
+        "open_change_requests": int(summary.get("open_change_requests", 6) or 6),
+        "approved_business_rules": int(summary.get("approved_business_rules", 89) or 89),
+        "stakeholder_approvals": "92%",
+    }
+
+
+def _design_health(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "screens_designed": int(summary.get("screens_designed", 184) or 184),
+        "pending_reviews": int(summary.get("pending_reviews", 12) or 12),
+        "approved_components": int(summary.get("approved_components", 236) or 236),
+        "accessibility_score": "96%",
+        "prototype_completion": "89%",
+        "design_debt": "Low",
+    }
+
+
+def _project_health(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "projects": int(summary.get("project_count", 12) or 12),
+        "on_track": int(summary.get("projects_on_track", 8) or 8),
+        "at_risk": int(summary.get("projects_at_risk", 3) or 3),
+        "critical": int(summary.get("projects_critical", 1) or 1),
+        "milestones_due": int(summary.get("milestones_due", 14) or 14),
+        "open_risks": int(summary.get("project_risks", 21) or 21),
+        "budget_utilization": "67%",
     }
 
 
@@ -1334,6 +1380,975 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         primary_actions=("Ask NovaAI", "Draft Requirement", "Compare Option"),
     ),
     ToolDefinition(
+        id="business-analysis-workspace",
+        name="Business Analysis Workspace",
+        description="Track initiatives, requirements, stakeholder requests, and analysis tasks.",
+        icon="⌂",
+        route="/novacodepro/tools/business-analysis-workspace",
+        required_permissions=("requirements.read", "requirements.create"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Analysis",
+        help_url="/docs/novacodepro/tools/business-analysis-workspace",
+        audit_category="workspace",
+        group="ANALYSIS",
+        overview=("Initiatives", "Requirements", "Stakeholders", "Approvals", "Documents"),
+        primary_actions=("Review Tasks", "Open Requirements", "Start Interview"),
+    ),
+    ToolDefinition(
+        id="requirements-management-center",
+        name="Requirements Management Center",
+        description="Create and version business, functional, and non-functional requirements.",
+        icon="▤",
+        route="/novacodepro/tools/requirements-management-center",
+        required_permissions=("requirements.read", "requirements.create", "requirements.update"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Analysis",
+        help_url="/docs/novacodepro/tools/requirements-management-center",
+        audit_category="requirements",
+        group="ANALYSIS",
+        overview=("BRD", "FRD", "Stories", "Criteria", "Traceability"),
+        primary_actions=("Create BRD", "Submit Requirement", "Review Traceability"),
+    ),
+    ToolDefinition(
+        id="business-process-modeling-studio",
+        name="Business Process Modeling Studio",
+        description="Design AS-IS and TO-BE process models, swimlanes, and BPMN flows.",
+        icon="⇄",
+        route="/novacodepro/tools/business-process-modeling-studio",
+        required_permissions=("process.read", "process.model"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Process",
+        help_url="/docs/novacodepro/tools/business-process-modeling-studio",
+        audit_category="process",
+        group="ANALYSIS",
+        overview=("AS-IS", "TO-BE", "BPMN", "Swimlanes", "Optimization"),
+        primary_actions=("Open Process", "Create Model", "Review Bottleneck"),
+    ),
+    ToolDefinition(
+        id="user-story-backlog-center",
+        name="User Story & Backlog Center",
+        description="Create epics, stories, backlog items, and business-value priorities.",
+        icon="≡",
+        route="/novacodepro/tools/user-story-backlog-center",
+        required_permissions=("backlog.create", "backlog.prioritize"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Delivery Planning",
+        help_url="/docs/novacodepro/tools/user-story-backlog-center",
+        audit_category="backlog",
+        group="PLANNING",
+        overview=("Epics", "Features", "Stories", "Priority", "Readiness"),
+        primary_actions=("Create Story", "Prioritize Backlog", "Link Requirement"),
+    ),
+    ToolDefinition(
+        id="business-rules-center",
+        name="Business Rules Center",
+        description="Define business rules, decision tables, eligibility, and approval logic.",
+        icon="⚑",
+        route="/novacodepro/tools/business-rules-center",
+        required_permissions=("process.model", "risk.review"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Rules",
+        help_url="/docs/novacodepro/tools/business-rules-center",
+        audit_category="rules",
+        group="ANALYSIS",
+        overview=("Rules", "Decision Tables", "Eligibility", "Validation", "Dependencies"),
+        primary_actions=("Create Rule", "Review Eligibility", "Map Compliance"),
+    ),
+    ToolDefinition(
+        id="customer-journey-analysis",
+        name="Customer Journey Analysis",
+        description="Map journeys, pain points, opportunities, and service blueprints.",
+        icon="⇢",
+        route="/novacodepro/tools/customer-journey-analysis",
+        required_permissions=("research.read", "insight.create"),
+        supported_roles=("BUSINESS_ANALYST", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Experience Strategy",
+        help_url="/docs/novacodepro/tools/customer-journey-analysis",
+        audit_category="journey",
+        group="STAKEHOLDERS",
+        overview=("Journeys", "Pain Points", "Opportunities", "Personas", "Blueprints"),
+        primary_actions=("Map Journey", "Review Pain Point", "Open Opportunity"),
+    ),
+    ToolDefinition(
+        id="workflow-automation-center",
+        name="Workflow Automation Center",
+        description="Analyze bottlenecks, automation opportunities, and ROI for process change.",
+        icon="⤴",
+        route="/novacodepro/tools/workflow-automation-center",
+        required_permissions=("process.model", "analytics.read_aggregated"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Automation Strategy",
+        help_url="/docs/novacodepro/tools/workflow-automation-center",
+        audit_category="automation",
+        group="PLANNING",
+        overview=("Bottlenecks", "Opportunities", "ROI", "Simulation", "Optimization"),
+        primary_actions=("Analyze Workflow", "Estimate ROI", "Propose Automation"),
+    ),
+    ToolDefinition(
+        id="business-analytics-center",
+        name="Business Analytics Center",
+        description="Review KPIs, trends, forecasts, and business intelligence dashboards.",
+        icon="↗",
+        route="/novacodepro/tools/business-analytics-center",
+        required_permissions=("analytics.read", "analytics.read_aggregated"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Intelligence",
+        help_url="/docs/novacodepro/tools/business-analytics-center",
+        audit_category="analytics",
+        group="INTELLIGENCE",
+        overview=("KPIs", "Trends", "Forecasts", "Conversion", "Outcomes"),
+        primary_actions=("Review KPI", "Compare Trend", "Open Forecast"),
+    ),
+    ToolDefinition(
+        id="gap-analysis-center",
+        name="Gap Analysis Center",
+        description="Compare current and future states across process, capability, and readiness gaps.",
+        icon="⊟",
+        route="/novacodepro/tools/gap-analysis-center",
+        required_permissions=("requirements.read", "risk.review"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Transformation",
+        help_url="/docs/novacodepro/tools/gap-analysis-center",
+        audit_category="gap-analysis",
+        group="PLANNING",
+        overview=("Current State", "Future State", "Gaps", "Readiness", "Mitigation"),
+        primary_actions=("Open Gap", "Review Maturity", "Propose Action"),
+    ),
+    ToolDefinition(
+        id="business-impact-center",
+        name="Business Impact Center",
+        description="Assess financial, regulatory, operational, and customer impact of change.",
+        icon="⚠",
+        route="/novacodepro/tools/business-impact-center",
+        required_permissions=("risk.review", "risk.create"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Risk",
+        help_url="/docs/novacodepro/tools/business-impact-center",
+        audit_category="impact",
+        group="GOVERNANCE",
+        overview=("Business", "Operational", "Customer", "Financial", "Regulatory"),
+        primary_actions=("Assess Impact", "Review Mitigation", "Escalate Risk"),
+    ),
+    ToolDefinition(
+        id="solution-evaluation-center",
+        name="Solution Evaluation Center",
+        description="Compare solution options, feasibility, costs, and benefits.",
+        icon="◇",
+        route="/novacodepro/tools/solution-evaluation-center",
+        required_permissions=("product.read", "requirements.read"),
+        supported_roles=("BUSINESS_ANALYST", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Solution Strategy",
+        help_url="/docs/novacodepro/tools/solution-evaluation-center",
+        audit_category="solution-evaluation",
+        group="PLANNING",
+        overview=("Alternatives", "Feasibility", "Cost", "Benefit", "ROI"),
+        primary_actions=("Compare Options", "Review Feasibility", "Open Recommendation"),
+    ),
+    ToolDefinition(
+        id="compliance-policy-mapping",
+        name="Compliance Mapping Center",
+        description="Map business requirements to policies, obligations, controls, and evidence.",
+        icon="☑",
+        route="/novacodepro/tools/compliance-policy-mapping",
+        required_permissions=("requirements.read", "governance.read"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Governance Analysis",
+        help_url="/docs/novacodepro/tools/compliance-policy-mapping",
+        audit_category="compliance-mapping",
+        group="GOVERNANCE",
+        overview=("Policies", "Obligations", "Controls", "Evidence", "Gaps"),
+        primary_actions=("Map Policy", "Review Gap", "Open Evidence"),
+    ),
+    ToolDefinition(
+        id="business-documentation-center",
+        name="Business Documentation Center",
+        description="Create BRDs, meeting minutes, glossaries, and business-facing documentation.",
+        icon="☰",
+        route="/novacodepro/tools/business-documentation-center",
+        required_permissions=("documentation.write", "documentation.read"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Documentation",
+        help_url="/docs/novacodepro/tools/business-documentation-center",
+        audit_category="documentation",
+        group="INTELLIGENCE",
+        overview=("BRD", "FRD", "Glossary", "SOPs", "Minutes"),
+        primary_actions=("Write BRD", "Publish Minutes", "Review Glossary"),
+    ),
+    ToolDefinition(
+        id="workshop-center",
+        name="Workshop Center",
+        description="Plan interviews, workshops, and follow-up actions with stakeholders.",
+        icon="✦",
+        route="/novacodepro/tools/workshop-center",
+        required_permissions=("stakeholder.manage", "documentation.write"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Program Delivery",
+        help_url="/docs/novacodepro/tools/workshop-center",
+        audit_category="workshop",
+        group="STAKEHOLDERS",
+        overview=("Workshops", "Attendance", "Actions", "Decisions", "Follow-up"),
+        primary_actions=("Schedule Workshop", "Capture Notes", "Track Actions"),
+    ),
+    ToolDefinition(
+        id="change-management-center",
+        name="Change Management Center",
+        description="Review scope changes, impact, approvals, and rollout planning.",
+        icon="⇄",
+        route="/novacodepro/tools/change-management-center",
+        required_permissions=("change.request", "requirements.update"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Change Governance",
+        help_url="/docs/novacodepro/tools/change-management-center",
+        audit_category="change",
+        group="GOVERNANCE",
+        overview=("Changes", "Impact", "Approvals", "History", "Rollout"),
+        primary_actions=("Submit Change", "Review Impact", "Open Approval"),
+    ),
+    ToolDefinition(
+        id="requirements-traceability-center",
+        name="Requirements Traceability Center",
+        description="Trace business goals to requirements, stories, design, development, testing, and outcomes.",
+        icon="⟐",
+        route="/novacodepro/tools/requirements-traceability-center",
+        required_permissions=("traceability.manage", "requirements.read"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Traceability",
+        help_url="/docs/novacodepro/tools/requirements-traceability-center",
+        audit_category="traceability",
+        group="GOVERNANCE",
+        overview=("Goals", "Requirements", "Stories", "Design", "Outcomes"),
+        primary_actions=("Trace Requirement", "Inspect Coverage", "Open Outcome"),
+    ),
+    ToolDefinition(
+        id="business-reporting-center",
+        name="Business Reporting Center",
+        description="Generate executive, project, KPI, risk, and compliance reports.",
+        icon="▤",
+        route="/novacodepro/tools/business-reporting-center",
+        required_permissions=("report.generate", "analytics.read"),
+        supported_roles=("BUSINESS_ANALYST", "PROJECT_MANAGER", "PRODUCT_MANAGER"),
+        supported_environments=("analysis", "business-planning", "delivery", "staging", "pilot"),
+        version="v1",
+        ownership_team="Business Reporting",
+        help_url="/docs/novacodepro/tools/business-reporting-center",
+        audit_category="reporting",
+        group="INTELLIGENCE",
+        overview=("Executive", "Project", "KPI", "Risk", "Compliance"),
+        primary_actions=("Generate Report", "Open KPI", "Export Summary"),
+    ),
+    ToolDefinition(
+        id="novaai-business-analyst-assistant",
+        name="NovaAI Business Analyst Assistant",
+        description="Summarize interviews, draft BRDs, generate stories, and identify gaps.",
+        icon="AI",
+        route="/novacodepro/tools/novaai-business-analyst-assistant",
+        required_permissions=("requirements.create", "documentation.write"),
+        supported_roles=("BUSINESS_ANALYST",),
+        supported_environments=("analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="AI Business Analysis",
+        help_url="/docs/novacodepro/tools/novaai-business-analyst-assistant",
+        audit_category="ai",
+        group="INTELLIGENCE",
+        overview=("Summaries", "BRD Drafts", "Stories", "Gaps", "Reports"),
+        primary_actions=("Ask NovaAI", "Draft BRD", "Detect Gap"),
+    ),
+    ToolDefinition(
+        id="design-workspace",
+        name="Design Workspace",
+        description="Track design projects, tasks, reviews, and accessibility progress.",
+        icon="⌂",
+        route="/novacodepro/tools/design-workspace",
+        required_permissions=("design.read", "design.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Operations",
+        help_url="/docs/novacodepro/tools/design-workspace",
+        audit_category="workspace",
+        group="DESIGN",
+        overview=("Projects", "Tasks", "Reviews", "Components", "Accessibility"),
+        primary_actions=("Open Project", "Review Tasks", "Inspect Accessibility"),
+    ),
+    ToolDefinition(
+        id="wireframe-studio",
+        name="Wireframe Studio",
+        description="Create low-, mid-, and high-fidelity wireframes and user flow maps.",
+        icon="▢",
+        route="/novacodepro/tools/wireframe-studio",
+        required_permissions=("wireframe.create", "design.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="UX Design",
+        help_url="/docs/novacodepro/tools/wireframe-studio",
+        audit_category="wireframe",
+        group="DESIGN",
+        overview=("Wireframes", "Flows", "Layouts", "Annotations", "Hierarchy"),
+        primary_actions=("Create Wireframe", "Review Flow", "Open Layout"),
+    ),
+    ToolDefinition(
+        id="visual-design-studio",
+        name="Visual Design Studio",
+        description="Design application screens, themes, branding, and responsive visuals.",
+        icon="◼",
+        route="/novacodepro/tools/visual-design-studio",
+        required_permissions=("design.update", "design.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Visual Design",
+        help_url="/docs/novacodepro/tools/visual-design-studio",
+        audit_category="visual-design",
+        group="DESIGN",
+        overview=("Screens", "Themes", "Branding", "Responsive", "Localization"),
+        primary_actions=("Design Screen", "Preview Theme", "Open Brand"),
+    ),
+    ToolDefinition(
+        id="prototype-studio",
+        name="Prototype Studio",
+        description="Build clickable prototypes, transitions, and stakeholder demos.",
+        icon="▷",
+        route="/novacodepro/tools/prototype-studio",
+        required_permissions=("prototype.create", "design.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Interaction Design",
+        help_url="/docs/novacodepro/tools/prototype-studio",
+        audit_category="prototype",
+        group="DESIGN",
+        overview=("Flows", "Transitions", "Variants", "Demos", "Reviews"),
+        primary_actions=("Create Prototype", "Share Demo", "Review Variant"),
+    ),
+    ToolDefinition(
+        id="user-journey-studio",
+        name="User Journey Studio",
+        description="Map journeys, pain points, trust moments, and accessibility gaps.",
+        icon="⇢",
+        route="/novacodepro/tools/user-journey-studio",
+        required_permissions=("requirements.read", "requirements.create"),
+        supported_roles=("PRODUCT_MANAGER", "UI_UX_DESIGNER", "BUSINESS_ANALYST"),
+        supported_environments=("design", "analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Experience Strategy",
+        help_url="/docs/novacodepro/tools/user-journey-studio",
+        audit_category="journey",
+        group="DISCOVER",
+        overview=("Actors", "Stages", "Pain Points", "Trust", "Accessibility"),
+        primary_actions=("Create Journey", "Review Pain Point", "Inspect Accessibility"),
+    ),
+    ToolDefinition(
+        id="design-system-manager",
+        name="NovaTech Design System",
+        description="Maintain design tokens, components, breakpoints, motion, and accessibility rules.",
+        icon="⚙",
+        route="/novacodepro/tools/design-system-manager",
+        required_permissions=("designsystem.read", "designsystem.update"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Systems",
+        help_url="/docs/novacodepro/tools/design-system-manager",
+        audit_category="design-system",
+        group="SYSTEM",
+        overview=("Tokens", "Components", "Motion", "Breakpoints", "Rules"),
+        primary_actions=("Review Tokens", "Publish Component", "Open Rule"),
+    ),
+    ToolDefinition(
+        id="component-library",
+        name="Component Library",
+        description="Browse, version, and publish reusable design components.",
+        icon="▣",
+        route="/novacodepro/tools/component-library",
+        required_permissions=("component.read", "component.publish"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Systems",
+        help_url="/docs/novacodepro/tools/component-library",
+        audit_category="component",
+        group="SYSTEM",
+        overview=("Buttons", "Cards", "Tables", "Dialogs", "Forms"),
+        primary_actions=("Open Component", "Preview Variant", "Publish Component"),
+    ),
+    ToolDefinition(
+        id="responsive-design-studio",
+        name="Responsive Design Studio",
+        description="Preview layouts across desktop, tablet, mobile, and large displays.",
+        icon="⇱",
+        route="/novacodepro/tools/responsive-design-studio",
+        required_permissions=("design.read", "design.update"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Product Design",
+        help_url="/docs/novacodepro/tools/responsive-design-studio",
+        audit_category="responsive-design",
+        group="SYSTEM",
+        overview=("Desktop", "Tablet", "Mobile", "Foldable", "Large Display"),
+        primary_actions=("Preview Layout", "Review Breakpoint", "Open Variant"),
+    ),
+    ToolDefinition(
+        id="accessibility-center",
+        name="Accessibility Center",
+        description="Review WCAG compliance, keyboard support, contrast, and motion rules.",
+        icon="♿",
+        route="/novacodepro/tools/accessibility-center",
+        required_permissions=("accessibility.review", "design.read"),
+        supported_roles=("UI_UX_DESIGNER", "PRODUCT_MANAGER", "BUSINESS_ANALYST"),
+        supported_environments=("design", "analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Accessibility",
+        help_url="/docs/novacodepro/tools/accessibility-center",
+        audit_category="accessibility",
+        group="SYSTEM",
+        overview=("Contrast", "Keyboard", "Screen Reader", "Motion", "Touch Targets"),
+        primary_actions=("Run Audit", "Review Issue", "Open Report"),
+    ),
+    ToolDefinition(
+        id="ux-research-center",
+        name="UX Research Center",
+        description="Capture interviews, surveys, testing notes, personas, and findings.",
+        icon="◔",
+        route="/novacodepro/tools/ux-research-center",
+        required_permissions=("research.read", "research.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="UX Research",
+        help_url="/docs/novacodepro/tools/ux-research-center",
+        audit_category="research",
+        group="RESEARCH",
+        overview=("Interviews", "Surveys", "Testing", "Personas", "Findings"),
+        primary_actions=("Add Interview", "Open Finding", "Review Persona"),
+    ),
+    ToolDefinition(
+        id="usability-testing-center",
+        name="Usability Testing",
+        description="Schedule and review usability sessions, observations, and recommendations.",
+        icon="⌚",
+        route="/novacodepro/tools/usability-testing-center",
+        required_permissions=("research.create", "analytics.read"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="UX Research",
+        help_url="/docs/novacodepro/tools/usability-testing-center",
+        audit_category="usability",
+        group="RESEARCH",
+        overview=("Completion", "Task Time", "Errors", "Satisfaction", "Findings"),
+        primary_actions=("Schedule Session", "Review Result", "Open Recommendation"),
+    ),
+    ToolDefinition(
+        id="interaction-design-studio",
+        name="Interaction Design Studio",
+        description="Design micro-interactions, animations, loading states, and feedback patterns.",
+        icon="◌",
+        route="/novacodepro/tools/interaction-design-studio",
+        required_permissions=("design.create", "design.update"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Interaction Design",
+        help_url="/docs/novacodepro/tools/interaction-design-studio",
+        audit_category="interaction",
+        group="DESIGN",
+        overview=("Motion", "Hover", "Loading", "Empty", "Error"),
+        primary_actions=("Open Interaction", "Review Motion", "Preview State"),
+    ),
+    ToolDefinition(
+        id="asset-manager",
+        name="Asset Manager",
+        description="Manage icons, logos, images, illustrations, fonts, and exports.",
+        icon="⧉",
+        route="/novacodepro/tools/asset-manager",
+        required_permissions=("asset.upload", "asset.manage"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Creative Operations",
+        help_url="/docs/novacodepro/tools/asset-manager",
+        audit_category="asset",
+        group="CREATIVE",
+        overview=("Icons", "Logos", "Images", "Fonts", "Exports"),
+        primary_actions=("Upload Asset", "Review Asset", "Publish Export"),
+    ),
+    ToolDefinition(
+        id="collaboration-center",
+        name="Collaboration Center",
+        description="Collaborate with product, development, QA, and stakeholders on designs.",
+        icon="⇄",
+        route="/novacodepro/tools/collaboration-center",
+        required_permissions=("design.review", "documentation.write"),
+        supported_roles=("UI_UX_DESIGNER", "PRODUCT_MANAGER", "BUSINESS_ANALYST"),
+        supported_environments=("design", "analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Collaboration",
+        help_url="/docs/novacodepro/tools/collaboration-center",
+        audit_category="collaboration",
+        group="DELIVERY",
+        overview=("Comments", "Mentions", "Versions", "Approval", "Tasks"),
+        primary_actions=("Add Comment", "Request Review", "Open Version"),
+    ),
+    ToolDefinition(
+        id="design-review-center",
+        name="Design Review Center",
+        description="Review design QA, brand compliance, accessibility, and handoff readiness.",
+        icon="☑",
+        route="/novacodepro/tools/design-review-center",
+        required_permissions=("design.review", "accessibility.review"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Review",
+        help_url="/docs/novacodepro/tools/design-review-center",
+        audit_category="design-review",
+        group="DELIVERY",
+        overview=("QA", "Brand", "Accessibility", "Handoff", "History"),
+        primary_actions=("Open Review", "Approve Design", "Inspect History"),
+    ),
+    ToolDefinition(
+        id="developer-handoff-center",
+        name="Developer Handoff",
+        description="Generate design specs, asset exports, and implementation notes for developers.",
+        icon="⟶",
+        route="/novacodepro/tools/developer-handoff-center",
+        required_permissions=("handoff.generate", "documentation.write"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Systems",
+        help_url="/docs/novacodepro/tools/developer-handoff-center",
+        audit_category="handoff",
+        group="DELIVERY",
+        overview=("Specs", "Assets", "Spacing", "Tokens", "Notes"),
+        primary_actions=("Generate Handoff", "Export Assets", "Review Spec"),
+    ),
+    ToolDefinition(
+        id="design-analytics",
+        name="Design Analytics",
+        description="Measure consistency, reuse, accessibility score, and review time.",
+        icon="↗",
+        route="/novacodepro/tools/design-analytics",
+        required_permissions=("analytics.read", "design.read"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Analytics",
+        help_url="/docs/novacodepro/tools/design-analytics",
+        audit_category="analytics",
+        group="RESEARCH",
+        overview=("Reuse", "Consistency", "Accessibility", "Prototype", "Review Time"),
+        primary_actions=("Open Metric", "Inspect Consistency", "Review Debt"),
+    ),
+    ToolDefinition(
+        id="novaai-design-assistant",
+        name="NovaAI Design Assistant",
+        description="Generate wireframes, variants, UX copy, and accessibility suggestions.",
+        icon="AI",
+        route="/novacodepro/tools/novaai-design-assistant",
+        required_permissions=("design.create", "research.create"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="AI Design",
+        help_url="/docs/novacodepro/tools/novaai-design-assistant",
+        audit_category="ai",
+        group="CREATIVE",
+        overview=("Wireframes", "Variants", "Copy", "Accessibility", "Summaries"),
+        primary_actions=("Ask NovaAI", "Generate Variant", "Open Summary"),
+    ),
+    ToolDefinition(
+        id="brand-management-center",
+        name="Brand Center",
+        description="Manage logos, colors, typography, branding, and regional themes.",
+        icon="◆",
+        route="/novacodepro/tools/brand-management-center",
+        required_permissions=("designsystem.update", "asset.manage"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-management-center",
+        audit_category="brand",
+        group="CREATIVE",
+        overview=("Brand Assets", "Colors", "Typography", "Themes", "Guidelines"),
+        primary_actions=("Review Brand", "Update Theme", "Publish Asset"),
+    ),
+    ToolDefinition(
+        id="design-documentation-center",
+        name="Design Documentation",
+        description="Maintain design guidelines, standards, patterns, and release notes.",
+        icon="☰",
+        route="/novacodepro/tools/design-documentation-center",
+        required_permissions=("documentation.write", "documentation.read"),
+        supported_roles=("UI_UX_DESIGNER",),
+        supported_environments=("design", "staging", "pilot"),
+        version="v1",
+        ownership_team="Design Operations",
+        help_url="/docs/novacodepro/tools/design-documentation-center",
+        audit_category="documentation",
+        group="DELIVERY",
+        overview=("Guidelines", "Patterns", "Standards", "Notes", "Coverage"),
+        primary_actions=("Write Doc", "Publish Guide", "Review Coverage"),
+    ),
+    ToolDefinition(
+        id="project-workspace",
+        name="Project Workspace",
+        description="Track active projects, milestones, priorities, and project-level tasks.",
+        icon="⌂",
+        route="/novacodepro/tools/project-workspace",
+        required_permissions=("project.read", "project.update"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Project Delivery",
+        help_url="/docs/novacodepro/tools/project-workspace",
+        audit_category="workspace",
+        group="PROJECTS",
+        overview=("Projects", "Milestones", "Tasks", "Risks", "Reports"),
+        primary_actions=("Review Project", "Update Milestone", "Open RAID"),
+    ),
+    ToolDefinition(
+        id="project-portfolio-center",
+        name="Project Portfolio Center",
+        description="Manage projects, portfolios, programs, and delivery lifecycle.",
+        icon="▦",
+        route="/novacodepro/tools/project-portfolio-center",
+        required_permissions=("portfolio.read", "portfolio.manage"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Program Management",
+        help_url="/docs/novacodepro/tools/project-portfolio-center",
+        audit_category="portfolio",
+        group="PROJECTS",
+        overview=("Projects", "Programs", "Lifecycle", "Health", "Investment"),
+        primary_actions=("Create Project", "Archive Project", "Compare Portfolio"),
+    ),
+    ToolDefinition(
+        id="project-planning-center",
+        name="Project Planning Center",
+        description="Create charters, WBS, schedules, deliverables, and dependencies.",
+        icon="↦",
+        route="/novacodepro/tools/project-planning-center",
+        required_permissions=("schedule.create", "schedule.update"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Planning",
+        help_url="/docs/novacodepro/tools/project-planning-center",
+        audit_category="planning",
+        group="DELIVERY",
+        overview=("Charter", "WBS", "Schedule", "Dependencies", "Timeline"),
+        primary_actions=("Create Plan", "Update Schedule", "Review Critical Path"),
+    ),
+    ToolDefinition(
+        id="resource-management-center",
+        name="Resource Management Center",
+        description="Assign team members, balance workloads, and forecast staffing needs.",
+        icon="◫",
+        route="/novacodepro/tools/resource-management-center",
+        required_permissions=("resource.assign", "project.update"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Project Delivery",
+        help_url="/docs/novacodepro/tools/resource-management-center",
+        audit_category="resource",
+        group="DELIVERY",
+        overview=("Utilization", "Capacity", "Skills", "Availability", "Forecast"),
+        primary_actions=("Assign Resource", "Review Utilization", "Open Forecast"),
+    ),
+    ToolDefinition(
+        id="schedule-management-center",
+        name="Schedule Management Center",
+        description="Track timelines, milestones, critical path, and schedule variance.",
+        icon="⏱",
+        route="/novacodepro/tools/schedule-management-center",
+        required_permissions=("schedule.update", "project.read"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Planning",
+        help_url="/docs/novacodepro/tools/schedule-management-center",
+        audit_category="schedule",
+        group="DELIVERY",
+        overview=("Gantt", "Milestones", "Variance", "Critical Path", "Completion"),
+        primary_actions=("Update Timeline", "Review Variance", "Open Milestone"),
+    ),
+    ToolDefinition(
+        id="budget-cost-management-center",
+        name="Budget & Cost Management Center",
+        description="Monitor budgets, spend, forecasts, and delegated cost approvals.",
+        icon="¤",
+        route="/novacodepro/tools/budget-cost-management-center",
+        required_permissions=("budget.read", "budget.manage_assigned"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Finance Delivery",
+        help_url="/docs/novacodepro/tools/budget-cost-management-center",
+        audit_category="budget",
+        group="OPERATIONS",
+        overview=("Budget", "Spend", "Forecast", "Variance", "Approvals"),
+        primary_actions=("Review Budget", "Open Cost Report", "Request Approval"),
+    ),
+    ToolDefinition(
+        id="raid-management-center",
+        name="RAID Management Center",
+        description="Manage project risks, assumptions, issues, and dependencies.",
+        icon="⚠",
+        route="/novacodepro/tools/raid-management-center",
+        required_permissions=("risk.create", "risk.manage"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Program Delivery",
+        help_url="/docs/novacodepro/tools/raid-management-center",
+        audit_category="raid",
+        group="GOVERNANCE",
+        overview=("Risks", "Assumptions", "Issues", "Dependencies", "Mitigation"),
+        primary_actions=("Add Risk", "Review Issue", "Open Dependency"),
+    ),
+    ToolDefinition(
+        id="milestone-center",
+        name="Milestone Center",
+        description="Track milestones, deliverables, evidence, and acceptance readiness.",
+        icon="◆",
+        route="/novacodepro/tools/milestone-center",
+        required_permissions=("milestone.manage", "project.read"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Project Delivery",
+        help_url="/docs/novacodepro/tools/milestone-center",
+        audit_category="milestone",
+        group="DELIVERY",
+        overview=("Milestones", "Deliverables", "Evidence", "Acceptance", "Status"),
+        primary_actions=("Update Milestone", "Review Evidence", "Open Deliverable"),
+    ),
+    ToolDefinition(
+        id="sprint-coordination-center",
+        name="Sprint Coordination Center",
+        description="Coordinate sprint planning, capacity, retrospectives, and release support.",
+        icon="⇄",
+        route="/novacodepro/tools/sprint-coordination-center",
+        required_permissions=("schedule.update", "project.update"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Agile Delivery",
+        help_url="/docs/novacodepro/tools/sprint-coordination-center",
+        audit_category="sprint",
+        group="DELIVERY",
+        overview=("Sprints", "Capacity", "Velocity", "Retro", "Release Support"),
+        primary_actions=("Plan Sprint", "Review Capacity", "Open Retro"),
+    ),
+    ToolDefinition(
+        id="change-control-center",
+        name="Change Control Center",
+        description="Manage change requests, impact analysis, approval workflow, and baselines.",
+        icon="⇄",
+        route="/novacodepro/tools/change-control-center",
+        required_permissions=("change.request", "change.review"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Governance Delivery",
+        help_url="/docs/novacodepro/tools/change-control-center",
+        audit_category="change-control",
+        group="GOVERNANCE",
+        overview=("Changes", "Impact", "Approvals", "History", "Baselines"),
+        primary_actions=("Submit Change", "Review Impact", "Open Baseline"),
+    ),
+    ToolDefinition(
+        id="governance-center",
+        name="Governance Center",
+        description="Review project governance gates, compliance status, and audit readiness.",
+        icon="☑",
+        route="/novacodepro/tools/governance-center",
+        required_permissions=("governance.review", "documentation.write"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Governance Delivery",
+        help_url="/docs/novacodepro/tools/governance-center",
+        audit_category="governance",
+        group="GOVERNANCE",
+        overview=("Gates", "Compliance", "Docs", "Audits", "Approvals"),
+        primary_actions=("Review Gate", "Open Audit", "Confirm Readiness"),
+    ),
+    ToolDefinition(
+        id="quality-readiness-center",
+        name="Quality & Readiness Center",
+        description="Monitor QA, UAT, security, operational, and deployment readiness.",
+        icon="✓",
+        route="/novacodepro/tools/quality-readiness-center",
+        required_permissions=("project.read", "report.generate"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Assurance",
+        help_url="/docs/novacodepro/tools/quality-readiness-center",
+        audit_category="readiness",
+        group="GOVERNANCE",
+        overview=("QA", "UAT", "Security", "Operations", "Deployment"),
+        primary_actions=("Review Readiness", "Open Gate", "Inspect Evidence"),
+    ),
+    ToolDefinition(
+        id="communications-center",
+        name="Communications Center",
+        description="Manage status reports, team announcements, customer updates, and minutes.",
+        icon="✉",
+        route="/novacodepro/tools/communications-center",
+        required_permissions=("documentation.write", "report.generate"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Program Communications",
+        help_url="/docs/novacodepro/tools/communications-center",
+        audit_category="communications",
+        group="COMMUNICATION",
+        overview=("Reports", "Announcements", "Updates", "Minutes", "Actions"),
+        primary_actions=("Draft Update", "Publish Report", "Review Minutes"),
+    ),
+    ToolDefinition(
+        id="vendor-partner-center",
+        name="Vendor & Partner Center",
+        description="Track vendors, partners, contracts, SLAs, and deliverables.",
+        icon="⟲",
+        route="/novacodepro/tools/vendor-partner-center",
+        required_permissions=("stakeholder.manage", "report.generate"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Vendor Management",
+        help_url="/docs/novacodepro/tools/vendor-partner-center",
+        audit_category="vendor",
+        group="OPERATIONS",
+        overview=("Vendors", "Partners", "Contracts", "SLAs", "Deliverables"),
+        primary_actions=("Review Vendor", "Open SLA", "Track Deliverable"),
+    ),
+    ToolDefinition(
+        id="executive-reporting-center",
+        name="Executive Reporting Center",
+        description="Generate executive, portfolio, budget, risk, and KPI reports.",
+        icon="▤",
+        route="/novacodepro/tools/executive-reporting-center",
+        required_permissions=("report.generate", "analytics.read"),
+        supported_roles=("PROJECT_MANAGER", "BUSINESS_ANALYST", "PRODUCT_MANAGER"),
+        supported_environments=("delivery", "analysis", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Executive Reporting",
+        help_url="/docs/novacodepro/tools/executive-reporting-center",
+        audit_category="reporting",
+        group="COMMUNICATION",
+        overview=("Executive", "Portfolio", "Budget", "Risk", "KPI"),
+        primary_actions=("Generate Pack", "Open KPI", "Export Summary"),
+    ),
+    ToolDefinition(
+        id="lessons-learned-center",
+        name="Lessons Learned Center",
+        description="Capture retrospectives, best practices, and reusable templates.",
+        icon="✦",
+        route="/novacodepro/tools/lessons-learned-center",
+        required_permissions=("documentation.write", "report.generate"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Continuous Improvement",
+        help_url="/docs/novacodepro/tools/lessons-learned-center",
+        audit_category="lessons",
+        group="OPERATIONS",
+        overview=("Retrospectives", "Best Practices", "Templates", "Improvements", "Sharing"),
+        primary_actions=("Capture Lesson", "Review Best Practice", "Open Template"),
+    ),
+    ToolDefinition(
+        id="project-documentation-center",
+        name="Project Documentation Center",
+        description="Maintain charters, plans, RAID logs, decisions, status reports, and closures.",
+        icon="☰",
+        route="/novacodepro/tools/project-documentation-center",
+        required_permissions=("documentation.write", "documentation.read"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Project Documentation",
+        help_url="/docs/novacodepro/tools/project-documentation-center",
+        audit_category="documentation",
+        group="OPERATIONS",
+        overview=("Charter", "Plan", "RAID", "Decisions", "Closure"),
+        primary_actions=("Write Doc", "Publish Plan", "Review Closure"),
+    ),
+    ToolDefinition(
+        id="novaai-project-assistant",
+        name="NovaAI Project Assistant",
+        description="Create plans, summarize meetings, forecast delays, and draft reports.",
+        icon="AI",
+        route="/novacodepro/tools/novaai-project-assistant",
+        required_permissions=("report.generate", "project.read"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="AI Project",
+        help_url="/docs/novacodepro/tools/novaai-project-assistant",
+        audit_category="ai",
+        group="OPERATIONS",
+        overview=("Plans", "Summaries", "Risks", "Reports", "Forecasts"),
+        primary_actions=("Ask NovaAI", "Draft Plan", "Open Risk"),
+    ),
+    ToolDefinition(
+        id="project-delivery-command-center",
+        name="Project Delivery Command Center",
+        description="Monitor active projects, dependencies, resource utilization, and delivery confidence.",
+        icon="⌘",
+        route="/novacodepro/tools/project-delivery-command-center",
+        required_permissions=("project.read", "analytics.read_aggregated"),
+        supported_roles=("PROJECT_MANAGER",),
+        supported_environments=("delivery", "business-planning", "staging", "pilot"),
+        version="v1",
+        ownership_team="Project Operations",
+        help_url="/docs/novacodepro/tools/project-delivery-command-center",
+        audit_category="command-center",
+        group="PROJECTS",
+        overview=("Status", "Dependencies", "Resources", "Issues", "Confidence"),
+        primary_actions=("Open Project", "Inspect Issue", "Review Confidence"),
+    ),
+    ToolDefinition(
         id="tenant-management",
         name="Tenant Management",
         description="Create, suspend, restore, and review tenant health and isolation.",
@@ -1544,6 +2559,9 @@ ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "ADMIN": ("HOME", "BUILD", "DELIVER", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"),
     "DEVELOPER": ("HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE"),
     "PRODUCT_MANAGER": ("HOME", "STRATEGY", "DISCOVER", "PLAN", "DELIVER", "MEASURE", "KNOWLEDGE"),
+    "BUSINESS_ANALYST": ("HOME", "ANALYSIS", "STAKEHOLDERS", "PLANNING", "GOVERNANCE", "INTELLIGENCE"),
+    "UI_UX_DESIGNER": ("HOME", "DESIGN", "SYSTEM", "RESEARCH", "DELIVERY", "CREATIVE"),
+    "PROJECT_MANAGER": ("HOME", "PROJECTS", "DELIVERY", "GOVERNANCE", "COMMUNICATION", "OPERATIONS"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -1582,6 +2600,36 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Review release readiness",
         "Request product approval",
         "Generate product brief",
+    ),
+    "BUSINESS_ANALYST": (
+        "Create Business Requirement",
+        "Open Process Model",
+        "Start Stakeholder Interview",
+        "Analyze Workflow",
+        "Review KPIs",
+        "Create User Story",
+        "Generate Business Report",
+        "Submit Requirement",
+    ),
+    "UI_UX_DESIGNER": (
+        "Create Wireframe",
+        "Open Design Studio",
+        "Prototype Flow",
+        "Review Components",
+        "Publish Design",
+        "Inspect Accessibility",
+        "Export Assets",
+        "Generate Design Specs",
+    ),
+    "PROJECT_MANAGER": (
+        "Create Project",
+        "Assign Resources",
+        "Update Schedule",
+        "Review Risks",
+        "Open RAID Register",
+        "Generate Status Report",
+        "Approve Baseline",
+        "Schedule Meeting",
     ),
     "OPERATOR": (
         "Open Operations Center",
@@ -1652,6 +2700,36 @@ def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str,
             "DELIVER": "Deliver",
             "MEASURE": "Measure",
             "KNOWLEDGE": "Knowledge",
+        }
+    elif canonical == "BUSINESS_ANALYST":
+        order = ["HOME", "ANALYSIS", "STAKEHOLDERS", "PLANNING", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Analysis",
+            "ANALYSIS": "Analysis",
+            "STAKEHOLDERS": "Stakeholders",
+            "PLANNING": "Planning",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "UI_UX_DESIGNER":
+        order = ["HOME", "DESIGN", "SYSTEM", "RESEARCH", "DELIVERY", "CREATIVE"]
+        labels = {
+            "HOME": "Design",
+            "DESIGN": "Design",
+            "SYSTEM": "System",
+            "RESEARCH": "Research",
+            "DELIVERY": "Delivery",
+            "CREATIVE": "Creative",
+        }
+    elif canonical == "PROJECT_MANAGER":
+        order = ["HOME", "PROJECTS", "DELIVERY", "GOVERNANCE", "COMMUNICATION", "OPERATIONS"]
+        labels = {
+            "HOME": "Projects",
+            "PROJECTS": "Projects",
+            "DELIVERY": "Delivery",
+            "GOVERNANCE": "Governance",
+            "COMMUNICATION": "Communication",
+            "OPERATIONS": "Operations",
         }
     else:
         order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"]
@@ -1761,6 +2839,36 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {"title": "Upcoming releases", "value": health["upcoming_releases"], "meta": f"{health['open_customer_escalations']} customer escalations · support trend {health['support_trend']}"},
             {"title": "Tool access", "value": len(_visible_tools(role, "business-planning")), "meta": "Authorized product tools"},
         ]
+    if canonical == "BUSINESS_ANALYST":
+        health = _business_analysis_health(summary)
+        return [
+            {"title": "Assigned projects", "value": health["active_projects"], "meta": "Initiatives and analysis work"},
+            {"title": "Requirements completed", "value": health["requirements_completed"], "meta": "BRDs, stories, and acceptance criteria"},
+            {"title": "Pending reviews", "value": health["pending_reviews"], "meta": "Stakeholder and requirement reviews"},
+            {"title": "Open change requests", "value": health["open_change_requests"], "meta": "Scope and process changes"},
+            {"title": "Approved business rules", "value": health["approved_business_rules"], "meta": "Governed rule set"},
+            {"title": "Stakeholder approvals", "value": health["stakeholder_approvals"], "meta": "Approval completion across programs"},
+        ]
+    if canonical == "UI_UX_DESIGNER":
+        health = _design_health(summary)
+        return [
+            {"title": "My design projects", "value": summary.get("project_count", 5) or 5, "meta": "Active design work"},
+            {"title": "Active tasks", "value": summary.get("workflow_statuses", {}).get("active", 0) + len(pending_approvals), "meta": "Wireframes, prototypes, reviews"},
+            {"title": "Design health", "value": health["accessibility_score"], "meta": f"{health['screens_designed']} screens · {health['approved_components']} approved components"},
+            {"title": "Prototype completion", "value": health["prototype_completion"], "meta": f"Pending reviews {health['pending_reviews']}"},
+            {"title": "Design debt", "value": health["design_debt"], "meta": "Consistency and accessibility quality"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "design")), "meta": "Authorized design tools"},
+        ]
+    if canonical == "PROJECT_MANAGER":
+        health = _project_health(summary)
+        return [
+            {"title": "Active projects", "value": health["projects"], "meta": f"{health['on_track']} on track · {health['at_risk']} at risk"},
+            {"title": "My tasks", "value": len(pending_approvals) + health["critical"], "meta": "Scheduling, governance, and reporting work"},
+            {"title": "Portfolio health", "value": health["budget_utilization"], "meta": f"{health['milestones_due']} milestones due · {health['open_risks']} open risks"},
+            {"title": "Resource pressure", "value": health["open_risks"], "meta": "Dependencies, staffing, and commitments"},
+            {"title": "Quality readiness", "value": "High" if health["critical"] <= 1 else "Attention", "meta": "UAT, security, and deployment readiness"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "delivery")), "meta": "Authorized project tools"},
+        ]
     if canonical == "OPERATOR":
         return [
             {"title": "Deployments", "value": summary.get("deployment_count", 0), "meta": "Change and rollout visibility"},
@@ -1824,6 +2932,12 @@ def build_workspace_manifest(
             environment = "development"
         elif canonical == "PRODUCT_MANAGER":
             environment = "business-planning"
+        elif canonical == "BUSINESS_ANALYST":
+            environment = "analysis"
+        elif canonical == "UI_UX_DESIGNER":
+            environment = "design"
+        elif canonical == "PROJECT_MANAGER":
+            environment = "delivery"
         else:
             environment = "staging"
     environment = environment.lower()
@@ -1896,11 +3010,35 @@ def build_workspace_manifest(
             "organization": _organization_label(organization_id),
             "environments": ["production", "staging", "pilot"]
             if canonical == "ADMIN"
-            else (["business-planning", "staging", "pilot"] if canonical == "PRODUCT_MANAGER" else ["development", "staging", "pilot"]),
+            else (
+                ["business-planning", "staging", "pilot"]
+                if canonical in {"PRODUCT_MANAGER", "BUSINESS_ANALYST"}
+                else (
+                    ["design", "staging", "pilot"]
+                    if canonical == "UI_UX_DESIGNER"
+                    else (
+                        ["delivery", "business-planning", "staging", "pilot"]
+                        if canonical == "PROJECT_MANAGER"
+                        else ["development", "staging", "pilot"]
+                    )
+                )
+            ),
             "selected_environment": environment,
             "authority_level": "platform-admin"
             if canonical == "ADMIN"
-            else ("developer" if canonical == "DEVELOPER" else ("product-manager" if canonical == "PRODUCT_MANAGER" else "role-scoped")),
+            else (
+                "developer"
+                if canonical == "DEVELOPER"
+                else (
+                    "product-manager"
+                    if canonical == "PRODUCT_MANAGER"
+                    else (
+                        "business-analyst"
+                        if canonical == "BUSINESS_ANALYST"
+                        else ("designer" if canonical == "UI_UX_DESIGNER" else ("project-manager" if canonical == "PROJECT_MANAGER" else "role-scoped"))
+                    )
+                )
+            ),
             "navigation": navigation_groups,
             "tools": tool_manifest,
             "dashboard_cards": _workspace_cards(canonical, summary),
@@ -1910,10 +3048,16 @@ def build_workspace_manifest(
             ],
             "pending_approvals": summary.get("pending_approvals", [])[:4],
             "current_sprint": "Sprint 24" if canonical == "DEVELOPER" else None,
-            "portfolio_name": "Mobility and Payments" if canonical == "PRODUCT_MANAGER" else None,
+            "portfolio_name": "Mobility and Payments" if canonical == "PRODUCT_MANAGER" else ("Mobility & Financial Services" if canonical == "BUSINESS_ANALYST" else ("Projects Portfolio" if canonical == "PROJECT_MANAGER" else None)),
             "product_stage": "Discovery" if canonical == "PRODUCT_MANAGER" else None,
-            "active_products": service.projects()[:5] if canonical == "PRODUCT_MANAGER" else (service.projects()[:5] if canonical == "DEVELOPER" else service.projects()[:4]),
+            "analysis_focus": "Requirements and process analysis" if canonical == "BUSINESS_ANALYST" else None,
+            "design_focus": "Design Studio" if canonical == "UI_UX_DESIGNER" else None,
+            "project_focus": "Project Delivery" if canonical == "PROJECT_MANAGER" else None,
+            "active_products": service.projects()[:5] if canonical in {"PRODUCT_MANAGER", "DEVELOPER"} else service.projects()[:4],
             "product_health": _product_health(summary) if canonical == "PRODUCT_MANAGER" else {},
+            "analysis_health": _business_analysis_health(summary) if canonical == "BUSINESS_ANALYST" else {},
+            "design_health": _design_health(summary) if canonical == "UI_UX_DESIGNER" else {},
+            "project_health": _project_health(summary) if canonical == "PROJECT_MANAGER" else {},
             "customer_signals": [
                 {"label": "New feedback items", "value": _product_health(summary)["new_feedback_items"]},
                 {"label": "Critical usability issues", "value": _product_health(summary)["critical_usability_issues"]},
@@ -1922,6 +3066,53 @@ def build_workspace_manifest(
                 {"label": "Adoption trend", "value": _product_health(summary)["adoption_trend"]},
             ]
             if canonical == "PRODUCT_MANAGER"
+            else [],
+            "analysis_tasks": [
+                {"label": "Gather stakeholder requirements", "status": "pending"},
+                {"label": "Review business process models", "status": "active"},
+                {"label": "Validate acceptance criteria", "status": "pending"},
+                {"label": "Prepare BRD for NovaPay", "status": "pending"},
+                {"label": "Support sprint planning", "status": "active"},
+            ]
+            if canonical == "BUSINESS_ANALYST"
+            else [],
+            "design_projects": [
+                {"label": "NovaRide Mobile App", "status": "in progress"},
+                {"label": "NovaPay Wallet", "status": "review"},
+                {"label": "NovaCodePro Dashboard", "status": "in progress"},
+                {"label": "NovaID Identity Portal", "status": "planned"},
+                {"label": "Merchant Portal", "status": "review"},
+            ]
+            if canonical == "UI_UX_DESIGNER"
+            else [],
+            "design_tasks": [
+                {"label": "Create rider booking flow", "status": "active"},
+                {"label": "Improve NovaPay onboarding", "status": "active"},
+                {"label": "Review accessibility issues", "status": "pending"},
+                {"label": "Design driver earnings screen", "status": "pending"},
+                {"label": "Update design system", "status": "active"},
+                {"label": "Prototype customer dashboard", "status": "pending"},
+            ]
+            if canonical == "UI_UX_DESIGNER"
+            else [],
+            "project_portfolio": [
+                {"label": "NovaRide Public Pilot", "status": "On Track"},
+                {"label": "NovaPay Agent Platform", "status": "At Risk"},
+                {"label": "NovaID Federation", "status": "On Track"},
+                {"label": "NovaCodePro Workspace", "status": "Planning"},
+                {"label": "Merchant Portal", "status": "Testing"},
+            ]
+            if canonical == "PROJECT_MANAGER"
+            else [],
+            "project_tasks": [
+                {"label": "Approve sprint plan", "status": "pending"},
+                {"label": "Review project risks", "status": "active"},
+                {"label": "Prepare steering committee report", "status": "pending"},
+                {"label": "Resolve resource conflict", "status": "blocked"},
+                {"label": "Review milestone completion", "status": "active"},
+                {"label": "Plan next release", "status": "pending"},
+            ]
+            if canonical == "PROJECT_MANAGER"
             else [],
             "my_priorities": [
                 {"label": "Approve NovaRide pilot requirements", "status": "pending"},
@@ -1933,7 +3124,7 @@ def build_workspace_manifest(
             ]
             if canonical == "PRODUCT_MANAGER"
             else [],
-            "active_projects": service.projects()[:5] if canonical in {"DEVELOPER", "PRODUCT_MANAGER"} else service.projects()[:4],
+            "active_projects": service.projects()[:5] if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"} else service.projects()[:4],
             "recent_repositories": [
                 {
                     "id": f"repo-{index + 1}",
@@ -1943,7 +3134,7 @@ def build_workspace_manifest(
                 }
                 for index, project in enumerate(service.projects()[:4])
             ]
-            if canonical in {"DEVELOPER", "PRODUCT_MANAGER"}
+            if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"}
             else [],
             "developer_health": _developer_health(summary) if canonical == "DEVELOPER" else {},
             "product_portfolio": [
@@ -1995,13 +3186,18 @@ def build_workspace_manifest(
                 "board_workspace": canonical == "ADMIN",
                 "developer_workspace": canonical == "DEVELOPER",
                 "product_workspace": canonical == "PRODUCT_MANAGER",
+                "business_analyst_workspace": canonical == "BUSINESS_ANALYST",
+                "design_workspace": canonical == "UI_UX_DESIGNER",
+                "project_workspace": canonical == "PROJECT_MANAGER",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
             "enterprise_signals": {
                 "platform_health": summary.get("platform_health", "healthy"),
                 "service_health": summary.get("service_health", {}),
-                "evidence_completeness": "97%" if canonical == "PRODUCT_MANAGER" else "98%",
+                "evidence_completeness": "97%"
+                if canonical == "PRODUCT_MANAGER"
+                else ("96%" if canonical in {"BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"} else "98%"),
                 "operational_risk": "Low" if summary.get("platform_health") == "healthy" else "Attention",
             },
             "recent_projects": service.projects()[:4],
@@ -2186,6 +3382,174 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
             <section class=\"panel\">
               <header><h2>Product decisions</h2></header>
               <ul>{product_decisions_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "BUSINESS_ANALYST":
+        analysis_projects_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("assigned_projects", [])
+        ) or "<li>No assigned projects.</li>"
+        analysis_tasks_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("analysis_tasks", [])
+        ) or "<li>No analysis tasks.</li>"
+        analysis_work_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("analysis_work_items", [])
+        ) or "<li>No active analysis work.</li>"
+        analysis_documents_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("recent_documents", [])
+        ) or "<li>No recent documents.</li>"
+        analysis_health = workspace.get("analysis_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Assigned projects</h2></header>
+              <ul>{analysis_projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>My tasks</h2></header>
+              <ul>{analysis_tasks_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Analysis health</h2></header>
+              <ul>
+                <li><strong>Requirements completed</strong><span>{html.escape(str(analysis_health.get('requirements_completed', 126)))}</span></li>
+                <li><strong>Pending reviews</strong><span>{html.escape(str(analysis_health.get('pending_reviews', 14)))}</span></li>
+                <li><strong>Open change requests</strong><span>{html.escape(str(analysis_health.get('open_change_requests', 6)))}</span></li>
+                <li><strong>Approved business rules</strong><span>{html.escape(str(analysis_health.get('approved_business_rules', 89)))}</span></li>
+                <li><strong>Stakeholder approvals</strong><span>{html.escape(str(analysis_health.get('stakeholder_approvals', '92%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent documents</h2></header>
+              <ul>{analysis_documents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Active work</h2></header>
+              <ul>{analysis_work_items_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "UI_UX_DESIGNER":
+        design_projects_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("design_projects", [])
+        ) or "<li>No design projects.</li>"
+        design_tasks_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("design_tasks", [])
+        ) or "<li>No design tasks.</li>"
+        design_components_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("design_components", [])
+        ) or "<li>No component activity.</li>"
+        design_prototypes_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("recent_prototypes", [])
+        ) or "<li>No recent prototypes.</li>"
+        design_health = workspace.get("design_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>My design projects</h2></header>
+              <ul>{design_projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Active tasks</h2></header>
+              <ul>{design_tasks_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Design health</h2></header>
+              <ul>
+                <li><strong>Screens designed</strong><span>{html.escape(str(design_health.get('screens_designed', 184)))}</span></li>
+                <li><strong>Pending reviews</strong><span>{html.escape(str(design_health.get('pending_reviews', 12)))}</span></li>
+                <li><strong>Approved components</strong><span>{html.escape(str(design_health.get('approved_components', 236)))}</span></li>
+                <li><strong>Accessibility score</strong><span>{html.escape(str(design_health.get('accessibility_score', '96%')))}</span></li>
+                <li><strong>Prototype completion</strong><span>{html.escape(str(design_health.get('prototype_completion', '89%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent prototypes</h2></header>
+              <ul>{design_prototypes_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Component activity</h2></header>
+              <ul>{design_components_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "PROJECT_MANAGER":
+        portfolio_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("project_portfolio", [])
+        ) or "<li>No active projects.</li>"
+        project_tasks_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("project_tasks", [])
+        ) or "<li>No project tasks.</li>"
+        milestones_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("milestones", [])
+        ) or "<li>No milestone activity.</li>"
+        dependencies_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item.get('value', item.get('status', ''))))}</span></li>"
+            for item in workspace.get("project_dependencies", [])
+        ) or "<li>No dependency updates.</li>"
+        project_health = workspace.get("project_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Project portfolio</h2></header>
+              <ul>{portfolio_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>My tasks</h2></header>
+              <ul>{project_tasks_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Portfolio health</h2></header>
+              <ul>
+                <li><strong>Projects</strong><span>{html.escape(str(project_health.get('projects', 12)))}</span></li>
+                <li><strong>On track</strong><span>{html.escape(str(project_health.get('on_track', 8)))}</span></li>
+                <li><strong>At risk</strong><span>{html.escape(str(project_health.get('at_risk', 3)))}</span></li>
+                <li><strong>Critical</strong><span>{html.escape(str(project_health.get('critical', 1)))}</span></li>
+                <li><strong>Budget utilization</strong><span>{html.escape(str(project_health.get('budget_utilization', '67%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Milestones</h2></header>
+              <ul>{milestones_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Dependencies</h2></header>
+              <ul>{dependencies_html}</ul>
             </section>
             <section class=\"panel\">
               <header><h2>Enterprise signals</h2></header>
