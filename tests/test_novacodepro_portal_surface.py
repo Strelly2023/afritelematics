@@ -27,7 +27,17 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
     )
     for token in [
         "NovaCodePro",
+        "Board of Directors",
+        "Chief Executive Officer",
+        "Chief Operating Officer",
+        "Chief Technology Officer",
+        "Chief Financial Officer",
+        "Chief Product Officer",
+        "Chief Information Security Officer",
+        "Chief Legal & Compliance Officer",
         "Platform Administrator",
+        "Governance model",
+        "Governance matrix",
         "Platform administration center",
         "Identity & Access",
         "Organizations & Tenants",

@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   "Customers",
   "Partners",
   "Employees",
+  "Board",
   "Executives",
   "Marketplace",
   "Reports",
@@ -45,9 +46,34 @@ const COMMANDS = [
   "Summarize incidents",
   "Inspect audit trail",
   "Launch customer workspace",
+  "Open board pack",
+  "Review risk register",
+  "Approve strategy",
   "Switch to Production",
   "Switch to Staging",
 ];
+
+const GOVERNANCE_MATRIX = [
+  ["Corporate strategy", "Board / CEO", "CEO", "Advise", "Advise", "—"],
+  ["Annual technology roadmap", "Review", "Approve", "✓", "Advise", "Contribute"],
+  ["Major platform architecture", "Inform", "Inform", "✓", "Review", "Implement"],
+  ["Production operations", "—", "Oversight", "Oversight", "Security oversight", "Execute"],
+  ["Security policy", "Review", "Approve", "Collaborate", "✓", "Implement"],
+  ["Release governance", "—", "Oversight", "✓", "Security approval", "Execute"],
+  ["Infrastructure management", "—", "—", "Oversight", "Review", "Execute"],
+  ["Incident response", "Oversight", "Coordinate", "Lead technical response", "Lead security response", "Execute operations"],
+];
+
+const LEADERSHIP_ROLE_IDS = new Set([
+  "board",
+  "ceo",
+  "coo",
+  "cto",
+  "cfo",
+  "cpo",
+  "ciso",
+  "chief-legal-compliance-officer",
+]);
 
 const ROLE_PROFILES = [
   {
@@ -144,6 +170,624 @@ const ROLE_PROFILES = [
     ],
     agents: ["Security", "DevOps", "QA", "Release Manager", "Platform SRE"],
     permissions: ["Global tenant control", "Release approval", "Audit visibility", "Policy edits", "Maintenance"],
+  },
+  {
+    id: "board",
+    label: "Board of Directors",
+    domain: "Governance and oversight",
+    summary:
+      "Strategic oversight for enterprise performance, risk, capital allocation, and governance.",
+    accent: "#8f98aa",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Board Portal",
+    presence: "Read-only",
+    metrics: [
+      ["Revenue growth", "18.4%"],
+      ["Customer satisfaction", "94.2%"],
+      ["Platform availability", "99.98%"],
+      ["Enterprise risk", "Low"],
+    ],
+    actions: [
+      "Review board pack",
+      "Open risk register",
+      "Inspect strategy",
+      "Review audit trail",
+      "Approve priorities",
+    ],
+    navFocus: "Board",
+    windows: [
+      {
+        id: "board-overview",
+        title: "Board Dashboard",
+        status: "Decision ready",
+        summary:
+          "A strategic dashboard for performance, risk, and governance without exposing operational depth.",
+        bullets: ["Revenue", "Growth", "Satisfaction", "Risk", "Compliance"],
+      },
+      {
+        id: "board-risk",
+        title: "Risk and Governance",
+        status: "Monitored",
+        summary:
+          "High-level risk posture, major audit outcomes, and governance matters presented for directors.",
+        bullets: ["Risk", "Audit", "Compliance", "Ethics", "Oversight"],
+      },
+      {
+        id: "board-strategy",
+        title: "Strategic Initiatives",
+        status: "Active",
+        summary:
+          "Board-level priorities, market expansion, and major investment themes stay visible here.",
+        bullets: ["Strategy", "Investment", "Expansion", "Portfolio", "Transformation"],
+      },
+      {
+        id: "board-finance",
+        title: "Financial Summary",
+        status: "Healthy",
+        summary:
+          "Profitability, cash flow, and capital deployment summaries for the next board review.",
+        bullets: ["Cash flow", "Margin", "Forecast", "Capital", "Liquidity"],
+      },
+    ],
+    signals: [
+      ["Board actions", "4 pending"],
+      ["Security issues", "0 critical"],
+      ["Compliance", "Compliant"],
+      ["Strategic initiatives", "12 active"],
+    ],
+    notifications: [
+      "Board pack is ready for the next scheduled review.",
+      "Enterprise risk remains within appetite.",
+      "No critical audit findings are currently open.",
+    ],
+    activity: [
+      "Prepared strategic performance summary for directors.",
+      "Reviewed capital allocation and risk posture.",
+      "Published the latest board evidence pack.",
+    ],
+    agents: ["Analyst", "Finance", "Legal", "Strategy"],
+    permissions: ["Read-only enterprise view", "Board pack review", "Risk oversight", "Strategic approval"],
+  },
+  {
+    id: "ceo",
+    label: "Chief Executive Officer",
+    domain: "Strategy and enterprise performance",
+    summary:
+      "Owns company strategy, partnerships, market expansion, and enterprise performance.",
+    accent: "#e0a85d",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Available",
+    metrics: [
+      ["Revenue", "$28.2M"],
+      ["Growth", "+18.4%"],
+      ["Customer adoption", "94%"],
+      ["Portfolio", "6 products"],
+    ],
+    actions: [
+      "Review KPI pack",
+      "Open board pack",
+      "Set strategic priorities",
+      "Inspect portfolio",
+      "Review risk posture",
+    ],
+    navFocus: "Executives",
+    windows: [
+      {
+        id: "ceo-dashboard",
+        title: "CEO Dashboard",
+        status: "Decision ready",
+        summary:
+          "Strategic KPIs, enterprise health, and major initiatives presented for executive action.",
+        bullets: ["Revenue", "Growth", "Adoption", "Portfolio", "Risk"],
+      },
+      {
+        id: "ceo-strategy",
+        title: "Strategic Initiatives",
+        status: "Active",
+        summary:
+          "Market entry, product investment, and executive priorities remain visible in one workspace.",
+        bullets: ["Markets", "Partnerships", "Initiatives", "Investments", "Expansion"],
+      },
+      {
+        id: "ceo-portfolio",
+        title: "Product Portfolio",
+        status: "Balanced",
+        summary:
+          "NovaCodePro, NovaRide, NovaPay, NovaID, NovaHealth, and future products tracked together.",
+        bullets: ["NovaCodePro", "NovaRide", "NovaPay", "NovaID", "NovaHealth"],
+      },
+      {
+        id: "ceo-board",
+        title: "Board Reporting",
+        status: "Prepared",
+        summary:
+          "Board-ready summaries with a clear view of performance, risk, and initiative progress.",
+        bullets: ["Board pack", "KPI trend", "Risk summary", "Forecast", "Actions"],
+      },
+    ],
+    signals: [
+      ["ARR", "$28.2M"],
+      ["Growth", "+18%"],
+      ["Customer adoption", "94%"],
+      ["Strategic initiatives", "12 active"],
+    ],
+    notifications: [
+      "Board reporting packet is ready for review.",
+      "Growth remains above plan for the current quarter.",
+      "Strategic initiative status is stable.",
+    ],
+    activity: [
+      "Reviewed enterprise growth and portfolio health.",
+      "Aligned executive priorities with the board agenda.",
+      "Checked partner and market expansion readiness.",
+    ],
+    agents: ["Strategy", "Finance", "Product", "Analyst"],
+    permissions: ["Strategic oversight", "Board reporting", "Portfolio view", "Executive planning"],
+  },
+  {
+    id: "coo",
+    label: "Chief Operating Officer",
+    domain: "Operations and service delivery",
+    summary:
+      "Owns daily operations, service delivery, continuity, and regional execution.",
+    accent: "#53c3b8",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Monitoring",
+    metrics: [
+      ["Availability", "99.99%"],
+      ["Incidents", "1 open"],
+      ["Regions", "6"],
+      ["SLA", "99.96%"],
+    ],
+    actions: [
+      "Open operations",
+      "Review incidents",
+      "Inspect continuity",
+      "Review regions",
+      "Run operational drill",
+    ],
+    navFocus: "Operations",
+    windows: [
+      {
+        id: "coo-ops",
+        title: "Operations Dashboard",
+        status: "Live",
+        summary:
+          "Service delivery, regional performance, and support operations in a single executive view.",
+        bullets: ["Delivery", "Regions", "Support", "Incidents", "Continuity"],
+      },
+      {
+        id: "coo-continuity",
+        title: "Business Continuity",
+        status: "Ready",
+        summary:
+          "Recovery posture, failover readiness, and operational resilience sit behind the COO view.",
+        bullets: ["DR", "Backups", "Failover", "Recovery", "Readiness"],
+      },
+      {
+        id: "coo-regions",
+        title: "Regional Operations",
+        status: "Synced",
+        summary:
+          "Regional fleet health, service rollout, and operational risk by geography.",
+        bullets: ["Australia", "Africa", "Europe", "Asia", "America"],
+      },
+      {
+        id: "coo-support",
+        title: "Service Delivery",
+        status: "Monitored",
+        summary:
+          "Customer support, issue resolution, and SLA adherence tracked alongside platform health.",
+        bullets: ["Tickets", "SLA", "Escalations", "Resolution", "Monitoring"],
+      },
+    ],
+    signals: [
+      ["Availability", "99.99%"],
+      ["Incidents", "1 open"],
+      ["Backlog", "3 items"],
+      ["Recovery posture", "Ready"],
+    ],
+    notifications: [
+      "No regional freeze is currently active.",
+      "Service delivery remains within the agreed SLA.",
+      "Continuity controls are ready for the next drill.",
+    ],
+    activity: [
+      "Reviewed the latest operational performance summary.",
+      "Checked continuity and recovery preparedness.",
+      "Validated regional service health.",
+    ],
+    agents: ["Operations", "Support", "SRE", "Continuity"],
+    permissions: ["Operational oversight", "Continuity review", "Service delivery", "Regional review"],
+  },
+  {
+    id: "cto",
+    label: "Chief Technology Officer",
+    domain: "Technology strategy and architecture",
+    summary:
+      "Owns technology strategy, platform architecture, AI direction, and engineering health.",
+    accent: "#4ca7ff",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Available",
+    metrics: [
+      ["Architecture health", "Healthy"],
+      ["Deployments", "24"],
+      ["Technical debt", "Low"],
+      ["AI platform", "Scaling"],
+    ],
+    actions: [
+      "Review roadmap",
+      "Inspect architecture",
+      "Review platform health",
+      "Plan migration",
+      "Align architecture",
+    ],
+    navFocus: "Engineering",
+    windows: [
+      {
+        id: "cto-roadmap",
+        title: "Technology Roadmap",
+        status: "Strategic",
+        summary:
+          "Architecture, cloud, AI, and engineering priorities in one technology leadership workspace.",
+        bullets: ["Roadmap", "Architecture", "Cloud", "AI", "Delivery"],
+      },
+      {
+        id: "cto-health",
+        title: "Platform Health",
+        status: "Healthy",
+        summary:
+          "Engineering health, release velocity, and technical risk surfaced for CTO review.",
+        bullets: ["Builds", "Deployments", "Debt", "Quality", "Velocity"],
+      },
+      {
+        id: "cto-architecture",
+        title: "Architecture Review",
+        status: "Reviewed",
+        summary:
+          "Major platform architecture changes, trust boundaries, and platform standards are coordinated here.",
+        bullets: ["Architecture", "Trust", "Standards", "Services", "Dependencies"],
+      },
+      {
+        id: "cto-ai",
+        title: "AI Platform",
+        status: "Scaling",
+        summary:
+          "AI orchestration, agent services, and governed solution generation tracked as a strategic platform.",
+        bullets: ["Agents", "Orchestration", "Policies", "Costs", "Scaling"],
+      },
+    ],
+    signals: [
+      ["Technical debt", "Low"],
+      ["Deployments", "24 active"],
+      ["AI maturity", "Scaling"],
+      ["Architecture review", "Ready"],
+    ],
+    notifications: [
+      "Technology roadmap is aligned with the current investment plan.",
+      "Platform health remains within target.",
+      "AI platform scaling review is scheduled.",
+    ],
+    activity: [
+      "Reviewed architecture and cloud strategy.",
+      "Checked the engineering delivery trend.",
+      "Validated the current AI platform direction.",
+    ],
+    agents: ["Architecture", "DevOps", "AI Platform", "Engineering"],
+    permissions: ["Technology strategy", "Architecture review", "Platform oversight", "Roadmap planning"],
+  },
+  {
+    id: "cfo",
+    label: "Chief Financial Officer",
+    domain: "Finance and capital management",
+    summary:
+      "Owns finance, forecasting, budgeting, investor reporting, and cost optimisation.",
+    accent: "#f3c46b",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Online",
+    metrics: [
+      ["ARR", "$28.2M"],
+      ["Cash flow", "Healthy"],
+      ["Margin", "38%"],
+      ["Forecast accuracy", "96%"],
+    ],
+    actions: ["Review forecasts", "Inspect spend", "Approve budget", "Review revenue", "Open procurement"],
+    navFocus: "Reports",
+    windows: [
+      {
+        id: "cfo-finance",
+        title: "Financial Control",
+        status: "Current",
+        summary:
+          "Revenue, costs, budgeting, and cash flow presented for finance leadership review.",
+        bullets: ["Revenue", "Costs", "Cash flow", "Margin", "Forecast"],
+      },
+      {
+        id: "cfo-budget",
+        title: "Budget Performance",
+        status: "Tracked",
+        summary:
+          "Budget consumption, investment approval, and forecast variance are captured here.",
+        bullets: ["Budget", "Variance", "Investment", "Approvals", "Plan"],
+      },
+      {
+        id: "cfo-ops",
+        title: "Cost Optimisation",
+        status: "Monitored",
+        summary:
+          "Cloud spend, vendor commitments, and operational cost efficiency remain visible.",
+        bullets: ["Cloud spend", "Vendor cost", "Efficiency", "Savings", "Run rate"],
+      },
+      {
+        id: "cfo-reporting",
+        title: "Investor Reporting",
+        status: "Prepared",
+        summary:
+          "Executive financial summaries for leadership, board, and investor reporting cycles.",
+        bullets: ["Reporting", "KPIs", "Cash flow", "Forecasts", "Disclosure"],
+      },
+    ],
+    signals: [
+      ["ARR", "$28.2M"],
+      ["Cash flow", "Healthy"],
+      ["Budget variance", "2%"],
+      ["Forecast accuracy", "96%"],
+    ],
+    notifications: [
+      "Quarterly financial reporting packet is prepared.",
+      "Cost posture remains within target.",
+      "Budget requests are within the current envelope.",
+    ],
+    activity: [
+      "Reviewed spend and margin performance.",
+      "Validated the current budget forecast.",
+      "Checked reporting readiness.",
+    ],
+    agents: ["Finance", "Procurement", "Analyst", "Strategy"],
+    permissions: ["Financial review", "Budget approval", "Reporting", "Procurement visibility"],
+  },
+  {
+    id: "cpo",
+    label: "Chief Product Officer",
+    domain: "Product strategy and user experience",
+    summary:
+      "Owns product strategy, roadmap, user experience, and portfolio investment.",
+    accent: "#9a7dff",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Available",
+    metrics: [
+      ["Portfolio", "6 products"],
+      ["Adoption", "94%"],
+      ["NPS", "62"],
+      ["Roadmap confidence", "High"],
+    ],
+    actions: [
+      "Review roadmap",
+      "Inspect adoption",
+      "Review feedback",
+      "Prioritize initiatives",
+      "Open research",
+    ],
+    navFocus: "Applications",
+    windows: [
+      {
+        id: "cpo-portfolio",
+        title: "Product Portfolio",
+        status: "Balanced",
+        summary:
+          "NovaCodePro, NovaRide, NovaPay, NovaID, NovaHealth, and future products managed together.",
+        bullets: ["Portfolio", "Adoption", "Risk", "Value", "Investment"],
+      },
+      {
+        id: "cpo-roadmap",
+        title: "Product Roadmap",
+        status: "Planned",
+        summary:
+          "Product roadmap, delivery milestones, and feature prioritisation stay visible to the CPO.",
+        bullets: ["Roadmap", "Milestones", "Priorities", "Themes", "Outcomes"],
+      },
+      {
+        id: "cpo-feedback",
+        title: "Customer Feedback",
+        status: "Tracked",
+        summary:
+          "User feedback, support trends, and product sentiment inform roadmap choices.",
+        bullets: ["Feedback", "Sentiment", "Support", "Requests", "Insights"],
+      },
+      {
+        id: "cpo-research",
+        title: "UX and Research",
+        status: "Active",
+        summary:
+          "Research findings and experience quality remain central to product decisions.",
+        bullets: ["UX", "Research", "Accessibility", "Journeys", "Experiments"],
+      },
+    ],
+    signals: [
+      ["Adoption", "94%"],
+      ["NPS", "62"],
+      ["Roadmap confidence", "High"],
+      ["Feature demand", "Strong"],
+    ],
+    notifications: [
+      "Roadmap review is scheduled for the next product cycle.",
+      "Feature adoption remains above plan.",
+      "Customer feedback is trending positive.",
+    ],
+    activity: [
+      "Reviewed product portfolio health.",
+      "Prioritized new product investments.",
+      "Validated the latest user feedback summary.",
+    ],
+    agents: ["Product", "Research", "Design", "Analytics"],
+    permissions: ["Product review", "Roadmap planning", "Portfolio view", "UX oversight"],
+  },
+  {
+    id: "ciso",
+    label: "Chief Information Security Officer",
+    domain: "Security and risk governance",
+    summary:
+      "Owns security strategy, Zero Trust, threat detection, incident response, and approvals.",
+    accent: "#ff7f7f",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Monitoring",
+    metrics: [
+      ["Security score", "96"],
+      ["Threats", "0 critical"],
+      ["Vulnerabilities", "2 medium"],
+      ["Incident posture", "Green"],
+    ],
+    actions: [
+      "Review threats",
+      "Open incident",
+      "Inspect policies",
+      "Approve exception",
+      "Run assessment",
+    ],
+    navFocus: "Settings",
+    windows: [
+      {
+        id: "ciso-security",
+        title: "Security Posture",
+        status: "Green",
+        summary:
+          "Threats, incidents, vulnerability posture, and security score for executive review.",
+        bullets: ["Threats", "Vulnerabilities", "Incidents", "Score", "Zero Trust"],
+      },
+      {
+        id: "ciso-threats",
+        title: "Threat Operations",
+        status: "Monitored",
+        summary:
+          "Security operations and detection feeds remain visible to the security leader.",
+        bullets: ["Detection", "Incidents", "Response", "Containment", "Evidence"],
+      },
+      {
+        id: "ciso-policies",
+        title: "Policy and Approvals",
+        status: "Controlled",
+        summary:
+          "Security policies, exceptions, and protected approvals stay governed here.",
+        bullets: ["Policies", "Exceptions", "Approvals", "Certificates", "Controls"],
+      },
+      {
+        id: "ciso-risk",
+        title: "Risk and Compliance",
+        status: "Reviewed",
+        summary:
+          "Risk posture, compliance mapping, and audit evidence ready for security oversight.",
+        bullets: ["Risk", "Compliance", "Audit", "Evidence", "Remediation"],
+      },
+    ],
+    signals: [
+      ["Security score", "96"],
+      ["Critical threats", "0"],
+      ["Vulnerabilities", "2 medium"],
+      ["Approvals pending", "1"],
+    ],
+    notifications: [
+      "Security posture remains within target.",
+      "One policy update awaits approval.",
+      "No critical incidents are open.",
+    ],
+    activity: [
+      "Reviewed the threat and vulnerability summary.",
+      "Validated the approval queue.",
+      "Checked the current Zero Trust posture.",
+    ],
+    agents: ["Security", "Compliance", "Threat Intel", "Incident Response"],
+    permissions: ["Security approvals", "Threat review", "Policy management", "Incident coordination"],
+  },
+  {
+    id: "chief-legal-compliance-officer",
+    label: "Chief Legal & Compliance Officer",
+    domain: "Legal, privacy, and compliance",
+    summary:
+      "Owns legal, privacy, compliance, contracts, regulatory affairs, and governance.",
+    accent: "#b6b0a4",
+    environment: "Production",
+    organization: "NovaTech",
+    subscription: "Executive Leadership",
+    presence: "Available",
+    metrics: [
+      ["Open obligations", "7"],
+      ["Policy exceptions", "0"],
+      ["Contracts", "38"],
+      ["Audit findings", "0 critical"],
+    ],
+    actions: [
+      "Review obligations",
+      "Inspect contracts",
+      "Approve compliance",
+      "Review privacy",
+      "Open audit pack",
+    ],
+    navFocus: "Reports",
+    windows: [
+      {
+        id: "legal-compliance",
+        title: "Legal Operations",
+        status: "Governed",
+        summary:
+          "Contracts, obligations, and legal review items collected for executive management.",
+        bullets: ["Contracts", "Obligations", "Review", "IP", "Regulatory"],
+      },
+      {
+        id: "privacy",
+        title: "Privacy and Data",
+        status: "Controlled",
+        summary:
+          "Privacy controls, data usage, and residency topics remain visible for compliance leadership.",
+        bullets: ["Privacy", "Residency", "Retention", "Consent", "Controls"],
+      },
+      {
+        id: "compliance",
+        title: "Compliance Center",
+        status: "Ready",
+        summary:
+          "Policy exceptions, audit evidence, and regulated workflow approvals stay in scope.",
+        bullets: ["Compliance", "Audit", "Exceptions", "Evidence", "Reviews"],
+      },
+      {
+        id: "legal-risk",
+        title: "Risk and Governance",
+        status: "Monitored",
+        summary:
+          "Legal, regulatory, and governance risk tracked alongside board-ready evidence.",
+        bullets: ["Risk", "Governance", "Regulatory", "Evidence", "Reviews"],
+      },
+    ],
+    signals: [
+      ["Open obligations", "7"],
+      ["Policy exceptions", "0"],
+      ["Contracts", "38"],
+      ["Audit findings", "0 critical"],
+    ],
+    notifications: [
+      "No active policy exceptions are open.",
+      "Regulatory obligations are within the expected cycle.",
+      "Contracts queue is awaiting normal review.",
+    ],
+    activity: [
+      "Reviewed the latest compliance and privacy summary.",
+      "Checked open legal obligations.",
+      "Validated the audit evidence pack.",
+    ],
+    agents: ["Legal", "Compliance", "Privacy", "Risk"],
+    permissions: ["Compliance review", "Contract oversight", "Privacy governance", "Legal signoff"],
   },
   {
     id: "software-engineer",
@@ -968,6 +1612,54 @@ function App() {
               </div>
             </div>
           </section>
+
+          {LEADERSHIP_ROLE_IDS.has(activeRole.id) ? (
+            <section className="surface-band">
+              <div className="band-header">
+                <div>
+                  <p className="section-label">Governance model</p>
+                  <h2>Strategy, governance, risk, and enterprise performance</h2>
+                </div>
+                <div className="layout-hint">
+                  <span>Board oversees strategy</span>
+                  <span>Executives manage performance</span>
+                </div>
+              </div>
+
+              <div className="studio-grid">
+                <article className="studio-card">
+                  <p className="section-label">Responsibilities</p>
+                  <strong>{activeRole.label}</strong>
+                  <p className="studio-note">
+                    The current workspace is intentionally read-mostly for governance and leadership decision making.
+                  </p>
+                  <div className="artifact-list">
+                    {activeRole.actions.map((action) => (
+                      <div className="artifact-row" key={action}>
+                        <strong>{action}</strong>
+                        <span>Leadership action</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="studio-card">
+                  <p className="section-label">Governance matrix</p>
+                  <strong>Board, executive, and operational decision boundaries</strong>
+                  <div className="artifact-list">
+                    {GOVERNANCE_MATRIX.map(([decision, board, ceo, cto, ciso, platformAdmin]) => (
+                      <div className="audit-row" key={decision}>
+                        <strong>{decision}</strong>
+                        <p>
+                          Board: {board} · CEO: {ceo} · CTO: {cto} · CISO: {ciso} · Platform Admin: {platformAdmin}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            </section>
+          ) : null}
 
           {activeRole.id === "platform-admin" ? (
             <section className="surface-band">
