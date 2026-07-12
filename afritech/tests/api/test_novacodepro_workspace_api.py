@@ -43,7 +43,12 @@ def test_workspace_manifest_personalizes_platform_administrator_workspace(tmp_pa
     assert body["workspace"]["feature_flags"]["role_workspace_v2"] is True
     tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
     assert "Platform Administration" in tool_names
+    assert "Tenant Management" in tool_names
+    assert "Identity and Access Center" in tool_names
+    assert "Application and Tool Registry" in tool_names
+    assert "Infrastructure and Service Center" in tool_names
     assert "Release Center" in tool_names
+    assert body["workspace"]["administrator_attention"]
 
 
 def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> None:
@@ -59,6 +64,8 @@ def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> 
     assert "Authorized tool launcher" in response.text
     assert "Command palette" in response.text
     assert "/novacodepro/tools/platform-administration" in response.text
+    assert "Tenant Management" in response.text
+    assert "Administrator attention" in response.text
 
 
 def test_unauthorized_tools_are_absent_and_direct_urls_return_404(tmp_path: Path) -> None:
@@ -73,6 +80,7 @@ def test_unauthorized_tools_are_absent_and_direct_urls_return_404(tmp_path: Path
     assert "Customer Center" in tool_names
     assert "Platform Administration" not in tool_names
     assert "Board Portal" not in tool_names
+    assert "Tenant Management" not in tool_names
 
     missing = client.get(
         "/novacodepro/tools/platform-administration",

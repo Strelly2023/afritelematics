@@ -82,7 +82,7 @@ def _workspace_title(role: str) -> str:
 
 def _workspace_description(role: str) -> str:
     mapping = {
-        "ADMIN": "Govern platforms, tenants, identity, evidence, approvals, and operational readiness.",
+        "ADMIN": "Govern platform services, tenants, identity, evidence, approvals, and operational readiness.",
         "DEVELOPER": "Build solution packages, inspect project context, and move work toward release.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
@@ -535,6 +535,210 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         overview=("Identity", "Tenants", "Services", "Environments", "Audit"),
         primary_actions=("Manage Tenant", "Open Service Registry", "Review Access"),
     ),
+    ToolDefinition(
+        id="tenant-management",
+        name="Tenant Management",
+        description="Create, suspend, restore, and review tenant health and isolation.",
+        icon="⌂",
+        route="/novacodepro/tools/tenant-management",
+        required_permissions=("tenant.read", "tenant.configure"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Operations",
+        help_url="/docs/novacodepro/tools/tenant-management",
+        audit_category="tenant",
+        group="ADMINISTRATION",
+        overview=("Organizations", "Tenants", "Isolation", "Quotas", "Lifecycle"),
+        primary_actions=("Create Tenant", "Suspend Tenant", "Review Isolation"),
+    ),
+    ToolDefinition(
+        id="identity-access-center",
+        name="Identity and Access Center",
+        description="Manage workforce identities, access risk, and privileged sessions.",
+        icon="⎈",
+        route="/novacodepro/tools/identity-access-center",
+        required_permissions=("identity.read", "identity.assign_role"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Identity Operations",
+        help_url="/docs/novacodepro/tools/identity-access-center",
+        audit_category="identity",
+        group="ADMINISTRATION",
+        overview=("Users", "Roles", "Sessions", "Risk", "Federation"),
+        primary_actions=("Invite User", "Revoke Session", "Review Risk"),
+    ),
+    ToolDefinition(
+        id="application-tool-registry",
+        name="Application and Tool Registry",
+        description="Register independent tools, routes, permissions, and rollout rings.",
+        icon="▣",
+        route="/novacodepro/tools/application-tool-registry",
+        required_permissions=("tool.read", "tool.register"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Engineering",
+        help_url="/docs/novacodepro/tools/application-tool-registry",
+        audit_category="tool-registry",
+        group="ADMINISTRATION",
+        overview=("Tools", "Routes", "Permissions", "Owners", "Rollouts"),
+        primary_actions=("Register Tool", "Disable Tool", "Review Health"),
+    ),
+    ToolDefinition(
+        id="infrastructure-service-center",
+        name="Infrastructure and Service Center",
+        description="Inspect services, dependencies, latency, versions, and capacity.",
+        icon="⛭",
+        route="/novacodepro/tools/infrastructure-service-center",
+        required_permissions=("platform.read", "operations.read"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Infrastructure",
+        help_url="/docs/novacodepro/tools/infrastructure-service-center",
+        audit_category="infrastructure",
+        group="ADMINISTRATION",
+        overview=("Services", "Dependencies", "Capacity", "Latency", "Regions"),
+        primary_actions=("Inspect Service", "Review Capacity", "Open Dependency Graph"),
+    ),
+    ToolDefinition(
+        id="artifact-registry",
+        name="Artifact Registry",
+        description="Review signed artifacts, versions, checksums, and rollout provenance.",
+        icon="⧉",
+        route="/novacodepro/tools/artifact-registry",
+        required_permissions=("artifact.read", "release.verify"),
+        supported_roles=("ADMIN",),
+        supported_environments=("staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Release Operations",
+        help_url="/docs/novacodepro/tools/artifact-registry",
+        audit_category="artifact",
+        group="DELIVER",
+        overview=("Artifacts", "Versions", "Checksums", "Signing", "Provenance"),
+        primary_actions=("Inspect Artifact", "Verify Checksum", "Open Provenance"),
+    ),
+    ToolDefinition(
+        id="policy-administration",
+        name="Policy Administration",
+        description="Publish approved policies and map them to tools, roles, tenants, and environments.",
+        icon="⚑",
+        route="/novacodepro/tools/policy-administration",
+        required_permissions=("policy.read", "policy.publish"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Governance",
+        help_url="/docs/novacodepro/tools/policy-administration",
+        audit_category="policy",
+        group="ADMINISTRATION",
+        overview=("Policies", "Mappings", "Enforcement", "Exceptions", "Versions"),
+        primary_actions=("Publish Policy", "Review Mapping", "Open Exception"),
+    ),
+    ToolDefinition(
+        id="compliance-center",
+        name="Compliance Center",
+        description="Review control coverage, evidence, exceptions, and compliance posture.",
+        icon="☑",
+        route="/novacodepro/tools/compliance-center",
+        required_permissions=("audit.read", "governance.read"),
+        supported_roles=("ADMIN",),
+        supported_environments=("staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/compliance-center",
+        audit_category="compliance",
+        group="GOVERN",
+        overview=("Controls", "Evidence", "Exceptions", "Posture", "Reviews"),
+        primary_actions=("Review Control", "Inspect Evidence", "Open Exception"),
+    ),
+    ToolDefinition(
+        id="integration-center",
+        name="Integration Center",
+        description="Manage external APIs, webhooks, identities, quotas, and failures.",
+        icon="⟲",
+        route="/novacodepro/tools/integration-center",
+        required_permissions=("integration.read", "integration.configure"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Integration Operations",
+        help_url="/docs/novacodepro/tools/integration-center",
+        audit_category="integration",
+        group="BUSINESS",
+        overview=("APIs", "Webhooks", "Credentials", "Rates", "Failures"),
+        primary_actions=("Register Integration", "Rotate Secret", "Test Connection"),
+    ),
+    ToolDefinition(
+        id="data-regional-administration",
+        name="Data and Regional Administration",
+        description="Configure residency, routing, replication, retention, and exports.",
+        icon="◫",
+        route="/novacodepro/tools/data-regional-administration",
+        required_permissions=("platform.configure", "environment.configure"),
+        supported_roles=("ADMIN",),
+        supported_environments=("staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-regional-administration",
+        audit_category="data-regional",
+        group="ADMINISTRATION",
+        overview=("Residency", "Routing", "Replication", "Retention", "Exports"),
+        primary_actions=("Review Residency", "Verify Replication", "Open Export Request"),
+    ),
+    ToolDefinition(
+        id="feature-configuration-center",
+        name="Feature and Configuration Center",
+        description="Manage feature flags, rollout rings, kill switches, and configuration history.",
+        icon="☼",
+        route="/novacodepro/tools/feature-configuration-center",
+        required_permissions=("platform.configure", "tool.configure"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Enablement",
+        help_url="/docs/novacodepro/tools/feature-configuration-center",
+        audit_category="feature-config",
+        group="ADMINISTRATION",
+        overview=("Flags", "Rollouts", "Overrides", "History", "Rollback"),
+        primary_actions=("Enable Flag", "Adjust Rollout", "Revert Change"),
+    ),
+    ToolDefinition(
+        id="continuity-recovery-center",
+        name="Continuity and Recovery Center",
+        description="Test backups, failover readiness, and regional recovery plans.",
+        icon="↺",
+        route="/novacodepro/tools/continuity-recovery-center",
+        required_permissions=("recovery.read", "recovery.execute"),
+        supported_roles=("ADMIN",),
+        supported_environments=("staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Reliability",
+        help_url="/docs/novacodepro/tools/continuity-recovery-center",
+        audit_category="recovery",
+        group="OPERATE",
+        overview=("Backups", "RTO", "RPO", "Failover", "Exercises"),
+        primary_actions=("Verify Backup", "Test Restore", "Open Failover Plan"),
+    ),
+    ToolDefinition(
+        id="administrative-diagnostics",
+        name="Administrative Diagnostics",
+        description="Inspect traces, logs, sync state, and configuration with redaction.",
+        icon="⌘",
+        route="/novacodepro/tools/administrative-diagnostics",
+        required_permissions=("audit.read", "platform.read"),
+        supported_roles=("ADMIN",),
+        supported_environments=("development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Diagnostics",
+        help_url="/docs/novacodepro/tools/administrative-diagnostics",
+        audit_category="diagnostics",
+        group="ADMINISTRATION",
+        overview=("Trace IDs", "Logs", "Dependencies", "Flags", "Sessions"),
+        primary_actions=("Inspect Trace", "Open Log Stream", "Review Drift"),
+    ),
 )
 
 
@@ -553,6 +757,10 @@ ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
 ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
     "ADMIN": (
         "Open Platform Administration",
+        "Open Tenant Management",
+        "Open Identity and Access Center",
+        "Open Application and Tool Registry",
+        "Open Infrastructure and Service Center",
         "Review Pending Approvals",
         "Inspect Operations",
         "Generate Audit Export",
@@ -654,8 +862,8 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
         return [
             {
                 "title": "Platform health",
-                "value": summary.get("service_health", {}).get("healthy", 0),
-                "meta": f"{summary.get('deployment_statuses', {}).get('degraded', 0)} degraded services",
+                "value": f"{summary.get('platform_health', 'healthy').title()}",
+                "meta": f"{summary.get('service_health', {}).get('healthy', 0)} healthy services",
             },
             {
                 "title": "Approvals requiring attention",
@@ -663,9 +871,21 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
                 "meta": "Production, security, policy, and customer requests",
             },
             {
-                "title": "Active work",
-                "value": len(ready_release_queue),
-                "meta": "Releases and solution work queued for execution",
+                "title": "Administrator attention",
+                "value": sum(
+                    int(summary.get(key, 0) or 0)
+                    for key in (
+                        "pending_approvals_count",
+                        "expiring_certificates_count",
+                        "failed_backups_count",
+                        "degraded_services_count",
+                        "high_risk_sessions_count",
+                        "policy_violations_count",
+                        "unhealthy_integrations_count",
+                        "configuration_drift_count",
+                    )
+                ) or len(ready_release_queue),
+                "meta": "Privileged approvals, certificates, backups, and drift",
             },
             {
                 "title": "Enterprise signals",
@@ -680,7 +900,7 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {
                 "title": "Authorized tools",
                 "value": len(_visible_tools(role, "production")),
-                "meta": "Launchers available for your role",
+                "meta": "Launchers available for your role and environment",
             },
         ]
     if canonical == "DEVELOPER":
@@ -827,6 +1047,16 @@ def build_workspace_manifest(
                 {"id": "task-2", "title": "Inspect current operational state", "status": "active"},
             ],
             "pending_approvals": summary.get("pending_approvals", [])[:4],
+            "administrator_attention": [
+                {"label": "Pending privileged approvals", "value": summary.get("pending_approvals_count", len(summary.get("pending_approvals", [])))},
+                {"label": "Expiring certificates", "value": summary.get("expiring_certificates_count", 0)},
+                {"label": "Failed backup jobs", "value": summary.get("failed_backups_count", 0)},
+                {"label": "Degraded platform services", "value": summary.get("degraded_services_count", 0)},
+                {"label": "High-risk identity sessions", "value": summary.get("high_risk_sessions_count", 0)},
+                {"label": "Policy violations", "value": summary.get("policy_violations_count", 0)},
+                {"label": "Unhealthy integrations", "value": summary.get("unhealthy_integrations_count", 0)},
+                {"label": "Configuration drift", "value": summary.get("configuration_drift_count", 0)},
+            ],
             "feature_flags": {
                 "role_workspace_v2": True,
                 "federated_tools": True,
@@ -871,6 +1101,7 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
     tools = workspace["tools"]
     actions = workspace["command_palette"]
     approvals = workspace["pending_approvals"]
+    admin_attention = workspace.get("administrator_attention", [])
     incidents = workspace["recent_incidents"]
     projects = workspace["recent_projects"]
     work = workspace["recent_work"]
@@ -1315,6 +1546,12 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
             <section class=\"panel\">
               <header><h2>Approvals</h2></header>
               <ul>{approvals_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Administrator attention</h2></header>
+              <ul>
+                {"".join(f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(str(item['value']))}</span></li>" for item in admin_attention)}
+              </ul>
             </section>
             <section class=\"panel\">
               <header><h2>Recent incidents</h2></header>
