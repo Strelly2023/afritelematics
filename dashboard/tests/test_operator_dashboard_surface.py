@@ -1536,6 +1536,7 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     caddyfile_tls = read_repo("deploy/production/Caddyfile.tls")
     trust_nginx = read_repo("deploy/production/nginx/trust-node.conf.template")
     platform_nginx = read_repo("deploy/production/nginx/afritechnology-platform.conf.template")
+    tls_runbook = read_repo("docs/operations/NOVACODEPRO_PORTAL_TLS_RUNBOOK.md")
     vite_config = read_repo("novacodepro_portal/vite.config.js")
 
     for required in (
@@ -1560,10 +1561,31 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     assert "reverse_proxy novacodepro-portal:4174" in caddyfile_tls
 
     assert "novacodepro.${AFRITECH_DOMAIN}" in trust_nginx
+    assert "/etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/fullchain.pem" in trust_nginx
+    assert "/etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/privkey.pem" in trust_nginx
     assert "set $novacodepro_portal novacodepro-portal:4174;" in trust_nginx
     assert "proxy_pass http://$novacodepro_portal;" in trust_nginx
+    assert "location /.well-known/acme-challenge/" in platform_nginx
+    assert "root /var/www/certbot;" in platform_nginx
+    assert "return 200 'ok';" in platform_nginx
     assert "server_name novacodepro.afritechnology.com;" in platform_nginx
+    assert "/etc/letsencrypt/live/novacodepro.afritechnology.com/fullchain.pem" in platform_nginx
+    assert "/etc/letsencrypt/live/novacodepro.afritechnology.com/privkey.pem" in platform_nginx
     assert "proxy_pass http://novacodepro-portal:4174;" in platform_nginx
+
+    for required in (
+        "docker compose",
+        "certbot/certbot:v2.11.0",
+        "run --rm certbot",
+        "certonly",
+        "--cert-name novacodepro.afritechnology.com",
+        "/.well-known/acme-challenge/test",
+        "up -d --force-recreate nginx",
+        "openssl s_client",
+        "DNS:novacodepro.afritechnology.com",
+        "curl -I https://novacodepro.afritechnology.com",
+    ):
+        assert required in tls_runbook
 
     assert '"novacodepro.afritechnology.com"' in vite_config
     assert "allowedHosts" in vite_config

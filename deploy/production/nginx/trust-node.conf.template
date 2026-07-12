@@ -134,8 +134,8 @@ server {
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $novacodepro_portal novacodepro-portal:4174;
 
-  ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${AFRITECH_DOMAIN}/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/novacodepro.${AFRITECH_DOMAIN}/privkey.pem;
   ssl_protocols TLSv1.2 TLSv1.3;
   ssl_prefer_server_ciphers off;
   ssl_session_cache shared:SSL:10m;

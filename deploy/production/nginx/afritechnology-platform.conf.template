@@ -11,6 +11,16 @@ server {
         deny all;
     }
 
+    location /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
     location / {
         return 301 https://$host$request_uri;
     }
@@ -64,8 +74,8 @@ server {
     listen 443 ssl http2;
     server_name novacodepro.afritechnology.com;
 
-    ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/afritechnology.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/novacodepro.afritechnology.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/novacodepro.afritechnology.com/privkey.pem;
 
     location /healthz {
         access_log off;
