@@ -1,5 +1,15 @@
 import React, { useMemo, useState } from "react";
 
+import {
+  AGENT_MARKETPLACE,
+  PLATFORM_CENTERS,
+  SERVICE_CATALOG,
+  SOLUTION_TEMPLATES,
+  WORKFLOW_STAGES,
+  platformRuntime,
+} from "./platform/runtime.js";
+import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
+
 const NAV_ITEMS = [
   "Dashboard",
   "Applications",
@@ -566,39 +576,6 @@ const TOPICS = [
   },
 ];
 
-const PLATFORM_CENTERS = [
-  {
-    title: "Trust Center",
-    summary: "Identities, receipts, certificates, releases, and audit evidence in one governed surface.",
-    chips: ["Identities", "Receipts", "Certificates", "Evidence", "Audit"],
-  },
-  {
-    title: "Release Center",
-    summary: "Validate, build, test, sign, publish, deploy, observe, and roll back from a single flow.",
-    chips: ["Validate", "Build", "Tests", "Sign", "Publish"],
-  },
-  {
-    title: "Observability Center",
-    summary: "Latency, error rate, regions, logs, metrics, traces, and alerts remain visible together.",
-    chips: ["CPU", "Memory", "Latency", "Logs", "Tracing"],
-  },
-  {
-    title: "Data Center",
-    summary: "SQL, NoSQL, storage, analytics, streaming, backups, and replication with shared context.",
-    chips: ["SQL", "Warehouse", "Streaming", "Backups", "Replication"],
-  },
-  {
-    title: "Security Center",
-    summary: "Zero Trust, NovaID, RBAC, MFA, certificates, secrets, threats, and policies are governed here.",
-    chips: ["Zero Trust", "RBAC", "MFA", "Secrets", "Policies"],
-  },
-  {
-    title: "Executive Center",
-    summary: "Revenue, MRR, ARR, growth, trust score, and regional performance drive leadership review.",
-    chips: ["Revenue", "MRR", "ARR", "Trust", "Forecast"],
-  },
-];
-
 const WORKFLOW_STEPS = [
   "User",
   "AI Planning",
@@ -634,12 +611,22 @@ const DIGITAL_TWIN_LAYERS = [
 ];
 
 function App() {
+  const runtime = usePlatformRuntime();
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
   const [search, setSearch] = useState("");
   const [environment, setEnvironment] = useState("Production");
   const [focusNav, setFocusNav] = useState("Dashboard");
   const [selectedWindowId, setSelectedWindowId] = useState(ROLE_PROFILES[0].windows[0].id);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [solutionTemplateId, setSolutionTemplateId] = useState(SOLUTION_TEMPLATES[0].id);
+  const [solutionTitle, setSolutionTitle] = useState("");
+  const [solutionRequest, setSolutionRequest] = useState(SOLUTION_TEMPLATES[0].request);
+  const [solutionDomain, setSolutionDomain] = useState(SOLUTION_TEMPLATES[0].domain);
+  const [solutionRegion, setSolutionRegion] = useState("Australia");
+  const [solutionCompliance, setSolutionCompliance] = useState("enterprise");
+  const [solutionSurfaces, setSolutionSurfaces] = useState(
+    SOLUTION_TEMPLATES[0].surfaces,
+  );
 
   const activeRole = useMemo(
     () => ROLE_PROFILES.find((role) => role.id === roleId) ?? ROLE_PROFILES[0],
@@ -663,6 +650,35 @@ function App() {
       return action.toLowerCase().includes(query);
     });
   }, [activeRole, search]);
+
+  const selectedRequest =
+    runtime.solutionRequests.find((request) => request.id === runtime.selectedRequestId) ??
+    runtime.solutionRequests[0];
+  const currentStage = selectedRequest?.workflow[selectedRequest?.stageIndex ?? 0];
+  const pendingSolutions = runtime.solutionRequests.filter((request) => request.status !== "operating");
+  const liveSolutions = runtime.solutionRequests.filter((request) => request.status === "operating");
+
+  const solutionBlueprint = useMemo(() => {
+    const template =
+      SOLUTION_TEMPLATES.find((item) => item.id === solutionTemplateId) ?? SOLUTION_TEMPLATES[0];
+    return {
+      template,
+      title: solutionTitle || template.title,
+      request: solutionRequest || template.request,
+      domain: solutionDomain || template.domain,
+      region: solutionRegion,
+      compliance: solutionCompliance,
+      surfaces: solutionSurfaces,
+    };
+  }, [
+    solutionCompliance,
+    solutionDomain,
+    solutionRegion,
+    solutionRequest,
+    solutionSurfaces,
+    solutionTemplateId,
+    solutionTitle,
+  ]);
 
   const selectedWindow =
     activeRole.windows.find((window) => window.id === selectedWindowId) ?? activeRole.windows[0];
@@ -857,6 +873,290 @@ function App() {
                   {appCatalog.slice(0, 4).join(", ") || "No action matched the current query."}
                 </p>
               </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Solution Studio</p>
+                <h2>Request a governed software solution, not a prompt</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Workflow engine, API, storage, audit, and UI all in play</span>
+                <span>Human approval stays mandatory at governance gates</span>
+              </div>
+            </div>
+
+            <div className="template-strip">
+              {SOLUTION_TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  className={template.id === solutionBlueprint.template.id ? "template-chip active" : "template-chip"}
+                  onClick={() => {
+                    setSolutionTemplateId(template.id);
+                    setSolutionTitle(template.title);
+                    setSolutionRequest(template.request);
+                    setSolutionDomain(template.domain);
+                    setSolutionSurfaces(template.surfaces);
+                    setSolutionCompliance(template.domain === "finance" ? "very high" : "enterprise");
+                  }}
+                >
+                  <strong>{template.title}</strong>
+                  <span>{template.request}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Request intake</p>
+                <label className="field">
+                  <span>Solution name</span>
+                  <input
+                    value={solutionTitle}
+                    onChange={(event) => setSolutionTitle(event.target.value)}
+                    placeholder="Online pharmacy platform"
+                  />
+                </label>
+                <label className="field">
+                  <span>Business request</span>
+                  <textarea
+                    rows="4"
+                    value={solutionRequest}
+                    onChange={(event) => setSolutionRequest(event.target.value)}
+                  />
+                </label>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Domain</span>
+                    <input
+                      value={solutionDomain}
+                      onChange={(event) => setSolutionDomain(event.target.value)}
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Region</span>
+                    <input
+                      value={solutionRegion}
+                      onChange={(event) => setSolutionRegion(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Compliance level</span>
+                    <select
+                      value={solutionCompliance}
+                      onChange={(event) => setSolutionCompliance(event.target.value)}
+                    >
+                      <option value="enterprise">Enterprise</option>
+                      <option value="high">High</option>
+                      <option value="very high">Very high</option>
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span>Surfaces</span>
+                    <div className="chip-cloud compact">
+                      {solutionBlueprint.template.surfaces.map((surface) => (
+                        <button
+                          type="button"
+                          key={surface}
+                          className={solutionSurfaces.includes(surface) ? "context-chip active" : "context-chip"}
+                          onClick={() => {
+                            setSolutionSurfaces((current) =>
+                              current.includes(surface)
+                                ? current.filter((item) => item !== surface)
+                                : [...current, surface],
+                            );
+                          }}
+                        >
+                          {surface}
+                        </button>
+                      ))}
+                    </div>
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="primary-action"
+                  onClick={() =>
+                    platformRuntime.createSolution({
+                      title: solutionBlueprint.title,
+                      request: solutionBlueprint.request,
+                      domain: solutionBlueprint.domain,
+                      region: solutionBlueprint.region,
+                      compliance: solutionBlueprint.compliance,
+                      surfaces: solutionBlueprint.surfaces,
+                      template: solutionBlueprint.template,
+                    })
+                  }
+                >
+                  Create governed solution
+                </button>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Workflow engine</p>
+                <strong>{selectedRequest?.title || "No solution selected"}</strong>
+                <p className="studio-note">
+                  Each stage carries a service, API, storage location, audit event, and UI owner.
+                </p>
+                <div className="workflow-rail">
+                  {selectedRequest?.workflow.map((stage) => (
+                    <button
+                      key={stage.id}
+                      type="button"
+                      className={stage.id === currentStage?.id ? "workflow-node active" : "workflow-node"}
+                      onClick={() => platformRuntime.runCommand(`Inspect ${stage.label}`)}
+                    >
+                      <span>{stage.label}</span>
+                      <strong>{stage.status}</strong>
+                      <em>{stage.service}</em>
+                    </button>
+                  ))}
+                </div>
+                <div className="studio-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.advanceWorkflow(selectedRequest.id)}
+                  >
+                    Advance stage
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.approveGate(selectedRequest.id, "Human approval captured in NovaCodePro.")
+                    }
+                  >
+                    Approve gate
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.runCommand("Generate release package")}
+                  >
+                    Generate package
+                  </button>
+                </div>
+                <div className="artifact-list">
+                  {selectedRequest?.artifacts.map((artifact) => (
+                    <div className="artifact-row" key={artifact.id}>
+                      <strong>{artifact.title}</strong>
+                      <span>{artifact.stage}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              <article className="studio-card">
+                <p className="section-label">Audit trail</p>
+                <strong>Immutable activity log</strong>
+                <div className="audit-list">
+                  {runtime.auditTrail.slice(0, 8).map((entry) => (
+                    <div className="audit-row" key={entry.id}>
+                      <span>{entry.at}</span>
+                      <strong>{entry.action}</strong>
+                      <p>
+                        {entry.service} · {entry.subject}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Platform services</p>
+                <h2>Each AI agent is backed by a service, API, storage layer, audit, and UI</h2>
+              </div>
+            </div>
+            <div className="service-grid">
+              {SERVICE_CATALOG.map((service) => (
+                <article className="service-card" key={service.id}>
+                  <p className="section-label">{service.kind}</p>
+                  <strong>{service.title}</strong>
+                  <p>{service.description}</p>
+                  <dl className="service-meta">
+                    <div>
+                      <dt>Service</dt>
+                      <dd>{service.service}</dd>
+                    </div>
+                    <div>
+                      <dt>API</dt>
+                      <dd>{service.api}</dd>
+                    </div>
+                    <div>
+                      <dt>Storage</dt>
+                      <dd>{service.storage}</dd>
+                    </div>
+                    <div>
+                      <dt>Audit</dt>
+                      <dd>{service.audit}</dd>
+                    </div>
+                    <div>
+                      <dt>UI</dt>
+                      <dd>{service.ui}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">AI agent marketplace</p>
+                <h2>Install specialist solution agents as governed services</h2>
+              </div>
+            </div>
+            <div className="service-grid marketplace">
+              {AGENT_MARKETPLACE.map((agent) => {
+                const installed = runtime.installedAgents.includes(agent.id);
+                return (
+                  <article className="service-card" key={agent.id}>
+                    <p className="section-label">{agent.category}</p>
+                    <strong>{agent.title}</strong>
+                    <p>{agent.summary}</p>
+                    <dl className="service-meta">
+                      <div>
+                        <dt>Service</dt>
+                        <dd>{agent.service}</dd>
+                      </div>
+                      <div>
+                        <dt>API</dt>
+                        <dd>{agent.api}</dd>
+                      </div>
+                      <div>
+                        <dt>Storage</dt>
+                        <dd>{agent.storage}</dd>
+                      </div>
+                      <div>
+                        <dt>Audit</dt>
+                        <dd>{agent.audit}</dd>
+                      </div>
+                      <div>
+                        <dt>UI</dt>
+                        <dd>{agent.ui}</dd>
+                      </div>
+                    </dl>
+                    <button
+                      type="button"
+                      className={installed ? "toolbar-chip active" : "toolbar-chip"}
+                      onClick={() => platformRuntime.installAgent(agent.id)}
+                    >
+                      {installed ? "Installed" : "Install agent"}
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           </section>
 

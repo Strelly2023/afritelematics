@@ -560,6 +560,207 @@ button {
   color: #b8c9d8;
 }
 
+.template-strip,
+.service-grid,
+.studio-grid,
+.field-grid,
+.workflow-rail,
+.artifact-list,
+.audit-list {
+  display: grid;
+  gap: 12px;
+}
+
+.template-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.template-chip {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  min-height: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(141, 172, 197, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.template-chip strong,
+.service-card strong,
+.studio-card strong,
+.artifact-row strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.template-chip span,
+.service-card p,
+.studio-note,
+.audit-row p,
+.artifact-row span {
+  color: #b8c9d8;
+}
+
+.template-chip.active {
+  border-color: rgba(105, 210, 164, 0.45);
+  background: rgba(105, 210, 164, 0.1);
+}
+
+.studio-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 1fr) minmax(260px, 0.7fr);
+}
+
+.studio-card,
+.service-card {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(141, 172, 197, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.field span {
+  color: #9ab4c9;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(141, 172, 197, 0.16);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(8, 18, 29, 0.9);
+  color: #eff6fb;
+}
+
+.field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.field-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, #69d2a4, #4ca7ff);
+  color: #041019;
+  font-weight: 900;
+}
+
+.chip-cloud.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.workflow-rail {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.workflow-node {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  min-height: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(141, 172, 197, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.workflow-node span {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.workflow-node strong {
+  font-size: 0.9rem;
+}
+
+.workflow-node em {
+  font-style: normal;
+  color: #9ab4c9;
+  font-size: 0.75rem;
+}
+
+.workflow-node.active {
+  border-color: rgba(76, 167, 255, 0.45);
+  background: rgba(76, 167, 255, 0.12);
+}
+
+.studio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.artifact-row,
+.audit-row {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(141, 172, 197, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.artifact-row span,
+.audit-row span {
+  display: block;
+  color: #8fa8bc;
+  font-size: 0.8rem;
+}
+
+.audit-row strong {
+  display: block;
+  margin: 4px 0;
+}
+
+.service-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.service-grid.marketplace {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.service-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 12px;
+}
+
+.service-meta dt {
+  color: #9ab4c9;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.service-meta dd {
+  margin: 4px 0 0;
+  color: #e8f2fa;
+  font-size: 0.88rem;
+  word-break: break-word;
+}
+
 .universal-card,
 .center-card,
 .marketplace-card {
@@ -810,7 +1011,11 @@ button {
   .universal-grid,
   .center-grid,
   .marketplace-grid,
-  .twin-shell {
+  .twin-shell,
+  .template-strip,
+  .service-grid,
+  .studio-grid,
+  .workflow-rail {
     grid-template-columns: 1fr;
   }
 }
@@ -830,6 +1035,15 @@ button {
   }
 
   .command-list.large {
+    grid-template-columns: 1fr;
+  }
+
+  .service-grid.marketplace,
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid {
     grid-template-columns: 1fr;
   }
 }

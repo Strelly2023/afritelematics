@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "novacodepro_portal" / "src" / "App.jsx"
 PACKAGE = ROOT / "novacodepro_portal" / "package.json"
+RUNTIME = ROOT / "novacodepro_portal" / "src" / "platform" / "runtime.js"
+CATALOG = ROOT / "novacodepro_portal" / "src" / "platform" / "catalog.js"
 
 
 def test_novacodepro_portal_is_a_separate_vite_app() -> None:
@@ -16,7 +18,13 @@ def test_novacodepro_portal_is_a_separate_vite_app() -> None:
 
 
 def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
-    text = APP.read_text(encoding="utf-8")
+    text = "\n".join(
+        [
+            APP.read_text(encoding="utf-8"),
+            CATALOG.read_text(encoding="utf-8"),
+            RUNTIME.read_text(encoding="utf-8"),
+        ]
+    )
     for token in [
         "NovaCodePro",
         "Platform Administrator",
@@ -45,3 +53,20 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
 def test_novacodepro_portal_mentions_the_separate_dashboard_boundary() -> None:
     text = APP.read_text(encoding="utf-8")
     assert "Separate from the current NovaTech dashboard surface." in text
+
+
+def test_novacodepro_portal_has_real_platform_services() -> None:
+    runtime = RUNTIME.read_text(encoding="utf-8")
+    catalog = CATALOG.read_text(encoding="utf-8")
+    for token in [
+        "createPlatformRuntime",
+        "localStorage",
+        "solution.request.created",
+        "solution.deployment.prepared",
+        "audit.event.appended",
+        "WORKFLOW_STAGES",
+        "SERVICE_CATALOG",
+        "AGENT_MARKETPLACE",
+        "SOLUTION_TEMPLATES",
+    ]:
+        assert token in runtime + catalog
