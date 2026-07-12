@@ -910,6 +910,103 @@ class NovaCodeProPlatform:
             "service_registry": services,
         }
 
+    def admin_summary(self) -> dict[str, Any]:
+        status = self.status()
+        workflows = self.workflows()
+        releases = self.releases()
+        deployments = self.deployments()
+        approvals = self.approvals()
+        service_registry = list(status.get("service_registry") or [])
+
+        def _count(items: list[dict[str, Any]], key: str, value: str) -> int:
+            return sum(1 for item in items if str(item.get(key) or "").lower() == value)
+
+        service_health = {
+            "healthy": _count(service_registry, "status", "healthy"),
+            "degraded": _count(service_registry, "status", "degraded"),
+            "unhealthy": _count(service_registry, "status", "unhealthy"),
+        }
+        workflow_statuses = {
+            "active": _count(workflows, "status", "active"),
+            "waiting-approval": _count(workflows, "status", "waiting-approval"),
+            "paused": _count(workflows, "status", "paused"),
+            "rejected": _count(workflows, "status", "rejected"),
+            "completed": _count(workflows, "status", "completed"),
+        }
+        release_statuses = {
+            "active": _count(releases, "status", "active"),
+            "completed": _count(releases, "status", "completed"),
+            "failed": _count(releases, "status", "failed"),
+        }
+        deployment_statuses = {
+            "healthy": _count(deployments, "health", "green") + _count(deployments, "status", "healthy"),
+            "degraded": _count(deployments, "health", "amber"),
+            "failed": _count(deployments, "health", "red") + _count(deployments, "status", "failed"),
+        }
+        pending_approvals = [approval for approval in approvals if str(approval.get("status") or "").upper() == "PENDING"]
+        ready_release_queue = [release for release in releases if str(release.get("status") or "").lower() != "completed"]
+        platform_health = "healthy"
+        if service_health["degraded"] or service_health["unhealthy"] or deployment_statuses["failed"]:
+            platform_health = "attention"
+        return {
+            **status,
+            "platform_health": platform_health,
+            "service_health": service_health,
+            "workflow_statuses": workflow_statuses,
+            "release_statuses": release_statuses,
+            "deployment_statuses": deployment_statuses,
+            "pending_approval_count": len(pending_approvals),
+            "ready_release_queue_count": len(ready_release_queue),
+            "pending_approvals": pending_approvals[:5],
+            "ready_release_queue": ready_release_queue[:5],
+            "governance_queue": [
+                "Security review",
+                "Compliance review",
+                "Release approval",
+                "Policy review",
+            ],
+            "administration_areas": [
+                "Identity & Access",
+                "Organizations",
+                "Tenants",
+                "Projects",
+                "Licenses",
+                "Marketplace",
+                "Users",
+                "Roles",
+                "Permissions",
+                "Infrastructure",
+                "Kubernetes",
+                "Storage",
+                "Databases",
+                "Networking",
+                "Release Center",
+                "Deployment Center",
+                "Artifact Repository",
+                "Knowledge Graph",
+                "Digital Twin",
+                "Audit",
+                "Compliance",
+                "Security",
+                "Risk",
+                "Policy",
+                "Certificates",
+                "Evidence",
+                "Approvals",
+                "Metrics",
+                "Logs",
+                "Tracing",
+                "Alerts",
+                "Health",
+                "Cost",
+                "Branding",
+                "Notifications",
+                "SSO",
+                "Backups",
+                "Maintenance",
+            ],
+        }
+
     def create_project(self, payload: dict[str, Any]) -> dict[str, Any]:
         project = {
             "id": _new_id("project"),

@@ -174,6 +174,10 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def status(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.status()
 
+    @router.get("/admin/summary")
+    def admin_summary(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.admin_summary()
+
     @router.get("/solutions")
     def solutions(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.solutions()

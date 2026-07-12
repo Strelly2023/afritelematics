@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   AGENT_MARKETPLACE,
@@ -55,79 +55,95 @@ const ROLE_PROFILES = [
     label: "Platform Administrator",
     domain: "Engineering and governance",
     summary:
-      "Full workspace control for tenants, security, layouts, releases, and policy administration.",
+      "Highest operational control for NovaTech platform health, governance, security, and lifecycle operations.",
     accent: "#69d2a4",
     environment: "Production",
     organization: "NovaTech",
     subscription: "Enterprise Governance",
     presence: "Online",
     metrics: [
-      ["Tenants", "48"],
-      ["Policies", "216"],
-      ["Releases", "12"],
+      ["Platform health", "Healthy"],
+      ["Services", "7 core"],
+      ["Workflows", "312"],
       ["Compliance", "99.98%"],
     ],
     actions: [
-      "Create project",
-      "Open Studio",
-      "Review security",
+      "Create organization",
+      "Provision tenant",
+      "Open digital twin",
+      "Review security alerts",
       "Inspect audit trail",
-      "Publish release",
-      "Manage tenants",
+      "Enable maintenance mode",
     ],
     navFocus: "Settings",
     windows: [
       {
-        id: "studio",
-        title: "NovaCodePro Studio",
+        id: "overview",
+        title: "Platform Overview",
         status: "Primary",
         summary:
-          "Unified editor for repositories, architecture diagrams, API surfaces, and deployment plans.",
-        bullets: ["Repositories", "Architecture", "API Explorer", "Terminal", "Git review"],
+          "Command-center overview of platform health, services, workflows, approvals, and release readiness.",
+        bullets: ["Health", "Services", "Workflows", "Approvals", "Releases"],
       },
       {
-        id: "security",
-        title: "Security Center",
+        id: "identity",
+        title: "Identity & Access",
         status: "Guarded",
         summary:
-          "Identity, RBAC, MFA, certificate policy, secret hygiene, and audit evidence in one control plane.",
-        bullets: ["Identity", "MFA", "Certificates", "Secrets", "Audit logs"],
+          "NovaID, SSO, MFA, RBAC, certificates, secrets, and role assignments controlled from one place.",
+        bullets: ["NovaID", "SSO", "MFA", "RBAC", "Certificates"],
       },
       {
         id: "operations",
-        title: "Operations Console",
+        title: "Infrastructure & Operations",
         status: "Live",
         summary:
-          "Services, regions, incidents, health, and availability across the NovaTech estate.",
-        bullets: ["Services", "Containers", "Alerts", "Regions", "Incidents"],
+          "Infrastructure, Kubernetes, storage, databases, networking, alerts, capacity, and runtime health.",
+        bullets: ["Infrastructure", "Kubernetes", "Storage", "Databases", "Alerts"],
       },
       {
-        id: "trust",
-        title: "Trust Center",
+        id: "governance",
+        title: "Governance & Audit",
         status: "Verifiable",
         summary:
-          "Receipts, certificates, release lineage, and verification records available for inspection.",
-        bullets: ["Receipts", "Releases", "Evidence", "Verification", "History"],
+          "Audit, compliance, security, risk, policy, approvals, evidence, and certificate controls.",
+        bullets: ["Audit", "Compliance", "Security", "Evidence", "Approvals"],
+      },
+      {
+        id: "delivery",
+        title: "Engineering & Delivery",
+        status: "Connected",
+        summary:
+          "Solution Factory, workflow engine, release center, deployment center, artifact repository, knowledge graph, and digital twin.",
+        bullets: ["Solution Factory", "Workflow Engine", "Release Center", "Deployment Center", "Digital Twin"],
+      },
+      {
+        id: "marketplace",
+        title: "Marketplace & Settings",
+        status: "Controlled",
+        summary:
+          "Marketplace packs, branding, notifications, API keys, backups, and maintenance remain governed.",
+        bullets: ["Marketplace", "Branding", "Notifications", "Backups", "Maintenance"],
       },
     ],
     signals: [
       ["API health", "Healthy"],
-      ["Builds", "2 active"],
+      ["Pending approvals", "2"],
       ["Open incidents", "0"],
-      ["Audit queue", "4 items"],
+      ["Service registry", "7 healthy"],
     ],
     notifications: [
-      "Release lineage verified for active workspace.",
+      "Platform health is green across the core service registry.",
       "One policy update is awaiting approval.",
-      "All production services are within SLO.",
+      "Release lineage remains verified for the active platform.",
     ],
     activity: [
-      "Policy pack updated for production tenants.",
-      "Release verification passed for Rider and Driver.",
-      "Audit evidence exported to the trust vault.",
+      "Validated the active NovaCodePro service registry.",
+      "Reviewed pending governance approvals.",
+      "Confirmed release and deployment status for production services.",
     ],
-    agents: ["Security", "DevOps", "QA", "Release Manager"],
-    permissions: ["Full tenant control", "Release approval", "Audit visibility", "Policy edits"],
+    agents: ["Security", "DevOps", "QA", "Release Manager", "Platform SRE"],
+    permissions: ["Global tenant control", "Release approval", "Audit visibility", "Policy edits", "Maintenance"],
   },
   {
     id: "software-engineer",
@@ -634,8 +650,54 @@ const DISTRIBUTED_SERVICES = [
   ["Observability Service", "Metrics, logs, traces, SLOs, and incidents."],
 ];
 
+const PLATFORM_ADMIN_SECTIONS = [
+  {
+    title: "Identity & Access",
+    summary: "NovaID, SSO, MFA, RBAC, roles, permissions, API keys, certificates, and secrets.",
+    bullets: ["NovaID", "SSO", "MFA", "RBAC", "Keys", "Certificates"],
+    command: "Open identity controls",
+  },
+  {
+    title: "Organizations & Tenants",
+    summary: "Provision organizations, tenants, projects, licenses, subscriptions, and ownership boundaries.",
+    bullets: ["Organizations", "Tenants", "Projects", "Licenses", "Subscriptions", "Users"],
+    command: "Provision tenant",
+  },
+  {
+    title: "Infrastructure & Operations",
+    summary: "Manage services, containers, Kubernetes, virtual machines, storage, databases, networking, and DNS.",
+    bullets: ["Infrastructure", "Kubernetes", "Storage", "Databases", "Networking", "DNS"],
+    command: "Inspect infrastructure",
+  },
+  {
+    title: "Engineering & Delivery",
+    summary: "Solution Factory, workflow engine, release center, deployment center, artifact repository, and digital twin.",
+    bullets: ["Solution Factory", "Workflow Engine", "Release Center", "Deployment Center", "Artifacts", "Digital Twin"],
+    command: "Open release center",
+  },
+  {
+    title: "Governance & Audit",
+    summary: "Audit, compliance, security, policy, risk, approvals, certificates, and evidence stay centrally governed.",
+    bullets: ["Audit", "Compliance", "Security", "Risk", "Policy", "Evidence"],
+    command: "Review security alerts",
+  },
+  {
+    title: "Monitoring & Cost",
+    summary: "Metrics, logs, tracing, alerts, health, performance, capacity, and cost visibility for the platform.",
+    bullets: ["Metrics", "Logs", "Tracing", "Alerts", "Health", "Cost"],
+    command: "Open observability center",
+  },
+  {
+    title: "Marketplace & Settings",
+    summary: "Marketplace packs, design systems, branding, notifications, backups, maintenance, and rollout controls.",
+    bullets: ["Marketplace", "Design systems", "Branding", "Notifications", "Backups", "Maintenance"],
+    command: "Open marketplace",
+  },
+];
+
 function App() {
   const runtime = usePlatformRuntime();
+  const [platformSummary, setPlatformSummary] = useState(null);
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
   const [search, setSearch] = useState("");
   const [environment, setEnvironment] = useState("Production");
@@ -661,6 +723,27 @@ function App() {
   const [automationTemplateId, setAutomationTemplateId] = useState(
     AUTOMATION_TEMPLATES[0].id,
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const baseUrl = import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "";
+
+    fetch(`${baseUrl}/v1/novacodepro/admin/summary`, {
+      signal: controller.signal,
+      credentials: "include",
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (data) {
+          setPlatformSummary(data);
+        }
+      })
+      .catch(() => {
+        setPlatformSummary(null);
+      });
+
+    return () => controller.abort();
+  }, []);
 
   const activeRole = useMemo(
     () => ROLE_PROFILES.find((role) => role.id === roleId) ?? ROLE_PROFILES[0],
@@ -731,6 +814,35 @@ function App() {
     activeRole.windows.find((window) => window.id === selectedWindowId) ?? activeRole.windows[0];
 
   const secondaryWindows = activeRole.windows.filter((window) => window.id !== selectedWindow.id);
+  const localAdminSummary = useMemo(() => {
+    const serviceRegistry = platformSummary?.service_registry ?? [];
+    return {
+      platform_health: platformSummary?.platform_health ?? "healthy",
+      service_count: platformSummary?.service_count ?? serviceRegistry.length,
+      tenant_count: platformSummary?.tenant_count ?? runtime.tenants.length,
+      workflow_count: platformSummary?.workflow_count ?? runtime.solutionRequests.length,
+      release_count: platformSummary?.release_count ?? runtime.automationRuns.length,
+      deployment_count: platformSummary?.deployment_count ?? 0,
+      approval_count: platformSummary?.approval_count ?? runtime.auditTrail.length,
+      digital_twin_count: platformSummary?.digital_twin_count ?? 1,
+      connected_integration_count:
+        platformSummary?.connected_integration_count ?? runtime.connectedIntegrations.length,
+      marketplace_count: platformSummary?.marketplace_count ?? AGENT_MARKETPLACE.length,
+      audit_event_count: platformSummary?.audit_event_count ?? runtime.auditTrail.length,
+      service_registry:
+        serviceRegistry.length > 0
+          ? serviceRegistry
+          : [
+              { name: "NovaCodePro Gateway", status: "healthy", category: "control-plane" },
+              { name: "Workflow Service", status: "healthy", category: "orchestration" },
+              { name: "Agent Orchestrator", status: "healthy", category: "execution" },
+              { name: "Artifact Service", status: "healthy", category: "storage" },
+              { name: "Approval Service", status: "healthy", category: "governance" },
+              { name: "Release Factory", status: "healthy", category: "delivery" },
+              { name: "Digital Twin Engine", status: "healthy", category: "observability" },
+            ],
+    };
+  }, [platformSummary, runtime.connectedIntegrations.length, runtime.auditTrail.length, runtime.solutionRequests.length, runtime.tenants.length]);
 
   return (
     <div className="app-shell">
@@ -856,6 +968,101 @@ function App() {
               </div>
             </div>
           </section>
+
+          {activeRole.id === "platform-admin" ? (
+            <section className="surface-band">
+              <div className="band-header">
+                <div>
+                  <p className="section-label">Platform administration center</p>
+                  <h2>Health, governance, security, and lifecycle controls</h2>
+                </div>
+                <div className="layout-hint">
+                  <span>{localAdminSummary.platform_health === "healthy" ? "Platform healthy" : "Platform attention required"}</span>
+                  <span>{platformSummary ? "Backend summary" : "Local fallback summary"}</span>
+                </div>
+              </div>
+
+              <div className="metric-grid">
+                {[
+                  ["Platform health", localAdminSummary.platform_health],
+                  ["Services", String(localAdminSummary.service_count)],
+                  ["Tenants", String(localAdminSummary.tenant_count)],
+                  ["Workflows", String(localAdminSummary.workflow_count)],
+                  ["Approvals", String(localAdminSummary.approval_count)],
+                  ["Marketplace", String(localAdminSummary.marketplace_count)],
+                ].map(([label, value]) => (
+                  <article className="metric-card" key={label}>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </article>
+                ))}
+              </div>
+
+              <div className="service-grid compact">
+                {PLATFORM_ADMIN_SECTIONS.map((section) => (
+                  <article className="service-card" key={section.title}>
+                    <p className="section-label">Platform admin</p>
+                    <strong>{section.title}</strong>
+                    <p>{section.summary}</p>
+                    <div className="chip-cloud">
+                      {section.bullets.map((bullet) => (
+                        <span className="context-chip" key={bullet}>
+                          {bullet}
+                        </span>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="toolbar-chip"
+                      onClick={() => runtime.runCommand(section.command)}
+                    >
+                      {section.command}
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              <div className="studio-grid">
+                <article className="studio-card">
+                  <p className="section-label">Service registry</p>
+                  <strong>Core platform services</strong>
+                  <p className="studio-note">
+                    Backend summary from the NovaCodePro platform service, with a local fallback when the API is not reachable.
+                  </p>
+                  <div className="artifact-list">
+                    {localAdminSummary.service_registry.map((service) => (
+                      <div className="artifact-row" key={service.name}>
+                        <strong>{service.name}</strong>
+                        <span>{service.category}</span>
+                        <span className="status-pill">{service.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="studio-card">
+                  <p className="section-label">Governance queue</p>
+                  <strong>Protected operational actions</strong>
+                  <p className="studio-note">
+                    Platform administrators oversee approvals, release readiness, policy controls, and emergency operations.
+                  </p>
+                  <div className="artifact-list">
+                    {(platformSummary?.governance_queue || [
+                      "Security review",
+                      "Compliance review",
+                      "Release approval",
+                      "Policy review",
+                    ]).map((item) => (
+                      <div className="artifact-row" key={item}>
+                        <strong>{item}</strong>
+                        <span>Governed</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            </section>
+          ) : null}
 
           <section className="surface-band">
             <div className="band-header">

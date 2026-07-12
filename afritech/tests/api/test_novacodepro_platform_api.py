@@ -26,6 +26,11 @@ def _headers(role: str = "OPERATOR", user_id: str = "platform-admin") -> dict[st
 def test_novacodepro_platform_creates_and_advances_workflows(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
+    summary = client.get("/v1/novacodepro/admin/summary", headers=_headers())
+    assert summary.status_code == 200
+    assert summary.json()["platform_health"] in {"healthy", "attention"}
+    assert summary.json()["service_health"]["healthy"] >= 1
+
     status = client.get("/v1/novacodepro/status", headers=_headers())
     assert status.status_code == 200
     assert status.json()["service"] == "novacodepro-platform"
