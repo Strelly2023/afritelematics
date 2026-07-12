@@ -38,6 +38,13 @@ def build_novacodepro_workspace_router(platform: NovaCodeProPlatform | None = No
         "QA_ENGINEER",
         "DEVOPS_ENGINEER",
         "CUSTOMER_SUPPORT",
+        "OPERATIONS_TEAM",
+        "BRAND_TEAM",
+        "COMPLIANCE_TEAM",
+        "AUDIT_TEAM",
+        "SECURITY_ENGINEER",
+        "INCIDENT_RESPONSE_TEAM",
+        "DATA_ARCHITECT",
         "CLIENT",
         "PARTNER",
         "CUSTOMER",
@@ -55,6 +62,13 @@ def build_novacodepro_workspace_router(platform: NovaCodeProPlatform | None = No
         "QA_ENGINEER",
         "DEVOPS_ENGINEER",
         "CUSTOMER_SUPPORT",
+        "OPERATIONS_TEAM",
+        "BRAND_TEAM",
+        "COMPLIANCE_TEAM",
+        "AUDIT_TEAM",
+        "SECURITY_ENGINEER",
+        "INCIDENT_RESPONSE_TEAM",
+        "DATA_ARCHITECT",
     )
 
     def _workspace_manifest(

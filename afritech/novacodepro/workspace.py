@@ -49,6 +49,13 @@ def _workspace_slug(role: str) -> str:
         "QA_ENGINEER": "qa-engineer",
         "DEVOPS_ENGINEER": "devops-engineer",
         "CUSTOMER_SUPPORT": "customer-support",
+        "OPERATIONS_TEAM": "operations",
+        "BRAND_TEAM": "brand",
+        "COMPLIANCE_TEAM": "compliance",
+        "AUDIT_TEAM": "audit",
+        "SECURITY_ENGINEER": "security",
+        "INCIDENT_RESPONSE_TEAM": "incident-response",
+        "DATA_ARCHITECT": "data-architect",
         "OPERATOR": "operations",
         "VERIFIER": "security",
         "CLIENT": "partner",
@@ -71,6 +78,13 @@ def _workspace_label(role: str) -> str:
         "QA_ENGINEER": "QA Engineer",
         "DEVOPS_ENGINEER": "DevOps Engineer",
         "CUSTOMER_SUPPORT": "Customer Support",
+        "OPERATIONS_TEAM": "Operations Team",
+        "BRAND_TEAM": "Brand Team",
+        "COMPLIANCE_TEAM": "Compliance Team",
+        "AUDIT_TEAM": "Audit Team",
+        "SECURITY_ENGINEER": "Security Engineer",
+        "INCIDENT_RESPONSE_TEAM": "Incident Response Team",
+        "DATA_ARCHITECT": "Data Architect",
         "OPERATOR": "DevOps Engineer",
         "VERIFIER": "Security Engineer",
         "CLIENT": "Partner",
@@ -94,6 +108,13 @@ def _workspace_title(role: str) -> str:
         "QA_ENGINEER": "Quality Engineering Workspace",
         "DEVOPS_ENGINEER": "DevOps Workspace",
         "CUSTOMER_SUPPORT": "Customer Support Workspace",
+        "OPERATIONS_TEAM": "Operations Workspace",
+        "BRAND_TEAM": "Brand Management Workspace",
+        "COMPLIANCE_TEAM": "Compliance Workspace",
+        "AUDIT_TEAM": "Audit Workspace",
+        "SECURITY_ENGINEER": "Cyber Security Workspace",
+        "INCIDENT_RESPONSE_TEAM": "Incident Response Workspace",
+        "DATA_ARCHITECT": "Data Architecture Workspace",
         "OPERATOR": "Operations Workspace",
         "VERIFIER": "Security Workspace",
         "CLIENT": "Partner Workspace",
@@ -116,6 +137,13 @@ def _workspace_description(role: str) -> str:
         "QA_ENGINEER": "Verify that every solution meets functional, security, performance, accessibility, and governance requirements.",
         "DEVOPS_ENGINEER": "Automate delivery, infrastructure, observability, and operations for reliable production change.",
         "CUSTOMER_SUPPORT": "Resolve customer issues, protect customer trust, and improve service experience.",
+        "OPERATIONS_TEAM": "Operate, monitor, coordinate, and continuously improve NovaTech business and technology operations.",
+        "BRAND_TEAM": "Build, protect, govern, and evolve the NovaTech brand across every touchpoint.",
+        "COMPLIANCE_TEAM": "Ensure NovaTech products, operations, and business processes comply with laws, regulations, contracts, and governance policies.",
+        "AUDIT_TEAM": "Provide independent assurance that governance, controls, and obligations function as intended.",
+        "SECURITY_ENGINEER": "Protect NovaTech platforms, identities, infrastructure, and data through proactive cybersecurity.",
+        "INCIDENT_RESPONSE_TEAM": "Detect, coordinate, contain, recover, and learn from incidents across the NovaTech ecosystem.",
+        "DATA_ARCHITECT": "Design and govern NovaTech's enterprise data foundations, contracts, and platform patterns.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
         "CLIENT": "Coordinate partner integrations, shared resources, and certified interfaces.",
@@ -2976,6 +3004,1162 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         overview=("Queue", "SLA", "Incidents", "Health", "Workload"),
         primary_actions=("Inspect Queue", "Review SLA", "Open Incident"),
     ),
+    ToolDefinition(
+        id="operations-workspace",
+        name="Operations Workspace",
+        description="Track daily operations, shift status, regional workload, and executive summaries.",
+        icon="⌂",
+        route="/novacodepro/tools/operations-workspace",
+        required_permissions=("operations.read", "operations.dashboard.read"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/operations-workspace",
+        audit_category="operations",
+        group="HOME",
+        overview=("Operations", "Shifts", "KPIs", "Calendar", "Approvals"),
+        primary_actions=("View Operations", "Open Incident", "Review Alerts"),
+    ),
+    ToolDefinition(
+        id="operations-command-center",
+        name="Operations Command Center",
+        description="Monitor global operations, service health, regional activity, and business flow.",
+        icon="⌘",
+        route="/novacodepro/tools/operations-command-center",
+        required_permissions=("operations.read", "analytics.read"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/operations-command-center",
+        audit_category="command-center",
+        group="OPERATIONS",
+        overview=("Global View", "Regions", "Services", "Alerts", "Business Activity"),
+        primary_actions=("Inspect Operations", "Review Alerts", "Open Dashboard"),
+    ),
+    ToolDefinition(
+        id="service-operations-center",
+        name="Service Operations Center",
+        description="Monitor services, databases, messaging, and scheduled tasks.",
+        icon="◔",
+        route="/novacodepro/tools/service-operations-center",
+        required_permissions=("service.monitor", "operations.read"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/service-operations-center",
+        audit_category="operations",
+        group="OPERATIONS",
+        overview=("APIs", "Applications", "Databases", "Messaging", "Jobs"),
+        primary_actions=("Monitor Service", "Open History", "Enter Maintenance"),
+    ),
+    ToolDefinition(
+        id="incident-operations-center",
+        name="Incident Operations Center",
+        description="Coordinate incident response, war rooms, severity, and recovery monitoring.",
+        icon="!",
+        route="/novacodepro/tools/incident-operations-center",
+        required_permissions=("incident.create", "incident.coordinate"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/incident-operations-center",
+        audit_category="incident",
+        group="COORDINATION",
+        overview=("Incidents", "Severity", "War Room", "Timeline", "Recovery"),
+        primary_actions=("Declare Incident", "Open War Room", "Notify Teams"),
+    ),
+    ToolDefinition(
+        id="operational-monitoring-center",
+        name="Operational Monitoring Center",
+        description="Track platform health, queues, transactions, and business KPIs.",
+        icon="◌",
+        route="/novacodepro/tools/operational-monitoring-center",
+        required_permissions=("operations.read", "analytics.read"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/operational-monitoring-center",
+        audit_category="monitoring",
+        group="OPERATIONS",
+        overview=("Health", "KPIs", "Queues", "Transactions", "Integrations"),
+        primary_actions=("Inspect Health", "Open KPI", "Review Alert"),
+    ),
+    ToolDefinition(
+        id="business-operations-center",
+        name="Business Operations Center",
+        description="Manage ride, payment, identity, merchant, customer, partner, and employee operations.",
+        icon="◫",
+        route="/novacodepro/tools/business-operations-center",
+        required_permissions=("operations.read", "operations.manage"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/business-operations-center",
+        audit_category="operations",
+        group="BUSINESS",
+        overview=("Ride", "Payments", "Identity", "Merchants", "Customers"),
+        primary_actions=("Open Business View", "Inspect Flow", "Review Escalation"),
+    ),
+    ToolDefinition(
+        id="regional-operations-center",
+        name="Regional Operations Center",
+        description="Manage region-specific availability, compliance, incidents, and maintenance.",
+        icon="◈",
+        route="/novacodepro/tools/regional-operations-center",
+        required_permissions=("operations.read", "resource.coordinate"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/regional-operations-center",
+        audit_category="operations",
+        group="COORDINATION",
+        overview=("Regions", "KPIs", "Compliance", "Incidents", "Maintenance"),
+        primary_actions=("Open Region", "Review Compliance", "Inspect Incident"),
+    ),
+    ToolDefinition(
+        id="maintenance-change-center",
+        name="Maintenance & Change Center",
+        description="Schedule maintenance, govern change windows, and verify recovery readiness.",
+        icon="⚑",
+        route="/novacodepro/tools/maintenance-change-center",
+        required_permissions=("maintenance.schedule", "operations.manage"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/maintenance-change-center",
+        audit_category="change",
+        group="COORDINATION",
+        overview=("Maintenance", "Windows", "Outages", "Verification", "History"),
+        primary_actions=("Schedule Maintenance", "Approve Window", "Review History"),
+    ),
+    ToolDefinition(
+        id="operational-scheduling-center",
+        name="Operational Scheduling Center",
+        description="Plan jobs, shifts, maintenance windows, and recurring operational activities.",
+        icon="🗓",
+        route="/novacodepro/tools/operational-scheduling-center",
+        required_permissions=("operations.manage", "resource.coordinate"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/operational-scheduling-center",
+        audit_category="scheduling",
+        group="COORDINATION",
+        overview=("Jobs", "Shifts", "Tasks", "Calendar", "Windows"),
+        primary_actions=("Schedule Job", "Adjust Shift", "Open Calendar"),
+    ),
+    ToolDefinition(
+        id="resource-coordination-center",
+        name="Resource Coordination Center",
+        description="Coordinate teams, vehicles, vendors, and operational equipment.",
+        icon="◎",
+        route="/novacodepro/tools/resource-coordination-center",
+        required_permissions=("resource.coordinate", "operations.manage"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/resource-coordination-center",
+        audit_category="coordination",
+        group="COORDINATION",
+        overview=("Teams", "Vehicles", "Equipment", "Vendors", "Capacity"),
+        primary_actions=("Assign Resource", "Review Capacity", "Open Request"),
+    ),
+    ToolDefinition(
+        id="business-continuity-center",
+        name="Business Continuity Center",
+        description="Manage continuity plans, recovery readiness, and disaster recovery coordination.",
+        icon="⟲",
+        route="/novacodepro/tools/business-continuity-center",
+        required_permissions=("continuity.manage", "operations.read"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/business-continuity-center",
+        audit_category="continuity",
+        group="GOVERNANCE",
+        overview=("Continuity", "Recovery", "Failover", "Exercises", "Evidence"),
+        primary_actions=("Open Plan", "Run Exercise", "Review Evidence"),
+    ),
+    ToolDefinition(
+        id="operational-communications-center",
+        name="Operational Communications Center",
+        description="Coordinate internal announcements, customer notifications, and maintenance notices.",
+        icon="✉",
+        route="/novacodepro/tools/operational-communications-center",
+        required_permissions=("communications.publish", "operations.manage"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/operational-communications-center",
+        audit_category="communications",
+        group="INTELLIGENCE",
+        overview=("Announcements", "Incidents", "Maintenance", "Customers", "Partners"),
+        primary_actions=("Draft Notice", "Publish Update", "Review Audience"),
+    ),
+    ToolDefinition(
+        id="executive-operations-dashboard",
+        name="Executive Operations Dashboard",
+        description="Present enterprise operations KPIs, customer impact, and operational risk.",
+        icon="⫶",
+        route="/novacodepro/tools/executive-operations-dashboard",
+        required_permissions=("operations.read", "report.generate"),
+        supported_roles=("OPERATIONS_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Operations",
+        help_url="/docs/novacodepro/tools/executive-operations-dashboard",
+        audit_category="executive",
+        group="INTELLIGENCE",
+        overview=("KPIs", "Availability", "Impact", "Risk", "Alerts"),
+        primary_actions=("Open KPI", "Review Risk", "Export Report"),
+    ),
+    ToolDefinition(
+        id="brand-workspace",
+        name="Brand Workspace",
+        description="Track campaign status, brand health, asset approvals, and launches.",
+        icon="⌂",
+        route="/novacodepro/tools/brand-workspace",
+        required_permissions=("brand.read", "brand.review"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-workspace",
+        audit_category="brand",
+        group="HOME",
+        overview=("Brand", "Campaigns", "Assets", "Reviews", "Guidelines"),
+        primary_actions=("Review Brand", "Open Campaign", "Approve Asset"),
+    ),
+    ToolDefinition(
+        id="brand-identity-center",
+        name="Brand Identity Center",
+        description="Manage corporate identity, product branding, hierarchy, and positioning.",
+        icon="◉",
+        route="/novacodepro/tools/brand-identity-center",
+        required_permissions=("brand.update", "brand.read"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-identity-center",
+        audit_category="brand",
+        group="BRAND",
+        overview=("Corporate", "Products", "Hierarchy", "Positioning", "Naming"),
+        primary_actions=("Update Identity", "Review Naming", "Open Hierarchy"),
+    ),
+    ToolDefinition(
+        id="brand-guidelines-center",
+        name="Brand Guidelines Center",
+        description="Maintain logo usage, typography, color, tone, localization, and accessibility guidance.",
+        icon="⚑",
+        route="/novacodepro/tools/brand-guidelines-center",
+        required_permissions=("brand.update", "documentation.write"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-guidelines-center",
+        audit_category="brand",
+        group="BRAND",
+        overview=("Logo", "Typography", "Color", "Tone", "Localization"),
+        primary_actions=("Publish Guideline", "Review Usage", "Open Standard"),
+    ),
+    ToolDefinition(
+        id="digital-asset-management",
+        name="Digital Asset Management",
+        description="Search, approve, version, and distribute approved brand assets.",
+        icon="▣",
+        route="/novacodepro/tools/digital-asset-management",
+        required_permissions=("asset.upload", "asset.publish"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/digital-asset-management",
+        audit_category="asset",
+        group="MARKETING",
+        overview=("Logos", "Templates", "Photos", "Videos", "License"),
+        primary_actions=("Upload Asset", "Review Rights", "Publish Kit"),
+    ),
+    ToolDefinition(
+        id="campaign-management-center",
+        name="Campaign Management Center",
+        description="Plan and govern brand, product, regional, and social campaigns.",
+        icon="✎",
+        route="/novacodepro/tools/campaign-management-center",
+        required_permissions=("campaign.create", "campaign.manage"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/campaign-management-center",
+        audit_category="campaign",
+        group="MARKETING",
+        overview=("Campaigns", "Launches", "Budget", "Performance", "Approvals"),
+        primary_actions=("Create Campaign", "Review Launch", "Inspect Performance"),
+    ),
+    ToolDefinition(
+        id="brand-compliance-center",
+        name="Brand Compliance Center",
+        description="Scan websites, mobile apps, and materials for brand and accessibility compliance.",
+        icon="✓",
+        route="/novacodepro/tools/brand-compliance-center",
+        required_permissions=("brand.review", "analytics.read"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-compliance-center",
+        audit_category="compliance",
+        group="GOVERNANCE",
+        overview=("Website", "Mobile", "Materials", "Issues", "Score"),
+        primary_actions=("Run Scan", "Review Issue", "Open Report"),
+    ),
+    ToolDefinition(
+        id="digital-experience-center",
+        name="Website & Digital Experience Center",
+        description="Review brand consistency across websites, portals, apps, and landing pages.",
+        icon="◌",
+        route="/novacodepro/tools/digital-experience-center",
+        required_permissions=("brand.review", "design.read"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/digital-experience-center",
+        audit_category="experience",
+        group="EXPERIENCE",
+        overview=("Websites", "Portals", "Apps", "Navigation", "Accessibility"),
+        primary_actions=("Review Site", "Open Portal", "Inspect Accessibility"),
+    ),
+    ToolDefinition(
+        id="brand-analytics-center",
+        name="Brand Analytics Center",
+        description="Analyze awareness, engagement, consistency, sentiment, and reach.",
+        icon="⌘",
+        route="/novacodepro/tools/brand-analytics-center",
+        required_permissions=("analytics.read", "brand.read"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-analytics-center",
+        audit_category="analytics",
+        group="INTELLIGENCE",
+        overview=("Awareness", "Engagement", "Sentiment", "Traffic", "Score"),
+        primary_actions=("Open Trend", "Inspect Sentiment", "Export Report"),
+    ),
+    ToolDefinition(
+        id="brand-command-center",
+        name="Brand Command Center",
+        description="Monitor brand compliance, campaign flow, approvals, and public sentiment.",
+        icon="⫶",
+        route="/novacodepro/tools/brand-command-center",
+        required_permissions=("brand.read", "analytics.read"),
+        supported_roles=("BRAND_TEAM", "ADMIN"),
+        supported_environments=("marketing", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Brand",
+        help_url="/docs/novacodepro/tools/brand-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Brand Health", "Campaigns", "Assets", "Sentiment", "Approvals"),
+        primary_actions=("Open Dashboard", "Review Brand", "Inspect Alert"),
+    ),
+    ToolDefinition(
+        id="compliance-workspace",
+        name="Compliance Workspace",
+        description="Track obligations, reviews, findings, and regulatory tasks.",
+        icon="⌂",
+        route="/novacodepro/tools/compliance-workspace",
+        required_permissions=("compliance.read", "compliance.review"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/compliance-workspace",
+        audit_category="compliance",
+        group="HOME",
+        overview=("Compliance", "Audits", "Findings", "Reviews", "Tasks"),
+        primary_actions=("Open Review", "Inspect Finding", "Run Report"),
+    ),
+    ToolDefinition(
+        id="regulatory-compliance-center",
+        name="Regulatory Compliance Center",
+        description="Manage legal and regulatory obligations across products and regions.",
+        icon="⚑",
+        route="/novacodepro/tools/regulatory-compliance-center",
+        required_permissions=("compliance.review", "regulatory.reporting"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/regulatory-compliance-center",
+        audit_category="regulatory",
+        group="COMPLIANCE",
+        overview=("Obligations", "Regions", "Reviews", "Reports", "Alerts"),
+        primary_actions=("Open Obligation", "Review Region", "Generate Report"),
+    ),
+    ToolDefinition(
+        id="policy-management-center",
+        name="Policy Management Center",
+        description="Draft, review, publish, and track policy versions and acknowledgements.",
+        icon="✎",
+        route="/novacodepro/tools/policy-management-center",
+        required_permissions=("policy.create", "policy.publish"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/policy-management-center",
+        audit_category="policy",
+        group="GOVERNANCE",
+        overview=("Drafts", "Versions", "Acknowledgements", "Exceptions", "History"),
+        primary_actions=("Draft Policy", "Publish Policy", "Review Acknowledgement"),
+    ),
+    ToolDefinition(
+        id="audit-management-center",
+        name="Audit Management Center",
+        description="Plan and manage audits, findings, corrective actions, and reports.",
+        icon="◈",
+        route="/novacodepro/tools/audit-management-center",
+        required_permissions=("audit.create", "audit.manage"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/audit-management-center",
+        audit_category="audit",
+        group="ASSURANCE",
+        overview=("Audits", "Findings", "Actions", "Reports", "Schedules"),
+        primary_actions=("Start Audit", "Review Evidence", "Open Report"),
+    ),
+    ToolDefinition(
+        id="evidence-records-center",
+        name="Evidence & Records Center",
+        description="Maintain evidence packages, immutable records, and acknowledgements.",
+        icon="⧉",
+        route="/novacodepro/tools/evidence-records-center",
+        required_permissions=("evidence.read", "report.generate"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/evidence-records-center",
+        audit_category="evidence",
+        group="ASSURANCE",
+        overview=("Evidence", "Records", "Approvals", "Retention", "Holds"),
+        primary_actions=("Open Evidence", "Verify Record", "Export Report"),
+    ),
+    ToolDefinition(
+        id="compliance-command-center",
+        name="Compliance Command Center",
+        description="Track compliance score, obligations, investigations, and board reporting.",
+        icon="⫶",
+        route="/novacodepro/tools/compliance-command-center",
+        required_permissions=("compliance.read", "analytics.read"),
+        supported_roles=("COMPLIANCE_TEAM", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Compliance",
+        help_url="/docs/novacodepro/tools/compliance-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Score", "Audits", "Findings", "Investigations", "Board"),
+        primary_actions=("Open Dashboard", "Review Finding", "Export Brief"),
+    ),
+    ToolDefinition(
+        id="audit-workspace",
+        name="Audit Workspace",
+        description="Review assigned audits, evidence, findings, and corrective actions.",
+        icon="⌂",
+        route="/novacodepro/tools/audit-workspace",
+        required_permissions=("audit.read", "evidence.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-workspace",
+        audit_category="audit",
+        group="HOME",
+        overview=("Audits", "Findings", "Actions", "Evidence", "Packs"),
+        primary_actions=("Start Audit", "Review Evidence", "Open Finding"),
+    ),
+    ToolDefinition(
+        id="audit-planning-center",
+        name="Audit Planning Center",
+        description="Create annual plans, scopes, objectives, and audit programs.",
+        icon="🗓",
+        route="/novacodepro/tools/audit-planning-center",
+        required_permissions=("audit.plan.manage", "audit.create"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-planning-center",
+        audit_category="audit",
+        group="AUDIT",
+        overview=("Plan", "Scope", "Objectives", "Calendar", "Approval"),
+        primary_actions=("Create Plan", "Set Scope", "Schedule Review"),
+    ),
+    ToolDefinition(
+        id="audit-execution-center",
+        name="Audit Execution Center",
+        description="Perform fieldwork for operational, financial, technology, and security audits.",
+        icon="◔",
+        route="/novacodepro/tools/audit-execution-center",
+        required_permissions=("audit.execute", "audit.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-execution-center",
+        audit_category="audit",
+        group="AUDIT",
+        overview=("Fieldwork", "Testing", "Observations", "Evidence", "Workpapers"),
+        primary_actions=("Open Workpaper", "Review Test", "Add Finding"),
+    ),
+    ToolDefinition(
+        id="evidence-verification-center",
+        name="Evidence Verification Center",
+        description="Verify integrity, signatures, timestamps, and chain of custody.",
+        icon="⧉",
+        route="/novacodepro/tools/evidence-verification-center",
+        required_permissions=("evidence.verify", "evidence.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/evidence-verification-center",
+        audit_category="evidence",
+        group="ASSURANCE",
+        overview=("Integrity", "Signatures", "Timestamps", "Chain", "Status"),
+        primary_actions=("Verify Bundle", "Inspect Signature", "Open Receipt"),
+    ),
+    ToolDefinition(
+        id="audit-findings-center",
+        name="Audit Findings Center",
+        description="Manage audit observations, risk ratings, responses, and escalations.",
+        icon="⚠",
+        route="/novacodepro/tools/audit-findings-center",
+        required_permissions=("finding.create", "finding.update"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-findings-center",
+        audit_category="audit",
+        group="AUDIT",
+        overview=("Critical", "High", "Medium", "Low", "Responses"),
+        primary_actions=("Create Finding", "Review Response", "Escalate"),
+    ),
+    ToolDefinition(
+        id="corrective-action-center",
+        name="Corrective Action Center",
+        description="Track owners, due dates, verification, and closure of corrective actions.",
+        icon="✓",
+        route="/novacodepro/tools/corrective-action-center",
+        required_permissions=("correctiveaction.review", "audit.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/corrective-action-center",
+        audit_category="audit",
+        group="ASSURANCE",
+        overview=("Actions", "Owners", "Due Dates", "Verification", "Closure"),
+        primary_actions=("Open Action", "Verify Closure", "Escalate Delay"),
+    ),
+    ToolDefinition(
+        id="audit-analytics-center",
+        name="Audit Analytics Center",
+        description="Analyze coverage, findings, repeat issues, and regional assurance trends.",
+        icon="⌘",
+        route="/novacodepro/tools/audit-analytics-center",
+        required_permissions=("analytics.read", "audit.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-analytics-center",
+        audit_category="analytics",
+        group="INTELLIGENCE",
+        overview=("Coverage", "Findings", "Actions", "Trends", "Heatmap"),
+        primary_actions=("Open Trend", "Review KPI", "Export Report"),
+    ),
+    ToolDefinition(
+        id="audit-committee-center",
+        name="Audit Committee Center",
+        description="Prepare committee packs, opinions, responses, and recommendations.",
+        icon="⫶",
+        route="/novacodepro/tools/audit-committee-center",
+        required_permissions=("committee.report", "report.generate"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/audit-committee-center",
+        audit_category="committee",
+        group="INTELLIGENCE",
+        overview=("Packs", "Responses", "Opinions", "Actions", "Board"),
+        primary_actions=("Prepare Pack", "Review Opinion", "Export Summary"),
+    ),
+    ToolDefinition(
+        id="enterprise-audit-command-center",
+        name="Enterprise Audit Command Center",
+        description="View enterprise assurance coverage, findings, and corrective action status.",
+        icon="⌘",
+        route="/novacodepro/tools/enterprise-audit-command-center",
+        required_permissions=("audit.read", "analytics.read"),
+        supported_roles=("AUDIT_TEAM", "ADMIN"),
+        supported_environments=("audit", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Audit",
+        help_url="/docs/novacodepro/tools/enterprise-audit-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Coverage", "Findings", "Controls", "Actions", "Board"),
+        primary_actions=("Open Dashboard", "Inspect Control", "Export Brief"),
+    ),
+    ToolDefinition(
+        id="security-workspace",
+        name="Security Workspace",
+        description="Track security posture, investigations, vulnerabilities, and control status.",
+        icon="⌂",
+        route="/novacodepro/tools/security-workspace",
+        required_permissions=("security.read", "security.monitor"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/security-workspace",
+        audit_category="security",
+        group="HOME",
+        overview=("Security", "Alerts", "Vulnerabilities", "Incidents", "Controls"),
+        primary_actions=("Investigate Alert", "Review Vulnerability", "Open SIEM"),
+    ),
+    ToolDefinition(
+        id="security-operations-center",
+        name="Security Operations Center",
+        description="Monitor threats, anomalies, alerts, and incident response flow.",
+        icon="◔",
+        route="/novacodepro/tools/security-operations-center",
+        required_permissions=("security.monitor", "incident.manage"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/security-operations-center",
+        audit_category="security",
+        group="SECURITY",
+        overview=("Threats", "Alerts", "Intrusions", "Identity", "Cases"),
+        primary_actions=("Triage Alert", "Open Case", "Hunt Threat"),
+    ),
+    ToolDefinition(
+        id="iam-center",
+        name="Identity & Access Management Center",
+        description="Manage identities, MFA, passkeys, SSO, federation, and sessions.",
+        icon="◉",
+        route="/novacodepro/tools/iam-center",
+        required_permissions=("identity.manage", "security.read"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/iam-center",
+        audit_category="identity",
+        group="SECURITY",
+        overview=("Users", "MFA", "Passkeys", "Federation", "Sessions"),
+        primary_actions=("Review Identity", "Inspect Session", "Open Federation"),
+    ),
+    ToolDefinition(
+        id="zero-trust-center",
+        name="Zero Trust Center",
+        description="Implement conditional access, device trust, and least-privilege policies.",
+        icon="⚑",
+        route="/novacodepro/tools/zero-trust-center",
+        required_permissions=("security.policy.review", "security.read"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/zero-trust-center",
+        audit_category="security",
+        group="PROTECTION",
+        overview=("Trust", "Policies", "Access", "Devices", "Risk"),
+        primary_actions=("Review Policy", "Open Access", "Inspect Trust"),
+    ),
+    ToolDefinition(
+        id="vulnerability-management-center",
+        name="Vulnerability Management Center",
+        description="Track CVEs, remediation, patch status, and risk prioritization.",
+        icon="⚠",
+        route="/novacodepro/tools/vulnerability-management-center",
+        required_permissions=("vulnerability.manage", "security.read"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/vulnerability-management-center",
+        audit_category="vulnerability",
+        group="PROTECTION",
+        overview=("CVE", "Exposure", "Remediation", "Patch", "SLA"),
+        primary_actions=("Open Vulnerability", "Review SLA", "Assign Remediation"),
+    ),
+    ToolDefinition(
+        id="application-security-center",
+        name="Application Security Center",
+        description="Review SAST, DAST, SCA, secrets, and API security findings.",
+        icon="</>",
+        route="/novacodepro/tools/application-security-center",
+        required_permissions=("security.scan", "security.read"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/application-security-center",
+        audit_category="application-security",
+        group="PROTECTION",
+        overview=("Source", "APIs", "Mobile", "Dependencies", "Findings"),
+        primary_actions=("Run Scan", "Inspect Finding", "Open Remediation"),
+    ),
+    ToolDefinition(
+        id="incident-response-center",
+        name="Security Incident Response Center",
+        description="Coordinate containment, eradication, recovery, and evidence preservation.",
+        icon="!",
+        route="/novacodepro/tools/incident-response-center",
+        required_permissions=("incident.manage", "security.read"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/incident-response-center",
+        audit_category="incident",
+        group="DETECTION",
+        overview=("Incidents", "Containment", "Forensics", "Recovery", "Evidence"),
+        primary_actions=("Open Incident", "Contain Threat", "Preserve Evidence"),
+    ),
+    ToolDefinition(
+        id="siem-log-analytics-center",
+        name="SIEM & Log Analytics Center",
+        description="Correlate security logs, alerts, and detections across the platform.",
+        icon="◌",
+        route="/novacodepro/tools/siem-log-analytics-center",
+        required_permissions=("siem.read", "security.monitor"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/siem-log-analytics-center",
+        audit_category="siem",
+        group="DETECTION",
+        overview=("Logs", "Alerts", "Rules", "Cases", "Dashboards"),
+        primary_actions=("Open SIEM", "Review Detection", "Export Log"),
+    ),
+    ToolDefinition(
+        id="security-command-center",
+        name="Enterprise Security Command Center",
+        description="Present enterprise security posture, identity risk, and board reporting.",
+        icon="⫶",
+        route="/novacodepro/tools/security-command-center",
+        required_permissions=("security.read", "security.report"),
+        supported_roles=("SECURITY_ENGINEER", "ADMIN"),
+        supported_environments=("security", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Security",
+        help_url="/docs/novacodepro/tools/security-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Posture", "Alerts", "Vulnerabilities", "Identity", "Board"),
+        primary_actions=("Open Dashboard", "Review Posture", "Export Report"),
+    ),
+    ToolDefinition(
+        id="incident-response-workspace",
+        name="Incident Response Workspace",
+        description="Track incident queues, responders, recovery progress, and shift status.",
+        icon="⌂",
+        route="/novacodepro/tools/incident-response-workspace",
+        required_permissions=("incident.read", "incident.manage"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/incident-response-workspace",
+        audit_category="incident",
+        group="HOME",
+        overview=("Incidents", "Responders", "Shifts", "Recovery", "Communications"),
+        primary_actions=("Declare Incident", "Open Bridge", "Review Timeline"),
+    ),
+    ToolDefinition(
+        id="incident-command-center",
+        name="Incident Command Center",
+        description="Assign commanders, manage timelines, and coordinate live response.",
+        icon="⌘",
+        route="/novacodepro/tools/incident-command-center",
+        required_permissions=("incident.create", "incident.manage"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/incident-command-center",
+        audit_category="incident",
+        group="RESPONSE",
+        overview=("Command", "Timeline", "Owners", "Recovery", "Updates"),
+        primary_actions=("Declare Incident", "Assign Commander", "Open War Room"),
+    ),
+    ToolDefinition(
+        id="incident-detection-center",
+        name="Incident Detection Center",
+        description="Monitor alerts, anomalies, customer reports, and AI-assisted detection.",
+        icon="◔",
+        route="/novacodepro/tools/incident-detection-center",
+        required_permissions=("incident.read", "analytics.read"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/incident-detection-center",
+        audit_category="incident",
+        group="RESPONSE",
+        overview=("Alerts", "Anomalies", "Reports", "Security", "Health"),
+        primary_actions=("Review Alert", "Open Detection", "Inspect Trend"),
+    ),
+    ToolDefinition(
+        id="war-room-collaboration-center",
+        name="War Room Collaboration Center",
+        description="Coordinate live collaboration, decisions, tasks, and evidence sharing.",
+        icon="✎",
+        route="/novacodepro/tools/war-room-collaboration-center",
+        required_permissions=("warroom.manage", "incident.manage"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/war-room-collaboration-center",
+        audit_category="war-room",
+        group="RESPONSE",
+        overview=("Chat", "Tasks", "Decisions", "Evidence", "Whiteboard"),
+        primary_actions=("Open War Room", "Assign Task", "Capture Decision"),
+    ),
+    ToolDefinition(
+        id="service-recovery-center",
+        name="Service Recovery Center",
+        description="Coordinate rollback, failover, backup restoration, and health validation.",
+        icon="⟲",
+        route="/novacodepro/tools/service-recovery-center",
+        required_permissions=("recovery.coordinate", "incident.manage"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/service-recovery-center",
+        audit_category="recovery",
+        group="RECOVERY",
+        overview=("Recovery", "Rollback", "Failover", "Validation", "Impact"),
+        primary_actions=("Start Recovery", "Validate Health", "Open Failover"),
+    ),
+    ToolDefinition(
+        id="customer-impact-center",
+        name="Customer Impact Center",
+        description="Assess customer impact, affected regions, and communication requirements.",
+        icon="◉",
+        route="/novacodepro/tools/customer-impact-center",
+        required_permissions=("incident.read", "communications.publish"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/customer-impact-center",
+        audit_category="impact",
+        group="RECOVERY",
+        overview=("Customers", "Regions", "Severity", "Notifications", "Support"),
+        primary_actions=("Review Impact", "Draft Update", "Open Support View"),
+    ),
+    ToolDefinition(
+        id="evidence-preservation-center",
+        name="Evidence Preservation Center",
+        description="Collect logs, snapshots, traces, and immutable incident evidence.",
+        icon="⧉",
+        route="/novacodepro/tools/evidence-preservation-center",
+        required_permissions=("evidence.collect", "incident.manage"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/evidence-preservation-center",
+        audit_category="evidence",
+        group="INVESTIGATION",
+        overview=("Logs", "Traces", "Snapshots", "Forensics", "Chain"),
+        primary_actions=("Collect Evidence", "Preserve Log", "Open Receipt"),
+    ),
+    ToolDefinition(
+        id="root-cause-analysis-center",
+        name="Root Cause Analysis Center",
+        description="Perform five whys, dependency analysis, and lessons learned review.",
+        icon="⚠",
+        route="/novacodepro/tools/root-cause-analysis-center",
+        required_permissions=("incident.read", "analytics.read"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/root-cause-analysis-center",
+        audit_category="analysis",
+        group="INVESTIGATION",
+        overview=("Cause", "Factors", "Dependencies", "Actions", "Lessons"),
+        primary_actions=("Open Analysis", "Review Cause", "Export Findings"),
+    ),
+    ToolDefinition(
+        id="incident-analytics-center",
+        name="Incident Analytics Center",
+        description="Analyze detection, response, recovery, and customer impact trends.",
+        icon="⌘",
+        route="/novacodepro/tools/incident-analytics-center",
+        required_permissions=("analytics.read", "incident.read"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/incident-analytics-center",
+        audit_category="analytics",
+        group="INVESTIGATION",
+        overview=("Detection", "Response", "Recovery", "Impact", "Trends"),
+        primary_actions=("Open Trend", "Review KPI", "Export Report"),
+    ),
+    ToolDefinition(
+        id="enterprise-incident-command-center",
+        name="Enterprise Incident Command Center",
+        description="Provide executive visibility for live incidents, recovery, and customer impact.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-incident-command-center",
+        required_permissions=("incident.read", "report.generate"),
+        supported_roles=("INCIDENT_RESPONSE_TEAM", "ADMIN"),
+        supported_environments=("operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Incident Response",
+        help_url="/docs/novacodepro/tools/enterprise-incident-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Map", "Health", "Impact", "Recovery", "KPI"),
+        primary_actions=("Open Dashboard", "Review Recovery", "Export Brief"),
+    ),
+    ToolDefinition(
+        id="data-architecture-workspace",
+        name="Data Architecture Workspace",
+        description="Review domains, models, contracts, lineage, and governance tasks.",
+        icon="⌂",
+        route="/novacodepro/tools/data-architecture-workspace",
+        required_permissions=("dataarchitecture.read", "architecture.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-architecture-workspace",
+        audit_category="data-architecture",
+        group="HOME",
+        overview=("Domains", "Models", "Contracts", "Lineage", "Tasks"),
+        primary_actions=("Create Domain", "Review Model", "Trace Lineage"),
+    ),
+    ToolDefinition(
+        id="enterprise-data-architecture-center",
+        name="Enterprise Data Architecture Center",
+        description="Map the enterprise data landscape and target-state architecture.",
+        icon="◈",
+        route="/novacodepro/tools/enterprise-data-architecture-center",
+        required_permissions=("dataarchitecture.read", "dataarchitecture.create"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/enterprise-data-architecture-center",
+        audit_category="data-architecture",
+        group="ARCHITECTURE",
+        overview=("Landscape", "Domains", "Sources", "Targets", "Roadmap"),
+        primary_actions=("Open Map", "Review Standard", "Publish Roadmap"),
+    ),
+    ToolDefinition(
+        id="data-domain-center",
+        name="Data Domain Center",
+        description="Define data domains, ownership, boundaries, and maturity.",
+        icon="◉",
+        route="/novacodepro/tools/data-domain-center",
+        required_permissions=("datadomain.create", "datadomain.update"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-domain-center",
+        audit_category="data-domain",
+        group="ARCHITECTURE",
+        overview=("Domains", "Owners", "Boundaries", "Events", "Maturity"),
+        primary_actions=("Create Domain", "Assign Owner", "Review Boundary"),
+    ),
+    ToolDefinition(
+        id="data-modeling-studio",
+        name="Data Modeling Studio",
+        description="Create conceptual and logical data models for governed data products.",
+        icon="▦",
+        route="/novacodepro/tools/data-modeling-studio",
+        required_permissions=("datamodel.create", "architecture.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-modeling-studio",
+        audit_category="data-model",
+        group="ARCHITECTURE",
+        overview=("Entities", "Relationships", "Identifiers", "Constraints", "Versions"),
+        primary_actions=("Create Model", "Compare Version", "Review Constraint"),
+    ),
+    ToolDefinition(
+        id="data-contract-center",
+        name="Data Contract Center",
+        description="Publish producer-consumer contracts with compatibility and quality expectations.",
+        icon="⚑",
+        route="/novacodepro/tools/data-contract-center",
+        required_permissions=("datacontract.create", "datacontract.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-contract-center",
+        audit_category="data-contract",
+        group="CONTRACTS",
+        overview=("Schemas", "Quality", "Freshness", "Ownership", "Compatibility"),
+        primary_actions=("Create Contract", "Review Change", "Publish Version"),
+    ),
+    ToolDefinition(
+        id="schema-registry",
+        name="Schema Registry",
+        description="Validate and version API, event, and storage schemas.",
+        icon="⌘",
+        route="/novacodepro/tools/schema-registry",
+        required_permissions=("schema.read", "schema.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/schema-registry",
+        audit_category="schema",
+        group="CONTRACTS",
+        overview=("Schemas", "Versions", "Compatibility", "Consumers", "Migration"),
+        primary_actions=("Review Schema", "Compare Version", "Approve Change"),
+    ),
+    ToolDefinition(
+        id="data-lineage-center",
+        name="Data Lineage Center",
+        description="Trace data flow from source systems to analytics and AI consumers.",
+        icon="⟐",
+        route="/novacodepro/tools/data-lineage-center",
+        required_permissions=("lineage.read", "lineage.manage"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-lineage-center",
+        audit_category="lineage",
+        group="GOVERNANCE",
+        overview=("Sources", "Transforms", "Consumers", "Impact", "Coverage"),
+        primary_actions=("Trace Lineage", "Inspect Impact", "Export Evidence"),
+    ),
+    ToolDefinition(
+        id="data-governance-center",
+        name="Data Governance Center",
+        description="Manage ownership, stewardship, policies, and certification workflows.",
+        icon="⚑",
+        route="/novacodepro/tools/data-governance-center",
+        required_permissions=("catalog.update", "architecture.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-governance-center",
+        audit_category="governance",
+        group="GOVERNANCE",
+        overview=("Ownership", "Policies", "Stewards", "Certifications", "Exceptions"),
+        primary_actions=("Review Policy", "Assign Steward", "Open Exception"),
+    ),
+    ToolDefinition(
+        id="data-quality-center",
+        name="Data Quality Center",
+        description="Define and monitor quality rules, thresholds, and incidents.",
+        icon="✓",
+        route="/novacodepro/tools/data-quality-center",
+        required_permissions=("dataquality.define", "dataquality.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-quality-center",
+        audit_category="quality",
+        group="GOVERNANCE",
+        overview=("Accuracy", "Completeness", "Freshness", "Validity", "Incidents"),
+        primary_actions=("Define Rule", "Review Incident", "Open Trend"),
+    ),
+    ToolDefinition(
+        id="data-residency-center",
+        name="Data Residency and Sovereignty Center",
+        description="Review jurisdiction rules, regional routing, and residency compliance.",
+        icon="◌",
+        route="/novacodepro/tools/data-residency-center",
+        required_permissions=("residency.review", "classification.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/data-residency-center",
+        audit_category="residency",
+        group="PROTECTION",
+        overview=("Residency", "Jurisdictions", "Routes", "Transfers", "Exceptions"),
+        primary_actions=("Review Residency", "Inspect Transfer", "Open Exception"),
+    ),
+    ToolDefinition(
+        id="ai-data-architecture-center",
+        name="AI and Machine Learning Data Architecture",
+        description="Govern feature stores, training datasets, vector stores, and provenance.",
+        icon="⟡",
+        route="/novacodepro/tools/ai-data-architecture-center",
+        required_permissions=("dataarchitecture.read", "architecture.review"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/ai-data-architecture-center",
+        audit_category="ai-data",
+        group="PLATFORMS",
+        overview=("Features", "Training", "Provenance", "Quality", "Retention"),
+        primary_actions=("Review Dataset", "Inspect Provenance", "Open Control"),
+    ),
+    ToolDefinition(
+        id="enterprise-data-command-center",
+        name="Enterprise Data Command Center",
+        description="Present enterprise data health, quality, lineage, and governance status.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-data-command-center",
+        required_permissions=("dataarchitecture.read", "analytics.read"),
+        supported_roles=("DATA_ARCHITECT", "ADMIN"),
+        supported_environments=("data", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Architecture",
+        help_url="/docs/novacodepro/tools/enterprise-data-command-center",
+        audit_category="command-center",
+        group="ASSURANCE",
+        overview=("Health", "Lineage", "Quality", "Residency", "Adoption"),
+        primary_actions=("Open Dashboard", "Review Quality", "Export Brief"),
+    ),
 )
 
 
@@ -2990,6 +4174,13 @@ ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "QA_ENGINEER": ("HOME", "TESTING", "QUALITY", "INTELLIGENCE"),
     "DEVOPS_ENGINEER": ("HOME", "DELIVERY", "OPERATIONS", "RELIABILITY", "INTELLIGENCE"),
     "CUSTOMER_SUPPORT": ("HOME", "SUPPORT", "CARE", "OPERATIONS", "MANAGEMENT"),
+    "OPERATIONS_TEAM": ("HOME", "OPERATIONS", "BUSINESS", "COORDINATION", "GOVERNANCE", "INTELLIGENCE"),
+    "BRAND_TEAM": ("HOME", "BRAND", "MARKETING", "EXPERIENCE", "GOVERNANCE", "INTELLIGENCE"),
+    "COMPLIANCE_TEAM": ("HOME", "COMPLIANCE", "ASSURANCE", "REGULATORY", "GOVERNANCE", "INTELLIGENCE"),
+    "AUDIT_TEAM": ("HOME", "AUDIT", "ASSURANCE", "GOVERNANCE", "INTELLIGENCE"),
+    "SECURITY_ENGINEER": ("HOME", "SECURITY", "PROTECTION", "DETECTION", "GOVERNANCE", "INTELLIGENCE"),
+    "INCIDENT_RESPONSE_TEAM": ("HOME", "RESPONSE", "RECOVERY", "INVESTIGATION", "CONTINUITY", "INTELLIGENCE"),
+    "DATA_ARCHITECT": ("HOME", "ARCHITECTURE", "CONTRACTS", "GOVERNANCE", "PROTECTION", "PLATFORMS", "ASSURANCE"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -3131,6 +4322,71 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Open Evidence Vault",
         "Review Audit Trail",
     ),
+    "OPERATIONS_TEAM": (
+        "View Operations",
+        "Open Incident",
+        "Monitor Services",
+        "Review Alerts",
+        "Approve Maintenance",
+        "Run Operational Report",
+    ),
+    "BRAND_TEAM": (
+        "Create Campaign",
+        "Upload Assets",
+        "Review Brand Compliance",
+        "Open Asset Library",
+        "Publish Guidelines",
+        "Review Website",
+        "Generate Brand Report",
+    ),
+    "COMPLIANCE_TEAM": (
+        "Open Audit",
+        "Review Policies",
+        "Investigate Alert",
+        "Approve Exception",
+        "Generate Report",
+        "Review Evidence",
+        "Launch Compliance Review",
+    ),
+    "AUDIT_TEAM": (
+        "Start Audit",
+        "Create Audit Plan",
+        "Review Evidence",
+        "Verify Controls",
+        "Issue Findings",
+        "Generate Audit Report",
+        "Review Corrective Actions",
+    ),
+    "SECURITY_ENGINEER": (
+        "Investigate Alert",
+        "Review Vulnerabilities",
+        "Run Security Scan",
+        "Open SIEM",
+        "Review IAM",
+        "Manage Certificates",
+        "Open Incident",
+        "Generate Report",
+    ),
+    "INCIDENT_RESPONSE_TEAM": (
+        "Declare Incident",
+        "Open War Room",
+        "Assign Commander",
+        "Notify Teams",
+        "Contain Incident",
+        "Recover Services",
+        "Generate Timeline",
+        "Close Incident",
+    ),
+    "DATA_ARCHITECT": (
+        "Create Data Domain",
+        "Design Canonical Model",
+        "Register Data Product",
+        "Review Schema Change",
+        "Trace Data Lineage",
+        "Run Privacy Impact Review",
+        "Compare Storage Options",
+        "Publish Data Standard",
+    ),
 }
 
 
@@ -3233,6 +4489,76 @@ def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str,
             "CARE": "Customer Care",
             "OPERATIONS": "Operations",
             "MANAGEMENT": "Management",
+        }
+    elif canonical == "OPERATIONS_TEAM":
+        order = ["HOME", "OPERATIONS", "BUSINESS", "COORDINATION", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Overview",
+            "OPERATIONS": "Operations",
+            "BUSINESS": "Business",
+            "COORDINATION": "Coordination",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "BRAND_TEAM":
+        order = ["HOME", "BRAND", "MARKETING", "EXPERIENCE", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Brand",
+            "BRAND": "Brand",
+            "MARKETING": "Marketing",
+            "EXPERIENCE": "Experience",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "COMPLIANCE_TEAM":
+        order = ["HOME", "COMPLIANCE", "ASSURANCE", "REGULATORY", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Compliance",
+            "COMPLIANCE": "Compliance",
+            "ASSURANCE": "Assurance",
+            "REGULATORY": "Regulatory",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "AUDIT_TEAM":
+        order = ["HOME", "AUDIT", "ASSURANCE", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Audit",
+            "AUDIT": "Audit",
+            "ASSURANCE": "Assurance",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "SECURITY_ENGINEER":
+        order = ["HOME", "SECURITY", "PROTECTION", "DETECTION", "GOVERNANCE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Security",
+            "SECURITY": "Security",
+            "PROTECTION": "Protection",
+            "DETECTION": "Detection",
+            "GOVERNANCE": "Governance",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "INCIDENT_RESPONSE_TEAM":
+        order = ["HOME", "RESPONSE", "RECOVERY", "INVESTIGATION", "CONTINUITY", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Response",
+            "RESPONSE": "Response",
+            "RECOVERY": "Recovery",
+            "INVESTIGATION": "Investigation",
+            "CONTINUITY": "Continuity",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "DATA_ARCHITECT":
+        order = ["HOME", "ARCHITECTURE", "CONTRACTS", "GOVERNANCE", "PROTECTION", "PLATFORMS", "ASSURANCE"]
+        labels = {
+            "HOME": "Architecture",
+            "ARCHITECTURE": "Architecture",
+            "CONTRACTS": "Contracts",
+            "GOVERNANCE": "Governance",
+            "PROTECTION": "Protection",
+            "PLATFORMS": "Platforms",
+            "ASSURANCE": "Assurance",
         }
     else:
         order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"]
@@ -3408,6 +4734,69 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {"title": "Average response", "value": "8 min", "meta": "First response performance"},
             {"title": "SLA breaches", "value": 0, "meta": "Current SLA posture"},
         ]
+    if canonical == "OPERATIONS_TEAM":
+        return [
+            {"title": "Platform status", "value": "Healthy", "meta": f"{summary.get('service_count', 184)} services online"},
+            {"title": "Critical incidents", "value": 0, "meta": "No critical incidents"},
+            {"title": "Operational alerts", "value": 4, "meta": "Open alerts requiring attention"},
+            {"title": "Today's operations", "value": 2846, "meta": "Completed operational jobs"},
+            {"title": "Business operations", "value": 138241, "meta": "Processed payments and transactions"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "operations")), "meta": "Authorized operations tools"},
+        ]
+    if canonical == "BRAND_TEAM":
+        return [
+            {"title": "Brand health", "value": "97%", "meta": "Brand compliance score"},
+            {"title": "Approved assets", "value": 3482, "meta": "Published and approved assets"},
+            {"title": "Brand violations", "value": 12, "meta": "Open issues requiring review"},
+            {"title": "Active campaigns", "value": 18, "meta": "Brand and launch campaigns"},
+            {"title": "Products reviewed", "value": 26, "meta": "Products and experiences checked"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "marketing")), "meta": "Authorized brand tools"},
+        ]
+    if canonical == "COMPLIANCE_TEAM":
+        return [
+            {"title": "Compliance score", "value": "98%", "meta": "Overall compliance posture"},
+            {"title": "Open findings", "value": 6, "meta": "Findings requiring follow-up"},
+            {"title": "Policy exceptions", "value": 3, "meta": "Approved temporary exceptions"},
+            {"title": "Upcoming audits", "value": 4, "meta": "Scheduled assurance activities"},
+            {"title": "Regulatory reviews", "value": 2, "meta": "Active regulatory reviews"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "compliance")), "meta": "Authorized compliance tools"},
+        ]
+    if canonical == "AUDIT_TEAM":
+        return [
+            {"title": "Active audits", "value": 12, "meta": "Open audit engagements"},
+            {"title": "Completed audits", "value": 146, "meta": "Closed assurance work"},
+            {"title": "Open findings", "value": 23, "meta": "Current observations"},
+            {"title": "Critical findings", "value": 1, "meta": "High-priority issues"},
+            {"title": "Evidence reviews", "value": 521, "meta": "Verified evidence items"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "audit")), "meta": "Authorized audit tools"},
+        ]
+    if canonical == "SECURITY_ENGINEER":
+        return [
+            {"title": "Security score", "value": "99%", "meta": "Overall security posture"},
+            {"title": "Critical alerts", "value": 0, "meta": "Immediate alerts"},
+            {"title": "High alerts", "value": 2, "meta": "High priority items"},
+            {"title": "Vulnerabilities", "value": 17, "meta": "Tracked vulnerabilities"},
+            {"title": "Active incidents", "value": 1, "meta": "Open security incidents"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "security")), "meta": "Authorized security tools"},
+        ]
+    if canonical == "INCIDENT_RESPONSE_TEAM":
+        return [
+            {"title": "Critical incidents", "value": 0, "meta": "No critical incidents"},
+            {"title": "Major incidents", "value": 1, "meta": "Major incidents in progress"},
+            {"title": "War rooms active", "value": 1, "meta": "Live coordination rooms"},
+            {"title": "Mean response", "value": "6m", "meta": "Response time"},
+            {"title": "Mean recovery", "value": "24m", "meta": "Recovery time"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "operations")), "meta": "Authorized incident tools"},
+        ]
+    if canonical == "DATA_ARCHITECT":
+        return [
+            {"title": "Registered data products", "value": 184, "meta": "Catalogued data products"},
+            {"title": "Authoritative domains", "value": 26, "meta": "Owned data domains"},
+            {"title": "Data quality score", "value": "97%", "meta": "Quality posture"},
+            {"title": "Lineage gaps", "value": 8, "meta": "Unresolved lineage gaps"},
+            {"title": "Open reviews", "value": 11, "meta": "Architecture reviews in progress"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "data")), "meta": "Authorized data tools"},
+        ]
     if canonical == "OPERATOR":
         return [
             {"title": "Deployments", "value": summary.get("deployment_count", 0), "meta": "Change and rollout visibility"},
@@ -3485,6 +4874,20 @@ def build_workspace_manifest(
             environment = "operations"
         elif canonical == "CUSTOMER_SUPPORT":
             environment = "support"
+        elif canonical == "OPERATIONS_TEAM":
+            environment = "operations"
+        elif canonical == "BRAND_TEAM":
+            environment = "marketing"
+        elif canonical == "COMPLIANCE_TEAM":
+            environment = "compliance"
+        elif canonical == "AUDIT_TEAM":
+            environment = "audit"
+        elif canonical == "SECURITY_ENGINEER":
+            environment = "security"
+        elif canonical == "INCIDENT_RESPONSE_TEAM":
+            environment = "operations"
+        elif canonical == "DATA_ARCHITECT":
+            environment = "data"
         else:
             environment = "staging"
     environment = environment.lower()
@@ -3576,9 +4979,37 @@ def build_workspace_manifest(
                                     ["operations", "staging", "pilot", "production"]
                                     if canonical == "DEVOPS_ENGINEER"
                                     else (
-                                        ["support", "staging", "pilot"]
-                                        if canonical == "CUSTOMER_SUPPORT"
-                                        else ["development", "staging", "pilot"]
+                                    ["support", "staging", "pilot"]
+                                    if canonical == "CUSTOMER_SUPPORT"
+                                        else (
+                                            ["operations", "staging", "pilot", "production"]
+                                            if canonical == "OPERATIONS_TEAM"
+                                            else (
+                                                ["marketing", "staging", "pilot", "production"]
+                                                if canonical == "BRAND_TEAM"
+                                                else (
+                                                    ["compliance", "staging", "pilot", "production"]
+                                                    if canonical == "COMPLIANCE_TEAM"
+                                                    else (
+                                                        ["audit", "staging", "pilot", "production"]
+                                                        if canonical == "AUDIT_TEAM"
+                                                        else (
+                                                            ["security", "staging", "pilot", "production"]
+                                                            if canonical == "SECURITY_ENGINEER"
+                                                            else (
+                                                                ["operations", "staging", "pilot", "production"]
+                                                                if canonical == "INCIDENT_RESPONSE_TEAM"
+                                                                else (
+                                                                    ["data", "staging", "pilot", "production"]
+                                                                    if canonical == "DATA_ARCHITECT"
+                                                                    else ["development", "staging", "pilot"]
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
                                     )
                                 )
                             )
@@ -3612,8 +5043,40 @@ def build_workspace_manifest(
                                         if canonical == "QA_ENGINEER"
                                         else (
                                             "devops-engineer"
-                                            if canonical == "DEVOPS_ENGINEER"
-                                            else ("customer-support" if canonical == "CUSTOMER_SUPPORT" else "role-scoped")
+                                        if canonical == "DEVOPS_ENGINEER"
+                                            else (
+                                                "customer-support"
+                                                if canonical == "CUSTOMER_SUPPORT"
+                                                else (
+                                                    "operations-manager"
+                                                    if canonical == "OPERATIONS_TEAM"
+                                                    else (
+                                                        "brand-manager"
+                                                        if canonical == "BRAND_TEAM"
+                                                        else (
+                                                            "compliance-manager"
+                                                            if canonical == "COMPLIANCE_TEAM"
+                                                            else (
+                                                                "audit-manager"
+                                                                if canonical == "AUDIT_TEAM"
+                                                                else (
+                                                                    "security-engineer"
+                                                                    if canonical == "SECURITY_ENGINEER"
+                                                                    else (
+                                                                        "incident-commander"
+                                                                        if canonical == "INCIDENT_RESPONSE_TEAM"
+                                                                        else (
+                                                                            "data-architect"
+                                                                            if canonical == "DATA_ARCHITECT"
+                                                                            else "role-scoped"
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
                                         )
                                     )
                                 )
@@ -3631,7 +5094,41 @@ def build_workspace_manifest(
             ],
             "pending_approvals": summary.get("pending_approvals", [])[:4],
             "current_sprint": "Sprint 24" if canonical == "DEVELOPER" else None,
-            "portfolio_name": "Mobility and Payments" if canonical == "PRODUCT_MANAGER" else ("Mobility & Financial Services" if canonical == "BUSINESS_ANALYST" else ("Projects Portfolio" if canonical == "PROJECT_MANAGER" else None)),
+            "portfolio_name": "Mobility and Payments"
+            if canonical == "PRODUCT_MANAGER"
+            else (
+                "Mobility & Financial Services"
+                if canonical == "BUSINESS_ANALYST"
+                else (
+                    "Projects Portfolio"
+                    if canonical == "PROJECT_MANAGER"
+                    else (
+                        "Mobility & Financial Operations"
+                        if canonical == "OPERATIONS_TEAM"
+                        else (
+                            "Brand Portfolio"
+                            if canonical == "BRAND_TEAM"
+                            else (
+                                "Compliance Obligations"
+                                if canonical == "COMPLIANCE_TEAM"
+                                else (
+                                    "Enterprise Assurance"
+                                    if canonical == "AUDIT_TEAM"
+                                    else (
+                                        "Cybersecurity"
+                                        if canonical == "SECURITY_ENGINEER"
+                                        else (
+                                            "Global Incident Response"
+                                            if canonical == "INCIDENT_RESPONSE_TEAM"
+                                            else ("Enterprise Data Architecture" if canonical == "DATA_ARCHITECT" else None)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ),
             "product_stage": "Discovery" if canonical == "PRODUCT_MANAGER" else None,
             "analysis_focus": "Requirements and process analysis" if canonical == "BUSINESS_ANALYST" else None,
             "design_focus": "Design Studio" if canonical == "UI_UX_DESIGNER" else None,
@@ -3684,6 +5181,84 @@ def build_workspace_manifest(
             }
             if canonical == "CUSTOMER_SUPPORT"
             else {},
+            "operations_health": {
+                "platform_status": "Healthy",
+                "critical_incidents": 0,
+                "major_incidents": 1,
+                "operational_alerts": 4,
+                "services_online": 184,
+                "regional_availability": "100%",
+                "completed_jobs": 2846,
+                "pending_operations": 42,
+                "support_escalations": 18,
+                "deployment_windows": 3,
+                "maintenance_activities": 2,
+            }
+            if canonical == "OPERATIONS_TEAM"
+            else {},
+            "brand_health": {
+                "brand_compliance": "97%",
+                "approved_assets": 3482,
+                "brand_violations": 12,
+                "campaigns_active": 18,
+                "products_reviewed": 26,
+            }
+            if canonical == "BRAND_TEAM"
+            else {},
+            "compliance_health": {
+                "compliance_score": "98%",
+                "open_findings": 6,
+                "critical_findings": 0,
+                "policy_exceptions": 3,
+                "upcoming_audits": 4,
+                "regulatory_reviews": 2,
+            }
+            if canonical == "COMPLIANCE_TEAM"
+            else {},
+            "audit_health": {
+                "active_audits": 12,
+                "completed_audits": 146,
+                "open_findings": 23,
+                "critical_findings": 1,
+                "corrective_actions": 38,
+                "evidence_reviews": 521,
+            }
+            if canonical == "AUDIT_TEAM"
+            else {},
+            "security_health": {
+                "security_score": "99%",
+                "critical_alerts": 0,
+                "high_alerts": 2,
+                "vulnerabilities": 17,
+                "active_incidents": 1,
+            }
+            if canonical == "SECURITY_ENGINEER"
+            else {},
+            "incident_health": {
+                "critical_incidents": 0,
+                "major_incidents": 1,
+                "medium_incidents": 4,
+                "resolved_today": 23,
+                "teams_engaged": 8,
+                "war_rooms_active": 1,
+                "mttd": "2m",
+                "mttr": "6m",
+                "mttr_recovery": "24m",
+                "sla": "99.6%",
+            }
+            if canonical == "INCIDENT_RESPONSE_TEAM"
+            else {},
+            "data_health": {
+                "registered_data_products": 184,
+                "authoritative_domains": 26,
+                "critical_datasets": 42,
+                "data_quality_score": "97%",
+                "classified_assets": "99%",
+                "lineage_gaps": 8,
+                "open_reviews": 11,
+            }
+            if canonical == "DATA_ARCHITECT"
+            else {},
             "customer_signals": [
                 {"label": "New feedback items", "value": _product_health(summary)["new_feedback_items"]},
                 {"label": "Critical usability issues", "value": _product_health(summary)["critical_usability_issues"]},
@@ -3692,6 +5267,68 @@ def build_workspace_manifest(
                 {"label": "Adoption trend", "value": _product_health(summary)["adoption_trend"]},
             ]
             if canonical == "PRODUCT_MANAGER"
+            else [],
+            "operations_items": [
+                {"label": "Platform Status", "status": "Healthy"},
+                {"label": "Major Incidents", "status": "1 monitoring"},
+                {"label": "Operational Alerts", "status": "4 open"},
+                {"label": "Pending Operations", "status": "42 queued"},
+                {"label": "Business Jobs", "status": "2,846 completed"},
+            ]
+            if canonical == "OPERATIONS_TEAM"
+            else [],
+            "brand_campaigns": [
+                {"label": "NovaRide Public Pilot", "status": "Active"},
+                {"label": "NovaPay Africa Launch", "status": "Review"},
+                {"label": "NovaID Business Identity", "status": "Approved"},
+                {"label": "NovaCodePro Enterprise", "status": "Active"},
+            ]
+            if canonical == "BRAND_TEAM"
+            else [],
+            "compliance_tasks": [
+                {"label": "Review AML alerts", "status": "pending"},
+                {"label": "Approve policy updates", "status": "active"},
+                {"label": "Validate KYC controls", "status": "pending"},
+                {"label": "Audit NovaPay operations", "status": "pending"},
+                {"label": "Review partner compliance", "status": "active"},
+                {"label": "Generate compliance report", "status": "pending"},
+            ]
+            if canonical == "COMPLIANCE_TEAM"
+            else [],
+            "audit_activities": [
+                {"label": "Infrastructure Audit", "status": "active"},
+                {"label": "NovaPay Financial Audit", "status": "active"},
+                {"label": "Security Control Review", "status": "review"},
+                {"label": "Evidence Verification", "status": "active"},
+                {"label": "Audit Committee Report", "status": "pending"},
+            ]
+            if canonical == "AUDIT_TEAM"
+            else [],
+            "security_alerts": [
+                {"label": "Investigate Alert", "status": "open"},
+                {"label": "Review Vulnerabilities", "status": "open"},
+                {"label": "Run Security Scan", "status": "queued"},
+                {"label": "Open SIEM", "status": "ready"},
+            ]
+            if canonical == "SECURITY_ENGINEER"
+            else [],
+            "incident_items": [
+                {"label": "Critical Incidents", "status": "0"},
+                {"label": "Major Incidents", "status": "1 monitoring"},
+                {"label": "War Rooms", "status": "1 active"},
+                {"label": "Recovery", "status": "Normal"},
+                {"label": "Communications", "status": "Active"},
+            ]
+            if canonical == "INCIDENT_RESPONSE_TEAM"
+            else [],
+            "data_initiatives": [
+                {"label": "Canonical Transfer Model", "status": "in progress"},
+                {"label": "Trip-Event Architecture", "status": "review"},
+                {"label": "Identity Graph", "status": "planned"},
+                {"label": "Lakehouse Modernization", "status": "in progress"},
+                {"label": "Customer 360 Data Product", "status": "review"},
+            ]
+            if canonical == "DATA_ARCHITECT"
             else [],
             "analysis_tasks": [
                 {"label": "Gather stakeholder requirements", "status": "pending"},
@@ -3853,6 +5490,13 @@ def build_workspace_manifest(
                 "quality_workspace": canonical == "QA_ENGINEER",
                 "devops_workspace": canonical == "DEVOPS_ENGINEER",
                 "customer_support_workspace": canonical == "CUSTOMER_SUPPORT",
+                "operations_workspace": canonical == "OPERATIONS_TEAM",
+                "brand_workspace": canonical == "BRAND_TEAM",
+                "compliance_workspace": canonical == "COMPLIANCE_TEAM",
+                "audit_workspace": canonical == "AUDIT_TEAM",
+                "security_workspace": canonical == "SECURITY_ENGINEER",
+                "incident_response_workspace": canonical == "INCIDENT_RESPONSE_TEAM",
+                "data_architect_workspace": canonical == "DATA_ARCHITECT",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
@@ -4382,6 +6026,203 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
                 <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
               </ul>
             </section>
+          </div>
+        """
+    elif canonical == "OPERATIONS_TEAM":
+        operations_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("operations_items", [])
+        ) or "<li>No operations items.</li>"
+        operations_health = workspace.get("operations_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Today's operations</h2></header><ul>{operations_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Operational status</h2></header>
+              <ul>
+                <li><strong>Platform status</strong><span>{html.escape(str(operations_health.get('platform_status', 'Healthy')))}</span></li>
+                <li><strong>Critical incidents</strong><span>{html.escape(str(operations_health.get('critical_incidents', 0)))}</span></li>
+                <li><strong>Major incidents</strong><span>{html.escape(str(operations_health.get('major_incidents', 1)))}</span></li>
+                <li><strong>Operational alerts</strong><span>{html.escape(str(operations_health.get('operational_alerts', 4)))}</span></li>
+                <li><strong>Services online</strong><span>{html.escape(str(operations_health.get('services_online', 184)))}</span></li>
+                <li><strong>Regional availability</strong><span>{html.escape(str(operations_health.get('regional_availability', '100%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Business operations</h2></header>
+              <ul>
+                <li><strong>Completed jobs</strong><span>{html.escape(str(operations_health.get('completed_jobs', 2846)))}</span></li>
+                <li><strong>Pending operations</strong><span>{html.escape(str(operations_health.get('pending_operations', 42)))}</span></li>
+                <li><strong>Support escalations</strong><span>{html.escape(str(operations_health.get('support_escalations', 18)))}</span></li>
+                <li><strong>Deployment windows</strong><span>{html.escape(str(operations_health.get('deployment_windows', 3)))}</span></li>
+                <li><strong>Maintenance activities</strong><span>{html.escape(str(operations_health.get('maintenance_activities', 2)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "BRAND_TEAM":
+        brand_campaigns_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("brand_campaigns", [])
+        ) or "<li>No active campaigns.</li>"
+        brand_health = workspace.get("brand_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Active campaigns</h2></header><ul>{brand_campaigns_html}</ul></section>
+            <section class=\"panel\"><header><h2>Brand health</h2></header>
+              <ul>
+                <li><strong>Brand compliance</strong><span>{html.escape(str(brand_health.get('brand_compliance', '97%')))}</span></li>
+                <li><strong>Approved assets</strong><span>{html.escape(str(brand_health.get('approved_assets', 3482)))}</span></li>
+                <li><strong>Brand violations</strong><span>{html.escape(str(brand_health.get('brand_violations', 12)))}</span></li>
+                <li><strong>Campaigns active</strong><span>{html.escape(str(brand_health.get('campaigns_active', 18)))}</span></li>
+                <li><strong>Products reviewed</strong><span>{html.escape(str(brand_health.get('products_reviewed', 26)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent projects</h2></header><ul>{projects_html}</ul></section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "COMPLIANCE_TEAM":
+        compliance_tasks_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("compliance_tasks", [])
+        ) or "<li>No compliance tasks.</li>"
+        compliance_health = workspace.get("compliance_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Today's tasks</h2></header><ul>{compliance_tasks_html}</ul></section>
+            <section class=\"panel\"><header><h2>Compliance health</h2></header>
+              <ul>
+                <li><strong>Compliance score</strong><span>{html.escape(str(compliance_health.get('compliance_score', '98%')))}</span></li>
+                <li><strong>Open findings</strong><span>{html.escape(str(compliance_health.get('open_findings', 6)))}</span></li>
+                <li><strong>Critical findings</strong><span>{html.escape(str(compliance_health.get('critical_findings', 0)))}</span></li>
+                <li><strong>Policy exceptions</strong><span>{html.escape(str(compliance_health.get('policy_exceptions', 3)))}</span></li>
+                <li><strong>Upcoming audits</strong><span>{html.escape(str(compliance_health.get('upcoming_audits', 4)))}</span></li>
+                <li><strong>Regulatory reviews</strong><span>{html.escape(str(compliance_health.get('regulatory_reviews', 2)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "AUDIT_TEAM":
+        audit_activities_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("audit_activities", [])
+        ) or "<li>No audit activities.</li>"
+        audit_health = workspace.get("audit_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Today's activities</h2></header><ul>{audit_activities_html}</ul></section>
+            <section class=\"panel\"><header><h2>Audit health</h2></header>
+              <ul>
+                <li><strong>Active audits</strong><span>{html.escape(str(audit_health.get('active_audits', 12)))}</span></li>
+                <li><strong>Completed audits</strong><span>{html.escape(str(audit_health.get('completed_audits', 146)))}</span></li>
+                <li><strong>Open findings</strong><span>{html.escape(str(audit_health.get('open_findings', 23)))}</span></li>
+                <li><strong>Critical findings</strong><span>{html.escape(str(audit_health.get('critical_findings', 1)))}</span></li>
+                <li><strong>Corrective actions</strong><span>{html.escape(str(audit_health.get('corrective_actions', 38)))}</span></li>
+                <li><strong>Evidence reviews</strong><span>{html.escape(str(audit_health.get('evidence_reviews', 521)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent projects</h2></header><ul>{projects_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "SECURITY_ENGINEER":
+        security_alerts_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("security_alerts", [])
+        ) or "<li>No security alerts.</li>"
+        security_health = workspace.get("security_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Security operations</h2></header><ul>{security_alerts_html}</ul></section>
+            <section class=\"panel\"><header><h2>Security health</h2></header>
+              <ul>
+                <li><strong>Security score</strong><span>{html.escape(str(security_health.get('security_score', '99%')))}</span></li>
+                <li><strong>Critical alerts</strong><span>{html.escape(str(security_health.get('critical_alerts', 0)))}</span></li>
+                <li><strong>High alerts</strong><span>{html.escape(str(security_health.get('high_alerts', 2)))}</span></li>
+                <li><strong>Vulnerabilities</strong><span>{html.escape(str(security_health.get('vulnerabilities', 17)))}</span></li>
+                <li><strong>Active incidents</strong><span>{html.escape(str(security_health.get('active_incidents', 1)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "INCIDENT_RESPONSE_TEAM":
+        incident_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("incident_items", [])
+        ) or "<li>No incident items.</li>"
+        incident_health = workspace.get("incident_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Live operations</h2></header><ul>{incident_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Response metrics</h2></header>
+              <ul>
+                <li><strong>Mean detection</strong><span>{html.escape(str(incident_health.get('mttd', '2m')))}</span></li>
+                <li><strong>Mean response</strong><span>{html.escape(str(incident_health.get('mttr', '6m')))}</span></li>
+                <li><strong>Mean recovery</strong><span>{html.escape(str(incident_health.get('mttr_recovery', '24m')))}</span></li>
+                <li><strong>SLA compliance</strong><span>{html.escape(str(incident_health.get('sla', '99.6%')))}</span></li>
+                <li><strong>Teams engaged</strong><span>{html.escape(str(incident_health.get('teams_engaged', 8)))}</span></li>
+                <li><strong>War rooms active</strong><span>{html.escape(str(incident_health.get('war_rooms_active', 1)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "DATA_ARCHITECT":
+        data_initiatives_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("data_initiatives", [])
+        ) or "<li>No data initiatives.</li>"
+        data_health = workspace.get("data_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Active initiatives</h2></header><ul>{data_initiatives_html}</ul></section>
+            <section class=\"panel\"><header><h2>Data estate health</h2></header>
+              <ul>
+                <li><strong>Registered data products</strong><span>{html.escape(str(data_health.get('registered_data_products', 184)))}</span></li>
+                <li><strong>Authoritative domains</strong><span>{html.escape(str(data_health.get('authoritative_domains', 26)))}</span></li>
+                <li><strong>Critical datasets</strong><span>{html.escape(str(data_health.get('critical_datasets', 42)))}</span></li>
+                <li><strong>Data quality score</strong><span>{html.escape(str(data_health.get('data_quality_score', '97%')))}</span></li>
+                <li><strong>Classified assets</strong><span>{html.escape(str(data_health.get('classified_assets', '99%')))}</span></li>
+                <li><strong>Lineage gaps</strong><span>{html.escape(str(data_health.get('lineage_gaps', 8)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Open reviews</h2></header><ul>{projects_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
           </div>
         """
     else:

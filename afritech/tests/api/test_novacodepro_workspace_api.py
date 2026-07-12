@@ -4,6 +4,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+import pytest
 
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.novacodepro_workspace_api import build_novacodepro_workspace_router
@@ -720,3 +721,115 @@ def test_command_execution_supports_architect_qa_devops_and_support_roles(tmp_pa
     )
     assert support_commands.status_code == 200
     assert any(item["label"] == "Create Ticket" for item in support_commands.json())
+
+
+@pytest.mark.parametrize(
+    ("role", "title", "slug", "environment", "flag", "tool_name"),
+    [
+        ("OPERATIONS_TEAM", "Operations Workspace", "operations", "operations", "operations_workspace", "Operations Command Center"),
+        ("BRAND_TEAM", "Brand Management Workspace", "brand", "marketing", "brand_workspace", "Brand Command Center"),
+        ("COMPLIANCE_TEAM", "Compliance Workspace", "compliance", "compliance", "compliance_workspace", "Compliance Command Center"),
+        ("AUDIT_TEAM", "Audit Workspace", "audit", "audit", "audit_workspace", "Enterprise Audit Command Center"),
+        ("SECURITY_ENGINEER", "Cyber Security Workspace", "security", "security", "security_workspace", "Enterprise Security Command Center"),
+        ("INCIDENT_RESPONSE_TEAM", "Incident Response Workspace", "incident-response", "operations", "incident_response_workspace", "Enterprise Incident Command Center"),
+        ("DATA_ARCHITECT", "Data Architecture Workspace", "data-architect", "data", "data_architect_workspace", "Enterprise Data Command Center"),
+    ],
+)
+def test_workspace_manifest_personalizes_new_role_workspaces(
+    tmp_path: Path,
+    role: str,
+    title: str,
+    slug: str,
+    environment: str,
+    flag: str,
+    tool_name: str,
+) -> None:
+    client = _client(tmp_path)
+
+    response = client.get("/v1/novacodepro/workspace", headers=_headers(role, "usr_djuma"))
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == role
+    assert body["workspace"]["title"] == title
+    assert body["workspace"]["home_route"] == f"/novacodepro/workspace/{slug}"
+    assert body["workspace"]["selected_environment"] == environment
+    assert body["workspace"]["feature_flags"][flag] is True
+    assert tool_name in [tool["name"] for tool in body["workspace"]["tools"]]
+
+
+@pytest.mark.parametrize(
+    ("role", "route", "expected_strings"),
+    [
+        ("OPERATIONS_TEAM", "/novacodepro/workspace/operations", ["Operations Workspace", "Operational status", "Business operations"]),
+        ("BRAND_TEAM", "/novacodepro/workspace/brand", ["Brand Management Workspace", "Brand health", "Active campaigns"]),
+        ("COMPLIANCE_TEAM", "/novacodepro/workspace/compliance", ["Compliance Workspace", "Compliance health", "Today's tasks"]),
+        ("AUDIT_TEAM", "/novacodepro/workspace/audit", ["Audit Workspace", "Audit health", "Today's activities"]),
+        ("SECURITY_ENGINEER", "/novacodepro/workspace/security", ["Cyber Security Workspace", "Security health", "Security operations"]),
+        ("INCIDENT_RESPONSE_TEAM", "/novacodepro/workspace/incident-response", ["Incident Response Workspace", "Response metrics", "Live operations"]),
+        ("DATA_ARCHITECT", "/novacodepro/workspace/data-architect", ["Data Architecture Workspace", "Data estate health", "Active initiatives"]),
+    ],
+)
+def test_workspace_html_renders_new_role_summaries(
+    tmp_path: Path,
+    role: str,
+    route: str,
+    expected_strings: list[str],
+) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(route, headers=_headers(role, "usr_djuma"))
+    assert response.status_code == 200
+    for value in expected_strings:
+        assert value in response.text
+
+
+@pytest.mark.parametrize(
+    "role",
+    [
+        "OPERATIONS_TEAM",
+        "BRAND_TEAM",
+        "COMPLIANCE_TEAM",
+        "AUDIT_TEAM",
+        "SECURITY_ENGINEER",
+        "INCIDENT_RESPONSE_TEAM",
+        "DATA_ARCHITECT",
+    ],
+)
+def test_new_role_workspaces_do_not_expose_platform_admin_window(tmp_path: Path, role: str) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers(role, "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+@pytest.mark.parametrize(
+    ("role", "command"),
+    [
+        ("OPERATIONS_TEAM", "View Operations"),
+        ("BRAND_TEAM", "Create Campaign"),
+        ("COMPLIANCE_TEAM", "Open Audit"),
+        ("AUDIT_TEAM", "Start Audit"),
+        ("SECURITY_ENGINEER", "Investigate Alert"),
+        ("INCIDENT_RESPONSE_TEAM", "Declare Incident"),
+        ("DATA_ARCHITECT", "Create Data Domain"),
+    ],
+)
+def test_command_execution_supports_new_role_quick_actions(tmp_path: Path, role: str, command: str) -> None:
+    client = _client(tmp_path)
+
+    commands = client.get("/v1/novacodepro/me/commands", headers=_headers(role, "usr_djuma"))
+    assert commands.status_code == 200
+    assert any(item["label"] == command for item in commands.json())
+
+    queued = client.post(
+        "/v1/novacodepro/commands/execute",
+        headers=_headers(role, "usr_djuma"),
+        json={"command": command},
+    )
+    assert queued.status_code == 200
+    assert queued.json()["status"] == "queued"
