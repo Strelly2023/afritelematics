@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   AGENT_MARKETPLACE,
@@ -81,6 +81,61 @@ const DISCOVERY_PROMPTS = [
   "Which regulations, policies, or data residency rules apply?",
   "Which channels are required: mobile, web, APIs, partners?",
   "Which languages, currencies, and payment methods are required?",
+];
+
+const COMPOSER_MODES = [
+  { id: "ask", label: "Ask", description: "Explain without changing files." },
+  { id: "plan", label: "Plan", description: "Produce a governed execution plan." },
+  { id: "design", label: "Design", description: "Generate architecture and UX direction." },
+  { id: "build", label: "Build", description: "Create or modify implementation." },
+  { id: "fix", label: "Fix", description: "Diagnose and correct defects." },
+  { id: "review", label: "Review", description: "Inspect code, security, or governance." },
+  { id: "test", label: "Test", description: "Generate and run validation." },
+  { id: "deploy", label: "Deploy", description: "Prepare or execute deployment." },
+  { id: "operate", label: "Operate", description: "Investigate runtime health." },
+  { id: "full_solution", label: "Full solution", description: "Run the complete lifecycle." },
+];
+
+const COMPOSER_CONTEXT_SOURCES = [
+  "Current conversation",
+  "Current project",
+  "Selected repository",
+  "Selected files",
+  "Organization knowledge",
+  "Approved external knowledge",
+  "Previous solutions",
+  "Production telemetry",
+];
+
+const COMPOSER_AGENTS = [
+  "Solution Architect",
+  "Product Manager",
+  "UI Designer",
+  "Frontend Engineer",
+  "Backend Engineer",
+  "QA Agent",
+  "Security Agent",
+  "DevOps Agent",
+];
+
+const OUTPUT_TABS = [
+  "Overview",
+  "Plan",
+  "Code",
+  "Design",
+  "Tests",
+  "Security",
+  "Architecture",
+  "Evidence",
+  "Deployment",
+  "Files",
+  "Agent Activity",
+];
+
+const STARTER_REQUESTS = [
+  "Build a modern customer-service portal with authentication, case management, analytics, and an AI support assistant.",
+  "Analyse this repository, identify production blockers, fix the critical issues, run validation, and prepare a release report.",
+  "Design and implement a mobile payment application for consumers, agents, merchants, and businesses.",
 ];
 
 const OPERATING_WINDOWS = [
@@ -1406,6 +1461,7 @@ const PLATFORM_ADMIN_SECTIONS = [
 ];
 
 function App() {
+  const attachmentInputRef = useRef(null);
   const runtime = usePlatformRuntime();
   const [platformSummary, setPlatformSummary] = useState(null);
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
@@ -1430,6 +1486,20 @@ function App() {
   const [solutionSurfaces, setSolutionSurfaces] = useState(
     SOLUTION_TEMPLATES[0].surfaces,
   );
+  const [composerPrompt, setComposerPrompt] = useState("");
+  const [composerMode, setComposerMode] = useState("full_solution");
+  const [composerContextSources, setComposerContextSources] = useState([
+    "Current conversation",
+    "Current project",
+  ]);
+  const [composerAgents, setComposerAgents] = useState([
+    "Solution Architect",
+    "Frontend Engineer",
+    "QA Agent",
+  ]);
+  const [composerAttachments, setComposerAttachments] = useState([]);
+  const [composerEnvironment, setComposerEnvironment] = useState(environment);
+  const [selectedOutputTab, setSelectedOutputTab] = useState("Overview");
   const [projectName, setProjectName] = useState("NovaCodePro Solution");
   const [projectOwner, setProjectOwner] = useState("Platform Engineering");
   const [projectBudget, setProjectBudget] = useState("$250K");
@@ -1590,6 +1660,495 @@ function App() {
     setSelectedJourneyStageId(selectedRequest?.workflow?.[selectedRequest.stageIndex]?.id ?? workflowJourneyStages[0]?.id ?? "intent");
   }, [selectedRequest?.id, selectedRequest?.stageIndex, workflowJourneyStages]);
 
+  useEffect(() => {
+    setComposerEnvironment(environment);
+  }, [environment]);
+
+  const activeRequest = selectedRequest;
+  const activeStage = activeRequest?.workflow?.[activeRequest.stageIndex];
+  const workflowProgress = activeRequest?.workflow?.length
+    ? Math.round(
+        (activeRequest.workflow.filter((stage) => stage.status === "completed").length /
+          activeRequest.workflow.length) *
+          100,
+      )
+    : 0;
+  const activeOutputTab = OUTPUT_TABS.includes(selectedOutputTab) ? selectedOutputTab : "Overview";
+
+  const requestSummary = useMemo(() => {
+    const prompt = composerPrompt.trim();
+    return prompt.length ? prompt : activeRequest?.request || STARTER_REQUESTS[0];
+  }, [activeRequest?.request, composerPrompt]);
+
+  const suggestedTitle = useMemo(() => {
+    const source = requestSummary.split(/[.!?]/)[0].trim();
+    if (!source) {
+      return "NovaCodePro solution request";
+    }
+    return source.length > 64 ? `${source.slice(0, 61)}...` : source;
+  }, [requestSummary]);
+
+  const selectedMode = COMPOSER_MODES.find((mode) => mode.id === composerMode) ?? COMPOSER_MODES[0];
+
+  const toggleComposerContextSource = (source) => {
+    setComposerContextSources((current) =>
+      current.includes(source) ? current.filter((item) => item !== source) : [...current, source],
+    );
+  };
+
+  const toggleComposerAgent = (agent) => {
+    setComposerAgents((current) =>
+      current.includes(agent) ? current.filter((item) => item !== agent) : [...current, agent],
+    );
+  };
+
+  const handleAttachmentUpload = (event) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) {
+      return;
+    }
+    const nextAttachments = files.map((file) => ({
+      id: `attachment-${Math.random().toString(36).slice(2, 10)}`,
+      name: file.name,
+      type: file.type || "application/octet-stream",
+      size: file.size,
+      source: "Local upload",
+      security: file.type.startsWith("image/") ? "scanned" : "queued",
+      indexing: "pending",
+    }));
+    setComposerAttachments((current) => [...nextAttachments, ...current].slice(0, 10));
+    event.target.value = "";
+  };
+
+  const submitComposer = (action) => {
+    const prompt = composerPrompt.trim();
+    if (!prompt) {
+      return;
+    }
+    const template =
+      SOLUTION_TEMPLATES.find((item) => prompt.toLowerCase().includes(item.domain)) ??
+      SOLUTION_TEMPLATES[0];
+    const request = platformRuntime.createSolution({
+      title: suggestedTitle,
+      request: prompt,
+      mode: composerMode,
+      domain: template.domain,
+      industry: solutionIndustry || template.domain,
+      country: solutionCountry,
+      budget: solutionBudget,
+      timeline: solutionTimeline,
+      stakeholders: solutionStakeholders,
+      region: environment,
+      compliance: solutionCompliance,
+      surfaces: composerMode === "ask" ? ["Conversation"] : solutionSurfaces,
+      template,
+      attachments: composerAttachments,
+      contextSources: composerContextSources,
+      selectedAgents: composerAgents,
+      environment: composerEnvironment,
+    });
+    setSelectedOutputTab("Overview");
+    setComposerPrompt("");
+    setComposerAttachments([]);
+    if (action === "Send and execute") {
+      platformRuntime.advanceWorkflow(request.id);
+    }
+  };
+
+  function renderOutputTabContent() {
+    const currentApprovals = activeRequest?.approvals ?? [];
+    const currentArtifacts = activeRequest?.artifacts ?? [];
+    const currentWorkflow = activeRequest?.workflow ?? [];
+
+    switch (activeOutputTab) {
+      case "Plan":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Proposed execution plan</p>
+              <strong>Discover, design, build, validate, secure, and release</strong>
+              <div className="workflow-track compact">
+                {currentWorkflow.map((stage, index) => (
+                  <React.Fragment key={stage.id}>
+                    <div className="workflow-step">
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{stage.label}</strong>
+                      <em>{stage.status}</em>
+                    </div>
+                    {index < currentWorkflow.length - 1 ? <div className="workflow-arrow">→</div> : null}
+                  </React.Fragment>
+                ))}
+              </div>
+            </article>
+            <div className="dual-grid">
+              <article className="output-card">
+                <p className="section-label">Recommended agents</p>
+                <div className="chip-cloud">
+                  {composerAgents.map((agent) => (
+                    <span className="context-chip active" key={agent}>
+                      {agent}
+                    </span>
+                  ))}
+                </div>
+              </article>
+              <article className="output-card">
+                <p className="section-label">Authority</p>
+                <p className="studio-note">
+                  The plan can execute automatically until a governance gate requires human approval.
+                </p>
+                <div className="artifact-list">
+                  {["Requirements approval", "Architecture approval", "Security approval", "Release approval"].map((item) => (
+                    <div className="artifact-row" key={item}>
+                      <strong>{item}</strong>
+                      <span>Controlled gate</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </div>
+        );
+      case "Code":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Implementation preview</p>
+              <strong>Repository scaffold and governed changes</strong>
+              <div className="code-block">
+                <pre>{`apps/${suggestedTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "solution"}
+  src/
+  tests/
+  docs/
+  infra/`}</pre>
+              </div>
+            </article>
+            <div className="dual-grid">
+              <article className="output-card">
+                <p className="section-label">Files</p>
+                <div className="artifact-list">
+                  {currentArtifacts.slice(0, 5).map((artifact) => (
+                    <div className="artifact-row" key={artifact.id}>
+                      <strong>{artifact.title}</strong>
+                      <span>{artifact.stage}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="output-card">
+                <p className="section-label">Generated output</p>
+                <p className="studio-note">
+                  Backend services, frontend surfaces, API contracts, and release assets are modelled as versioned artifacts.
+                </p>
+              </article>
+            </div>
+          </div>
+        );
+      case "Design":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Suggested UX</p>
+              <strong>Request composer, system output, approval rail, and evidence views</strong>
+              <div className="chip-cloud">
+                {solutionSurfaces.map((surface) => (
+                  <span className="context-chip" key={surface}>
+                    {surface}
+                  </span>
+                ))}
+              </div>
+            </article>
+            <div className="dual-grid">
+              <article className="output-card">
+                <p className="section-label">Accessibility</p>
+                <p className="studio-note">
+                  Keyboard-first input, visible focus, live region updates, and colour-independent status markers are required.
+                </p>
+              </article>
+              <article className="output-card">
+                <p className="section-label">Responsive layouts</p>
+                <p className="studio-note">
+                  Desktop uses three columns, tablet collapses to a side sheet, and mobile becomes a single stream with a pinned composer.
+                </p>
+              </article>
+            </div>
+          </div>
+        );
+      case "Tests":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Validation</p>
+              <strong>Suites and coverage remain visible before delivery</strong>
+              <div className="metric-grid compact">
+                {[
+                  ["Unit", "612 passed"],
+                  ["Integration", "48 passed"],
+                  ["UI", "24 passed"],
+                  ["Security", "0 critical"],
+                ].map(([label, value]) => (
+                  <article className="metric-card" key={label}>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </article>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Evidence chain</p>
+              <div className="artifact-list">
+                {runtime.auditTrail.slice(0, 4).map((entry) => (
+                  <div className="audit-row" key={entry.id}>
+                    <span>{entry.at}</span>
+                    <strong>{entry.action}</strong>
+                    <p>{entry.service}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+          </div>
+        );
+      case "Security":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Security findings</p>
+              <strong>Threat model, dependency review, and approval gates remain enforced</strong>
+              <div className="artifact-list">
+                {[
+                  "Secrets scanned before release",
+                  "Policy checks executed against the target environment",
+                  "Production deployment remains approval-gated",
+                ].map((item) => (
+                  <div className="artifact-row" key={item}>
+                    <strong>{item}</strong>
+                    <span>Governed</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Current approvals</p>
+              <div className="artifact-list">
+                {currentApprovals.length ? (
+                  currentApprovals.map((approval) => (
+                    <div className="artifact-row" key={approval.id}>
+                      <strong>{approval.gate}</strong>
+                      <span>{approval.by}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="audit-row">
+                    <strong>No approvals yet</strong>
+                    <p>The workflow will request human approval at governance gates.</p>
+                  </div>
+                )}
+              </div>
+            </article>
+          </div>
+        );
+      case "Architecture":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Suggested architecture</p>
+              <strong>Gateway, orchestrator, workflow engine, agents, storage, audit, deployment</strong>
+              <div className="chip-cloud">
+                {[
+                  "NovaCodePro Gateway",
+                  "Workflow Engine",
+                  "Agent Orchestrator",
+                  "Artifact Service",
+                  "Audit Service",
+                  "Deployment Service",
+                ].map((item) => (
+                  <span className="context-chip" key={item}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Traceability</p>
+              <p className="studio-note">
+                Request, requirement, architecture, code, tests, release, deployment, and operations remain linked in the graph.
+              </p>
+            </article>
+          </div>
+        );
+      case "Evidence":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Evidence summary</p>
+              <strong>Artifacts, approvals, and audit events are preserved for review</strong>
+              <div className="artifact-list">
+                {currentArtifacts.slice(0, 4).map((artifact) => (
+                  <div className="artifact-row" key={artifact.id}>
+                    <strong>{artifact.title}</strong>
+                    <span>{artifact.stage}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Audit trail</p>
+              <div className="artifact-list">
+                {runtime.auditTrail.slice(0, 6).map((entry) => (
+                  <div className="audit-row" key={entry.id}>
+                    <span>{entry.at}</span>
+                    <strong>{entry.action}</strong>
+                    <p>{entry.subject}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+          </div>
+        );
+      case "Deployment":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Deployment recommendation</p>
+              <strong>{composerEnvironment} deployment path with gated promotion</strong>
+              <div className="workflow-track compact">
+                {["Development", "Test", "Pilot", "Staging", "Production"].map((stage, index) => (
+                  <React.Fragment key={stage}>
+                    <div className="workflow-step">
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{stage}</strong>
+                    </div>
+                    {index < 4 ? <div className="workflow-arrow">→</div> : null}
+                  </React.Fragment>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Release readiness</p>
+              <p className="studio-note">
+                Build, test, sign, package, publish, deploy, and verify remain separate steps with their own evidence.
+              </p>
+            </article>
+          </div>
+        );
+      case "Files":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Attachments</p>
+              <div className="artifact-list">
+                {composerAttachments.length ? (
+                  composerAttachments.map((attachment) => (
+                    <div className="artifact-row" key={attachment.id}>
+                      <strong>{attachment.name}</strong>
+                      <span>
+                        {attachment.source} · {attachment.security}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="audit-row">
+                    <strong>No attachments yet</strong>
+                    <p>Upload files, connect repositories, or attach design artefacts to enrich the request.</p>
+                  </div>
+                )}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Solution artifacts</p>
+              <div className="artifact-list">
+                {currentArtifacts.map((artifact) => (
+                  <div className="artifact-row" key={artifact.id}>
+                    <strong>{artifact.title}</strong>
+                    <span>{artifact.stage}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          </div>
+        );
+      case "Agent Activity":
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Active agents</p>
+              <div className="chip-cloud">
+                {composerAgents.map((agent) => (
+                  <span className="context-chip active" key={agent}>
+                    {agent}
+                  </span>
+                ))}
+              </div>
+            </article>
+            <article className="output-card">
+              <p className="section-label">Recent activity</p>
+              <div className="artifact-list">
+                {runtime.commandHistory.slice(0, 6).map((entry, index) => (
+                  <div className="audit-row" key={`${entry}-${index}`}>
+                    <strong>{entry}</strong>
+                    <p>Command executed against the platform workspace.</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+          </div>
+        );
+      case "Overview":
+      default:
+        return (
+          <div className="output-stack">
+            <article className="output-card">
+              <p className="section-label">Request summary</p>
+              <strong>{activeRequest?.title || suggestedTitle}</strong>
+              <p className="studio-note">{requestSummary}</p>
+              <div className="chip-cloud">
+                <span className="context-chip active">{selectedMode.label}</span>
+                <span className="context-chip">{composerEnvironment}</span>
+                <span className="context-chip">{workflowProgress}% complete</span>
+                <span className="context-chip">{activeRequest?.status || "draft"}</span>
+              </div>
+            </article>
+            <div className="dual-grid">
+              <article className="output-card">
+                <p className="section-label">Suggested solution</p>
+                <div className="artifact-list">
+                  {[
+                    ["Scope", activeRequest?.domain || "Business solution"],
+                    ["Region", activeRequest?.region || "Unspecified"],
+                    ["Target", activeRequest?.surfaces?.join(", ") || "Workspace"],
+                    ["Stage", activeStage?.label || "Intent Analysis"],
+                  ].map(([label, value]) => (
+                    <div className="artifact-row" key={label}>
+                      <strong>{label}</strong>
+                      <span>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="output-card">
+                <p className="section-label">Missing information</p>
+                <p className="studio-note">
+                  NovaCodePro will request clarification if any materially blocking detail is not supplied.
+                </p>
+                <div className="artifact-list">
+                  {[
+                    "User groups",
+                    "Country and residency constraints",
+                    "Deployment target",
+                    "Approval authority",
+                  ].map((item) => (
+                    <div className="artifact-row" key={item}>
+                      <strong>{item}</strong>
+                      <span>Review if applicable</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </div>
+        );
+    }
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -1680,48 +2239,302 @@ function App() {
         </aside>
 
         <main className="content">
-          <section className="hero-card">
-            <div className="hero-copy">
-              <p className="eyebrow">Business-first enterprise operating workflow</p>
-              <h1>Turn a business problem into an approved operating solution</h1>
-              <p className="hero-summary">
-                NovaCodePro starts with the request, moves through discovery, requirements,
-                architecture, design, engineering, review, release, deployment, and operations,
-                and keeps every step governed.
-              </p>
-
-              <div className="hero-badges">
-                <span className="badge">Organization: {activeRole.organization}</span>
-                <span className="badge">Environment: {environment}</span>
-                <span className="badge">Subscription: {activeRole.subscription}</span>
-                <span className="badge">Presence: {activeRole.presence}</span>
-                <span className="badge">Tenant: {activeTenant.name}</span>
-                <span className="badge">Project: {activeProject.name}</span>
-              </div>
-            </div>
-
-            <div className="hero-panel">
-              <div className="identity-summary">
-                <span className="dot" style={{ background: activeRole.accent }} />
-                <div>
-                  <p className="section-label">Current context</p>
-                  <strong>{selectedRequest?.title || "No solution selected"}</strong>
+          <section className="hero-card request-console">
+            <div className="console-main">
+              <div className="console-intro">
+                <p className="eyebrow">Business-first enterprise operating workflow</p>
+                <h1>What would you like NovaCodePro to build or solve?</h1>
+                <p className="hero-summary">
+                  Describe a product, upload an existing project, report a problem, or ask
+                  NovaCodePro to design, implement, test, secure, or deploy a governed solution.
+                </p>
+                <div className="hero-badges">
+                  <span className="badge">Organization: {activeRole.organization}</span>
+                  <span className="badge">Environment: {environment}</span>
+                  <span className="badge">Workspace: Solution Studio</span>
+                  <span className="badge">Tenant: {activeTenant.name}</span>
+                  <span className="badge">Project: {activeProject.name}</span>
+                  <span className="badge">Mode: {selectedMode.label}</span>
                 </div>
               </div>
-              <div className="metric-grid">
-                {[
-                  ["Stage", selectedRequest?.current_stage?.label || selectedRequest?.workflow?.[selectedRequest?.stageIndex ?? 0]?.label || "Discovery"],
-                  ["Status", selectedRequest?.status || "active"],
-                  ["Artifacts", String(selectedRequest?.artifacts?.length || 0)],
-                  ["Approvals", String(selectedRequest?.approvals?.length || 0)],
-                ].map(([label, value]) => (
-                  <article className="metric-card" key={label}>
-                    <span>{label}</span>
-                    <strong>{value}</strong>
-                  </article>
+
+              {!composerPrompt.trim() ? (
+                <article className="empty-console">
+                  <strong>Start with a request</strong>
+                  <p>
+                    NovaCodePro will interpret the request, ask for the missing facts, propose a
+                    plan, coordinate agents, and return a governed solution.
+                  </p>
+                  <div className="starter-grid">
+                    {STARTER_REQUESTS.map((request) => (
+                      <button
+                        type="button"
+                        key={request}
+                        className="starter-card"
+                        onClick={() => setComposerPrompt(request)}
+                      >
+                        {request}
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              ) : (
+                <article className="output-card interpretation-card">
+                  <p className="section-label">NovaCodePro interpretation</p>
+                  <strong>{suggestedTitle}</strong>
+                  <p className="studio-note">{requestSummary}</p>
+                  <div className="chip-cloud">
+                    <span className="context-chip active">{selectedMode.label}</span>
+                    <span className="context-chip">{composerEnvironment}</span>
+                    <span className="context-chip">{workflowProgress}% complete</span>
+                    <span className="context-chip">{activeRequest?.status || "draft"}</span>
+                  </div>
+                </article>
+              )}
+
+              <div className="console-tabs" role="tablist" aria-label="Output views">
+                {OUTPUT_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === activeOutputTab}
+                    className={tab === activeOutputTab ? "workspace-tab active" : "workspace-tab"}
+                    onClick={() => setSelectedOutputTab(tab)}
+                  >
+                    {tab}
+                  </button>
                 ))}
               </div>
+
+              {renderOutputTabContent()}
+
+              <form
+                className="composer-panel"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitComposer("Send and execute");
+                }}
+              >
+                <label className="composer-field">
+                  <span>Ask NovaCodePro to build, analyse, fix, test, secure, or deploy...</span>
+                  <textarea
+                    rows="5"
+                    value={composerPrompt}
+                    onChange={(event) => setComposerPrompt(event.target.value)}
+                    placeholder="Build a modern customer-service portal with authentication, case management, analytics, and an AI support assistant."
+                  />
+                </label>
+
+                <div className="composer-toolbar">
+                  <input
+                    ref={attachmentInputRef}
+                    type="file"
+                    hidden
+                    multiple
+                    onChange={handleAttachmentUpload}
+                  />
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => attachmentInputRef.current?.click()}
+                  >
+                    Attach
+                  </button>
+                  <div className="segmented-control" role="group" aria-label="Execution mode">
+                    {COMPOSER_MODES.map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        className={mode.id === composerMode ? "segment active" : "segment"}
+                        onClick={() => setComposerMode(mode.id)}
+                        title={mode.description}
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
+                  </div>
+                  <select
+                    className="toolbar-select"
+                    value={composerEnvironment}
+                    onChange={(event) => setComposerEnvironment(event.target.value)}
+                    aria-label="Target environment"
+                  >
+                    {["Local", "Development", "Test", "Internal QA", "Controlled Pilot", "Public Pilot", "Staging", "Production"].map(
+                      (item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+
+                <div className="composer-toolbar wrap">
+                  <div className="chip-cloud compact">
+                    {COMPOSER_CONTEXT_SOURCES.map((source) => (
+                      <button
+                        type="button"
+                        key={source}
+                        className={
+                          composerContextSources.includes(source)
+                            ? "context-chip active"
+                            : "context-chip"
+                        }
+                        onClick={() => toggleComposerContextSource(source)}
+                      >
+                        {source}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="chip-cloud compact">
+                    {COMPOSER_AGENTS.map((agent) => (
+                      <button
+                        type="button"
+                        key={agent}
+                        className={composerAgents.includes(agent) ? "context-chip active" : "context-chip"}
+                        onClick={() => toggleComposerAgent(agent)}
+                      >
+                        {agent}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {composerAttachments.length ? (
+                  <div className="attachment-strip">
+                    {composerAttachments.map((attachment) => (
+                      <span className="attachment-chip" key={attachment.id}>
+                        {attachment.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="composer-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => {
+                      submitComposer("Plan only");
+                    }}
+                  >
+                    Plan only
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => {
+                      platformRuntime.runCommand("Save solution request as draft");
+                    }}
+                  >
+                    Save draft
+                  </button>
+                  <button
+                    type="submit"
+                    className="primary-action"
+                  >
+                    Send and execute
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.runCommand("Create reusable workflow")}
+                  >
+                    Create workflow
+                  </button>
+                </div>
+              </form>
             </div>
+
+            <aside className="console-aside">
+              <section className="console-card">
+                <p className="section-label">Execution status</p>
+                <strong>{activeRequest?.title || "New request"}</strong>
+                <div className="metric-grid compact">
+                  {[
+                    ["Stage", activeStage?.label || "Intent Analysis"],
+                    ["Status", activeRequest?.status || "draft"],
+                    ["Artifacts", String(activeRequest?.artifacts?.length || 0)],
+                    ["Approvals", String(activeRequest?.approvals?.length || 0)],
+                  ].map(([label, value]) => (
+                    <article className="metric-card" key={label}>
+                      <span>{label}</span>
+                      <strong>{value}</strong>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="console-card">
+                <p className="section-label">Workflow monitor</p>
+                <div className="workflow-rail compact">
+                  {(activeRequest?.workflow || []).slice(0, 5).map((stage) => (
+                    <button
+                      key={stage.id}
+                      type="button"
+                      className={stage.id === activeStage?.id ? "workflow-node active" : "workflow-node"}
+                      onClick={() => setSelectedOutputTab("Plan")}
+                    >
+                      <span>{stage.label}</span>
+                      <strong>{stage.status}</strong>
+                      <em>{stage.service}</em>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className="console-card">
+                <p className="section-label">Context</p>
+                <div className="chip-cloud">
+                  {composerContextSources.map((source) => (
+                    <span className="context-chip active" key={source}>
+                      {source}
+                    </span>
+                  ))}
+                </div>
+              </section>
+
+              <section className="console-card">
+                <p className="section-label">Attachments</p>
+                <div className="artifact-list">
+                  {composerAttachments.length ? (
+                    composerAttachments.map((attachment) => (
+                      <div className="artifact-row" key={attachment.id}>
+                        <strong>{attachment.name}</strong>
+                        <span>
+                          {attachment.source} · {attachment.security}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="audit-row">
+                      <strong>No attachments yet</strong>
+                      <p>Upload files, connect a repository, or attach reference material.</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              <section className="console-card">
+                <p className="section-label">Approvals</p>
+                <div className="artifact-list">
+                  {activeRequest?.approvals?.length ? (
+                    activeRequest.approvals.map((approval) => (
+                      <div className="artifact-row" key={approval.id}>
+                        <strong>{approval.gate}</strong>
+                        <span>{approval.by}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="audit-row">
+                      <strong>Human approval pending</strong>
+                      <p>Architecture, security, compliance, and release gates stay explicit.</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </aside>
           </section>
 
           <section className="surface-band">

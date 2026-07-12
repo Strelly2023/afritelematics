@@ -27,12 +27,16 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
     )
     for token in [
         "NovaCodePro",
-        "Turn a business problem into an approved operating solution",
+        "What would you like NovaCodePro to build or solve?",
         "Solution journey",
-        "Business request",
-        "AI discovery",
-        "Understanding score",
-        "Workflow Monitor",
+        "Request summary",
+        "Suggested solution",
+        "Execution status",
+        "Workflow monitor",
+        "Plan only",
+        "Send and execute",
+        "Create workflow",
+        "Attachments",
         "Release Factory",
         "Deployment Center",
         "Digital Twin",
@@ -121,5 +125,10 @@ def test_novacodepro_portal_has_real_platform_services() -> None:
         "postComment",
         "focusKnowledgeNode",
         "runAutomationTemplate",
+        "mode: payload.mode",
+        "attachments: payload.attachments",
+        "contextSources: payload.contextSources",
+        "selectedAgents: payload.selectedAgents",
+        "environment: payload.environment",
     ]:
         assert token in runtime + catalog
