@@ -616,6 +616,24 @@ const DIGITAL_TWIN_LAYERS = [
   ["America", "Growth region"],
 ];
 
+const DISTRIBUTED_SERVICES = [
+  ["Gateway Service", "Authentication, routing, billing, and workspace entry control."],
+  ["NovaID Service", "Identity, SSO, MFA, and role assignment."],
+  ["Workflow Service", "Pause, resume, retry, rollback, approve, and replay."],
+  ["Agent Orchestrator", "Specialist AI services with execution history and evidence."],
+  ["Artifact Service", "Versioned requirements, code, docs, and deployment assets."],
+  ["Audit Service", "Immutable audit trail and evidence capture."],
+  ["Policy Engine", "Governance rules, approval gates, and compliance checks."],
+  ["Notification Service", "Tasks, approvals, alerts, and workflow messages."],
+  ["Marketplace Service", "Extensions, agents, and solution packs."],
+  ["Search Service", "Semantic discovery across projects and artifacts."],
+  ["Deployment Service", "Release promotion, rollback, and verification."],
+  ["Release Factory", "Release creation, stage promotion, and publication evidence."],
+  ["Billing Service", "Metering, quotas, licensing, and subscriptions."],
+  ["Licensing Service", "Entitlements, plan enforcement, and activation."],
+  ["Observability Service", "Metrics, logs, traces, SLOs, and incidents."],
+];
+
 function App() {
   const runtime = usePlatformRuntime();
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
@@ -1471,6 +1489,28 @@ function App() {
                   ))}
                 </div>
               </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Distributed platform</p>
+                <h2>Backend services carry the state, workflows, evidence, and operations</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Persistent storage</span>
+                <span>Auditable transitions</span>
+              </div>
+            </div>
+            <div className="service-grid compact">
+              {DISTRIBUTED_SERVICES.map(([service, detail]) => (
+                <article className="service-card" key={service}>
+                  <p className="section-label">Service</p>
+                  <strong>{service}</strong>
+                  <p>{detail}</p>
+                </article>
+              ))}
             </div>
           </section>
 
