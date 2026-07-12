@@ -45,6 +45,10 @@ def _workspace_slug(role: str) -> str:
         "BUSINESS_ANALYST": "business-analyst",
         "UI_UX_DESIGNER": "design",
         "PROJECT_MANAGER": "project-manager",
+        "ARCHITECT": "architect",
+        "QA_ENGINEER": "qa-engineer",
+        "DEVOPS_ENGINEER": "devops-engineer",
+        "CUSTOMER_SUPPORT": "customer-support",
         "OPERATOR": "operations",
         "VERIFIER": "security",
         "CLIENT": "partner",
@@ -63,6 +67,10 @@ def _workspace_label(role: str) -> str:
         "BUSINESS_ANALYST": "Business Analyst",
         "UI_UX_DESIGNER": "UI/UX Designer",
         "PROJECT_MANAGER": "Project Manager",
+        "ARCHITECT": "Architect",
+        "QA_ENGINEER": "QA Engineer",
+        "DEVOPS_ENGINEER": "DevOps Engineer",
+        "CUSTOMER_SUPPORT": "Customer Support",
         "OPERATOR": "DevOps Engineer",
         "VERIFIER": "Security Engineer",
         "CLIENT": "Partner",
@@ -82,6 +90,10 @@ def _workspace_title(role: str) -> str:
         "BUSINESS_ANALYST": "Business Analysis Workspace",
         "UI_UX_DESIGNER": "Design Studio",
         "PROJECT_MANAGER": "Project Delivery Workspace",
+        "ARCHITECT": "Architecture Workspace",
+        "QA_ENGINEER": "Quality Engineering Workspace",
+        "DEVOPS_ENGINEER": "DevOps Workspace",
+        "CUSTOMER_SUPPORT": "Customer Support Workspace",
         "OPERATOR": "Operations Workspace",
         "VERIFIER": "Security Workspace",
         "CLIENT": "Partner Workspace",
@@ -100,6 +112,10 @@ def _workspace_description(role: str) -> str:
         "BUSINESS_ANALYST": "Translate business needs into clear, testable, and traceable requirements that deliver measurable value.",
         "UI_UX_DESIGNER": "Transform business and customer requirements into accessible, consistent, user-centered experiences.",
         "PROJECT_MANAGER": "Plan, coordinate, and deliver NovaTech projects within scope, schedule, budget, quality, and governance.",
+        "ARCHITECT": "Design secure, scalable, interoperable, future-ready technology architectures.",
+        "QA_ENGINEER": "Verify that every solution meets functional, security, performance, accessibility, and governance requirements.",
+        "DEVOPS_ENGINEER": "Automate delivery, infrastructure, observability, and operations for reliable production change.",
+        "CUSTOMER_SUPPORT": "Resolve customer issues, protect customer trust, and improve service experience.",
         "OPERATOR": "Watch delivery health, deployments, reliability signals, and incident response.",
         "VERIFIER": "Review security posture, approvals, evidence, and compliance gates.",
         "CLIENT": "Coordinate partner integrations, shared resources, and certified interfaces.",
@@ -214,7 +230,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/solution-studio",
         required_permissions=("solution.write", "workflow.write"),
         supported_roles=("ADMIN", "DEVELOPER"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Solution Engineering",
         help_url="/docs/novacodepro/tools/solution-studio",
@@ -248,7 +264,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/projects",
         required_permissions=("project.read", "project.write"),
         supported_roles=("ADMIN", "DEVELOPER", "OPERATOR", "OBSERVER"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Portfolio Office",
         help_url="/docs/novacodepro/tools/projects",
@@ -281,7 +297,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         icon="✓",
         route="/novacodepro/tools/build-test-center",
         required_permissions=("workflow.write", "release.write"),
-        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR"),
+        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR", "DEVOPS_ENGINEER"),
         supported_environments=("development", "staging", "pilot"),
         version="v1",
         ownership_team="Quality Engineering",
@@ -298,8 +314,8 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         icon="⟶",
         route="/novacodepro/tools/release-center",
         required_permissions=("release.read", "release.write"),
-        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR"),
-        supported_environments=("staging", "pilot", "production"),
+        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR", "DEVOPS_ENGINEER"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Release Engineering",
         help_url="/docs/novacodepro/tools/release-center",
@@ -315,8 +331,8 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         icon="⇢",
         route="/novacodepro/tools/deployment-center",
         required_permissions=("deployment.read", "deployment.write"),
-        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR"),
-        supported_environments=("staging", "pilot", "production"),
+        supported_roles=("ADMIN", "DEVELOPER", "OPERATOR", "DEVOPS_ENGINEER"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Delivery",
         help_url="/docs/novacodepro/tools/deployment-center",
@@ -333,7 +349,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/environment-manager",
         required_permissions=("deployment.write", "policy.write"),
         supported_roles=("ADMIN", "OPERATOR"),
-        supported_environments=("staging", "pilot", "production"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Operations",
         help_url="/docs/novacodepro/tools/environment-manager",
@@ -350,7 +366,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/operations-center",
         required_permissions=("read:metrics", "read:delivery"),
         supported_roles=("ADMIN", "OPERATOR", "OBSERVER"),
-        supported_environments=("staging", "pilot", "production"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Operations",
         help_url="/docs/novacodepro/tools/operations-center",
@@ -401,7 +417,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/customer-center",
         required_permissions=("read:metrics", "read:verification"),
         supported_roles=("ADMIN", "OBSERVER", "CUSTOMER"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Customer Operations",
         help_url="/docs/novacodepro/tools/customer-center",
@@ -435,7 +451,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/employee-center",
         required_permissions=("read:metrics", "read:trust"),
         supported_roles=("ADMIN", "OPERATOR"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="People Operations",
         help_url="/docs/novacodepro/tools/employee-center",
@@ -486,7 +502,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/evidence-vault",
         required_permissions=("evidence.read",),
         supported_roles=("ADMIN", "VERIFIER", "OBSERVER"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Evidence",
         help_url="/docs/novacodepro/tools/evidence-vault",
@@ -537,7 +553,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/knowledge-graph",
         required_permissions=("graph.read", "knowledge.query"),
         supported_roles=("ADMIN", "DEVELOPER", "OPERATOR", "VERIFIER", "OBSERVER"),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Knowledge Fabric",
         help_url="/docs/novacodepro/tools/knowledge-graph",
@@ -605,7 +621,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/platform-administration",
         required_permissions=("rbac.manage", "policy.manage"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Operations",
         help_url="/docs/novacodepro/tools/platform-administration",
@@ -2356,7 +2372,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/tenant-management",
         required_permissions=("tenant.read", "tenant.configure"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Operations",
         help_url="/docs/novacodepro/tools/tenant-management",
@@ -2373,7 +2389,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/identity-access-center",
         required_permissions=("identity.read", "identity.assign_role"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Identity Operations",
         help_url="/docs/novacodepro/tools/identity-access-center",
@@ -2390,7 +2406,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/application-tool-registry",
         required_permissions=("tool.read", "tool.register"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Engineering",
         help_url="/docs/novacodepro/tools/application-tool-registry",
@@ -2407,7 +2423,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/infrastructure-service-center",
         required_permissions=("platform.read", "operations.read"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Infrastructure",
         help_url="/docs/novacodepro/tools/infrastructure-service-center",
@@ -2424,7 +2440,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/artifact-registry",
         required_permissions=("artifact.read", "release.verify"),
         supported_roles=("ADMIN",),
-        supported_environments=("staging", "pilot", "production"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Release Operations",
         help_url="/docs/novacodepro/tools/artifact-registry",
@@ -2441,7 +2457,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/policy-administration",
         required_permissions=("policy.read", "policy.publish"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Governance",
         help_url="/docs/novacodepro/tools/policy-administration",
@@ -2458,7 +2474,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/compliance-center",
         required_permissions=("audit.read", "governance.read"),
         supported_roles=("ADMIN",),
-        supported_environments=("staging", "pilot", "production"),
+        supported_environments=("operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Compliance",
         help_url="/docs/novacodepro/tools/compliance-center",
@@ -2475,7 +2491,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/integration-center",
         required_permissions=("integration.read", "integration.configure"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Integration Operations",
         help_url="/docs/novacodepro/tools/integration-center",
@@ -2509,7 +2525,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/feature-configuration-center",
         required_permissions=("platform.configure", "tool.configure"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Enablement",
         help_url="/docs/novacodepro/tools/feature-configuration-center",
@@ -2543,7 +2559,7 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         route="/novacodepro/tools/administrative-diagnostics",
         required_permissions=("audit.read", "platform.read"),
         supported_roles=("ADMIN",),
-        supported_environments=("development", "staging", "pilot", "production"),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
         version="v1",
         ownership_team="Platform Diagnostics",
         help_url="/docs/novacodepro/tools/administrative-diagnostics",
@@ -2551,6 +2567,414 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         group="ADMINISTRATION",
         overview=("Trace IDs", "Logs", "Dependencies", "Flags", "Sessions"),
         primary_actions=("Inspect Trace", "Open Log Stream", "Review Drift"),
+    ),
+    ToolDefinition(
+        id="architecture-workspace",
+        name="Architecture Workspace",
+        description="Review assigned systems, designs, risks, and architecture alignment.",
+        icon="⌂",
+        route="/novacodepro/tools/architecture-workspace",
+        required_permissions=("architecture.read", "review.create"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Architecture",
+        help_url="/docs/novacodepro/tools/architecture-workspace",
+        audit_category="architecture",
+        group="HOME",
+        overview=("Initiatives", "Risks", "Reviews", "Diagrams", "ADRs"),
+        primary_actions=("Review Design", "Open ADR", "Inspect Risk"),
+    ),
+    ToolDefinition(
+        id="enterprise-architecture-center",
+        name="Enterprise Architecture Center",
+        description="Define enterprise capability maps, principles, standards, and future state.",
+        icon="⌘",
+        route="/novacodepro/tools/enterprise-architecture-center",
+        required_permissions=("architecture.read", "standards.read"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Enterprise Architecture",
+        help_url="/docs/novacodepro/tools/enterprise-architecture-center",
+        audit_category="architecture",
+        group="ARCHITECTURE",
+        overview=("Capabilities", "Principles", "Standards", "Portfolio", "Future State"),
+        primary_actions=("Open Map", "Review Standard", "Publish View"),
+    ),
+    ToolDefinition(
+        id="solution-architecture-studio",
+        name="Solution Architecture Studio",
+        description="Design solution blueprints, services, integrations, and deployments.",
+        icon="◆",
+        route="/novacodepro/tools/solution-architecture-studio",
+        required_permissions=("architecture.create", "api.design", "integration.design"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Solution Architecture",
+        help_url="/docs/novacodepro/tools/solution-architecture-studio",
+        audit_category="architecture",
+        group="ARCHITECTURE",
+        overview=("Blueprints", "Services", "Integration", "Deployment", "Runtime"),
+        primary_actions=("Create Blueprint", "Review Context", "Publish Design"),
+    ),
+    ToolDefinition(
+        id="architecture-governance-center",
+        name="Architecture Governance Center",
+        description="Schedule reviews, validate standards, and manage architecture exceptions.",
+        icon="⚑",
+        route="/novacodepro/tools/architecture-governance-center",
+        required_permissions=("review.create", "standards.propose"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Architecture Governance",
+        help_url="/docs/novacodepro/tools/architecture-governance-center",
+        audit_category="architecture-governance",
+        group="GOVERNANCE",
+        overview=("Reviews", "Exceptions", "Standards", "Boards", "Compliance"),
+        primary_actions=("Schedule Review", "Open Exception", "Publish Standard"),
+    ),
+    ToolDefinition(
+        id="architecture-documentation-center",
+        name="Architecture Documentation Center",
+        description="Maintain reference architectures, standards, ADRs, and blueprints.",
+        icon="☰",
+        route="/novacodepro/tools/architecture-documentation-center",
+        required_permissions=("documentation.publish", "architecture.read"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Architecture Documentation",
+        help_url="/docs/novacodepro/tools/architecture-documentation-center",
+        audit_category="documentation",
+        group="KNOWLEDGE",
+        overview=("Reference", "ADRs", "Standards", "Guides", "Roadmap"),
+        primary_actions=("Publish Doc", "Open ADR", "Review Guide"),
+    ),
+    ToolDefinition(
+        id="architecture-command-center",
+        name="Architecture Command Center",
+        description="Monitor architecture health, compliance, and dependency posture.",
+        icon="⌘",
+        route="/novacodepro/tools/architecture-command-center",
+        required_permissions=("architecture.read", "analytics.read"),
+        supported_roles=("ARCHITECT",),
+        supported_environments=("architecture", "staging", "pilot"),
+        version="v1",
+        ownership_team="Architecture Operations",
+        help_url="/docs/novacodepro/tools/architecture-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Landscape", "Dependencies", "Standards", "Risks", "Health"),
+        primary_actions=("Inspect Topology", "Review Health", "Open Compliance"),
+    ),
+    ToolDefinition(
+        id="quality-engineering-workspace",
+        name="Quality Engineering Workspace",
+        description="Track active test projects, execution status, defects, and readiness.",
+        icon="⌂",
+        route="/novacodepro/tools/quality-engineering-workspace",
+        required_permissions=("test.read", "quality.report"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Engineering",
+        help_url="/docs/novacodepro/tools/quality-engineering-workspace",
+        audit_category="quality",
+        group="HOME",
+        overview=("Projects", "Tests", "Defects", "Readiness", "Evidence"),
+        primary_actions=("Open Test Plan", "Review Defect", "Run Suite"),
+    ),
+    ToolDefinition(
+        id="test-management-center",
+        name="Test Management Center",
+        description="Create test plans, suites, cases, and execution cycles.",
+        icon="☑",
+        route="/novacodepro/tools/test-management-center",
+        required_permissions=("test.create", "requirements.traceability.read"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Engineering",
+        help_url="/docs/novacodepro/tools/test-management-center",
+        audit_category="test-management",
+        group="TESTING",
+        overview=("Plans", "Suites", "Cases", "Cycles", "Traceability"),
+        primary_actions=("Create Plan", "Add Suite", "Open Trace"),
+    ),
+    ToolDefinition(
+        id="automation-testing-center",
+        name="Automation Testing Center",
+        description="Build and run regression, API, UI, and mobile automation.",
+        icon="⚙",
+        route="/novacodepro/tools/automation-testing-center",
+        required_permissions=("automation.manage", "test.execute"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Automation",
+        help_url="/docs/novacodepro/tools/automation-testing-center",
+        audit_category="automation",
+        group="TESTING",
+        overview=("Regression", "API", "UI", "Mobile", "Parallel"),
+        primary_actions=("Run Regression", "Open Report", "Schedule Run"),
+    ),
+    ToolDefinition(
+        id="release-readiness-center",
+        name="Release Readiness Center",
+        description="Review quality gates, defect thresholds, and release recommendation evidence.",
+        icon="✓",
+        route="/novacodepro/tools/release-readiness-center",
+        required_permissions=("release.readiness.review", "test.read"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Release",
+        help_url="/docs/novacodepro/tools/release-readiness-center",
+        audit_category="release-readiness",
+        group="QUALITY",
+        overview=("Gates", "Defects", "Docs", "Evidence", "Recommendation"),
+        primary_actions=("Review Gates", "Inspect Defects", "Recommend Release"),
+    ),
+    ToolDefinition(
+        id="test-evidence-center",
+        name="Test Evidence Center",
+        description="Store screenshots, logs, videos, and signed test reports.",
+        icon="✦",
+        route="/novacodepro/tools/test-evidence-center",
+        required_permissions=("evidence.upload", "test.read"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Evidence",
+        help_url="/docs/novacodepro/tools/test-evidence-center",
+        audit_category="evidence",
+        group="QUALITY",
+        overview=("Screenshots", "Logs", "Videos", "Reports", "Signatures"),
+        primary_actions=("Upload Evidence", "Verify Report", "Open Bundle"),
+    ),
+    ToolDefinition(
+        id="quality-command-center",
+        name="Quality Command Center",
+        description="Monitor cross-product quality, defect trends, automation, and release health.",
+        icon="⌘",
+        route="/novacodepro/tools/quality-command-center",
+        required_permissions=("quality.report", "analytics.read"),
+        supported_roles=("QA_ENGINEER",),
+        supported_environments=("quality", "staging", "pilot"),
+        version="v1",
+        ownership_team="Quality Operations",
+        help_url="/docs/novacodepro/tools/quality-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Quality", "Defects", "Automation", "Readiness", "Alerts"),
+        primary_actions=("Open Trend", "Review Quality", "Inspect Alert"),
+    ),
+    ToolDefinition(
+        id="devops-workspace",
+        name="DevOps Workspace",
+        description="Monitor deployments, pipelines, incidents, and platform operations.",
+        icon="⌂",
+        route="/novacodepro/tools/devops-workspace",
+        required_permissions=("deployment.read", "observability.read"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="DevOps",
+        help_url="/docs/novacodepro/tools/devops-workspace",
+        audit_category="devops",
+        group="HOME",
+        overview=("Deployments", "Pipelines", "Health", "Incidents", "Readiness"),
+        primary_actions=("Open Deployment", "Run Pipeline", "Inspect Logs"),
+    ),
+    ToolDefinition(
+        id="cicd-pipeline-center",
+        name="CI/CD Pipeline Center",
+        description="Create, execute, and analyze governed pipelines.",
+        icon="⇄",
+        route="/novacodepro/tools/cicd-pipeline-center",
+        required_permissions=("pipeline.read", "pipeline.execute"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Delivery Engineering",
+        help_url="/docs/novacodepro/tools/cicd-pipeline-center",
+        audit_category="pipeline",
+        group="DELIVERY",
+        overview=("Workflows", "Approvals", "Artifacts", "Analytics", "Gates"),
+        primary_actions=("Run Pipeline", "Open Workflow", "Review Gate"),
+    ),
+    ToolDefinition(
+        id="deployment-center",
+        name="Deployment Center",
+        description="Execute approved releases across environments with rollback support.",
+        icon="⟲",
+        route="/novacodepro/tools/deployment-center",
+        required_permissions=("deployment.deploy_authorized", "deployment.read"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Release Operations",
+        help_url="/docs/novacodepro/tools/deployment-center",
+        audit_category="deployment",
+        group="DELIVERY",
+        overview=("Rollout", "Rollback", "Readiness", "Evidence", "Topology"),
+        primary_actions=("Deploy Release", "Pause Rollout", "Rollback"),
+    ),
+    ToolDefinition(
+        id="observability-center",
+        name="Observability Center",
+        description="Monitor metrics, logs, traces, alerts, latency, and capacity.",
+        icon="◌",
+        route="/novacodepro/tools/observability-center",
+        required_permissions=("observability.read", "analytics.read"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Observability",
+        help_url="/docs/novacodepro/tools/observability-center",
+        audit_category="observability",
+        group="OPERATIONS",
+        overview=("Metrics", "Logs", "Traces", "Alerts", "Latency"),
+        primary_actions=("Open Dashboard", "Inspect Trace", "Review Alert"),
+    ),
+    ToolDefinition(
+        id="environment-management-center",
+        name="Environment Management Center",
+        description="Provision and manage development, QA, pilot, staging, production, and DR environments.",
+        icon="⌂",
+        route="/novacodepro/tools/environment-management-center",
+        required_permissions=("environment.manage", "environment.validate"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Platform Operations",
+        help_url="/docs/novacodepro/tools/environment-management-center",
+        audit_category="environment",
+        group="RELIABILITY",
+        overview=("Environments", "Health", "Drift", "Resources", "Cleanup"),
+        primary_actions=("Open Environment", "Validate Config", "Compare"),
+    ),
+    ToolDefinition(
+        id="devops-command-center",
+        name="DevOps Command Center",
+        description="View deployment maps, infrastructure health, release flow, and live topology.",
+        icon="⌘",
+        route="/novacodepro/tools/devops-command-center",
+        required_permissions=("deployment.read", "analytics.read"),
+        supported_roles=("DEVOPS_ENGINEER",),
+        supported_environments=("development", "operations", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="DevOps Operations",
+        help_url="/docs/novacodepro/tools/devops-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Status", "Map", "Health", "Alerts", "KPIs"),
+        primary_actions=("Open Map", "Inspect Health", "Review KPI"),
+    ),
+    ToolDefinition(
+        id="customer-support-workspace",
+        name="Customer Support Workspace",
+        description="Manage tickets, queues, SLAs, and customer interactions.",
+        icon="⌂",
+        route="/novacodepro/tools/customer-support-workspace",
+        required_permissions=("ticket.read", "ticket.update"),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Customer Support",
+        help_url="/docs/novacodepro/tools/customer-support-workspace",
+        audit_category="support",
+        group="HOME",
+        overview=("Queue", "SLA", "Incidents", "Customers", "Actions"),
+        primary_actions=("Open Ticket", "Search Customer", "Escalate"),
+    ),
+    ToolDefinition(
+        id="customer-360-center",
+        name="Customer 360 Center",
+        description="View authorized customer profile, accounts, interactions, and support history.",
+        icon="◉",
+        route="/novacodepro/tools/customer-360-center",
+        required_permissions=("customer.read_authorized", "identity.verify"),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Customer Intelligence",
+        help_url="/docs/novacodepro/tools/customer-360-center",
+        audit_category="customer",
+        group="CARE",
+        overview=("Identity", "Accounts", "History", "Devices", "Preferences"),
+        primary_actions=("Open Profile", "Verify Identity", "Inspect History"),
+    ),
+    ToolDefinition(
+        id="ticket-management-center",
+        name="Ticket Management Center",
+        description="Create, assign, triage, and close customer tickets.",
+        icon="✎",
+        route="/novacodepro/tools/ticket-management-center",
+        required_permissions=("ticket.create", "ticket.update", "ticket.assign"),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Support Operations",
+        help_url="/docs/novacodepro/tools/ticket-management-center",
+        audit_category="ticket",
+        group="SUPPORT",
+        overview=("New", "Assigned", "Investigating", "Waiting", "Closed"),
+        primary_actions=("Create Ticket", "Assign Ticket", "Close Ticket"),
+    ),
+    ToolDefinition(
+        id="incident-communication-center",
+        name="Incident Communication Center",
+        description="Link tickets to incidents and send governed customer updates.",
+        icon="⚠",
+        route="/novacodepro/tools/incident-communication-center",
+        required_permissions=("escalation.create", "analytics.read"),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Incident Communications",
+        help_url="/docs/novacodepro/tools/incident-communication-center",
+        audit_category="incident",
+        group="OPERATIONS",
+        overview=("Incidents", "Customers", "Updates", "Templates", "Impact"),
+        primary_actions=("Open Incident", "Send Update", "Link Ticket"),
+    ),
+    ToolDefinition(
+        id="support-analytics-center",
+        name="Support Analytics Center",
+        description="Analyze satisfaction, backlog, resolution trends, and regional support load.",
+        icon="⌘",
+        route="/novacodepro/tools/support-analytics-center",
+        required_permissions=("analytics.read",),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Support Analytics",
+        help_url="/docs/novacodepro/tools/support-analytics-center",
+        audit_category="analytics",
+        group="MANAGEMENT",
+        overview=("CSAT", "Backlog", "SLA", "Trends", "Performance"),
+        primary_actions=("Open Trend", "Review KPI", "Export Report"),
+    ),
+    ToolDefinition(
+        id="customer-support-command-center",
+        name="Customer Support Command Center",
+        description="Monitor global support queue, regional status, and live support metrics.",
+        icon="⌘",
+        route="/novacodepro/tools/customer-support-command-center",
+        required_permissions=("ticket.read", "analytics.read"),
+        supported_roles=("CUSTOMER_SUPPORT",),
+        supported_environments=("support", "staging", "pilot"),
+        version="v1",
+        ownership_team="Support Command",
+        help_url="/docs/novacodepro/tools/customer-support-command-center",
+        audit_category="command-center",
+        group="MANAGEMENT",
+        overview=("Queue", "SLA", "Incidents", "Health", "Workload"),
+        primary_actions=("Inspect Queue", "Review SLA", "Open Incident"),
     ),
 )
 
@@ -2562,6 +2986,10 @@ ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "BUSINESS_ANALYST": ("HOME", "ANALYSIS", "STAKEHOLDERS", "PLANNING", "GOVERNANCE", "INTELLIGENCE"),
     "UI_UX_DESIGNER": ("HOME", "DESIGN", "SYSTEM", "RESEARCH", "DELIVERY", "CREATIVE"),
     "PROJECT_MANAGER": ("HOME", "PROJECTS", "DELIVERY", "GOVERNANCE", "COMMUNICATION", "OPERATIONS"),
+    "ARCHITECT": ("HOME", "ARCHITECTURE", "GOVERNANCE", "KNOWLEDGE", "INTELLIGENCE"),
+    "QA_ENGINEER": ("HOME", "TESTING", "QUALITY", "INTELLIGENCE"),
+    "DEVOPS_ENGINEER": ("HOME", "DELIVERY", "OPERATIONS", "RELIABILITY", "INTELLIGENCE"),
+    "CUSTOMER_SUPPORT": ("HOME", "SUPPORT", "CARE", "OPERATIONS", "MANAGEMENT"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -2630,6 +3058,46 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Generate Status Report",
         "Approve Baseline",
         "Schedule Meeting",
+    ),
+    "ARCHITECT": (
+        "Create Architecture",
+        "Open System Model",
+        "Review ADR",
+        "Design API",
+        "Review Integration",
+        "Validate Standards",
+        "Publish Architecture",
+        "Start Design Review",
+    ),
+    "QA_ENGINEER": (
+        "Run Test Suite",
+        "Execute Regression",
+        "Open Failed Tests",
+        "Report Defect",
+        "Review Release",
+        "Generate Test Report",
+        "Verify Bug Fix",
+        "Create Test Plan",
+    ),
+    "DEVOPS_ENGINEER": (
+        "Run Pipeline",
+        "Deploy Release",
+        "Rollback Deployment",
+        "Review Infrastructure",
+        "Scale Services",
+        "Open Logs",
+        "Rotate Secrets",
+        "View Kubernetes Cluster",
+    ),
+    "CUSTOMER_SUPPORT": (
+        "Create Ticket",
+        "Search Customer",
+        "Verify Identity",
+        "Escalate Issue",
+        "Refund Request",
+        "Knowledge Base",
+        "Live Chat",
+        "View Customer Timeline",
     ),
     "OPERATOR": (
         "Open Operations Center",
@@ -2730,6 +3198,41 @@ def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str,
             "GOVERNANCE": "Governance",
             "COMMUNICATION": "Communication",
             "OPERATIONS": "Operations",
+        }
+    elif canonical == "ARCHITECT":
+        order = ["HOME", "ARCHITECTURE", "GOVERNANCE", "KNOWLEDGE", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Overview",
+            "ARCHITECTURE": "Architecture",
+            "GOVERNANCE": "Governance",
+            "KNOWLEDGE": "Knowledge",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "QA_ENGINEER":
+        order = ["HOME", "TESTING", "QUALITY", "INTELLIGENCE"]
+        labels = {
+            "HOME": "Quality Engineering",
+            "TESTING": "Testing",
+            "QUALITY": "Quality",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "DEVOPS_ENGINEER":
+        order = ["HOME", "DELIVERY", "OPERATIONS", "RELIABILITY", "INTELLIGENCE"]
+        labels = {
+            "HOME": "DevOps",
+            "DELIVERY": "Delivery",
+            "OPERATIONS": "Operations",
+            "RELIABILITY": "Reliability",
+            "INTELLIGENCE": "Intelligence",
+        }
+    elif canonical == "CUSTOMER_SUPPORT":
+        order = ["HOME", "SUPPORT", "CARE", "OPERATIONS", "MANAGEMENT"]
+        labels = {
+            "HOME": "Overview",
+            "SUPPORT": "Support",
+            "CARE": "Customer Care",
+            "OPERATIONS": "Operations",
+            "MANAGEMENT": "Management",
         }
     else:
         order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE", "OPERATE", "BUSINESS", "GOVERN", "LEADERSHIP", "ADMINISTRATION"]
@@ -2869,6 +3372,42 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {"title": "Quality readiness", "value": "High" if health["critical"] <= 1 else "Attention", "meta": "UAT, security, and deployment readiness"},
             {"title": "Tool access", "value": len(_visible_tools(role, "delivery")), "meta": "Authorized project tools"},
         ]
+    if canonical == "ARCHITECT":
+        return [
+            {"title": "Architecture decisions", "value": 324, "meta": "ADRs and standards decisions tracked"},
+            {"title": "Open reviews", "value": 18, "meta": "Solution, API, and platform reviews"},
+            {"title": "Standards compliance", "value": "97%", "meta": "Reference architecture alignment"},
+            {"title": "Technical debt", "value": "Low", "meta": "Modernization and refactoring pressure"},
+            {"title": "Critical risks", "value": 2, "meta": "Design risks requiring escalation"},
+            {"title": "Reference architectures", "value": 46, "meta": "Reusable patterns and blueprints"},
+        ]
+    if canonical == "QA_ENGINEER":
+        return [
+            {"title": "Test cases executed", "value": 8420, "meta": "Regression, API, mobile, and UI coverage"},
+            {"title": "Pass rate", "value": "98.9%", "meta": "Recent execution quality"},
+            {"title": "Failed tests", "value": 24, "meta": "Open test failures"},
+            {"title": "Open defects", "value": 18, "meta": "Verified and triaged defects"},
+            {"title": "Automation coverage", "value": "91%", "meta": "Automated validation coverage"},
+            {"title": "Release readiness", "value": "96%", "meta": "Quality gate confidence"},
+        ]
+    if canonical == "DEVOPS_ENGINEER":
+        return [
+            {"title": "Active deployments", "value": 5, "meta": "Healthy, rolling, and pending releases"},
+            {"title": "Infrastructure health", "value": "Strong", "meta": "Service and cluster state"},
+            {"title": "CI/CD status", "value": 12, "meta": "Running pipelines"},
+            {"title": "Deployment success", "value": "99.4%", "meta": "Successful delivery rate"},
+            {"title": "Production availability", "value": "99.98%", "meta": "Platform uptime"},
+            {"title": "Quick actions", "value": len(ROLE_QUICK_ACTIONS.get(canonical, ())), "meta": "Authorized operational actions"},
+        ]
+    if canonical == "CUSTOMER_SUPPORT":
+        return [
+            {"title": "Open tickets", "value": 28, "meta": "Active support queue"},
+            {"title": "High priority", "value": 4, "meta": "Escalated customer requests"},
+            {"title": "Resolved today", "value": 19, "meta": "Completed support work"},
+            {"title": "CSAT", "value": "96%", "meta": "Customer satisfaction"},
+            {"title": "Average response", "value": "8 min", "meta": "First response performance"},
+            {"title": "SLA breaches", "value": 0, "meta": "Current SLA posture"},
+        ]
     if canonical == "OPERATOR":
         return [
             {"title": "Deployments", "value": summary.get("deployment_count", 0), "meta": "Change and rollout visibility"},
@@ -2938,6 +3477,14 @@ def build_workspace_manifest(
             environment = "design"
         elif canonical == "PROJECT_MANAGER":
             environment = "delivery"
+        elif canonical == "ARCHITECT":
+            environment = "architecture"
+        elif canonical == "QA_ENGINEER":
+            environment = "quality"
+        elif canonical == "DEVOPS_ENGINEER":
+            environment = "operations"
+        elif canonical == "CUSTOMER_SUPPORT":
+            environment = "support"
         else:
             environment = "staging"
     environment = environment.lower()
@@ -3019,7 +3566,23 @@ def build_workspace_manifest(
                     else (
                         ["delivery", "business-planning", "staging", "pilot"]
                         if canonical == "PROJECT_MANAGER"
-                        else ["development", "staging", "pilot"]
+                        else (
+                            ["architecture", "staging", "pilot"]
+                            if canonical == "ARCHITECT"
+                            else (
+                                ["quality", "staging", "pilot"]
+                                if canonical == "QA_ENGINEER"
+                                else (
+                                    ["operations", "staging", "pilot", "production"]
+                                    if canonical == "DEVOPS_ENGINEER"
+                                    else (
+                                        ["support", "staging", "pilot"]
+                                        if canonical == "CUSTOMER_SUPPORT"
+                                        else ["development", "staging", "pilot"]
+                                    )
+                                )
+                            )
+                        )
                     )
                 )
             ),
@@ -3035,7 +3598,27 @@ def build_workspace_manifest(
                     else (
                         "business-analyst"
                         if canonical == "BUSINESS_ANALYST"
-                        else ("designer" if canonical == "UI_UX_DESIGNER" else ("project-manager" if canonical == "PROJECT_MANAGER" else "role-scoped"))
+                        else (
+                            "designer"
+                            if canonical == "UI_UX_DESIGNER"
+                            else (
+                                "project-manager"
+                                if canonical == "PROJECT_MANAGER"
+                                else (
+                                    "architect"
+                                    if canonical == "ARCHITECT"
+                                    else (
+                                        "qa-engineer"
+                                        if canonical == "QA_ENGINEER"
+                                        else (
+                                            "devops-engineer"
+                                            if canonical == "DEVOPS_ENGINEER"
+                                            else ("customer-support" if canonical == "CUSTOMER_SUPPORT" else "role-scoped")
+                                        )
+                                    )
+                                )
+                            )
+                        )
                     )
                 )
             ),
@@ -3053,11 +3636,54 @@ def build_workspace_manifest(
             "analysis_focus": "Requirements and process analysis" if canonical == "BUSINESS_ANALYST" else None,
             "design_focus": "Design Studio" if canonical == "UI_UX_DESIGNER" else None,
             "project_focus": "Project Delivery" if canonical == "PROJECT_MANAGER" else None,
-            "active_products": service.projects()[:5] if canonical in {"PRODUCT_MANAGER", "DEVELOPER"} else service.projects()[:4],
+            "architecture_focus": "Enterprise Architecture" if canonical == "ARCHITECT" else None,
+            "quality_focus": "Quality Engineering" if canonical == "QA_ENGINEER" else None,
+            "devops_focus": "Delivery and operations" if canonical == "DEVOPS_ENGINEER" else None,
+            "support_focus": "Customer Support" if canonical == "CUSTOMER_SUPPORT" else None,
+            "active_products": service.projects()[:5] if canonical in {"PRODUCT_MANAGER", "DEVELOPER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER", "CUSTOMER_SUPPORT"} else service.projects()[:4],
             "product_health": _product_health(summary) if canonical == "PRODUCT_MANAGER" else {},
             "analysis_health": _business_analysis_health(summary) if canonical == "BUSINESS_ANALYST" else {},
             "design_health": _design_health(summary) if canonical == "UI_UX_DESIGNER" else {},
             "project_health": _project_health(summary) if canonical == "PROJECT_MANAGER" else {},
+            "architecture_health": {
+                "architecture_decisions": 324,
+                "open_reviews": 18,
+                "standards_compliance": "97%",
+                "technical_debt": "Low",
+                "critical_risks": 2,
+                "reference_architectures": 46,
+            }
+            if canonical == "ARCHITECT"
+            else {},
+            "quality_health": {
+                "test_cases_executed": 8420,
+                "pass_rate": "98.9%",
+                "failed_tests": 24,
+                "open_defects": 18,
+                "automation_coverage": "91%",
+                "release_readiness": "96%",
+            }
+            if canonical == "QA_ENGINEER"
+            else {},
+            "devops_health": {
+                "active_deployments": 5,
+                "infrastructure_health": "Strong",
+                "ci_cd_status": 12,
+                "deployment_success": "99.4%",
+                "production_availability": "99.98%",
+            }
+            if canonical == "DEVOPS_ENGINEER"
+            else {},
+            "support_health": {
+                "open_tickets": 28,
+                "high_priority": 4,
+                "resolved_today": 19,
+                "csat": "96%",
+                "average_response": "8 min",
+                "sla_breaches": 0,
+            }
+            if canonical == "CUSTOMER_SUPPORT"
+            else {},
             "customer_signals": [
                 {"label": "New feedback items", "value": _product_health(summary)["new_feedback_items"]},
                 {"label": "Critical usability issues", "value": _product_health(summary)["critical_usability_issues"]},
@@ -3114,6 +3740,40 @@ def build_workspace_manifest(
             ]
             if canonical == "PROJECT_MANAGER"
             else [],
+            "architecture_initiatives": [
+                {"label": "NovaRide Dispatch v3", "status": "review"},
+                {"label": "NovaPay Cross-Border Platform", "status": "in progress"},
+                {"label": "NovaID Federation", "status": "planned"},
+                {"label": "NovaCodePro Workspace", "status": "in progress"},
+                {"label": "Enterprise Event Platform", "status": "review"},
+            ]
+            if canonical == "ARCHITECT"
+            else [],
+            "quality_projects": [
+                {"label": "NovaRide Public Pilot", "status": "In progress"},
+                {"label": "NovaPay Wallet", "status": "In progress"},
+                {"label": "NovaID Federation", "status": "Review"},
+                {"label": "NovaCodePro Workspace", "status": "Testing"},
+                {"label": "Merchant Portal", "status": "Verification"},
+            ]
+            if canonical == "QA_ENGINEER"
+            else [],
+            "devops_deployments": [
+                {"label": "NovaRide Production", "status": "Healthy"},
+                {"label": "NovaPay Staging", "status": "Deploying"},
+                {"label": "NovaID Public Pilot", "status": "Healthy"},
+                {"label": "NovaCodePro QA", "status": "Ready"},
+                {"label": "Merchant Portal", "status": "Rolling Update"},
+            ]
+            if canonical == "DEVOPS_ENGINEER"
+            else [],
+            "support_queue": [
+                {"label": "NovaRide Payment Delay", "status": "Monitoring"},
+                {"label": "NovaPay Transfer Verification", "status": "Resolved"},
+                {"label": "NovaID Login Issue", "status": "Investigating"},
+            ]
+            if canonical == "CUSTOMER_SUPPORT"
+            else [],
             "my_priorities": [
                 {"label": "Approve NovaRide pilot requirements", "status": "pending"},
                 {"label": "Review NovaPay onboarding journey", "status": "active"},
@@ -3124,7 +3784,7 @@ def build_workspace_manifest(
             ]
             if canonical == "PRODUCT_MANAGER"
             else [],
-            "active_projects": service.projects()[:5] if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"} else service.projects()[:4],
+            "active_projects": service.projects()[:5] if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER", "CUSTOMER_SUPPORT"} else service.projects()[:4],
             "recent_repositories": [
                 {
                     "id": f"repo-{index + 1}",
@@ -3134,7 +3794,7 @@ def build_workspace_manifest(
                 }
                 for index, project in enumerate(service.projects()[:4])
             ]
-            if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"}
+            if canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER", "CUSTOMER_SUPPORT"}
             else [],
             "developer_health": _developer_health(summary) if canonical == "DEVELOPER" else {},
             "product_portfolio": [
@@ -3189,6 +3849,10 @@ def build_workspace_manifest(
                 "business_analyst_workspace": canonical == "BUSINESS_ANALYST",
                 "design_workspace": canonical == "UI_UX_DESIGNER",
                 "project_workspace": canonical == "PROJECT_MANAGER",
+                "architecture_workspace": canonical == "ARCHITECT",
+                "quality_workspace": canonical == "QA_ENGINEER",
+                "devops_workspace": canonical == "DEVOPS_ENGINEER",
+                "customer_support_workspace": canonical == "CUSTOMER_SUPPORT",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
@@ -3197,7 +3861,11 @@ def build_workspace_manifest(
                 "service_health": summary.get("service_health", {}),
                 "evidence_completeness": "97%"
                 if canonical == "PRODUCT_MANAGER"
-                else ("96%" if canonical in {"BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER"} else "98%"),
+                else (
+                    "96%"
+                    if canonical in {"BUSINESS_ANALYST", "UI_UX_DESIGNER", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER", "CUSTOMER_SUPPORT"}
+                    else "98%"
+                ),
                 "operational_risk": "Low" if summary.get("platform_health") == "healthy" else "Attention",
             },
             "recent_projects": service.projects()[:4],
@@ -3550,6 +4218,161 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
             <section class=\"panel\">
               <header><h2>Dependencies</h2></header>
               <ul>{dependencies_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "ARCHITECT":
+        initiatives_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("architecture_initiatives", [])
+        ) or "<li>No architecture initiatives.</li>"
+        architecture_health = workspace.get("architecture_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Active architecture initiatives</h2></header>
+              <ul>{initiatives_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Architecture health</h2></header>
+              <ul>
+                <li><strong>Architecture decisions</strong><span>{html.escape(str(architecture_health.get('architecture_decisions', 324)))}</span></li>
+                <li><strong>Open reviews</strong><span>{html.escape(str(architecture_health.get('open_reviews', 18)))}</span></li>
+                <li><strong>Standards compliance</strong><span>{html.escape(str(architecture_health.get('standards_compliance', '97%')))}</span></li>
+                <li><strong>Technical debt</strong><span>{html.escape(str(architecture_health.get('technical_debt', 'Low')))}</span></li>
+                <li><strong>Critical risks</strong><span>{html.escape(str(architecture_health.get('critical_risks', 2)))}</span></li>
+                <li><strong>Reference architectures</strong><span>{html.escape(str(architecture_health.get('reference_architectures', 46)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent work</h2></header>
+              <ul>{work_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent projects</h2></header>
+              <ul>{projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "QA_ENGINEER":
+        qa_projects_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("quality_projects", [])
+        ) or "<li>No active test projects.</li>"
+        quality_health = workspace.get("quality_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Active test projects</h2></header>
+              <ul>{qa_projects_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>My tasks</h2></header>
+              <ul>{work_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Quality health</h2></header>
+              <ul>
+                <li><strong>Test cases executed</strong><span>{html.escape(str(quality_health.get('test_cases_executed', 8420)))}</span></li>
+                <li><strong>Pass rate</strong><span>{html.escape(str(quality_health.get('pass_rate', '98.9%')))}</span></li>
+                <li><strong>Failed tests</strong><span>{html.escape(str(quality_health.get('failed_tests', 24)))}</span></li>
+                <li><strong>Open defects</strong><span>{html.escape(str(quality_health.get('open_defects', 18)))}</span></li>
+                <li><strong>Automation coverage</strong><span>{html.escape(str(quality_health.get('automation_coverage', '91%')))}</span></li>
+                <li><strong>Release readiness</strong><span>{html.escape(str(quality_health.get('release_readiness', '96%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent incidents</h2></header>
+              <ul>{incidents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "DEVOPS_ENGINEER":
+        deployments_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("devops_deployments", [])
+        ) or "<li>No active deployments.</li>"
+        devops_health = workspace.get("devops_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>Active deployments</h2></header>
+              <ul>{deployments_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Infrastructure health</h2></header>
+              <ul>
+                <li><strong>Services running</strong><span>{html.escape(str(devops_health.get('active_deployments', 5)))}</span></li>
+                <li><strong>Infrastructure health</strong><span>{html.escape(str(devops_health.get('infrastructure_health', 'Strong')))}</span></li>
+                <li><strong>CI/CD status</strong><span>{html.escape(str(devops_health.get('ci_cd_status', 12)))}</span></li>
+                <li><strong>Deployment success</strong><span>{html.escape(str(devops_health.get('deployment_success', '99.4%')))}</span></li>
+                <li><strong>Production availability</strong><span>{html.escape(str(devops_health.get('production_availability', '99.98%')))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent incidents</h2></header>
+              <ul>{incidents_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Enterprise signals</h2></header>
+              <ul>
+                <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+                <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+                <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+              </ul>
+            </section>
+          </div>
+        """
+    elif canonical == "CUSTOMER_SUPPORT":
+        queue_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("support_queue", [])
+        ) or "<li>No queued tickets.</li>"
+        support_health = workspace.get("support_health", {})
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\">
+              <header><h2>My queue</h2></header>
+              <ul>{queue_html}</ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Customer health</h2></header>
+              <ul>
+                <li><strong>Open tickets</strong><span>{html.escape(str(support_health.get('open_tickets', 28)))}</span></li>
+                <li><strong>High priority</strong><span>{html.escape(str(support_health.get('high_priority', 4)))}</span></li>
+                <li><strong>Resolved today</strong><span>{html.escape(str(support_health.get('resolved_today', 19)))}</span></li>
+                <li><strong>CSAT</strong><span>{html.escape(str(support_health.get('csat', '96%')))}</span></li>
+                <li><strong>Average response</strong><span>{html.escape(str(support_health.get('average_response', '8 min')))}</span></li>
+                <li><strong>SLA breaches</strong><span>{html.escape(str(support_health.get('sla_breaches', 0)))}</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\">
+              <header><h2>Recent incidents</h2></header>
+              <ul>{incidents_html}</ul>
             </section>
             <section class=\"panel\">
               <header><h2>Enterprise signals</h2></header>

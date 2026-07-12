@@ -205,6 +205,114 @@ def test_workspace_manifest_personalizes_project_manager_workspace(tmp_path: Pat
     assert body["workspace"]["project_portfolio"]
 
 
+def test_workspace_manifest_personalizes_architect_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("ARCHITECT", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "ARCHITECT"
+    assert body["workspace"]["title"] == "Architecture Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/architect"
+    assert body["workspace"]["selected_environment"] == "architecture"
+    assert body["workspace"]["authority_level"] == "architect"
+    assert body["workspace"]["feature_flags"]["architecture_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Overview", "Architecture", "Governance", "Knowledge", "Intelligence"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Architecture Workspace" in tool_names
+    assert "Enterprise Architecture Center" in tool_names
+    assert "Solution Architecture Studio" in tool_names
+    assert "Architecture Governance Center" in tool_names
+    assert "Architecture Documentation Center" in tool_names
+
+
+def test_workspace_manifest_personalizes_qa_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("QA_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "QA_ENGINEER"
+    assert body["workspace"]["title"] == "Quality Engineering Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/qa-engineer"
+    assert body["workspace"]["selected_environment"] == "quality"
+    assert body["workspace"]["authority_level"] == "qa-engineer"
+    assert body["workspace"]["feature_flags"]["quality_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Quality Engineering", "Testing", "Quality", "Intelligence"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Quality Engineering Workspace" in tool_names
+    assert "Test Management Center" in tool_names
+    assert "Automation Testing Center" in tool_names
+    assert "Release Readiness Center" in tool_names
+    assert "Test Evidence Center" in tool_names
+
+
+def test_workspace_manifest_personalizes_devops_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("DEVOPS_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "DEVOPS_ENGINEER"
+    assert body["workspace"]["title"] == "DevOps Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/devops-engineer"
+    assert body["workspace"]["selected_environment"] == "operations"
+    assert body["workspace"]["authority_level"] == "devops-engineer"
+    assert body["workspace"]["feature_flags"]["devops_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["DevOps", "Delivery", "Operations", "Reliability", "Intelligence"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "DevOps Workspace" in tool_names
+    assert "CI/CD Pipeline Center" in tool_names
+    assert "Deployment Center" in tool_names
+    assert "Observability Center" in tool_names
+    assert "DevOps Command Center" in tool_names
+
+
+def test_workspace_manifest_personalizes_customer_support_workspace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/workspace",
+        headers=_headers("CUSTOMER_SUPPORT", "usr_djuma"),
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["user"]["primary_role"] == "CUSTOMER_SUPPORT"
+    assert body["workspace"]["title"] == "Customer Support Workspace"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/customer-support"
+    assert body["workspace"]["selected_environment"] == "support"
+    assert body["workspace"]["authority_level"] == "customer-support"
+    assert body["workspace"]["feature_flags"]["customer_support_workspace"] is True
+    nav_labels = [group["label"] for group in body["workspace"]["navigation"]]
+    assert nav_labels == ["Overview", "Support", "Customer Care", "Operations", "Management"]
+
+    tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
+    assert "Customer Support Workspace" in tool_names
+    assert "Customer 360 Center" in tool_names
+    assert "Ticket Management Center" in tool_names
+    assert "Incident Communication Center" in tool_names
+    assert "Customer Support Command Center" in tool_names
+
+
 def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
@@ -299,6 +407,62 @@ def test_project_manager_workspace_html_renders_project_summary(tmp_path: Path) 
     assert "/novacodepro/tools/platform-administration" not in response.text
 
 
+def test_architect_workspace_html_renders_architecture_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/architect",
+        headers=_headers("ARCHITECT", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Architecture Workspace" in response.text
+    assert "Active architecture initiatives" in response.text
+    assert "Architecture health" in response.text
+    assert "Architecture decisions" in response.text
+
+
+def test_qa_workspace_html_renders_quality_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/qa-engineer",
+        headers=_headers("QA_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Quality Engineering Workspace" in response.text
+    assert "Active test projects" in response.text
+    assert "Quality health" in response.text
+    assert "Test cases executed" in response.text
+
+
+def test_devops_workspace_html_renders_delivery_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/devops-engineer",
+        headers=_headers("DEVOPS_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "DevOps Workspace" in response.text
+    assert "Active deployments" in response.text
+    assert "Infrastructure health" in response.text
+    assert "Production availability" in response.text
+
+
+def test_customer_support_workspace_html_renders_support_summary(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/novacodepro/workspace/customer-support",
+        headers=_headers("CUSTOMER_SUPPORT", "usr_djuma"),
+    )
+    assert response.status_code == 200
+    assert "Customer Support Workspace" in response.text
+    assert "My queue" in response.text
+    assert "Customer health" in response.text
+    assert "Open tickets" in response.text
+
+
 def test_developer_role_does_not_expose_admin_window(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
@@ -349,6 +513,50 @@ def test_project_manager_role_does_not_expose_admin_window(tmp_path: Path) -> No
     response = client.get(
         "/v1/novacodepro/tools/platform-administration",
         headers=_headers("PROJECT_MANAGER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_architect_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("ARCHITECT", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_qa_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("QA_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_devops_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("DEVOPS_ENGINEER", "usr_djuma"),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "tool_not_found"
+
+
+def test_customer_support_role_does_not_expose_admin_window(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get(
+        "/v1/novacodepro/tools/platform-administration",
+        headers=_headers("CUSTOMER_SUPPORT", "usr_djuma"),
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "tool_not_found"
@@ -480,3 +688,35 @@ def test_command_execution_supports_business_analyst_and_project_roles(tmp_path:
     )
     assert project_queued.status_code == 200
     assert project_queued.json()["status"] == "queued"
+
+
+def test_command_execution_supports_architect_qa_devops_and_support_roles(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    architect_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("ARCHITECT", "usr_djuma"),
+    )
+    assert architect_commands.status_code == 200
+    assert any(item["label"] == "Create Architecture" for item in architect_commands.json())
+
+    qa_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("QA_ENGINEER", "usr_djuma"),
+    )
+    assert qa_commands.status_code == 200
+    assert any(item["label"] == "Run Test Suite" for item in qa_commands.json())
+
+    devops_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("DEVOPS_ENGINEER", "usr_djuma"),
+    )
+    assert devops_commands.status_code == 200
+    assert any(item["label"] == "Run Pipeline" for item in devops_commands.json())
+
+    support_commands = client.get(
+        "/v1/novacodepro/me/commands",
+        headers=_headers("CUSTOMER_SUPPORT", "usr_djuma"),
+    )
+    assert support_commands.status_code == 200
+    assert any(item["label"] == "Create Ticket" for item in support_commands.json())
