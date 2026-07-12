@@ -329,6 +329,166 @@ DEFAULT_DEVELOPER_SURFACES: list[dict[str, str]] = [
     },
 ]
 
+DEFAULT_SERVICE_REGISTRY: list[dict[str, Any]] = [
+    {
+        "id": "gateway-service",
+        "name": "NovaCodePro Gateway",
+        "category": "control-plane",
+        "status": "healthy",
+        "api": "/api/v1/solutions",
+    },
+    {
+        "id": "workflow-service",
+        "name": "Workflow Service",
+        "category": "orchestration",
+        "status": "healthy",
+        "api": "/api/v1/workflows",
+    },
+    {
+        "id": "agent-orchestrator",
+        "name": "Agent Orchestrator",
+        "category": "execution",
+        "status": "healthy",
+        "api": "/api/v1/agents/executions",
+    },
+    {
+        "id": "artifact-service",
+        "name": "Artifact Service",
+        "category": "storage",
+        "status": "healthy",
+        "api": "/api/v1/artifacts",
+    },
+    {
+        "id": "approval-service",
+        "name": "Approval Service",
+        "category": "governance",
+        "status": "healthy",
+        "api": "/api/v1/approvals",
+    },
+    {
+        "id": "release-factory",
+        "name": "Release Factory",
+        "category": "delivery",
+        "status": "healthy",
+        "api": "/api/v1/releases",
+    },
+    {
+        "id": "digital-twin",
+        "name": "Digital Twin Engine",
+        "category": "observability",
+        "status": "healthy",
+        "api": "/api/v1/digital-twins",
+    },
+]
+
+DEFAULT_SOLUTIONS: list[dict[str, Any]] = [
+    {
+        "id": "solution-ride-platform",
+        "tenant_id": "novatech",
+        "project_id": "nova-ride-platform",
+        "title": "NovaRide Platform",
+        "request": "Build a governed ride-hailing platform.",
+        "status": "release_ready",
+        "workflow_id": "workflow-ride-platform",
+        "version": "2026.1",
+        "created_at": "2026-07-11T00:00:00+00:00",
+        "updated_at": "2026-07-11T00:00:00+00:00",
+    },
+]
+
+DEFAULT_AGENT_EXECUTIONS: list[dict[str, Any]] = [
+    {
+        "id": "agent-execution-architecture",
+        "agent_id": "architecture-agent",
+        "version": "2027.1.0",
+        "category": "engineering",
+        "tenant_id": "novatech",
+        "project_id": "nova-ride-platform",
+        "workflow_id": "workflow-ride-platform",
+        "stage_id": "architecture",
+        "status": "completed",
+        "input": {"brief": "Ride-hailing platform for Melbourne"},
+        "output": {"artifact": "architecture-pack"},
+        "allowed_tools": ["artifact.read", "artifact.write", "knowledge.query"],
+        "forbidden_tools": ["production.deploy", "secret.export"],
+        "timeout_seconds": 900,
+        "maximum_cost": 10.0,
+        "approval_policy": "architecture-review-required",
+        "evidence": ["architecture-pack", "traceability-links"],
+        "created_at": "2026-07-11T00:00:00+00:00",
+        "updated_at": "2026-07-11T00:00:00+00:00",
+    },
+]
+
+DEFAULT_APPROVALS: list[dict[str, Any]] = [
+    {
+        "id": "approval-security-ride-platform",
+        "gate_type": "SECURITY_APPROVAL",
+        "workflow_id": "workflow-ride-platform",
+        "release_id": "release-ride-platform",
+        "status": "APPROVED",
+        "requested_by": "platform-admin",
+        "approved_by": "security-officer-8",
+        "requested_at": "2026-07-11T00:00:00+00:00",
+        "decided_at": "2026-07-11T00:00:00+00:00",
+        "decision": "approve",
+        "conditions": ["Enable enhanced monitoring for 48 hours"],
+        "evidence_ids": ["evidence-threat-model", "evidence-sbom", "evidence-security-scan"],
+        "signature": "digital-signature",
+        "audit_event_id": "audit-approval-security-ride-platform",
+        "created_at": "2026-07-11T00:00:00+00:00",
+        "updated_at": "2026-07-11T00:00:00+00:00",
+    },
+]
+
+DEFAULT_DEPLOYMENTS: list[dict[str, Any]] = [
+    {
+        "id": "deployment-ride-platform-staging",
+        "workflow_id": "workflow-ride-platform",
+        "release_id": "release-ride-platform",
+        "environment": "staging",
+        "region": "Australia",
+        "status": "healthy",
+        "health": "green",
+        "version": "2026.1.3",
+        "metrics": {
+            "availability": 0.999,
+            "latency_p95_ms": 118,
+            "error_rate": 0.0002,
+        },
+        "created_at": "2026-07-11T00:00:00+00:00",
+        "updated_at": "2026-07-11T00:00:00+00:00",
+    },
+]
+
+DEFAULT_DIGITAL_TWINS: list[dict[str, Any]] = [
+    {
+        "id": "twin-novacodepro",
+        "name": "NovaCodePro Platform Twin",
+        "kind": "organization",
+        "status": "healthy",
+        "region": "Australia",
+        "children": ["twin-ride-platform", "twin-release-factory"],
+        "health": {
+            "availability": 0.999,
+            "latency_p95_ms": 118,
+            "error_rate": 0.0002,
+        },
+        "topology": {
+            "services": [
+                "NovaCodePro Gateway",
+                "Workflow Service",
+                "Agent Orchestrator",
+                "Artifact Service",
+                "Release Factory",
+                "Deployment Service",
+            ]
+        },
+        "created_at": "2026-07-11T00:00:00+00:00",
+        "updated_at": "2026-07-11T00:00:00+00:00",
+    },
+]
+
 
 def _stage_view(blueprint: list[dict[str, str]], stage_index: int, flow_status: str) -> list[dict[str, str]]:
     stages: list[dict[str, str]] = []
@@ -347,6 +507,45 @@ def _stage_view(blueprint: list[dict[str, str]], stage_index: int, flow_status: 
             status = "in_progress"
         stages.append({**stage, "status": status})
     return stages
+
+
+def _event_envelope(
+    *,
+    event_type: str,
+    actor_type: str,
+    actor_id: str,
+    tenant_id: str,
+    organization_id: str,
+    project_id: str | None,
+    workflow_id: str | None,
+    correlation_id: str | None,
+    causation_id: str | None,
+    data: dict[str, Any],
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    now = _now()
+    return {
+        "event_id": _new_id("event"),
+        "event_type": event_type,
+        "schema_version": "1.0",
+        "occurred_at": now,
+        "correlation_id": correlation_id or _new_id("correlation"),
+        "causation_id": causation_id or _new_id("causation"),
+        "tenant_id": tenant_id,
+        "organization_id": organization_id,
+        "project_id": project_id,
+        "workflow_id": workflow_id,
+        "actor": {
+            "type": actor_type,
+            "id": actor_id,
+        },
+        "data": data,
+        "metadata": {
+            "environment": "production",
+            "region": "Australia",
+            **(metadata or {}),
+        },
+    }
 
 
 class NovaCodeProRepository:
@@ -387,6 +586,23 @@ class NovaCodeProRepository:
                     detail TEXT NOT NULL,
                     payload_json TEXT NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS domain_events (
+                    event_id TEXT PRIMARY KEY,
+                    occurred_at TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    tenant_id TEXT NOT NULL,
+                    organization_id TEXT NOT NULL,
+                    project_id TEXT,
+                    workflow_id TEXT,
+                    actor_type TEXT NOT NULL,
+                    actor_id TEXT NOT NULL,
+                    correlation_id TEXT NOT NULL,
+                    causation_id TEXT NOT NULL,
+                    metadata_json TEXT NOT NULL,
+                    data_json TEXT NOT NULL,
+                    payload_json TEXT NOT NULL
+                );
                 """
             )
         self._seed()
@@ -400,6 +616,12 @@ class NovaCodeProRepository:
             "integration": DEFAULT_INTEGRATIONS,
             "marketplace_item": DEFAULT_MARKETPLACE,
             "developer_surface": DEFAULT_DEVELOPER_SURFACES,
+            "solution": DEFAULT_SOLUTIONS,
+            "agent_execution": DEFAULT_AGENT_EXECUTIONS,
+            "approval": DEFAULT_APPROVALS,
+            "deployment": DEFAULT_DEPLOYMENTS,
+            "digital_twin": DEFAULT_DIGITAL_TWINS,
+            "service": DEFAULT_SERVICE_REGISTRY,
         }
         with self._connect() as connection:
             for kind, payloads in seeds.items():
@@ -510,10 +732,63 @@ class NovaCodeProRepository:
             ).fetchall()
         return [json.loads(row["payload_json"]) for row in rows]
 
+    def append_event(self, payload: dict[str, Any]) -> dict[str, Any]:
+        event = dict(payload)
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO domain_events (
+                    event_id,
+                    occurred_at,
+                    event_type,
+                    tenant_id,
+                    organization_id,
+                    project_id,
+                    workflow_id,
+                    actor_type,
+                    actor_id,
+                    correlation_id,
+                    causation_id,
+                    metadata_json,
+                    data_json,
+                    payload_json
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    event["event_id"],
+                    event["occurred_at"],
+                    event["event_type"],
+                    event["tenant_id"],
+                    event["organization_id"],
+                    event.get("project_id"),
+                    event.get("workflow_id"),
+                    event["actor"]["type"],
+                    event["actor"]["id"],
+                    event["correlation_id"],
+                    event["causation_id"],
+                    json.dumps(event.get("metadata") or {}, sort_keys=True),
+                    json.dumps(event.get("data") or {}, sort_keys=True),
+                    json.dumps(event, sort_keys=True),
+                ),
+            )
+        return event
+
+    def list_events(self, limit: int = 100) -> list[dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT payload_json FROM domain_events ORDER BY occurred_at DESC, event_id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return [json.loads(row["payload_json"]) for row in rows]
+
 
 class NovaCodeProPlatform:
     def __init__(self, repository: NovaCodeProRepository) -> None:
         self.repository = repository
+
+    def service_registry(self) -> list[dict[str, Any]]:
+        return self.repository.list("service")
 
     def tenants(self) -> list[dict[str, Any]]:
         return self.repository.list("tenant")
@@ -545,29 +820,75 @@ class NovaCodeProPlatform:
     def artifacts(self) -> list[dict[str, Any]]:
         return self.repository.list("artifact")
 
+    def solutions(self) -> list[dict[str, Any]]:
+        return self.repository.list("solution")
+
+    def get_solution(self, solution_id: str) -> dict[str, Any] | None:
+        return self.repository.get("solution", solution_id)
+
+    def agent_executions(self) -> list[dict[str, Any]]:
+        return self.repository.list("agent_execution")
+
+    def get_agent_execution(self, execution_id: str) -> dict[str, Any] | None:
+        return self.repository.get("agent_execution", execution_id)
+
+    def approvals(self) -> list[dict[str, Any]]:
+        return self.repository.list("approval")
+
+    def get_approval(self, approval_id: str) -> dict[str, Any] | None:
+        return self.repository.get("approval", approval_id)
+
+    def deployments(self) -> list[dict[str, Any]]:
+        return self.repository.list("deployment")
+
+    def get_deployment(self, deployment_id: str) -> dict[str, Any] | None:
+        return self.repository.get("deployment", deployment_id)
+
+    def digital_twins(self) -> list[dict[str, Any]]:
+        return self.repository.list("digital_twin")
+
+    def get_digital_twin(self, twin_id: str) -> dict[str, Any] | None:
+        return self.repository.get("digital_twin", twin_id)
+
+    def events(self, limit: int = 100) -> list[dict[str, Any]]:
+        return self.repository.list_events(limit=limit)
+
     def audit(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.repository.list_audit(limit=limit)
 
     def status(self) -> dict[str, Any]:
+        services = self.service_registry()
         tenants = self.tenants()
         projects = self.projects()
         workflows = self.workflows()
         releases = self.releases()
         artifacts = self.artifacts()
+        solutions = self.solutions()
+        agents = self.agent_executions()
+        approvals = self.approvals()
+        deployments = self.deployments()
+        twins = self.digital_twins()
         threads = self.collaboration_threads()
         integrations = self.integrations()
         return {
             "service": "novacodepro-platform",
             "status": "operational",
+            "service_count": len(services),
             "tenant_count": len(tenants),
             "project_count": len(projects),
             "workflow_count": len(workflows),
             "release_count": len(releases),
             "artifact_count": len(artifacts),
+            "solution_count": len(solutions),
+            "agent_execution_count": len(agents),
+            "approval_count": len(approvals),
+            "deployment_count": len(deployments),
+            "digital_twin_count": len(twins),
             "thread_count": len(threads),
             "integration_count": len(integrations),
             "connected_integration_count": sum(1 for item in integrations if item.get("status") == "connected"),
             "audit_event_count": len(self.audit(limit=500)),
+            "domain_event_count": len(self.events(limit=500)),
             "marketplace_count": len(self.marketplace()["agents"]),
             "automation_ready": True,
             "distributed_services": [
@@ -586,6 +907,7 @@ class NovaCodeProPlatform:
                 "Licensing Service",
                 "Observability Service",
             ],
+            "service_registry": services,
         }
 
     def create_project(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -610,7 +932,410 @@ class NovaCodeProPlatform:
             evidence=project["solution"],
             detail="Project created through the governed NovaCodePro platform.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="project.created",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=project["tenant_id"],
+                organization_id=project["tenant_id"],
+                project_id=project["id"],
+                workflow_id=None,
+                correlation_id=project["id"],
+                causation_id=project["id"],
+                data={"project_id": project["id"], "name": project["name"], "solution": project["solution"]},
+            )
+        )
         return project
+
+    def create_solution(self, payload: dict[str, Any]) -> dict[str, Any]:
+        workflow = self.create_workflow(
+            {
+                "title": payload["title"],
+                "request": payload["request"],
+                "tenant_id": payload.get("tenant_id"),
+                "project_id": payload.get("project_id"),
+                "template_id": payload.get("template_id") or "solution-factory",
+                "domain": payload.get("domain") or "general",
+                "region": payload.get("region") or "Australia",
+                "compliance": payload.get("compliance") or "enterprise",
+                "surfaces": list(payload.get("surfaces") or []),
+            }
+        )
+        solution = {
+            "id": _new_id("solution"),
+            "tenant_id": workflow["tenant_id"],
+            "project_id": workflow["project_id"],
+            "workflow_id": workflow["id"],
+            "title": workflow["title"],
+            "request": workflow["request"],
+            "domain": workflow["domain"],
+            "region": workflow["region"],
+            "compliance": workflow["compliance"],
+            "status": "solution_factory_running",
+            "version": str(payload.get("version") or "2027.1.0"),
+            "surfaces": workflow.get("surfaces") or [],
+            "package_manifest": {
+                "solution_id": None,
+                "workflow_id": workflow["id"],
+                "tenant_id": workflow["tenant_id"],
+                "version": str(payload.get("version") or "2027.1.0"),
+                "status": "draft",
+            },
+            "artifacts": [],
+            "approvals": [],
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        solution["package_manifest"]["solution_id"] = solution["id"]
+        self.repository.upsert("solution", solution)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="solution.created",
+                actor_type="service",
+                actor_id="solution-factory",
+                tenant_id=solution["tenant_id"],
+                organization_id=solution["tenant_id"],
+                project_id=solution["project_id"],
+                workflow_id=solution["workflow_id"],
+                correlation_id=solution["workflow_id"],
+                causation_id=workflow["id"],
+                data={"solution_id": solution["id"], "title": solution["title"], "status": solution["status"]},
+            )
+        )
+        self.repository.append_audit(
+            kind="solution",
+            actor="NovaID",
+            service="Solution Factory",
+            subject=solution["title"],
+            action="solution.created",
+            evidence=solution["workflow_id"],
+            detail="Solution package created and linked to a durable workflow.",
+        )
+        return solution
+
+    def create_agent_execution(self, payload: dict[str, Any]) -> dict[str, Any]:
+        workflow = self.repository.get("workflow", str(payload.get("workflow_id") or ""))
+        project_id = str(payload.get("project_id") or (workflow.get("project_id") if workflow else self.projects()[0]["id"]))
+        tenant_id = str(payload.get("tenant_id") or (workflow.get("tenant_id") if workflow else self.tenants()[0]["id"]))
+        workflow_id = str(payload.get("workflow_id") or (workflow.get("id") if workflow else ""))
+        execution = {
+            "id": _new_id("agent-execution"),
+            "agent_id": str(payload["agent_id"]),
+            "version": str(payload.get("version") or "2027.1.0"),
+            "category": str(payload.get("category") or "general"),
+            "tenant_id": tenant_id,
+            "project_id": project_id,
+            "workflow_id": workflow_id,
+            "stage_id": str(payload.get("stage_id") or "intake"),
+            "status": "completed",
+            "input": dict(payload.get("input") or {}),
+            "output": dict(payload.get("output") or {"result": "completed"}),
+            "allowed_tools": list(payload.get("allowed_tools") or []),
+            "forbidden_tools": list(payload.get("forbidden_tools") or []),
+            "timeout_seconds": int(payload.get("timeout_seconds") or 900),
+            "maximum_cost": float(payload.get("maximum_cost") or 0.0),
+            "approval_policy": str(payload.get("approval_policy") or "standard"),
+            "evidence": list(payload.get("evidence") or []),
+            "logs": [
+                {
+                    "at": _now(),
+                    "message": "Agent execution completed through the orchestrated backend.",
+                }
+            ],
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        self.repository.upsert("agent_execution", execution)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="agent.execution.completed",
+                actor_type="service",
+                actor_id=execution["agent_id"],
+                tenant_id=execution["tenant_id"],
+                organization_id=execution["tenant_id"],
+                project_id=execution["project_id"],
+                workflow_id=execution["workflow_id"],
+                correlation_id=execution["workflow_id"],
+                causation_id=execution["id"],
+                data={
+                    "agent_execution_id": execution["id"],
+                    "stage_id": execution["stage_id"],
+                    "status": execution["status"],
+                },
+            )
+        )
+        self.repository.append_audit(
+            kind="agent_execution",
+            actor="NovaID",
+            service="Agent Orchestrator",
+            subject=execution["agent_id"],
+            action="agent.execution.completed",
+            evidence=execution["stage_id"],
+            detail="Specialist agent execution completed in the durable backend runtime.",
+        )
+        return execution
+
+    def create_approval(self, payload: dict[str, Any]) -> dict[str, Any]:
+        workflow = self.repository.get("workflow", str(payload.get("workflow_id") or ""))
+        tenant_id = str(workflow.get("tenant_id") if workflow else self.tenants()[0]["id"])
+        approval = {
+            "id": _new_id("approval"),
+            "gate_type": str(payload["gate_type"]),
+            "workflow_id": str(payload.get("workflow_id") or ""),
+            "release_id": str(payload.get("release_id") or ""),
+            "status": "PENDING",
+            "requested_by": str(payload.get("requested_by") or "NovaID"),
+            "approved_by": "",
+            "requested_at": _now(),
+            "decided_at": "",
+            "decision": "",
+            "conditions": list(payload.get("conditions") or []),
+            "evidence_ids": list(payload.get("evidence_ids") or []),
+            "signature": "",
+            "audit_event_id": "",
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        self.repository.upsert("approval", approval)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="approval.requested",
+                actor_type="user",
+                actor_id=approval["requested_by"],
+                tenant_id=tenant_id,
+                organization_id=tenant_id,
+                project_id=None,
+                workflow_id=approval["workflow_id"] or None,
+                correlation_id=approval["workflow_id"] or approval["id"],
+                causation_id=approval["id"],
+                data={"approval_id": approval["id"], "gate_type": approval["gate_type"]},
+            )
+        )
+        self.repository.append_audit(
+            kind="approval",
+            actor=approval["requested_by"],
+            service="Approval Service",
+            subject=approval["gate_type"],
+            action="approval.requested",
+            evidence="; ".join(approval["evidence_ids"]),
+            detail="Protected approval request created for a governed gate.",
+        )
+        return approval
+
+    def decide_approval(self, approval_id: str, decision: str, actor: str, note: str = "") -> dict[str, Any]:
+        approval = self.repository.get("approval", approval_id)
+        if approval is None:
+            raise KeyError("approval_not_found")
+        decision = decision.lower().strip()
+        if decision not in {"approve", "reject"}:
+            raise ValueError("unsupported_decision")
+        approval["status"] = "APPROVED" if decision == "approve" else "REJECTED"
+        approval["approved_by"] = actor
+        approval["decided_at"] = _now()
+        approval["decision"] = decision
+        approval["signature"] = f"sig-{_new_id('approval')}"
+        approval["audit_event_id"] = _new_id("audit")
+        approval["updated_at"] = _now()
+        approval.setdefault("notes", [])
+        if note:
+            approval["notes"] = [note, *approval["notes"]]
+        self.repository.upsert("approval", approval)
+        self.repository.append_event(
+            _event_envelope(
+                event_type=f"approval.{decision}ed",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=approval["workflow_id"] or None,
+                correlation_id=approval["workflow_id"] or approval["id"],
+                causation_id=approval["id"],
+                data={"approval_id": approval["id"], "decision": approval["status"], "note": note},
+            )
+        )
+        self.repository.append_audit(
+            kind="approval",
+            actor=actor,
+            service="Approval Service",
+            subject=approval["gate_type"],
+            action=f"approval.{decision}",
+            evidence=note or approval["status"],
+            detail="Protected approval decision recorded in the durable backend.",
+        )
+        return approval
+
+    def create_deployment(self, payload: dict[str, Any]) -> dict[str, Any]:
+        workflow = self.repository.get("workflow", str(payload.get("workflow_id") or ""))
+        tenant_id = str(workflow.get("tenant_id") if workflow else self.tenants()[0]["id"])
+        deployment = {
+            "id": _new_id("deployment"),
+            "workflow_id": str(payload["workflow_id"]),
+            "release_id": str(payload["release_id"]),
+            "environment": str(payload.get("environment") or "staging"),
+            "region": str(payload.get("region") or "Australia"),
+            "status": "provisioning",
+            "health": "unknown",
+            "version": str(payload.get("version") or "2027.1.0"),
+            "metrics": dict(payload.get("metrics") or {}),
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        self.repository.upsert("deployment", deployment)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="deployment.created",
+                actor_type="service",
+                actor_id="deployment-service",
+                tenant_id=tenant_id,
+                organization_id=tenant_id,
+                project_id=None,
+                workflow_id=deployment["workflow_id"],
+                correlation_id=deployment["release_id"],
+                causation_id=deployment["id"],
+                data={"deployment_id": deployment["id"], "status": deployment["status"]},
+            )
+        )
+        self.repository.append_audit(
+            kind="deployment",
+            actor="NovaID",
+            service="Deployment Service",
+            subject=deployment["release_id"],
+            action="deployment.created",
+            evidence=deployment["environment"],
+            detail="Deployment prepared by the governed backend runtime.",
+        )
+        return deployment
+
+    def transition_deployment(self, deployment_id: str, action: str, note: str = "", actor: str = "NovaID") -> dict[str, Any]:
+        deployment = self.repository.get("deployment", deployment_id)
+        if deployment is None:
+            raise KeyError("deployment_not_found")
+        workflow = self.repository.get("workflow", str(deployment.get("workflow_id") or ""))
+        tenant_id = str(workflow.get("tenant_id") if workflow else self.tenants()[0]["id"])
+        action = action.lower().strip()
+        if action not in {"start", "pause", "resume", "rollback", "verify", "complete", "fail"}:
+            raise ValueError("unsupported_action")
+        if action == "start":
+            deployment["status"] = "running"
+            deployment["health"] = "green"
+        elif action == "pause":
+            deployment["status"] = "paused"
+        elif action == "resume":
+            deployment["status"] = "running"
+        elif action == "rollback":
+            deployment["status"] = "rolling_back"
+            deployment["health"] = "amber"
+        elif action == "verify":
+            deployment["status"] = "verifying"
+        elif action == "complete":
+            deployment["status"] = "healthy"
+            deployment["health"] = "green"
+        elif action == "fail":
+            deployment["status"] = "failed"
+            deployment["health"] = "red"
+        deployment["updated_at"] = _now()
+        self.repository.upsert("deployment", deployment)
+        self.update_digital_twin_from_deployment(deployment)
+        self.repository.append_event(
+            _event_envelope(
+                event_type=f"deployment.{action}",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=tenant_id,
+                organization_id=tenant_id,
+                project_id=None,
+                workflow_id=deployment["workflow_id"],
+                correlation_id=deployment["release_id"],
+                causation_id=deployment["id"],
+                data={"deployment_id": deployment["id"], "status": deployment["status"], "note": note},
+            )
+        )
+        self.repository.append_audit(
+            kind="deployment",
+            actor=actor,
+            service="Deployment Service",
+            subject=deployment["release_id"],
+            action=f"deployment.{action}",
+            evidence=note or deployment["status"],
+            detail="Deployment lifecycle advanced in the durable backend.",
+        )
+        return deployment
+
+    def get_or_create_digital_twin(self, twin_id: str | None = None) -> dict[str, Any]:
+        target_id = twin_id or "twin-novacodepro"
+        twin = self.repository.get("digital_twin", target_id)
+        if twin is not None:
+            return twin
+        twin = {
+            "id": target_id,
+            "name": "NovaCodePro Twin",
+            "kind": "solution",
+            "status": "healthy",
+            "region": "Australia",
+            "children": [],
+            "health": {
+                "availability": 1.0,
+                "latency_p95_ms": 120,
+                "error_rate": 0.0,
+            },
+            "topology": {"services": [service["name"] for service in self.service_registry()]},
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        self.repository.upsert("digital_twin", twin)
+        return twin
+
+    def digital_twin_health(self, twin_id: str | None = None) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        return {
+            "id": twin["id"],
+            "status": twin["status"],
+            "health": twin.get("health") or {},
+            "region": twin.get("region"),
+            "updated_at": twin.get("updated_at"),
+        }
+
+    def digital_twin_topology(self, twin_id: str | None = None) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        return {
+            "id": twin["id"],
+            "name": twin["name"],
+            "kind": twin["kind"],
+            "children": list(twin.get("children") or []),
+            "services": list((twin.get("topology") or {}).get("services") or []),
+        }
+
+    def update_digital_twin_from_deployment(self, deployment: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin()
+        twins = list(twin.get("children") or [])
+        if deployment["id"] not in twins:
+            twins.append(deployment["id"])
+        twin["children"] = twins
+        twin["status"] = "healthy" if deployment.get("health") in {"green", "healthy"} else "degraded"
+        twin["health"] = {
+            "availability": deployment.get("metrics", {}).get("availability", 1.0),
+            "latency_p95_ms": deployment.get("metrics", {}).get("latency_p95_ms", 120),
+            "error_rate": deployment.get("metrics", {}).get("error_rate", 0.0),
+        }
+        twin["updated_at"] = _now()
+        self.repository.upsert("digital_twin", twin)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="digital_twin.updated",
+                actor_type="service",
+                actor_id="digital-twin-engine",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=deployment["workflow_id"],
+                correlation_id=deployment["release_id"],
+                causation_id=deployment["id"],
+                data={"twin_id": twin["id"], "deployment_id": deployment["id"], "health": twin["health"]},
+            )
+        )
+        return twin
 
     def create_workflow(self, payload: dict[str, Any]) -> dict[str, Any]:
         created_at = _now()
@@ -653,6 +1378,20 @@ class NovaCodeProPlatform:
             evidence=workflow["request"],
             detail="Business request entered the distributed workflow engine.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="workflow.created",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=workflow["tenant_id"],
+                organization_id=workflow["tenant_id"],
+                project_id=workflow["project_id"],
+                workflow_id=workflow["id"],
+                correlation_id=workflow["id"],
+                causation_id=workflow["id"],
+                data={"workflow_id": workflow["id"], "title": workflow["title"], "stage_index": workflow["stage_index"]},
+            )
+        )
         return workflow
 
     def get_workflow(self, workflow_id: str) -> dict[str, Any] | None:
@@ -681,6 +1420,25 @@ class NovaCodeProPlatform:
             evidence=note or transitioned["current_stage"]["label"],
             detail=f"Workflow transition executed: {action}.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type=f"workflow.{action}",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=transitioned["tenant_id"],
+                organization_id=transitioned["tenant_id"],
+                project_id=transitioned["project_id"],
+                workflow_id=transitioned["id"],
+                correlation_id=transitioned["id"],
+                causation_id=transitioned["id"],
+                data={
+                    "workflow_id": transitioned["id"],
+                    "stage_index": transitioned["stage_index"],
+                    "status": transitioned["status"],
+                    "action": action,
+                },
+            )
+        )
         return transitioned
 
     def create_artifact(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -706,6 +1464,20 @@ class NovaCodeProPlatform:
             evidence=artifact["kind"],
             detail="Artifact stored in the governed repository.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="artifact.created",
+                actor_type="service",
+                actor_id="artifact-service",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=artifact["workflow_id"],
+                correlation_id=artifact["workflow_id"],
+                causation_id=artifact["id"],
+                data={"artifact_id": artifact["id"], "kind": artifact["kind"], "title": artifact["title"]},
+            )
+        )
         return artifact
 
     def create_thread(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -729,6 +1501,20 @@ class NovaCodeProPlatform:
             action="thread.created",
             evidence=", ".join(thread["participants"]),
             detail="Thread created for a governed workspace discussion.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="collaboration.thread.created",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=thread["tenant_id"],
+                organization_id=thread["tenant_id"],
+                project_id=thread["project_id"],
+                workflow_id=None,
+                correlation_id=thread["id"],
+                causation_id=thread["id"],
+                data={"thread_id": thread["id"], "scope": thread["scope"]},
+            )
         )
         return thread
 
@@ -756,6 +1542,20 @@ class NovaCodeProPlatform:
             evidence=body,
             detail="Collaborative comment appended to the active thread.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="collaboration.message.posted",
+                actor_type="user",
+                actor_id=author,
+                tenant_id=thread["tenant_id"],
+                organization_id=thread["tenant_id"],
+                project_id=thread["project_id"],
+                workflow_id=None,
+                correlation_id=thread["id"],
+                causation_id=message["id"],
+                data={"thread_id": thread["id"], "message_id": message["id"], "body": body},
+            )
+        )
         return thread
 
     def focus_node(self, node_id: str) -> dict[str, Any]:
@@ -770,6 +1570,20 @@ class NovaCodeProPlatform:
             action="knowledge.focused",
             evidence=", ".join(node.get("links") or []),
             detail="Knowledge graph node inspected from the distributed platform.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="knowledge.node.focused",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=None,
+                correlation_id=node_id,
+                causation_id=node_id,
+                data={"node_id": node_id, "label": node["label"]},
+            )
         )
         return node
 
@@ -793,6 +1607,20 @@ class NovaCodeProPlatform:
             evidence=f"{source_id}->{target_id}",
             detail="Knowledge graph traceability updated.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="knowledge.linked",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=None,
+                correlation_id=source_id,
+                causation_id=target_id,
+                data={"source_id": source_id, "target_id": target_id},
+            )
+        )
         return {"source": source, "target": target}
 
     def connect_integration(self, integration_id: str) -> dict[str, Any]:
@@ -811,6 +1639,20 @@ class NovaCodeProPlatform:
             action="integration.connected",
             evidence=integration.get("purpose", ""),
             detail="Integration connected through governed platform controls.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="integration.connected",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=None,
+                correlation_id=integration_id,
+                causation_id=integration_id,
+                data={"integration_id": integration_id, "status": integration["status"]},
+            )
         )
         return integration
 
@@ -838,6 +1680,20 @@ class NovaCodeProPlatform:
             evidence=release["workflow_id"],
             detail="Release bundle created from the governed workflow.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="release.created",
+                actor_type="user",
+                actor_id="NovaID",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=release["workflow_id"],
+                correlation_id=release["id"],
+                causation_id=release["id"],
+                data={"release_id": release["id"], "workflow_id": release["workflow_id"], "status": release["status"]},
+            )
+        )
         return release
 
     def transition_release(self, release_id: str, action: str, note: str = "", actor: str = "NovaID") -> dict[str, Any]:
@@ -863,6 +1719,20 @@ class NovaCodeProPlatform:
             evidence=note or transitioned["current_stage"]["label"],
             detail=f"Release transition executed: {action}.",
         )
+        self.repository.append_event(
+            _event_envelope(
+                event_type=f"release.{action}",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=None,
+                workflow_id=transitioned["workflow_id"],
+                correlation_id=transitioned["id"],
+                causation_id=transitioned["id"],
+                data={"release_id": transitioned["id"], "stage_index": transitioned["stage_index"], "status": transitioned["status"]},
+            )
+        )
         return transitioned
 
     def run_command(self, command: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -872,7 +1742,7 @@ class NovaCodeProPlatform:
         if any(token in normalized for token in ("create", "generate")) and any(
             token in normalized for token in ("solution", "platform", "workflow", "app", "portal")
         ):
-            workflow = self.create_workflow(
+            solution = self.create_solution(
                 {
                     "title": command,
                     "request": command,
@@ -883,9 +1753,10 @@ class NovaCodeProPlatform:
                     "compliance": (context or {}).get("compliance") or "enterprise",
                     "surfaces": list((context or {}).get("surfaces") or []),
                     "template_id": (context or {}).get("template_id") or "command",
+                    "version": (context or {}).get("version") or "2027.1.0",
                 }
             )
-            outcome = {"command": command, "status": "workflow_created", "workflow": workflow}
+            outcome = {"command": command, "status": "solution_created", "solution": solution, "workflow_id": solution["workflow_id"]}
         elif "deploy" in normalized or "release" in normalized:
             workflows = self.workflows()
             workflow_id = (context or {}).get("workflow_id") or (workflows[0]["id"] if workflows else None)

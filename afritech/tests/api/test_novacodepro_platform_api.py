@@ -186,10 +186,125 @@ def test_novacodepro_platform_release_factory_and_command_center(tmp_path: Path)
         },
     )
     assert command.status_code == 200
-    assert command.json()["status"] == "workflow_created"
-    assert command.json()["workflow"]["title"] == "Generate multi-tenant customer portal"
+    assert command.json()["status"] == "solution_created"
+    assert command.json()["solution"]["title"] == "Generate multi-tenant customer portal"
 
     status = client.get("/v1/novacodepro/status", headers=_headers())
     assert status.status_code == 200
     assert status.json()["workflow_count"] >= 2
     assert status.json()["release_count"] >= 1
+
+
+def test_novacodepro_platform_cloud_native_services(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    solution = client.post(
+        "/v1/novacodepro/solutions",
+        headers=_headers(role="DEVELOPER"),
+        json={
+            "title": "International payments platform",
+            "request": "Build a governed cross-border payments platform.",
+            "tenant_id": "novatech",
+            "project_id": "nova-pay-core",
+            "template_id": "solution-factory",
+            "domain": "payments",
+            "region": "Australia",
+            "compliance": "high",
+            "surfaces": ["Payments console", "Ledger", "Admin portal"],
+            "version": "2027.1.0",
+        },
+    )
+    assert solution.status_code == 200
+    solution_id = solution.json()["id"]
+    assert solution.json()["workflow_id"]
+
+    solution_record = client.get(f"/v1/novacodepro/solutions/{solution_id}", headers=_headers())
+    assert solution_record.status_code == 200
+    assert solution_record.json()["status"] == "solution_factory_running"
+
+    execution = client.post(
+        "/v1/novacodepro/agents/executions",
+        headers=_headers(role="DEVELOPER"),
+        json={
+            "agent_id": "architecture-agent",
+            "version": "2027.1.0",
+            "category": "engineering",
+            "tenant_id": "novatech",
+            "project_id": "nova-pay-core",
+            "workflow_id": solution_record.json()["workflow_id"],
+            "stage_id": "architecture",
+            "input": {"request": "Governed payments platform"},
+            "output": {"artifact": "architecture-pack"},
+            "allowed_tools": ["artifact.read", "artifact.write", "knowledge.query"],
+            "forbidden_tools": ["production.deploy"],
+            "timeout_seconds": 900,
+            "maximum_cost": 10.0,
+            "approval_policy": "architecture-review-required",
+            "evidence": ["architecture-pack"],
+        },
+    )
+    assert execution.status_code == 200
+    assert execution.json()["status"] == "completed"
+
+    approval = client.post(
+        "/v1/novacodepro/approvals",
+        headers=_headers(role="DEVELOPER"),
+        json={
+            "gate_type": "SECURITY_APPROVAL",
+            "workflow_id": solution_record.json()["workflow_id"],
+            "release_id": "release-payments",
+            "requested_by": "platform-admin",
+            "conditions": ["Enable enhanced monitoring"],
+            "evidence_ids": ["evidence-threat-model"],
+        },
+    )
+    assert approval.status_code == 200
+    approval_id = approval.json()["id"]
+    assert approval.json()["status"] == "PENDING"
+
+    approval_decision = client.post(
+        f"/v1/novacodepro/approvals/{approval_id}/approve",
+        headers=_headers(role="ADMIN"),
+        json={"note": "Security approval granted"},
+    )
+    assert approval_decision.status_code == 200
+    assert approval_decision.json()["status"] == "APPROVED"
+
+    deployment = client.post(
+        "/v1/novacodepro/deployments",
+        headers=_headers(role="DEVELOPER"),
+        json={
+            "workflow_id": solution_record.json()["workflow_id"],
+            "release_id": "release-payments",
+            "environment": "staging",
+            "region": "Australia",
+            "version": "2027.1.0",
+        },
+    )
+    assert deployment.status_code == 200
+    deployment_id = deployment.json()["id"]
+    assert deployment.json()["status"] == "provisioning"
+
+    transitioned = client.post(
+        f"/v1/novacodepro/deployments/{deployment_id}/transition",
+        headers=_headers(role="DEVELOPER"),
+        json={"action": "complete", "note": "Deployment verified"},
+    )
+    assert transitioned.status_code == 200
+    assert transitioned.json()["status"] == "healthy"
+
+    twin = client.get("/v1/novacodepro/digital-twins/twin-novacodepro", headers=_headers())
+    assert twin.status_code == 200
+    assert twin.json()["id"] == "twin-novacodepro"
+
+    topology = client.get("/v1/novacodepro/digital-twins/twin-novacodepro/topology", headers=_headers())
+    assert topology.status_code == 200
+    assert "Workflow Service" in topology.json()["services"]
+
+    health = client.get("/v1/novacodepro/digital-twins/twin-novacodepro/health", headers=_headers())
+    assert health.status_code == 200
+    assert health.json()["status"] in {"healthy", "degraded"}
+
+    events = client.get("/v1/novacodepro/events", headers=_headers())
+    assert events.status_code == 200
+    assert any(event["event_type"] == "solution.created" for event in events.json())
