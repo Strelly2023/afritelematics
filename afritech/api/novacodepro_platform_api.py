@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 from typing import Any
 
@@ -157,6 +158,164 @@ class KnowledgeQueryRequest(BaseModel):
     query: str
 
 
+class GraphNodeRequest(BaseModel):
+    id: str | None = None
+    label: str
+    type: str = "Service"
+    tenant_id: str | None = None
+    owner: str = "NovaCodePro"
+    evidence: list[str] = Field(default_factory=list)
+    links: list[str] = Field(default_factory=list)
+
+
+class GraphEdgeRequest(BaseModel):
+    source_id: str
+    target_id: str
+
+
+class GraphQueryRequest(BaseModel):
+    query: str
+
+
+class FederationAgreementRequest(BaseModel):
+    provider_org: str | None = None
+    consumer_org: str | None = None
+    trust_level: str = "VERIFIED"
+    allowed_capabilities: list[str] = Field(default_factory=list)
+    denied_capabilities: list[str] = Field(default_factory=list)
+    allowed_regions: list[str] = Field(default_factory=list)
+    data_classes: list[str] = Field(default_factory=list)
+    purpose: str = ""
+    expires_at: str = ""
+    signature: str = ""
+
+
+class FederationAuthorizeRequest(BaseModel):
+    capability: str
+    region: str = "AU"
+
+
+class FederationShareRequest(BaseModel):
+    resource_id: str
+    consumer_org: str
+    tenant_id: str | None = None
+
+
+class RegionEligibilityRequest(BaseModel):
+    capacity_ok: bool = True
+    keys_available: bool = True
+    replication_healthy: bool = True
+
+
+class RegionFailoverRequest(BaseModel):
+    target_region: str
+    reasons: list[str] = Field(default_factory=list)
+    required_actions: list[str] = Field(default_factory=list)
+
+
+class TwinSimulationRequest(BaseModel):
+    scenario: str
+    affected_users: int | None = None
+    estimated_revenue_impact: int | None = None
+    predicted_recovery_minutes: int | None = None
+    policy_violations: list[str] = Field(default_factory=list)
+    recommended_actions: list[str] = Field(default_factory=list)
+    confidence: float | None = None
+
+
+class TwinCompareRequest(BaseModel):
+    compare_to: str
+
+
+class ExecutiveCouncilSessionRequest(BaseModel):
+    subject: str
+    question: str
+
+
+class ExecutiveCouncilSynthesisRequest(BaseModel):
+    subject: str
+    consensus: str = "CONDITIONAL_APPROVAL_RECOMMENDED"
+    supporting_agents: list[str] = Field(default_factory=list)
+    dissenting_agents: list[str] = Field(default_factory=list)
+    conditions: list[str] = Field(default_factory=list)
+    escalation: str = "BOARD_REVIEW_REQUIRED"
+
+
+class ExecutiveAgentAnalyzeRequest(BaseModel):
+    position: str = "DEFER"
+    confidence: float = 0.88
+    findings: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class BoardMeetingRequest(BaseModel):
+    title: str
+    agenda: list[str] = Field(default_factory=list)
+
+
+class BoardResolutionRequest(BaseModel):
+    title: str
+    meeting_id: str
+    quorum: dict[str, Any] = Field(default_factory=lambda: {"required": 3, "present": 0, "met": False})
+    votes: dict[str, Any] = Field(default_factory=lambda: {"for": 0, "against": 0, "abstain": 0})
+    conditions: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+    signature: str = ""
+
+
+class BoardVoteRequest(BaseModel):
+    vote: str
+
+
+class SliRequest(BaseModel):
+    service: str
+    metric: str
+    target: float = 99.95
+    measurement: float = 99.97
+    window: str = "30d"
+    status: str = "WITHIN_TARGET"
+
+
+class SloRequest(BaseModel):
+    service: str
+    metric: str
+    target: float = 99.95
+    measurement: float = 99.97
+    window: str = "30d"
+    status: str = "WITHIN_TARGET"
+
+
+class ChaosExperimentRequest(BaseModel):
+    scenario: str
+    scope: str = "regional"
+    owner: str = "SRE"
+    approval_id: str = ""
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class EventTopicRequest(BaseModel):
+    name: str
+    owner: str = "NovaCodePro"
+    retention: str = "30d"
+    classification: str = "INTERNAL"
+    region: str = "Australia"
+    replay_policy: str = "isolated"
+
+
+class EventSchemaRequest(BaseModel):
+    topic: str
+    version: str = "1.0"
+    schema: dict[str, Any] = Field(default_factory=dict)
+    compatibility: str = "BACKWARD"
+
+
+class EventReplayRequest(BaseModel):
+    topic: str
+    tenant_id: str | None = None
+    region: str = "Australia"
+
+
 class MarketplaceInstallRequest(BaseModel):
     package_id: str
     tenant_id: str | None = None
@@ -169,6 +328,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     router = APIRouter(prefix="/v1/novacodepro", tags=["novacodepro"])
     observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
     editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
+
+    def _tenant_context(claims: JWTClaims) -> str:
+        return str(claims.organization_id or "novatech")
 
     @router.get("/status")
     def status(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
@@ -191,11 +353,23 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/solutions")
     def create_solution(payload: SolutionCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_solution(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_solution(data)
 
     @router.get("/agents/executions")
     def agent_executions(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.agent_executions()
+
+    @router.get("/agents")
+    def agents(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.agents()
+
+    @router.post("/agents/register")
+    def register_agent(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.register_agent(data)
 
     @router.get("/agents/executions/{execution_id}")
     def agent_execution(execution_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
@@ -206,7 +380,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/agents/executions")
     def create_agent_execution(payload: AgentExecutionCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_agent_execution(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_agent_execution(data)
 
     @router.post("/agents/executions/{execution_id}/cancel")
     def cancel_agent_execution(execution_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
@@ -217,13 +393,22 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
         service.repository.upsert("agent_execution", record)
         return record
 
+    @router.post("/agents/executions/{execution_id}/retry")
+    def retry_agent_execution(execution_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.retry_agent_execution(execution_id, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="agent_execution_not_found") from exc
+
     @router.get("/approvals")
     def approvals(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.approvals()
 
     @router.post("/approvals")
     def create_approval(payload: ApprovalCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_approval(payload.model_dump())
+        data = payload.model_dump()
+        data["requested_by"] = claims.sub
+        return service.create_approval(data)
 
     @router.post("/approvals/{approval_id}/approve")
     def approve_approval(
@@ -260,7 +445,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/deployments")
     def create_deployment(payload: DeploymentCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_deployment(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_deployment(data)
 
     @router.post("/deployments/{deployment_id}/transition")
     def transition_deployment(
@@ -288,6 +475,38 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def digital_twin_health(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.digital_twin_health(twin_id)
 
+    @router.get("/twins/{twin_id}")
+    def twin(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.get_or_create_digital_twin(twin_id)
+
+    @router.get("/twins/{twin_id}/topology")
+    def twin_topology(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.digital_twin_topology(twin_id)
+
+    @router.get("/twins/{twin_id}/health")
+    def twin_health(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.digital_twin_health(twin_id)
+
+    @router.get("/twins/{twin_id}/history")
+    def twin_history(twin_id: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.twin_history(twin_id)
+
+    @router.post("/twins/{twin_id}/simulate")
+    def simulate_twin(twin_id: str, payload: TwinSimulationRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.simulate_twin(twin_id, payload.model_dump())
+
+    @router.post("/twins/{twin_id}/compare")
+    def compare_twins(twin_id: str, payload: TwinCompareRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.compare_twins(twin_id, payload.model_dump())
+
+    @router.post("/twins/{twin_id}/replay")
+    def replay_twin(twin_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.replay_twin(twin_id, payload or {})
+
+    @router.post("/twins/{twin_id}/refresh")
+    def refresh_twin(twin_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.refresh_twin(twin_id)
+
     @router.get("/tenants")
     def tenants(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.tenants()
@@ -298,7 +517,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/projects")
     def create_project(payload: ProjectCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_project(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_project(data)
 
     @router.get("/workflows")
     def workflows(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
@@ -313,7 +534,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/workflows")
     def create_workflow(payload: WorkflowCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_workflow(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_workflow(data)
 
     @router.post("/workflows/{workflow_id}/transition")
     def transition_workflow(
@@ -334,7 +557,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/artifacts")
     def create_artifact(payload: ArtifactCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_artifact(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_artifact(data)
 
     @router.get("/knowledge-graph")
     def knowledge_graph(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
@@ -353,7 +578,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/collaboration/threads")
     def create_thread(payload: ThreadCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_thread(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_thread(data)
 
     @router.post("/collaboration/threads/{thread_id}/messages")
     def post_comment(
@@ -386,39 +613,91 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
         payload: MarketplaceInstallRequest,
         claims: JWTClaims = Depends(editor),
     ) -> dict[str, Any]:
-        package = {
-            "id": payload.package_id,
-            "tenant_id": payload.tenant_id or service.tenants()[0]["id"],
-            "region": payload.region,
-            "version": payload.version,
-            "installed_at": service.audit(limit=1)[0]["at"] if service.audit(limit=1) else None,
-            "status": "installed",
-        }
-        service.repository.upsert("marketplace_item", {
-            "id": payload.package_id,
-            "name": payload.package_id.replace("-", " ").title(),
-            "category": "solution",
-            "version": payload.version,
-            "installed": True,
-            "tenant_id": package["tenant_id"],
-            "region": payload.region,
-            "created_at": package["installed_at"] or "",
-            "updated_at": package["installed_at"] or "",
-        })
-        return package
+        return service.install_marketplace_package(
+            {
+                "package_id": payload.package_id,
+                "tenant_id": _tenant_context(claims),
+                "region": payload.region,
+                "version": payload.version,
+            }
+        )
 
     @router.post("/marketplace/uninstall")
     def uninstall_marketplace_package(
         payload: MarketplaceInstallRequest,
         claims: JWTClaims = Depends(editor),
     ) -> dict[str, Any]:
-        item = service.repository.get("marketplace_item", payload.package_id)
-        if item is None:
+        try:
+            package = service.uninstall_marketplace_package(payload.package_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="marketplace_package_not_found") from exc
+        return {"id": package["id"], "status": "uninstalled"}
+
+    @router.get("/marketplace/packages")
+    def marketplace_packages(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.marketplace_packages()
+
+    @router.get("/marketplace/installations")
+    def marketplace_installations(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.marketplace_installations()
+
+    @router.post("/marketplace/packages")
+    def create_marketplace_package(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        package = dict(payload)
+        package["id"] = str(package.get("package_id") or package.get("id") or "package")
+        package.setdefault("tenant_id", _tenant_context(claims))
+        package.setdefault("installed", False)
+        package.setdefault("version", "2027.1.0")
+        package.setdefault("category", "solution")
+        package.setdefault("signature", "sigstore-reference")
+        package.setdefault("checksum", "sha256-demo")
+        return service.repository.upsert("marketplace_item", package)
+
+    @router.post("/marketplace/packages/{package_id}/verify")
+    def verify_marketplace_package(package_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        package = service.repository.get("marketplace_item", package_id)
+        if package is None:
             raise HTTPException(status_code=404, detail="marketplace_package_not_found")
-        item["installed"] = False
-        item["updated_at"] = service.audit(limit=1)[0]["at"] if service.audit(limit=1) else item.get("updated_at")
-        service.repository.upsert("marketplace_item", item)
-        return {"id": payload.package_id, "status": "uninstalled"}
+        verified = not str(package.get("signature") or "").startswith("invalid")
+        return {"package_id": package_id, "verified": verified, "package": package}
+
+    @router.post("/marketplace/installations")
+    def create_marketplace_installation(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.install_marketplace_package(
+                {
+                    "package_id": str(payload["package_id"]),
+                    "tenant_id": _tenant_context(claims),
+                    "region": str(payload.get("region") or "Australia"),
+                    "version": str(payload.get("version") or "2027.1.0"),
+                    "signature": str(payload.get("signature") or "sigstore-reference"),
+                    "permissions": list(payload.get("permissions") or []),
+                    "checksum": str(payload.get("checksum") or "sha256-demo"),
+                    "publisher": str(payload.get("publisher") or "NovaTech"),
+                }
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="marketplace_package_not_found") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/marketplace/installations/{installation_id}/upgrade")
+    def upgrade_marketplace_installation(installation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        package = service.repository.get("marketplace_item", installation_id)
+        if package is None:
+            raise HTTPException(status_code=404, detail="marketplace_package_not_found")
+        package["version"] = str(payload.get("version") or package.get("version") or "2027.1.0")
+        package["updated_at"] = service.audit(limit=1)[0]["at"] if service.audit(limit=1) else package.get("updated_at")
+        service.repository.upsert("marketplace_item", package)
+        return package
+
+    @router.post("/marketplace/installations/{installation_id}/remove")
+    def remove_marketplace_installation(installation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            package = service.uninstall_marketplace_package(installation_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="marketplace_package_not_found") from exc
+        return package
 
     @router.get("/releases")
     def releases(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
@@ -426,7 +705,9 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/releases")
     def create_release(payload: ReleaseCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_release(payload.model_dump())
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_release(data)
 
     @router.post("/releases/{release_id}/transition")
     def transition_release(
@@ -441,19 +722,407 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @router.post("/solutions/{solution_id}/submit")
+    def submit_solution(solution_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        solution = service.get_solution(solution_id)
+        if solution is None:
+            raise HTTPException(status_code=404, detail="solution_not_found")
+        solution["status"] = "submitted"
+        solution["updated_at"] = service.audit(limit=1)[0]["at"] if service.audit(limit=1) else solution.get("updated_at")
+        service.repository.upsert("solution", solution)
+        return solution
+
+    @router.post("/solutions/{solution_id}/cancel")
+    def cancel_solution(solution_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        solution = service.get_solution(solution_id)
+        if solution is None:
+            raise HTTPException(status_code=404, detail="solution_not_found")
+        solution["status"] = "cancelled"
+        solution["updated_at"] = service.audit(limit=1)[0]["at"] if service.audit(limit=1) else solution.get("updated_at")
+        service.repository.upsert("solution", solution)
+        return solution
+
+    @router.post("/workflows/{workflow_id}/pause")
+    def pause_workflow(workflow_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.transition_workflow(workflow_id, "pause", actor=claims.sub)
+
+    @router.post("/workflows/{workflow_id}/resume")
+    def resume_workflow(workflow_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.transition_workflow(workflow_id, "resume", actor=claims.sub)
+
+    @router.post("/workflows/{workflow_id}/retry")
+    def retry_workflow(workflow_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.transition_workflow(workflow_id, "retry", actor=claims.sub)
+
+    @router.post("/workflows/{workflow_id}/reject")
+    def reject_workflow(workflow_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        note = str((payload or {}).get("note") or "")
+        return service.transition_workflow(workflow_id, "reject", note, actor=claims.sub)
+
+    @router.post("/workflows/{workflow_id}/rollback")
+    def rollback_workflow(workflow_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        note = str((payload or {}).get("note") or "")
+        return service.transition_workflow(workflow_id, "rollback", note, actor=claims.sub)
+
+    @router.post("/workflows/{workflow_id}/replay")
+    def replay_workflow(workflow_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        record = service.get_workflow(workflow_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="workflow_not_found")
+        return record
+
+    @router.post("/risks/evaluate")
+    def evaluate_risk(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.evaluate_risk(data)
+
+    @router.get("/risks")
+    def risks(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.risks()
+
+    @router.get("/risks/{risk_id}")
+    def risk(risk_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        record = service.get_risk(risk_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="risk_not_found")
+        return record
+
+    @router.post("/risks/{risk_id}/treat")
+    def treat_risk(risk_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.treat_risk(risk_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="risk_not_found") from exc
+
+    @router.post("/risks/{risk_id}/accept")
+    def accept_risk(risk_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.accept_risk(risk_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="risk_not_found") from exc
+
+    @router.post("/risks/{risk_id}/close")
+    def close_risk(risk_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.close_risk(risk_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="risk_not_found") from exc
+
+    @router.get("/evidence/bundles")
+    def evidence_bundles(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.evidence_bundles()
+
+    @router.post("/evidence/bundles")
+    def create_evidence_bundle(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        data.setdefault("actor", {"type": "user", "id": claims.sub})
+        return service.create_evidence_bundle(data)
+
+    @router.get("/evidence/bundles/{evidence_id}")
+    def evidence_bundle(evidence_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        record = service.get_evidence_bundle(evidence_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="evidence_not_found")
+        return record
+
+    @router.post("/evidence/bundles/{evidence_id}/verify")
+    def verify_evidence_bundle(evidence_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.verify_evidence_bundle(evidence_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="evidence_not_found") from exc
+
+    @router.get("/evidence/search")
+    def search_evidence(q: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.search_evidence_bundles(q)
+
+    @router.post("/policies")
+    def create_policy(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_policy(data)
+
+    @router.get("/policies")
+    def policies(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.policies()
+
+    @router.post("/policies/evaluate")
+    def evaluate_policy(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.evaluate_policy(data)
+
+    @router.post("/policies/{policy_id}/activate")
+    def activate_policy(policy_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            active = True if payload is None else bool(payload.get("active", True))
+            return service.activate_policy(policy_id, active=active)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="policy_not_found") from exc
+
+    @router.get("/knowledge/nodes")
+    def knowledge_nodes(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.knowledge_nodes()
+
+    @router.post("/knowledge/nodes")
+    def create_knowledge_node(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_knowledge_node(data)
+
+    @router.post("/knowledge/relationships")
+    def create_knowledge_relationship(payload: KnowledgeLinkRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.create_knowledge_relationship(payload.source_id, payload.target_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="knowledge_node_not_found") from exc
+
+    @router.get("/knowledge/trace/{node_id}")
+    def knowledge_trace(node_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.knowledge_trace(node_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="knowledge_node_not_found") from exc
+
+    @router.get("/knowledge/impact/{node_id}")
+    def knowledge_impact(node_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.knowledge_impact(node_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="knowledge_node_not_found") from exc
+
+    @router.post("/graph/nodes")
+    def graph_nodes(payload: GraphNodeRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_knowledge_node(data)
+
+    @router.post("/graph/edges")
+    def graph_edges(payload: GraphEdgeRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.create_knowledge_relationship(payload.source_id, payload.target_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="knowledge_node_not_found") from exc
+
+    @router.post("/graph/query")
+    def graph_query(payload: GraphQueryRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_query(payload.query)
+
+    @router.post("/graph/federation/query")
+    def graph_federation_query(payload: dict[str, Any], claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_federation_query(payload)
+
+    @router.post("/graph/analytics/blast-radius")
+    def graph_blast_radius(payload: GraphQueryRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_blast_radius(payload.query)
+
+    @router.post("/graph/analytics/root-cause")
+    def graph_root_cause(payload: GraphQueryRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_root_cause(payload.query)
+
+    @router.post("/graph/analytics/critical-path")
+    def graph_critical_path(payload: dict[str, Any], claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_critical_path(str(payload.get("start_id") or ""), str(payload.get("end_id") or ""))
+
+    @router.get("/graph/trace/{node_id}")
+    def graph_trace(node_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.knowledge_trace(node_id)
+
+    @router.get("/graph/impact/{node_id}")
+    def graph_impact(node_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.knowledge_impact(node_id)
+
+    @router.post("/graph/snapshots")
+    def graph_snapshot(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = dict(payload)
+        data["tenant_id"] = _tenant_context(claims)
+        return service.graph_snapshot(data)
+
+    @router.post("/graph/reconcile")
+    def graph_reconcile(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.graph_reconcile()
+
+    @router.post("/releases/{release_id}/build")
+    def build_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.build_release(release_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="release_not_found") from exc
+
+    @router.post("/releases/{release_id}/sign")
+    def sign_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.sign_release(release_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="release_not_found") from exc
+
+    @router.post("/releases/{release_id}/publish")
+    def publish_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.publish_release(release_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="release_not_found") from exc
+
+    @router.post("/releases/{release_id}/promote")
+    def promote_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.promote_release(release_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="release_not_found") from exc
+
+    @router.post("/releases/{release_id}/revoke")
+    def revoke_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.revoke_release(release_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="release_not_found") from exc
+
+    @router.post("/deployments/{deployment_id}/start")
+    def start_deployment(deployment_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.start_deployment(deployment_id, payload)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+        except ValueError as exc:
+            message = str(exc)
+            try:
+                detail = json.loads(message)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail=message) from exc
+            raise HTTPException(status_code=409, detail=detail) from exc
+
+    @router.post("/deployments/{deployment_id}/pause")
+    def pause_deployment(deployment_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.pause_deployment(deployment_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+
+    @router.post("/deployments/{deployment_id}/resume")
+    def resume_deployment(deployment_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.resume_deployment(deployment_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+
+    @router.post("/deployments/{deployment_id}/verify")
+    def verify_deployment(deployment_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.verify_deployment(deployment_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+
+    @router.post("/deployments/{deployment_id}/rollback")
+    def rollback_deployment(deployment_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.rollback_deployment(deployment_id, note=str((payload or {}).get("note") or ""), actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+
+    @router.post("/deployments/{deployment_id}/complete")
+    def complete_deployment(deployment_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.complete_deployment(deployment_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="deployment_not_found") from exc
+
+    @router.get("/operations/health")
+    def operations_health(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.operations_health()
+
+    @router.get("/operations/metrics")
+    def operations_metrics(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.operations_metrics()
+
+    @router.get("/operations/incidents")
+    def operations_incidents(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.operations_incidents()
+
+    @router.post("/operations/incidents")
+    def create_incident(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_incident(payload)
+
+    @router.post("/operations/maintenance-windows")
+    def create_maintenance_window(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_incident(
+            {
+                "title": str(payload.get("title") or "Maintenance Window"),
+                "severity": str(payload.get("severity") or "low"),
+                "status": "scheduled",
+                "service": str(payload.get("service") or "NovaCodePro Platform"),
+                "region": str(payload.get("region") or "Australia"),
+                "details": dict(payload.get("details") or {}),
+            }
+        )
+
+    @router.post("/operations/backups/{backup_id}/restore")
+    def restore_backup(backup_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.restore_backup(backup_id, payload or {})
+
+    @router.post("/sre/slis")
+    def create_sli(payload: SliRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.sli_record(payload.model_dump())
+
+    @router.post("/sre/slos")
+    def create_slo(payload: SloRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.slo_record(payload.model_dump())
+
+    @router.get("/sre/error-budgets")
+    def error_budgets(service_name: str = "novacodepro-gateway", window: str = "30d", claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.error_budget(service_name, window)
+
+    @router.get("/sre/capacity")
+    def capacity(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.capacity()
+
+    @router.post("/sre/chaos/experiments")
+    def create_chaos_experiment(payload: ChaosExperimentRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.chaos_experiment(payload.model_dump())
+
+    @router.get("/executive/briefings")
+    def executive_briefings(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.briefings()
+
+    @router.post("/executive/briefings")
+    def create_executive_briefing(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_briefing(payload)
+
+    @router.get("/executive/command-center")
+    def executive_command_center(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.command_center()
+
+    @router.post("/executive/command-center/refresh")
+    def refresh_executive_command_center(claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.command_center_refresh()
+
+    @router.post("/executive/council/sessions")
+    def create_executive_council_session(payload: ExecutiveCouncilSessionRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.executive_council_session(payload.model_dump())
+
+    @router.get("/executive/council/sessions/{session_id}")
+    def get_executive_council_session(session_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        session = service.repository.get("executive_council_session", session_id)
+        if session is None:
+            raise HTTPException(status_code=404, detail="council_session_not_found")
+        return session
+
+    @router.post("/executive/agents/{role}/analyze")
+    def analyze_executive_agent(role: str, payload: ExecutiveAgentAnalyzeRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.executive_agent_analyze(role, payload.model_dump())
+
+    @router.post("/executive/council/synthesize")
+    def synthesize_executive_council(payload: ExecutiveCouncilSynthesisRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.executive_council_synthesize(payload.model_dump())
+
     @router.post("/commands")
     def command(payload: CommandRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
         return service.run_command(payload.command, payload.context)
 
     @router.post("/knowledge/query")
     def query_knowledge(payload: KnowledgeQueryRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
-        query = payload.query.lower()
-        matches = [
-            node
-            for node in service.knowledge_graph()
-            if query in node.get("label", "").lower() or query in node.get("id", "").lower()
-        ]
-        return {"query": payload.query, "matches": matches, "match_count": len(matches)}
+        return service.knowledge_query(payload.query)
 
     @router.get("/events")
     def events(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
@@ -462,6 +1131,147 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/audit")
     def audit(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.audit()
+
+    @router.post("/board/meetings")
+    def board_meetings(payload: BoardMeetingRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.board_meeting(payload.model_dump())
+
+    @router.post("/board/resolutions")
+    def board_resolutions(payload: BoardResolutionRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.board_resolution(payload.model_dump())
+
+    @router.post("/board/resolutions/{resolution_id}/vote")
+    def board_vote(resolution_id: str, payload: BoardVoteRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.board_vote(resolution_id, payload.model_dump())
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="board_resolution_not_found") from exc
+
+    @router.post("/board/resolutions/{resolution_id}/close")
+    def board_close(resolution_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.board_close_resolution(resolution_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="board_resolution_not_found") from exc
+
+    @router.get("/board/resolutions/{resolution_id}/evidence")
+    def board_evidence(resolution_id: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        try:
+            return service.board_resolution_evidence(resolution_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="board_resolution_not_found") from exc
+
+    @router.post("/events/topics")
+    def create_event_topic(payload: EventTopicRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_event_topic(payload.model_dump())
+
+    @router.get("/events/topics")
+    def event_topics(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.event_topics()
+
+    @router.post("/events/schemas")
+    def create_event_schema(payload: EventSchemaRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_event_schema(payload.model_dump())
+
+    @router.post("/events/replays")
+    def create_event_replay(payload: EventReplayRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.create_event_replay(payload.model_dump())
+
+    @router.get("/events/replays/{replay_id}")
+    def get_event_replay(replay_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        replay = service.repository.get("event_replay", replay_id)
+        if replay is None:
+            raise HTTPException(status_code=404, detail="event_replay_not_found")
+        return replay
+
+    @router.post("/events/dead-letter/{event_id}/retry")
+    def retry_dead_letter(event_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        matches = [event for event in service.repository.list_outbox(limit=1000, status=None) if event.get("event_id") == event_id]
+        if not matches:
+            raise HTTPException(status_code=404, detail="dead_letter_not_found")
+        service.repository.fail_outbox_event(event_id, "")
+        return {"event_id": event_id, "status": "retry_requested"}
+
+    @router.post("/federation/agreements")
+    def create_federation_agreement(payload: FederationAgreementRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["provider_org"] = _tenant_context(claims)
+        return service.create_federation_agreement(data)
+
+    @router.get("/federation/agreements")
+    def federation_agreements(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.federation_agreements()
+
+    @router.post("/federation/agreements/{agreement_id}/approve")
+    def approve_federation_agreement(agreement_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.approve_federation_agreement(agreement_id, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="federation_agreement_not_found") from exc
+
+    @router.post("/federation/agreements/{agreement_id}/revoke")
+    def revoke_federation_agreement(agreement_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.revoke_federation_agreement(agreement_id, reason=str((payload or {}).get("reason") or ""))
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="federation_agreement_not_found") from exc
+
+    @router.post("/federation/authorize")
+    def federation_authorize(payload: FederationAuthorizeRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.federation_authorize(payload.model_dump())
+
+    @router.get("/federation/hierarchy")
+    def federation_hierarchy(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.federation_hierarchy()
+
+    @router.post("/federation/resources/share")
+    def federation_share_resource(payload: FederationShareRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.federation_share_resource(data)
+
+    @router.post("/federation/resources/unshare")
+    def federation_unshare_resource(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.federation_unshare_resource(str(payload.get("share_id") or payload.get("id") or ""))
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="federation_share_not_found") from exc
+
+    @router.get("/federation/audit")
+    def federation_audit(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.federation_audit()
+
+    @router.get("/regions")
+    def regions(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.federation_hierarchy()
+
+    @router.get("/regions/{region_id}/health")
+    def region_health(region_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.region_health(region_id)
+
+    @router.get("/regions/{region_id}/governance")
+    def region_governance(region_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.region_governance(region_id)
+
+    @router.post("/regions/{region_id}/eligibility/evaluate")
+    def region_eligibility(region_id: str, payload: RegionEligibilityRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.evaluate_region_eligibility(region_id, payload.model_dump())
+
+    @router.post("/regions/{region_id}/failover/plan")
+    def region_failover_plan(region_id: str, payload: RegionFailoverRequest, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.plan_region_failover(region_id, payload.model_dump())
+
+    @router.post("/regions/{region_id}/failover/approve")
+    def region_failover_approve(region_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.approve_region_failover(region_id, payload or {"approver": claims.sub})
+
+    @router.post("/regions/{region_id}/failover/execute")
+    def region_failover_execute(region_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.execute_region_failover(region_id, payload or {})
+
+    @router.post("/regions/{region_id}/reconcile")
+    def region_reconcile(region_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.reconcile_region(region_id)
 
     return router
 

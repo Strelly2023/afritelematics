@@ -1,0 +1,1074 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: novacodepro
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: novacodepro-service
+  namespace: novacodepro
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: novacodepro-config
+  namespace: novacodepro
+data:
+  NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+  NOVACODEPRO_AGENT_ASYNC_EXECUTION: "true"
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: novacodepro-deny-all-egress-by-default
+  namespace: novacodepro
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda
+  namespace: novacodepro
+spec:
+  selector:
+    app: redpanda
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redpanda
+  namespace: novacodepro
+spec:
+  serviceName: redpanda
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redpanda
+  template:
+    metadata:
+      labels:
+        app: redpanda
+    spec:
+      containers:
+        - name: redpanda
+          image: redpandadata/redpanda:v24.1.5
+          ports:
+            - containerPort: 9092
+          command:
+            - redpanda
+            - start
+            - --overprovisioned
+            - --smp
+            - "1"
+            - --memory
+            - 512M
+            - --reserve-memory
+            - 0M
+            - --node-id
+            - "0"
+            - --check=false
+            - --kafka-addr
+            - PLAINTEXT://0.0.0.0:9092
+            - --advertise-kafka-addr
+            - PLAINTEXT://redpanda:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-gateway
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-gateway
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-gateway
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-gateway
+  template:
+    metadata:
+      labels:
+        app: novacodepro-gateway
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: gateway
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:gateway_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_GATEWAY_DB_PATH
+              value: /var/lib/novacodepro/gateway.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          volumeMounts:
+            - name: gateway-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: gateway-data
+          persistentVolumeClaim:
+            claimName: gateway-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gateway-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-agent
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-agent
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-agent
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-agent
+  template:
+    metadata:
+      labels:
+        app: novacodepro-agent
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: agent
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:agent_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_AGENT_DB_PATH
+              value: /var/lib/novacodepro/agent.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: agent-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: agent-data
+          persistentVolumeClaim:
+            claimName: agent-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-identity-context
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-identity-context
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-identity-context
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-identity-context
+  template:
+    metadata:
+      labels:
+        app: novacodepro-identity-context
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: identity-context
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:identity_context_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_IDENTITY_CONTEXT_DB_PATH
+              value: /var/lib/novacodepro/identity-context.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: identity-context-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: identity-context-data
+          persistentVolumeClaim:
+            claimName: identity-context-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: identity-context-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-tenant
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-tenant
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-tenant
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-tenant
+  template:
+    metadata:
+      labels:
+        app: novacodepro-tenant
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: tenant
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:tenant_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_TENANT_DB_PATH
+              value: /var/lib/novacodepro/tenant.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: tenant-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: tenant-data
+          persistentVolumeClaim:
+            claimName: tenant-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tenant-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-federation
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-federation
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-federation
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-federation
+  template:
+    metadata:
+      labels:
+        app: novacodepro-federation
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: federation
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:federation_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_FEDERATION_DB_PATH
+              value: /var/lib/novacodepro/federation.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: federation-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: federation-data
+          persistentVolumeClaim:
+            claimName: federation-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: federation-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-approval
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-approval
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-approval
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-approval
+  template:
+    metadata:
+      labels:
+        app: novacodepro-approval
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: approval
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:approval_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_APPROVAL_DB_PATH
+              value: /var/lib/novacodepro/approval.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: approval-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: approval-data
+          persistentVolumeClaim:
+            claimName: approval-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: approval-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-digital-twin
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-digital-twin
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-digital-twin
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-digital-twin
+  template:
+    metadata:
+      labels:
+        app: novacodepro-digital-twin
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: digital-twin
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:digital_twin_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_DIGITAL_TWIN_DB_PATH
+              value: /var/lib/novacodepro/digital-twin.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: digital-twin-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: digital-twin-data
+          persistentVolumeClaim:
+            claimName: digital-twin-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: digital-twin-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-observability
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-observability
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-observability
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-observability
+  template:
+    metadata:
+      labels:
+        app: novacodepro-observability
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: observability
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:observability_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_OBSERVABILITY_DB_PATH
+              value: /var/lib/novacodepro/observability.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: observability-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: observability-data
+          persistentVolumeClaim:
+            claimName: observability-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: observability-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-incident
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-incident
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-incident
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-incident
+  template:
+    metadata:
+      labels:
+        app: novacodepro-incident
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: incident
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:incident_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_INCIDENT_DB_PATH
+              value: /var/lib/novacodepro/incident.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: incident-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: incident-data
+          persistentVolumeClaim:
+            claimName: incident-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: incident-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-command-center
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-command-center
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-command-center
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-command-center
+  template:
+    metadata:
+      labels:
+        app: novacodepro-command-center
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: command-center
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:command_center_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_COMMAND_CENTER_DB_PATH
+              value: /var/lib/novacodepro/command-center.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: command-center-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: command-center-data
+          persistentVolumeClaim:
+            claimName: command-center-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: command-center-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-board-governance
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-board-governance
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-board-governance
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-board-governance
+  template:
+    metadata:
+      labels:
+        app: novacodepro-board-governance
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: board-governance
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:board_governance_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_BOARD_GOVERNANCE_DB_PATH
+              value: /var/lib/novacodepro/board-governance.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: board-governance-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: board-governance-data
+          persistentVolumeClaim:
+            claimName: board-governance-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: board-governance-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-audit
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-audit
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-audit
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-audit
+  template:
+    metadata:
+      labels:
+        app: novacodepro-audit
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: audit
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:audit_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_AUDIT_DB_PATH
+              value: /var/lib/novacodepro/audit.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: audit-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: audit-data
+          persistentVolumeClaim:
+            claimName: audit-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audit-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novacodepro-notification
+  namespace: novacodepro
+spec:
+  selector:
+    app: novacodepro-notification
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-notification
+  namespace: novacodepro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novacodepro-notification
+  template:
+    metadata:
+      labels:
+        app: novacodepro-notification
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: notification
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "afritech.novacodepro.processes:notification_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_NOTIFICATION_DB_PATH
+              value: /var/lib/novacodepro/notification.sqlite3
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: notification-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: notification-data
+          persistentVolumeClaim:
+            claimName: notification-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notification-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agent-data
+  namespace: novacodepro
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novacodepro-agent-worker
+  namespace: novacodepro
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: novacodepro-agent-worker
+  template:
+    metadata:
+      labels:
+        app: novacodepro-agent-worker
+    spec:
+      serviceAccountName: novacodepro-service
+      containers:
+        - name: worker
+          image: novacodepro-services:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "afritech.novacodepro.worker_main", "agent", "agents", "--db-env-var", "NOVACODEPRO_AGENT_DB_PATH"]
+          envFrom:
+            - configMapRef:
+                name: novacodepro-config
+          env:
+            - name: NOVACODEPRO_AGENT_DB_PATH
+              value: /var/lib/novacodepro/agent.sqlite3
+          volumeMounts:
+            - name: agent-data
+              mountPath: /var/lib/novacodepro
+      volumes:
+        - name: agent-data
+          persistentVolumeClaim:
+            claimName: agent-data
+---

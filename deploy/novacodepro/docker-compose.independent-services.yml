@@ -1,0 +1,416 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:v24.1.5
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 512M
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:9092
+    ports:
+      - "9092:9092"
+
+  novacodepro-gateway:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:gateway_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_GATEWAY_DB_PATH: /var/lib/novacodepro/gateway.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+      NOVACODEPRO_AGENT_ASYNC_EXECUTION: "false"
+    volumes:
+      - novacodepro-gateway-data:/var/lib/novacodepro
+    ports:
+      - "8010:8000"
+
+  novacodepro-solution:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:solution_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_SOLUTION_DB_PATH: /var/lib/novacodepro/solution.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-solution-data:/var/lib/novacodepro
+    ports:
+      - "8011:8000"
+
+  novacodepro-identity-context:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:identity_context_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_IDENTITY_CONTEXT_DB_PATH: /var/lib/novacodepro/identity-context.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-identity-context-data:/var/lib/novacodepro
+    ports:
+      - "8012:8000"
+
+  novacodepro-tenant:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:tenant_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_TENANT_DB_PATH: /var/lib/novacodepro/tenant.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-tenant-data:/var/lib/novacodepro
+    ports:
+      - "8013:8000"
+
+  novacodepro-federation:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:federation_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_FEDERATION_DB_PATH: /var/lib/novacodepro/federation.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-federation-data:/var/lib/novacodepro
+    ports:
+      - "8014:8000"
+
+  novacodepro-workflow:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:workflow_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_WORKFLOW_DB_PATH: /var/lib/novacodepro/workflow.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-workflow-data:/var/lib/novacodepro
+    ports:
+      - "8015:8000"
+
+  novacodepro-agent:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:agent_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_AGENT_DB_PATH: /var/lib/novacodepro/agent.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+      NOVACODEPRO_AGENT_ASYNC_EXECUTION: "true"
+    volumes:
+      - novacodepro-agent-data:/var/lib/novacodepro
+    ports:
+      - "8016:8000"
+
+  novacodepro-approval:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:approval_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_APPROVAL_DB_PATH: /var/lib/novacodepro/approval.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-approval-data:/var/lib/novacodepro
+    ports:
+      - "8017:8000"
+
+  novacodepro-evidence:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:evidence_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_EVIDENCE_DB_PATH: /var/lib/novacodepro/evidence.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-evidence-data:/var/lib/novacodepro
+    ports:
+      - "8018:8000"
+
+  novacodepro-risk-policy:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:risk_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_RISK_DB_PATH: /var/lib/novacodepro/risk.sqlite3
+      NOVACODEPRO_POLICY_DB_PATH: /var/lib/novacodepro/policy.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-risk-policy-data:/var/lib/novacodepro
+    ports:
+      - "8019:8000"
+
+  novacodepro-knowledge:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:knowledge_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_KNOWLEDGE_DB_PATH: /var/lib/novacodepro/knowledge.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-knowledge-data:/var/lib/novacodepro
+    ports:
+      - "8020:8000"
+
+  novacodepro-digital-twin:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:digital_twin_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_DIGITAL_TWIN_DB_PATH: /var/lib/novacodepro/digital-twin.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-digital-twin-data:/var/lib/novacodepro
+    ports:
+      - "8021:8000"
+
+  novacodepro-release-deployment:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:release_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_RELEASE_DB_PATH: /var/lib/novacodepro/release.sqlite3
+      NOVACODEPRO_DEPLOYMENT_DB_PATH: /var/lib/novacodepro/deployment.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-release-data:/var/lib/novacodepro
+    ports:
+      - "8022:8000"
+
+  novacodepro-marketplace:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:marketplace_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_MARKETPLACE_DB_PATH: /var/lib/novacodepro/marketplace.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-marketplace-data:/var/lib/novacodepro
+    ports:
+      - "8023:8000"
+
+  novacodepro-observability:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:observability_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_OBSERVABILITY_DB_PATH: /var/lib/novacodepro/observability.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-observability-data:/var/lib/novacodepro
+    ports:
+      - "8025:8000"
+
+  novacodepro-incident:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:incident_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_INCIDENT_DB_PATH: /var/lib/novacodepro/incident.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-incident-data:/var/lib/novacodepro
+    ports:
+      - "8026:8000"
+
+  novacodepro-command-center:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:command_center_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_COMMAND_CENTER_DB_PATH: /var/lib/novacodepro/command-center.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-command-center-data:/var/lib/novacodepro
+    ports:
+      - "8027:8000"
+
+  novacodepro-board-governance:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:board_governance_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_BOARD_GOVERNANCE_DB_PATH: /var/lib/novacodepro/board-governance.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-board-governance-data:/var/lib/novacodepro
+    ports:
+      - "8028:8000"
+
+  novacodepro-operations:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:operations_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_OPERATIONS_DB_PATH: /var/lib/novacodepro/operations.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-operations-data:/var/lib/novacodepro
+    ports:
+      - "8024:8000"
+
+  novacodepro-executive:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:executive_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_EXECUTIVE_DB_PATH: /var/lib/novacodepro/executive.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-executive-data:/var/lib/novacodepro
+    ports:
+      - "8029:8000"
+
+  novacodepro-audit:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:audit_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_AUDIT_DB_PATH: /var/lib/novacodepro/audit.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-audit-data:/var/lib/novacodepro
+    ports:
+      - "8030:8000"
+
+  novacodepro-notification:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["uvicorn", "afritech.novacodepro.processes:notification_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      NOVACODEPRO_NOTIFICATION_DB_PATH: /var/lib/novacodepro/notification.sqlite3
+      NOVACODEPRO_EVENT_BUS_KAFKA_BROKERS: redpanda:9092
+    volumes:
+      - novacodepro-notification-data:/var/lib/novacodepro
+    ports:
+      - "8031:8000"
+
+  novacodepro-agent-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "agent", "agents", "--db-env-var", "NOVACODEPRO_AGENT_DB_PATH"]
+    environment:
+      NOVACODEPRO_AGENT_DB_PATH: /var/lib/novacodepro/agent.sqlite3
+    volumes:
+      - novacodepro-agent-data:/var/lib/novacodepro
+
+  novacodepro-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "gateway", "outbox", "--db-env-var", "NOVACODEPRO_GATEWAY_DB_PATH"]
+    environment:
+      NOVACODEPRO_GATEWAY_DB_PATH: /var/lib/novacodepro/gateway.sqlite3
+    volumes:
+      - novacodepro-gateway-data:/var/lib/novacodepro
+
+  novacodepro-solution-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "solution", "outbox", "--db-env-var", "NOVACODEPRO_SOLUTION_DB_PATH"]
+    environment:
+      NOVACODEPRO_SOLUTION_DB_PATH: /var/lib/novacodepro/solution.sqlite3
+    volumes:
+      - novacodepro-solution-data:/var/lib/novacodepro
+
+  novacodepro-workflow-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "workflow", "outbox", "--db-env-var", "NOVACODEPRO_WORKFLOW_DB_PATH"]
+    environment:
+      NOVACODEPRO_WORKFLOW_DB_PATH: /var/lib/novacodepro/workflow.sqlite3
+    volumes:
+      - novacodepro-workflow-data:/var/lib/novacodepro
+
+  novacodepro-approval-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "approval", "outbox", "--db-env-var", "NOVACODEPRO_APPROVAL_DB_PATH"]
+    environment:
+      NOVACODEPRO_APPROVAL_DB_PATH: /var/lib/novacodepro/approval.sqlite3
+    volumes:
+      - novacodepro-approval-data:/var/lib/novacodepro
+
+  novacodepro-evidence-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "evidence", "outbox", "--db-env-var", "NOVACODEPRO_EVIDENCE_DB_PATH"]
+    environment:
+      NOVACODEPRO_EVIDENCE_DB_PATH: /var/lib/novacodepro/evidence.sqlite3
+    volumes:
+      - novacodepro-evidence-data:/var/lib/novacodepro
+
+  novacodepro-release-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "release", "outbox", "--db-env-var", "NOVACODEPRO_RELEASE_DB_PATH"]
+    environment:
+      NOVACODEPRO_RELEASE_DB_PATH: /var/lib/novacodepro/release.sqlite3
+    volumes:
+      - novacodepro-release-data:/var/lib/novacodepro
+
+  novacodepro-deployment-outbox-worker:
+    build:
+      context: ../..
+      dockerfile: deploy/staging/Dockerfile.api
+    command: ["python", "-m", "afritech.novacodepro.worker_main", "deployment", "outbox", "--db-env-var", "NOVACODEPRO_DEPLOYMENT_DB_PATH"]
+    environment:
+      NOVACODEPRO_DEPLOYMENT_DB_PATH: /var/lib/novacodepro/deployment.sqlite3
+    volumes:
+      - novacodepro-release-data:/var/lib/novacodepro
+
+volumes:
+  novacodepro-gateway-data:
+  novacodepro-solution-data:
+  novacodepro-workflow-data:
+  novacodepro-agent-data:
+  novacodepro-evidence-data:
+  novacodepro-risk-policy-data:
+  novacodepro-knowledge-data:
+  novacodepro-release-data:
+  novacodepro-marketplace-data:
+  novacodepro-operations-data:
+  novacodepro-executive-data:
+  novacodepro-identity-context-data:
+  novacodepro-tenant-data:
+  novacodepro-federation-data:
+  novacodepro-approval-data:
+  novacodepro-digital-twin-data:
+  novacodepro-observability-data:
+  novacodepro-incident-data:
+  novacodepro-command-center-data:
+  novacodepro-board-governance-data:
+  novacodepro-audit-data:
+  novacodepro-notification-data:
