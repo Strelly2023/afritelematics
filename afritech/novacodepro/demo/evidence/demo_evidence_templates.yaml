@@ -1,0 +1,12 @@
+version: 1
+templates:
+  - id: demo-release-approval
+    label: Demo Release Approval
+    classification: DEMO_DATA
+  - id: demo-board-resolution
+    label: Demo Board Resolution
+    classification: DEMO_DATA
+  - id: demo-risk-review
+    label: Demo Risk Review
+    classification: DEMO_DATA
+

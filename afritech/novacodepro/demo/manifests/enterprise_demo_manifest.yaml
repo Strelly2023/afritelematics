@@ -1,0 +1,37 @@
+version: 1
+name: NovaCodePro Enterprise Demo Tenant
+tenant:
+  id: tenant-novacodepro-enterprise-demo
+  name: NovaCodePro Enterprise Demo
+organization:
+  id: org-novatech-demo
+  name: NovaTech Demo
+realms:
+  primary: novatech-enterprise-demo
+  allowed:
+    - novatech-enterprise-demo
+demo_guard:
+  prohibited:
+    - production.deploy
+    - real.payment
+    - external.email
+    - external.sms
+    - real.cloud.create
+    - real.secret.access
+    - policy.override
+    - risk.accept
+    - board.vote
+seeds:
+  users: 29
+  projects: 4
+  workflows: 8
+  approvals: 12
+  risks: 4
+  incidents: 2
+  evidence_bundles: 10
+  releases: 3
+  deployments: 4
+  marketplace_packages: 6
+  board_workflows: 2
+  twin_scenarios: 3
+

@@ -983,6 +983,13 @@ class NovaCodeProRepository:
             ).fetchall()
         return [json.loads(row["payload_json"]) for row in rows]
 
+    def delete(self, kind: str, record_id: str) -> None:
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                "DELETE FROM records WHERE kind = ? AND record_id = ?",
+                (kind, record_id),
+            )
+
     def upsert(self, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)
         record_id = str(payload["id"])
