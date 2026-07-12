@@ -102,6 +102,13 @@ SERVICE_DEFINITIONS: tuple[NovaCodeProServiceDefinition, ...] = (
         database_url_env_var="NOVACODEPRO_KNOWLEDGE_DATABASE_URL",
     ),
     NovaCodeProServiceDefinition(
+        name="graph",
+        app_name="knowledge_app",
+        title="NovaCodePro Graph Service",
+        db_env_var="NOVACODEPRO_KNOWLEDGE_DB_PATH",
+        database_url_env_var="NOVACODEPRO_KNOWLEDGE_DATABASE_URL",
+    ),
+    NovaCodeProServiceDefinition(
         name="digital-twin",
         app_name="digital_twin_app",
         title="NovaCodePro Digital Twin Service",
@@ -137,6 +144,13 @@ SERVICE_DEFINITIONS: tuple[NovaCodeProServiceDefinition, ...] = (
         database_url_env_var="NOVACODEPRO_OBSERVABILITY_DATABASE_URL",
     ),
     NovaCodeProServiceDefinition(
+        name="sre",
+        app_name="observability_app",
+        title="NovaCodePro SRE Service",
+        db_env_var="NOVACODEPRO_OBSERVABILITY_DB_PATH",
+        database_url_env_var="NOVACODEPRO_OBSERVABILITY_DATABASE_URL",
+    ),
+    NovaCodeProServiceDefinition(
         name="incident",
         app_name="incident_app",
         title="NovaCodePro Incident Service",
@@ -158,6 +172,13 @@ SERVICE_DEFINITIONS: tuple[NovaCodeProServiceDefinition, ...] = (
         database_url_env_var="NOVACODEPRO_BOARD_GOVERNANCE_DATABASE_URL",
     ),
     NovaCodeProServiceDefinition(
+        name="board",
+        app_name="board_governance_app",
+        title="NovaCodePro Board Governance Service",
+        db_env_var="NOVACODEPRO_BOARD_GOVERNANCE_DB_PATH",
+        database_url_env_var="NOVACODEPRO_BOARD_GOVERNANCE_DATABASE_URL",
+    ),
+    NovaCodeProServiceDefinition(
         name="executive",
         app_name="executive_app",
         title="NovaCodePro Executive Intelligence Service",
@@ -168,6 +189,13 @@ SERVICE_DEFINITIONS: tuple[NovaCodeProServiceDefinition, ...] = (
         name="audit",
         app_name="audit_app",
         title="NovaCodePro Audit Service",
+        db_env_var="NOVACODEPRO_AUDIT_DB_PATH",
+        database_url_env_var="NOVACODEPRO_AUDIT_DATABASE_URL",
+    ),
+    NovaCodeProServiceDefinition(
+        name="event-mesh",
+        app_name="audit_app",
+        title="NovaCodePro Event Mesh Service",
         db_env_var="NOVACODEPRO_AUDIT_DB_PATH",
         database_url_env_var="NOVACODEPRO_AUDIT_DATABASE_URL",
     ),

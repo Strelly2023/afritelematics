@@ -44,6 +44,24 @@ def _default_database_url() -> str | None:
     return None
 
 
+def _runtime_environment() -> str:
+    for env_var in ("NOVACODEPRO_ENVIRONMENT", "AFRITECH_ENV", "ENVIRONMENT"):
+        value = os.environ.get(env_var)
+        if value:
+            return value
+    return "development"
+
+
+def validate_database_runtime(database_url: str | None, environment: str | None = None) -> None:
+    runtime = str(environment or _runtime_environment()).strip().lower()
+    if runtime not in {"production", "prod"}:
+        return
+    if not database_url:
+        raise RuntimeError("sqlite_not_allowed_in_production")
+    if str(database_url).startswith("sqlite"):
+        raise RuntimeError("sqlite_not_allowed_in_production")
+
+
 def _split_sql_script(script: str) -> list[str]:
     statements: list[str] = []
     for raw_statement in script.split(";"):
@@ -814,6 +832,7 @@ def _event_envelope(
 class NovaCodeProRepository:
     def __init__(self, db_path: str | Path, database_url: str | None = None) -> None:
         self.database_url = database_url or _default_database_url()
+        validate_database_runtime(self.database_url, _runtime_environment())
         self._use_postgres = bool(self.database_url and self.database_url.startswith(("postgres://", "postgresql://")))
         self.path = Path(db_path)
         if self._use_postgres:
@@ -3592,3 +3611,11 @@ class NovaCodeProPlatform:
 def get_novacodepro_platform(db_path: str | Path | None = None, database_url: str | None = None) -> NovaCodeProPlatform:
     path = Path(db_path or Path.cwd() / "var" / "novacodepro-platform.sqlite3")
     return NovaCodeProPlatform(NovaCodeProRepository(path, database_url=database_url))
+
+
+__all__ = [
+    "NovaCodeProPlatform",
+    "NovaCodeProRepository",
+    "get_novacodepro_platform",
+    "validate_database_runtime",
+]

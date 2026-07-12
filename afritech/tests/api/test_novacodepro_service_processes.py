@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from afritech.api.auth.jwt_device_auth import JWT
 from afritech.novacodepro.distributed.process import build_process_app
 from afritech.novacodepro.distributed.workers import AgentExecutionWorker, OutboxWorker
-from afritech.novacodepro.processes import command_center_app, identity_context_app
+from afritech.novacodepro.platform import validate_database_runtime
+from afritech.novacodepro.processes import command_center_app, graph_app, identity_context_app
 
 
 def test_novacodepro_process_app_supports_async_workers_and_outbox(tmp_path: Path, monkeypatch) -> None:
@@ -88,6 +90,21 @@ def test_novacodepro_async_agent_worker_completes_queued_execution(tmp_path: Pat
 def test_novacodepro_additional_service_processes_are_exposed() -> None:
     identity_client = TestClient(identity_context_app)
     command_client = TestClient(command_center_app)
+    graph_client = TestClient(graph_app)
 
     assert identity_client.get("/health").json()["service"] == "identity-context"
     assert command_client.get("/health").json()["service"] == "command-center"
+    assert graph_client.post("/v1/novacodepro/board/meetings").status_code == 404
+    assert (
+        graph_client.post(
+            "/v1/novacodepro/graph/query",
+            headers={"Authorization": f"Bearer {JWT.create_token('platform-admin', role='OBSERVER', organization_id='novatech')}"},
+            json={"query": "Requirement"},
+        ).status_code
+        == 200
+    )
+
+
+def test_novacodepro_rejects_sqlite_in_production_runtime() -> None:
+    with pytest.raises(RuntimeError, match="sqlite_not_allowed_in_production"):
+        validate_database_runtime("sqlite:///var/lib/novacodepro.db", "production")

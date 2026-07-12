@@ -63,6 +63,11 @@ knowledge_app = build_process_app(
     db_env_var="NOVACODEPRO_KNOWLEDGE_DB_PATH",
     title="NovaCodePro Knowledge Graph Service",
 )
+graph_app = build_process_app(
+    service_name="graph",
+    db_env_var="NOVACODEPRO_KNOWLEDGE_DB_PATH",
+    title="NovaCodePro Graph Service",
+)
 digital_twin_app = build_process_app(
     service_name="digital-twin",
     db_env_var="NOVACODEPRO_DIGITAL_TWIN_DB_PATH",
@@ -88,6 +93,11 @@ observability_app = build_process_app(
     db_env_var="NOVACODEPRO_OBSERVABILITY_DB_PATH",
     title="NovaCodePro Observability Service",
 )
+sre_app = build_process_app(
+    service_name="sre",
+    db_env_var="NOVACODEPRO_OBSERVABILITY_DB_PATH",
+    title="NovaCodePro SRE Service",
+)
 incident_app = build_process_app(
     service_name="incident",
     db_env_var="NOVACODEPRO_INCIDENT_DB_PATH",
@@ -103,6 +113,11 @@ board_governance_app = build_process_app(
     db_env_var="NOVACODEPRO_BOARD_GOVERNANCE_DB_PATH",
     title="NovaCodePro Board Governance Service",
 )
+board_app = build_process_app(
+    service_name="board",
+    db_env_var="NOVACODEPRO_BOARD_GOVERNANCE_DB_PATH",
+    title="NovaCodePro Board Governance Service",
+)
 executive_app = build_process_app(
     service_name="executive",
     db_env_var="NOVACODEPRO_EXECUTIVE_DB_PATH",
@@ -112,6 +127,11 @@ audit_app = build_process_app(
     service_name="audit",
     db_env_var="NOVACODEPRO_AUDIT_DB_PATH",
     title="NovaCodePro Audit Service",
+)
+event_mesh_app = build_process_app(
+    service_name="event-mesh",
+    db_env_var="NOVACODEPRO_AUDIT_DB_PATH",
+    title="NovaCodePro Event Mesh Service",
 )
 notification_app = build_process_app(
     service_name="notification",
@@ -124,15 +144,18 @@ __all__ = [
     "approval_app",
     "audit_app",
     "board_governance_app",
+    "board_app",
     "command_center_app",
     "deployment_app",
     "digital_twin_app",
     "evidence_app",
     "executive_app",
+    "event_mesh_app",
     "federation_app",
     "gateway_app",
     "incident_app",
     "identity_context_app",
+    "graph_app",
     "knowledge_app",
     "marketplace_app",
     "notification_app",
@@ -140,6 +163,7 @@ __all__ = [
     "policy_app",
     "release_app",
     "risk_app",
+    "sre_app",
     "solution_app",
     "tenant_app",
     "workflow_app",
