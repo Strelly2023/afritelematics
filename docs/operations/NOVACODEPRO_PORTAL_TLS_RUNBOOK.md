@@ -26,7 +26,40 @@ DNS:novacodepro.afritechnology.com
 
 If it does not, issue the dedicated certificate below.
 
-## 2. Confirm ACME Challenge Routing
+## 2. Recover or Start NGINX Before Issuing the Certificate
+
+The NGINX container must be able to start before the dedicated NovaCodePro
+certificate exists. The trust-node compose service mounts
+`deploy/production/nginx/15-novacodepro-cert.envsh`, which sets
+`NOVACODEPRO_SSL_CERTIFICATE` and `NOVACODEPRO_SSL_CERTIFICATE_KEY` during
+container startup.
+
+If `/etc/letsencrypt/live/novacodepro.afritechnology.com/fullchain.pem` and
+`privkey.pem` already exist in the Certbot volume, the script selects them.
+Otherwise it selects the existing `afritechnology.com` certificate so NGINX can
+boot and serve HTTP-01 challenges. This fallback will still fail browser
+hostname validation for `novacodepro.afritechnology.com`; it exists only to keep
+the reverse proxy available while Certbot provisions the correct certificate.
+
+After pulling the latest deployment files, recreate NGINX:
+
+```bash
+docker compose \
+  -f deploy/production/docker-compose.trust-node.yml \
+  up -d --force-recreate nginx
+
+docker logs production-nginx-1 --tail=120
+docker exec production-nginx-1 nginx -t
+docker exec production-nginx-1 wget -qO- http://localhost/healthz
+```
+
+Expected local health response:
+
+```text
+ok
+```
+
+## 3. Confirm ACME Challenge Routing
 
 The production NGINX HTTP server for port `80` must include
 `novacodepro.${AFRITECH_DOMAIN}` and must serve the Certbot webroot from
@@ -54,7 +87,7 @@ The response should be:
 ok
 ```
 
-## 3. Issue the Dedicated Certificate
+## 4. Issue the Dedicated Certificate
 
 Issue a named certificate for NovaCodePro using the shared Certbot webroot.
 The Compose service uses the `certbot/certbot:v2.11.0` image and already sets
@@ -81,9 +114,10 @@ After issuance, the files must exist in the shared LetsEncrypt volume:
 /etc/letsencrypt/live/novacodepro.afritechnology.com/privkey.pem
 ```
 
-## 4. Recreate NGINX
+## 5. Recreate NGINX
 
-Recreate the NGINX container after the certificate is present:
+Recreate the NGINX container after the certificate is present. The startup
+script will now select the dedicated NovaCodePro certificate automatically:
 
 ```bash
 docker compose \
@@ -103,7 +137,7 @@ docker compose \
   up -d --build novacodepro-portal nginx
 ```
 
-## 5. Verify Public HTTPS
+## 6. Verify Public HTTPS
 
 Verify the certificate and the served portal:
 

@@ -1536,6 +1536,7 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     caddyfile_tls = read_repo("deploy/production/Caddyfile.tls")
     trust_nginx = read_repo("deploy/production/nginx/trust-node.conf.template")
     platform_nginx = read_repo("deploy/production/nginx/afritechnology-platform.conf.template")
+    novacodepro_cert_selector = read_repo("deploy/production/nginx/15-novacodepro-cert.envsh")
     tls_runbook = read_repo("docs/operations/NOVACODEPRO_PORTAL_TLS_RUNBOOK.md")
     vite_config = read_repo("novacodepro_portal/vite.config.js")
 
@@ -1569,9 +1570,13 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
     assert "root /var/www/certbot;" in platform_nginx
     assert "return 200 'ok';" in platform_nginx
     assert "server_name novacodepro.afritechnology.com;" in platform_nginx
-    assert "/etc/letsencrypt/live/novacodepro.afritechnology.com/fullchain.pem" in platform_nginx
-    assert "/etc/letsencrypt/live/novacodepro.afritechnology.com/privkey.pem" in platform_nginx
+    assert "ssl_certificate ${NOVACODEPRO_SSL_CERTIFICATE};" in platform_nginx
+    assert "ssl_certificate_key ${NOVACODEPRO_SSL_CERTIFICATE_KEY};" in platform_nginx
     assert "proxy_pass http://novacodepro-portal:4174;" in platform_nginx
+    assert "./nginx/15-novacodepro-cert.envsh:/docker-entrypoint.d/15-novacodepro-cert.envsh:ro" in trust_node_compose
+    assert "NOVACODEPRO_SSL_CERTIFICATE" in novacodepro_cert_selector
+    assert "/etc/letsencrypt/live/novacodepro.afritechnology.com" in novacodepro_cert_selector
+    assert "/etc/letsencrypt/live/afritechnology.com" in novacodepro_cert_selector
 
     for required in (
         "docker compose",
@@ -1581,6 +1586,7 @@ def test_novacodepro_portal_is_first_class_production_service() -> None:
         "--cert-name novacodepro.afritechnology.com",
         "/.well-known/acme-challenge/test",
         "up -d --force-recreate nginx",
+        "15-novacodepro-cert.envsh",
         "openssl s_client",
         "DNS:novacodepro.afritechnology.com",
         "curl -I https://novacodepro.afritechnology.com",

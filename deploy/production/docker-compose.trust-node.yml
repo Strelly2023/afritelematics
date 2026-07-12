@@ -87,6 +87,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./nginx/15-novacodepro-cert.envsh:/docker-entrypoint.d/15-novacodepro-cert.envsh:ro
       - ./nginx/afritechnology-platform.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ${PWD}/apk:/var/www/afritech-apk:ro
       - ${PWD}/apk-public:/var/www/afritechnology-downloads:ro

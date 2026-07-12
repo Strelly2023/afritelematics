@@ -1,0 +1,12 @@
+#!/bin/sh
+
+NOVACODEPRO_CERT_DIR="/etc/letsencrypt/live/novacodepro.afritechnology.com"
+AFRITECH_CERT_DIR="/etc/letsencrypt/live/afritechnology.com"
+
+if [ -f "$NOVACODEPRO_CERT_DIR/fullchain.pem" ] && [ -f "$NOVACODEPRO_CERT_DIR/privkey.pem" ]; then
+  export NOVACODEPRO_SSL_CERTIFICATE="$NOVACODEPRO_CERT_DIR/fullchain.pem"
+  export NOVACODEPRO_SSL_CERTIFICATE_KEY="$NOVACODEPRO_CERT_DIR/privkey.pem"
+else
+  export NOVACODEPRO_SSL_CERTIFICATE="$AFRITECH_CERT_DIR/fullchain.pem"
+  export NOVACODEPRO_SSL_CERTIFICATE_KEY="$AFRITECH_CERT_DIR/privkey.pem"
+fi
