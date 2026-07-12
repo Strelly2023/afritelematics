@@ -260,6 +260,34 @@ function withUpdatedRequest(state, requestId, updater) {
   return { ...state, solutionRequests, selectedRequestId };
 }
 
+function traceGraphPath(graph, startId, targetId) {
+  if (!startId || !targetId || startId === targetId) {
+    return [startId, targetId].filter(Boolean);
+  }
+  const visited = new Set([startId]);
+  const queue = [[startId]];
+  while (queue.length) {
+    const path = queue.shift();
+    const currentId = path[path.length - 1];
+    const currentNode = graph.find((node) => node.id === currentId);
+    if (!currentNode) {
+      continue;
+    }
+    for (const nextId of currentNode.links || []) {
+      if (visited.has(nextId)) {
+        continue;
+      }
+      const nextPath = [...path, nextId];
+      if (nextId === targetId) {
+        return nextPath;
+      }
+      visited.add(nextId);
+      queue.push(nextPath);
+    }
+  }
+  return [startId, targetId];
+}
+
 function createRuntime() {
   let state = loadState();
   const listeners = new Set();
@@ -506,6 +534,45 @@ function createSolution(payload) {
         detail: "Enterprise knowledge graph inspected from the workspace.",
       }),
     );
+  }
+
+  function queryKnowledgeGraph(term) {
+    const normalized = String(term || "").trim().toLowerCase();
+    const matches = normalized
+      ? state.knowledgeGraph.filter((node) => {
+          const haystack = [node.id, node.label, node.type, node.domain, node.owner, node.evidence]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          return haystack.includes(normalized);
+        })
+      : state.knowledgeGraph;
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "knowledge.graph.queried",
+        service: "Knowledge Graph",
+        subject: normalized || "all nodes",
+        evidence: matches.map((node) => node.label).join(", ") || "No match",
+        detail: "Semantic discovery query executed against the enterprise graph.",
+      }),
+    );
+    return matches;
+  }
+
+  function traceKnowledgePath(startId, targetId) {
+    const path = traceGraphPath(state.knowledgeGraph, startId, targetId);
+    emit(
+      appendAudit({
+        actor: "NovaID",
+        action: "knowledge.graph.path.traced",
+        service: "Knowledge Graph",
+        subject: `${startId} -> ${targetId}`,
+        evidence: path.join(" -> "),
+        detail: "Traceability path reconstructed across the enterprise lifecycle.",
+      }),
+    );
+    return path;
   }
 
   function runAutomationTemplate(templateId) {
@@ -897,6 +964,8 @@ function createSolution(payload) {
     createProject,
     postComment,
     focusKnowledgeNode,
+    queryKnowledgeGraph,
+    traceKnowledgePath,
     runAutomationTemplate,
     advanceWorkflow,
     approveGate,

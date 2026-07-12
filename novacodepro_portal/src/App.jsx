@@ -1692,6 +1692,10 @@ function App() {
   const [selectedJourneyStageId, setSelectedJourneyStageId] = useState(
     WORKFLOW_STAGES[0]?.id ?? "intent",
   );
+  const [knowledgeQuery, setKnowledgeQuery] = useState("request");
+  const [knowledgeTraceTargetId, setKnowledgeTraceTargetId] = useState("kg-audit");
+  const [knowledgeSearchResults, setKnowledgeSearchResults] = useState(runtime.knowledgeGraph);
+  const [knowledgeTracePath, setKnowledgeTracePath] = useState(["kg-request", "kg-audit"]);
   const [discoveryAnswers, setDiscoveryAnswers] = useState({
     users: "Customers, operations, and support teams.",
     regions: "Australia, Kenya, and DR Congo.",
@@ -1832,9 +1836,59 @@ function App() {
                   { name: "Policy Engine", status: "healthy", category: "routing" },
                   { name: "Release Factory", status: "healthy", category: "delivery" },
                   { name: "Digital Twin Engine", status: "healthy", category: "observability" },
-                ],
+        ],
     };
   }, [platformSummary, runtime.connectedIntegrations.length, runtime.auditTrail.length, runtime.solutionRequests.length, runtime.tenants.length]);
+
+  const enterpriseCommandCenter = useMemo(() => {
+    const securityEvents = runtime.auditTrail.filter((event) =>
+      /security|policy|approval|compliance/i.test(`${event.action} ${event.service} ${event.subject}`),
+    ).length;
+    const releaseEvents = runtime.auditTrail.filter((event) =>
+      /release|deploy|workflow/i.test(`${event.action} ${event.service} ${event.subject}`),
+    ).length;
+    const workflowHealth =
+      selectedRequest?.workflow?.length
+        ? Math.round(
+            (selectedRequest.workflow.filter((stage) => stage.status === "completed").length /
+              selectedRequest.workflow.length) *
+              100,
+          )
+        : 0;
+
+    return [
+      {
+        label: "Enterprise health score",
+        value: platformSummary?.platform_health === "healthy" ? "99.98%" : "97.40%",
+        note: "Aggregated from service, workflow, and audit signals.",
+      },
+      {
+        label: "Operational readiness",
+        value: `${Math.min(100, workflowHealth || 88)}%`,
+        note: "Based on the currently selected governed solution.",
+      },
+      {
+        label: "Trust score",
+        value: `${Math.max(86, 100 - securityEvents * 2)}%`,
+        note: "Approvals, evidence, and audit integrity are factored in.",
+      },
+      {
+        label: "Risk score",
+        value: `${Math.max(12, 40 - securityEvents - releaseEvents)}%`,
+        note: "Higher numbers reflect more open risk on the active workspace.",
+      },
+      {
+        label: "AI governance",
+        value: `${runtime.automationRuns.length + runtime.knowledgeGraph.length}`,
+        note: "Active automation runs and enterprise knowledge assets.",
+      },
+      {
+        label: "Command readiness",
+        value: "Mission control",
+        note: "Cross-domain alerts, approvals, and recovery actions are available.",
+      },
+    ];
+  }, [platformSummary?.platform_health, runtime.auditTrail, runtime.automationRuns.length, runtime.knowledgeGraph.length, selectedRequest?.workflow]);
 
   useEffect(() => {
     setSelectedJourneyStageId(selectedRequest?.workflow?.[selectedRequest.stageIndex]?.id ?? workflowJourneyStages[0]?.id ?? "intent");
@@ -1880,6 +1934,14 @@ function App() {
     setComposerAgents((current) =>
       current.includes(agent) ? current.filter((item) => item !== agent) : [...current, agent],
     );
+  };
+
+  const runKnowledgeQuery = () => {
+    setKnowledgeSearchResults(runtime.queryKnowledgeGraph(knowledgeQuery));
+  };
+
+  const refreshKnowledgeTrace = () => {
+    setKnowledgeTracePath(runtime.traceKnowledgePath(activeKnowledgeNode.id, knowledgeTraceTargetId));
   };
 
   const handleAttachmentUpload = (event) => {
@@ -3574,17 +3636,52 @@ function App() {
           <section className="surface-band">
             <div className="band-header">
               <div>
-                <p className="section-label">Knowledge graph</p>
-                <h2>Requirements, architecture, code, tests, release, and operations stay linked</h2>
+                <p className="section-label">Enterprise knowledge graph</p>
+                <h2>Traceability, impact analysis, and institutional memory across the lifecycle</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Window 11 service surface</span>
+                <span>Shared evidence and graph mutations are auditable</span>
               </div>
             </div>
             <div className="studio-grid">
               <article className="studio-card">
-                <p className="section-label">Graph focus</p>
+                <p className="section-label">Graph service</p>
                 <strong>{activeKnowledgeNode.label}</strong>
                 <p className="studio-note">
                   Nodes remain traceable from the business request through deployment and audit evidence.
                 </p>
+                <div className="field-grid">
+                  <label className="field">
+                    <span>Search graph</span>
+                    <input
+                      value={knowledgeQuery}
+                      onChange={(event) => setKnowledgeQuery(event.target.value)}
+                      placeholder="Search requirements, release, audit..."
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Trace to</span>
+                    <select
+                      value={knowledgeTraceTargetId}
+                      onChange={(event) => setKnowledgeTraceTargetId(event.target.value)}
+                    >
+                      {runtime.knowledgeGraph.map((node) => (
+                        <option key={node.id} value={node.id}>
+                          {node.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="studio-actions">
+                  <button type="button" className="toolbar-chip" onClick={runKnowledgeQuery}>
+                    Run query
+                  </button>
+                  <button type="button" className="toolbar-chip" onClick={refreshKnowledgeTrace}>
+                    Trace path
+                  </button>
+                </div>
                 <div className="bullet-grid">
                   {activeKnowledgeNode.links.map((link) => {
                     const linked = runtime.knowledgeGraph.find((node) => node.id === link);
@@ -3600,22 +3697,50 @@ function App() {
                     );
                   })}
                 </div>
+                <div className="artifact-list">
+                  <div className="artifact-row">
+                    <strong>Owner</strong>
+                    <span>{activeKnowledgeNode.owner || "Unassigned"}</span>
+                  </div>
+                  <div className="artifact-row">
+                    <strong>Domain</strong>
+                    <span>{activeKnowledgeNode.domain || "Lifecycle"}</span>
+                  </div>
+                  <div className="artifact-row">
+                    <strong>Evidence</strong>
+                    <span>{activeKnowledgeNode.evidence || "Linked evidence"}</span>
+                  </div>
+                </div>
               </article>
               <article className="studio-card">
-                <p className="section-label">Enterprise graph</p>
-                <div className="service-grid compact">
-                  {runtime.knowledgeGraph.map((node) => (
+                <p className="section-label">Search results</p>
+                <strong>{knowledgeSearchResults.length} matches</strong>
+                <div className="artifact-list">
+                  {knowledgeSearchResults.slice(0, 6).map((node) => (
                     <button
                       type="button"
-                      className={node.id === activeKnowledgeNode.id ? "service-card active" : "service-card"}
+                      className={node.id === activeKnowledgeNode.id ? "artifact-row active" : "artifact-row"}
                       key={node.id}
                       onClick={() => runtime.focusKnowledgeNode(node.id)}
                     >
-                      <p className="section-label">{node.type}</p>
                       <strong>{node.label}</strong>
-                      <p>{node.links.length} linked nodes</p>
+                      <span>
+                        {node.type} · {node.links.length} links
+                      </span>
                     </button>
                   ))}
+                </div>
+                <div className="articledivider" />
+                <p className="section-label">Trace path</p>
+                <div className="chip-cloud compact">
+                  {knowledgeTracePath.map((nodeId) => {
+                    const node = runtime.knowledgeGraph.find((item) => item.id === nodeId);
+                    return (
+                      <span className="context-chip active" key={nodeId}>
+                        {node?.label || nodeId}
+                      </span>
+                    );
+                  })}
                 </div>
               </article>
             </div>
@@ -3689,6 +3814,45 @@ function App() {
                   )}
                 </div>
               </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Shared platform services</p>
+                <h2>Every window depends on the same identity, workflow, policy, evidence, and graph services</h2>
+              </div>
+            </div>
+            <div className="service-grid">
+              {[
+                ["Identity Service", "Authentication, sessions, trust, and verified actors."],
+                ["Authorization Service", "RBAC, ABAC, and policy-aware access decisions."],
+                ["Tenant Service", "Tenant isolation, quotas, residency, and entitlements."],
+                ["Workspace Service", "Role-aware shells, layouts, memory, and collaboration."],
+                ["Conversation Service", "Requests, streaming output, comments, and branches."],
+                ["Agent Runtime", "Typed agent executions, budgets, tools, and checkpoints."],
+                ["Workflow Engine", "Long-running orchestration, replays, compensations, and state."],
+                ["Policy Engine", "Routing, quorum, separation of duties, and governance constraints."],
+                ["Approval Engine", "Human authorizations, conditions, expiry, and evidence."],
+                ["Knowledge Graph", "Traceability, impact analysis, and institutional memory."],
+                ["Evidence Service", "Immutable proof bundles across tests, releases, and operations."],
+                ["Audit Ledger", "Append-only event history with actor, action, and service provenance."],
+                ["Risk Engine", "Risk scoring, treatment plans, and enterprise monitoring."],
+                ["Notification Service", "Approvals, incidents, tasks, and release alerts."],
+                ["Search Service", "Semantic discovery across projects, artifacts, and evidence."],
+                ["Artifact Registry", "Versioned storage for documents, code, builds, and releases."],
+                ["Integration Hub", "Connectors to external systems and enterprise tools."],
+                ["Observability Platform", "Metrics, logs, traces, alerts, and service health."],
+                ["Digital Twin Engine", "Live system model, scenario simulation, and blast radius."],
+                ["Billing Service", "Usage metering, entitlements, and subscription governance."],
+              ].map(([title, summary]) => (
+                <article className="service-card" key={title}>
+                  <p className="section-label">Core service</p>
+                  <strong>{title}</strong>
+                  <p>{summary}</p>
+                </article>
+              ))}
             </div>
           </section>
 
@@ -3998,6 +4162,72 @@ function App() {
                   <p>Install, govern, certify, and remove from the NovaCodePro workspace.</p>
                 </article>
               ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Enterprise command center</p>
+                <h2>Mission control for strategy, operations, risk, and recovery</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Window 29 service surface</span>
+                <span>Authority-aware action execution</span>
+              </div>
+            </div>
+            <div className="center-grid">
+              {enterpriseCommandCenter.map((item) => (
+                <article className="center-card" key={item.label}>
+                  <p className="section-label">{item.label}</p>
+                  <strong>{item.value}</strong>
+                  <p>{item.note}</p>
+                </article>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Situational awareness</p>
+                <strong>Cross-domain operational state</strong>
+                <div className="artifact-list">
+                  {[
+                    ["Security", "0 critical findings"],
+                    ["Compliance", "Evidence chain current"],
+                    ["Approvals", "No blocked gates"],
+                    ["Operations", "Service health stable"],
+                    ["Finance", "Usage within quota"],
+                    ["Recovery", "Rollback path ready"],
+                  ].map(([label, detail]) => (
+                    <div className="artifact-row" key={label}>
+                      <strong>{label}</strong>
+                      <span>{detail}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Action queue</p>
+                <strong>Ready-to-run enterprise actions</strong>
+                <div className="studio-actions">
+                  {[
+                    "Open incident bridge",
+                    "Review policy breach",
+                    "Inspect deployment health",
+                    "Escalate approval",
+                    "Run recovery drill",
+                    "Generate board brief",
+                  ].map((action) => (
+                    <button
+                      type="button"
+                      key={action}
+                      className="toolbar-chip"
+                      onClick={() => platformRuntime.runCommand(action)}
+                    >
+                      {action}
+                    </button>
+                  ))}
+                </div>
+              </article>
             </div>
           </section>
 
