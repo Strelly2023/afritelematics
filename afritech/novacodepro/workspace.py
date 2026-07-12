@@ -37,7 +37,104 @@ def _display_name(user_id: str) -> str:
     return value.title() if value else "NovaCodePro User"
 
 
+ROLE_WORKSPACE_PROFILES: dict[str, dict[str, Any]] = {
+    "DATA_ENGINEER": {
+        "slug": "data-engineering",
+        "label": "Data Engineer",
+        "title": "Data Engineering Workspace",
+        "description": "Build and operate governed data pipelines, streaming systems, lakehouses, warehouses, and data services.",
+        "environment": "data",
+        "authority": "data-engineer",
+        "environments": ["data", "development", "staging", "pilot", "production"],
+    },
+    "DATABASE_ENGINEER": {
+        "slug": "database-engineer",
+        "label": "Database Engineer",
+        "title": "Database Engineering Workspace",
+        "description": "Provision, secure, tune, and recover the database systems that support NovaTech products and data platforms.",
+        "environment": "database",
+        "authority": "database-engineer",
+        "environments": ["database", "development", "staging", "pilot", "production"],
+    },
+    "AI_ML_ENGINEER": {
+        "slug": "ai-ml-engineer",
+        "label": "AI/ML Engineer",
+        "title": "AI Engineering Workspace",
+        "description": "Build, evaluate, deploy, and govern machine-learning models, agents, and inference services.",
+        "environment": "ai",
+        "authority": "ai-ml-engineer",
+        "environments": ["ai", "development", "staging", "pilot", "production"],
+    },
+    "DATA_SCIENTIST": {
+        "slug": "data-scientist",
+        "label": "Data Scientist",
+        "title": "Data Science Workspace",
+        "description": "Use trusted data, statistics, experimentation, and modeling to drive evidence-based decisions.",
+        "environment": "science",
+        "authority": "data-scientist",
+        "environments": ["science", "development", "staging", "pilot", "production"],
+    },
+    "PRIVACY_COMPLIANCE": {
+        "slug": "privacy-compliance",
+        "label": "Privacy & Compliance",
+        "title": "Privacy & Compliance Workspace",
+        "description": "Govern privacy, compliance, consent, retention, AI risk, and regulatory reporting across NovaTech.",
+        "environment": "compliance",
+        "authority": "privacy-compliance",
+        "environments": ["compliance", "staging", "pilot", "production"],
+    },
+    "RISK_MANAGEMENT": {
+        "slug": "risk",
+        "label": "Risk Management",
+        "title": "Enterprise Risk Workspace",
+        "description": "Identify, assess, prioritize, treat, and report risks that affect NovaTech strategy and resilience.",
+        "environment": "risk",
+        "authority": "risk-manager",
+        "environments": ["risk", "staging", "pilot", "production"],
+    },
+    "EXTERNAL_REGULATOR": {
+        "slug": "regulator",
+        "label": "Regulator",
+        "title": "Regulatory Oversight Workspace",
+        "description": "Provide regulators with restricted, evidence-based oversight into NovaTech regulated activities.",
+        "environment": "regulator",
+        "authority": "regulator",
+        "environments": ["regulator", "staging", "pilot", "production"],
+    },
+    "LEGAL": {
+        "slug": "legal",
+        "label": "Legal",
+        "title": "Legal Operations Workspace",
+        "description": "Protect NovaTech's rights, assets, reputation, and strategic interests through trusted legal governance.",
+        "environment": "legal",
+        "authority": "legal-counsel",
+        "environments": ["legal", "staging", "pilot", "production"],
+    },
+}
+
+
+def _workspace_profile(role: str) -> dict[str, Any] | None:
+    return ROLE_WORKSPACE_PROFILES.get(canonical_role_name(role))
+
+
+def _workspace_environments(role: str) -> list[str] | None:
+    profile = _workspace_profile(role)
+    if profile and "environments" in profile:
+        return list(profile["environments"])
+    return None
+
+
+def _workspace_authority(role: str) -> str | None:
+    profile = _workspace_profile(role)
+    if profile:
+        return str(profile["authority"])
+    return None
+
+
 def _workspace_slug(role: str) -> str:
+    profile = _workspace_profile(role)
+    if profile:
+        return str(profile["slug"])
     mapping = {
         "ADMIN": "admin",
         "DEVELOPER": "developer",
@@ -67,6 +164,9 @@ def _workspace_slug(role: str) -> str:
 
 
 def _workspace_label(role: str) -> str:
+    profile = _workspace_profile(role)
+    if profile:
+        return str(profile["label"])
     mapping = {
         "ADMIN": "Platform Administrator",
         "DEVELOPER": "Developer",
@@ -97,6 +197,9 @@ def _workspace_label(role: str) -> str:
 
 
 def _workspace_title(role: str) -> str:
+    profile = _workspace_profile(role)
+    if profile:
+        return str(profile["title"])
     mapping = {
         "ADMIN": "Platform Administration Workspace",
         "DEVELOPER": "Developer Workspace",
@@ -126,6 +229,9 @@ def _workspace_title(role: str) -> str:
 
 
 def _workspace_description(role: str) -> str:
+    profile = _workspace_profile(role)
+    if profile:
+        return str(profile["description"])
     mapping = {
         "ADMIN": "Govern platform services, tenants, identity, evidence, approvals, and operational readiness.",
         "DEVELOPER": "Turn approved requirements into secure, tested, documented, traceable, and release-ready software.",
@@ -4160,6 +4266,822 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         overview=("Health", "Lineage", "Quality", "Residency", "Adoption"),
         primary_actions=("Open Dashboard", "Review Quality", "Export Brief"),
     ),
+    ToolDefinition(
+        id="data-engineering-workspace",
+        name="Data Engineering Workspace",
+        description="Track pipelines, incidents, quality alerts, deployments, and data products.",
+        icon="⌂",
+        route="/novacodepro/tools/data-engineering-workspace",
+        required_permissions=("pipeline.read", "dataset.read_authorized"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-engineering-workspace",
+        audit_category="data-engineering",
+        group="HOME",
+        overview=("Pipelines", "Streaming", "Quality", "Lineage", "Work"),
+        primary_actions=("Create Pipeline", "Run Pipeline", "Open Incident"),
+    ),
+    ToolDefinition(
+        id="data-pipeline-center",
+        name="Data Pipeline Center",
+        description="Create and manage governed ETL, ELT, batch, and CDC pipelines.",
+        icon="⇄",
+        route="/novacodepro/tools/data-pipeline-center",
+        required_permissions=("pipeline.create", "pipeline.update"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-pipeline-center",
+        audit_category="pipeline",
+        group="BUILD",
+        overview=("ETL", "ELT", "Batch", "CDC", "Backfills"),
+        primary_actions=("Create Pipeline", "Run Pipeline", "Review History"),
+    ),
+    ToolDefinition(
+        id="streaming-data-center",
+        name="Streaming Data Center",
+        description="Manage Kafka, Pulsar, replay, consumer lag, and event delivery.",
+        icon="◔",
+        route="/novacodepro/tools/streaming-data-center",
+        required_permissions=("stream.read", "stream.configure"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/streaming-data-center",
+        audit_category="streaming",
+        group="REAL_TIME",
+        overview=("Streams", "Topics", "Lag", "Replay", "DLQ"),
+        primary_actions=("Open Stream", "Inspect Lag", "Replay Event"),
+    ),
+    ToolDefinition(
+        id="data-observability-center",
+        name="Data Observability Center",
+        description="Monitor freshness, schema drift, anomalies, and data incidents.",
+        icon="◌",
+        route="/novacodepro/tools/data-observability-center",
+        required_permissions=("quality.monitor", "platform.monitor"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-observability-center",
+        audit_category="observability",
+        group="TRUST",
+        overview=("Freshness", "Drift", "Alerts", "Latency", "Incidents"),
+        primary_actions=("Open Alert", "Review Drift", "Inspect Trend"),
+    ),
+    ToolDefinition(
+        id="data-quality-center-engineering",
+        name="Data Quality Center",
+        description="Create validation rules and monitor dataset quality incidents.",
+        icon="✓",
+        route="/novacodepro/tools/data-quality-center",
+        required_permissions=("quality.rule_create", "quality.incident_manage"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-quality-center",
+        audit_category="quality",
+        group="TRUST",
+        overview=("Rules", "Thresholds", "Certified", "Incidents", "Evidence"),
+        primary_actions=("Create Rule", "Open Incident", "Certify Dataset"),
+    ),
+    ToolDefinition(
+        id="data-deployment-center",
+        name="Data Deployment Center",
+        description="Deploy pipelines and transformations with approvals, verification, and rollback.",
+        icon="⟲",
+        route="/novacodepro/tools/data-deployment-center",
+        required_permissions=("pipeline.deploy_authorized", "transformation.execute"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/data-deployment-center",
+        audit_category="deployment",
+        group="DELIVER",
+        overview=("Deployments", "Validation", "Rollback", "Evidence", "Readiness"),
+        primary_actions=("Deploy", "Validate", "Rollback"),
+    ),
+    ToolDefinition(
+        id="enterprise-data-operations-command-center",
+        name="Enterprise Data Operations Command Center",
+        description="Present data pipeline health, freshness, quality, capacity, and incidents.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-data-operations-command-center",
+        required_permissions=("platform.monitor", "report.generate"),
+        supported_roles=("DATA_ENGINEER", "ADMIN"),
+        supported_environments=("data", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Platform",
+        help_url="/docs/novacodepro/tools/enterprise-data-operations-command-center",
+        audit_category="command-center",
+        group="OPERATE",
+        overview=("Pipelines", "Freshness", "Quality", "Capacity", "Incidents"),
+        primary_actions=("Open Dashboard", "Review KPI", "Export Report"),
+    ),
+    ToolDefinition(
+        id="database-engineering-workspace",
+        name="Database Engineering Workspace",
+        description="Review database health, migrations, capacity, backups, and incidents.",
+        icon="⌂",
+        route="/novacodepro/tools/database-engineering-workspace",
+        required_permissions=("database.read", "database.monitor"),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Platform",
+        help_url="/docs/novacodepro/tools/database-engineering-workspace",
+        audit_category="database",
+        group="FLEET",
+        overview=("Fleet", "Performance", "Protection", "Change", "Runbooks"),
+        primary_actions=("Review Health", "Open Migration", "Run Recovery"),
+    ),
+    ToolDefinition(
+        id="database-fleet-center",
+        name="Database Fleet Center",
+        description="Inventory database systems across products, tenants, regions, and environments.",
+        icon="▦",
+        route="/novacodepro/tools/database-fleet-center",
+        required_permissions=("database.read",),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Platform",
+        help_url="/docs/novacodepro/tools/database-fleet-center",
+        audit_category="database",
+        group="FLEET",
+        overview=("Instances", "Versions", "Owners", "Criticality", "Lifecycle"),
+        primary_actions=("Open Fleet", "Inspect Version", "Review Owner"),
+    ),
+    ToolDefinition(
+        id="database-migration-center",
+        name="Database Migration Center",
+        description="Create governed migration packages with rollback and reconciliation.",
+        icon="⇄",
+        route="/novacodepro/tools/database-migration-center",
+        required_permissions=("migration.create", "migration.execute_authorized"),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Platform",
+        help_url="/docs/novacodepro/tools/database-migration-center",
+        audit_category="migration",
+        group="ENGINEERING",
+        overview=("Draft", "Test", "Approve", "Schedule", "Verify"),
+        primary_actions=("Create Migration", "Test Rollback", "Open Evidence"),
+    ),
+    ToolDefinition(
+        id="database-reliability-center",
+        name="Database Reliability Center",
+        description="Track availability objectives, failover health, and resilience work.",
+        icon="◐",
+        route="/novacodepro/tools/database-reliability-center",
+        required_permissions=("database.monitor", "restore.test"),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Platform",
+        help_url="/docs/novacodepro/tools/database-reliability-center",
+        audit_category="reliability",
+        group="RELIABILITY",
+        overview=("Availability", "Replica Health", "Recovery", "Incidents", "Budgets"),
+        primary_actions=("Review SLO", "Open Incident", "Test Recovery"),
+    ),
+    ToolDefinition(
+        id="database-security-center",
+        name="Database Security Center",
+        description="Enforce database authentication, encryption, logging, and privileged access.",
+        icon="⛨",
+        route="/novacodepro/tools/database-security-center",
+        required_permissions=("database.security.configure", "database.access.review"),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Security",
+        help_url="/docs/novacodepro/tools/database-security-center",
+        audit_category="security",
+        group="PROTECTION",
+        overview=("Encryption", "Access", "Logging", "Keys", "Hardening"),
+        primary_actions=("Review Access", "Rotate Keys", "Open Audit"),
+    ),
+    ToolDefinition(
+        id="enterprise-database-command-center",
+        name="Enterprise Database Command Center",
+        description="Provide enterprise database health, performance, and resilience visibility.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-database-command-center",
+        required_permissions=("database.read", "report.generate"),
+        supported_roles=("DATABASE_ENGINEER", "ADMIN"),
+        supported_environments=("database", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Database Platform",
+        help_url="/docs/novacodepro/tools/enterprise-database-command-center",
+        audit_category="command-center",
+        group="ASSURANCE",
+        overview=("Health", "Replication", "Backup", "Performance", "Incidents"),
+        primary_actions=("Open Dashboard", "Review Health", "Export Report"),
+    ),
+    ToolDefinition(
+        id="ai-engineering-workspace",
+        name="AI Engineering Workspace",
+        description="Track models, agents, experiments, evaluations, and production health.",
+        icon="⌂",
+        route="/novacodepro/tools/ai-engineering-workspace",
+        required_permissions=("ai.workspace.read", "experiment.create"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Platform",
+        help_url="/docs/novacodepro/tools/ai-engineering-workspace",
+        audit_category="ai",
+        group="HOME",
+        overview=("Models", "Experiments", "Agents", "Safety", "Reviews"),
+        primary_actions=("Create Experiment", "Run Evaluation", "Open Incident"),
+    ),
+    ToolDefinition(
+        id="model-development-studio",
+        name="Model Development Studio",
+        description="Create model projects, training code, notebooks, and candidate artifacts.",
+        icon="◈",
+        route="/novacodepro/tools/model-development-studio",
+        required_permissions=("model.create", "training.execute"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Platform",
+        help_url="/docs/novacodepro/tools/model-development-studio",
+        audit_category="model",
+        group="DEVELOP",
+        overview=("Projects", "Training", "Code", "Artifacts", "Assumptions"),
+        primary_actions=("Create Model", "Run Training", "Open Notebook"),
+    ),
+    ToolDefinition(
+        id="experiment-tracking-center",
+        name="Experiment Tracking Center",
+        description="Compare runs, metrics, datasets, and reproducibility evidence.",
+        icon="⌘",
+        route="/novacodepro/tools/experiment-tracking-center",
+        required_permissions=("experiment.create", "experiment.execute"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Platform",
+        help_url="/docs/novacodepro/tools/experiment-tracking-center",
+        audit_category="experiment",
+        group="DEVELOP",
+        overview=("Runs", "Metrics", "Parameters", "Artifacts", "Baselines"),
+        primary_actions=("Open Run", "Compare Models", "Promote Candidate"),
+    ),
+    ToolDefinition(
+        id="feature-store-center",
+        name="Feature Store Center",
+        description="Register reusable features, freshness expectations, and consumers.",
+        icon="◌",
+        route="/novacodepro/tools/feature-store-center",
+        required_permissions=("feature.create", "feature.publish_authorized"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Platform",
+        help_url="/docs/novacodepro/tools/feature-store-center",
+        audit_category="feature",
+        group="DATA",
+        overview=("Features", "Groups", "Freshness", "Consumers", "Lineage"),
+        primary_actions=("Create Feature", "Review Freshness", "Open Consumer"),
+    ),
+    ToolDefinition(
+        id="training-pipeline-center",
+        name="Training Pipeline Center",
+        description="Build repeatable training workflows with captured evidence and reproducibility.",
+        icon="⇄",
+        route="/novacodepro/tools/training-pipeline-center",
+        required_permissions=("training.execute", "training.schedule"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Platform",
+        help_url="/docs/novacodepro/tools/training-pipeline-center",
+        audit_category="training",
+        group="DEVELOP",
+        overview=("Runs", "Schedules", "Compute", "Checkpoints", "Evidence"),
+        primary_actions=("Run Training", "Schedule Retrain", "Open Evidence"),
+    ),
+    ToolDefinition(
+        id="ai-dataset-center",
+        name="AI Dataset Center",
+        description="Manage training and evaluation datasets with privacy and provenance controls.",
+        icon="▦",
+        route="/novacodepro/tools/ai-dataset-center",
+        required_permissions=("dataset.read_authorized", "dataset.version"),
+        supported_roles=("AI_ML_ENGINEER", "ADMIN"),
+        supported_environments=("ai", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="AI Governance",
+        help_url="/docs/novacodepro/tools/ai-dataset-center",
+        audit_category="dataset",
+        group="DATA",
+        overview=("Datasets", "Labels", "Provenance", "Privacy", "Versions"),
+        primary_actions=("Review Dataset", "Open Version", "Inspect Provenance"),
+    ),
+    ToolDefinition(
+        id="data-science-workspace",
+        name="Data Science Workspace",
+        description="Track analyses, experiments, models, blockers, and decision support work.",
+        icon="⌂",
+        route="/novacodepro/tools/data-science-workspace",
+        required_permissions=("analysis.create", "dataset.read_authorized"),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/data-science-workspace",
+        audit_category="data-science",
+        group="HOME",
+        overview=("Analyses", "Experiments", "Models", "Insights", "Reviews"),
+        primary_actions=("Create Analysis", "Design Experiment", "Open Notebook"),
+    ),
+    ToolDefinition(
+        id="problem-framing-center",
+        name="Analytical Problem Framing Center",
+        description="Translate business questions into analytical questions, hypotheses, and data needs.",
+        icon="◎",
+        route="/novacodepro/tools/problem-framing-center",
+        required_permissions=("analysis.create",),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/problem-framing-center",
+        audit_category="analysis",
+        group="DISCOVER",
+        overview=("Question", "Hypotheses", "Owners", "Metrics", "Risks"),
+        primary_actions=("Frame Problem", "Open Dataset", "Draft Plan"),
+    ),
+    ToolDefinition(
+        id="exploratory-analysis-studio",
+        name="Exploratory Data Analysis Studio",
+        description="Profile datasets, distributions, anomalies, and segment behavior.",
+        icon="◌",
+        route="/novacodepro/tools/exploratory-analysis-studio",
+        required_permissions=("dataset.read_authorized", "notebook.execute"),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/exploratory-analysis-studio",
+        audit_category="analysis",
+        group="DISCOVER",
+        overview=("Profile", "Outliers", "Trends", "Segments", "Reports"),
+        primary_actions=("Profile Data", "Open Notebook", "Export Report"),
+    ),
+    ToolDefinition(
+        id="experiment-design-center",
+        name="Experiment Design Center",
+        description="Design governed experiments with power, sample size, and guardrails.",
+        icon="⇄",
+        route="/novacodepro/tools/experiment-design-center",
+        required_permissions=("experiment.design", "experiment.analyze"),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/experiment-design-center",
+        audit_category="experiment",
+        group="EXPERIMENT",
+        overview=("Hypotheses", "Power", "Guardrails", "Variants", "Approval"),
+        primary_actions=("Design Experiment", "Estimate Power", "Submit Review"),
+    ),
+    ToolDefinition(
+        id="forecasting-center",
+        name="Forecasting Center",
+        description="Create demand, revenue, and operational forecasts with intervals and scenarios.",
+        icon="⟐",
+        route="/novacodepro/tools/forecasting-center",
+        required_permissions=("forecast.create",),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/forecasting-center",
+        audit_category="forecasting",
+        group="ANALYZE",
+        overview=("Demand", "Revenue", "Interval", "Backtest", "Scenarios"),
+        primary_actions=("Create Forecast", "Backtest Model", "Open Scenario"),
+    ),
+    ToolDefinition(
+        id="data-science-validation-center",
+        name="Data Science Validation Center",
+        description="Validate models, assumptions, fairness, explainability, and reproducibility.",
+        icon="✓",
+        route="/novacodepro/tools/data-science-validation-center",
+        required_permissions=("model.evaluate", "reproducibility.manage"),
+        supported_roles=("DATA_SCIENTIST", "ADMIN"),
+        supported_environments=("science", "development", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Data Science",
+        help_url="/docs/novacodepro/tools/data-science-validation-center",
+        audit_category="validation",
+        group="VALIDATE",
+        overview=("Validation", "Fairness", "Explainability", "Reproducibility", "Reviews"),
+        primary_actions=("Run Validation", "Review Bias", "Export Evidence"),
+    ),
+    ToolDefinition(
+        id="privacy-compliance-workspace",
+        name="Privacy & Compliance Workspace",
+        description="Track privacy reviews, compliance findings, policy status, and regulatory work.",
+        icon="⌂",
+        route="/novacodepro/tools/privacy-compliance-workspace",
+        required_permissions=("privacy.read", "compliance.read"),
+        supported_roles=("PRIVACY_COMPLIANCE", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Privacy & Compliance",
+        help_url="/docs/novacodepro/tools/privacy-compliance-workspace",
+        audit_category="privacy-compliance",
+        group="PRIVACY",
+        overview=("Reviews", "Investigations", "Policies", "Incidents", "Tasks"),
+        primary_actions=("Review PIA", "Open Compliance Case", "Generate Report"),
+    ),
+    ToolDefinition(
+        id="privacy-governance-center",
+        name="Privacy Governance Center",
+        description="Manage privacy principles, controls, ownership, and data lifecycle governance.",
+        icon="⚑",
+        route="/novacodepro/tools/privacy-governance-center",
+        required_permissions=("privacy.review", "policy.manage"),
+        supported_roles=("PRIVACY_COMPLIANCE", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Privacy & Compliance",
+        help_url="/docs/novacodepro/tools/privacy-governance-center",
+        audit_category="privacy",
+        group="PRIVACY",
+        overview=("Principles", "Controls", "Lifecycle", "Ownership", "Exceptions"),
+        primary_actions=("Review Policy", "Open Control", "Publish Update"),
+    ),
+    ToolDefinition(
+        id="privacy-impact-assessment-center",
+        name="Privacy Impact Assessment Center",
+        description="Perform PIA, DPIA, high-risk processing, and AI privacy reviews.",
+        icon="◉",
+        route="/novacodepro/tools/privacy-impact-assessment-center",
+        required_permissions=("pia.create", "dpia.create"),
+        supported_roles=("PRIVACY_COMPLIANCE", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Privacy & Compliance",
+        help_url="/docs/novacodepro/tools/privacy-impact-assessment-center",
+        audit_category="privacy",
+        group="COMPLIANCE",
+        overview=("PIA", "DPIA", "AI Risk", "Transfers", "Mitigations"),
+        primary_actions=("Create Assessment", "Review Risk", "Request Approval"),
+    ),
+    ToolDefinition(
+        id="compliance-monitoring-center",
+        name="Compliance Monitoring Center",
+        description="Continuously monitor compliance posture, findings, and obligations.",
+        icon="◔",
+        route="/novacodepro/tools/compliance-monitoring-center",
+        required_permissions=("compliance.manage", "analytics.read"),
+        supported_roles=("PRIVACY_COMPLIANCE", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Privacy & Compliance",
+        help_url="/docs/novacodepro/tools/compliance-monitoring-center",
+        audit_category="monitoring",
+        group="COMPLIANCE",
+        overview=("Score", "Obligations", "Findings", "Alerts", "Trends"),
+        primary_actions=("Open Monitor", "Review Finding", "Export Report"),
+    ),
+    ToolDefinition(
+        id="enterprise-privacy-compliance-command-center",
+        name="Enterprise Privacy & Compliance Command Center",
+        description="Present privacy maturity, compliance posture, incidents, and board reporting.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-privacy-compliance-command-center",
+        required_permissions=("compliance.read", "report.generate"),
+        supported_roles=("PRIVACY_COMPLIANCE", "ADMIN"),
+        supported_environments=("compliance", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Privacy & Compliance",
+        help_url="/docs/novacodepro/tools/enterprise-privacy-compliance-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Posture", "Privacy", "Compliance", "Incidents", "Board"),
+        primary_actions=("Open Dashboard", "Review Posture", "Export Report"),
+    ),
+    ToolDefinition(
+        id="enterprise-risk-workspace",
+        name="Enterprise Risk Workspace",
+        description="Review active risks, appetite breaches, exposures, and treatment work.",
+        icon="⌂",
+        route="/novacodepro/tools/enterprise-risk-workspace",
+        required_permissions=("risk.read", "risk.update"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/enterprise-risk-workspace",
+        audit_category="risk",
+        group="ENTERPRISE_RISK",
+        overview=("Risks", "Appetite", "Treatments", "Indicators", "Reviews"),
+        primary_actions=("Register Risk", "Run Assessment", "Open Register"),
+    ),
+    ToolDefinition(
+        id="enterprise-risk-register",
+        name="Enterprise Risk Register",
+        description="Maintain the authoritative inventory of enterprise risks.",
+        icon="▦",
+        route="/novacodepro/tools/enterprise-risk-register",
+        required_permissions=("riskregister.manage", "risk.read"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/enterprise-risk-register",
+        audit_category="risk",
+        group="ENTERPRISE_RISK",
+        overview=("Owners", "Impacts", "Ratings", "Controls", "History"),
+        primary_actions=("Add Risk", "Review Owner", "Open Treatment"),
+    ),
+    ToolDefinition(
+        id="risk-assessment-center",
+        name="Risk Assessment Center",
+        description="Conduct qualitative and quantitative assessments and record assumptions.",
+        icon="◉",
+        route="/novacodepro/tools/risk-assessment-center",
+        required_permissions=("riskassessment.create", "riskassessment.review"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/risk-assessment-center",
+        audit_category="assessment",
+        group="CONTROLS",
+        overview=("Likelihood", "Impact", "Residual", "Controls", "Evidence"),
+        primary_actions=("Create Assessment", "Review Controls", "Export Evidence"),
+    ),
+    ToolDefinition(
+        id="risk-treatment-center",
+        name="Risk Treatment Center",
+        description="Plan, track, and verify risk treatments and mitigations.",
+        icon="⇄",
+        route="/novacodepro/tools/risk-treatment-center",
+        required_permissions=("risktreatment.create", "risktreatment.monitor"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/risk-treatment-center",
+        audit_category="treatment",
+        group="CONTROLS",
+        overview=("Treatments", "Owners", "Due Dates", "Status", "Verification"),
+        primary_actions=("Create Treatment", "Review Progress", "Close Action"),
+    ),
+    ToolDefinition(
+        id="risk-heat-map-center",
+        name="Risk Heat Map Center",
+        description="Display risks by likelihood, impact, and appetite status.",
+        icon="⫶",
+        route="/novacodepro/tools/risk-heat-map-center",
+        required_permissions=("risk.read", "analytics.read"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/risk-heat-map-center",
+        audit_category="analysis",
+        group="ANALYSIS",
+        overview=("Likelihood", "Impact", "Breach", "Exposure", "Trend"),
+        primary_actions=("Open Heat Map", "Filter Risk", "Export View"),
+    ),
+    ToolDefinition(
+        id="enterprise-risk-command-center",
+        name="Enterprise Risk Command Center",
+        description="Present enterprise risk posture, appetite breaches, and board alerts.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-risk-command-center",
+        required_permissions=("risk.read", "riskreport.generate"),
+        supported_roles=("RISK_MANAGEMENT", "ADMIN"),
+        supported_environments=("risk", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Risk",
+        help_url="/docs/novacodepro/tools/enterprise-risk-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Posture", "Breaches", "KRIs", "Loss Events", "Board"),
+        primary_actions=("Open Dashboard", "Review Exposure", "Export Report"),
+    ),
+    ToolDefinition(
+        id="regulatory-oversight-workspace",
+        name="Regulatory Oversight Workspace",
+        description="Review licences, submissions, incidents, and supervisory obligations.",
+        icon="⌂",
+        route="/novacodepro/tools/regulatory-oversight-workspace",
+        required_permissions=("regulator.workspace.read", "submission.read"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/regulatory-oversight-workspace",
+        audit_category="regulatory",
+        group="OVERSIGHT",
+        overview=("Licences", "Submissions", "Matters", "Incidents", "Deadlines"),
+        primary_actions=("Review Submission", "Open Licence", "Inspect Incident"),
+    ),
+    ToolDefinition(
+        id="regulatory-submission-center",
+        name="Regulatory Submission Center",
+        description="Receive, validate, and track regulated submissions and reporting packages.",
+        icon="▦",
+        route="/novacodepro/tools/regulatory-submission-center",
+        required_permissions=("submission.read", "submission.review"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/regulatory-submission-center",
+        audit_category="submission",
+        group="SUPERVISION",
+        overview=("Draft", "Submitted", "Review", "Clarification", "Accepted"),
+        primary_actions=("Review Return", "Request Clarification", "Accept Submission"),
+    ),
+    ToolDefinition(
+        id="regulatory-reporting-center",
+        name="Regulatory Reporting Center",
+        description="Review structured regulatory reports, signatures, and evidence packages.",
+        icon="⫶",
+        route="/novacodepro/tools/regulatory-reporting-center",
+        required_permissions=("report.read_authorized", "evidence.read_authorized"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/regulatory-reporting-center",
+        audit_category="reporting",
+        group="SUPERVISION",
+        overview=("Reports", "Trends", "Attestations", "Lineage", "Signatures"),
+        primary_actions=("Open Report", "Inspect Signature", "Export Evidence"),
+    ),
+    ToolDefinition(
+        id="evidence-review-center",
+        name="Evidence Review Center",
+        description="Verify hashes, signatures, timestamps, and chain of custody.",
+        icon="⧉",
+        route="/novacodepro/tools/evidence-review-center",
+        required_permissions=("evidence.verify", "evidence.read_authorized"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/evidence-review-center",
+        audit_category="evidence",
+        group="ASSURANCE",
+        overview=("Integrity", "Timestamps", "Hash", "Chain", "Status"),
+        primary_actions=("Verify Evidence", "Open Receipt", "Flag Missing"),
+    ),
+    ToolDefinition(
+        id="supervisory-inquiry-center",
+        name="Supervisory Inquiry Center",
+        description="Create formal information requests and track responses.",
+        icon="✎",
+        route="/novacodepro/tools/supervisory-inquiry-center",
+        required_permissions=("inquiry.create", "inquiry.manage"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/supervisory-inquiry-center",
+        audit_category="inquiry",
+        group="SUPERVISION",
+        overview=("Scope", "Deadlines", "Requests", "Responses", "Status"),
+        primary_actions=("Create Inquiry", "Request Evidence", "Close Inquiry"),
+    ),
+    ToolDefinition(
+        id="regulatory-command-center",
+        name="Regulatory Command Center",
+        description="Present jurisdiction-specific oversight, deadlines, incidents, and findings.",
+        icon="⫶",
+        route="/novacodepro/tools/regulatory-command-center",
+        required_permissions=("analytics.read_authorized", "regulator.workspace.read"),
+        supported_roles=("EXTERNAL_REGULATOR",),
+        supported_environments=("regulator", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Regulatory Affairs",
+        help_url="/docs/novacodepro/tools/regulatory-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Licences", "Reports", "Inquiries", "Incidents", "Findings"),
+        primary_actions=("Open Dashboard", "Review Matter", "Export Report"),
+    ),
+    ToolDefinition(
+        id="legal-operations-workspace",
+        name="Legal Operations Workspace",
+        description="Track legal matters, contract work, regulatory requests, and priorities.",
+        icon="⌂",
+        route="/novacodepro/tools/legal-operations-workspace",
+        required_permissions=("legal.read", "legal.review"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/legal-operations-workspace",
+        audit_category="legal",
+        group="OPERATIONS",
+        overview=("Matters", "Contracts", "Reviews", "Calendar", "Approvals"),
+        primary_actions=("Review Contract", "Create Opinion", "Open Matter"),
+    ),
+    ToolDefinition(
+        id="legal-matter-management-center",
+        name="Legal Matter Management Center",
+        description="Manage legal cases, investigations, advice requests, and litigation.",
+        icon="◉",
+        route="/novacodepro/tools/legal-matter-management-center",
+        required_permissions=("legalopinion.create", "litigation.manage"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/legal-matter-management-center",
+        audit_category="matter",
+        group="OPERATIONS",
+        overview=("Cases", "Requests", "Advice", "Litigation", "Responses"),
+        primary_actions=("Open Matter", "Create Opinion", "Assign Counsel"),
+    ),
+    ToolDefinition(
+        id="contract-lifecycle-management-center",
+        name="Contract Lifecycle Management Center",
+        description="Manage draft contracts, negotiations, approvals, renewals, and terminations.",
+        icon="⇄",
+        route="/novacodepro/tools/contract-lifecycle-management-center",
+        required_permissions=("contract.create", "contract.review"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/contract-lifecycle-management-center",
+        audit_category="contract",
+        group="CONTRACTS",
+        overview=("Drafts", "Negotiations", "Approvals", "Renewals", "Expiry"),
+        primary_actions=("Create Contract", "Review Terms", "Open Approval"),
+    ),
+    ToolDefinition(
+        id="legal-risk-assessment-center",
+        name="Legal Risk Assessment Center",
+        description="Assess contract, litigation, regulatory, and cross-border legal risk.",
+        icon="⚠",
+        route="/novacodepro/tools/legal-risk-assessment-center",
+        required_permissions=("legalrisk.review", "legal.read"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/legal-risk-assessment-center",
+        audit_category="risk",
+        group="DISPUTES",
+        overview=("Contract", "Litigation", "Regulatory", "IP", "Cross-Border"),
+        primary_actions=("Review Risk", "Open Assessment", "Export Memo"),
+    ),
+    ToolDefinition(
+        id="legal-document-management-center",
+        name="Legal Document Management Center",
+        description="Manage contracts, opinions, notices, board papers, and legal archives.",
+        icon="⧉",
+        route="/novacodepro/tools/legal-document-management-center",
+        required_permissions=("document.manage", "legal.read"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/legal-document-management-center",
+        audit_category="document",
+        group="INTELLIGENCE",
+        overview=("Documents", "Archives", "Notices", "Board", "Evidence"),
+        primary_actions=("Open Archive", "Review Document", "Export Bundle"),
+    ),
+    ToolDefinition(
+        id="enterprise-legal-command-center",
+        name="Enterprise Legal Command Center",
+        description="Provide enterprise legal oversight across matters, contracts, disputes, and governance.",
+        icon="⫶",
+        route="/novacodepro/tools/enterprise-legal-command-center",
+        required_permissions=("legal.read", "report.generate"),
+        supported_roles=("LEGAL", "ADMIN"),
+        supported_environments=("legal", "staging", "pilot", "production"),
+        version="v1",
+        ownership_team="Legal",
+        help_url="/docs/novacodepro/tools/enterprise-legal-command-center",
+        audit_category="command-center",
+        group="INTELLIGENCE",
+        overview=("Matters", "Contracts", "Risks", "Litigation", "Reports"),
+        primary_actions=("Open Dashboard", "Review Matter", "Export Brief"),
+    ),
 )
 
 
@@ -4181,6 +5103,14 @@ ROLE_TOOL_GROUPS: dict[str, tuple[str, ...]] = {
     "SECURITY_ENGINEER": ("HOME", "SECURITY", "PROTECTION", "DETECTION", "GOVERNANCE", "INTELLIGENCE"),
     "INCIDENT_RESPONSE_TEAM": ("HOME", "RESPONSE", "RECOVERY", "INVESTIGATION", "CONTINUITY", "INTELLIGENCE"),
     "DATA_ARCHITECT": ("HOME", "ARCHITECTURE", "CONTRACTS", "GOVERNANCE", "PROTECTION", "PLATFORMS", "ASSURANCE"),
+    "DATA_ENGINEER": ("HOME", "BUILD", "REAL_TIME", "PLATFORMS", "TRUST", "DELIVER", "OPERATE"),
+    "DATABASE_ENGINEER": ("FLEET", "ENGINEERING", "RELIABILITY", "PROTECTION", "OPERATIONS", "ASSURANCE"),
+    "AI_ML_ENGINEER": ("HOME", "DEVELOP", "DATA", "GENAI", "EVALUATE", "DELIVER", "OPERATE", "GOVERN"),
+    "DATA_SCIENTIST": ("HOME", "DISCOVER", "ANALYZE", "EXPERIMENT", "MODEL", "VALIDATE", "DELIVER", "INTELLIGENCE"),
+    "PRIVACY_COMPLIANCE": ("HOME", "PRIVACY", "COMPLIANCE", "DATA_GOVERNANCE", "OPERATIONS", "INTELLIGENCE"),
+    "RISK_MANAGEMENT": ("HOME", "ENTERPRISE_RISK", "CONTROLS", "ANALYSIS", "RISK_DOMAINS", "GOVERNANCE", "INTELLIGENCE"),
+    "EXTERNAL_REGULATOR": ("HOME", "OVERSIGHT", "SUPERVISION", "ASSURANCE", "REGULATORY_DOMAINS", "INCIDENTS", "ENFORCEMENT", "INTELLIGENCE"),
+    "LEGAL": ("HOME", "OPERATIONS", "CONTRACTS", "GOVERNANCE", "LEGAL_DOMAINS", "DISPUTES", "INTELLIGENCE"),
     "OPERATOR": ("HOME", "DELIVER", "OPERATE", "GOVERN"),
     "VERIFIER": ("GOVERN", "OPERATE", "LEADERSHIP"),
     "CLIENT": ("HOME", "BUILD", "BUSINESS", "GOVERN"),
@@ -4387,6 +5317,151 @@ ROLE_QUICK_ACTIONS: dict[str, tuple[str, ...]] = {
         "Compare Storage Options",
         "Publish Data Standard",
     ),
+    "DATA_ENGINEER": (
+        "Run Pipeline",
+        "Create Pipeline",
+        "Inspect Lineage",
+        "Review Data Quality",
+        "Replay Event Stream",
+        "Open Lakehouse",
+        "Deploy Transformation",
+        "Open Data Incident",
+    ),
+    "DATABASE_ENGINEER": (
+        "Open Database Health",
+        "Review Slow Queries",
+        "Create Migration Plan",
+        "Verify Backup",
+        "Inspect Replication",
+        "Open Incident",
+        "Review Capacity",
+        "Run Recovery Test",
+    ),
+    "AI_ML_ENGINEER": (
+        "Create Experiment",
+        "Open Model Workspace",
+        "Build Training Pipeline",
+        "Run Evaluation",
+        "Compare Model Versions",
+        "Review Drift",
+        "Create Model Card",
+        "Open AI Incident",
+    ),
+    "DATA_SCIENTIST": (
+        "Create Analysis",
+        "Open Notebook",
+        "Design Experiment",
+        "Create Forecast",
+        "Run Statistical Test",
+        "Request Productionization",
+        "Publish Insight",
+        "Explore Dataset",
+    ),
+    "PRIVACY_COMPLIANCE": (
+        "Review Privacy Impact Assessment",
+        "Approve Data Processing",
+        "Review AI Risk",
+        "Manage Consent",
+        "Generate Regulatory Report",
+        "Open Compliance Case",
+        "Review Retention Policy",
+    ),
+    "RISK_MANAGEMENT": (
+        "Register Risk",
+        "Run Risk Assessment",
+        "Review Treatment Plan",
+        "Escalate Material Risk",
+        "Create Risk Scenario",
+        "Review KRI",
+        "Prepare Executive Report",
+    ),
+    "EXTERNAL_REGULATOR": (
+        "Review Regulatory Submission",
+        "Request Additional Evidence",
+        "Open Licence Record",
+        "Inspect Material Incident",
+        "Schedule Inspection",
+        "Generate Oversight Report",
+    ),
+    "LEGAL": (
+        "Review Contract",
+        "Create Legal Opinion",
+        "Open Litigation Matter",
+        "Review AI Policy",
+        "Register Trademark",
+        "Review Privacy Notice",
+        "Generate Board Brief",
+    ),
+}
+
+
+ROLE_NAVIGATION_LAYOUTS: dict[str, tuple[tuple[str, str], ...]] = {
+    "DATA_ENGINEER": (
+        ("HOME", "Build"),
+        ("REAL_TIME", "Real Time"),
+        ("PLATFORMS", "Platforms"),
+        ("TRUST", "Trust"),
+        ("DELIVER", "Deliver"),
+        ("OPERATE", "Operate"),
+    ),
+    "DATABASE_ENGINEER": (
+        ("FLEET", "Fleet"),
+        ("ENGINEERING", "Engineering"),
+        ("RELIABILITY", "Reliability"),
+        ("PROTECTION", "Protection"),
+        ("OPERATIONS", "Operations"),
+        ("ASSURANCE", "Assurance"),
+    ),
+    "AI_ML_ENGINEER": (
+        ("HOME", "Develop"),
+        ("DATA", "Data"),
+        ("GENAI", "Generative AI"),
+        ("EVALUATE", "Evaluate"),
+        ("DELIVER", "Deliver"),
+        ("OPERATE", "Operate"),
+        ("GOVERN", "Govern"),
+    ),
+    "DATA_SCIENTIST": (
+        ("HOME", "Discover"),
+        ("ANALYZE", "Analyze"),
+        ("EXPERIMENT", "Experiment"),
+        ("MODEL", "Model"),
+        ("VALIDATE", "Validate"),
+        ("DELIVER", "Deliver"),
+        ("INTELLIGENCE", "Intelligence"),
+    ),
+    "PRIVACY_COMPLIANCE": (
+        ("PRIVACY", "Privacy"),
+        ("COMPLIANCE", "Compliance"),
+        ("DATA_GOVERNANCE", "Data Governance"),
+        ("OPERATIONS", "Operations"),
+        ("INTELLIGENCE", "Intelligence"),
+    ),
+    "RISK_MANAGEMENT": (
+        ("ENTERPRISE_RISK", "Enterprise Risk"),
+        ("CONTROLS", "Controls"),
+        ("ANALYSIS", "Analysis"),
+        ("RISK_DOMAINS", "Risk Domains"),
+        ("GOVERNANCE", "Governance"),
+        ("INTELLIGENCE", "Intelligence"),
+    ),
+    "EXTERNAL_REGULATOR": (
+        ("OVERSIGHT", "Oversight"),
+        ("SUPERVISION", "Supervision"),
+        ("ASSURANCE", "Assurance"),
+        ("REGULATORY_DOMAINS", "Regulatory Domains"),
+        ("INCIDENTS", "Incidents"),
+        ("ENFORCEMENT", "Enforcement"),
+        ("INTELLIGENCE", "Intelligence"),
+    ),
+    "LEGAL": (
+        ("OPERATIONS", "Operations"),
+        ("CONTRACTS", "Contracts"),
+        ("GOVERNANCE", "Governance"),
+        ("LEGAL_DOMAINS", "Legal Domains"),
+        ("DISPUTES", "Disputes & Risk"),
+        ("INTELLIGENCE", "Intelligence"),
+    ),
 }
 
 
@@ -4404,7 +5479,10 @@ def _navigation_groups(role: str, tools: list[ToolDefinition]) -> list[dict[str,
     for tool in tools:
         grouped.setdefault(tool.group, []).append(tool)
     canonical = canonical_role_name(role)
-    if canonical == "DEVELOPER":
+    if canonical in ROLE_NAVIGATION_LAYOUTS:
+        order = [group for group, _label in ROLE_NAVIGATION_LAYOUTS[canonical]]
+        labels = {group: label for group, label in ROLE_NAVIGATION_LAYOUTS[canonical]}
+    elif canonical == "DEVELOPER":
         order = ["HOME", "BUILD", "DESIGN", "DELIVER", "ASSURE", "KNOWLEDGE"]
         labels = {
             "HOME": "My Work",
@@ -4797,6 +5875,78 @@ def _workspace_cards(role: str, summary: dict[str, Any]) -> list[dict[str, Any]]
             {"title": "Open reviews", "value": 11, "meta": "Architecture reviews in progress"},
             {"title": "Tool access", "value": len(_visible_tools(role, "data")), "meta": "Authorized data tools"},
         ]
+    if canonical == "DATA_ENGINEER":
+        return [
+            {"title": "Running pipelines", "value": 842, "meta": "Healthy, successful, and failed jobs"},
+            {"title": "Pipeline availability", "value": "99.97%", "meta": "Operational pipeline uptime"},
+            {"title": "Streaming clusters", "value": "Healthy", "meta": "Kafka, Pulsar, and event mesh"},
+            {"title": "Certified datasets", "value": 274, "meta": "Published data products"},
+            {"title": "Quality incidents", "value": 2, "meta": "Freshness and schema issues"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "data")), "meta": "Authorized data engineering tools"},
+        ]
+    if canonical == "DATABASE_ENGINEER":
+        return [
+            {"title": "Database instances", "value": 86, "meta": "Managed production and non-production databases"},
+            {"title": "Production availability", "value": "99.99%", "meta": "Critical database uptime"},
+            {"title": "Backup success", "value": "99.8%", "meta": "Verified backup completion"},
+            {"title": "Slow-query alerts", "value": 7, "meta": "Performance tuning queue"},
+            {"title": "Critical databases", "value": 18, "meta": "High-priority systems"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "database")), "meta": "Authorized database engineering tools"},
+        ]
+    if canonical == "AI_ML_ENGINEER":
+        return [
+            {"title": "Registered models", "value": 86, "meta": "Model inventory"},
+            {"title": "Production models", "value": 24, "meta": "Approved live services"},
+            {"title": "Inference availability", "value": "99.96%", "meta": "Model-serving uptime"},
+            {"title": "Evaluation gate pass", "value": "97.4%", "meta": "Candidate model readiness"},
+            {"title": "Open safety findings", "value": 4, "meta": "Responsible AI and safety items"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "ai")), "meta": "Authorized AI engineering tools"},
+        ]
+    if canonical == "DATA_SCIENTIST":
+        return [
+            {"title": "Active studies", "value": 18, "meta": "Open analytical work"},
+            {"title": "Running experiments", "value": 7, "meta": "A/B and simulation work"},
+            {"title": "Reproducible studies", "value": "98%", "meta": "Evidence-ready analysis"},
+            {"title": "Forecast accuracy", "value": "94.2%", "meta": "Published forecasting performance"},
+            {"title": "Quality blockers", "value": 3, "meta": "Data issues affecting studies"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "science")), "meta": "Authorized data science tools"},
+        ]
+    if canonical == "PRIVACY_COMPLIANCE":
+        return [
+            {"title": "Compliance score", "value": "99%", "meta": "Privacy and compliance posture"},
+            {"title": "Consent records", "value": "18.4M", "meta": "Managed consent volume"},
+            {"title": "Privacy requests", "value": 234, "meta": "Open and completed requests"},
+            {"title": "Cross-border transfers", "value": 14, "meta": "Active transfer reviews"},
+            {"title": "Open findings", "value": 3, "meta": "Privacy and regulatory issues"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "compliance")), "meta": "Authorized privacy and compliance tools"},
+        ]
+    if canonical == "RISK_MANAGEMENT":
+        return [
+            {"title": "Active risks", "value": 146, "meta": "Enterprise risk register"},
+            {"title": "Risks above appetite", "value": 9, "meta": "Breach and escalation set"},
+            {"title": "Overdue treatments", "value": 7, "meta": "Open remediation items"},
+            {"title": "Critical risks", "value": 2, "meta": "High-consequence exposures"},
+            {"title": "KRI breaches", "value": 3, "meta": "Warning and critical indicators"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "risk")), "meta": "Authorized risk tools"},
+        ]
+    if canonical == "EXTERNAL_REGULATOR":
+        return [
+            {"title": "Active licences", "value": 8, "meta": "Supervised products and entities"},
+            {"title": "Open matters", "value": 3, "meta": "Supervisory work in progress"},
+            {"title": "Overdue submissions", "value": 0, "meta": "Reporting timeliness"},
+            {"title": "Material incidents", "value": 1, "meta": "Current incident attention"},
+            {"title": "Remediation items", "value": 5, "meta": "Open findings and actions"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "regulator")), "meta": "Authorized regulatory tools"},
+        ]
+    if canonical == "LEGAL":
+        return [
+            {"title": "Active contracts", "value": 1284, "meta": "Contract portfolio"},
+            {"title": "Open matters", "value": 39, "meta": "Legal matters and disputes"},
+            {"title": "Pending approvals", "value": 21, "meta": "Business requests awaiting review"},
+            {"title": "Court matters", "value": 1, "meta": "Active litigation"},
+            {"title": "IP assets", "value": 684, "meta": "Trademark, copyright, and trade secret assets"},
+            {"title": "Tool access", "value": len(_visible_tools(role, "legal")), "meta": "Authorized legal tools"},
+        ]
     if canonical == "OPERATOR":
         return [
             {"title": "Deployments", "value": summary.get("deployment_count", 0), "meta": "Change and rollout visibility"},
@@ -4853,8 +6003,11 @@ def build_workspace_manifest(
 ) -> dict[str, Any]:
     canonical = canonical_role_name(role)
     summary = service.admin_summary()
+    profile = _workspace_profile(canonical)
     if environment is None:
-        if canonical == "ADMIN":
+        if profile:
+            environment = str(profile["environment"])
+        elif canonical == "ADMIN":
             environment = "production"
         elif canonical == "DEVELOPER":
             environment = "development"
@@ -4958,57 +6111,33 @@ def build_workspace_manifest(
             "description": _workspace_description(canonical),
             "tenant": organization_id,
             "organization": _organization_label(organization_id),
-            "environments": ["production", "staging", "pilot"]
-            if canonical == "ADMIN"
+            "environments": _workspace_environments(canonical)
+            if _workspace_environments(canonical)
             else (
-                ["business-planning", "staging", "pilot"]
-                if canonical in {"PRODUCT_MANAGER", "BUSINESS_ANALYST"}
+                ["production", "staging", "pilot"]
+                if canonical == "ADMIN"
                 else (
-                    ["design", "staging", "pilot"]
-                    if canonical == "UI_UX_DESIGNER"
+                    ["business-planning", "staging", "pilot"]
+                    if canonical in {"PRODUCT_MANAGER", "BUSINESS_ANALYST"}
                     else (
-                        ["delivery", "business-planning", "staging", "pilot"]
-                        if canonical == "PROJECT_MANAGER"
+                        ["design", "staging", "pilot"]
+                        if canonical == "UI_UX_DESIGNER"
                         else (
-                            ["architecture", "staging", "pilot"]
-                            if canonical == "ARCHITECT"
+                            ["delivery", "business-planning", "staging", "pilot"]
+                            if canonical == "PROJECT_MANAGER"
                             else (
-                                ["quality", "staging", "pilot"]
-                                if canonical == "QA_ENGINEER"
+                                ["architecture", "staging", "pilot"]
+                                if canonical == "ARCHITECT"
                                 else (
-                                    ["operations", "staging", "pilot", "production"]
-                                    if canonical == "DEVOPS_ENGINEER"
+                                    ["quality", "staging", "pilot"]
+                                    if canonical == "QA_ENGINEER"
                                     else (
-                                    ["support", "staging", "pilot"]
-                                    if canonical == "CUSTOMER_SUPPORT"
+                                        ["operations", "staging", "pilot", "production"]
+                                        if canonical == "DEVOPS_ENGINEER"
                                         else (
-                                            ["operations", "staging", "pilot", "production"]
-                                            if canonical == "OPERATIONS_TEAM"
-                                            else (
-                                                ["marketing", "staging", "pilot", "production"]
-                                                if canonical == "BRAND_TEAM"
-                                                else (
-                                                    ["compliance", "staging", "pilot", "production"]
-                                                    if canonical == "COMPLIANCE_TEAM"
-                                                    else (
-                                                        ["audit", "staging", "pilot", "production"]
-                                                        if canonical == "AUDIT_TEAM"
-                                                        else (
-                                                            ["security", "staging", "pilot", "production"]
-                                                            if canonical == "SECURITY_ENGINEER"
-                                                            else (
-                                                                ["operations", "staging", "pilot", "production"]
-                                                                if canonical == "INCIDENT_RESPONSE_TEAM"
-                                                                else (
-                                                                    ["data", "staging", "pilot", "production"]
-                                                                    if canonical == "DATA_ARCHITECT"
-                                                                    else ["development", "staging", "pilot"]
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
+                                            ["support", "staging", "pilot"]
+                                            if canonical == "CUSTOMER_SUPPORT"
+                                            else ["development", "staging", "pilot"]
                                         )
                                     )
                                 )
@@ -5018,64 +6147,36 @@ def build_workspace_manifest(
                 )
             ),
             "selected_environment": environment,
-            "authority_level": "platform-admin"
-            if canonical == "ADMIN"
+            "authority_level": _workspace_authority(canonical)
+            if _workspace_authority(canonical)
             else (
-                "developer"
-                if canonical == "DEVELOPER"
+                "platform-admin"
+                if canonical == "ADMIN"
                 else (
-                    "product-manager"
-                    if canonical == "PRODUCT_MANAGER"
+                    "developer"
+                    if canonical == "DEVELOPER"
                     else (
-                        "business-analyst"
-                        if canonical == "BUSINESS_ANALYST"
+                        "product-manager"
+                        if canonical == "PRODUCT_MANAGER"
                         else (
-                            "designer"
-                            if canonical == "UI_UX_DESIGNER"
+                            "business-analyst"
+                            if canonical == "BUSINESS_ANALYST"
                             else (
-                                "project-manager"
-                                if canonical == "PROJECT_MANAGER"
+                                "designer"
+                                if canonical == "UI_UX_DESIGNER"
                                 else (
-                                    "architect"
-                                    if canonical == "ARCHITECT"
+                                    "project-manager"
+                                    if canonical == "PROJECT_MANAGER"
                                     else (
-                                        "qa-engineer"
-                                        if canonical == "QA_ENGINEER"
+                                        "architect"
+                                        if canonical == "ARCHITECT"
                                         else (
-                                            "devops-engineer"
-                                        if canonical == "DEVOPS_ENGINEER"
+                                            "qa-engineer"
+                                            if canonical == "QA_ENGINEER"
                                             else (
-                                                "customer-support"
-                                                if canonical == "CUSTOMER_SUPPORT"
-                                                else (
-                                                    "operations-manager"
-                                                    if canonical == "OPERATIONS_TEAM"
-                                                    else (
-                                                        "brand-manager"
-                                                        if canonical == "BRAND_TEAM"
-                                                        else (
-                                                            "compliance-manager"
-                                                            if canonical == "COMPLIANCE_TEAM"
-                                                            else (
-                                                                "audit-manager"
-                                                                if canonical == "AUDIT_TEAM"
-                                                                else (
-                                                                    "security-engineer"
-                                                                    if canonical == "SECURITY_ENGINEER"
-                                                                    else (
-                                                                        "incident-commander"
-                                                                        if canonical == "INCIDENT_RESPONSE_TEAM"
-                                                                        else (
-                                                                            "data-architect"
-                                                                            if canonical == "DATA_ARCHITECT"
-                                                                            else "role-scoped"
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
+                                                "devops-engineer"
+                                                if canonical == "DEVOPS_ENGINEER"
+                                                else ("customer-support" if canonical == "CUSTOMER_SUPPORT" else "role-scoped")
                                             )
                                         )
                                     )
@@ -5120,7 +6221,39 @@ def build_workspace_manifest(
                                         else (
                                             "Global Incident Response"
                                             if canonical == "INCIDENT_RESPONSE_TEAM"
-                                            else ("Enterprise Data Architecture" if canonical == "DATA_ARCHITECT" else None)
+                                            else (
+                                                "Enterprise Data Architecture"
+                                                if canonical == "DATA_ARCHITECT"
+                                                else (
+                                                    "Enterprise Data Engineering"
+                                                    if canonical == "DATA_ENGINEER"
+                                                    else (
+                                                        "Database Engineering"
+                                                        if canonical == "DATABASE_ENGINEER"
+                                                        else (
+                                                            "AI/ML Engineering"
+                                                            if canonical == "AI_ML_ENGINEER"
+                                                            else (
+                                                                "Data Science"
+                                                                if canonical == "DATA_SCIENTIST"
+                                                                else (
+                                                                    "Privacy & Compliance"
+                                                                    if canonical == "PRIVACY_COMPLIANCE"
+                                                                    else (
+                                                                        "Enterprise Risk"
+                                                                        if canonical == "RISK_MANAGEMENT"
+                                                                        else (
+                                                                            "Regulatory Oversight"
+                                                                            if canonical == "EXTERNAL_REGULATOR"
+                                                                            else ("Legal Operations" if canonical == "LEGAL" else None)
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
                                         )
                                     )
                                 )
@@ -5330,6 +6463,78 @@ def build_workspace_manifest(
             ]
             if canonical == "DATA_ARCHITECT"
             else [],
+            "data_engineering_items": [
+                {"label": "Run NovaPay settlement pipeline", "status": "healthy"},
+                {"label": "Validate NovaRide trip event feed", "status": "monitoring"},
+                {"label": "Refresh AI feature store", "status": "scheduled"},
+                {"label": "Review schema drift alerts", "status": "pending"},
+                {"label": "Publish certified dataset", "status": "ready"},
+            ]
+            if canonical == "DATA_ENGINEER"
+            else [],
+            "database_items": [
+                {"label": "Review slow queries", "status": "open"},
+                {"label": "Create migration plan", "status": "review"},
+                {"label": "Verify backup", "status": "pending"},
+                {"label": "Inspect replication", "status": "monitoring"},
+                {"label": "Open incident", "status": "ready"},
+            ]
+            if canonical == "DATABASE_ENGINEER"
+            else [],
+            "ai_ml_items": [
+                {"label": "Create experiment", "status": "active"},
+                {"label": "Run evaluation", "status": "queued"},
+                {"label": "Compare model versions", "status": "review"},
+                {"label": "Review drift", "status": "monitoring"},
+                {"label": "Open AI incident", "status": "ready"},
+            ]
+            if canonical == "AI_ML_ENGINEER"
+            else [],
+            "data_science_items": [
+                {"label": "Create analysis", "status": "active"},
+                {"label": "Design experiment", "status": "pending"},
+                {"label": "Create forecast", "status": "ready"},
+                {"label": "Request productionization", "status": "review"},
+                {"label": "Open notebook", "status": "active"},
+            ]
+            if canonical == "DATA_SCIENTIST"
+            else [],
+            "privacy_compliance_items": [
+                {"label": "Review Privacy Impact Assessment", "status": "pending"},
+                {"label": "Approve Data Processing", "status": "active"},
+                {"label": "Review AI Risk", "status": "monitoring"},
+                {"label": "Manage Consent", "status": "active"},
+                {"label": "Generate Regulatory Report", "status": "ready"},
+            ]
+            if canonical == "PRIVACY_COMPLIANCE"
+            else [],
+            "risk_items": [
+                {"label": "Register risk", "status": "pending"},
+                {"label": "Run risk assessment", "status": "active"},
+                {"label": "Review treatment plan", "status": "monitoring"},
+                {"label": "Escalate material risk", "status": "ready"},
+                {"label": "Prepare executive report", "status": "review"},
+            ]
+            if canonical == "RISK_MANAGEMENT"
+            else [],
+            "regulator_items": [
+                {"label": "Review regulatory submission", "status": "pending"},
+                {"label": "Request additional evidence", "status": "active"},
+                {"label": "Inspect material incident", "status": "monitoring"},
+                {"label": "Schedule inspection", "status": "ready"},
+                {"label": "Generate oversight report", "status": "review"},
+            ]
+            if canonical == "EXTERNAL_REGULATOR"
+            else [],
+            "legal_items": [
+                {"label": "Review contract", "status": "pending"},
+                {"label": "Create legal opinion", "status": "active"},
+                {"label": "Open litigation matter", "status": "monitoring"},
+                {"label": "Review AI policy", "status": "review"},
+                {"label": "Generate board brief", "status": "ready"},
+            ]
+            if canonical == "LEGAL"
+            else [],
             "analysis_tasks": [
                 {"label": "Gather stakeholder requirements", "status": "pending"},
                 {"label": "Review business process models", "status": "active"},
@@ -5497,6 +6702,14 @@ def build_workspace_manifest(
                 "security_workspace": canonical == "SECURITY_ENGINEER",
                 "incident_response_workspace": canonical == "INCIDENT_RESPONSE_TEAM",
                 "data_architect_workspace": canonical == "DATA_ARCHITECT",
+                "data_engineer_workspace": canonical == "DATA_ENGINEER",
+                "database_engineer_workspace": canonical == "DATABASE_ENGINEER",
+                "ai_ml_engineer_workspace": canonical == "AI_ML_ENGINEER",
+                "data_scientist_workspace": canonical == "DATA_SCIENTIST",
+                "privacy_compliance_workspace": canonical == "PRIVACY_COMPLIANCE",
+                "risk_management_workspace": canonical == "RISK_MANAGEMENT",
+                "regulatory_oversight_workspace": canonical == "EXTERNAL_REGULATOR",
+                "legal_workspace": canonical == "LEGAL",
             },
             "command_palette": commands,
             "activity_timeline": (service.audit(limit=12) or service.events(limit=12))[:12],
@@ -6218,6 +7431,272 @@ def render_workspace_html(manifest: dict[str, Any]) -> str:
               </ul>
             </section>
             <section class=\"panel\"><header><h2>Open reviews</h2></header><ul>{projects_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "DATA_ENGINEER":
+        pipeline_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("data_engineering_items", [])
+        ) or "<li>No pipeline items.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Pipeline work</h2></header><ul>{pipeline_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Platform health</h2></header>
+              <ul>
+                <li><strong>Streaming clusters</strong><span>Healthy</span></li>
+                <li><strong>Lakehouse</strong><span>Healthy</span></li>
+                <li><strong>Warehouse</strong><span>Healthy</span></li>
+                <li><strong>Data APIs</strong><span>Healthy</span></li>
+                <li><strong>Storage</strong><span>Healthy</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Data quality</h2></header>
+              <ul>
+                <li><strong>Certified datasets</strong><span>274</span></li>
+                <li><strong>Freshness SLA</strong><span>99.6%</span></li>
+                <li><strong>Quality incidents</strong><span>2</span></li>
+                <li><strong>Schema violations</strong><span>1</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "DATABASE_ENGINEER":
+        database_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("database_items", [])
+        ) or "<li>No database work.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Database fleet</h2></header><ul>{database_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Database health</h2></header>
+              <ul>
+                <li><strong>Instances</strong><span>86</span></li>
+                <li><strong>Healthy instances</strong><span>84</span></li>
+                <li><strong>Degraded instances</strong><span>2</span></li>
+                <li><strong>Backup success</strong><span>99.8%</span></li>
+                <li><strong>Privileged access reviews</strong><span>100%</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Performance</h2></header>
+              <ul>
+                <li><strong>Slow-query alerts</strong><span>7</span></li>
+                <li><strong>Replication lag alerts</strong><span>1</span></li>
+                <li><strong>Connection saturation</strong><span>2</span></li>
+                <li><strong>Deadlock events</strong><span>4</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "AI_ML_ENGINEER":
+        ai_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("ai_ml_items", [])
+        ) or "<li>No AI work.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Model work</h2></header><ul>{ai_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Model estate</h2></header>
+              <ul>
+                <li><strong>Registered models</strong><span>86</span></li>
+                <li><strong>Production models</strong><span>24</span></li>
+                <li><strong>Models under evaluation</strong><span>17</span></li>
+                <li><strong>Evaluation gate pass rate</strong><span>97.4%</span></li>
+                <li><strong>Open safety findings</strong><span>4</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Production health</h2></header>
+              <ul>
+                <li><strong>Inference availability</strong><span>99.96%</span></li>
+                <li><strong>Average latency</strong><span>82 ms</span></li>
+                <li><strong>Degraded services</strong><span>2</span></li>
+                <li><strong>High-risk exceptions</strong><span>1</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "DATA_SCIENTIST":
+        study_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("data_science_items", [])
+        ) or "<li>No active studies.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Active studies</h2></header><ul>{study_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Analytical health</h2></header>
+              <ul>
+                <li><strong>Validated model candidates</strong><span>14</span></li>
+                <li><strong>Experiments reaching power</strong><span>6</span></li>
+                <li><strong>Reproducible studies</strong><span>98%</span></li>
+                <li><strong>Forecast accuracy</strong><span>94.2%</span></li>
+                <li><strong>Open data blockers</strong><span>3</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Model and experiment health</h2></header>
+              <ul>
+                <li><strong>Running experiments</strong><span>7</span></li>
+                <li><strong>Inconclusive experiments</strong><span>2</span></li>
+                <li><strong>Drift investigations</strong><span>3</span></li>
+                <li><strong>Approved datasets</strong><span>100%</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "PRIVACY_COMPLIANCE":
+        privacy_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("privacy_compliance_items", [])
+        ) or "<li>No compliance work.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Today's tasks</h2></header><ul>{privacy_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Compliance health</h2></header>
+              <ul>
+                <li><strong>Compliance score</strong><span>99%</span></li>
+                <li><strong>Critical violations</strong><span>0</span></li>
+                <li><strong>Open findings</strong><span>3</span></li>
+                <li><strong>Privacy incidents</strong><span>1</span></li>
+                <li><strong>Policies current</strong><span>100%</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Privacy operations</h2></header>
+              <ul>
+                <li><strong>Consent records</strong><span>18.4M</span></li>
+                <li><strong>DSAR requests</strong><span>21</span></li>
+                <li><strong>Cross-border transfers</strong><span>14</span></li>
+                <li><strong>Retention reviews</strong><span>36</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "RISK_MANAGEMENT":
+        risk_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("risk_items", [])
+        ) or "<li>No risk items.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Risk attention</h2></header><ul>{risk_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise risk posture</h2></header>
+              <ul>
+                <li><strong>Total active risks</strong><span>146</span></li>
+                <li><strong>Critical risks</strong><span>2</span></li>
+                <li><strong>High risks</strong><span>17</span></li>
+                <li><strong>Risks above appetite</strong><span>9</span></li>
+                <li><strong>Overdue treatments</strong><span>7</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Risk domains</h2></header>
+              <ul>
+                <li><strong>Technology</strong><span>Moderate</span></li>
+                <li><strong>Cybersecurity</strong><span>Moderate</span></li>
+                <li><strong>Privacy</strong><span>Moderate</span></li>
+                <li><strong>Third-party</strong><span>Moderate</span></li>
+                <li><strong>Business continuity</strong><span>Moderate</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "EXTERNAL_REGULATOR":
+        regulator_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("regulator_items", [])
+        ) or "<li>No active supervision items.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Current attention</h2></header><ul>{regulator_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Submission status</h2></header>
+              <ul>
+                <li><strong>Due this month</strong><span>6</span></li>
+                <li><strong>Submitted</strong><span>4</span></li>
+                <li><strong>Under review</strong><span>2</span></li>
+                <li><strong>Returned for clarification</strong><span>1</span></li>
+                <li><strong>Approved</strong><span>9</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Oversight status</h2></header>
+              <ul>
+                <li><strong>Active licences</strong><span>8</span></li>
+                <li><strong>Licence conditions</strong><span>14</span></li>
+                <li><strong>Open regulatory matters</strong><span>3</span></li>
+                <li><strong>Material incidents</strong><span>1</span></li>
+                <li><strong>Outstanding remediation</strong><span>5</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
+            <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
+              <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
+              <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
+              <li><strong>Operational risk</strong><span>{html.escape(str(signal['operational_risk']))}</span></li>
+            </ul></section>
+          </div>
+        """
+    elif canonical == "LEGAL":
+        legal_items_html = "".join(
+            f"<li><strong>{html.escape(item['label'])}</strong><span>{html.escape(item['status'])}</span></li>"
+            for item in workspace.get("legal_items", [])
+        ) or "<li>No legal matters.</li>"
+        right_stack_html = f"""
+          <div class=\"right-stack\">
+            <section class=\"panel\"><header><h2>Legal matters</h2></header><ul>{legal_items_html}</ul></section>
+            <section class=\"panel\"><header><h2>Legal portfolio</h2></header>
+              <ul>
+                <li><strong>Active contracts</strong><span>1,284</span></li>
+                <li><strong>Legal reviews</strong><span>142</span></li>
+                <li><strong>Open matters</strong><span>39</span></li>
+                <li><strong>Pending approvals</strong><span>21</span></li>
+                <li><strong>Court matters</strong><span>1</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Intellectual property</h2></header>
+              <ul>
+                <li><strong>Patents</strong><span>11</span></li>
+                <li><strong>Trademarks</strong><span>27</span></li>
+                <li><strong>Copyright assets</strong><span>684</span></li>
+                <li><strong>Trade secrets</strong><span>49</span></li>
+              </ul>
+            </section>
+            <section class=\"panel\"><header><h2>Recent incidents</h2></header><ul>{incidents_html}</ul></section>
             <section class=\"panel\"><header><h2>Enterprise signals</h2></header><ul>
               <li><strong>Platform health</strong><span>{html.escape(str(signal['platform_health']))}</span></li>
               <li><strong>Evidence completeness</strong><span>{html.escape(str(signal['evidence_completeness']))}</span></li>
