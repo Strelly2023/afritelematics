@@ -20,10 +20,36 @@ function clampList(values, limit = 4) {
 }
 
 function asPairList(items) {
-  return (Array.isArray(items) ? items : []).map(([label, value]) => ({
-    label: String(label),
-    value: String(value),
-  }));
+  if (Array.isArray(items)) {
+    return items
+      .map((item) => {
+        if (Array.isArray(item) && item.length >= 2) {
+          return {
+            label: String(item[0]),
+            value: String(item[1]),
+          };
+        }
+        if (item && typeof item === "object") {
+          const label = item.label ?? item.name ?? item.title ?? item.id ?? "";
+          const value = item.value ?? item.detail ?? item.status ?? item.count ?? "";
+          if (label || value) {
+            return {
+              label: String(label),
+              value: String(value),
+            };
+          }
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (items && typeof items === "object") {
+    return Object.entries(items).map(([label, value]) => ({
+      label: String(label),
+      value: String(value),
+    }));
+  }
+  return [];
 }
 
 export function buildRoleWorkspaceModel({
@@ -47,7 +73,7 @@ export function buildRoleWorkspaceModel({
   const latestApprovalRoute = runtime?.approvalRoutes?.[0] ?? null;
   const latestEvidenceBundle = runtime?.evidenceBundles?.[0] ?? null;
   const latestRiskItem = runtime?.riskRegister?.[0] ?? null;
-  const activeSignals = clampList(activeRole?.signals, 4);
+  const activeSignals = asPairList(activeRole?.signals).slice(0, 4);
   const roleMetrics = asPairList(activeRole?.metrics);
   const quickActions = clampList(activeRole?.actions, 4);
   const operationalActions = [
@@ -151,7 +177,7 @@ export function buildRoleWorkspaceModel({
           },
           {
             label: "Live signals",
-            rows: activeSignals.map(([label, value]) => ({
+            rows: activeSignals.map(({ label, value }) => ({
               title: label,
               detail: value,
             })),

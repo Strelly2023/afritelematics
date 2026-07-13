@@ -1,9 +1,34 @@
 import React from "react";
 
+function normalizePairs(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => {
+        if (Array.isArray(item) && item.length >= 2) {
+          return [String(item[0]), String(item[1])];
+        }
+        if (item && typeof item === "object") {
+          const label = item.label ?? item.name ?? item.title ?? item.id ?? "";
+          const metricValue = item.value ?? item.detail ?? item.status ?? item.count ?? "";
+          if (label || metricValue) {
+            return [String(label), String(metricValue)];
+          }
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (value && typeof value === "object") {
+    return Object.entries(value).map(([label, metricValue]) => [String(label), String(metricValue)]);
+  }
+  return [];
+}
+
 function SurfaceMetricGrid({ metrics }) {
+  const pairs = normalizePairs(metrics);
   return (
     <div className="role-surface-metric-grid">
-      {metrics.map(([label, value]) => (
+      {pairs.map(([label, value]) => (
         <div className="role-surface-metric" key={label}>
           <span>{label}</span>
           <strong>{value}</strong>
@@ -139,4 +164,3 @@ export function RoleWorkspaceWindows({ model, activeSurfaceId, onFocusSurface, o
     </section>
   );
 }
-

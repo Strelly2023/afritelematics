@@ -1731,7 +1731,27 @@ function toArray(value) {
 }
 
 function toPairArray(value) {
-  return toArray(value).filter((item) => Array.isArray(item) && item.length >= 2);
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => {
+        if (Array.isArray(item) && item.length >= 2) {
+          return [String(item[0]), String(item[1])];
+        }
+        if (item && typeof item === "object") {
+          const label = item.label ?? item.name ?? item.title ?? item.id ?? "";
+          const pairValue = item.value ?? item.detail ?? item.status ?? item.count ?? "";
+          if (label || pairValue) {
+            return [String(label), String(pairValue)];
+          }
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (value && typeof value === "object") {
+    return Object.entries(value).map(([label, pairValue]) => [String(label), String(pairValue)]);
+  }
+  return [];
 }
 
 function App() {

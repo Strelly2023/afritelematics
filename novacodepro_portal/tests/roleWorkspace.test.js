@@ -113,6 +113,46 @@ test("role workspace model carries role-specific dashboard and chat context", ()
 
   assert.ok(model.windows[0].highlights.some((item) => item.includes("Review contract")));
   assert.ok(model.windows[1].actions.some((action) => action.label === "Investigate"));
-  assert.ok(model.windows[2].metrics.some(([label]) => label === "Modes"));
+  assert.ok(
+    model.windows[2].metrics.some(
+      (metric) => metric.label === "Modes" || (Array.isArray(metric) && metric[0] === "Modes"),
+    ),
+  );
   assert.ok(model.windows[3].highlights.some((item) => item.includes("Privacy policy review")));
+});
+
+test("role workspace model tolerates object-shaped signals and metrics", () => {
+  const model = buildRoleWorkspaceModel({
+    activeRole: {
+      label: "Platform Administrator",
+      domain: "Engineering and governance",
+      metrics: {
+        "Platform health": "Healthy",
+        Services: "7 core",
+      },
+      actions: ["Review security alerts"],
+      signals: {
+        "API health": "Healthy",
+        "Pending approvals": "2",
+      },
+      agents: ["Security", "DevOps"],
+    },
+    runtime: runtimeStub,
+    platformSummary: { platform_health: "healthy" },
+    environment: "Production",
+    activeTenant: { name: "NovaTech" },
+    activeProject: { name: "NovaCodePro" },
+    activeRequest: { title: "Platform hardening", status: "draft" },
+    activeStage: { label: "Intent analysis" },
+    workflowProgress: 10,
+    authDisplayName: "Djuma",
+    authDisplayRoleLabel: "Platform Administrator",
+    selectedModeLabel: "Full solution",
+    requestSummary: "Harden the platform.",
+    suggestedTitle: "Platform hardening",
+  });
+
+  assert.equal(model.windows.length, 4);
+  assert.ok(model.windows[0].metrics.some((metric) => metric.label === "Platform health"));
+  assert.ok(model.windows[1].lists[1].rows.some((row) => row.title === "API health"));
 });
