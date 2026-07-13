@@ -12,6 +12,8 @@ import {
   platformRuntime,
 } from "./platform/runtime.js";
 import { fetchBootstrap, normalizeBootstrapResponse } from "./platform/bootstrap.js";
+import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
+import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 
@@ -1745,6 +1747,7 @@ function App() {
   const [environment, setEnvironment] = useState("Production");
   const [focusNav, setFocusNav] = useState("Dashboard");
   const [selectedWindowId, setSelectedWindowId] = useState(ROLE_PROFILES[0].windows[0].id);
+  const [activeWorkspaceSurfaceId, setActiveWorkspaceSurfaceId] = useState("dashboard");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [solutionTemplateId, setSolutionTemplateId] = useState(SOLUTION_TEMPLATES[0].id);
   const [solutionTitle, setSolutionTitle] = useState("");
@@ -1894,6 +1897,7 @@ function App() {
         setBootstrapState("READY");
         setBootstrapError("");
         setLoginError("");
+        setActiveWorkspaceSurfaceId("dashboard");
         window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
       } catch (error) {
         if (!active) {
@@ -2014,6 +2018,7 @@ function App() {
       setBootstrapError("");
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
+      setActiveWorkspaceSurfaceId("dashboard");
       window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : "Login failed");
@@ -2043,6 +2048,7 @@ function App() {
     setComposerAttachments([]);
     setRoleId(ROLE_PROFILES[0].id);
     setSelectedWindowId(resolveFirstWindowIdForRole("ADMIN"));
+    setActiveWorkspaceSurfaceId("dashboard");
     window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
   };
 
@@ -2080,11 +2086,18 @@ function App() {
       setSession(payload.session);
       setRoleId(resolveProfileIdForRole(role));
       setSelectedWindowId(resolveFirstWindowIdForRole(role));
+      setActiveWorkspaceSurfaceId("dashboard");
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : "Unable to switch role");
     }
+  };
+
+  const focusWorkspaceSurface = (surface) => {
+    setActiveWorkspaceSurfaceId(surface.id);
+    const target = document.getElementById(surface.anchorId);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const authDisplayName = session?.display_name || "Djuma";
@@ -2532,6 +2545,42 @@ function App() {
   }, [requestSummary]);
 
   const selectedMode = COMPOSER_MODES.find((mode) => mode.id === composerMode) ?? COMPOSER_MODES[0];
+
+  const roleWorkspaceModel = useMemo(
+    () =>
+      buildRoleWorkspaceModel({
+        activeRole,
+        runtime,
+        platformSummary,
+        environment,
+        activeTenant,
+        activeProject,
+        activeRequest,
+        activeStage,
+        workflowProgress,
+        authDisplayName,
+        authDisplayRoleLabel,
+        selectedModeLabel: selectedMode?.label,
+        requestSummary,
+        suggestedTitle,
+      }),
+    [
+      activeRole,
+      activeTenant,
+      activeProject,
+      activeRequest,
+      activeStage,
+      authDisplayName,
+      authDisplayRoleLabel,
+      environment,
+      platformSummary,
+      requestSummary,
+      runtime,
+      selectedMode?.label,
+      suggestedTitle,
+      workflowProgress,
+    ],
+  );
 
   const toggleComposerContextSource = (source) => {
     setComposerContextSources((current) =>
@@ -3141,6 +3190,106 @@ function App() {
           </div>
         </div>
       ) : null}
+
+      <section className="hero-card request-console">
+        <div className="console-main">
+          <div className="console-intro">
+            <p className="eyebrow">Intent-first enterprise operating model</p>
+            <h1>What would you like NovaCodePro to accomplish today?</h1>
+            <p className="hero-summary">
+              Describe the goal. NovaCodePro will infer the workflow, assemble the right agents, apply policy, and
+              prepare the solution for review and execution.
+            </p>
+            <div className="hero-badges">
+              <span className="badge">Role: {authDisplayRoleLabel}</span>
+              <span className="badge">Organization: {activeRole.organization || "NovaTech"}</span>
+              <span className="badge">Environment: {environment}</span>
+              <span className="badge">Workspace: {activeProject?.name || "NovaCodePro"}</span>
+              <span className="badge">Tenant: {activeTenant?.name || "NovaTech"}</span>
+            </div>
+          </div>
+
+          <label className="composer-field">
+            <span>Describe the outcome, not the menu path.</span>
+            <textarea
+              rows="4"
+              value={composerPrompt}
+              onChange={(event) => setComposerPrompt(event.target.value)}
+              placeholder="Build a governed NovaRide fleet management module with approvals, evidence, and deployment checks."
+            />
+          </label>
+
+          <div className="composer-actions">
+            <button type="button" className="toolbar-chip" onClick={() => submitComposer("Plan only")}>
+              Plan
+            </button>
+            <button type="button" className="toolbar-chip" onClick={() => setSelectedOutputTab("Overview")}>
+              Review workspace
+            </button>
+            <button type="button" className="primary-action" onClick={() => submitComposer("Send and execute")}>
+              Generate solution
+            </button>
+          </div>
+
+          <div className="starter-grid">
+            {STARTER_REQUESTS.map((request) => (
+              <button
+                type="button"
+                key={request}
+                className="starter-card"
+                onClick={() => setComposerPrompt(request)}
+              >
+                {request}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <aside className="console-aside">
+          <section className="console-card">
+            <p className="section-label">Enterprise workflow</p>
+            <strong>Ask, generate, review, approve, execute, verify, learn</strong>
+            <div className="artifact-list">
+              {[
+                "Intent classification",
+                "Context and memory retrieval",
+                "Agent and tool selection",
+                "Governed solution generation",
+                "Human review and approval",
+                "Verified execution and evidence",
+              ].map((item) => (
+                <div className="artifact-row" key={item}>
+                  <strong>{item}</strong>
+                  <span>Built into the platform loop</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="console-card">
+            <p className="section-label">Suggested requests</p>
+            <div className="starter-grid">
+              {activeRole.actions.slice(0, 4).map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  className="starter-card"
+                  onClick={() => setComposerPrompt(action)}
+                >
+                  {action}
+                </button>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <RoleWorkspaceWindows
+        model={roleWorkspaceModel}
+        activeSurfaceId={activeWorkspaceSurfaceId}
+        onFocusSurface={focusWorkspaceSurface}
+        onRunCommand={(command) => platformRuntime.runCommand(command)}
+      />
 
       <div className="workspace-shell">
         <aside className="sidebar">

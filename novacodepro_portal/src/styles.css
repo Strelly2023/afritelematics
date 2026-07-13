@@ -1012,6 +1012,132 @@ button {
   gap: 14px;
 }
 
+.role-workspace-band {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(140, 171, 198, 0.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.025)),
+    rgba(8, 18, 29, 0.84);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+}
+
+.role-workspace-tabs {
+  max-width: 720px;
+}
+
+.role-window-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.role-window-card,
+.role-window-detail {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(141, 172, 197, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03)),
+    rgba(10, 20, 32, 0.82);
+}
+
+.role-window-card.active {
+  border-color: rgba(105, 210, 164, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(105, 210, 164, 0.14);
+}
+
+.role-surface-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.role-surface-metric {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(141, 172, 197, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.role-surface-metric span {
+  color: #9bb0c2;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.role-surface-metric strong {
+  color: #eff6fb;
+  font-size: 0.98rem;
+}
+
+.role-surface-highlights {
+  display: grid;
+  gap: 8px;
+}
+
+.role-surface-highlights.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.role-surface-highlight {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(105, 210, 164, 0.15);
+  background: rgba(105, 210, 164, 0.08);
+  color: #def8e9;
+}
+
+.role-surface-list-block {
+  display: grid;
+  gap: 8px;
+}
+
+.role-surface-list {
+  display: grid;
+  gap: 8px;
+}
+
+.role-surface-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(141, 172, 197, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.role-surface-list-item strong {
+  color: #eef6fc;
+}
+
+.role-surface-list-item span,
+.role-surface-empty {
+  color: #9bb0c2;
+  font-size: 0.9rem;
+}
+
+.role-surface-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.role-window-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(240px, 0.7fr);
+  gap: 14px;
+  align-items: start;
+}
+
 .primary-window,
 .secondary-window {
   padding: 16px;
@@ -1623,6 +1749,11 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .role-window-grid,
+  .role-window-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
   .sidebar,
   .context-rail {
     position: static;
@@ -1659,6 +1790,12 @@ button {
   .hero-card,
   .hero-card.request-console,
   .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-window-grid,
+  .role-window-detail-grid,
+  .role-surface-metric-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1731,6 +1868,10 @@ button {
   .starter-grid,
   .dual-grid,
   .maturity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-surface-highlights.compact {
     grid-template-columns: 1fr;
   }
 
