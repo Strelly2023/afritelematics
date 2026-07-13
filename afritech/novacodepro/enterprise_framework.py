@@ -266,6 +266,36 @@ def build_enterprise_data_architecture() -> dict[str, Any]:
     }
 
 
+def build_enterprise_resilience_model() -> dict[str, Any]:
+    return {
+        "id": "nerm",
+        "name": "NovaTech Enterprise Resilience Model",
+        "version": "1.0",
+        "generated_at": _now(),
+        "objects": [
+            "Dependency",
+            "Recovery Plan",
+            "Recovery Workflow",
+            "Recovery Test",
+            "Resilience Score",
+            "Recovery Evidence",
+            "Blast Radius",
+            "Recovery Confidence",
+            "RTO",
+            "RPO",
+        ],
+        "scorecards": [
+            "Availability",
+            "Recovery Confidence",
+            "Dependency Confidence",
+            "Simulation Confidence",
+            "Control Effectiveness",
+            "Evidence Completeness",
+        ],
+        "lifecycle": ["Observe", "Assess", "Simulate", "Approve", "Execute", "Verify", "Learn"],
+    }
+
+
 def build_enterprise_ai_architecture() -> dict[str, Any]:
     return {
         "id": "nai",
@@ -301,6 +331,14 @@ def build_enterprise_digital_twin_model() -> dict[str, Any]:
         "name": "NovaTech Enterprise Digital Twin Model",
         "version": "1.0",
         "generated_at": _now(),
+        "state_views": [
+            "Observed State",
+            "Desired State",
+            "Predicted State",
+            "Simulated State",
+            "Approved State",
+            "Recovered State",
+        ],
         "twin_domains": [
             "Organization",
             "People",
@@ -316,6 +354,29 @@ def build_enterprise_digital_twin_model() -> dict[str, Any]:
             "Operations",
             "AI",
         ],
+        "identity_contract": [
+            "id",
+            "type",
+            "owner",
+            "jurisdiction",
+            "classification",
+            "version",
+            "lifecycle_state",
+            "trust_state",
+        ],
+        "relationship_model": [
+            "DEPENDS_ON",
+            "HOSTED_BY",
+            "OPERATED_BY",
+            "PROTECTED_BY",
+            "GOVERNED_BY",
+            "SUPPLIED_BY",
+            "CONNECTED_TO",
+            "IMPACTS",
+            "REQUIRES",
+            "RECOVERS_WITH",
+            "REPLACES",
+        ],
         "capabilities": [
             "Current state",
             "Scenario simulation",
@@ -323,6 +384,8 @@ def build_enterprise_digital_twin_model() -> dict[str, Any]:
             "Recovery validation",
             "RTO/RPO analysis",
             "Cascading failure analysis",
+            "Evidence capture",
+            "Replay support",
         ],
     }
 
@@ -338,6 +401,7 @@ def build_enterprise_architecture_framework() -> dict[str, Any]:
             "necm": build_enterprise_capability_model(),
             "neom": build_enterprise_operating_model(),
             "nedm": build_enterprise_data_architecture(),
+            "nerm": build_enterprise_resilience_model(),
             "nekm": build_enterprise_meta_model(),
             "nai": build_enterprise_ai_architecture(),
             "ndtm": build_enterprise_digital_twin_model(),
@@ -352,6 +416,7 @@ __all__ = [
     "build_enterprise_operating_model",
     "build_enterprise_meta_model",
     "build_enterprise_data_architecture",
+    "build_enterprise_resilience_model",
     "build_enterprise_ai_architecture",
     "build_enterprise_digital_twin_model",
 ]

@@ -80,6 +80,37 @@ const NERA_ARCHITECTURE = {
   ],
 };
 
+const EROS_MANIFEST = {
+  id: "eros",
+  name: "NovaDigitalTwin Enterprise Resilience Operating System",
+  version: "1.0",
+  coreViews: [
+    "Observed State",
+    "Desired State",
+    "Predicted State",
+    "Simulated State",
+    "Approved State",
+    "Recovered State",
+  ],
+  authorityLevels: [
+    { level: 0, mode: "Observe" },
+    { level: 1, mode: "Recommend" },
+    { level: 2, mode: "Prepare" },
+    { level: 3, mode: "Execute with Approval" },
+    { level: 4, mode: "Execute Pre-Approved" },
+    { level: 5, mode: "Emergency Containment" },
+  ],
+  runtimeServices: [
+    "Twin Registry",
+    "Twin State",
+    "Twin Graph",
+    "Simulation Engine",
+    "Recovery Orchestrator",
+    "Evidence Ledger",
+    "Replay Engine",
+  ],
+};
+
 const ENTERPRISE_ARCHITECTURE_FRAMEWORK = {
   id: "natech-framework",
   name: "NovaTech Enterprise Architecture Framework",
@@ -251,6 +282,7 @@ function seedState() {
     },
     automationRuns: [],
     enterpriseArchitectureFramework: ENTERPRISE_ARCHITECTURE_FRAMEWORK,
+    erosManifest: EROS_MANIFEST,
     solutionRequests: [
       first,
       {
@@ -460,6 +492,7 @@ function loadState() {
       neraArchitecture: parsed.neraArchitecture ?? base.neraArchitecture,
       enterpriseArchitectureFramework:
         parsed.enterpriseArchitectureFramework ?? base.enterpriseArchitectureFramework,
+      erosManifest: parsed.erosManifest ?? base.erosManifest,
       evidenceBundles: parsed.evidenceBundles ?? base.evidenceBundles,
       riskRegister: parsed.riskRegister ?? base.riskRegister,
       approvalPolicies: parsed.approvalPolicies ?? base.approvalPolicies,

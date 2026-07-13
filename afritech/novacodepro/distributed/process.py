@@ -34,7 +34,7 @@ SERVICE_ROUTE_ALLOWLIST: dict[str, tuple[str, ...]] = {
     "policy": ("/health", "/ready", "/metrics", "/v1/novacodepro/policies"),
     "knowledge": ("/health", "/ready", "/metrics", "/v1/novacodepro/knowledge", "/v1/novacodepro/graph"),
     "graph": ("/health", "/ready", "/metrics", "/v1/novacodepro/knowledge", "/v1/novacodepro/graph"),
-    "digital-twin": ("/health", "/ready", "/metrics", "/v1/novacodepro/digital-twins", "/v1/novacodepro/twins"),
+    "digital-twin": ("/health", "/ready", "/metrics", "/v1/novacodepro/digital-twins", "/v1/novacodepro/twins", "/v1/novacodepro/eros"),
     "release": ("/health", "/ready", "/metrics", "/v1/novacodepro/releases"),
     "deployment": ("/health", "/ready", "/metrics", "/v1/novacodepro/deployments"),
     "marketplace": ("/health", "/ready", "/metrics", "/v1/novacodepro/marketplace"),

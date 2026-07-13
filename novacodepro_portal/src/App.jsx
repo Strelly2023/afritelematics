@@ -1569,11 +1569,12 @@ const MARKETPLACE = [
 ];
 
 const DIGITAL_TWIN_LAYERS = [
-  ["Australia", "Active region"],
-  ["Africa", "Pilot region"],
-  ["Europe", "Scaling region"],
-  ["Asia", "Expansion region"],
-  ["America", "Growth region"],
+  ["Observed", "Live enterprise state"],
+  ["Desired", "Target operating posture"],
+  ["Predicted", "Forward risk model"],
+  ["Simulated", "What-if response"],
+  ["Approved", "Governed intervention"],
+  ["Recovered", "Validated safe state"],
 ];
 
 const DISTRIBUTED_SERVICES = [
@@ -4800,6 +4801,13 @@ function App() {
                       </span>
                     </article>
                     <article className="tool-mini-card">
+                      <strong>EROS</strong>
+                      <span>
+                        {runtime.erosManifest.coreViews.length} governed twin views, authority levels, and recovery
+                        services for enterprise resilience.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
                       <strong>Knowledge graph</strong>
                       <span>
                         {runtime.knowledgeGraph.length} approved nodes and trace paths across requests, approvals,
@@ -5114,6 +5122,10 @@ function App() {
                     <strong>{value}</strong>
                   </div>
                 ))}
+                <div className="metric-card">
+                  <span>EROS</span>
+                  <strong>{runtime.erosManifest.coreViews.length}</strong>
+                </div>
               </div>
             </div>
           </section>

@@ -227,6 +227,88 @@ class TwinCompareRequest(BaseModel):
     compare_to: str
 
 
+class DigitalTwinCreateRequest(BaseModel):
+    id: str | None = None
+    name: str
+    type: str = "SERVICE"
+    owner: str = "NovaCodePro"
+    tenant_id: str | None = None
+    jurisdiction: str = "AU"
+    classification: str = "INTERNAL"
+    region: str = "Australia"
+    status: str = "healthy"
+    summary: str = ""
+    sources: list[str] = Field(default_factory=list)
+    controls: list[str] = Field(default_factory=list)
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    topology: dict[str, Any] = Field(default_factory=dict)
+    children: list[str] = Field(default_factory=list)
+    observed_state: str = "HEALTHY"
+    desired_state: str = "AVAILABLE"
+    predicted_state: str = "STABLE"
+    simulated_state: str = "NOT_RUN"
+    approved_state: str = "APPROVED"
+    recovered_state: str = "HEALTHY"
+    relationships: list[dict[str, Any]] = Field(default_factory=list)
+    evidence: list[str] = Field(default_factory=list)
+    lineage: list[str] = Field(default_factory=list)
+
+
+class DigitalTwinObservationRequest(BaseModel):
+    observed_state: str
+    observed_detail: str = ""
+    observed_evidence: list[str] = Field(default_factory=list)
+    desired_state: str | None = None
+    desired_detail: str = ""
+    desired_evidence: list[str] = Field(default_factory=list)
+    predicted_state: str | None = None
+    predicted_detail: str = ""
+    predicted_evidence: list[str] = Field(default_factory=list)
+    status: str = "healthy"
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    actor: str = "digital-twin-engine"
+
+
+class DigitalTwinRelationshipRequest(BaseModel):
+    id: str | None = None
+    source: str | None = None
+    target: str
+    type: str = "DEPENDS_ON"
+    criticality: str = "MEDIUM"
+    weight: float = 1.0
+    rto: str = "15m"
+    rpo: str = "5m"
+    recovery_difficulty: float = 1.0
+    confidence: float = 0.9
+    evidence: list[str] = Field(default_factory=list)
+
+
+class DigitalTwinRecoveryPlanRequest(BaseModel):
+    scenario: str
+    workflow_id: str | None = None
+    expected_rto: str | None = None
+    expected_rpo: str | None = None
+    steps: list[str] = Field(default_factory=list)
+    approvals_required: list[str] = Field(default_factory=list)
+    blast_radius: int = 1
+    evidence_id: str | None = None
+
+
+class DigitalTwinRecoveryRequest(BaseModel):
+    scenario: str
+    workflow_id: str | None = None
+    root_failure: str | None = None
+    predicted_recovery_minutes: int | None = None
+    risk_after: int | None = None
+    summary: str = ""
+    evidence: dict[str, Any] = Field(default_factory=dict)
+    recovery_plan: dict[str, Any] = Field(default_factory=dict)
+    actor: str = "recovery-orchestrator"
+    blast_radius: int = 1
+    approved_detail: str = ""
+    recovered_detail: str = ""
+
+
 class ExecutiveCouncilSessionRequest(BaseModel):
     subject: str
     question: str
@@ -507,10 +589,28 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @router.get("/eros")
+    def eros(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.eros_manifest()
+
+    @router.get("/digital-twins")
+    def digital_twins(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.digital_twin_registry()
+
+    @router.post("/digital-twins")
+    def create_digital_twin(payload: DigitalTwinCreateRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        return service.create_digital_twin(data)
+
     @router.get("/digital-twins/{twin_id}")
     def digital_twin(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         record = service.get_or_create_digital_twin(twin_id)
         return record
+
+    @router.get("/digital-twins/{twin_id}/summary")
+    def digital_twin_summary(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.digital_twin_summary(twin_id)
 
     @router.get("/digital-twins/{twin_id}/topology")
     def digital_twin_topology(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
@@ -519,6 +619,90 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/digital-twins/{twin_id}/health")
     def digital_twin_health(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.digital_twin_health(twin_id)
+
+    @router.get("/digital-twins/{twin_id}/relationships")
+    def digital_twin_relationships(twin_id: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.twin_relationships(twin_id)
+
+    @router.get("/digital-twins/{twin_id}/scores")
+    def digital_twin_scores(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.twin_scores(twin_id)
+
+    @router.get("/digital-twins/{twin_id}/snapshots")
+    def digital_twin_snapshots(twin_id: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.twin_snapshots(twin_id)
+
+    @router.get("/digital-twins/{twin_id}/evidence")
+    def digital_twin_evidence(twin_id: str, claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.twin_evidence(twin_id)
+
+    @router.post("/digital-twins/{twin_id}/observe")
+    def observe_digital_twin(
+        twin_id: str,
+        payload: DigitalTwinObservationRequest,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.observe_twin(twin_id, payload.model_dump())
+
+    @router.post("/digital-twins/{twin_id}/simulate")
+    def simulate_digital_twin(
+        twin_id: str,
+        payload: TwinSimulationRequest,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.simulate_twin(twin_id, payload.model_dump())
+
+    @router.post("/digital-twins/{twin_id}/compare")
+    def compare_digital_twins(
+        twin_id: str,
+        payload: TwinCompareRequest,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return service.compare_twins(twin_id, payload.model_dump())
+
+    @router.post("/digital-twins/{twin_id}/replay")
+    def replay_digital_twin(
+        twin_id: str,
+        payload: dict[str, Any] | None = None,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return service.replay_twin(twin_id, payload or {})
+
+    @router.post("/digital-twins/{twin_id}/refresh")
+    def refresh_digital_twin(twin_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.refresh_twin(twin_id)
+
+    @router.post("/digital-twins/{twin_id}/relationships")
+    def create_digital_twin_relationship(
+        twin_id: str,
+        payload: DigitalTwinRelationshipRequest,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.create_twin_relationship(twin_id, payload.model_dump())
+
+    @router.post("/digital-twins/{twin_id}/snapshots")
+    def create_digital_twin_snapshot(
+        twin_id: str,
+        payload: dict[str, Any] | None = None,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.create_twin_snapshot(twin_id, payload or {})
+
+    @router.post("/digital-twins/{twin_id}/recovery-plans")
+    def create_digital_twin_recovery_plan(
+        twin_id: str,
+        payload: DigitalTwinRecoveryPlanRequest,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.create_twin_recovery_plan(twin_id, payload.model_dump())
+
+    @router.post("/digital-twins/{twin_id}/recover")
+    def recover_digital_twin(
+        twin_id: str,
+        payload: DigitalTwinRecoveryRequest,
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        return service.recover_twin(twin_id, payload.model_dump())
 
     @router.get("/twins/{twin_id}")
     def twin(twin_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:

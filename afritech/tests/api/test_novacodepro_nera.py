@@ -53,5 +53,5 @@ def test_architecture_framework_endpoint_exposes_multi_view_model(tmp_path: Path
     assert response.status_code == 200
     body = response.json()
     assert body["name"] == "NovaTech Enterprise Architecture Framework"
-    assert set(body["models"]) >= {"nera", "necm", "neom"}
+    assert set(body["models"]) >= {"nera", "necm", "neom", "nerm", "ndtm"}
     assert body["models"]["necm"]["capabilities"][0] == "Identity"

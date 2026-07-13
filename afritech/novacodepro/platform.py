@@ -24,6 +24,16 @@ from afritech.novacodepro.enterprise_os import (
     knowledge_projection,
     replay_events,
 )
+from afritech.novacodepro.eros import (
+    apply_observation,
+    build_eros_manifest,
+    build_recovery_plan,
+    build_twin_record,
+    build_twin_relationship,
+    derive_resilience_scores,
+    execute_recovery,
+    simulate_twin,
+)
 
 
 def _now() -> str:
@@ -764,20 +774,118 @@ DEFAULT_DIGITAL_TWINS: list[dict[str, Any]] = [
         "status": "healthy",
         "region": "Australia",
         "children": ["twin-ride-platform", "twin-release-factory"],
-        "health": {
+        "identity": {
+            "id": "twin-novacodepro",
+            "type": "PLATFORM",
+            "owner": "NovaCodePro",
+            "jurisdiction": "AU",
+            "classification": "INTERNAL",
+            "version": 1,
+            "lifecycle_state": "ACTIVE",
+            "trust_state": "TRUSTED",
+        },
+        "observed_state": "HEALTHY",
+        "desired_state": "AVAILABLE",
+        "predicted_state": "STABLE",
+        "simulated_state": "NOT_RUN",
+        "approved_state": "APPROVED",
+        "recovered_state": "HEALTHY",
+        "metrics": {
             "availability": 0.999,
             "latency_p95_ms": 118,
             "error_rate": 0.0002,
+            "risk_score": 18,
+            "recovery_minutes": 8,
         },
-        "topology": {
-            "services": [
-                "NovaCodePro Gateway",
-                "Workflow Service",
-                "Agent Orchestrator",
-                "Artifact Service",
-                "Release Factory",
-                "Deployment Service",
-            ]
+        "state": {
+            "observed": {
+                "label": "Observed State",
+                "status": "HEALTHY",
+                "detail": "Live telemetry indicates the platform is healthy.",
+                "evidence": ["prometheus", "opentelemetry"],
+            },
+            "desired": {
+                "label": "Desired State",
+                "status": "AVAILABLE",
+                "detail": "Platform should remain available to all teams.",
+                "evidence": ["sla-availability"],
+            },
+            "predicted": {
+                "label": "Predicted State",
+                "status": "STABLE",
+                "detail": "No high-risk change is pending.",
+                "evidence": [],
+            },
+            "simulated": {
+                "label": "Simulated State",
+                "status": "NOT_RUN",
+                "detail": "No resilience simulation has been executed yet.",
+                "evidence": [],
+            },
+            "approved": {
+                "label": "Approved State",
+                "status": "APPROVED",
+                "detail": "Approved operational posture.",
+                "evidence": ["governance-approval"],
+            },
+            "recovered": {
+                "label": "Recovered State",
+                "status": "HEALTHY",
+                "detail": "Recovery has been validated.",
+                "evidence": ["recovery-evidence"],
+            },
+        },
+        "relationships": [
+            {
+                "id": "rel-novacodepro-gateway",
+                "source": "twin-novacodepro",
+                "target": "NovaCodePro Gateway",
+                "type": "DEPENDS_ON",
+                "criticality": "CRITICAL",
+                "weight": 4.8,
+                "rto": "15m",
+                "rpo": "5m",
+                "recovery_difficulty": 3.4,
+                "confidence": 0.98,
+                "evidence": ["service-registry", "dependency-map"],
+            },
+            {
+                "id": "rel-novacodepro-workflow",
+                "source": "twin-novacodepro",
+                "target": "Workflow Service",
+                "type": "DEPENDS_ON",
+                "criticality": "HIGH",
+                "weight": 4.2,
+                "rto": "30m",
+                "rpo": "10m",
+                "recovery_difficulty": 2.6,
+                "confidence": 0.95,
+                "evidence": ["workflow-topology"],
+            },
+        ],
+        "sources": ["Prometheus", "OpenTelemetry", "Knowledge Graph", "Approval Ledger"],
+        "controls": ["NovaPolicy", "NovaRisk", "NovaCompliance", "NovaAudit"],
+        "evidence": ["prometheus", "approval-ledger", "incident-log"],
+        "lineage": ["workflow-ride-platform", "release-ride-platform"],
+        "summary": "Enterprise platform twin for NovaCodePro governed operations.",
+        "resilience": {
+            "twin_fidelity_score": 84,
+            "dependency_confidence_score": 96,
+            "simulation_confidence_score": 88,
+            "recovery_confidence_score": 91,
+            "enterprise_resilience_score": 90,
+        },
+        "recovery": {
+            "status": "VERIFIED",
+            "plan_id": "recovery-plan-novacodepro",
+            "workflow": {
+                "id": "recovery-plan-novacodepro",
+                "scenario": "regional_outage",
+                "expected_rto": "15m",
+                "expected_rpo": "5m",
+                "steps": ["verify_failure", "activate_replica", "switch_traffic", "validate_health", "capture_evidence"],
+            },
+            "evidence_id": "evidence-recovery-novacodepro",
         },
         "created_at": "2026-07-11T00:00:00+00:00",
         "updated_at": "2026-07-11T00:00:00+00:00",
@@ -1525,6 +1633,251 @@ class NovaCodeProPlatform:
     def get_digital_twin(self, twin_id: str) -> dict[str, Any] | None:
         return self.repository.get("digital_twin", twin_id)
 
+    def digital_twin_registry(self) -> list[dict[str, Any]]:
+        return self.digital_twins()
+
+    def create_digital_twin(self, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = build_twin_record(payload)
+        twin["id"] = str(payload.get("id") or twin["id"])
+        twin["kind"] = str(payload.get("kind") or twin.get("type") or "service").lower()
+        twin["topology"] = dict(payload.get("topology") or {"services": []})
+        twin["children"] = list(payload.get("children") or [])
+        twin["scores"] = derive_resilience_scores(twin)
+        twin["resilience"] = dict(twin["scores"])
+        self.repository.upsert("digital_twin", twin)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="digital_twin.created",
+                actor_type="service",
+                actor_id="digital-twin-registry",
+                tenant_id=str(twin.get("tenant_id") or self.tenants()[0]["id"]),
+                organization_id=str(twin.get("tenant_id") or self.tenants()[0]["id"]),
+                project_id=None,
+                workflow_id=None,
+                correlation_id=twin["id"],
+                causation_id=twin["id"],
+                data={"twin_id": twin["id"], "status": twin.get("status"), "region": twin.get("region")},
+            )
+        )
+        return twin
+
+    def _normalize_digital_twin(self, twin: dict[str, Any]) -> dict[str, Any]:
+        if "identity" in twin and "state" in twin and "resilience" in twin:
+            return twin
+        payload = {
+            "id": twin.get("id"),
+            "name": twin.get("name"),
+            "type": twin.get("kind") or twin.get("type") or "SERVICE",
+            "owner": twin.get("owner") or "NovaCodePro",
+            "tenant_id": twin.get("tenant_id") or self.tenants()[0]["id"],
+            "classification": twin.get("classification") or "INTERNAL",
+            "jurisdiction": twin.get("jurisdiction") or "AU",
+            "status": twin.get("status") or "healthy",
+            "region": twin.get("region") or "Australia",
+            "observed_state": twin.get("observed_state") or "HEALTHY",
+            "desired_state": twin.get("desired_state") or "AVAILABLE",
+            "predicted_state": twin.get("predicted_state") or "STABLE",
+            "simulated_state": twin.get("simulated_state") or "NOT_RUN",
+            "approved_state": twin.get("approved_state") or "APPROVED",
+            "recovered_state": twin.get("recovered_state") or "HEALTHY",
+            "metrics": twin.get("metrics") or twin.get("health") or {},
+            "relationships": twin.get("relationships") or [],
+            "sources": twin.get("sources") or [],
+            "controls": twin.get("controls") or [],
+            "evidence": twin.get("evidence") or [],
+            "lineage": twin.get("lineage") or [],
+        }
+        normalized = build_twin_record(payload)
+        normalized["kind"] = twin.get("kind") or normalized["type"].lower()
+        normalized["topology"] = dict(twin.get("topology") or {"services": []})
+        normalized["children"] = list(twin.get("children") or [])
+        normalized["scores"] = derive_resilience_scores(normalized)
+        normalized["resilience"] = dict(normalized["scores"])
+        normalized["created_at"] = twin.get("created_at") or normalized["created_at"]
+        normalized["updated_at"] = twin.get("updated_at") or normalized["updated_at"]
+        self.repository.upsert("digital_twin", normalized)
+        return normalized
+
+    def twin_relationships(self, twin_id: str) -> list[dict[str, Any]]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        return list(twin.get("relationships") or [])
+
+    def create_twin_relationship(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        relationship = build_twin_relationship({
+            "id": payload.get("id"),
+            "source": payload.get("source") or twin["id"],
+            "target": payload.get("target") or "",
+            "type": payload.get("type") or "DEPENDS_ON",
+            "criticality": payload.get("criticality") or "MEDIUM",
+            "weight": payload.get("weight") or 1.0,
+            "rto": payload.get("rto") or "15m",
+            "rpo": payload.get("rpo") or "5m",
+            "recovery_difficulty": payload.get("recovery_difficulty") or 1.0,
+            "confidence": payload.get("confidence") or 0.9,
+            "evidence": payload.get("evidence") or [],
+        })
+        relationships = list(twin.get("relationships") or [])
+        relationships.append(relationship)
+        twin["relationships"] = relationships
+        twin["scores"] = derive_resilience_scores(twin)
+        twin["updated_at"] = _now()
+        self.repository.upsert("digital_twin", twin)
+        self.repository.upsert("twin_relationship", {"id": relationship["id"], "twin_id": twin["id"], **relationship, "created_at": relationship["created_at"], "updated_at": _now()})
+        return relationship
+
+    def twin_snapshots(self, twin_id: str) -> list[dict[str, Any]]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        snapshots = [
+            snapshot
+            for snapshot in self.repository.list("twin_snapshot")
+            if str(snapshot.get("twin_id") or "") == twin["id"]
+        ]
+        simulations = [
+            snapshot
+            for snapshot in self.repository.list("twin_simulation")
+            if str(snapshot.get("twin_id") or "") == twin["id"]
+        ]
+        return snapshots + simulations
+
+    def create_twin_snapshot(self, twin_id: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        snapshot = {
+            "id": str((payload or {}).get("id") or _new_id("twin-snapshot")),
+            "twin_id": twin["id"],
+            "state": dict(twin.get("state") or {}),
+            "metrics": dict(twin.get("metrics") or {}),
+            "resilience": dict(twin.get("resilience") or {}),
+            "status": twin.get("status"),
+            "region": twin.get("region"),
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        self.repository.upsert("twin_snapshot", snapshot)
+        return snapshot
+
+    def twin_scores(self, twin_id: str) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        scores = derive_resilience_scores(twin)
+        twin["scores"] = scores
+        twin["resilience"] = scores
+        self.repository.upsert("digital_twin", twin)
+        return {"twin_id": twin["id"], **scores}
+
+    def observe_twin(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        updated = apply_observation(twin, payload)
+        self.repository.upsert("digital_twin", updated)
+        snapshot = self.create_twin_snapshot(twin_id, {"id": _new_id("snapshot")})
+        self.repository.append_event(
+            _event_envelope(
+                event_type="digital_twin.observed",
+                actor_type="service",
+                actor_id=str(payload.get("actor") or "digital-twin-engine"),
+                tenant_id=str(updated.get("tenant_id") or self.tenants()[0]["id"]),
+                organization_id=str(updated.get("tenant_id") or self.tenants()[0]["id"]),
+                project_id=None,
+                workflow_id=None,
+                correlation_id=updated["id"],
+                causation_id=updated["id"],
+                data={"twin_id": updated["id"], "snapshot_id": snapshot["id"], "observed_state": updated.get("observed_state")},
+            )
+        )
+        return {"twin": updated, "snapshot": snapshot, "scores": updated.get("scores") or {}}
+
+    def simulate_twin(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        result = simulate_twin(twin, payload)
+        self.repository.upsert("twin_simulation", result)
+        twin["simulated_state"] = result["simulated_twin"]["simulated_state"]
+        twin["state"] = dict(result["simulated_twin"].get("state") or twin.get("state") or {})
+        twin["metrics"] = dict(result["simulated_twin"].get("metrics") or twin.get("metrics") or {})
+        twin["scores"] = dict(result["simulated_twin"].get("resilience") or twin.get("scores") or {})
+        twin["resilience"] = dict(twin["scores"])
+        twin["updated_at"] = _now()
+        self.repository.upsert("digital_twin", twin)
+        self.repository.append_event(
+            _event_envelope(
+                event_type="digital_twin.simulated",
+                actor_type="service",
+                actor_id="digital-twin-engine",
+                tenant_id=str(twin.get("tenant_id") or self.tenants()[0]["id"]),
+                organization_id=str(twin.get("tenant_id") or self.tenants()[0]["id"]),
+                project_id=None,
+                workflow_id=None,
+                correlation_id=twin["id"],
+                causation_id=twin["id"],
+                data={"twin_id": twin["id"], "simulation_id": result["id"], "scenario": result["scenario"]},
+            )
+        )
+        return result
+
+    def create_twin_recovery_plan(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        plan = build_recovery_plan(twin, payload)
+        twin["recovery"] = {
+            "status": "READY",
+            "plan_id": plan["id"],
+            "workflow": plan,
+            "evidence_id": str((payload or {}).get("evidence_id") or ""),
+        }
+        self.repository.upsert("digital_twin", twin)
+        self.repository.upsert("twin_recovery_plan", plan)
+        return plan
+
+    def recover_twin(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        result = execute_recovery(twin, payload)
+        self.repository.upsert("digital_twin", result["twin"])
+        self.repository.upsert("twin_recovery_plan", result["recovery_plan"])
+        self.repository.upsert("twin_evidence", result["evidence"])
+        self.repository.append_event(
+            _event_envelope(
+                event_type="digital_twin.recovered",
+                actor_type="service",
+                actor_id=str(payload.get("actor") or "recovery-orchestrator"),
+                tenant_id=str(result["twin"].get("tenant_id") or self.tenants()[0]["id"]),
+                organization_id=str(result["twin"].get("tenant_id") or self.tenants()[0]["id"]),
+                project_id=None,
+                workflow_id=None,
+                correlation_id=result["twin"]["id"],
+                causation_id=result["twin"]["id"],
+                data={"twin_id": result["twin"]["id"], "recovery_plan_id": result["recovery_plan"]["id"], "evidence_id": result["evidence"]["id"]},
+            )
+        )
+        return result
+
+    def twin_evidence(self, twin_id: str) -> list[dict[str, Any]]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        evidence = [
+            item
+            for item in self.repository.list("twin_evidence")
+            if str(item.get("twin_id") or "") == twin["id"]
+        ]
+        return evidence
+
+    def digital_twin_summary(self, twin_id: str | None = None) -> dict[str, Any]:
+        twin = self.get_or_create_digital_twin(twin_id)
+        scores = derive_resilience_scores(twin)
+        return {
+            "id": twin["id"],
+            "name": twin.get("name"),
+            "type": twin.get("type"),
+            "status": twin.get("status"),
+            "region": twin.get("region"),
+            "observed_state": twin.get("observed_state"),
+            "desired_state": twin.get("desired_state"),
+            "predicted_state": twin.get("predicted_state"),
+            "simulated_state": twin.get("simulated_state"),
+            "approved_state": twin.get("approved_state"),
+            "recovered_state": twin.get("recovered_state"),
+            "relationships": len(twin.get("relationships") or []),
+            "evidence_count": len(twin.get("evidence") or []),
+            "scores": scores,
+            "resilience": scores,
+            "updated_at": twin.get("updated_at"),
+        }
+
     def events(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.repository.list_events(limit=limit)
 
@@ -2093,30 +2446,12 @@ class NovaCodeProPlatform:
     def reconcile_region(self, region_id: str) -> dict[str, Any]:
         return {"region": region_id, "status": "reconciled", "updated_at": _now()}
 
-    def simulate_twin(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
-        twin = self.get_or_create_digital_twin(twin_id)
-        scenario = str(payload.get("scenario") or "UNKNOWN")
-        affected_services = len(twin.get("topology", {}).get("services") or [])
-        result = {
-            "id": _new_id("twin-simulation"),
-            "twin_id": twin["id"],
-            "scenario": scenario,
-            "affected_services": affected_services,
-            "affected_users": int(payload.get("affected_users") or affected_services * 1000),
-            "estimated_revenue_impact": int(payload.get("estimated_revenue_impact") or 125000),
-            "predicted_recovery_minutes": int(payload.get("predicted_recovery_minutes") or 23),
-            "policy_violations": list(payload.get("policy_violations") or []),
-            "recommended_actions": list(payload.get("recommended_actions") or ["activate_secondary_region", "freeze_releases"]),
-            "approval_required": True,
-            "confidence": float(payload.get("confidence") or 0.92),
-            "created_at": _now(),
-        }
-        self.repository.upsert("twin_simulation", result)
-        return result
-
     def twin_history(self, twin_id: str) -> list[dict[str, Any]]:
-        simulations = self.repository.list("twin_simulation")
-        return [record for record in simulations if str(record.get("twin_id") or "") == twin_id]
+        twin = self.get_or_create_digital_twin(twin_id)
+        snapshots = [record for record in self.repository.list("twin_snapshot") if str(record.get("twin_id") or "") == twin["id"]]
+        simulations = [record for record in self.repository.list("twin_simulation") if str(record.get("twin_id") or "") == twin["id"]]
+        evidence = [record for record in self.repository.list("twin_evidence") if str(record.get("twin_id") or "") == twin["id"]]
+        return snapshots + simulations + evidence
 
     def compare_twins(self, twin_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         baseline = self.get_or_create_digital_twin(twin_id)
@@ -2623,6 +2958,7 @@ class NovaCodeProPlatform:
             "status": status,
             "event_bus": event_bus,
             "reference_architecture": self.nera_manifest(),
+            "eros": self.eros_manifest(),
             "architecture_framework": self.architecture_framework(),
             "latest_briefing": self.briefings()[0] if self.briefings() else None,
             "incident_count": health["incident_count"],
@@ -2715,6 +3051,8 @@ class NovaCodeProPlatform:
             "dead_letter_queue_count": event_bus["dead_letter_queue"],
             "nera_layer_count": len(self.nera_manifest()["layers"]),
             "architecture_model_count": len(self.architecture_framework()["models"]),
+            "eros_core_views": len(self.eros_manifest()["core_views"]),
+            "main_twin_resilience_score": self.digital_twin_summary().get("scores", {}).get("enterprise_resilience_score", 0),
             "connected_integration_count": sum(1 for item in integrations if item.get("status") == "connected"),
             "audit_event_count": len(self.audit(limit=500)),
             "domain_event_count": len(self.events(limit=500)),
@@ -3274,24 +3612,73 @@ class NovaCodeProPlatform:
         target_id = twin_id or "twin-novacodepro"
         twin = self.repository.get("digital_twin", target_id)
         if twin is not None:
+            if "identity" not in twin or "state" not in twin or "resilience" not in twin:
+                return self._normalize_digital_twin(twin)
             return twin
-        twin = {
-            "id": target_id,
-            "name": "NovaCodePro Twin",
-            "kind": "solution",
-            "status": "healthy",
-            "region": "Australia",
-            "children": [],
-            "health": {
-                "availability": 1.0,
-                "latency_p95_ms": 120,
-                "error_rate": 0.0,
-            },
-            "topology": {"services": [service["name"] for service in self.service_registry()]},
-            "created_at": _now(),
-            "updated_at": _now(),
-        }
-        self.repository.upsert("digital_twin", twin)
+        twin = self.create_digital_twin(
+            {
+                "id": target_id,
+                "name": "NovaCodePro Twin",
+                "type": "PLATFORM",
+                "kind": "solution",
+                "owner": "NovaCodePro",
+                "tenant_id": self.tenants()[0]["id"],
+                "classification": "INTERNAL",
+                "jurisdiction": "AU",
+                "status": "healthy",
+                "region": "Australia",
+                "children": [],
+                "sources": ["service-registry", "event-bus", "knowledge-graph"],
+                "controls": ["NovaPolicy", "NovaRisk", "NovaCompliance", "NovaAudit"],
+                "metrics": {
+                    "availability": 1.0,
+                    "latency_p95_ms": 120,
+                    "error_rate": 0.0,
+                    "risk_score": 18,
+                },
+                "observed_state": "HEALTHY",
+                "desired_state": "AVAILABLE",
+                "predicted_state": "STABLE",
+                "simulated_state": "NOT_RUN",
+                "approved_state": "APPROVED",
+                "recovered_state": "HEALTHY",
+                "summary": "NovaCodePro governed platform twin.",
+                "topology": {"services": [service["name"] for service in self.service_registry()]},
+                "relationships": [
+                    {
+                        "source": target_id,
+                        "target": service["name"],
+                        "type": "DEPENDS_ON",
+                        "criticality": "MEDIUM",
+                        "weight": 3.0,
+                        "rto": "30m",
+                        "rpo": "5m",
+                        "recovery_difficulty": 2.0,
+                        "confidence": 0.92,
+                    }
+                    for service in self.service_registry()[:3]
+                ],
+                "evidence": ["governance-approval", "service-registry"],
+                "lineage": ["workflow-ride-platform"],
+                "resilience": {
+                    "twin_fidelity_score": 82,
+                    "dependency_confidence_score": 92,
+                    "simulation_confidence_score": 86,
+                    "recovery_confidence_score": 88,
+                    "enterprise_resilience_score": 88,
+                },
+                "recovery": {
+                    "status": "READY",
+                    "workflow": {
+                        "id": "recovery-plan-default",
+                        "scenario": "regional_outage",
+                        "expected_rto": "30m",
+                        "expected_rpo": "5m",
+                        "steps": ["verify_failure", "activate_replica", "switch_traffic", "validate_health", "capture_evidence"],
+                    },
+                },
+            }
+        )
         return twin
 
     def digital_twin_health(self, twin_id: str | None = None) -> dict[str, Any]:
@@ -3299,7 +3686,7 @@ class NovaCodeProPlatform:
         return {
             "id": twin["id"],
             "status": twin["status"],
-            "health": twin.get("health") or {},
+            "health": twin.get("metrics") or twin.get("health") or {},
             "region": twin.get("region"),
             "updated_at": twin.get("updated_at"),
         }
@@ -3309,9 +3696,10 @@ class NovaCodeProPlatform:
         return {
             "id": twin["id"],
             "name": twin["name"],
-            "kind": twin["kind"],
+            "kind": twin.get("kind") or twin.get("type"),
             "children": list(twin.get("children") or []),
             "services": list((twin.get("topology") or {}).get("services") or []),
+            "relationships": list(twin.get("relationships") or []),
         }
 
     def update_digital_twin_from_deployment(self, deployment: dict[str, Any]) -> dict[str, Any]:
@@ -3321,11 +3709,32 @@ class NovaCodeProPlatform:
             twins.append(deployment["id"])
         twin["children"] = twins
         twin["status"] = "healthy" if deployment.get("health") in {"green", "healthy"} else "degraded"
-        twin["health"] = {
+        metrics = {
             "availability": deployment.get("metrics", {}).get("availability", 1.0),
             "latency_p95_ms": deployment.get("metrics", {}).get("latency_p95_ms", 120),
             "error_rate": deployment.get("metrics", {}).get("error_rate", 0.0),
+            "risk_score": deployment.get("metrics", {}).get("risk_score", 18),
         }
+        twin["metrics"] = metrics
+        twin["observed_state"] = "HEALTHY" if twin["status"] == "healthy" else "DEGRADED"
+        twin["predicted_state"] = "STABLE" if twin["status"] == "healthy" else "AT_RISK"
+        twin["state"] = {
+            **dict(twin.get("state") or {}),
+            "observed": {
+                "label": "Observed State",
+                "status": twin["observed_state"],
+                "detail": "Deployment telemetry updated the twin.",
+                "evidence": [deployment["id"]],
+            },
+            "predicted": {
+                "label": "Predicted State",
+                "status": twin["predicted_state"],
+                "detail": "Deployment posture recalculated from the latest rollout.",
+                "evidence": [deployment["id"]],
+            },
+        }
+        twin["resilience"] = derive_resilience_scores(twin)
+        twin["scores"] = dict(twin["resilience"])
         twin["updated_at"] = _now()
         self.repository.upsert("digital_twin", twin)
         self.repository.append_event(
@@ -3339,7 +3748,7 @@ class NovaCodeProPlatform:
                 workflow_id=deployment["workflow_id"],
                 correlation_id=deployment["release_id"],
                 causation_id=deployment["id"],
-                data={"twin_id": twin["id"], "deployment_id": deployment["id"], "health": twin["health"]},
+                data={"twin_id": twin["id"], "deployment_id": deployment["id"], "metrics": twin["metrics"], "status": twin["status"]},
             )
         )
         return twin
@@ -4030,6 +4439,9 @@ class NovaCodeProPlatform:
 
     def nera_manifest(self) -> dict[str, Any]:
         return build_nera_manifest()
+
+    def eros_manifest(self) -> dict[str, Any]:
+        return build_eros_manifest()
 
     def architecture_framework(self) -> dict[str, Any]:
         return build_enterprise_architecture_framework()
