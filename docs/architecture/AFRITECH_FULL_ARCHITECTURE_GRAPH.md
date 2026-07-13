@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `534`
+- Startup-safe closure size: `536`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `68`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (534 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (536 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (87 files)"]
+    Core --> Api["api (88 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (18 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `87` files
+- `api`: `88` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `18` files
@@ -193,7 +193,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (437)
+### Other (439)
 
 - `afritech`
 - `afritech.afripay`
@@ -520,6 +520,8 @@ flowchart TD
 - `afritech.mobility.trust_network`
 - `afritech.mobility.trust_network_invariants`
 - `afritech.novacodepro`
+- `afritech.novacodepro.enterprise_framework`
+- `afritech.novacodepro.enterprise_os`
 - `afritech.novacodepro.platform`
 - `afritech.novacodepro.workspace`
 - `afritech.novaid`

@@ -11,6 +11,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from afritech.novacodepro.enterprise_framework import (
+    build_enterprise_architecture_framework,
+    build_nera_manifest,
+)
+from afritech.novacodepro.enterprise_os import (
+    build_approval_object,
+    build_event_record,
+    build_knowledge_entry,
+    build_solution_package,
+    default_agent_registry,
+    knowledge_projection,
+    replay_events,
+)
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -909,6 +923,41 @@ class NovaCodeProRepository:
                     created_at TEXT NOT NULL,
                     published_at TEXT
                 );
+
+                CREATE TABLE IF NOT EXISTS retry_queue (
+                    id TEXT PRIMARY KEY,
+                    event_id TEXT NOT NULL,
+                    consumer_name TEXT NOT NULL,
+                    aggregate_id TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    retry_count INTEGER NOT NULL,
+                    next_retry_at TEXT NOT NULL,
+                    last_error TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS dead_letter_queue (
+                    id TEXT PRIMARY KEY,
+                    event_id TEXT NOT NULL,
+                    consumer_name TEXT NOT NULL,
+                    aggregate_id TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    failure_reason TEXT NOT NULL,
+                    retry_count INTEGER NOT NULL,
+                    failed_at TEXT NOT NULL,
+                    last_attempt_at TEXT NOT NULL,
+                    status TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS projection_checkpoints (
+                    projection_name TEXT PRIMARY KEY,
+                    last_event_id TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
                 """
             )
         self._seed()
@@ -1177,6 +1226,192 @@ class NovaCodeProRepository:
                 (limit,),
             ).fetchall()
         return [json.loads(row["payload_json"]) for row in rows]
+
+    def list_events_for_aggregate(self, aggregate_id: str, limit: int = 100) -> list[dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT payload_json
+                FROM domain_events
+                WHERE project_id = ? OR workflow_id = ? OR correlation_id = ?
+                ORDER BY occurred_at ASC, event_id ASC
+                LIMIT ?
+                """,
+                (aggregate_id, aggregate_id, aggregate_id, limit),
+            ).fetchall()
+        return [json.loads(row["payload_json"]) for row in rows]
+
+    def enqueue_retry(
+        self,
+        *,
+        event_id: str,
+        consumer_name: str,
+        aggregate_id: str,
+        event_type: str,
+        payload: dict[str, Any],
+        retry_count: int,
+        next_retry_at: str,
+        last_error: str,
+    ) -> dict[str, Any]:
+        record = {
+            "id": _new_id("retry"),
+            "event_id": event_id,
+            "consumer_name": consumer_name,
+            "aggregate_id": aggregate_id,
+            "event_type": event_type,
+            "payload": dict(payload),
+            "retry_count": int(retry_count),
+            "next_retry_at": next_retry_at,
+            "last_error": last_error,
+            "status": "PENDING",
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO retry_queue (
+                    id,
+                    event_id,
+                    consumer_name,
+                    aggregate_id,
+                    event_type,
+                    payload_json,
+                    retry_count,
+                    next_retry_at,
+                    last_error,
+                    status,
+                    created_at,
+                    updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["id"],
+                    record["event_id"],
+                    record["consumer_name"],
+                    record["aggregate_id"],
+                    record["event_type"],
+                    json.dumps(record["payload"], sort_keys=True),
+                    record["retry_count"],
+                    record["next_retry_at"],
+                    record["last_error"],
+                    record["status"],
+                    record["created_at"],
+                    record["updated_at"],
+                ),
+            )
+        return record
+
+    def list_retry_queue(self) -> list[dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM retry_queue ORDER BY next_retry_at ASC, id ASC",
+            ).fetchall()
+        return [
+            {
+                **dict(row),
+                "payload": json.loads(row["payload_json"]),
+            }
+            for row in rows
+        ]
+
+    def move_retry_to_dead_letter(self, retry_id: str, *, failure_reason: str) -> dict[str, Any]:
+        retry = None
+        with self._lock, self._connect() as connection:
+            row = connection.execute("SELECT * FROM retry_queue WHERE id = ?", (retry_id,)).fetchone()
+            if row is None:
+                raise KeyError("retry_not_found")
+            retry = dict(row)
+            connection.execute("DELETE FROM retry_queue WHERE id = ?", (retry_id,))
+            dead_letter = {
+                "id": _new_id("dlq"),
+                "event_id": retry["event_id"],
+                "consumer_name": retry["consumer_name"],
+                "aggregate_id": retry["aggregate_id"],
+                "event_type": retry["event_type"],
+                "payload_json": retry["payload_json"],
+                "failure_reason": failure_reason,
+                "retry_count": int(retry["retry_count"] or 0),
+                "failed_at": _now(),
+                "last_attempt_at": str(retry["updated_at"]),
+                "status": "DEAD",
+            }
+            connection.execute(
+                """
+                INSERT INTO dead_letter_queue (
+                    id,
+                    event_id,
+                    consumer_name,
+                    aggregate_id,
+                    event_type,
+                    payload_json,
+                    failure_reason,
+                    retry_count,
+                    failed_at,
+                    last_attempt_at,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    dead_letter["id"],
+                    dead_letter["event_id"],
+                    dead_letter["consumer_name"],
+                    dead_letter["aggregate_id"],
+                    dead_letter["event_type"],
+                    dead_letter["payload_json"],
+                    dead_letter["failure_reason"],
+                    dead_letter["retry_count"],
+                    dead_letter["failed_at"],
+                    dead_letter["last_attempt_at"],
+                    dead_letter["status"],
+                ),
+            )
+        return {
+            **dead_letter,
+            "payload": json.loads(dead_letter["payload_json"]),
+        }
+
+    def list_dead_letter_queue(self) -> list[dict[str, Any]]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM dead_letter_queue ORDER BY failed_at DESC, id DESC",
+            ).fetchall()
+        return [
+            {
+                **dict(row),
+                "payload": json.loads(row["payload_json"]),
+            }
+            for row in rows
+        ]
+
+    def save_projection_checkpoint(self, projection_name: str, last_event_id: str) -> dict[str, Any]:
+        checkpoint = {
+            "projection_name": projection_name,
+            "last_event_id": last_event_id,
+            "updated_at": _now(),
+        }
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO projection_checkpoints (projection_name, last_event_id, updated_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT(projection_name) DO UPDATE SET
+                    last_event_id = excluded.last_event_id,
+                    updated_at = excluded.updated_at
+                """,
+                (checkpoint["projection_name"], checkpoint["last_event_id"], checkpoint["updated_at"]),
+            )
+        return checkpoint
+
+    def get_projection_checkpoint(self, projection_name: str) -> dict[str, Any] | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM projection_checkpoints WHERE projection_name = ?",
+                (projection_name,),
+            ).fetchone()
+        return dict(row) if row is not None else None
 
 
 class NovaCodeProPlatform:
@@ -2376,6 +2611,7 @@ class NovaCodeProPlatform:
         status = self.status()
         health = self.operations_health()
         risk_list = self.risks()
+        event_bus = self.event_bus_snapshot()
         return {
             "enterprise_health": 96,
             "trust_score": 94,
@@ -2385,6 +2621,9 @@ class NovaCodeProPlatform:
             "delivery_score": 91,
             "operations": health,
             "status": status,
+            "event_bus": event_bus,
+            "reference_architecture": self.nera_manifest(),
+            "architecture_framework": self.architecture_framework(),
             "latest_briefing": self.briefings()[0] if self.briefings() else None,
             "incident_count": health["incident_count"],
             "pending_approval_count": status.get("approval_count", 0),
@@ -2439,6 +2678,7 @@ class NovaCodeProPlatform:
         schemas = self.repository.list("event_schema")
         replays = self.repository.list("event_replay")
         simulations = self.repository.list("twin_simulation")
+        event_bus = self.event_bus_snapshot()
         return {
             "service": "novacodepro-platform",
             "status": "operational",
@@ -2471,6 +2711,10 @@ class NovaCodeProPlatform:
             "event_schema_count": len(schemas),
             "event_replay_count": len(replays),
             "twin_simulation_count": len(simulations),
+            "retry_queue_count": event_bus["retry_queue"],
+            "dead_letter_queue_count": event_bus["dead_letter_queue"],
+            "nera_layer_count": len(self.nera_manifest()["layers"]),
+            "architecture_model_count": len(self.architecture_framework()["models"]),
             "connected_integration_count": sum(1 for item in integrations if item.get("status") == "connected"),
             "audit_event_count": len(self.audit(limit=500)),
             "domain_event_count": len(self.events(limit=500)),
@@ -3613,6 +3857,182 @@ class NovaCodeProPlatform:
         )
         flow["history"] = history
         return flow
+
+    def agent_registry_catalog(self) -> list[dict[str, Any]]:
+        registry = self.agents()
+        return registry if registry else default_agent_registry()
+
+    def orchestrate_solution_package(self, payload: dict[str, Any]) -> dict[str, Any]:
+        solution = self.create_solution(
+            {
+                "title": str(payload.get("title") or payload.get("request") or "Enterprise solution"),
+                "request": str(payload.get("request") or payload.get("title") or "Enterprise solution"),
+                "tenant_id": payload.get("tenant_id"),
+                "project_id": payload.get("project_id"),
+                "template_id": payload.get("template_id") or "solution-factory",
+                "domain": payload.get("domain") or "general",
+                "region": payload.get("region") or "Australia",
+                "compliance": payload.get("compliance") or "enterprise",
+                "surfaces": list(payload.get("surfaces") or []),
+                "version": str(payload.get("version") or "1"),
+            }
+        )
+        workflow = self.get_workflow(solution["workflow_id"]) or {
+            "id": solution["workflow_id"],
+            "title": solution["title"],
+            "request": solution["request"],
+        }
+        package = build_solution_package(
+            {
+                **payload,
+                "solution_id": solution["id"],
+                "workflow_id": solution["workflow_id"],
+                "project_id": solution["project_id"],
+                "version": solution["version"],
+            },
+            registry=default_agent_registry(),
+        )
+        package["solution"] = solution
+        package["workflow"] = workflow
+        package["approval"] = {
+            **package["approval"],
+            "workflow_id": solution["workflow_id"],
+            "release_id": str(payload.get("release_id") or ""),
+        }
+        self.repository.upsert("approval", package["approval"])
+        self.repository.append_event(
+            _event_envelope(
+                event_type="approval.requested",
+                actor_type="user",
+                actor_id=str(payload.get("requested_by") or "NovaAI"),
+                tenant_id=solution["tenant_id"],
+                organization_id=solution["tenant_id"],
+                project_id=solution["project_id"],
+                workflow_id=solution["workflow_id"],
+                correlation_id=solution["id"],
+                causation_id=solution["id"],
+                data={"approval_id": package["approval"]["id"], "solution_id": solution["id"]},
+            )
+        )
+        if str(package["approval"].get("status") or "").upper() == "APPROVED":
+            package["knowledge_entry"] = self.publish_knowledge_from_approval(solution["id"], package["approval"]["id"])
+        for event in package["events"]:
+            self.repository.append_event(
+                _event_envelope(
+                    event_type=str(event["event_type"]),
+                    actor_type="service",
+                    actor_id=str(event.get("actor") or "NovaAI"),
+                    tenant_id=solution["tenant_id"],
+                    organization_id=solution["tenant_id"],
+                    project_id=solution["project_id"],
+                    workflow_id=solution["workflow_id"],
+                    correlation_id=solution["id"],
+                    causation_id=solution["id"],
+                    data={"event_id": event["event_id"], **dict(event.get("payload") or {})},
+                )
+            )
+        return package
+
+    def publish_knowledge_from_approval(self, solution_id: str, approval_id: str, *, previous_version: str = "") -> dict[str, Any]:
+        solution = self.get_solution(solution_id)
+        approval = self.get_approval(approval_id)
+        if solution is None:
+            raise KeyError("solution_not_found")
+        if approval is None:
+            raise KeyError("approval_not_found")
+        if str(approval.get("status") or "").upper() != "APPROVED":
+            raise ValueError("approval_not_approved")
+        knowledge = build_knowledge_entry(
+            solution=solution,
+            approval=approval,
+            previous_version=previous_version,
+            evidence_ids=list(approval.get("evidence_ids") or []),
+        )
+        self.repository.upsert(
+            "knowledge_node",
+            {
+                "id": knowledge["id"],
+                "label": knowledge["title"],
+                "type": knowledge["type"],
+                "domain": "Knowledge Graph",
+                "owner": "NovaCodePro",
+                "evidence": knowledge["evidence_ids"],
+                "links": list(knowledge["links"]),
+                "solution_id": knowledge["solution_id"],
+                "approval_id": knowledge["approval_id"],
+                "version": knowledge["version"],
+                "status": knowledge["status"],
+                "approved": knowledge["approved"],
+                "previous_version": knowledge["previous_version"],
+                "hash": knowledge["hash"],
+                "created_at": knowledge["created_at"],
+                "updated_at": knowledge["updated_at"],
+            },
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="knowledge.entry.promoted",
+                actor_type="service",
+                actor_id="knowledge-graph-service",
+                tenant_id=str(solution.get("tenant_id") or self.tenants()[0]["id"]),
+                organization_id=str(solution.get("tenant_id") or self.tenants()[0]["id"]),
+                project_id=str(solution.get("project_id") or "") or None,
+                workflow_id=str(solution.get("workflow_id") or "") or None,
+                correlation_id=solution_id,
+                causation_id=approval_id,
+                data={
+                    "knowledge_id": knowledge["id"],
+                    "solution_id": solution_id,
+                    "approval_id": approval_id,
+                    "version": knowledge["version"],
+                },
+            )
+        )
+        return knowledge
+
+    def replay_knowledge_graph(self, limit: int = 500) -> list[dict[str, Any]]:
+        events = self.events(limit=limit)
+        projection = knowledge_projection(events)
+        for node in projection:
+            self.repository.upsert(
+                "knowledge_node",
+                {
+                    "id": node["id"],
+                    "label": node["id"],
+                    "type": "approved-solution",
+                    "domain": "Knowledge Graph",
+                    "owner": "NovaCodePro",
+                    "evidence": [],
+                    "links": list(node.get("links") or []),
+                    "solution_id": node.get("solution_id"),
+                    "approval_id": node.get("approval_id"),
+                    "version": node.get("version") or 1,
+                    "status": node.get("status") or "APPROVED",
+                    "approved": True,
+                    "created_at": _now(),
+                    "updated_at": _now(),
+                },
+            )
+        if events:
+            self.repository.save_projection_checkpoint("knowledge_graph", str(events[0]["event_id"]))
+        return projection
+
+    def event_bus_snapshot(self) -> dict[str, Any]:
+        return {
+            "domain_events": len(self.events(limit=1000)),
+            "outbox_pending": len(self.repository.list_outbox(limit=1000, status="pending")),
+            "retry_queue": len(self.repository.list_retry_queue()),
+            "dead_letter_queue": len(self.repository.list_dead_letter_queue()),
+            "projection_checkpoints": [
+                self.repository.get_projection_checkpoint("knowledge_graph"),
+            ],
+        }
+
+    def nera_manifest(self) -> dict[str, Any]:
+        return build_nera_manifest()
+
+    def architecture_framework(self) -> dict[str, Any]:
+        return build_enterprise_architecture_framework()
 
 
 def get_novacodepro_platform(db_path: str | Path | None = None, database_url: str | None = None) -> NovaCodeProPlatform:

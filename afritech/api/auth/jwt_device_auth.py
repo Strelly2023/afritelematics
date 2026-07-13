@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Security, WebSocket, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, Security, WebSocket, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from afritech.afriprogramming.rbac import AUTH_ROLE_ORDER, canonical_role_name, role_implies_role
@@ -32,6 +32,8 @@ class JWTClaims:
     role: str
     organization_id: str
     exp: int
+    sid: str | None = None
+    token_kind: str = "access"
 
 
 class JWTService:
@@ -49,6 +51,8 @@ class JWTService:
         *,
         role: str = "OPERATOR",
         organization_id: str | None = None,
+        session_id: str | None = None,
+        token_kind: str = "access",
         issued_at: int | None = None,
     ) -> str:
         now = int(time.time()) if issued_at is None else issued_at
@@ -60,9 +64,12 @@ class JWTService:
             "sub": user_id,
             "role": role,
             "exp": now + self.ttl_seconds,
+            "token_kind": token_kind,
         }
         if organization_id:
             payload["organization_id"] = organization_id
+        if session_id:
+            payload["sid"] = session_id
         signing_input = ".".join(
             (
                 _b64url_encode(json.dumps(header, sort_keys=True, separators=(",", ":")).encode()),
@@ -103,6 +110,8 @@ class JWTService:
             role=role,
             organization_id=organization_id,
             exp=int(payload["exp"]),
+            sid=str(payload["sid"]) if payload.get("sid") else None,
+            token_kind=str(payload.get("token_kind", "access")),
         )
 
 
@@ -129,12 +138,32 @@ JWT = JWTService(os.environ.get("AFRITECH_JWT_SECRET", _EPHEMERAL_JWT_SECRET))
 BEARER_SCHEME = HTTPBearer(auto_error=False, scheme_name="bearerAuth", bearerFormat="JWT")
 
 
+def _cookie_secure() -> bool:
+    environment = os.environ.get("AFRITECH_ENV", "development").lower()
+    if environment in {"production", "prod"}:
+        return True
+    return os.environ.get("NOVACODEPRO_COOKIE_SECURE", "false").lower() in {"1", "true", "yes"}
+
+
 def build_auth_router(
     jwt_service: JWTService | None = None,
     device_binding: DeviceBindingService | None = None,
+    session_store: Any | None = None,
 ) -> APIRouter:
     jwt = jwt_service or JWT
     binding = device_binding or DeviceBindingService()
+    from afritech.api.auth.novacodepro_session_store import (
+        ACCESS_COOKIE_NAME,
+        CSRF_COOKIE_NAME,
+        REFRESH_COOKIE_NAME,
+        SESSION_COOKIE_NAME,
+        get_default_novacodepro_session_store,
+        set_default_novacodepro_session_store,
+    )
+
+    session_store = session_store or get_default_novacodepro_session_store()
+    session_store.jwt_service = jwt
+    set_default_novacodepro_session_store(session_store)
     router = APIRouter(prefix="/v1", tags=["pilot-auth"])
 
     @router.post("/auth/token")
@@ -190,6 +219,129 @@ def build_auth_router(
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         return identity.canonical()
 
+    @router.post("/auth/login")
+    def login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
+        identifier = str(payload.get("email") or payload.get("username") or "").strip()
+        password = str(payload.get("password") or "")
+        role = payload.get("role")
+        if not identifier or not password:
+            raise HTTPException(status_code=400, detail="email_and_password_required")
+        result = session_store.login(
+            identifier=identifier,
+            password=password,
+            role=str(role) if role else None,
+            user_agent=request.headers.get("user-agent", ""),
+            client_ip=request.client.host if request.client else "",
+        )
+        response.set_cookie(
+            key=ACCESS_COOKIE_NAME,
+            value=result["access_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        response.set_cookie(
+            key=REFRESH_COOKIE_NAME,
+            value=result["refresh_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        response.set_cookie(
+            key=SESSION_COOKIE_NAME,
+            value=result["session_id"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        response.set_cookie(
+            key=CSRF_COOKIE_NAME,
+            value=result["csrf_token"],
+            httponly=False,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        return {
+            "status": "authenticated",
+            "user": {
+                "user_id": result["session"]["user_id"],
+                "email": result["session"]["email"],
+                "display_name": result["session"]["display_name"],
+                "organization": result["session"]["organization"],
+                "assigned_roles": result["session"]["assigned_roles"],
+                "active_role": result["session"]["active_role"],
+            },
+            "session": result["session"],
+            "tokens": {
+                "access_token": result["access_token"],
+                "refresh_token": result["refresh_token"],
+            },
+        }
+
+    @router.get("/auth/session")
+    def session(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
+    @router.post("/auth/session/keepalive")
+    def keepalive(request: Request) -> dict[str, Any]:
+        claims = session_store.claims_from_request(request)
+        if claims is None or not claims.sid:
+            raise HTTPException(status_code=401, detail="session_required")
+        return {"status": "ok", "session": session_store.get_session(claims.sid)}
+
+    @router.post("/auth/refresh")
+    def refresh(request: Request, response: Response) -> dict[str, Any]:
+        result = session_store.refresh_session(request)
+        response.set_cookie(
+            key=ACCESS_COOKIE_NAME,
+            value=result["access_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        response.set_cookie(
+            key=REFRESH_COOKIE_NAME,
+            value=result["refresh_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        return result
+
+    @router.post("/auth/logout")
+    def logout(request: Request, response: Response) -> dict[str, Any]:
+        result = session_store.logout(request)
+        for cookie_name in (ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME, SESSION_COOKIE_NAME, CSRF_COOKIE_NAME):
+            response.delete_cookie(cookie_name, path="/")
+        response.headers["Cache-Control"] = "no-store"
+        return result
+
+    @router.post("/auth/switch-role")
+    def switch_role(payload: dict[str, Any], request: Request, response: Response) -> dict[str, Any]:
+        requested_role = str(payload.get("role") or "").strip()
+        if not requested_role:
+            raise HTTPException(status_code=400, detail="role required")
+        result = session_store.switch_role(request, requested_role)
+        response.set_cookie(
+            key=ACCESS_COOKIE_NAME,
+            value=result["access_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        return result
+
+    @router.get("/auth/me")
+    def me(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
     return router
 
 
@@ -216,9 +368,29 @@ def _claims_from_authorization(jwt: JWTService, authorization: str) -> JWTClaims
 
 
 def get_current_claims(
+    request: Request,
     credentials: HTTPAuthorizationCredentials | None = Security(BEARER_SCHEME),
 ) -> JWTClaims:
-    return _claims_from_credentials(JWT, credentials)
+    if credentials and credentials.credentials:
+        claims = _claims_from_credentials(JWT, credentials)
+    else:
+        claims = None
+    if claims is not None and claims.sid:
+        from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
+
+        session_store = get_default_novacodepro_session_store()
+        session_store._validate_access_token_session(claims.sid, credentials.credentials)  # noqa: SLF001
+        return session_store.get_claims_for_session(claims.sid)
+    if claims is not None:
+        return claims
+
+    from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
+
+    session_store = get_default_novacodepro_session_store()
+    session_claims = session_store.claims_from_request(request)
+    if session_claims is None:
+        raise HTTPException(status_code=401, detail="bearer token required")
+    return session_claims
 
 
 def require_roles(*roles: str):

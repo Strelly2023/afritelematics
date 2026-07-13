@@ -16,6 +16,108 @@ import {
 
 const STORAGE_KEY = "novacodepro.platform.runtime.v1";
 
+const NERA_ARCHITECTURE = {
+  id: "nera",
+  name: "NovaTech Enterprise Reference Architecture",
+  version: "1.0",
+  layers: [
+    {
+      id: "corporate-governance",
+      name: "Corporate Governance",
+      purpose: "Board, executive, and enterprise accountability.",
+    },
+    {
+      id: "enterprise-governance",
+      name: "Enterprise Governance Layer",
+      purpose: "Identity, security, policy, risk, compliance, and audit.",
+    },
+    {
+      id: "enterprise-platform",
+      name: "Enterprise Platform Layer",
+      purpose: "Reusable capabilities shared across all products.",
+    },
+    {
+      id: "knowledge-intelligence",
+      name: "Knowledge & Intelligence Layer",
+      purpose: "Enterprise memory, reasoning, and digital twin intelligence.",
+    },
+    {
+      id: "business-products",
+      name: "Business Product Layer",
+      purpose: "Customer-facing and partner-facing products.",
+    },
+    {
+      id: "enterprise-operations",
+      name: "Enterprise Operations Layer",
+      purpose: "Run-the-business operations and support functions.",
+    },
+    {
+      id: "shared-enterprise-services",
+      name: "Shared Enterprise Services",
+      purpose: "Common services consumed by every product and platform domain.",
+    },
+    {
+      id: "infrastructure",
+      name: "Infrastructure Layer",
+      purpose: "Cloud, networking, runtime, storage, and edge services.",
+    },
+  ],
+  platformDomains: [
+    "NovaWorkspace",
+    "NovaProjects",
+    "NovaAgents",
+    "NovaExecution",
+    "NovaReviews",
+    "NovaApprovals",
+    "NovaGovernance",
+    "NovaKnowledge",
+    "NovaAutomation",
+    "NovaTesting",
+    "NovaDeployments",
+    "NovaObservability",
+    "NovaReporting",
+    "NovaAdministration",
+  ],
+};
+
+const ENTERPRISE_ARCHITECTURE_FRAMEWORK = {
+  id: "natech-framework",
+  name: "NovaTech Enterprise Architecture Framework",
+  models: {
+    nera: NERA_ARCHITECTURE,
+    necm: {
+      id: "necm",
+      name: "NovaTech Enterprise Capability Model",
+      capabilities: [
+        "Identity",
+        "Security",
+        "Payments",
+        "Mobility",
+        "Commerce",
+        "Healthcare",
+        "Education",
+        "Agriculture",
+        "Workflow",
+        "Approvals",
+        "AI",
+        "Knowledge",
+        "Analytics",
+        "Observability",
+        "Compliance",
+        "Risk",
+        "Audit",
+      ],
+    },
+    neom: {
+      id: "neom",
+      name: "NovaTech Enterprise Operating Model",
+      people: ["Executives", "Product Managers", "Engineers", "Analysts", "Operators", "Legal", "Compliance"],
+      roles: ["Owner", "Steward", "Approver", "Operator", "Agent", "Reviewer"],
+      workspaces: ["NovaCodePro", "Customer Platforms", "Partner Platforms", "Enterprise Analytics"],
+    },
+  },
+};
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -139,7 +241,16 @@ function seedState() {
       ],
     })),
     knowledgeGraph: KNOWLEDGE_GRAPH,
+    approvalObjects: [],
+    agentTeams: [],
+    eventBus: {
+      domainEvents: 0,
+      retryQueue: 0,
+      deadLetterQueue: 0,
+      projectionCheckpoints: 1,
+    },
     automationRuns: [],
+    enterpriseArchitectureFramework: ENTERPRISE_ARCHITECTURE_FRAMEWORK,
     solutionRequests: [
       first,
       {
@@ -313,6 +424,7 @@ function seedState() {
       },
     ],
     commandHistory: [],
+    neraArchitecture: NERA_ARCHITECTURE,
     developerSurfaces: DEVELOPER_SURFACES,
   };
 }
@@ -342,6 +454,12 @@ function loadState() {
       projects: parsed.projects ?? base.projects,
       collaborationThreads: parsed.collaborationThreads ?? base.collaborationThreads,
       knowledgeGraph: parsed.knowledgeGraph ?? base.knowledgeGraph,
+      approvalObjects: parsed.approvalObjects ?? base.approvalObjects,
+      agentTeams: parsed.agentTeams ?? base.agentTeams,
+      eventBus: parsed.eventBus ?? base.eventBus,
+      neraArchitecture: parsed.neraArchitecture ?? base.neraArchitecture,
+      enterpriseArchitectureFramework:
+        parsed.enterpriseArchitectureFramework ?? base.enterpriseArchitectureFramework,
       evidenceBundles: parsed.evidenceBundles ?? base.evidenceBundles,
       riskRegister: parsed.riskRegister ?? base.riskRegister,
       approvalPolicies: parsed.approvalPolicies ?? base.approvalPolicies,
@@ -964,14 +1082,51 @@ function createSolution(payload) {
       incidentCount: state.commandCenterSnapshots[0]?.incidentCount ?? 0,
       generatedAt: nowIso(),
     };
+    const approvalObject = {
+      id: `approval-${Math.random().toString(36).slice(2, 10)}`,
+      solutionId: subject,
+      approvalType: "solution_review",
+      status: route.required.length ? "REVIEWED" : "APPROVED",
+      riskLevel: risk.score >= 18 ? "HIGH" : risk.score >= 8 ? "MEDIUM" : "LOW",
+      approver: "NovaTech Governance",
+      comments: ["Review package assembled from request, agents, and evidence."],
+      approvedAt: route.required.length ? "" : nowIso(),
+      version: 1,
+      knowledgeCreated: route.required.length === 0,
+      executionEnabled: route.required.length === 0,
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+    const agentTeam = {
+      id: `team-${Math.random().toString(36).slice(2, 10)}`,
+      subject,
+      members: [
+        "Architect Agent",
+        "Developer Agent",
+        "QA Agent",
+        "Security Agent",
+        "Compliance Agent",
+      ].filter((item, index) => index < 3 || approvalObject.riskLevel !== "LOW"),
+      stage: "review",
+      updatedAt: nowIso(),
+    };
+    const eventBus = {
+      domainEvents: state.auditTrail.length + 4,
+      retryQueue: state.eventBus?.retryQueue ?? 0,
+      deadLetterQueue: state.eventBus?.deadLetterQueue ?? 0,
+      projectionCheckpoints: state.eventBus?.projectionCheckpoints ?? 1,
+    };
     setState({
       ...state,
       evidenceBundles: [evidence, ...state.evidenceBundles],
       riskRegister: [risk, ...state.riskRegister],
       approvalRoutes: [route, ...state.approvalRoutes],
+      approvalObjects: [approvalObject, ...state.approvalObjects],
+      agentTeams: [agentTeam, ...state.agentTeams],
       digitalTwinScenarios: [twin, ...state.digitalTwinScenarios],
       executiveInsights: [insight, ...state.executiveInsights],
       commandCenterSnapshots: [snapshot, ...state.commandCenterSnapshots],
+      eventBus,
     });
     emit(
       appendAudit({

@@ -1639,10 +1639,95 @@ const PLATFORM_ADMIN_SECTIONS = [
   },
 ];
 
+const AUTH_ROLE_TO_PROFILE_ID = {
+  ADMIN: "platform-admin",
+  DEVELOPER: "software-engineer",
+  PRODUCT_MANAGER: "cpo",
+  BUSINESS_ANALYST: "business-administrator",
+  UI_UX_DESIGNER: "software-engineer",
+  PROJECT_MANAGER: "business-administrator",
+  ARCHITECT: "platform-admin",
+  QA_ENGINEER: "software-engineer",
+  DEVOPS_ENGINEER: "operations-manager",
+  CUSTOMER_SUPPORT: "customer-success",
+  OPERATIONS_TEAM: "operations-manager",
+  BRAND_TEAM: "business-administrator",
+  COMPLIANCE_TEAM: "chief-legal-compliance-officer",
+  AUDIT_TEAM: "chief-legal-compliance-officer",
+  SECURITY_ENGINEER: "ciso",
+  INCIDENT_RESPONSE_TEAM: "operations-manager",
+  DATA_ARCHITECT: "platform-admin",
+  DATA_ENGINEER: "software-engineer",
+  DATABASE_ENGINEER: "software-engineer",
+  AI_ML_ENGINEER: "software-engineer",
+  DATA_SCIENTIST: "software-engineer",
+  PRIVACY_COMPLIANCE: "chief-legal-compliance-officer",
+  RISK_MANAGEMENT: "chief-legal-compliance-officer",
+  LEGAL: "chief-legal-compliance-officer",
+  EXTERNAL_REGULATOR: "board",
+};
+
+const AUTH_ROLE_DISPLAY_LABELS = {
+  ADMIN: "Platform Administrator",
+  DEVELOPER: "Developer",
+  PRODUCT_MANAGER: "Product Manager",
+  BUSINESS_ANALYST: "Business Analyst",
+  UI_UX_DESIGNER: "UI/UX Designer",
+  PROJECT_MANAGER: "Project Manager",
+  ARCHITECT: "Architect",
+  QA_ENGINEER: "QA Engineer",
+  DEVOPS_ENGINEER: "DevOps Engineer",
+  CUSTOMER_SUPPORT: "Customer Support",
+  OPERATIONS_TEAM: "Operations Team",
+  BRAND_TEAM: "Brand Team",
+  COMPLIANCE_TEAM: "Compliance Team",
+  AUDIT_TEAM: "Audit Team",
+  SECURITY_ENGINEER: "Security Engineer",
+  INCIDENT_RESPONSE_TEAM: "Incident Response Team",
+  DATA_ARCHITECT: "Data Architect",
+  DATA_ENGINEER: "Data Engineer",
+  DATABASE_ENGINEER: "Database Engineer",
+  AI_ML_ENGINEER: "AI/ML Engineer",
+  DATA_SCIENTIST: "Data Scientist",
+  PRIVACY_COMPLIANCE: "Privacy & Compliance",
+  RISK_MANAGEMENT: "Risk Management",
+  LEGAL: "Legal",
+  EXTERNAL_REGULATOR: "Regulator",
+};
+
+const AUTH_API_BASE = import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "";
+const AUTH_LOGIN_ROUTE = "/login";
+const AUTH_DASHBOARD_ROUTE = "/novacodepro/dashboard";
+const AUTH_WARNING_MS = 2 * 60 * 1000;
+
+function resolveProfileIdForRole(role) {
+  return AUTH_ROLE_TO_PROFILE_ID[role] || AUTH_ROLE_TO_PROFILE_ID.ADMIN;
+}
+
+function resolveAuthRoleLabel(role) {
+  return AUTH_ROLE_DISPLAY_LABELS[role] || String(role || "").replaceAll("_", " ");
+}
+
+function resolveFirstWindowIdForRole(role) {
+  const profileId = resolveProfileIdForRole(role);
+  return ROLE_PROFILES.find((profile) => profile.id === profileId)?.windows[0]?.id ?? ROLE_PROFILES[0].windows[0].id;
+}
+
 function App() {
   const attachmentInputRef = useRef(null);
   const runtime = usePlatformRuntime();
   const [platformSummary, setPlatformSummary] = useState(null);
+  const [authStatus, setAuthStatus] = useState("checking");
+  const [session, setSession] = useState(null);
+  const [sessionWarning, setSessionWarning] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("platformadministrator.test@afritechnology.com");
+  const [loginPassword, setLoginPassword] = useState("NovaCodePro123!");
+  const [loginRole, setLoginRole] = useState("ADMIN");
+  const [loginError, setLoginError] = useState("");
+  const [toolView, setToolView] = useState("main");
+  const [smartCommand, setSmartCommand] = useState("");
   const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
   const [search, setSearch] = useState("");
   const [environment, setEnvironment] = useState("Production");
@@ -1706,9 +1791,7 @@ function App() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const baseUrl = import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "";
-
-    fetch(`${baseUrl}/v1/novacodepro/admin/summary`, {
+    fetch(`${AUTH_API_BASE}/v1/novacodepro/admin/summary`, {
       signal: controller.signal,
       credentials: "include",
     })
@@ -1724,6 +1807,191 @@ function App() {
 
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(`${AUTH_API_BASE}/v1/auth/session`, {
+      signal: controller.signal,
+      credentials: "include",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("signed_out");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSession(data);
+        setRoleId(resolveProfileIdForRole(data.active_role));
+        setEnvironment("Production");
+        setAuthStatus("signed-in");
+        setLoginError("");
+        window.history.replaceState({}, "", AUTH_DASHBOARD_ROUTE);
+      })
+      .catch(() => {
+        setSession(null);
+        setAuthStatus("signed-out");
+        window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (authStatus !== "signed-in" || !session) {
+      setSessionWarning(false);
+      return undefined;
+    }
+    const interval = window.setInterval(() => {
+      const idleExpiresAt = Date.parse(session.idle_expires_at);
+      if (Number.isNaN(idleExpiresAt)) {
+        setSessionWarning(false);
+        return;
+      }
+      setSessionWarning(idleExpiresAt - Date.now() <= AUTH_WARNING_MS);
+    }, 15000);
+    return () => window.clearInterval(interval);
+  }, [authStatus, session]);
+
+  useEffect(() => {
+    if (authStatus !== "signed-in") {
+      return undefined;
+    }
+    const interval = window.setInterval(() => {
+      fetch(`${AUTH_API_BASE}/v1/auth/session`, {
+        credentials: "include",
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error("session_expired");
+          }
+          return response.json();
+        })
+        .then((payload) => {
+          setSession(payload);
+          setSessionWarning(Date.parse(payload.idle_expires_at) - Date.now() <= AUTH_WARNING_MS);
+        })
+        .catch(() => {
+          setSession(null);
+          setAuthStatus("signed-out");
+          setAccountMenuOpen(false);
+          setShowRoleSwitcher(false);
+          setSessionWarning(false);
+          setRoleId(ROLE_PROFILES[0].id);
+          window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+        });
+    }, 60000);
+    return () => window.clearInterval(interval);
+  }, [authStatus]);
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setLoginError("");
+    try {
+      const response = await fetch(`${AUTH_API_BASE}/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+          role: loginRole,
+        }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.detail || "Login failed");
+      }
+      setSession(payload.session);
+      setRoleId(resolveProfileIdForRole(payload.session.active_role));
+      setSelectedWindowId(resolveFirstWindowIdForRole(payload.session.active_role));
+      setEnvironment("Production");
+      setAuthStatus("signed-in");
+      setAccountMenuOpen(false);
+      setShowRoleSwitcher(false);
+      window.history.replaceState({}, "", AUTH_DASHBOARD_ROUTE);
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : "Login failed");
+      setAuthStatus("signed-out");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${AUTH_API_BASE}/v1/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // ignore logout transport failures; local state still clears
+    }
+    setPlatformSummary(null);
+    setSession(null);
+    setAuthStatus("signed-out");
+    setAccountMenuOpen(false);
+    setShowRoleSwitcher(false);
+    setSessionWarning(false);
+    setLoginError("");
+    setPaletteOpen(false);
+    setSearch("");
+    setComposerAttachments([]);
+    setRoleId(ROLE_PROFILES[0].id);
+    setSelectedWindowId(resolveFirstWindowIdForRole("ADMIN"));
+    window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+  };
+
+  const handleStaySignedIn = async () => {
+    try {
+      const response = await fetch(`${AUTH_API_BASE}/v1/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("session refresh failed");
+      }
+      const payload = await response.json();
+      setSession(payload.session);
+      setSessionWarning(false);
+    } catch {
+      await handleLogout();
+    }
+  };
+
+  const handleSwitchRole = async (role) => {
+    try {
+      const response = await fetch(`${AUTH_API_BASE}/v1/auth/switch-role`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ role }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.detail || "Unable to switch role");
+      }
+      setSession(payload.session);
+      setRoleId(resolveProfileIdForRole(role));
+      setSelectedWindowId(resolveFirstWindowIdForRole(role));
+      setAccountMenuOpen(false);
+      setShowRoleSwitcher(false);
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : "Unable to switch role");
+    }
+  };
+
+  const authDisplayName = session?.display_name || "Djuma";
+  const authDisplayRole = session?.active_role || loginRole;
+  const authDisplayRoleLabel = resolveAuthRoleLabel(authDisplayRole);
+  const authAssignedRoles = session?.assigned_roles || [loginRole];
+  const authAssignedRoleOptions = authAssignedRoles.map((role) => ({
+    id: role,
+    label: role.replaceAll("_", " "),
+  }));
 
   const activeRole = useMemo(
     () => ROLE_PROFILES.find((role) => role.id === roleId) ?? ROLE_PROFILES[0],
@@ -1764,6 +2032,135 @@ function App() {
   const activeKnowledgeNode =
     runtime.knowledgeGraph.find((node) => node.id === runtime.selectedKnowledgeNodeId) ??
     runtime.knowledgeGraph[0];
+  if (authStatus !== "signed-in") {
+    return (
+      <div className="auth-shell">
+        <header className="auth-topbar">
+          <div className="brand-block">
+            <div className="brand-mark">N</div>
+            <div>
+              <p className="eyebrow">NovaTech enterprise workspace</p>
+              <strong>NovaCodePro</strong>
+            </div>
+          </div>
+        </header>
+
+        <main className="auth-panel">
+          <section className="auth-copy">
+            <p className="section-label">Welcome to NovaCodePro</p>
+            <h1>Sign in to access your NovaTech workspace.</h1>
+            <p className="hero-summary">
+              Signed out
+              {" "}
+              {"→"}
+              {" "}
+              Sign in
+              {" "}
+              {"→"}
+              {" "}
+              Identity verification
+              {" "}
+              {"→"}
+              {" "}
+              Role resolution
+              {" "}
+              {"→"}
+              {" "}
+              Workspace load
+              {" "}
+              {"→"}
+              {" "}
+              Session monitoring
+              {" "}
+              {"→"}
+              {" "}
+              Sign out
+              {" "}
+              {"→"}
+              {" "}
+              Session revoked
+            </p>
+          </section>
+
+          <form className="auth-form" onSubmit={handleLogin}>
+            <button type="button" className="novaid-button" onClick={handleLogin}>
+              Sign in with NovaID
+            </button>
+
+            <label className="auth-field">
+              <span>Email</span>
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={(event) => setLoginEmail(event.target.value)}
+                autoComplete="email"
+              />
+            </label>
+
+            <label className="auth-field">
+              <span>Password</span>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(event) => setLoginPassword(event.target.value)}
+                autoComplete="current-password"
+              />
+            </label>
+
+            <label className="auth-field">
+              <span>Role</span>
+              <select value={loginRole} onChange={(event) => setLoginRole(event.target.value)}>
+                {[
+                  "ADMIN",
+                  "DEVELOPER",
+                  "PRODUCT_MANAGER",
+                  "BUSINESS_ANALYST",
+                  "UI_UX_DESIGNER",
+                  "PROJECT_MANAGER",
+                  "ARCHITECT",
+                  "QA_ENGINEER",
+                  "DEVOPS_ENGINEER",
+                  "CUSTOMER_SUPPORT",
+                  "OPERATIONS_TEAM",
+                  "BRAND_TEAM",
+                  "COMPLIANCE_TEAM",
+                  "AUDIT_TEAM",
+                  "SECURITY_ENGINEER",
+                  "INCIDENT_RESPONSE_TEAM",
+                  "DATA_ARCHITECT",
+                  "DATA_ENGINEER",
+                  "DATABASE_ENGINEER",
+                  "AI_ML_ENGINEER",
+                  "DATA_SCIENTIST",
+                  "PRIVACY_COMPLIANCE",
+                  "RISK_MANAGEMENT",
+                  "LEGAL",
+                  "EXTERNAL_REGULATOR",
+                ].map((role) => (
+                  <option key={role} value={role}>
+                    {role.replaceAll("_", " ")}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {loginError ? <p className="auth-error">{loginError}</p> : null}
+
+            <button type="submit" className="auth-submit">
+              Sign In
+            </button>
+
+            <div className="auth-links">
+              <button type="button">Forgot password?</button>
+              <button type="button">Use passkey</button>
+              <button type="button">Need help?</button>
+            </div>
+          </form>
+        </main>
+      </div>
+    );
+  }
+
   const activeAutomationTemplate =
     AUTOMATION_TEMPLATES.find((template) => template.id === automationTemplateId) ??
     AUTOMATION_TEMPLATES[0];
@@ -1815,6 +2212,9 @@ function App() {
     activeRole.windows.find((window) => window.id === selectedWindowId) ?? activeRole.windows[0];
 
   const secondaryWindows = activeRole.windows.filter((window) => window.id !== selectedWindow.id);
+  useEffect(() => {
+    setToolView("main");
+  }, [roleId, selectedWindowId]);
   const localAdminSummary = useMemo(() => {
     const serviceRegistry = platformSummary?.service_registry ?? [];
     return {
@@ -2474,19 +2874,74 @@ function App() {
           <button type="button" className="toolbar-chip">
             Notifications
           </button>
-          <button type="button" className="toolbar-chip">
-            NovaID
-          </button>
+          <div className="account-menu-wrap">
+            <button
+              type="button"
+              className="account-chip"
+              onClick={() => setAccountMenuOpen((value) => !value)}
+            >
+              {authDisplayName} ▼
+            </button>
+            {accountMenuOpen ? (
+              <div className="account-menu" role="menu">
+                {[
+                  "My Profile",
+                  "Switch Role",
+                  "Security Settings",
+                  "Active Sessions",
+                  "Notifications",
+                  "Help",
+                ].map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className="account-menu-item"
+                    onClick={() => {
+                      if (item === "Switch Role") {
+                        setShowRoleSwitcher((value) => !value);
+                      }
+                      setAccountMenuOpen(false);
+                    }}
+                  >
+                    {item}
+                  </button>
+                ))}
+                <button type="button" className="account-menu-item danger" onClick={handleLogout}>
+                  Sign Out
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </header>
+
+      {sessionWarning ? (
+        <div className="session-warning">
+          <span>Your session will expire in 2 minutes.</span>
+          <div className="session-warning-actions">
+            <button type="button" className="secondary-action" onClick={handleStaySignedIn}>
+              Stay Signed In
+            </button>
+            <button type="button" className="danger-action" onClick={handleLogout}>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="workspace-shell">
         <aside className="sidebar">
           <div className="sidebar-card identity-card">
-            <p className="section-label">Signed in</p>
-            <strong>Djuma</strong>
-            <span>{activeRole.label}</span>
-            <span>{activeRole.organization}</span>
+            <p className="section-label">SIGNED IN</p>
+            <strong>{authDisplayName}</strong>
+            <span>{authDisplayRoleLabel}</span>
+            <span>{session?.email || "djstrelly@gmail.com"}</span>
+            <span>{session?.organization || "NovaTech"}</span>
+            <div className="identity-meta">
+              <span>Active role: {authDisplayRoleLabel}</span>
+              <span>Session: Verified</span>
+              <span>Environment: Production</span>
+            </div>
           </div>
 
           <nav className="nav-list" aria-label="Primary navigation">
@@ -2520,6 +2975,31 @@ function App() {
                 </button>
               ))}
             </div>
+            {showRoleSwitcher ? (
+              <div className="role-switcher-popover">
+                {authAssignedRoleOptions.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    className="role-switch-item"
+                    onClick={() => handleSwitchRole(role.id)}
+                  >
+                    {role.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="sidebar-card signout-card">
+            <strong>{authDisplayName}</strong>
+            <span>{authDisplayRoleLabel}</span>
+            <button type="button" className="secondary-action" onClick={() => setShowRoleSwitcher(true)}>
+              Switch Role
+            </button>
+            <button type="button" className="danger-action" onClick={handleLogout}>
+              Sign Out
+            </button>
           </div>
         </aside>
 
@@ -4184,6 +4664,214 @@ function App() {
                   </article>
                 );
               })}
+            </div>
+          </section>
+
+          <section className="workspace-band universal-tool-band">
+            <div className="tool-header">
+              <div className="tool-header-main">
+                <p className="section-label">Tool Header</p>
+                <strong>{selectedWindow.title}</strong>
+                <span>{activeProject.name}</span>
+              </div>
+              <div className="tool-header-meta">
+                <span>Name: {selectedWindow.title}</span>
+                <span>Project: {activeProject.name}</span>
+                <span>Workspace: {activeRole.label}</span>
+                <span>Environment: {environment}</span>
+                <span>AI: Enabled</span>
+                <span>Status: {selectedWindow.status}</span>
+                <span>User: {authDisplayName}</span>
+              </div>
+            </div>
+
+            <div className="tool-tabs" role="tablist" aria-label="Tool views">
+              {[
+                ["main", "Main Workspace"],
+                ["ai", "AI Assistant"],
+                ["collaboration", "Collaboration"],
+                ["activity", "Activity"],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={toolView === id}
+                  className={toolView === id ? "tool-tab active" : "tool-tab"}
+                  onClick={() => setToolView(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="tool-workspace-grid">
+              <article className="tool-main-pane">
+                <div className="tool-pane-head">
+                  <div>
+                    <p className="section-label">Main Workspace</p>
+                    <h3>{selectedWindow.title}</h3>
+                  </div>
+                  <span className="status-pill">{selectedWindow.status}</span>
+                </div>
+                <div className="tool-pane-body">
+                  <p>{selectedWindow.summary}</p>
+                  <div className="bullet-grid">
+                    {selectedWindow.bullets.map((bullet) => (
+                      <span className="bullet" key={bullet}>
+                        {bullet}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {toolView === "ai" ? (
+                  <div className="tool-pane-panel">
+                    <p className="section-label">AI Assistant</p>
+                    <p className="studio-note">
+                      NovaAI can reason over context, generate plans, summarize history, and propose governed actions.
+                    </p>
+                    <div className="chip-cloud">
+                      {["Analyze", "Explain", "Generate", "Refactor", "Review", "Automate"].map((item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          className="context-chip"
+                          onClick={() => setSmartCommand(item)}
+                        >
+                          {item}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="tool-output-grid">
+                      <article className="tool-mini-card">
+                        <strong>Long-term memory</strong>
+                        <span>Projects, decisions, preferences, and approvals persist across sessions.</span>
+                      </article>
+                      <article className="tool-mini-card">
+                        <strong>Research mode</strong>
+                        <span>Sources, comparison, risks, and recommendations are attached to the reply.</span>
+                      </article>
+                    </div>
+                  </div>
+                ) : null}
+                {toolView === "collaboration" ? (
+                  <div className="tool-pane-panel">
+                    <p className="section-label">Collaboration</p>
+                    <div className="tool-output-grid">
+                      <article className="tool-mini-card">
+                        <strong>Comments</strong>
+                        <span>Shared review threads with mentions, approvals, and task handoff.</span>
+                      </article>
+                      <article className="tool-mini-card">
+                        <strong>Multi-agent teams</strong>
+                        <span>Architect, developer, QA, security, legal, compliance, and risk agents can coordinate.</span>
+                      </article>
+                    </div>
+                  </div>
+                ) : null}
+                {toolView === "activity" ? (
+                  <div className="tool-pane-panel">
+                    <p className="section-label">Activity</p>
+                    <div className="tool-output-grid">
+                      {selectedWindow.bullets.slice(0, 3).map((item) => (
+                        <article className="tool-mini-card" key={item}>
+                          <strong>{item}</strong>
+                          <span>Recent tool activity and context are available for review.</span>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                <div className="tool-pane-panel">
+                  <p className="section-label">Enterprise foundation</p>
+                  <div className="tool-output-grid">
+                    <article className="tool-mini-card">
+                      <strong>NERA</strong>
+                      <span>
+                        {runtime.neraArchitecture.layers.length} stable architecture layers with governance, platform,
+                        knowledge, products, operations, services, and infrastructure separated.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
+                      <strong>Framework views</strong>
+                      <span>
+                        {Object.keys(runtime.enterpriseArchitectureFramework.models).length} coordinated views across
+                        reference architecture, capability, operating, data, knowledge, AI, and twin models.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
+                      <strong>Knowledge graph</strong>
+                      <span>
+                        {runtime.knowledgeGraph.length} approved nodes and trace paths across requests, approvals,
+                        deployments, and evidence.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
+                      <strong>Approval objects</strong>
+                      <span>
+                        {runtime.approvalObjects.length} governed review objects with status, risk, and execution
+                        readiness.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
+                      <strong>Multi-agent teams</strong>
+                      <span>
+                        {runtime.agentTeams.length} coordinated solution teams assembled from architect, developer,
+                        QA, security, compliance, and legal agents.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
+                      <strong>Event bus</strong>
+                      <span>
+                        {runtime.eventBus.domainEvents} domain events, {runtime.eventBus.retryQueue} retries, and{" "}
+                        {runtime.eventBus.deadLetterQueue} dead letters are tracked for replay and audit.
+                      </span>
+                    </article>
+                  </div>
+                </div>
+              </article>
+
+              <aside className="tool-side-pane">
+                <div className="tool-side-panel">
+                  <p className="section-label">Navigation</p>
+                  <div className="tool-nav-list">
+                    {activeRole.windows.map((window) => (
+                      <button
+                        key={window.id}
+                        type="button"
+                        className={window.id === selectedWindow.id ? "tool-nav-item active" : "tool-nav-item"}
+                        onClick={() => setSelectedWindowId(window.id)}
+                      >
+                        {window.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="tool-side-panel">
+                  <p className="section-label">AI Panel</p>
+                  <p className="studio-note">
+                    Chat, history, memory, files, code, knowledge, tasks, agents, and automation.
+                  </p>
+                </div>
+              </aside>
+            </div>
+
+            <div className="smart-command-bar">
+              <label className="smart-command-input">
+                <span>What would you like to accomplish today?</span>
+                <input
+                  value={smartCommand}
+                  onChange={(event) => setSmartCommand(event.target.value)}
+                  placeholder="Generate payment microservice"
+                />
+              </label>
+              <div className="smart-command-actions">
+                {["Voice", "Files", "Search", "Agents", "Terminal", "History", "Automations"].map((item) => (
+                  <button key={item} type="button" className="toolbar-chip">
+                    {item}
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 

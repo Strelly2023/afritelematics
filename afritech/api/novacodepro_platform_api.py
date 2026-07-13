@@ -323,6 +323,40 @@ class MarketplaceInstallRequest(BaseModel):
     version: str = "2027.1.0"
 
 
+class SolutionPackageRequest(BaseModel):
+    title: str
+    request: str
+    tenant_id: str | None = None
+    project_id: str | None = None
+    template_id: str | None = None
+    domain: str = "general"
+    region: str = "Australia"
+    compliance: str = "enterprise"
+    surfaces: list[str] = Field(default_factory=list)
+    version: str = "1"
+    approval_type: str = "solution_review"
+    risk_level: str = "medium"
+    approver: str = "NovaTech Governance"
+    comments: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+    execution_enabled: bool = False
+
+
+class RetryQueueRequest(BaseModel):
+    event_id: str
+    consumer_name: str
+    aggregate_id: str
+    event_type: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    retry_count: int = 0
+    next_retry_at: str
+    last_error: str = ""
+
+
+class DeadLetterRequest(BaseModel):
+    failure_reason: str
+
+
 def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = None) -> APIRouter:
     service = platform or _service()
     router = APIRouter(prefix="/v1/novacodepro", tags=["novacodepro"])
@@ -357,6 +391,13 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
         data["tenant_id"] = _tenant_context(claims)
         return service.create_solution(data)
 
+    @router.post("/solutions/packages")
+    def create_solution_package(payload: SolutionPackageRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["tenant_id"] = _tenant_context(claims)
+        data.setdefault("requested_by", claims.sub)
+        return service.orchestrate_solution_package(data)
+
     @router.get("/agents/executions")
     def agent_executions(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.agent_executions()
@@ -364,6 +405,10 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/agents")
     def agents(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
         return service.agents()
+
+    @router.get("/agents/registry")
+    def agent_registry(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.agent_registry_catalog()
 
     @router.post("/agents/register")
     def register_agent(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
@@ -564,6 +609,10 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/knowledge-graph")
     def knowledge_graph(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return {"nodes": service.knowledge_graph()}
+
+    @router.post("/knowledge-graph/replay")
+    def replay_knowledge_graph(claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return {"nodes": service.replay_knowledge_graph()}
 
     @router.post("/knowledge-graph/link")
     def link_knowledge(payload: KnowledgeLinkRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
@@ -943,6 +992,37 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.post("/graph/reconcile")
     def graph_reconcile(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.graph_reconcile()
+
+    @router.get("/event-bus")
+    def event_bus_snapshot(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.event_bus_snapshot()
+
+    @router.get("/nera")
+    def nera_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.nera_manifest()
+
+    @router.get("/architecture-framework")
+    def architecture_framework(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.architecture_framework()
+
+    @router.post("/retry-queue")
+    def enqueue_retry(payload: RetryQueueRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        return service.repository.enqueue_retry(**payload.model_dump())
+
+    @router.get("/retry-queue")
+    def retry_queue(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.repository.list_retry_queue()
+
+    @router.post("/retry-queue/{retry_id}/dead-letter")
+    def dead_letter(retry_id: str, payload: DeadLetterRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.repository.move_retry_to_dead_letter(retry_id, failure_reason=payload.failure_reason)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="retry_not_found") from exc
+
+    @router.get("/dead-letter-queue")
+    def dead_letter_queue(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.repository.list_dead_letter_queue()
 
     @router.post("/releases/{release_id}/build")
     def build_release(release_id: str, payload: dict[str, Any] | None = None, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
