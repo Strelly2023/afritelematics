@@ -2,7 +2,7 @@
 
 - Startup module: `afritech.api.app`
 - Scanned modules: `5648`
-- Startup-path modules discovered: `537`
+- Startup-path modules discovered: `539`
 - Declared Django-bound modules discovered: `284`
 - Violations: `0`
 

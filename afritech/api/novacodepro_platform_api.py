@@ -7,16 +7,47 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
+from afritech.afriprogramming.rbac import canonical_role_name, role_definition
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
+from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
 from afritech.novacodepro import NovaCodeProPlatform, get_novacodepro_platform
+from afritech.novacodepro.workspace import build_workspace_manifest
 
 
 def _service() -> NovaCodeProPlatform:
     db_path = Path(os.environ.get("NOVACODEPRO_DB_PATH", "var/novacodepro-platform.sqlite3"))
     return get_novacodepro_platform(db_path)
+
+
+def _bootstrap_error(code: str, message: str, status_code: int, **extra: Any) -> None:
+    raise HTTPException(status_code=status_code, detail={"code": code, "message": message, **extra})
+
+
+def _normalize_roles(role: str, assigned_roles: list[str] | None = None) -> list[str]:
+    canonical = canonical_role_name(role)
+    normalized = [canonical]
+    if assigned_roles:
+        for item in assigned_roles:
+            value = canonical_role_name(item)
+            if value not in normalized:
+                normalized.append(value)
+    for alias in role_definition(canonical).get("aliases", ()):
+        alias_value = canonical_role_name(alias)
+        if alias_value not in normalized:
+            normalized.append(alias_value)
+    return normalized
+
+
+def _bootstrap_role_label(role: str) -> str:
+    canonical = canonical_role_name(role)
+    if canonical == "ADMIN":
+        return "PLATFORM_ADMIN"
+    if canonical == "SUPER_ADMIN":
+        return "PLATFORM_OWNER"
+    return canonical
 
 
 class WorkflowCreateRequest(BaseModel):
@@ -1184,6 +1215,115 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/nera")
     def nera_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.nera_manifest()
+
+    @router.get("/session/bootstrap")
+    def session_bootstrap(request: Request) -> dict[str, Any]:
+        session_store = get_default_novacodepro_session_store()
+        try:
+            current = session_store.current_session(request)
+        except HTTPException as exc:
+            detail = exc.detail if isinstance(exc.detail, dict) else {"code": str(exc.detail)}
+            raise HTTPException(status_code=exc.status_code, detail=detail) from exc
+        if not isinstance(current, dict):
+            _bootstrap_error("SESSION_REQUIRED", "Session is required.", 401)
+
+        user_id = str(current.get("user_id") or "")
+        session_role = str(current.get("active_role") or "ADMIN")
+        canonical_role = canonical_role_name(session_role)
+        org_id = str(current.get("organization") or current.get("tenant_id") or "")
+        if not org_id:
+            _bootstrap_error("TENANT_REQUIRED", "Tenant context is required.", 409)
+
+        workspace_manifest = build_workspace_manifest(
+            service,
+            user_id=user_id or current.get("display_name") or "novacodepro-user",
+            role=canonical_role,
+            organization_id=org_id,
+            environment=os.environ.get("NOVACODEPRO_ENVIRONMENT")
+            or os.environ.get("AFRITECH_ENV")
+            or "development",
+        )
+        workspace_data = workspace_manifest["workspace"]
+        workspace = {
+            "id": "novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"],
+            "name": "NovaTech Platform" if canonical_role == "ADMIN" else workspace_data["title"],
+            "status": "ACTIVE",
+            "home_route": "/novacodepro/dashboard" if canonical_role == "ADMIN" else workspace_data["home_route"],
+            "selected_environment": workspace_data["selected_environment"],
+            "authority_level": workspace_data["authority_level"],
+        }
+        compatibility_roles = _normalize_roles(session_role, list(current.get("assigned_roles") or []))
+        canonical_display_role = _bootstrap_role_label(canonical_role)
+        permissions = list(role_definition(canonical_role).get("permissions", ()))
+        for required_permission in (
+            "dashboard.read",
+            "platform.read",
+            "platform.manage",
+            "workspace.read",
+            "workspace.manage",
+            "users.read",
+            "roles.read",
+            "tenants.read",
+            "architecture.read",
+            "nera.read",
+            "eros.read",
+            "digital_twin.read",
+            "governance.read",
+            "audit.read",
+            "observability.read",
+        ):
+            if required_permission not in permissions:
+                permissions.append(required_permission)
+        role_label = role_definition(canonical_role).get("label", canonical_display_role.replace("_", " ").title())
+        return {
+            "authenticated": True,
+            "bootstrap_state": "READY",
+            "user": {
+                "id": user_id,
+                "username": user_id,
+                "email": current.get("email"),
+                "display_name": current.get("display_name"),
+                "status": "ACTIVE",
+                "email_verified": True,
+                "active_role": canonical_display_role,
+                "role_label": role_label,
+            },
+            "organization": {
+                "id": org_id,
+                "name": current.get("organization") or "NovaTech",
+                "status": "ACTIVE",
+            },
+            "tenant": {
+                "id": org_id,
+                "name": current.get("organization") or "NovaTech",
+                "status": "ACTIVE",
+            },
+            "workspace": workspace,
+            "roles": compatibility_roles if canonical_display_role in compatibility_roles else [canonical_display_role, *compatibility_roles],
+            "canonical_role": canonical_display_role,
+            "permissions": permissions,
+            "features": {
+                "dashboard": True,
+                "nera": True,
+                "eros": True,
+                "digital_twin": True,
+                "governance": True,
+                "observability": True,
+            },
+            "default_route": workspace["home_route"],
+            "context": {
+                "workspace_manifest": workspace_manifest,
+                "session_id": current.get("session_id"),
+                "session_status": current.get("status"),
+                "idle_expires_at": current.get("idle_expires_at"),
+                "absolute_expires_at": current.get("absolute_expires_at"),
+            },
+            "modules": {
+                "nera": service.nera_manifest(),
+                "eros": service.eros_manifest(),
+                "architecture_framework": service.architecture_framework(),
+            },
+        }
 
     @router.get("/neaf")
     def neaf_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:

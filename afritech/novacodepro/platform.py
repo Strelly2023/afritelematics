@@ -1528,7 +1528,15 @@ class NovaCodeProPlatform:
         self.repository = repository
 
     def service_registry(self) -> list[dict[str, Any]]:
-        return self.repository.list("service")
+        services = self.repository.list("service")
+        if services:
+            return services
+        try:
+            from afritech.novacodepro.demo.factories._catalog import build_service_registry
+        except Exception:
+            return services
+        seeded = [self.repository.upsert("service", item) for item in build_service_registry()]
+        return seeded
 
     def tenants(self) -> list[dict[str, Any]]:
         return self.repository.list("tenant")
@@ -3696,12 +3704,15 @@ class NovaCodeProPlatform:
 
     def digital_twin_topology(self, twin_id: str | None = None) -> dict[str, Any]:
         twin = self.get_or_create_digital_twin(twin_id)
+        services = list((twin.get("topology") or {}).get("services") or [])
+        if not services and str(twin.get("id") or "") == "twin-novacodepro":
+            services = [service["name"] for service in self.service_registry()]
         return {
             "id": twin["id"],
             "name": twin["name"],
             "kind": twin.get("kind") or twin.get("type"),
             "children": list(twin.get("children") or []),
-            "services": list((twin.get("topology") or {}).get("services") or []),
+            "services": services,
             "relationships": list(twin.get("relationships") or []),
         }
 

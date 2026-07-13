@@ -313,3 +313,37 @@ def test_novacodepro_platform_cloud_native_services(tmp_path: Path) -> None:
     events = client.get("/v1/novacodepro/events", headers=_headers())
     assert events.status_code == 200
     assert any(event["event_type"] == "solution.created" for event in events.json())
+
+
+def test_platform_admin_session_bootstrap_returns_canonical_context(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    login = client.post(
+        "/v1/auth/login",
+        json={
+            "identifier": "djuma.platformadmin",
+            "password": "NovaCodePro123!",
+            "role": "ADMIN",
+        },
+    )
+    assert login.status_code == 200
+
+    bootstrap = client.get("/v1/novacodepro/session/bootstrap")
+    assert bootstrap.status_code == 200
+    body = bootstrap.json()
+    assert body["authenticated"] is True
+    assert body["canonical_role"] == "PLATFORM_ADMIN"
+    assert "ADMIN" in body["roles"]
+    assert "PLATFORM_ADMIN" in body["roles"]
+    assert body["workspace"]["id"] == "novatech-platform"
+    assert body["default_route"] == "/novacodepro/dashboard"
+    assert body["modules"]["nera"]["id"] == "nera"
+    assert body["modules"]["eros"]["id"] == "eros"
+
+
+def test_session_bootstrap_requires_authentication(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    bootstrap = client.get("/v1/novacodepro/session/bootstrap")
+    assert bootstrap.status_code == 401
+    assert bootstrap.json()["detail"]["code"] == "session_required"

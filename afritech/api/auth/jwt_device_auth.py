@@ -221,7 +221,9 @@ def build_auth_router(
 
     @router.post("/auth/login")
     def login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
-        identifier = str(payload.get("email") or payload.get("username") or "").strip()
+        identifier = str(
+            payload.get("identifier") or payload.get("email") or payload.get("username") or ""
+        ).strip()
         password = str(payload.get("password") or "")
         role = payload.get("role")
         if not identifier or not password:

@@ -11,7 +11,9 @@ import {
   WORKFLOW_STAGES,
   platformRuntime,
 } from "./platform/runtime.js";
+import { fetchBootstrap, normalizeBootstrapResponse } from "./platform/bootstrap.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
+import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 
 const NAV_ITEMS = [
   "Dashboard",
@@ -1642,6 +1644,8 @@ const PLATFORM_ADMIN_SECTIONS = [
 
 const AUTH_ROLE_TO_PROFILE_ID = {
   ADMIN: "platform-admin",
+  PLATFORM_ADMIN: "platform-admin",
+  PLATFORM_OWNER: "platform-admin",
   DEVELOPER: "software-engineer",
   PRODUCT_MANAGER: "cpo",
   BUSINESS_ANALYST: "business-administrator",
@@ -1670,6 +1674,8 @@ const AUTH_ROLE_TO_PROFILE_ID = {
 
 const AUTH_ROLE_DISPLAY_LABELS = {
   ADMIN: "Platform Administrator",
+  PLATFORM_ADMIN: "Platform Administrator",
+  PLATFORM_OWNER: "Platform Owner",
   DEVELOPER: "Developer",
   PRODUCT_MANAGER: "Product Manager",
   BUSINESS_ANALYST: "Business Analyst",
@@ -1696,7 +1702,9 @@ const AUTH_ROLE_DISPLAY_LABELS = {
   EXTERNAL_REGULATOR: "Regulator",
 };
 
-const AUTH_API_BASE = import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "";
+const AUTH_API_BASE = String(import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "")
+  .replace(/\/v1\/?$/, "")
+  .replace(/\/$/, "");
 const AUTH_LOGIN_ROUTE = "/login";
 const AUTH_DASHBOARD_ROUTE = "/novacodepro/dashboard";
 const AUTH_WARNING_MS = 2 * 60 * 1000;
@@ -1719,6 +1727,9 @@ function App() {
   const runtime = usePlatformRuntime();
   const [platformSummary, setPlatformSummary] = useState(null);
   const [authStatus, setAuthStatus] = useState("checking");
+  const [bootstrapState, setBootstrapState] = useState("loading");
+  const [bootstrapError, setBootstrapError] = useState("");
+  const [bootstrapContext, setBootstrapContext] = useState(null);
   const [session, setSession] = useState(null);
   const [sessionWarning, setSessionWarning] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -1811,32 +1822,95 @@ function App() {
 
   useEffect(() => {
     const controller = new AbortController();
+    let active = true;
 
-    fetch(`${AUTH_API_BASE}/v1/auth/session`, {
-      signal: controller.signal,
-      credentials: "include",
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error("signed_out");
+    (async () => {
+      try {
+        const { response, payload } = await fetchBootstrap(AUTH_API_BASE, { signal: controller.signal });
+        if (!active) {
+          return;
         }
-        return response.json();
-      })
-      .then((data) => {
-        setSession(data);
-        setRoleId(resolveProfileIdForRole(data.active_role));
-        setEnvironment("Production");
+        if (!response.ok) {
+          const detail = payload?.detail ?? payload ?? {};
+          const code = String(detail.code || response.statusText || "APPLICATION_ERROR").toUpperCase();
+          if (response.status === 401 || code.includes("SESSION_EXPIRED") || code.includes("SESSION_REQUIRED")) {
+            setBootstrapState("SESSION_EXPIRED");
+            setBootstrapError("Your session expired. Please sign in again.");
+            setSession(null);
+            setAuthStatus("signed-out");
+            window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+            return;
+          }
+          if (response.status === 403) {
+            setBootstrapState("FORBIDDEN");
+            setBootstrapError(detail.message || "Access denied.");
+            return;
+          }
+          if (response.status === 409) {
+            setBootstrapState(String(detail.code || "WORKSPACE_REQUIRED").toUpperCase());
+            setBootstrapError(detail.message || "Workspace or tenant context is required.");
+            return;
+          }
+          if (response.status >= 500) {
+            setBootstrapState("API_UNAVAILABLE");
+            setBootstrapError(detail.message || "Bootstrap service unavailable.");
+            return;
+          }
+          setBootstrapState("APPLICATION_ERROR");
+          setBootstrapError(detail.message || "Unable to initialize the workspace.");
+          return;
+        }
+
+        const normalized = normalizeBootstrapResponse(payload);
+        if (!normalized.authenticated) {
+          setBootstrapState("SESSION_EXPIRED");
+          setBootstrapError("Authentication is required.");
+          setSession(null);
+          setAuthStatus("signed-out");
+          window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+          return;
+        }
+        setBootstrapContext(normalized);
+        setSession({
+          session_id: normalized.context?.session_id ?? null,
+          user_id: normalized.user?.id ?? normalized.user?.username ?? "djuma.platformadmin",
+          email: normalized.user?.email ?? loginEmail,
+          display_name: normalized.user?.display_name ?? "Djuma Platform Administrator",
+          organization: normalized.organization?.id ?? "novatech",
+          active_role: normalized.roles?.[0] ?? "PLATFORM_ADMIN",
+          assigned_roles: normalized.roles ?? ["PLATFORM_ADMIN", "ADMIN"],
+          status: "active",
+          created_at: normalized.context?.created_at ?? new Date().toISOString(),
+          last_seen_at: normalized.context?.last_seen_at ?? new Date().toISOString(),
+          absolute_expires_at: normalized.context?.absolute_expires_at ?? new Date().toISOString(),
+          idle_expires_at: normalized.context?.idle_expires_at ?? new Date().toISOString(),
+        });
+        setRoleId(resolveProfileIdForRole(normalized.roles?.[0] ?? "PLATFORM_ADMIN"));
+        setEnvironment(normalized.workspace?.selected_environment ?? "Production");
         setAuthStatus("signed-in");
+        setBootstrapState("READY");
+        setBootstrapError("");
         setLoginError("");
-        window.history.replaceState({}, "", AUTH_DASHBOARD_ROUTE);
-      })
-      .catch(() => {
+        window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+        const message = error instanceof Error ? error.message : String(error || "APPLICATION_ERROR");
+        if (message === "AbortError") {
+          return;
+        }
+        setBootstrapState("API_UNAVAILABLE");
+        setBootstrapError(message);
         setSession(null);
         setAuthStatus("signed-out");
-        window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
-      });
+      }
+    })();
 
-    return () => controller.abort();
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -1911,6 +1985,8 @@ function App() {
       setSelectedWindowId(resolveFirstWindowIdForRole(payload.session.active_role));
       setEnvironment("Production");
       setAuthStatus("signed-in");
+      setBootstrapState("READY");
+      setBootstrapError("");
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
       window.history.replaceState({}, "", AUTH_DASHBOARD_ROUTE);
@@ -1932,6 +2008,7 @@ function App() {
     setPlatformSummary(null);
     setSession(null);
     setAuthStatus("signed-out");
+    setBootstrapState("SESSION_EXPIRED");
     setAccountMenuOpen(false);
     setShowRoleSwitcher(false);
     setSessionWarning(false);
@@ -2033,6 +2110,111 @@ function App() {
   const activeKnowledgeNode =
     runtime.knowledgeGraph.find((node) => node.id === runtime.selectedKnowledgeNodeId) ??
     runtime.knowledgeGraph[0];
+  const renderBootstrapLoading = (title, message, code) => (
+    <div className="auth-shell">
+      <header className="auth-topbar">
+        <div className="brand-block">
+          <div className="brand-mark">N</div>
+          <div>
+            <p className="eyebrow">NovaCodePro bootstrapping</p>
+            <strong>NovaCodePro</strong>
+          </div>
+        </div>
+      </header>
+      <main className="auth-panel">
+        <section className="auth-copy">
+          <p className="section-label">Loading workspace</p>
+          <h1>{title}</h1>
+          <p className="hero-summary">{message}</p>
+          <p className="auth-error">State: {code}</p>
+          <p className="hero-summary">
+            Version {NOVACODEPRO_BUILD_INFO.version} · Build {NOVACODEPRO_BUILD_INFO.build_id} · Commit{" "}
+            {NOVACODEPRO_BUILD_INFO.commit}
+          </p>
+        </section>
+        <div className="auth-form">
+          <button type="button" className="secondary-action" onClick={() => window.location.reload()}>
+            Reload application
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+
+  const renderBootstrapRecovery = (title, message, code) => (
+    <div className="auth-shell">
+      <header className="auth-topbar">
+        <div className="brand-block">
+          <div className="brand-mark">N</div>
+          <div>
+            <p className="eyebrow">NovaCodePro recovery screen</p>
+            <strong>NovaCodePro</strong>
+          </div>
+        </div>
+      </header>
+      <main className="auth-panel">
+        <section className="auth-copy">
+          <p className="section-label">Workspace unavailable</p>
+          <h1>{title}</h1>
+          <p className="hero-summary">{message}</p>
+          <p className="auth-error">State: {code}</p>
+          <p className="hero-summary">
+            Version {NOVACODEPRO_BUILD_INFO.version} · Build {NOVACODEPRO_BUILD_INFO.build_id} · Commit{" "}
+            {NOVACODEPRO_BUILD_INFO.commit}
+          </p>
+        </section>
+        <div className="auth-form">
+          <button type="button" className="novaid-button" onClick={() => window.location.reload()}>
+            Retry
+          </button>
+          <button type="button" className="secondary-action" onClick={() => window.location.reload()}>
+            Reload application
+          </button>
+          <button
+            type="button"
+            className="secondary-action"
+            onClick={() => window.location.assign("/novacodepro/login")}
+          >
+            Sign in again
+          </button>
+          <button
+            type="button"
+            className="secondary-action"
+            onClick={async () => {
+              try {
+                await fetch(`${AUTH_API_BASE}/v1/auth/logout`, { method: "POST", credentials: "include" });
+              } catch {
+                // Ignore sign-out failures.
+              }
+              try {
+                window.localStorage?.clear();
+              } catch {
+                // Ignore storage failures.
+              }
+              window.location.assign("/novacodepro/login");
+            }}
+          >
+            Clear local session
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+
+  if (bootstrapState === "loading") {
+    return renderBootstrapLoading(
+      "Loading your NovaCodePro workspace.",
+      "Resolving identity, tenant, workspace, and governance context.",
+      "BOOTSTRAP_LOADING",
+    );
+  }
+  if (["API_UNAVAILABLE", "APPLICATION_ERROR", "FORBIDDEN", "WORKSPACE_REQUIRED", "TENANT_REQUIRED"].includes(bootstrapState)) {
+    return renderBootstrapRecovery(
+      "NovaCodePro could not load this workspace.",
+      bootstrapError || "A managed recovery state is required before the dashboard can render.",
+      bootstrapState,
+    );
+  }
   if (authStatus !== "signed-in") {
     return (
       <div className="auth-shell">
@@ -2081,6 +2263,7 @@ function App() {
               {" "}
               Session revoked
             </p>
+            {bootstrapError ? <p className="auth-error">{bootstrapError}</p> : null}
           </section>
 
           <form className="auth-form" onSubmit={handleLogin}>
