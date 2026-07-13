@@ -13,6 +13,7 @@ from typing import Any
 
 from afritech.novacodepro.enterprise_framework import (
     build_enterprise_architecture_framework,
+    build_enterprise_plane_model,
     build_nera_manifest,
 )
 from afritech.novacodepro.enterprise_os import (
@@ -2957,6 +2958,7 @@ class NovaCodeProPlatform:
             "operations": health,
             "status": status,
             "event_bus": event_bus,
+            "plane_model": self.neaf_manifest(),
             "reference_architecture": self.nera_manifest(),
             "eros": self.eros_manifest(),
             "architecture_framework": self.architecture_framework(),
@@ -3050,6 +3052,7 @@ class NovaCodeProPlatform:
             "retry_queue_count": event_bus["retry_queue"],
             "dead_letter_queue_count": event_bus["dead_letter_queue"],
             "nera_layer_count": len(self.nera_manifest()["layers"]),
+            "plane_count": len(self.neaf_manifest()["planes"]),
             "architecture_model_count": len(self.architecture_framework()["models"]),
             "eros_core_views": len(self.eros_manifest()["core_views"]),
             "main_twin_resilience_score": self.digital_twin_summary().get("scores", {}).get("enterprise_resilience_score", 0),
@@ -4439,6 +4442,9 @@ class NovaCodeProPlatform:
 
     def nera_manifest(self) -> dict[str, Any]:
         return build_nera_manifest()
+
+    def neaf_manifest(self) -> dict[str, Any]:
+        return build_enterprise_plane_model()
 
     def eros_manifest(self) -> dict[str, Any]:
         return build_eros_manifest()

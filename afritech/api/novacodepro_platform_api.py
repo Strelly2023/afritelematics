@@ -1185,6 +1185,10 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def nera_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.nera_manifest()
 
+    @router.get("/neaf")
+    def neaf_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.neaf_manifest()
+
     @router.get("/architecture-framework")
     def architecture_framework(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.architecture_framework()

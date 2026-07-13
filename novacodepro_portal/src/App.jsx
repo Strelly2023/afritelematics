@@ -4787,6 +4787,13 @@ function App() {
                   <p className="section-label">Enterprise foundation</p>
                   <div className="tool-output-grid">
                     <article className="tool-mini-card">
+                      <strong>NEAF</strong>
+                      <span>
+                        {runtime.enterpriseArchitectureFramework.models.neaf.sequence.length} enterprise planes align
+                        governance, intelligence, execution, products, and infrastructure.
+                      </span>
+                    </article>
+                    <article className="tool-mini-card">
                       <strong>NERA</strong>
                       <span>
                         {runtime.neraArchitecture.layers.length} stable architecture layers with governance, platform,
@@ -4803,8 +4810,8 @@ function App() {
                     <article className="tool-mini-card">
                       <strong>EROS</strong>
                       <span>
-                        {runtime.erosManifest.coreViews.length} governed twin views, authority levels, and recovery
-                        services for enterprise resilience.
+                        {runtime.erosManifest.coreViews.length} governed twin views, authority levels, recovery
+                        services, and an optimize loop for enterprise resilience.
                       </span>
                     </article>
                     <article className="tool-mini-card">

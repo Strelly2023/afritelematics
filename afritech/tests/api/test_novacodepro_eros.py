@@ -31,7 +31,8 @@ def test_eros_manifest_and_architecture_framework_include_resilience_models(tmp_
 
     assert eros["name"] == "NovaDigitalTwin Enterprise Resilience Operating System"
     assert len(eros["core_views"]) == 6
-    assert "Simulation Engine" in eros["runtime_services"]
+    assert eros["lifecycle"][-1] == "Optimize"
+    assert "Optimization Engine" in eros["runtime_services"]
     assert "nerm" in framework["models"]
     assert "Simulation confidence" not in framework["models"]["ndtm"]["capabilities"]
     assert "Replay support" in framework["models"]["ndtm"]["capabilities"]

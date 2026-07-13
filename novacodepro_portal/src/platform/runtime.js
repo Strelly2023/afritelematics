@@ -80,10 +80,70 @@ const NERA_ARCHITECTURE = {
   ],
 };
 
+const NEAF_MODEL = {
+  id: "neaf",
+  name: "NovaTech Enterprise Plane Model",
+  version: "1.0",
+  sequence: [
+    "Governance Plane",
+    "Intelligence Plane",
+    "Execution Plane",
+    "Product Plane",
+    "Infrastructure Plane",
+  ],
+  planes: [
+    {
+      id: "governance-plane",
+      name: "Governance Plane",
+      owner: "NovaGovernance",
+      responsibilities: ["Trust", "Identity", "Security", "Policy", "Risk", "Compliance", "Audit", "Legal", "Privacy", "Authority"],
+      platforms: ["NovaTrust", "NovaID", "NovaSecure", "NovaPolicy", "NovaRisk", "NovaCompliance", "NovaAudit", "NovaLegal", "NovaPrivacy", "NovaAuthority"],
+    },
+    {
+      id: "intelligence-plane",
+      name: "Intelligence Plane",
+      owner: "NovaIntelligence",
+      responsibilities: ["Knowledge", "Graph", "Memory", "Decision", "Insights", "Learning", "Digital Twin", "Search", "Reasoning"],
+      platforms: ["NovaKnowledge", "NovaGraph", "NovaMemory", "NovaDecision", "NovaInsights", "NovaLearning", "NovaDigitalTwin", "NovaSearch", "NovaReasoning"],
+    },
+    {
+      id: "execution-plane",
+      name: "Execution Plane",
+      owner: "NovaExecution",
+      responsibilities: ["Workspace", "Projects", "Reviews", "Approvals", "Workflow", "Automation", "Deployments", "Testing", "Operations"],
+      platforms: ["NovaCodePro", "NovaWorkspace", "NovaProjects", "NovaReviews", "NovaApprovals", "NovaWorkflow", "NovaAutomation", "NovaDeployments", "NovaTesting", "NovaOperations"],
+    },
+    {
+      id: "product-plane",
+      name: "Product Plane",
+      owner: "NovaProducts",
+      responsibilities: ["Customer value", "Modular product evolution", "Market differentiation", "Industry-specific solutions"],
+      platforms: ["NovaRide", "NovaPay", "NovaHealth", "NovaCommerce", "NovaEducation", "NovaAgriculture", "NovaEnergy", "NovaInsurance", "NovaRealEstate", "NovaFood", "NovaGov", "NovaERP", "NovaCRM", "NovaAnalytics", "NovaLogistics"],
+    },
+    {
+      id: "infrastructure-plane",
+      name: "Infrastructure Plane",
+      owner: "NovaInfrastructure",
+      responsibilities: ["Cloud", "Gateway", "Events", "API", "Storage", "Network", "Regions", "Observability", "Monitoring", "Recovery"],
+      platforms: ["NovaCloud", "NovaGateway", "NovaEvents", "NovaAPI", "NovaStorage", "NovaNetwork", "NovaRegions", "NovaObservability", "NovaMonitoring", "NovaRecovery"],
+    },
+  ],
+  interactionModel: [
+    "Governance -> Intelligence",
+    "Intelligence -> Execution",
+    "Execution -> Products",
+    "Products -> Infrastructure",
+    "Infrastructure -> Governance evidence and telemetry",
+  ],
+  enterpriseStateModels: ["Observed State", "Desired State", "Predicted State", "Simulated State", "Approved State", "Recovered State"],
+  aiWorkforce: ["Executive Agents", "Architecture Agents", "Engineering Agents", "QA Agents", "Security Agents", "Compliance Agents", "Finance Agents", "Support Agents", "Operations Agents", "Research Agents"],
+  reasoningDomains: ["Strategic Reasoning", "Operational Reasoning", "Financial Reasoning", "Security Reasoning", "Compliance Reasoning", "Architecture Reasoning", "Risk Reasoning", "Recovery Reasoning", "Executive Reasoning"],
+};
+
 const EROS_MANIFEST = {
   id: "eros",
   name: "NovaDigitalTwin Enterprise Resilience Operating System",
-  version: "1.0",
+  version: "2.0",
   coreViews: [
     "Observed State",
     "Desired State",
@@ -108,13 +168,55 @@ const EROS_MANIFEST = {
     "Recovery Orchestrator",
     "Evidence Ledger",
     "Replay Engine",
+    "Optimization Engine",
+  ],
+  lifecycle: [
+    "Observe",
+    "Understand",
+    "Predict",
+    "Simulate",
+    "Recommend",
+    "Approve",
+    "Execute",
+    "Validate",
+    "Capture Evidence",
+    "Learn",
+    "Optimize",
+  ],
+  twinHierarchy: [
+    "Enterprise Twin",
+    "Organization Twins",
+    "Product Twins",
+    "Platform Twins",
+    "Service Twins",
+    "Process Twins",
+    "Infrastructure Twins",
+    "Financial Twins",
+    "Security Twins",
+    "Risk Twins",
+    "Compliance Twins",
+    "AI Twins",
+  ],
+  enterpriseMemory: [
+    "Architecture Memory",
+    "Operational Memory",
+    "Governance Memory",
+    "Product Memory",
+    "Customer Memory",
+    "Incident Memory",
+    "Recovery Memory",
+    "AI Memory",
+    "Decision Memory",
+    "Historical Memory",
   ],
 };
 
 const ENTERPRISE_ARCHITECTURE_FRAMEWORK = {
   id: "natech-framework",
-  name: "NovaTech Enterprise Architecture Framework",
+  name: "NovaTech AI-Native Enterprise Operating System Framework",
+  version: "2.0",
   models: {
+    neaf: NEAF_MODEL,
     nera: NERA_ARCHITECTURE,
     necm: {
       id: "necm",
@@ -476,6 +578,9 @@ function loadState() {
       return base;
     }
     const parsed = JSON.parse(raw);
+    const parsedEnterpriseArchitectureFramework = parsed.enterpriseArchitectureFramework ?? {};
+    const parsedEnterpriseArchitectureModels = parsedEnterpriseArchitectureFramework.models ?? {};
+    const parsedErosManifest = parsed.erosManifest ?? {};
     return {
       ...base,
       ...parsed,
@@ -490,9 +595,18 @@ function loadState() {
       agentTeams: parsed.agentTeams ?? base.agentTeams,
       eventBus: parsed.eventBus ?? base.eventBus,
       neraArchitecture: parsed.neraArchitecture ?? base.neraArchitecture,
-      enterpriseArchitectureFramework:
-        parsed.enterpriseArchitectureFramework ?? base.enterpriseArchitectureFramework,
-      erosManifest: parsed.erosManifest ?? base.erosManifest,
+      enterpriseArchitectureFramework: {
+        ...base.enterpriseArchitectureFramework,
+        ...parsedEnterpriseArchitectureFramework,
+        models: {
+          ...base.enterpriseArchitectureFramework.models,
+          ...parsedEnterpriseArchitectureModels,
+        },
+      },
+      erosManifest: {
+        ...base.erosManifest,
+        ...parsedErosManifest,
+      },
       evidenceBundles: parsed.evidenceBundles ?? base.evidenceBundles,
       riskRegister: parsed.riskRegister ?? base.riskRegister,
       approvalPolicies: parsed.approvalPolicies ?? base.approvalPolicies,
