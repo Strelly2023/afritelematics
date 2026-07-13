@@ -14,6 +14,10 @@ import {
 import { fetchBootstrap, normalizeBootstrapResponse } from "./platform/bootstrap.js";
 import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
 import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
+import {
+  resolveWorkspaceLoginRoleFromPathname,
+  resolveWorkspaceSlugFromLoginRole,
+} from "./platform/workspaceRoutes.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 
@@ -1725,6 +1729,8 @@ function resolveFirstWindowIdForRole(role) {
 }
 
 function App() {
+  const initialPathname = typeof window !== "undefined" ? window.location.pathname : AUTH_LOGIN_ROUTE;
+  const initialLoginRole = resolveWorkspaceLoginRoleFromPathname(initialPathname) || "ADMIN";
   const attachmentInputRef = useRef(null);
   const runtime = usePlatformRuntime();
   const [platformSummary, setPlatformSummary] = useState(null);
@@ -1738,15 +1744,15 @@ function App() {
   const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
   const [loginEmail, setLoginEmail] = useState("platformadministrator.test@afritechnology.com");
   const [loginPassword, setLoginPassword] = useState("NovaCodePro123!");
-  const [loginRole, setLoginRole] = useState("ADMIN");
+  const [loginRole, setLoginRole] = useState(initialLoginRole);
   const [loginError, setLoginError] = useState("");
   const [toolView, setToolView] = useState("main");
   const [smartCommand, setSmartCommand] = useState("");
-  const [roleId, setRoleId] = useState(ROLE_PROFILES[0].id);
+  const [roleId, setRoleId] = useState(resolveProfileIdForRole(initialLoginRole));
   const [search, setSearch] = useState("");
   const [environment, setEnvironment] = useState("Production");
   const [focusNav, setFocusNav] = useState("Dashboard");
-  const [selectedWindowId, setSelectedWindowId] = useState(ROLE_PROFILES[0].windows[0].id);
+  const [selectedWindowId, setSelectedWindowId] = useState(resolveFirstWindowIdForRole(initialLoginRole));
   const [activeWorkspaceSurfaceId, setActiveWorkspaceSurfaceId] = useState("dashboard");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [solutionTemplateId, setSolutionTemplateId] = useState(SOLUTION_TEMPLATES[0].id);
@@ -1898,7 +1904,12 @@ function App() {
         setBootstrapError("");
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
-        window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
+        const bootstrapRoute =
+          normalized.default_route ||
+          `/novacodepro/workspace/${resolveWorkspaceSlugFromLoginRole(
+            normalized.roles?.[0] ?? "ADMIN",
+          )}`;
+        window.history.replaceState({}, "", bootstrapRoute);
       } catch (error) {
         if (!active) {
           return;
@@ -2019,7 +2030,12 @@ function App() {
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
       setActiveWorkspaceSurfaceId("dashboard");
-      window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
+      const loginRoute =
+        normalized.default_route ||
+        `/novacodepro/workspace/${resolveWorkspaceSlugFromLoginRole(
+          normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole,
+        )}`;
+      window.history.replaceState({}, "", loginRoute);
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : "Login failed");
       setAuthStatus("signed-out");
