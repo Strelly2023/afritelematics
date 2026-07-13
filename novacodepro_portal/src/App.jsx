@@ -1802,6 +1802,9 @@ function App() {
   });
 
   useEffect(() => {
+    if (authStatus !== "signed-in") {
+      return undefined;
+    }
     const controller = new AbortController();
     fetch(`${AUTH_API_BASE}/v1/novacodepro/admin/summary`, {
       signal: controller.signal,
@@ -1980,16 +1983,38 @@ function App() {
       if (!response.ok) {
         throw new Error(payload.detail || "Login failed");
       }
-      setSession(payload.session);
-      setRoleId(resolveProfileIdForRole(payload.session.active_role));
-      setSelectedWindowId(resolveFirstWindowIdForRole(payload.session.active_role));
-      setEnvironment("Production");
+      const { response: bootstrapResponse, payload: bootstrapPayload } = await fetchBootstrap(AUTH_API_BASE, {});
+      if (!bootstrapResponse.ok) {
+        const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
+        const code = String(detail.code || bootstrapResponse.statusText || "SESSION_EXPIRED").toUpperCase();
+        throw new Error(detail.message || code || "Unable to establish a dashboard session");
+      }
+      const normalized = normalizeBootstrapResponse(bootstrapPayload);
+      setSession({
+        session_id: normalized.context?.session_id ?? payload.session?.session_id ?? null,
+        user_id: normalized.user?.id ?? payload.session?.user_id ?? loginEmail,
+        email: normalized.user?.email ?? payload.session?.email ?? loginEmail,
+        display_name: normalized.user?.display_name ?? payload.session?.display_name ?? "Djuma Platform Administrator",
+        organization: normalized.organization?.id ?? payload.session?.organization ?? "novatech",
+        active_role: normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN",
+        assigned_roles: normalized.roles ?? payload.session?.assigned_roles ?? ["PLATFORM_ADMIN", "ADMIN"],
+        status: "active",
+        created_at: normalized.context?.created_at ?? payload.session?.created_at ?? new Date().toISOString(),
+        last_seen_at: normalized.context?.last_seen_at ?? payload.session?.last_seen_at ?? new Date().toISOString(),
+        absolute_expires_at:
+          normalized.context?.absolute_expires_at ?? payload.session?.absolute_expires_at ?? new Date().toISOString(),
+        idle_expires_at:
+          normalized.context?.idle_expires_at ?? payload.session?.idle_expires_at ?? new Date().toISOString(),
+      });
+      setRoleId(resolveProfileIdForRole(normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN"));
+      setSelectedWindowId(resolveFirstWindowIdForRole(normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN"));
+      setEnvironment(normalized.workspace?.selected_environment ?? "Production");
       setAuthStatus("signed-in");
       setBootstrapState("READY");
       setBootstrapError("");
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
-      window.history.replaceState({}, "", AUTH_DASHBOARD_ROUTE);
+      window.history.replaceState({}, "", normalized.default_route || AUTH_DASHBOARD_ROUTE);
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : "Login failed");
       setAuthStatus("signed-out");
@@ -2201,23 +2226,18 @@ function App() {
     </div>
   );
 
-  if (bootstrapState === "loading") {
-    return renderBootstrapLoading(
-      "Loading your NovaCodePro workspace.",
-      "Resolving identity, tenant, workspace, and governance context.",
-      "BOOTSTRAP_LOADING",
-    );
-  }
-  if (["API_UNAVAILABLE", "APPLICATION_ERROR", "FORBIDDEN", "WORKSPACE_REQUIRED", "TENANT_REQUIRED"].includes(bootstrapState)) {
-    return renderBootstrapRecovery(
-      "NovaCodePro could not load this workspace.",
-      bootstrapError || "A managed recovery state is required before the dashboard can render.",
-      bootstrapState,
-    );
-  }
-  if (authStatus !== "signed-in") {
-    return (
-      <div className="auth-shell">
+  const bootstrapLoadingScreen = renderBootstrapLoading(
+    "Loading your NovaCodePro workspace.",
+    "Resolving identity, tenant, workspace, and governance context.",
+    "BOOTSTRAP_LOADING",
+  );
+  const bootstrapRecoveryScreen = renderBootstrapRecovery(
+    "NovaCodePro could not load this workspace.",
+    bootstrapError || "A managed recovery state is required before the dashboard can render.",
+    bootstrapState,
+  );
+  const signedOutScreen = (
+    <div className="auth-shell">
         <header className="auth-topbar">
           <div className="brand-block">
             <div className="brand-mark">N</div>
@@ -2342,8 +2362,7 @@ function App() {
           </form>
         </main>
       </div>
-    );
-  }
+  );
 
   const activeAutomationTemplate =
     AUTOMATION_TEMPLATES.find((template) => template.id === automationTemplateId) ??
@@ -3016,6 +3035,16 @@ function App() {
           </div>
         );
     }
+  }
+
+  if (bootstrapState === "loading") {
+    return bootstrapLoadingScreen;
+  }
+  if (["API_UNAVAILABLE", "APPLICATION_ERROR", "FORBIDDEN", "WORKSPACE_REQUIRED", "TENANT_REQUIRED"].includes(bootstrapState)) {
+    return bootstrapRecoveryScreen;
+  }
+  if (authStatus !== "signed-in") {
+    return signedOutScreen;
   }
 
   return (
