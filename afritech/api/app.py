@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse, Response
 from afritech.api.auth.jwt_device_auth import (
     authenticate_websocket,
     build_auth_router as build_pilot_auth_router,
+    build_novacodepro_session_router,
     reject_websocket,
     require_roles,
 )
@@ -374,6 +375,7 @@ app.include_router(
 app.include_router(build_novapay_ecosystem_router())
 app.include_router(build_novaid_router())
 app.include_router(build_novacodepro_platform_router())
+app.include_router(build_novacodepro_session_router())
 app.include_router(build_novaportal_suite_router())
 
 # ✅ AfriPro workspace API

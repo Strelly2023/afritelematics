@@ -12,12 +12,11 @@ import {
   platformRuntime,
 } from "./platform/runtime.js";
 import { fetchBootstrap, normalizeBootstrapResponse } from "./platform/bootstrap.js";
+import { ROUTES } from "./platform/routes.js";
 import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
 import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
-import {
-  resolveWorkspaceLoginRoleFromPathname,
-  resolveWorkspaceSlugFromLoginRole,
-} from "./platform/workspaceRoutes.js";
+import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoutes.js";
+import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 
@@ -1711,8 +1710,7 @@ const AUTH_ROLE_DISPLAY_LABELS = {
 const AUTH_API_BASE = String(import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "")
   .replace(/\/v1\/?$/, "")
   .replace(/\/$/, "");
-const AUTH_LOGIN_ROUTE = "/login";
-const AUTH_DASHBOARD_ROUTE = "/novacodepro/dashboard";
+const SESSION_API_BASE = `${AUTH_API_BASE}/v1/novacodepro/session`;
 const AUTH_WARNING_MS = 2 * 60 * 1000;
 
 function resolveProfileIdForRole(role) {
@@ -1728,8 +1726,16 @@ function resolveFirstWindowIdForRole(role) {
   return ROLE_PROFILES.find((profile) => profile.id === profileId)?.windows[0]?.id ?? ROLE_PROFILES[0].windows[0].id;
 }
 
+function toArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function toPairArray(value) {
+  return toArray(value).filter((item) => Array.isArray(item) && item.length >= 2);
+}
+
 function App() {
-  const initialPathname = typeof window !== "undefined" ? window.location.pathname : AUTH_LOGIN_ROUTE;
+  const initialPathname = typeof window !== "undefined" ? window.location.pathname : ROUTES.login;
   const initialLoginRole = resolveWorkspaceLoginRoleFromPathname(initialPathname) || "ADMIN";
   const attachmentInputRef = useRef(null);
   const runtime = usePlatformRuntime();
@@ -1738,6 +1744,7 @@ function App() {
   const [bootstrapState, setBootstrapState] = useState("loading");
   const [bootstrapError, setBootstrapError] = useState("");
   const [bootstrapContext, setBootstrapContext] = useState(null);
+  const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [session, setSession] = useState(null);
   const [sessionWarning, setSessionWarning] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -1850,7 +1857,8 @@ function App() {
             setBootstrapError("Your session expired. Please sign in again.");
             setSession(null);
             setAuthStatus("signed-out");
-            window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+            clearNovaCodeProSessionState();
+            window.history.replaceState({}, "", ROUTES.login);
             return;
           }
           if (response.status === 403) {
@@ -1879,7 +1887,8 @@ function App() {
           setBootstrapError("Authentication is required.");
           setSession(null);
           setAuthStatus("signed-out");
-          window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+          clearNovaCodeProSessionState();
+          window.history.replaceState({}, "", ROUTES.login);
           return;
         }
         setBootstrapContext(normalized);
@@ -1904,11 +1913,7 @@ function App() {
         setBootstrapError("");
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
-        const bootstrapRoute =
-          normalized.default_route ||
-          `/novacodepro/workspace/${resolveWorkspaceSlugFromLoginRole(
-            normalized.roles?.[0] ?? "ADMIN",
-          )}`;
+        const bootstrapRoute = normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN");
         window.history.replaceState({}, "", bootstrapRoute);
       } catch (error) {
         if (!active) {
@@ -1922,6 +1927,7 @@ function App() {
         setBootstrapError(message);
         setSession(null);
         setAuthStatus("signed-out");
+        clearNovaCodeProSessionState();
       }
     })();
 
@@ -1929,7 +1935,7 @@ function App() {
       active = false;
       controller.abort();
     };
-  }, []);
+  }, [bootstrapAttempt]);
 
   useEffect(() => {
     if (authStatus !== "signed-in" || !session) {
@@ -1952,27 +1958,40 @@ function App() {
       return undefined;
     }
     const interval = window.setInterval(() => {
-      fetch(`${AUTH_API_BASE}/v1/auth/session`, {
-        credentials: "include",
-      })
-        .then(async (response) => {
+      fetchBootstrap(AUTH_API_BASE, {})
+        .then(({ response, payload }) => {
           if (!response.ok) {
             throw new Error("session_expired");
           }
-          return response.json();
-        })
-        .then((payload) => {
-          setSession(payload);
-          setSessionWarning(Date.parse(payload.idle_expires_at) - Date.now() <= AUTH_WARNING_MS);
+          const normalized = normalizeBootstrapResponse(payload);
+          const nextSession = {
+            session_id: normalized.context?.session_id ?? null,
+            user_id: normalized.user?.id ?? normalized.user?.username ?? "djuma.platformadmin",
+            email: normalized.user?.email ?? loginEmail,
+            display_name: normalized.user?.display_name ?? "Djuma Platform Administrator",
+            organization: normalized.organization?.id ?? "novatech",
+            active_role: normalized.roles?.[0] ?? "PLATFORM_ADMIN",
+            assigned_roles: normalized.roles ?? ["PLATFORM_ADMIN", "ADMIN"],
+            status: "active",
+            created_at: normalized.context?.created_at ?? new Date().toISOString(),
+            last_seen_at: normalized.context?.last_seen_at ?? new Date().toISOString(),
+            absolute_expires_at: normalized.context?.absolute_expires_at ?? new Date().toISOString(),
+            idle_expires_at: normalized.context?.idle_expires_at ?? new Date().toISOString(),
+          };
+          setSession(nextSession);
+          setSessionWarning(Date.parse(nextSession.idle_expires_at) - Date.now() <= AUTH_WARNING_MS);
         })
         .catch(() => {
+          setBootstrapState("SESSION_EXPIRED");
+          setBootstrapError("Your session expired. Please sign in again.");
           setSession(null);
           setAuthStatus("signed-out");
           setAccountMenuOpen(false);
           setShowRoleSwitcher(false);
           setSessionWarning(false);
           setRoleId(ROLE_PROFILES[0].id);
-          window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+          clearNovaCodeProSessionState();
+          window.history.replaceState({}, "", ROUTES.login);
         });
     }, 60000);
     return () => window.clearInterval(interval);
@@ -1982,7 +2001,7 @@ function App() {
     event.preventDefault();
     setLoginError("");
     try {
-      const response = await fetch(`${AUTH_API_BASE}/v1/auth/login`, {
+      const response = await fetch(`${SESSION_API_BASE}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -2030,27 +2049,30 @@ function App() {
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
       setActiveWorkspaceSurfaceId("dashboard");
-      const loginRoute =
-        normalized.default_route ||
-        `/novacodepro/workspace/${resolveWorkspaceSlugFromLoginRole(
-          normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole,
-        )}`;
+      const loginRoute = normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole);
       window.history.replaceState({}, "", loginRoute);
     } catch (error) {
-      setLoginError(error instanceof Error ? error.message : "Login failed");
+      const message = error instanceof Error ? error.message : "Login failed";
+      if (/session(_| )?(expired|required)/i.test(message)) {
+        setBootstrapState("SESSION_EXPIRED");
+        setBootstrapError("Your session expired. Please sign in again.");
+      }
+      clearNovaCodeProSessionState();
+      setLoginError(message);
       setAuthStatus("signed-out");
     }
   };
 
   const handleLogout = async () => {
     try {
-      await fetch(`${AUTH_API_BASE}/v1/auth/logout`, {
+      await fetch(`${SESSION_API_BASE}/logout`, {
         method: "POST",
         credentials: "include",
       });
     } catch {
       // ignore logout transport failures; local state still clears
     }
+    clearNovaCodeProSessionState();
     setPlatformSummary(null);
     setSession(null);
     setAuthStatus("signed-out");
@@ -2065,12 +2087,12 @@ function App() {
     setRoleId(ROLE_PROFILES[0].id);
     setSelectedWindowId(resolveFirstWindowIdForRole("ADMIN"));
     setActiveWorkspaceSurfaceId("dashboard");
-    window.history.replaceState({}, "", AUTH_LOGIN_ROUTE);
+    window.history.replaceState({}, "", ROUTES.login);
   };
 
   const handleStaySignedIn = async () => {
     try {
-      const response = await fetch(`${AUTH_API_BASE}/v1/auth/refresh`, {
+      const response = await fetch(`${SESSION_API_BASE}/refresh`, {
         method: "POST",
         credentials: "include",
       });
@@ -2119,8 +2141,9 @@ function App() {
   const authDisplayName = session?.display_name || "Djuma";
   const authDisplayRole = session?.active_role || loginRole;
   const authDisplayRoleLabel = resolveAuthRoleLabel(authDisplayRole);
-  const authAssignedRoles = session?.assigned_roles || [loginRole];
-  const authAssignedRoleOptions = authAssignedRoles.map((role) => ({
+  const authAssignedRoles = toArray(session?.assigned_roles);
+  const safeAssignedRoles = authAssignedRoles.length ? authAssignedRoles : [loginRole];
+  const authAssignedRoleOptions = safeAssignedRoles.map((role) => ({
     id: role,
     label: role.replaceAll("_", " "),
   }));
@@ -2187,7 +2210,7 @@ function App() {
           </p>
         </section>
         <div className="auth-form">
-          <button type="button" className="secondary-action" onClick={() => window.location.reload()}>
+          <button type="button" className="secondary-action" onClick={() => window.location.replace(ROUTES.dashboard)}>
             Reload application
           </button>
         </div>
@@ -2218,16 +2241,28 @@ function App() {
           </p>
         </section>
         <div className="auth-form">
-          <button type="button" className="novaid-button" onClick={() => window.location.reload()}>
+          <button
+            type="button"
+            className="novaid-button"
+            onClick={() => {
+              setBootstrapState("loading");
+              setBootstrapError("");
+              setAuthStatus("checking");
+              setBootstrapAttempt((value) => value + 1);
+            }}
+          >
             Retry
           </button>
-          <button type="button" className="secondary-action" onClick={() => window.location.reload()}>
+          <button type="button" className="secondary-action" onClick={() => window.location.replace(ROUTES.dashboard)}>
             Reload application
           </button>
           <button
             type="button"
             className="secondary-action"
-            onClick={() => window.location.assign("/novacodepro/login")}
+            onClick={() => {
+              clearNovaCodeProSessionState();
+              window.location.assign(ROUTES.loginWithReason("session_expired"));
+            }}
           >
             Sign in again
           </button>
@@ -2236,16 +2271,12 @@ function App() {
             className="secondary-action"
             onClick={async () => {
               try {
-                await fetch(`${AUTH_API_BASE}/v1/auth/logout`, { method: "POST", credentials: "include" });
+                await fetch(`${SESSION_API_BASE}/logout`, { method: "POST", credentials: "include" });
               } catch {
                 // Ignore sign-out failures.
               }
-              try {
-                window.localStorage?.clear();
-              } catch {
-                // Ignore storage failures.
-              }
-              window.location.assign("/novacodepro/login");
+              clearNovaCodeProSessionState();
+              window.location.assign(ROUTES.loginWithReason("session_expired"));
             }}
           >
             Clear local session
@@ -4468,7 +4499,7 @@ function App() {
                   Each stage carries a service, API, storage location, audit event, and UI owner.
                 </p>
                 <div className="workflow-rail">
-                  {selectedRequest?.workflow.map((stage) => (
+          {toArray(selectedRequest?.workflow).map((stage) => (
                     <button
                       key={stage.id}
                       type="button"
@@ -4507,7 +4538,7 @@ function App() {
                   </button>
                 </div>
                 <div className="artifact-list">
-                  {selectedRequest?.artifacts.map((artifact) => (
+          {toArray(selectedRequest?.artifacts).map((artifact) => (
                     <div className="artifact-row" key={artifact.id}>
                       <strong>{artifact.title}</strong>
                       <span>{artifact.stage}</span>
@@ -5531,7 +5562,7 @@ function App() {
           <section className="rail-card">
             <p className="section-label">Live signals</p>
             <div className="signal-list">
-              {activeRole.signals.map(([label, value]) => (
+              {toPairArray(activeRole.signals).map(([label, value]) => (
                 <div className="signal-row" key={label}>
                   <span>{label}</span>
                   <strong>{value}</strong>
@@ -5543,7 +5574,7 @@ function App() {
           <section className="rail-card">
             <p className="section-label">Permissions</p>
             <div className="chip-cloud">
-              {activeRole.permissions.map((item) => (
+              {toArray(activeRole.permissions).map((item) => (
                 <span className="context-chip" key={item}>
                   {item}
                 </span>
@@ -5555,7 +5586,7 @@ function App() {
             <p className="section-label">AI workspace</p>
             <strong>Assistant and agents</strong>
             <div className="chip-cloud">
-              {activeRole.agents.map((item) => (
+              {toArray(activeRole.agents).map((item) => (
                 <span className="context-chip" key={item}>
                   {item}
                 </span>
@@ -5566,7 +5597,7 @@ function App() {
           <section className="rail-card">
             <p className="section-label">Notifications</p>
             <ul className="feed-list">
-              {activeRole.notifications.map((item) => (
+              {toArray(activeRole.notifications).map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -5575,7 +5606,7 @@ function App() {
           <section className="rail-card">
             <p className="section-label">Recent activity</p>
             <ul className="feed-list">
-              {activeRole.activity.map((item) => (
+              {toArray(activeRole.activity).map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>

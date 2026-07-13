@@ -6106,7 +6106,7 @@ def build_workspace_manifest(
         "workspace": {
             "id": workspace_id,
             "slug": workspace_slug,
-            "home_route": f"/novacodepro/workspace/{workspace_slug}",
+            "home_route": f"/novacodepro/workspace/{workspace_slug}/dashboard",
             "title": _workspace_title(canonical),
             "description": _workspace_description(canonical),
             "tenant": organization_id,

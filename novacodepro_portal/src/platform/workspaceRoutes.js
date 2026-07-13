@@ -30,7 +30,7 @@ export function resolveWorkspaceLoginRoleFromPathname(pathname) {
   if (typeof pathname !== "string") {
     return null;
   }
-  const match = pathname.match(/^\/novacodepro\/workspace\/([^/?#]+)/);
+  const match = pathname.match(/^\/novacodepro\/workspace\/([^/?#]+)(?:\/dashboard)?(?:[/?#]|$)/);
   if (!match) {
     return null;
   }
@@ -39,11 +39,13 @@ export function resolveWorkspaceLoginRoleFromPathname(pathname) {
 
 export function resolveWorkspaceSlugFromLoginRole(role) {
   const roleName = String(role || "").trim().toUpperCase();
+  if (["ADMIN", "PLATFORM_ADMIN", "PLATFORM_OWNER", "SUPER_ADMIN", "SYSTEM_ADMIN"].includes(roleName)) {
+    return "admin";
+  }
   for (const [slug, mappedRole] of Object.entries(WORKSPACE_ROUTE_TO_LOGIN_ROLE)) {
     if (mappedRole === roleName) {
       return slug;
     }
   }
-  return roleName === "ADMIN" ? "admin" : "workspace";
+  return "workspace";
 }
-

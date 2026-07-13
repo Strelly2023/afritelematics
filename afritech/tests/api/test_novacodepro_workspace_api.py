@@ -39,7 +39,7 @@ def test_workspace_manifest_personalizes_platform_administrator_workspace(tmp_pa
     assert body["user"]["primary_role"] == "ADMIN"
     assert body["workspace"]["title"] == "Platform Administration Workspace"
     assert body["workspace"]["authority_level"] == "platform-admin"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/admin"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/admin/dashboard"
     assert body["workspace"]["selected_environment"] == "production"
     assert body["workspace"]["feature_flags"]["role_workspace_v2"] is True
     tool_names = [tool["name"] for tool in body["workspace"]["tools"]]
@@ -65,7 +65,7 @@ def test_workspace_manifest_personalizes_developer_workspace(tmp_path: Path) -> 
     assert body["user"]["display_name"] == "Djuma"
     assert body["user"]["primary_role"] == "DEVELOPER"
     assert body["workspace"]["title"] == "Developer Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/developer"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/developer/dashboard"
     assert body["workspace"]["selected_environment"] == "development"
     assert body["workspace"]["authority_level"] == "developer"
     assert body["workspace"]["current_sprint"] == "Sprint 24"
@@ -97,7 +97,7 @@ def test_workspace_manifest_personalizes_product_manager_workspace(tmp_path: Pat
     assert body["user"]["display_name"] == "Djuma"
     assert body["user"]["primary_role"] == "PRODUCT_MANAGER"
     assert body["workspace"]["title"] == "Product Management Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/product"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/product/dashboard"
     assert body["workspace"]["selected_environment"] == "business-planning"
     assert body["workspace"]["authority_level"] == "product-manager"
     assert body["workspace"]["portfolio_name"] == "Mobility and Payments"
@@ -129,7 +129,7 @@ def test_workspace_manifest_personalizes_business_analyst_workspace(tmp_path: Pa
     body = response.json()
     assert body["user"]["primary_role"] == "BUSINESS_ANALYST"
     assert body["workspace"]["title"] == "Business Analysis Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/business-analyst"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/business-analyst/dashboard"
     assert body["workspace"]["selected_environment"] == "analysis"
     assert body["workspace"]["authority_level"] == "business-analyst"
     assert body["workspace"]["portfolio_name"] == "Mobility & Financial Services"
@@ -159,7 +159,7 @@ def test_workspace_manifest_personalizes_ui_ux_designer_workspace(tmp_path: Path
     body = response.json()
     assert body["user"]["primary_role"] == "UI_UX_DESIGNER"
     assert body["workspace"]["title"] == "Design Studio"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/design"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/design/dashboard"
     assert body["workspace"]["selected_environment"] == "design"
     assert body["workspace"]["authority_level"] == "designer"
     assert body["workspace"]["feature_flags"]["design_workspace"] is True
@@ -188,7 +188,7 @@ def test_workspace_manifest_personalizes_project_manager_workspace(tmp_path: Pat
     body = response.json()
     assert body["user"]["primary_role"] == "PROJECT_MANAGER"
     assert body["workspace"]["title"] == "Project Delivery Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/project-manager"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/project-manager/dashboard"
     assert body["workspace"]["selected_environment"] == "delivery"
     assert body["workspace"]["authority_level"] == "project-manager"
     assert body["workspace"]["portfolio_name"] == "Projects Portfolio"
@@ -218,7 +218,7 @@ def test_workspace_manifest_personalizes_architect_workspace(tmp_path: Path) -> 
     body = response.json()
     assert body["user"]["primary_role"] == "ARCHITECT"
     assert body["workspace"]["title"] == "Architecture Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/architect"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/architect/dashboard"
     assert body["workspace"]["selected_environment"] == "architecture"
     assert body["workspace"]["authority_level"] == "architect"
     assert body["workspace"]["feature_flags"]["architecture_workspace"] is True
@@ -245,7 +245,7 @@ def test_workspace_manifest_personalizes_qa_workspace(tmp_path: Path) -> None:
     body = response.json()
     assert body["user"]["primary_role"] == "QA_ENGINEER"
     assert body["workspace"]["title"] == "Quality Engineering Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/qa-engineer"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/qa-engineer/dashboard"
     assert body["workspace"]["selected_environment"] == "quality"
     assert body["workspace"]["authority_level"] == "qa-engineer"
     assert body["workspace"]["feature_flags"]["quality_workspace"] is True
@@ -272,7 +272,7 @@ def test_workspace_manifest_personalizes_devops_workspace(tmp_path: Path) -> Non
     body = response.json()
     assert body["user"]["primary_role"] == "DEVOPS_ENGINEER"
     assert body["workspace"]["title"] == "DevOps Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/devops-engineer"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/devops-engineer/dashboard"
     assert body["workspace"]["selected_environment"] == "operations"
     assert body["workspace"]["authority_level"] == "devops-engineer"
     assert body["workspace"]["feature_flags"]["devops_workspace"] is True
@@ -299,7 +299,7 @@ def test_workspace_manifest_personalizes_customer_support_workspace(tmp_path: Pa
     body = response.json()
     assert body["user"]["primary_role"] == "CUSTOMER_SUPPORT"
     assert body["workspace"]["title"] == "Customer Support Workspace"
-    assert body["workspace"]["home_route"] == "/novacodepro/workspace/customer-support"
+    assert body["workspace"]["home_route"] == "/novacodepro/workspace/customer-support/dashboard"
     assert body["workspace"]["selected_environment"] == "support"
     assert body["workspace"]["authority_level"] == "customer-support"
     assert body["workspace"]["feature_flags"]["customer_support_workspace"] is True
@@ -318,7 +318,7 @@ def test_workspace_html_renders_launcher_and_command_palette(tmp_path: Path) -> 
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/admin",
+        "/novacodepro/workspace/admin/dashboard",
         headers=_headers("ADMIN", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -335,7 +335,7 @@ def test_developer_workspace_html_renders_engineering_summary(tmp_path: Path) ->
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/developer",
+        "/novacodepro/workspace/developer/dashboard",
         headers=_headers("DEVELOPER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -352,7 +352,7 @@ def test_product_manager_workspace_html_renders_product_summary(tmp_path: Path) 
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/product",
+        "/novacodepro/workspace/product/dashboard",
         headers=_headers("PRODUCT_MANAGER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -367,7 +367,7 @@ def test_business_analyst_workspace_html_renders_analysis_summary(tmp_path: Path
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/business-analyst",
+        "/novacodepro/workspace/business-analyst/dashboard",
         headers=_headers("BUSINESS_ANALYST", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -382,7 +382,7 @@ def test_ui_ux_designer_workspace_html_renders_design_summary(tmp_path: Path) ->
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/design",
+        "/novacodepro/workspace/design/dashboard",
         headers=_headers("UI_UX_DESIGNER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -397,7 +397,7 @@ def test_project_manager_workspace_html_renders_project_summary(tmp_path: Path) 
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/project-manager",
+        "/novacodepro/workspace/project-manager/dashboard",
         headers=_headers("PROJECT_MANAGER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -412,7 +412,7 @@ def test_architect_workspace_html_renders_architecture_summary(tmp_path: Path) -
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/architect",
+        "/novacodepro/workspace/architect/dashboard",
         headers=_headers("ARCHITECT", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -426,7 +426,7 @@ def test_qa_workspace_html_renders_quality_summary(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/qa-engineer",
+        "/novacodepro/workspace/qa-engineer/dashboard",
         headers=_headers("QA_ENGINEER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -440,7 +440,7 @@ def test_devops_workspace_html_renders_delivery_summary(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/devops-engineer",
+        "/novacodepro/workspace/devops-engineer/dashboard",
         headers=_headers("DEVOPS_ENGINEER", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -454,7 +454,7 @@ def test_customer_support_workspace_html_renders_support_summary(tmp_path: Path)
     client = _client(tmp_path)
 
     response = client.get(
-        "/novacodepro/workspace/customer-support",
+        "/novacodepro/workspace/customer-support/dashboard",
         headers=_headers("CUSTOMER_SUPPORT", "usr_djuma"),
     )
     assert response.status_code == 200
@@ -760,7 +760,7 @@ def test_workspace_manifest_personalizes_new_role_workspaces(
     body = response.json()
     assert body["user"]["primary_role"] == role
     assert body["workspace"]["title"] == title
-    assert body["workspace"]["home_route"] == f"/novacodepro/workspace/{slug}"
+    assert body["workspace"]["home_route"] == f"/novacodepro/workspace/{slug}/dashboard"
     assert body["workspace"]["selected_environment"] == environment
     assert body["workspace"]["feature_flags"][flag] is True
     assert tool_name in [tool["name"] for tool in body["workspace"]["tools"]]
@@ -769,21 +769,21 @@ def test_workspace_manifest_personalizes_new_role_workspaces(
 @pytest.mark.parametrize(
     ("role", "route", "expected_strings"),
     [
-        ("OPERATIONS_TEAM", "/novacodepro/workspace/operations", ["Operations Workspace", "Operational status", "Business operations"]),
-        ("BRAND_TEAM", "/novacodepro/workspace/brand", ["Brand Management Workspace", "Brand health", "Active campaigns"]),
-        ("COMPLIANCE_TEAM", "/novacodepro/workspace/compliance", ["Compliance Workspace", "Compliance health", "Today's tasks"]),
-        ("AUDIT_TEAM", "/novacodepro/workspace/audit", ["Audit Workspace", "Audit health", "Today's activities"]),
-        ("SECURITY_ENGINEER", "/novacodepro/workspace/security", ["Cyber Security Workspace", "Security health", "Security operations"]),
-        ("INCIDENT_RESPONSE_TEAM", "/novacodepro/workspace/incident-response", ["Incident Response Workspace", "Response metrics", "Live operations"]),
-        ("DATA_ARCHITECT", "/novacodepro/workspace/data-architect", ["Data Architecture Workspace", "Data estate health", "Active initiatives"]),
-        ("DATA_ENGINEER", "/novacodepro/workspace/data-engineering", ["Data Engineering Workspace", "Data quality", "Pipeline work"]),
-        ("DATABASE_ENGINEER", "/novacodepro/workspace/database-engineer", ["Database Engineering Workspace", "Database health", "Database fleet"]),
-        ("AI_ML_ENGINEER", "/novacodepro/workspace/ai-ml-engineer", ["AI Engineering Workspace", "Model estate", "Model work"]),
-        ("DATA_SCIENTIST", "/novacodepro/workspace/data-scientist", ["Data Science Workspace", "Analytical health", "Active studies"]),
-        ("PRIVACY_COMPLIANCE", "/novacodepro/workspace/privacy-compliance", ["Privacy &amp; Compliance Workspace", "Compliance health", "Today's tasks"]),
-        ("RISK_MANAGEMENT", "/novacodepro/workspace/risk", ["Enterprise Risk Workspace", "Enterprise risk posture", "Risk attention"]),
-        ("EXTERNAL_REGULATOR", "/novacodepro/workspace/regulator", ["Regulatory Oversight Workspace", "Submission status", "Current attention"]),
-        ("LEGAL", "/novacodepro/workspace/legal", ["Legal Operations Workspace", "Legal portfolio", "Legal matters"]),
+        ("OPERATIONS_TEAM", "/novacodepro/workspace/operations/dashboard", ["Operations Workspace", "Operational status", "Business operations"]),
+        ("BRAND_TEAM", "/novacodepro/workspace/brand/dashboard", ["Brand Management Workspace", "Brand health", "Active campaigns"]),
+        ("COMPLIANCE_TEAM", "/novacodepro/workspace/compliance/dashboard", ["Compliance Workspace", "Compliance health", "Today's tasks"]),
+        ("AUDIT_TEAM", "/novacodepro/workspace/audit/dashboard", ["Audit Workspace", "Audit health", "Today's activities"]),
+        ("SECURITY_ENGINEER", "/novacodepro/workspace/security/dashboard", ["Cyber Security Workspace", "Security health", "Security operations"]),
+        ("INCIDENT_RESPONSE_TEAM", "/novacodepro/workspace/incident-response/dashboard", ["Incident Response Workspace", "Response metrics", "Live operations"]),
+        ("DATA_ARCHITECT", "/novacodepro/workspace/data-architect/dashboard", ["Data Architecture Workspace", "Data estate health", "Active initiatives"]),
+        ("DATA_ENGINEER", "/novacodepro/workspace/data-engineering/dashboard", ["Data Engineering Workspace", "Data quality", "Pipeline work"]),
+        ("DATABASE_ENGINEER", "/novacodepro/workspace/database-engineer/dashboard", ["Database Engineering Workspace", "Database health", "Database fleet"]),
+        ("AI_ML_ENGINEER", "/novacodepro/workspace/ai-ml-engineer/dashboard", ["AI Engineering Workspace", "Model estate", "Model work"]),
+        ("DATA_SCIENTIST", "/novacodepro/workspace/data-scientist/dashboard", ["Data Science Workspace", "Analytical health", "Active studies"]),
+        ("PRIVACY_COMPLIANCE", "/novacodepro/workspace/privacy-compliance/dashboard", ["Privacy &amp; Compliance Workspace", "Compliance health", "Today's tasks"]),
+        ("RISK_MANAGEMENT", "/novacodepro/workspace/risk/dashboard", ["Enterprise Risk Workspace", "Enterprise risk posture", "Risk attention"]),
+        ("EXTERNAL_REGULATOR", "/novacodepro/workspace/regulator/dashboard", ["Regulatory Oversight Workspace", "Submission status", "Current attention"]),
+        ("LEGAL", "/novacodepro/workspace/legal/dashboard", ["Legal Operations Workspace", "Legal portfolio", "Legal matters"]),
     ],
 )
 def test_workspace_html_renders_new_role_summaries(

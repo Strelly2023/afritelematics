@@ -1,3 +1,5 @@
+import { ROUTES } from "./routes.js";
+
 const DEFAULT_TIMEOUT_MS = 8000;
 
 function normalizeError(error, fallbackCode = "APPLICATION_ERROR") {
@@ -38,7 +40,7 @@ export async function fetchBootstrap(baseUrl = "", { signal } = {}) {
   }
 
   try {
-    const response = await fetch(`${baseUrl}/v1/novacodepro/session/bootstrap`, {
+    const response = await fetch(`${baseUrl}/v1/novacodepro/session`, {
       credentials: "include",
       signal: controller.signal,
       headers: {
@@ -98,7 +100,7 @@ export function normalizeBootstrapResponse(payload) {
     roles,
     permissions,
     features: payload.features ?? {},
-    default_route: payload.default_route || "/novacodepro/dashboard",
+    default_route: payload.default_route || ROUTES.dashboard,
     bootstrap_state: payload.bootstrap_state || (authenticated ? "READY" : "UNAUTHENTICATED"),
   };
 }

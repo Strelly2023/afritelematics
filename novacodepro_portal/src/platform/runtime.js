@@ -572,6 +572,7 @@ function loadState() {
   if (typeof localStorage === "undefined") {
     return base;
   }
+  const pickArray = (value, fallback) => (Array.isArray(value) ? value : fallback);
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
@@ -584,16 +585,16 @@ function loadState() {
     return {
       ...base,
       ...parsed,
-      solutionRequests: parsed.solutionRequests ?? base.solutionRequests,
-      auditTrail: parsed.auditTrail ?? base.auditTrail,
-      commandHistory: parsed.commandHistory ?? base.commandHistory,
-      tenants: parsed.tenants ?? base.tenants,
-      projects: parsed.projects ?? base.projects,
-      collaborationThreads: parsed.collaborationThreads ?? base.collaborationThreads,
-      knowledgeGraph: parsed.knowledgeGraph ?? base.knowledgeGraph,
-      approvalObjects: parsed.approvalObjects ?? base.approvalObjects,
-      agentTeams: parsed.agentTeams ?? base.agentTeams,
-      eventBus: parsed.eventBus ?? base.eventBus,
+      solutionRequests: pickArray(parsed.solutionRequests, base.solutionRequests),
+      auditTrail: pickArray(parsed.auditTrail, base.auditTrail),
+      commandHistory: pickArray(parsed.commandHistory, base.commandHistory),
+      tenants: pickArray(parsed.tenants, base.tenants),
+      projects: pickArray(parsed.projects, base.projects),
+      collaborationThreads: pickArray(parsed.collaborationThreads, base.collaborationThreads),
+      knowledgeGraph: pickArray(parsed.knowledgeGraph, base.knowledgeGraph),
+      approvalObjects: pickArray(parsed.approvalObjects, base.approvalObjects),
+      agentTeams: pickArray(parsed.agentTeams, base.agentTeams),
+      eventBus: pickArray(parsed.eventBus, base.eventBus),
       neraArchitecture: parsed.neraArchitecture ?? base.neraArchitecture,
       enterpriseArchitectureFramework: {
         ...base.enterpriseArchitectureFramework,
@@ -607,17 +608,17 @@ function loadState() {
         ...base.erosManifest,
         ...parsedErosManifest,
       },
-      evidenceBundles: parsed.evidenceBundles ?? base.evidenceBundles,
-      riskRegister: parsed.riskRegister ?? base.riskRegister,
-      approvalPolicies: parsed.approvalPolicies ?? base.approvalPolicies,
-      approvalRoutes: parsed.approvalRoutes ?? base.approvalRoutes,
-      digitalTwinScenarios: parsed.digitalTwinScenarios ?? base.digitalTwinScenarios,
-      executiveInsights: parsed.executiveInsights ?? base.executiveInsights,
-      commandCenterSnapshots: parsed.commandCenterSnapshots ?? base.commandCenterSnapshots,
-      automationRuns: parsed.automationRuns ?? base.automationRuns,
-      connectedIntegrations: parsed.connectedIntegrations ?? base.connectedIntegrations,
-      installedAgents: parsed.installedAgents ?? base.installedAgents,
-      developerSurfaces: parsed.developerSurfaces ?? base.developerSurfaces,
+      evidenceBundles: pickArray(parsed.evidenceBundles, base.evidenceBundles),
+      riskRegister: pickArray(parsed.riskRegister, base.riskRegister),
+      approvalPolicies: pickArray(parsed.approvalPolicies, base.approvalPolicies),
+      approvalRoutes: pickArray(parsed.approvalRoutes, base.approvalRoutes),
+      digitalTwinScenarios: pickArray(parsed.digitalTwinScenarios, base.digitalTwinScenarios),
+      executiveInsights: pickArray(parsed.executiveInsights, base.executiveInsights),
+      commandCenterSnapshots: pickArray(parsed.commandCenterSnapshots, base.commandCenterSnapshots),
+      automationRuns: pickArray(parsed.automationRuns, base.automationRuns),
+      connectedIntegrations: pickArray(parsed.connectedIntegrations, base.connectedIntegrations),
+      installedAgents: pickArray(parsed.installedAgents, base.installedAgents),
+      developerSurfaces: pickArray(parsed.developerSurfaces, base.developerSurfaces),
     };
   } catch {
     return base;

@@ -284,8 +284,20 @@ def build_auth_router(
             },
         }
 
+    @router.post("/session/login")
+    def session_login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
+        return login(payload, response, request)
+
     @router.get("/auth/session")
     def session(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
+    @router.get("/session")
+    def session_alias(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
+    @router.get("/session/bootstrap")
+    def session_bootstrap(request: Request) -> dict[str, Any]:
         return session_store.current_session(request)
 
     @router.post("/auth/session/keepalive")
@@ -316,6 +328,10 @@ def build_auth_router(
         )
         return result
 
+    @router.post("/session/refresh")
+    def session_refresh(request: Request, response: Response) -> dict[str, Any]:
+        return refresh(request, response)
+
     @router.post("/auth/logout")
     def logout(request: Request, response: Response) -> dict[str, Any]:
         result = session_store.logout(request)
@@ -323,6 +339,10 @@ def build_auth_router(
             response.delete_cookie(cookie_name, path="/")
         response.headers["Cache-Control"] = "no-store"
         return result
+
+    @router.post("/session/logout")
+    def session_logout(request: Request, response: Response) -> dict[str, Any]:
+        return logout(request, response)
 
     @router.post("/auth/switch-role")
     def switch_role(payload: dict[str, Any], request: Request, response: Response) -> dict[str, Any]:
@@ -343,6 +363,127 @@ def build_auth_router(
     @router.get("/auth/me")
     def me(request: Request) -> dict[str, Any]:
         return session_store.current_session(request)
+
+    return router
+
+
+def build_novacodepro_session_router(
+    jwt_service: JWTService | None = None,
+    device_binding: DeviceBindingService | None = None,
+    session_store: Any | None = None,
+) -> APIRouter:
+    jwt = jwt_service or JWT
+    _ = device_binding or DeviceBindingService()
+    from afritech.api.auth.novacodepro_session_store import (
+        ACCESS_COOKIE_NAME,
+        CSRF_COOKIE_NAME,
+        REFRESH_COOKIE_NAME,
+        SESSION_COOKIE_NAME,
+        get_default_novacodepro_session_store,
+        set_default_novacodepro_session_store,
+    )
+
+    session_store = session_store or get_default_novacodepro_session_store()
+    session_store.jwt_service = jwt
+    set_default_novacodepro_session_store(session_store)
+    router = APIRouter(prefix="/v1/novacodepro", tags=["novacodepro-session"])
+
+    def _set_session_cookies(response: Response, result: dict[str, Any]) -> None:
+        response.set_cookie(
+            key=ACCESS_COOKIE_NAME,
+            value=result["access_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        response.set_cookie(
+            key=REFRESH_COOKIE_NAME,
+            value=result["refresh_token"],
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+        )
+        session_id = result.get("session_id") or result.get("session", {}).get("session_id")
+        if session_id:
+            response.set_cookie(
+                key=SESSION_COOKIE_NAME,
+                value=str(session_id),
+                httponly=True,
+                secure=_cookie_secure(),
+                samesite="lax",
+                path="/",
+            )
+        csrf_token = result.get("csrf_token")
+        if csrf_token:
+            response.set_cookie(
+                key=CSRF_COOKIE_NAME,
+                value=str(csrf_token),
+                httponly=False,
+                secure=_cookie_secure(),
+                samesite="lax",
+                path="/",
+            )
+
+    def _clear_session_cookies(response: Response) -> None:
+        for cookie_name in (ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME, SESSION_COOKIE_NAME, CSRF_COOKIE_NAME):
+            response.delete_cookie(cookie_name, path="/")
+
+    @router.post("/session/login")
+    def session_login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
+        identifier = str(
+            payload.get("identifier") or payload.get("email") or payload.get("username") or ""
+        ).strip()
+        password = str(payload.get("password") or "")
+        role = payload.get("role")
+        if not identifier or not password:
+            raise HTTPException(status_code=400, detail="email_and_password_required")
+        result = session_store.login(
+            identifier=identifier,
+            password=password,
+            role=str(role) if role else None,
+            user_agent=request.headers.get("user-agent", ""),
+            client_ip=request.client.host if request.client else "",
+        )
+        _set_session_cookies(response, result)
+        return {
+            "status": "authenticated",
+            "user": {
+                "user_id": result["session"]["user_id"],
+                "email": result["session"]["email"],
+                "display_name": result["session"]["display_name"],
+                "organization": result["session"]["organization"],
+                "assigned_roles": result["session"]["assigned_roles"],
+                "active_role": result["session"]["active_role"],
+            },
+            "session": result["session"],
+            "tokens": {
+                "access_token": result["access_token"],
+                "refresh_token": result["refresh_token"],
+            },
+        }
+
+    @router.get("/session")
+    def session(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
+    @router.get("/session/bootstrap")
+    def session_bootstrap(request: Request) -> dict[str, Any]:
+        return session_store.current_session(request)
+
+    @router.post("/session/refresh")
+    def session_refresh(request: Request, response: Response) -> dict[str, Any]:
+        result = session_store.refresh_session(request)
+        _set_session_cookies(response, result)
+        return result
+
+    @router.post("/session/logout")
+    def session_logout(request: Request, response: Response) -> dict[str, Any]:
+        result = session_store.logout(request)
+        _clear_session_cookies(response)
+        response.headers["Cache-Control"] = "no-store"
+        return result
 
     return router
 

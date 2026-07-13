@@ -134,6 +134,17 @@ def build_novacodepro_workspace_router(platform: NovaCodeProPlatform | None = No
         manifest = _workspace_manifest(claims, environment=environment)
         if workspace_slug != manifest["workspace"]["slug"]:
             raise HTTPException(status_code=404, detail="workspace_not_found")
+        return RedirectResponse(manifest["workspace"]["home_route"], status_code=307)
+
+    @router.get("/novacodepro/workspace/{workspace_slug}/dashboard", response_class=HTMLResponse)
+    def novacodepro_workspace_dashboard(
+        workspace_slug: str,
+        environment: str | None = None,
+        claims: JWTClaims = Depends(observer),
+    ) -> str:
+        manifest = _workspace_manifest(claims, environment=environment)
+        if workspace_slug != manifest["workspace"]["slug"]:
+            raise HTTPException(status_code=404, detail="workspace_not_found")
         return render_workspace_html(manifest)
 
     @router.get("/novacodepro/tools/{tool_id}", response_class=HTMLResponse)

@@ -319,7 +319,7 @@ def test_platform_admin_session_bootstrap_returns_canonical_context(tmp_path: Pa
     client = _client(tmp_path)
 
     login = client.post(
-        "/v1/auth/login",
+        "/v1/novacodepro/session/login",
         json={
             "identifier": "djuma.platformadmin",
             "password": "NovaCodePro123!",
@@ -328,7 +328,7 @@ def test_platform_admin_session_bootstrap_returns_canonical_context(tmp_path: Pa
     )
     assert login.status_code == 200
 
-    bootstrap = client.get("/v1/novacodepro/session/bootstrap")
+    bootstrap = client.get("/v1/novacodepro/session")
     assert bootstrap.status_code == 200
     body = bootstrap.json()
     assert body["authenticated"] is True
@@ -344,6 +344,6 @@ def test_platform_admin_session_bootstrap_returns_canonical_context(tmp_path: Pa
 def test_session_bootstrap_requires_authentication(tmp_path: Path) -> None:
     client = _client(tmp_path)
 
-    bootstrap = client.get("/v1/novacodepro/session/bootstrap")
+    bootstrap = client.get("/v1/novacodepro/session")
     assert bootstrap.status_code == 401
     assert bootstrap.json()["detail"]["code"] == "session_required"

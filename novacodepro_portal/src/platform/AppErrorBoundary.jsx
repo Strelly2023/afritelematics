@@ -1,5 +1,7 @@
 import React from "react";
 
+import { ROUTES } from "./routes.js";
+import { clearNovaCodeProSessionState } from "./sessionState.js";
 import { NOVACODEPRO_BUILD_INFO } from "./version.js";
 
 function createReferenceId() {
@@ -70,31 +72,27 @@ export class AppErrorBoundary extends React.Component {
   };
 
   handleReload = () => {
-    window.location.reload();
+    window.location.replace(ROUTES.dashboard);
   };
 
   handleSignIn = async () => {
     try {
-      await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
+      await fetch("/v1/novacodepro/session/logout", { method: "POST", credentials: "include" });
     } catch {
       // Ignore sign-out failures.
     }
-    window.localStorage?.removeItem("novacodepro.platform.runtime.v1");
-    window.location.assign("/novacodepro/login");
+    clearNovaCodeProSessionState();
+    window.location.assign(ROUTES.loginWithReason("session_expired"));
   };
 
   handleClearSession = async () => {
     try {
-      await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
+      await fetch("/v1/novacodepro/session/logout", { method: "POST", credentials: "include" });
     } catch {
       // Ignore sign-out failures.
     }
-    try {
-      window.localStorage?.clear();
-    } catch {
-      // Ignore storage failures.
-    }
-    window.location.assign("/novacodepro/login");
+    clearNovaCodeProSessionState();
+    window.location.assign(ROUTES.loginWithReason("session_expired"));
   };
 
   render() {

@@ -7,11 +7,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 from afritech.afriprogramming.rbac import canonical_role_name, role_definition
-from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
+from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles, _cookie_secure
 from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
 from afritech.novacodepro import NovaCodeProPlatform, get_novacodepro_platform
 from afritech.novacodepro.workspace import build_workspace_manifest
@@ -48,6 +48,169 @@ def _bootstrap_role_label(role: str) -> str:
     if canonical == "SUPER_ADMIN":
         return "PLATFORM_OWNER"
     return canonical
+
+
+def _set_session_cookies(response: Response, result: dict[str, Any]) -> None:
+    from afritech.api.auth.novacodepro_session_store import (
+        ACCESS_COOKIE_NAME,
+        CSRF_COOKIE_NAME,
+        REFRESH_COOKIE_NAME,
+        SESSION_COOKIE_NAME,
+    )
+
+    response.set_cookie(
+        key=ACCESS_COOKIE_NAME,
+        value=result["access_token"],
+        httponly=True,
+        secure=_cookie_secure(),
+        samesite="lax",
+        path="/",
+    )
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=result["refresh_token"],
+        httponly=True,
+        secure=_cookie_secure(),
+        samesite="lax",
+        path="/",
+    )
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=result["session_id"],
+        httponly=True,
+        secure=_cookie_secure(),
+        samesite="lax",
+        path="/",
+    )
+    response.set_cookie(
+        key=CSRF_COOKIE_NAME,
+        value=result["csrf_token"],
+        httponly=False,
+        secure=_cookie_secure(),
+        samesite="lax",
+        path="/",
+    )
+
+
+def _clear_session_cookies(response: Response) -> None:
+    from afritech.api.auth.novacodepro_session_store import (
+        ACCESS_COOKIE_NAME,
+        CSRF_COOKIE_NAME,
+        REFRESH_COOKIE_NAME,
+        SESSION_COOKIE_NAME,
+    )
+
+    for cookie_name in (ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME, SESSION_COOKIE_NAME, CSRF_COOKIE_NAME):
+        response.delete_cookie(cookie_name, path="/")
+
+
+def _build_session_bootstrap(service: NovaCodeProPlatform, request: Request) -> dict[str, Any]:
+    session_store = get_default_novacodepro_session_store()
+    try:
+        current = session_store.current_session(request)
+    except HTTPException as exc:
+        detail = exc.detail if isinstance(exc.detail, dict) else {"code": str(exc.detail)}
+        raise HTTPException(status_code=exc.status_code, detail=detail) from exc
+    if not isinstance(current, dict):
+        _bootstrap_error("SESSION_REQUIRED", "Session is required.", 401)
+
+    user_id = str(current.get("user_id") or "")
+    session_role = str(current.get("active_role") or "ADMIN")
+    canonical_role = canonical_role_name(session_role)
+    org_id = str(current.get("organization") or current.get("tenant_id") or "")
+    if not org_id:
+        _bootstrap_error("TENANT_REQUIRED", "Tenant context is required.", 409)
+
+    workspace_manifest = build_workspace_manifest(
+        service,
+        user_id=user_id or current.get("display_name") or "novacodepro-user",
+        role=canonical_role,
+        organization_id=org_id,
+        environment=os.environ.get("NOVACODEPRO_ENVIRONMENT")
+        or os.environ.get("AFRITECH_ENV")
+        or "development",
+    )
+    workspace_data = workspace_manifest["workspace"]
+    workspace = {
+        "id": "novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"],
+        "name": "NovaTech Platform" if canonical_role == "ADMIN" else workspace_data["title"],
+        "status": "ACTIVE",
+        "home_route": "/novacodepro/dashboard" if canonical_role == "ADMIN" else workspace_data["home_route"],
+        "selected_environment": workspace_data["selected_environment"],
+        "authority_level": workspace_data["authority_level"],
+    }
+    compatibility_roles = _normalize_roles(session_role, list(current.get("assigned_roles") or []))
+    canonical_display_role = _bootstrap_role_label(canonical_role)
+    permissions = list(role_definition(canonical_role).get("permissions", ()))
+    for required_permission in (
+        "dashboard.read",
+        "platform.read",
+        "platform.manage",
+        "workspace.read",
+        "workspace.manage",
+        "users.read",
+        "roles.read",
+        "tenants.read",
+        "architecture.read",
+        "nera.read",
+        "eros.read",
+        "digital_twin.read",
+        "governance.read",
+        "audit.read",
+        "observability.read",
+    ):
+        if required_permission not in permissions:
+            permissions.append(required_permission)
+    role_label = role_definition(canonical_role).get("label", canonical_display_role.replace("_", " ").title())
+    return {
+        "authenticated": True,
+        "bootstrap_state": "READY",
+        "user": {
+            "id": user_id,
+            "username": user_id,
+            "email": current.get("email"),
+            "display_name": current.get("display_name"),
+            "status": "ACTIVE",
+            "email_verified": True,
+            "active_role": canonical_display_role,
+            "role_label": role_label,
+        },
+        "organization": {
+            "id": org_id,
+            "name": current.get("organization") or "NovaTech",
+            "status": "ACTIVE",
+        },
+        "tenant": {
+            "id": org_id,
+            "name": current.get("organization") or "NovaTech",
+            "status": "ACTIVE",
+        },
+        "workspace": workspace,
+        "roles": compatibility_roles if canonical_display_role in compatibility_roles else [canonical_display_role, *compatibility_roles],
+        "canonical_role": canonical_display_role,
+        "permissions": permissions,
+        "features": {
+            "dashboard": True,
+            "nera": True,
+            "eros": True,
+            "digital_twin": True,
+            "governance": True,
+            "observability": True,
+        },
+        "default_route": workspace["home_route"],
+        "context": {
+            "workspace_manifest": workspace_manifest,
+            "session_id": current.get("session_id"),
+            "session_status": current.get("status"),
+            "idle_expires_at": current.get("idle_expires_at"),
+            "absolute_expires_at": current.get("absolute_expires_at"),
+        },
+        "modules": {
+            "nera": service.nera_manifest(),
+            "eros": service.eros_manifest(),
+            "architecture_framework": service.architecture_framework(),
+        },
+    }
 
 
 class WorkflowCreateRequest(BaseModel):
@@ -1216,114 +1379,61 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def nera_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.nera_manifest()
 
+    @router.post("/session/login")
+    def session_login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
+        session_store = get_default_novacodepro_session_store()
+        identifier = str(payload.get("identifier") or payload.get("email") or payload.get("username") or "").strip()
+        password = str(payload.get("password") or "")
+        role = payload.get("role")
+        if not identifier or not password:
+            raise HTTPException(status_code=400, detail="email_and_password_required")
+        result = session_store.login(
+            identifier=identifier,
+            password=password,
+            role=str(role) if role else None,
+            user_agent=request.headers.get("user-agent", ""),
+            client_ip=request.client.host if request.client else "",
+        )
+        _set_session_cookies(response, result)
+        return {
+            "status": "authenticated",
+            "user": {
+                "user_id": result["session"]["user_id"],
+                "email": result["session"]["email"],
+                "display_name": result["session"]["display_name"],
+                "organization": result["session"]["organization"],
+                "assigned_roles": result["session"]["assigned_roles"],
+                "active_role": result["session"]["active_role"],
+            },
+            "session": result["session"],
+            "tokens": {
+                "access_token": result["access_token"],
+                "refresh_token": result["refresh_token"],
+            },
+        }
+
+    @router.get("/session")
+    def session(request: Request) -> dict[str, Any]:
+        return _build_session_bootstrap(service, request)
+
     @router.get("/session/bootstrap")
     def session_bootstrap(request: Request) -> dict[str, Any]:
+        return _build_session_bootstrap(service, request)
+
+    @router.post("/session/refresh")
+    def session_refresh(request: Request, response: Response) -> dict[str, Any]:
         session_store = get_default_novacodepro_session_store()
-        try:
-            current = session_store.current_session(request)
-        except HTTPException as exc:
-            detail = exc.detail if isinstance(exc.detail, dict) else {"code": str(exc.detail)}
-            raise HTTPException(status_code=exc.status_code, detail=detail) from exc
-        if not isinstance(current, dict):
-            _bootstrap_error("SESSION_REQUIRED", "Session is required.", 401)
+        result = session_store.refresh_session(request)
+        _set_session_cookies(response, result)
+        return result
 
-        user_id = str(current.get("user_id") or "")
-        session_role = str(current.get("active_role") or "ADMIN")
-        canonical_role = canonical_role_name(session_role)
-        org_id = str(current.get("organization") or current.get("tenant_id") or "")
-        if not org_id:
-            _bootstrap_error("TENANT_REQUIRED", "Tenant context is required.", 409)
-
-        workspace_manifest = build_workspace_manifest(
-            service,
-            user_id=user_id or current.get("display_name") or "novacodepro-user",
-            role=canonical_role,
-            organization_id=org_id,
-            environment=os.environ.get("NOVACODEPRO_ENVIRONMENT")
-            or os.environ.get("AFRITECH_ENV")
-            or "development",
-        )
-        workspace_data = workspace_manifest["workspace"]
-        workspace = {
-            "id": "novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"],
-            "name": "NovaTech Platform" if canonical_role == "ADMIN" else workspace_data["title"],
-            "status": "ACTIVE",
-            "home_route": "/novacodepro/dashboard" if canonical_role == "ADMIN" else workspace_data["home_route"],
-            "selected_environment": workspace_data["selected_environment"],
-            "authority_level": workspace_data["authority_level"],
-        }
-        compatibility_roles = _normalize_roles(session_role, list(current.get("assigned_roles") or []))
-        canonical_display_role = _bootstrap_role_label(canonical_role)
-        permissions = list(role_definition(canonical_role).get("permissions", ()))
-        for required_permission in (
-            "dashboard.read",
-            "platform.read",
-            "platform.manage",
-            "workspace.read",
-            "workspace.manage",
-            "users.read",
-            "roles.read",
-            "tenants.read",
-            "architecture.read",
-            "nera.read",
-            "eros.read",
-            "digital_twin.read",
-            "governance.read",
-            "audit.read",
-            "observability.read",
-        ):
-            if required_permission not in permissions:
-                permissions.append(required_permission)
-        role_label = role_definition(canonical_role).get("label", canonical_display_role.replace("_", " ").title())
-        return {
-            "authenticated": True,
-            "bootstrap_state": "READY",
-            "user": {
-                "id": user_id,
-                "username": user_id,
-                "email": current.get("email"),
-                "display_name": current.get("display_name"),
-                "status": "ACTIVE",
-                "email_verified": True,
-                "active_role": canonical_display_role,
-                "role_label": role_label,
-            },
-            "organization": {
-                "id": org_id,
-                "name": current.get("organization") or "NovaTech",
-                "status": "ACTIVE",
-            },
-            "tenant": {
-                "id": org_id,
-                "name": current.get("organization") or "NovaTech",
-                "status": "ACTIVE",
-            },
-            "workspace": workspace,
-            "roles": compatibility_roles if canonical_display_role in compatibility_roles else [canonical_display_role, *compatibility_roles],
-            "canonical_role": canonical_display_role,
-            "permissions": permissions,
-            "features": {
-                "dashboard": True,
-                "nera": True,
-                "eros": True,
-                "digital_twin": True,
-                "governance": True,
-                "observability": True,
-            },
-            "default_route": workspace["home_route"],
-            "context": {
-                "workspace_manifest": workspace_manifest,
-                "session_id": current.get("session_id"),
-                "session_status": current.get("status"),
-                "idle_expires_at": current.get("idle_expires_at"),
-                "absolute_expires_at": current.get("absolute_expires_at"),
-            },
-            "modules": {
-                "nera": service.nera_manifest(),
-                "eros": service.eros_manifest(),
-                "architecture_framework": service.architecture_framework(),
-            },
-        }
+    @router.post("/session/logout")
+    def session_logout(request: Request, response: Response) -> dict[str, Any]:
+        session_store = get_default_novacodepro_session_store()
+        result = session_store.logout(request)
+        _clear_session_cookies(response)
+        response.headers["Cache-Control"] = "no-store"
+        return result
 
     @router.get("/neaf")
     def neaf_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:

@@ -1,0 +1,37 @@
+import { resolveWorkspaceSlugFromLoginRole } from "./workspaceRoutes.js";
+
+export const APP_BASE = "/novacodepro";
+
+export function appPath(path = "/") {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (normalized === "/") {
+    return `${APP_BASE}/`;
+  }
+  return `${APP_BASE}${normalized}`;
+}
+
+export function appUrl(path = "/", query = {}) {
+  const target = appPath(path);
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query || {})) {
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+    params.set(key, String(value));
+  }
+  const search = params.toString();
+  return search ? `${target}?${search}` : target;
+}
+
+export const ROUTES = {
+  login: appPath("/login"),
+  dashboard: appPath("/dashboard"),
+  logout: appPath("/logout"),
+  roleDashboard(role) {
+    const slug = resolveWorkspaceSlugFromLoginRole(role) || "workspace";
+    return appPath(`/workspace/${encodeURIComponent(slug)}/dashboard`);
+  },
+  loginWithReason(reason, returnTo) {
+    return appUrl("/login", { reason, returnTo });
+  },
+};
