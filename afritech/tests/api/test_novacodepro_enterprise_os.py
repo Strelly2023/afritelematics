@@ -116,3 +116,19 @@ def test_platform_api_exposes_solution_packages_and_queue_controls(tmp_path: Pat
     queue_response = client.get("/v1/novacodepro/dead-letter-queue", headers=_headers("OBSERVER"))
     assert queue_response.status_code == 200
     assert queue_response.json()
+
+
+def test_platform_api_exposes_edos_capability_state_registry(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get("/v1/novacodepro/edos/capability-states", headers=_headers("OBSERVER"))
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "FOUR_STATE_GOVERNANCE_MODEL"
+    assert body["transition_rule"] == "implemented -> verified -> certified -> approved"
+    assert all(record["lifecycle_validation"]["valid"] is True for record in body["records"])
+    assert any(
+        record["domain"] == "GA Governance" and record["lifecycle_validation"]["current_state"] == "implemented"
+        for record in body["records"]
+    )

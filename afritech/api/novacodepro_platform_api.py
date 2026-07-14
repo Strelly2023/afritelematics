@@ -7,13 +7,26 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from pydantic import BaseModel, ConfigDict, Field
 
 from afritech.afriprogramming.rbac import canonical_role_name, role_definition
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles, _cookie_secure
 from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
 from afritech.novacodepro import NovaCodeProPlatform, get_novacodepro_platform
+from afritech.novacodepro.edos import (
+    capability_state_registry,
+    edos_capability_model,
+    edos_maturity_report,
+    edos_summary,
+    enterprise_readiness_matrix,
+    infrastructure_certification_records,
+    mobile_release_certificate,
+    continuous_compliance_model,
+    operational_evidence_manifest,
+    prr_governance_workflow,
+)
+from afritech.novacodepro.operating_fabric import EnterpriseExecutionContext, normalize_role
 from afritech.novacodepro.workspace import build_workspace_manifest
 
 
@@ -288,6 +301,23 @@ class ReleaseTransitionRequest(BaseModel):
 class CommandRequest(BaseModel):
     command: str
     context: dict[str, Any] = Field(default_factory=dict)
+
+
+class EnterpriseOperatingRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    title: str
+    request: str
+    workspace_id: str | None = None
+    project_id: str | None = None
+    capability_hint: str | None = None
+    products: list[str] = Field(default_factory=list)
+    services: list[str] = Field(default_factory=list)
+    desired_outcomes: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    requested_region: str | None = None
+    requested_environment: str = "development"
+    rollback_expectation: str | None = None
 
 
 class SolutionCreateRequest(BaseModel):
@@ -642,6 +672,38 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def _tenant_context(claims: JWTClaims) -> str:
         return str(claims.organization_id or "novatech")
 
+    def _execution_context(claims: JWTClaims, workspace_id: str | None, requested_region: str | None) -> EnterpriseExecutionContext:
+        tenant_id = _tenant_context(claims)
+        workspace = workspace_id or "workspace-platform"
+        if not tenant_id:
+            raise HTTPException(status_code=403, detail="missing_tenant_membership")
+        if workspace not in {"workspace-platform", "workspace-enterprise", "workspace-operations"}:
+            raise HTTPException(status_code=403, detail="unknown_workspace")
+        canonical_role = normalize_role(claims.role)
+        permissions = {"novacodepro.request.create", "workflow.read", "approval.read"}
+        if canonical_role in {"ADMIN", "PLATFORM_ADMIN", "PLATFORM_OWNER", "DEVELOPER", "OPERATOR"}:
+            permissions.update({"workflow.write", "evidence.write", "policy.evaluate"})
+        authority_grants = ("authority-level-2",)
+        if canonical_role in {"ADMIN", "PLATFORM_ADMIN", "PLATFORM_OWNER", "OPERATOR"}:
+            authority_grants = ("authority-level-3",)
+        return EnterpriseExecutionContext(
+            subject_id=claims.sub,
+            actor_type="USER",
+            tenant_id=tenant_id,
+            organization_id=tenant_id,
+            workspace_id=workspace,
+            canonical_roles=(canonical_role,),
+            permissions=frozenset(permissions),
+            authority_grants=authority_grants,
+            session_id=claims.sid or f"jwt-{claims.sub}",
+            authentication_strength="JWT",
+            device_trust=80,
+            session_risk=10,
+            jurisdiction="AU",
+            region=requested_region or "Australia",
+            correlation_id=f"corr-{claims.sub}-{workspace}",
+        )
+
     @router.get("/status")
     def status(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.status()
@@ -741,6 +803,8 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
             return service.decide_approval(approval_id, "approve", actor=claims.sub, note=payload.note)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="approval_not_found") from exc
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
 
     @router.post("/approvals/{approval_id}/reject")
     def reject_approval(
@@ -752,6 +816,8 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
             return service.decide_approval(approval_id, "reject", actor=claims.sub, note=payload.note)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="approval_not_found") from exc
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
 
     @router.get("/deployments")
     def deployments(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
@@ -1379,6 +1445,42 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     def nera_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.nera_manifest()
 
+    @router.get("/capabilities")
+    def capability_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.capability_model()
+
+    @router.get("/operating-model")
+    def operating_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.operating_model()
+
+    @router.get("/data-model")
+    def data_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.data_model()
+
+    @router.get("/knowledge-model")
+    def knowledge_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.knowledge_model()
+
+    @router.get("/technology-model")
+    def technology_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.technology_model()
+
+    @router.get("/governance-model")
+    def governance_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.governance_model()
+
+    @router.get("/ai-model")
+    def ai_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.ai_model()
+
+    @router.get("/digital-twin-model")
+    def digital_twin_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.digital_twin_model()
+
+    @router.get("/resilience-model")
+    def resilience_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.resilience_model()
+
     @router.post("/session/login")
     def session_login(payload: dict[str, Any], response: Response, request: Request) -> dict[str, Any]:
         session_store = get_default_novacodepro_session_store()
@@ -1610,6 +1712,116 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/executive/command-center")
     def executive_command_center(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.command_center()
+
+    @router.get("/operating-fabric")
+    def operating_fabric_manifest(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.operating_fabric_manifest()
+
+    @router.get("/operating-fabric/maturity")
+    def operating_fabric_maturity(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.sovereign_maturity_report()
+
+    @router.get("/operating-fabric/production-readiness")
+    def operating_fabric_production_readiness(profile: str | None = None, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.production_readiness(profile)
+
+    @router.get("/edos")
+    def enterprise_delivery_operating_system(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return edos_summary()
+
+    @router.get("/edos/capabilities")
+    def enterprise_delivery_capabilities(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return edos_capability_model()
+
+    @router.get("/edos/capability-states")
+    def enterprise_delivery_capability_states(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return capability_state_registry()
+
+    @router.get("/edos/runtime-certification")
+    def enterprise_delivery_runtime_certification(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"components": infrastructure_certification_records()}
+
+    @router.get("/edos/mobile-release-certificate")
+    def enterprise_delivery_mobile_release_certificate(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return mobile_release_certificate()
+
+    @router.get("/edos/operational-evidence")
+    def enterprise_delivery_operational_evidence(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return operational_evidence_manifest()
+
+    @router.get("/edos/prr")
+    def enterprise_delivery_prr(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return prr_governance_workflow()
+
+    @router.get("/edos/maturity")
+    def enterprise_delivery_maturity(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return edos_maturity_report()
+
+    @router.get("/edos/readiness-matrix")
+    def enterprise_delivery_readiness_matrix(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return enterprise_readiness_matrix()
+
+    @router.get("/edos/continuous-compliance")
+    def enterprise_delivery_continuous_compliance(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return continuous_compliance_model()
+
+    @router.get("/enterprise-objects")
+    def enterprise_objects(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.enterprise_objects()
+
+    @router.get("/enterprise-capabilities")
+    def enterprise_capabilities(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.enterprise_capabilities()
+
+    @router.post("/enterprise-requests", status_code=202)
+    def submit_enterprise_request(
+        payload: EnterpriseOperatingRequest,
+        response: Response,
+        idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+        claims: JWTClaims = Depends(editor),
+    ) -> dict[str, Any]:
+        if not idempotency_key:
+            raise HTTPException(status_code=400, detail="idempotency_key_required")
+        data = payload.model_dump()
+        extra = getattr(payload, "model_extra", None) or {}
+        for key in ("tenant_id", "organization_id", "requested_by", "actor", "roles", "authority_level"):
+            if key in extra:
+                data[key] = extra[key]
+        context = _execution_context(claims, payload.workspace_id, payload.requested_region)
+        try:
+            result = service.submit_enterprise_request(data, context=context, idempotency_key=idempotency_key)
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        response.headers["Location"] = result["status_url"]
+        return {
+            "request_id": result["request_id"],
+            "workflow_id": result["workflow_id"],
+            "status": result["status"],
+            "correlation_id": result["correlation_id"],
+            "status_url": result["status_url"],
+            "policy_outcome": result["policy_decision"]["outcome"],
+            "approval_id": result["approval"]["id"],
+        }
+
+    @router.get("/enterprise-requests/{request_id}")
+    def enterprise_request(request_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        record = service.repository.get("enterprise_object", request_id)
+        if record is None or record.get("tenant_id") != _tenant_context(claims):
+            raise HTTPException(status_code=404, detail="enterprise_request_not_found")
+        return record
+
+    @router.get("/command-center")
+    def enterprise_command_center(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.enterprise_command_center()
+
+    @router.get("/enterprise-relationships")
+    def enterprise_relationships(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        tenant_id = _tenant_context(claims)
+        return [item for item in service.enterprise_relationships() if item.get("tenant_id") == tenant_id]
+
+    @router.get("/identity/roles/{role}/normalize")
+    def normalize_authority_role(role: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.normalize_authority_role(role)
 
     @router.post("/executive/command-center/refresh")
     def refresh_executive_command_center(claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
