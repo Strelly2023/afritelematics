@@ -31,7 +31,7 @@ services:
       - "1"
       - --proxy-headers
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -53,7 +53,7 @@ services:
       afritech-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4173"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4173/"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -72,7 +72,7 @@ services:
       afritech-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4174"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4174/"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -101,7 +101,7 @@ services:
       novacodepro-portal:
         condition: service_started
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
       interval: 30s
       timeout: 5s
       retries: 5
