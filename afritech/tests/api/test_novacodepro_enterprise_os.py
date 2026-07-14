@@ -132,3 +132,21 @@ def test_platform_api_exposes_edos_capability_state_registry(tmp_path: Path) -> 
         record["domain"] == "GA Governance" and record["lifecycle_validation"]["current_state"] == "implemented"
         for record in body["records"]
     )
+
+
+def test_platform_api_exposes_edos_frontend_backend_and_authority_architecture(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    frontends = client.get("/v1/novacodepro/edos/frontends", headers=_headers("OBSERVER"))
+    assert frontends.status_code == 200
+    assert frontends.json()["status"] == "FEDERATED_EXPERIENCE_LAYER"
+    assert any(item["name"] == "NovaCodePro Executive" for item in frontends.json()["experiences"])
+
+    backends = client.get("/v1/novacodepro/edos/backends", headers=_headers("OBSERVER"))
+    assert backends.status_code == 200
+    assert backends.json()["status"] == "FEDERATED_DOMAIN_SEPARATED_BACKENDS"
+    assert "No service writes directly to another service database." in backends.json()["data_rules"]
+
+    authority = client.get("/v1/novacodepro/edos/authority-model", headers=_headers("OBSERVER"))
+    assert authority.status_code == 200
+    assert "GA approval" in authority.json()["non_delegable_decisions"]

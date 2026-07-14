@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from afritech.novacodepro.edos import (
     CertificationState,
+    authority_model,
+    backend_service_architecture,
     capability_state_registry,
     continuous_compliance_model,
     edos_maturity_report,
     edos_summary,
     enterprise_readiness_matrix,
+    frontend_experience_registry,
     infrastructure_certification_records,
     mobile_release_certificate,
     prr_governance_workflow,
@@ -26,6 +29,9 @@ def test_edos_keeps_implemented_verified_certified_approved_separate() -> None:
     assert summary["governance_state"]["REAL_PAYMENTS_ENABLED"] is False
     assert summary["capability_model"]["lifecycle"][6] == "Certification"
     assert summary["capability_states"]["status"] == "FOUR_STATE_GOVERNANCE_MODEL"
+    assert summary["frontend_experiences"]["status"] == "FEDERATED_EXPERIENCE_LAYER"
+    assert summary["backend_services"]["status"] == "FEDERATED_DOMAIN_SEPARATED_BACKENDS"
+    assert summary["authority_model"]["status"] == "AUTHORITY_SEPARATION_ENFORCED"
     assert summary["continuous_compliance"]["active"] is False
     assert summary["readiness_matrix"]["status"] == "STATE_BASED_READINESS"
 
@@ -65,6 +71,57 @@ def test_capability_state_registry_tracks_exactly_one_ordered_model_per_domain()
         "certified",
         "approved",
     }
+
+
+def test_frontend_registry_is_role_federated_with_shared_governance() -> None:
+    registry = frontend_experience_registry()
+
+    assert registry["principle"] == "One platform foundation, multiple role-specific workspaces, one governed source of truth."
+    names = {experience["name"] for experience in registry["experiences"]}
+    assert {
+        "NovaCodePro Workspace",
+        "NovaCodePro Developer",
+        "NovaCodePro Operations",
+        "NovaCodePro Evidence",
+        "NovaCodePro PRR Center",
+        "NovaCodePro GA Governance",
+        "NovaCodePro CLI",
+    }.issubset(names)
+    ga = next(experience for experience in registry["experiences"] if experience["name"] == "NovaCodePro GA Governance")
+    assert "may not self-approve GA" in ga["authority_boundary"]
+    assert "Backend enforcement" in registry["security_model"]
+    assert "Release Certification" in registry["quality_gates"]
+
+
+def test_backend_architecture_is_domain_separated_and_event_governed() -> None:
+    architecture = backend_service_architecture()
+
+    names = {service["name"] for service in architecture["services"]}
+    assert {
+        "API Gateway and Edge Backend",
+        "Requirements Backend",
+        "Architecture Backend",
+        "Release Backend",
+        "Replay Backend",
+        "Evidence Backend",
+        "PRR Backend",
+        "GA Governance Backend",
+    }.issubset(names)
+    assert "No service writes directly to another service database." in architecture["data_rules"]
+    assert "Transactional outbox" in architecture["reliability_controls"]
+    assert "integrity_hash" in architecture["event_contract"]
+    release = next(service for service in architecture["services"] if service["name"] == "Release Backend")
+    assert release["authority_boundary"] == "Implemented != verified; verified != certified; certified != approved; approved != deployed; deployed != GA."
+
+
+def test_authority_model_keeps_novacodepro_from_owning_final_approvals() -> None:
+    model = authority_model()
+
+    assert "GA approval" in model["non_delegable_decisions"]
+    assert "real payment activation" in model["non_delegable_decisions"]
+    assert "signed evidence" in model["authorities"]["NovaTrust"]
+    assert "financial execution" in model["authorities"]["NovaPay"]
+    assert "advisory analysis" in model["authorities"]["NovaAI"]
 
 
 def test_mobile_release_certificate_preserves_device_and_approval_pending() -> None:

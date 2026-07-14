@@ -15,11 +15,14 @@ from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles, _cookie_
 from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
 from afritech.novacodepro import NovaCodeProPlatform, get_novacodepro_platform
 from afritech.novacodepro.edos import (
+    authority_model,
+    backend_service_architecture,
     capability_state_registry,
     edos_capability_model,
     edos_maturity_report,
     edos_summary,
     enterprise_readiness_matrix,
+    frontend_experience_registry,
     infrastructure_certification_records,
     mobile_release_certificate,
     continuous_compliance_model,
@@ -1736,6 +1739,18 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/edos/capability-states")
     def enterprise_delivery_capability_states(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return capability_state_registry()
+
+    @router.get("/edos/frontends")
+    def enterprise_delivery_frontends(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return frontend_experience_registry()
+
+    @router.get("/edos/backends")
+    def enterprise_delivery_backends(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return backend_service_architecture()
+
+    @router.get("/edos/authority-model")
+    def enterprise_delivery_authority_model(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return authority_model()
 
     @router.get("/edos/runtime-certification")
     def enterprise_delivery_runtime_certification(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
