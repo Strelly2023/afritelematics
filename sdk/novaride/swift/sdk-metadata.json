@@ -1,0 +1,10 @@
+{
+  "authentication": "bearer-or-domain-specific",
+  "contract_version": "2026.07.0",
+  "domain": "novaride",
+  "idempotency_header": "Idempotency-Key",
+  "language": "swift",
+  "openapi_hash": "sha256:7a4a8b4e198c09a8e4ad693dad3b2e19521d567069ea9aaac0e9d67f728e35b8",
+  "sdk_version": "2026.07.0",
+  "standard_error_model": "NovaTechErrorEnvelope"
+}

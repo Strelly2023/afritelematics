@@ -1,0 +1,29 @@
+{
+  "canonicalization": "canonical.v1",
+  "domain": "operations",
+  "openapi_hash": "sha256:e84ba324202edac364849c7bb8381d9b8fcbcdfef674b8d898a8ac14fd897823",
+  "platform": "NovaTech",
+  "provenance": {
+    "build_id": "local",
+    "builder": "local-developer",
+    "contract_version": "2026.07.0",
+    "domain": "operations",
+    "git_branch": "unknown",
+    "git_commit": "unknown",
+    "pipeline_id": "local",
+    "published_at": "2026-07-14T12:30:42.271275+00:00",
+    "release_id": "api-operations-2026.07.0",
+    "repository": "github.com/Strelly2023/afritelematics"
+  },
+  "schema_hash": "sha256:83e2691b7c1bd17ff1581cc3f413618cc5fb531bd9d11e2290b823abff98a820",
+  "sdk_versions": {},
+  "signature": {
+    "key_id": "novatrust-api-contract-dev-01",
+    "provider": "ephemeral_development_ed25519",
+    "public_key": "aHLEDIUneEVekKSe+HYMc5UaHGxNy6TDhXuIA4/Zask=",
+    "scheme": "ed25519",
+    "value": "KvxOum+v5UBbwe+g5+wxDBlj5RE8wGvmpYznI2Ucpah6yGTHeLewjjNEMRb3CMHYi8Ecz8OwdQEzdL4BxANFAg=="
+  },
+  "supported_until": "2027-07-01",
+  "version": "2026.07.0"
+}

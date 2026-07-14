@@ -1,0 +1,245 @@
+{
+  "components": {
+    "schemas": {
+      "NovaTechEnvelope": {
+        "properties": {
+          "data": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/NovaTechError"
+            },
+            "type": "array"
+          },
+          "evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "meta": {
+            "properties": {
+              "contract_version": {
+                "type": "string"
+              },
+              "organization_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "NovaTechError": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "trace_id",
+          "retryable"
+        ],
+        "type": "object"
+      },
+      "NovaTechErrorEnvelope": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              },
+              "message": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "trace_id",
+              "retryable"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Replay, evidence, signatures, and public verification APIs.",
+    "title": "NovaTech novatrust API",
+    "version": "2026.07.0",
+    "x-novatech-authority": "NovaTrust",
+    "x-novatech-maturity": "stable",
+    "x-novatech-owner": "NovaTrust Evidence",
+    "x-novatech-supported-until": "2027-07-01"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/public/trust/proofs/{proof_id}": {
+      "get": {
+        "deprecated": false,
+        "description": "Get public proof.",
+        "operationId": "getPublicProof",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Get public proof.",
+        "x-novatech-audience": [
+          "public"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [],
+          "approval-required": false,
+          "policy-engine": "NovaTrust"
+        },
+        "x-novatech-domain": "novatrust",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": true
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    },
+    "/v1/trust/evidence/{evidence_id}": {
+      "get": {
+        "deprecated": false,
+        "description": "Get evidence record.",
+        "operationId": "getTrustEvidence",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Get evidence record.",
+        "x-novatech-audience": [
+          "partner",
+          "operator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "PARTNER",
+            "OPERATOR"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaTrust"
+        },
+        "x-novatech-domain": "novatrust",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": true
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    }
+  },
+  "x-novatech-audience": [
+    "public",
+    "partner",
+    "operator"
+  ],
+  "x-novatech-domain": "novatrust",
+  "x-novatech-sdk-targets": [
+    "novatrust-sdk-go"
+  ]
+}

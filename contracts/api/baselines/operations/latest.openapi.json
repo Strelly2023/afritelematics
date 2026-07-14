@@ -1,0 +1,247 @@
+{
+  "components": {
+    "schemas": {
+      "NovaTechEnvelope": {
+        "properties": {
+          "data": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/NovaTechError"
+            },
+            "type": "array"
+          },
+          "evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "meta": {
+            "properties": {
+              "contract_version": {
+                "type": "string"
+              },
+              "organization_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "NovaTechError": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "trace_id",
+          "retryable"
+        ],
+        "type": "object"
+      },
+      "NovaTechErrorEnvelope": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              },
+              "message": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "trace_id",
+              "retryable"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Health, readiness, metrics, dashboards, and operational controls.",
+    "title": "NovaTech operations API",
+    "version": "2026.07.0",
+    "x-novatech-authority": "NovaOps",
+    "x-novatech-maturity": "stable",
+    "x-novatech-owner": "NovaTech Operations",
+    "x-novatech-supported-until": "2027-07-01"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "deprecated": false,
+        "description": "Service health.",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Service health.",
+        "x-novatech-audience": [
+          "operator",
+          "internal-service"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "OPERATOR",
+            "ADMIN"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaOps"
+        },
+        "x-novatech-domain": "operations",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": false
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "deprecated": false,
+        "description": "Versioned health.",
+        "operationId": "getVersionedHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Versioned health.",
+        "x-novatech-audience": [
+          "operator",
+          "internal-service"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "OPERATOR",
+            "ADMIN"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaOps"
+        },
+        "x-novatech-domain": "operations",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": false
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    }
+  },
+  "x-novatech-audience": [
+    "operator",
+    "administrator",
+    "internal-service"
+  ],
+  "x-novatech-domain": "operations",
+  "x-novatech-sdk-targets": []
+}

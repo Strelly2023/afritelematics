@@ -1,0 +1,312 @@
+{
+  "components": {
+    "schemas": {
+      "NovaTechEnvelope": {
+        "properties": {
+          "data": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/NovaTechError"
+            },
+            "type": "array"
+          },
+          "evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "meta": {
+            "properties": {
+              "contract_version": {
+                "type": "string"
+              },
+              "organization_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "NovaTechError": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "trace_id",
+          "retryable"
+        ],
+        "type": "object"
+      },
+      "NovaTechErrorEnvelope": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              },
+              "message": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "trace_id",
+              "retryable"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Platform catalog, releases, compatibility, migrations, and API governance.",
+    "title": "NovaTech platform API",
+    "version": "2026.07.0",
+    "x-novatech-authority": "NovaPolicy",
+    "x-novatech-maturity": "stable",
+    "x-novatech-owner": "NovaTech Platform",
+    "x-novatech-supported-until": "2027-07-01"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/platform/api-catalog": {
+      "get": {
+        "deprecated": false,
+        "description": "List federated API contracts.",
+        "operationId": "listApiCatalog",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "List federated API contracts.",
+        "x-novatech-audience": [
+          "employee",
+          "operator",
+          "administrator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "DEVELOPER",
+            "OPERATOR",
+            "ADMIN"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaPolicy"
+        },
+        "x-novatech-domain": "platform",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": false
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    },
+    "/v1/platform/compatibility": {
+      "get": {
+        "deprecated": false,
+        "description": "Show compatibility policy.",
+        "operationId": "platformApiCompatibility",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Show compatibility policy.",
+        "x-novatech-audience": [
+          "employee",
+          "operator",
+          "administrator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "DEVELOPER",
+            "OPERATOR",
+            "ADMIN"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaPolicy"
+        },
+        "x-novatech-domain": "platform",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": false
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    },
+    "/v1/platform/releases": {
+      "get": {
+        "deprecated": false,
+        "description": "List API release lifecycle records.",
+        "operationId": "listPlatformApiReleases",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "List API release lifecycle records.",
+        "x-novatech-audience": [
+          "employee",
+          "operator",
+          "administrator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "DEVELOPER",
+            "OPERATOR",
+            "ADMIN"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaPolicy"
+        },
+        "x-novatech-domain": "platform",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": false
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "stable",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    }
+  },
+  "x-novatech-audience": [
+    "employee",
+    "operator",
+    "administrator"
+  ],
+  "x-novatech-domain": "platform",
+  "x-novatech-sdk-targets": [
+    "platform-sdk-typescript"
+  ]
+}

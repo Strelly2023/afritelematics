@@ -1,0 +1,159 @@
+{
+  "catalog_version": "2026.07.0",
+  "domains": [
+    {
+      "audience": [
+        "employee",
+        "operator",
+        "administrator"
+      ],
+      "authority": "NovaPolicy",
+      "domain": "platform",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/platform.json",
+      "owner": "NovaTech Platform",
+      "replay_required": false,
+      "signed_publication_url": "/v1/platform/api-catalog/platform/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "customer",
+        "partner",
+        "operator"
+      ],
+      "authority": "NovaPolicy",
+      "domain": "novaride",
+      "evidence_required": true,
+      "maturity": "pilot",
+      "openapi_url": "/openapi/novaride.json",
+      "owner": "NovaRide Mobility",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/novaride/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "partner",
+        "operator",
+        "internal-service"
+      ],
+      "authority": "NovaPower",
+      "domain": "novapay",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/novapay.json",
+      "owner": "NovaPay Core",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/novapay/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "customer",
+        "partner",
+        "employee",
+        "internal-service"
+      ],
+      "authority": "NovaID",
+      "domain": "novaid",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/novaid.json",
+      "owner": "NovaID Identity",
+      "replay_required": false,
+      "signed_publication_url": "/v1/platform/api-catalog/novaid/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "public",
+        "partner",
+        "operator"
+      ],
+      "authority": "NovaTrust",
+      "domain": "novatrust",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/novatrust.json",
+      "owner": "NovaTrust Evidence",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/novatrust/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "employee",
+        "operator",
+        "administrator"
+      ],
+      "authority": "NovaCodePro",
+      "domain": "novaprogramming",
+      "evidence_required": true,
+      "maturity": "pilot",
+      "openapi_url": "/openapi/novaprogramming.json",
+      "owner": "NovaProgramming",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/novaprogramming/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "operator",
+        "administrator",
+        "internal-service"
+      ],
+      "authority": "NovaOps",
+      "domain": "operations",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/operations.json",
+      "owner": "NovaTech Operations",
+      "replay_required": false,
+      "signed_publication_url": "/v1/platform/api-catalog/operations/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "public",
+        "partner"
+      ],
+      "authority": "NovaTrust",
+      "domain": "public-verification",
+      "evidence_required": true,
+      "maturity": "stable",
+      "openapi_url": "/openapi/public-verification.json",
+      "owner": "NovaTrust Public Verification",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/public-verification/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    },
+    {
+      "audience": [
+        "partner",
+        "operator",
+        "administrator"
+      ],
+      "authority": "NovaPolicy",
+      "domain": "partner",
+      "evidence_required": true,
+      "maturity": "pilot",
+      "openapi_url": "/openapi/partner.json",
+      "owner": "NovaTech Partner Platform",
+      "replay_required": true,
+      "signed_publication_url": "/v1/platform/api-catalog/partner/publication",
+      "supported_until": "2027-07-01",
+      "version": "2026.07.0"
+    }
+  ],
+  "platform": "NovaTech"
+}

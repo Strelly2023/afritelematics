@@ -37,6 +37,7 @@ from afritech.api.partner_verification_api import build_partner_verification_rou
 from afritech.api.partner_registry_api import build_partner_registry_router
 from afritech.api.partner_governance_api import build_partner_governance_router
 from afritech.api.partner_certification_api import build_partner_certification_router
+from afritech.api.api_catalog_api import build_api_catalog_router
 from afritech.api.public_verification_api import build_public_verification_router
 from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
@@ -331,6 +332,7 @@ app.include_router(
         partner_registry_store=partner_registry_store,
     )
 )
+app.include_router(build_api_catalog_router())
 
 # ✅ Trust Network API
 app.include_router(

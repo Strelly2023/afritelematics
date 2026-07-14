@@ -1,0 +1,10 @@
+{
+  "authentication": "bearer-or-domain-specific",
+  "contract_version": "2026.07.0",
+  "domain": "novapay",
+  "idempotency_header": "Idempotency-Key",
+  "language": "typescript",
+  "openapi_hash": "sha256:a60aab8428c3e3ddd3b3f435b89f858198ddbeb92b2dec5c43e89440d19dce38",
+  "sdk_version": "2026.07.0",
+  "standard_error_model": "NovaTechErrorEnvelope"
+}

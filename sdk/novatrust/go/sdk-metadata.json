@@ -1,0 +1,10 @@
+{
+  "authentication": "bearer-or-domain-specific",
+  "contract_version": "2026.07.0",
+  "domain": "novatrust",
+  "idempotency_header": "Idempotency-Key",
+  "language": "go",
+  "openapi_hash": "sha256:0abbd955790d44b98a95a5b9ecc6dd16925b1f91682d0c17bf2c0b4b8b96885e",
+  "sdk_version": "2026.07.0",
+  "standard_error_model": "NovaTechErrorEnvelope"
+}

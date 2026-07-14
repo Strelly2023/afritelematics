@@ -1,0 +1,10 @@
+{
+  "authentication": "bearer-or-domain-specific",
+  "contract_version": "2026.07.0",
+  "domain": "novaid",
+  "idempotency_header": "Idempotency-Key",
+  "language": "java",
+  "openapi_hash": "sha256:1ab3ae25daeda2d9e9a38a4a13b2b0ecf4f049f97eefcbc7ce69756d6d4b190d",
+  "sdk_version": "2026.07.0",
+  "standard_error_model": "NovaTechErrorEnvelope"
+}

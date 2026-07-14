@@ -1,0 +1,304 @@
+{
+  "components": {
+    "schemas": {
+      "NovaTechEnvelope": {
+        "properties": {
+          "data": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/NovaTechError"
+            },
+            "type": "array"
+          },
+          "evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "meta": {
+            "properties": {
+              "contract_version": {
+                "type": "string"
+              },
+              "organization_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "NovaTechError": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "trace_id",
+          "retryable"
+        ],
+        "type": "object"
+      },
+      "NovaTechErrorEnvelope": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              },
+              "message": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "trace_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "trace_id",
+              "retryable"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "API keys, webhooks, onboarding, and certification.",
+    "title": "NovaTech partner API",
+    "version": "2026.07.0",
+    "x-novatech-authority": "NovaPolicy",
+    "x-novatech-maturity": "pilot",
+    "x-novatech-owner": "NovaTech Partner Platform",
+    "x-novatech-supported-until": "2027-07-01"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/partner/certification/evidence": {
+      "get": {
+        "deprecated": false,
+        "description": "Get partner certification evidence.",
+        "operationId": "getPartnerCertificationEvidence",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Get partner certification evidence.",
+        "x-novatech-audience": [
+          "partner",
+          "operator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "PARTNER",
+            "OPERATOR"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaTrust"
+        },
+        "x-novatech-domain": "partner",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": true
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "pilot",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    },
+    "/v1/partner/certification/run": {
+      "post": {
+        "deprecated": false,
+        "description": "Run partner certification.",
+        "operationId": "runPartnerCertification",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Run partner certification.",
+        "x-novatech-audience": [
+          "partner",
+          "operator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "PARTNER",
+            "OPERATOR"
+          ],
+          "approval-required": true,
+          "policy-engine": "NovaPolicy"
+        },
+        "x-novatech-domain": "partner",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": true
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "pilot",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": true,
+          "level": "high"
+        }
+      }
+    },
+    "/v1/partner/certification/status": {
+      "get": {
+        "deprecated": false,
+        "description": "Get partner certification status.",
+        "operationId": "getPartnerCertificationStatus",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech response envelope."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NovaTechErrorEnvelope"
+                }
+              }
+            },
+            "description": "Standard NovaTech error envelope."
+          }
+        },
+        "summary": "Get partner certification status.",
+        "x-novatech-audience": [
+          "partner",
+          "operator"
+        ],
+        "x-novatech-authority": {
+          "allowed-roles": [
+            "PARTNER",
+            "OPERATOR"
+          ],
+          "approval-required": false,
+          "policy-engine": "NovaPolicy"
+        },
+        "x-novatech-domain": "partner",
+        "x-novatech-evidence": {
+          "audit-required": true,
+          "receipt-required": false,
+          "replay-required": true
+        },
+        "x-novatech-maturity": {
+          "introduced": "2026.07.0",
+          "status": "pilot",
+          "supported-until": "2027-07-01"
+        },
+        "x-novatech-risk": {
+          "idempotency-required": false,
+          "level": "medium"
+        }
+      }
+    }
+  },
+  "x-novatech-audience": [
+    "partner",
+    "operator",
+    "administrator"
+  ],
+  "x-novatech-domain": "partner",
+  "x-novatech-sdk-targets": []
+}

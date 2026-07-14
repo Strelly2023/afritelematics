@@ -1,0 +1,30 @@
+{
+  "sdk/novaid/java": {
+    "scheme": "sha256-local-artifact",
+    "value": "00b8fda311fc71bcf00a2464cf37ba6924120f7f9a2e29e1cbb55b49404645c4"
+  },
+  "sdk/novapay/python": {
+    "scheme": "sha256-local-artifact",
+    "value": "2a107c90523a8fc6fc9165591aa6fe0981318e429e1d85784b1cbce2a1b30a53"
+  },
+  "sdk/novapay/typescript": {
+    "scheme": "sha256-local-artifact",
+    "value": "ec315656384c0343a4effba28395880afa6ec3e4b29765b84925dbea934b766e"
+  },
+  "sdk/novaride/kotlin": {
+    "scheme": "sha256-local-artifact",
+    "value": "0d244ea8ce738d611d49de940cc5bd754380a587ab7df4593504cf567e0d1784"
+  },
+  "sdk/novaride/swift": {
+    "scheme": "sha256-local-artifact",
+    "value": "04488b60a7234703ca1b1cc8220276ba9e6dec790e9c6be9537c87a1de1cc998"
+  },
+  "sdk/novaride/typescript": {
+    "scheme": "sha256-local-artifact",
+    "value": "767cbde1ea48017415056f267d8026dc037202c07e17ef060277c738f43493f9"
+  },
+  "sdk/novatrust/go": {
+    "scheme": "sha256-local-artifact",
+    "value": "77edde353e7d08deede320b942a0032abdeef59cc13728c5cd214517a42de064"
+  }
+}

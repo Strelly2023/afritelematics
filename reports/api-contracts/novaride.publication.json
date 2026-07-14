@@ -1,0 +1,54 @@
+{
+  "canonicalization": "canonical.v1",
+  "domain": "novaride",
+  "openapi_hash": "sha256:7a4a8b4e198c09a8e4ad693dad3b2e19521d567069ea9aaac0e9d67f728e35b8",
+  "platform": "NovaTech",
+  "provenance": {
+    "build_id": "local",
+    "builder": "local-developer",
+    "contract_version": "2026.07.0",
+    "domain": "novaride",
+    "git_branch": "unknown",
+    "git_commit": "unknown",
+    "pipeline_id": "local",
+    "published_at": "2026-07-14T12:30:42.264407+00:00",
+    "release_id": "api-novaride-2026.07.0",
+    "repository": "github.com/Strelly2023/afritelematics"
+  },
+  "schema_hash": "sha256:83e2691b7c1bd17ff1581cc3f413618cc5fb531bd9d11e2290b823abff98a820",
+  "sdk_versions": {
+    "novaride-sdk-kotlin": {
+      "contract_version": "2026.07.0",
+      "sdk_version": "2026.07.0",
+      "supported_api_versions": [
+        "2026.07",
+        "2026.07.0"
+      ]
+    },
+    "novaride-sdk-swift": {
+      "contract_version": "2026.07.0",
+      "sdk_version": "2026.07.0",
+      "supported_api_versions": [
+        "2026.07",
+        "2026.07.0"
+      ]
+    },
+    "novaride-sdk-typescript": {
+      "contract_version": "2026.07.0",
+      "sdk_version": "2026.07.0",
+      "supported_api_versions": [
+        "2026.07",
+        "2026.07.0"
+      ]
+    }
+  },
+  "signature": {
+    "key_id": "novatrust-api-contract-dev-01",
+    "provider": "ephemeral_development_ed25519",
+    "public_key": "aHLEDIUneEVekKSe+HYMc5UaHGxNy6TDhXuIA4/Zask=",
+    "scheme": "ed25519",
+    "value": "XyHwFbAqjOTuNQkvBfIs5nRHT8PaWOXPUCRN2UOZZXuugVY3fa+77EVTdM4gDC/KV2C9ZHLmfNXK/oU9FgWGBg=="
+  },
+  "supported_until": "2027-07-01",
+  "version": "2026.07.0"
+}
