@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Generic, TypeVar
 
+from afritech.novaride_runtime.common.clocks import utc_now
 from afritech.novaride_runtime.common.errors import DuplicateCommand
 from afritech.novaride_runtime.common.idempotency import IdempotencyRecord
 from afritech.novaride_runtime.events.envelope import MobilityEvent
-from afritech.novaride_runtime.models import Aggregate
+from afritech.novaride_runtime.models import Aggregate, OfflineOperation, ProviderHealthRecord
 
 T = TypeVar("T", bound=Aggregate)
 
@@ -31,6 +33,62 @@ class MemoryRepository(Generic[T]):
         if tenant_id is not None:
             values = [item for item in values if item.tenant_id == tenant_id]
         return deepcopy(list(values))
+
+
+@dataclass(slots=True)
+class MemoryOfflineOperationRepository(MemoryRepository[OfflineOperation]):
+    def get_by_idempotency_key(self, tenant_id: str, idempotency_key: str) -> OfflineOperation | None:
+        for item in self.records.values():
+            if item.tenant_id == tenant_id and item.idempotency_key == idempotency_key:
+                return deepcopy(item)
+        return None
+
+    def claim_pending(self, *, region_code: str, limit: int, now: datetime | None = None) -> list[OfflineOperation]:
+        current_time = now or utc_now()
+        pending: list[OfflineOperation] = []
+        for item in self.records.values():
+            if len(pending) >= limit:
+                break
+            if item.region_code != region_code or not item.status.startswith("QUEUED"):
+                continue
+            if item.next_attempt_at is not None and item.next_attempt_at > current_time:
+                continue
+            claimed = deepcopy(item)
+            claimed.status = "UPLOADING"
+            claimed.touch()
+            self.records[item.id] = deepcopy(claimed)
+            pending.append(deepcopy(claimed))
+        return pending
+
+    def mark_synced(self, operation_id: str) -> None:
+        item = self.records[operation_id]
+        item.status = "SYNCED"
+        item.touch()
+        self.records[operation_id] = deepcopy(item)
+
+    def mark_failed(self, operation_id: str, *, error_code: str, next_attempt_at: datetime) -> None:
+        item = self.records[operation_id]
+        item.status = "QUEUED_RETRY"
+        item.attempt_count += 1
+        item.last_error_code = error_code
+        item.next_attempt_at = next_attempt_at
+        item.touch()
+        self.records[operation_id] = deepcopy(item)
+
+
+@dataclass(slots=True)
+class MemoryProviderHealthRepository(MemoryRepository[ProviderHealthRecord]):
+    def latest(self, *, provider: str, capability: str, tenant_id: str | None = None) -> ProviderHealthRecord | None:
+        matches = [
+            item
+            for item in self.records.values()
+            if item.provider == provider
+            and item.capability == capability
+            and (tenant_id is None or item.tenant_id == tenant_id)
+        ]
+        if not matches:
+            return None
+        return deepcopy(sorted(matches, key=lambda item: item.updated_at)[-1])
 
 
 @dataclass(slots=True)
@@ -90,5 +148,12 @@ class RuntimeRepositories:
     corporate_bookings: MemoryRepository = field(default_factory=MemoryRepository)
     transit_journeys: MemoryRepository = field(default_factory=MemoryRepository)
     operator_commands: MemoryRepository = field(default_factory=MemoryRepository)
+    offline_operations: MemoryOfflineOperationRepository = field(default_factory=MemoryOfflineOperationRepository)
+    resilience_evidence: MemoryRepository = field(default_factory=MemoryRepository)
+    provider_health: MemoryProviderHealthRepository = field(default_factory=MemoryProviderHealthRepository)
+    provider_routes: MemoryRepository = field(default_factory=MemoryRepository)
+    sync_sessions: MemoryRepository = field(default_factory=MemoryRepository)
+    conflict_records: MemoryRepository = field(default_factory=MemoryRepository)
+    failover_events: MemoryRepository = field(default_factory=MemoryRepository)
     events: MemoryEventRepository = field(default_factory=MemoryEventRepository)
     idempotency: MemoryIdempotencyRepository = field(default_factory=MemoryIdempotencyRepository)

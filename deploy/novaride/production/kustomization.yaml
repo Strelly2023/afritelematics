@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: novaride-production
+resources:
+  - namespace.yaml
+  - api-deployment.yaml
+  - worker-deployments.yaml
+  - service.yaml
+  - ingress.yaml
+  - pdb.yaml
+  - hpa.yaml
+  - serviceaccount.yaml
+  - configmap.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: novaride-resilience-alerts
+    files:
+      - ../../../config/novaride/resilience/alert_rules.yaml

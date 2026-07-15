@@ -1,0 +1,7 @@
+event_store_backup: not_executed_no_live_dsn
+external_side_effects_blocked: true
+postgres_backup: not_executed_no_live_dsn
+projection_backup: not_executed_no_live_dsn
+replay_after_restore: not_executed
+restore_to_isolated_environment: not_executed
+status: PENDING

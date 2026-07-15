@@ -1,0 +1,27 @@
+route:
+  receiver: operations
+  routes:
+    - matchers: ['severity="critical"', 'service="emergency"']
+      receiver: emergency-operations
+    - matchers: ['service="payments"']
+      receiver: payment-operations
+    - matchers: ['severity="security"']
+      receiver: security
+    - matchers: ['severity="critical"']
+      receiver: sre
+receivers:
+  - name: operations
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/operations-webhook-url
+  - name: sre
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/sre-webhook-url
+  - name: security
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/security-webhook-url
+  - name: payment-operations
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/payment-operations-webhook-url
+  - name: emergency-operations
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/emergency-operations-webhook-url

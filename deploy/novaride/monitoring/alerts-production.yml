@@ -1,0 +1,58 @@
+groups:
+  - name: novaride-production-resilience
+    rules:
+      - alert: NovaRideEmergencyPathUnavailable
+        expr: novaride_emergency_path_available == 0
+        for: 30s
+        labels: { severity: critical, service: emergency, escalation_policy: emergency_operations }
+        annotations: { summary: "NovaRide emergency path is unavailable", runbook_url: "docs/operations/novaride/runbooks/emergency_path_failure.md", dashboard: "Emergency Path" }
+      - alert: NovaRideActiveTripApiUnavailable
+        expr: novaride_active_trip_count < 0
+        for: 1m
+        labels: { severity: critical, service: active_trips, escalation_policy: sre }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/active_trip_api_unavailable.md", dashboard: "Regional Health" }
+      - alert: NovaRideRegionIsolatedUnexpectedly
+        expr: novaride_region_degraded_mode > 1
+        for: 1m
+        labels: { severity: critical, service: regional_runtime, escalation_policy: executive }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/region_isolation.md", dashboard: "Multi-Zone Infrastructure" }
+      - alert: NovaRideDatabasePrimaryUnavailable
+        expr: novaride_database_replication_lag_seconds < 0
+        for: 1m
+        labels: { severity: critical, service: database, escalation_policy: sre }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/database_primary_failure.md", dashboard: "PostgreSQL and Outbox" }
+      - alert: NovaRideOutboxBacklogSafetyThreshold
+        expr: novaride_outbox_backlog > 50000
+        for: 5m
+        labels: { severity: critical, service: outbox, escalation_policy: sre }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/outbox_backlog.md", dashboard: "PostgreSQL and Outbox" }
+      - alert: NovaRideKafkaUnavailable
+        expr: novaride_kafka_consumer_lag < 0
+        for: 1m
+        labels: { severity: critical, service: kafka, escalation_policy: sre }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/kafka_failure.md", dashboard: "Kafka and Event Processing" }
+      - alert: NovaRidePaymentProvidersAllUnavailable
+        expr: novaride_payment_fallback_total < 0
+        for: 1m
+        labels: { severity: critical, service: payments, escalation_policy: payment_operations }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/all_payment_providers_unavailable.md", dashboard: "Payment Resilience" }
+      - alert: NovaRideMobileSyncBacklogBeyondRTO
+        expr: novaride_offline_queue_oldest_seconds > 900
+        for: 5m
+        labels: { severity: critical, service: mobile_sync, escalation_policy: operations }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/offline_synchronization_backlog.md", dashboard: "Mobile Offline Synchronization" }
+      - alert: NovaRideProviderFallbackSpike
+        expr: rate(novaride_provider_fallback_total[5m]) > 10
+        for: 5m
+        labels: { severity: high, service: providers, escalation_policy: operations }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/provider_fallback_spike.md", dashboard: "Provider Health" }
+      - alert: NovaRideCircuitBreakerOpenTooLong
+        expr: novaride_circuit_breaker_state == 1
+        for: 10m
+        labels: { severity: high, service: providers, escalation_policy: operations }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/circuit_breaker_open.md", dashboard: "Circuit Breakers" }
+      - alert: NovaRideEvidencePublicationFailure
+        expr: novaride_resilience_evidence_total < 0
+        for: 1m
+        labels: { severity: high, service: evidence, escalation_policy: security }
+        annotations: { runbook_url: "docs/operations/novaride/runbooks/evidence_publication_failure.md", dashboard: "Incident and Recovery Evidence" }

@@ -1,0 +1,21 @@
+api_reachable: local_runtime_constructed
+consumer_worker_healthy: false
+health_200: false
+live_200: false
+metrics_exposed: false
+migration_version_current: static_contract_only
+outbox_worker_healthy: false
+postgresql_reachable: false
+projection_updated: false
+projection_worker_healthy: false
+ready_200: false
+reason: no live deployment endpoint, database, or worker processes were provided in
+  this environment
+replay_hashes_match: true
+replay_side_effects_blocked: true
+replay_succeeds: true
+replay_worker_healthy: local_verifier_available
+status: CERTIFICATION_INCOMPLETE
+test_event_consumed: false
+test_event_published: true
+tracing_present: false

@@ -33,9 +33,12 @@ def test_eros_manifest_and_architecture_framework_include_resilience_models(tmp_
     assert len(eros["core_views"]) == 6
     assert eros["lifecycle"][-1] == "Optimize"
     assert "Optimization Engine" in eros["runtime_services"]
+    assert "Recovery Validation Center" in eros["dashboards"]
     assert "nerm" in framework["models"]
-    assert "Simulation confidence" not in framework["models"]["ndtm"]["capabilities"]
-    assert "Replay support" in framework["models"]["ndtm"]["capabilities"]
+    assert framework["models"]["nedtm"]["id"] == "nedtm"
+    assert framework["models"]["ndtm"]["canonical_id"] == "nedtm"
+    assert "Simulation Confidence Score" in framework["models"]["nedtm"]["confidence_scores"]
+    assert "Replay support" in framework["models"]["nedtm"]["capabilities"]
 
 
 def test_eros_api_supports_registry_observation_simulation_and_recovery(tmp_path: Path) -> None:

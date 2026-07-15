@@ -1,0 +1,20 @@
+{
+  "generated_modules": [
+    "corporate",
+    "diagnostics",
+    "driver",
+    "fleet",
+    "logistics",
+    "models",
+    "operator",
+    "replay",
+    "rider",
+    "safety",
+    "transit"
+  ],
+  "live_openapi_export_verified": false,
+  "missing_modules": [],
+  "source": "/openapi.json",
+  "stale_modules": [],
+  "status": "PASS"
+}

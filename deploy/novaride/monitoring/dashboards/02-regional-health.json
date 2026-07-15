@@ -1,0 +1,1 @@
+{"title":"NovaRide Regional Health","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Active Trips","targets":[{"expr":"novaride_active_trip_count"}]},{"type":"timeseries","title":"Booking Success","targets":[{"expr":"novaride_booking_success_total"}]}]}

@@ -55,3 +55,25 @@ def test_runtime_migrations_include_required_tables_and_rls() -> None:
     ]:
         assert f"CREATE TABLE IF NOT EXISTS {table}" in replay
         assert f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY" in replay
+
+
+def test_resilience_hardening_migration_includes_durable_tables_indexes_and_outbox() -> None:
+    migration = Path("afritech/novaride_runtime/persistence/migrations/0008_novaride_resilience_hardening.sql").read_text()
+
+    for table in [
+        "novaride_offline_operations",
+        "novaride_resilience_evidence",
+        "novaride_provider_health",
+        "novaride_provider_route_decisions",
+        "novaride_sync_sessions",
+        "novaride_sync_conflicts",
+        "novaride_failover_events",
+        "novaride_resilience_outbox",
+    ]:
+        assert f"CREATE TABLE IF NOT EXISTS {table}" in migration
+        assert f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY" in migration
+
+    assert "UNIQUE (tenant_id, idempotency_key)" in migration
+    assert "CREATE INDEX IF NOT EXISTS idx_offline_operations_pending" in migration
+    assert "CREATE INDEX IF NOT EXISTS idx_resilience_outbox_claim" in migration
+    assert "FOR UPDATE SKIP LOCKED" not in migration

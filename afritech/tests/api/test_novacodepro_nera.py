@@ -29,8 +29,10 @@ def test_nera_manifest_is_stable_and_layered(tmp_path: Path) -> None:
     manifest = service.nera_manifest()
 
     assert manifest["name"] == "NovaTech Enterprise Reference Architecture"
-    assert len(manifest["layers"]) == 8
-    assert manifest["layers"][3]["name"] == "Knowledge & Intelligence Layer"
+    assert len(manifest["layers"]) == 10
+    assert manifest["layers"][3]["name"] == "Knowledge & Intelligence Plane"
+    assert manifest["layers"][4]["id"] == "enterprise-ai"
+    assert manifest["layers"][5]["id"] == "digital-twin-resilience"
     assert "NovaDigitalTwin" in manifest["knowledge_and_intelligence"]["services"]
 
 
@@ -42,7 +44,7 @@ def test_nera_endpoint_exposes_reference_architecture(tmp_path: Path) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["name"] == "NovaTech Enterprise Reference Architecture"
-    assert len(body["layers"]) == 8
+    assert len(body["layers"]) == 10
 
 
 def test_architecture_framework_endpoint_exposes_multi_view_model(tmp_path: Path) -> None:
@@ -53,5 +55,28 @@ def test_architecture_framework_endpoint_exposes_multi_view_model(tmp_path: Path
     assert response.status_code == 200
     body = response.json()
     assert body["name"] == "NovaTech AI-Native Enterprise Operating System Framework"
-    assert set(body["models"]) >= {"neaf", "nera", "necm", "neom", "nerm", "ndtm"}
-    assert body["models"]["necm"]["capabilities"][0] == "Identity"
+    assert set(body["models"]) >= {"neaf", "nera", "necm", "neom", "nedm", "nekm", "netm", "negm", "neam", "nedtm", "ndtm", "nerm"}
+    assert body["models"]["necm"]["capabilities"][0] == "Strategy, Governance & Leadership"
+    assert body["models"]["nedtm"]["id"] == "nedtm"
+    assert body["models"]["ndtm"]["alias_for"] == "nedtm"
+
+
+def test_enterprise_model_endpoints_are_queryable(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    expected = {
+        "/v1/novacodepro/capabilities": "necm",
+        "/v1/novacodepro/operating-model": "neom",
+        "/v1/novacodepro/data-model": "nedm",
+        "/v1/novacodepro/knowledge-model": "nekm",
+        "/v1/novacodepro/technology-model": "netm",
+        "/v1/novacodepro/governance-model": "negm",
+        "/v1/novacodepro/ai-model": "neam",
+        "/v1/novacodepro/digital-twin-model": "nedtm",
+        "/v1/novacodepro/resilience-model": "nerm",
+    }
+
+    for path, model_id in expected.items():
+        response = client.get(path, headers=_headers("OBSERVER"))
+        assert response.status_code == 200
+        assert response.json()["id"] == model_id

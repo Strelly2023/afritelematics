@@ -1,0 +1,1 @@
+{"title":"NovaRide Emergency Path","schemaVersion":39,"version":1,"panels":[{"type":"stat","title":"Emergency Available","targets":[{"expr":"novaride_emergency_path_available"}]},{"type":"timeseries","title":"Failovers","targets":[{"expr":"novaride_failover_events_total"}]}]}

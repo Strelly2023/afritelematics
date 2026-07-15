@@ -1,0 +1,9 @@
+id: BIND-NOVARIDE-SUPER-PLATFORM-BOUNDARIES
+status: active
+boundaries:
+  NovaRide: [mobility, trips, bookings, dispatch, matching, route_state, pricing_policy, fleet_mobility, logistics_execution, transit_journey_integration]
+  NovaID: [identity, authentication, verification, rbac_abac_claims, device_trust, session_risk]
+  NovaPay: [wallet_ledger, payment_execution, settlement, payouts, refunds, lending, savings, insurance_transactions, reconciliation]
+  NovaTrust: [signed_evidence, immutable_audit, receipts, replay, evidence_integrity]
+  NovaAI: [advisory_recommendations_only]
+  NovaCodePro: [build, tests, release, deployment, provenance, observability_configuration, release_evidence]

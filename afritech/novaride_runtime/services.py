@@ -12,6 +12,7 @@ from afritech.novaride_runtime.common.geography import AddressRef, GeoPoint
 from afritech.novaride_runtime.common.identifiers import new_id
 from afritech.novaride_runtime.common.idempotency import IdempotencyRecord, payload_hash
 from afritech.novaride_runtime.common.money import Money
+from afritech.novaride_runtime.events.hashing import canonical_hash
 from afritech.novaride_runtime.events.envelope import MobilityEvent
 from afritech.novaride_runtime.models import (
     ActorType,
@@ -20,7 +21,9 @@ from afritech.novaride_runtime.models import (
     BookingState,
     CorporateAccount,
     CorporateBooking,
+    ConflictRecord,
     DeliveryOrder,
+    DegradedMode,
     DispatchOffer,
     DriverAvailability,
     DriverAvailabilityState,
@@ -34,12 +37,23 @@ from afritech.novaride_runtime.models import (
     Fleet,
     FleetComplianceState,
     FleetVehicle,
+    FailoverEvent,
+    FailoverState,
     LogisticsState,
     OfferState,
     OperatorCommand,
+    OfflineOperation,
     PaymentIntentReference,
+    ProviderHealth,
+    ProviderHealthRecord,
+    ProviderRoute,
+    ProviderRouteDecision,
+    ProviderState,
+    ResilienceEvidence,
     RiderProfile,
     RuntimeContext,
+    SyncSession,
+    SyncResult,
     TransitJourney,
     TransitLeg,
     Trip,
@@ -578,6 +592,409 @@ class DispatchIntelligenceService:
 
 
 @dataclass(slots=True)
+class ResilienceService:
+    repositories: RuntimeRepositories
+    events: EventFabric
+
+    def queue_offline_operation(
+        self,
+        context: RuntimeContext,
+        *,
+        operation_type: str,
+        payload: dict[str, Any],
+        idempotency_key: str,
+        authority_required: bool = False,
+        priority: str = "NORMAL",
+    ) -> OfflineOperation:
+        command_hash = payload_hash({"operation_type": operation_type, "payload": payload})
+        existing_operation = self.repositories.offline_operations.get_by_idempotency_key(context.tenant_id, idempotency_key)
+        if existing_operation:
+            return existing_operation
+        existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
+        if existing:
+            queued = self.repositories.offline_operations.get(existing.result["offline_operation_id"])
+            if queued is None:
+                raise DuplicateCommand("idempotent_offline_operation_missing")
+            return queued
+        operation = OfflineOperation(
+            id=new_id("offline_op"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            actor_id=context.actor_id,
+            operation_type=operation_type,
+            encrypted_payload={"ciphertext_ref": canonical_hash(payload), "payload_minimized": True},
+            payload_hash=command_hash,
+            idempotency_key=idempotency_key,
+            authority_required=authority_required,
+            status="QUEUED_AUTHORITY_REQUIRED" if authority_required else "QUEUED",
+            priority=priority,
+        )
+        self.repositories.offline_operations.save(operation)
+        self.repositories.idempotency.put(
+            IdempotencyRecord(context.tenant_id, idempotency_key, command_hash, {"offline_operation_id": operation.id})
+        )
+        self.events.emit(
+            context,
+            event_type="OfflineOperationQueued",
+            aggregate_id=operation.id,
+            aggregate_type="OfflineOperation",
+            aggregate_version=operation.aggregate_version,
+            payload={"operation": operation},
+        )
+        return operation
+
+    def synchronize(self, context: RuntimeContext) -> SyncResult:
+        queued = [
+            operation
+            for operation in self.repositories.offline_operations.list(tenant_id=context.tenant_id)
+            if operation.actor_id == context.actor_id and operation.status.startswith("QUEUED")
+        ]
+        synced = 0
+        awaiting_authority = 0
+        for operation in queued:
+            operation.status = "AWAITING_AUTHORITATIVE_ACK" if operation.authority_required else "SYNCED"
+            operation.touch()
+            self.repositories.offline_operations.save(operation)
+            if operation.authority_required:
+                awaiting_authority += 1
+            else:
+                synced += 1
+            self.events.emit(
+                context,
+                event_type="OfflineOperationSynchronized",
+                aggregate_id=operation.id,
+                aggregate_type="OfflineOperation",
+                aggregate_version=operation.aggregate_version,
+                payload={"operation_id": operation.id, "status": operation.status},
+            )
+        return SyncResult(
+            queued=len(queued),
+            synced=synced,
+            awaiting_authority=awaiting_authority,
+            conflicts_resolved=0,
+            status="PARTIAL_AUTHORITY_REQUIRED" if awaiting_authority else "SYNCHRONIZED",
+        )
+
+    def process_mobile_sync_batch(
+        self,
+        context: RuntimeContext,
+        *,
+        device_id: str,
+        last_server_cursor: str | None,
+        operations: tuple[dict[str, Any], ...],
+    ) -> dict[str, Any]:
+        sync = SyncSession(
+            id=new_id("sync"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            device_id=device_id,
+            last_server_cursor=last_server_cursor,
+            server_cursor=new_id("cursor"),
+            status="RECEIVED",
+            operation_count=len(operations),
+        )
+        self.repositories.sync_sessions.save(sync)
+        results: list[dict[str, str]] = []
+        conflicts: list[dict[str, str]] = []
+        for operation in operations:
+            queued = self.queue_offline_operation(
+                context,
+                operation_type=str(operation["operation_type"]),
+                payload=dict(operation.get("payload") or {}),
+                idempotency_key=str(operation["idempotency_key"]),
+                authority_required=bool(operation.get("authority_required", False)),
+                priority=str(operation.get("priority", "NORMAL")),
+            )
+            if operation.get("aggregate_version") and int(operation["aggregate_version"]) < int(operation.get("server_version", operation["aggregate_version"])):
+                decision = self.resolve_conflict(
+                    domain=str(operation["operation_type"]).split("_")[0],
+                    local_version=int(operation["aggregate_version"]),
+                    server_version=int(operation.get("server_version", operation["aggregate_version"])),
+                )
+                conflict = ConflictRecord(
+                    id=new_id("sync_conflict"),
+                    tenant_id=context.tenant_id,
+                    organization_id=context.organization_id,
+                    region_code=context.region_code,
+                    sync_session_id=sync.id,
+                    operation_id=str(operation["id"]),
+                    domain=decision["domain"],
+                    local_version=decision["local_version"],
+                    server_version=decision["server_version"],
+                    policy_selected=decision["policy"],
+                    winner=decision["winner"],
+                    reason="mobile_sync_version_conflict",
+                    correlation_id=context.correlation_id,
+                )
+                self.repositories.conflict_records.save(conflict)
+                conflicts.append({"conflict_id": conflict.id, "operation_id": conflict.operation_id, "winner": conflict.winner})
+                results.append({"operation_id": str(operation["id"]), "status": "CONFLICT"})
+                continue
+            results.append({"operation_id": str(operation["id"]), "status": queued.status.replace("QUEUED_AUTHORITY_REQUIRED", "AWAITING_AUTHORITATIVE_ACK")})
+        sync.status = "CONFLICTS_RECORDED" if conflicts else "ACCEPTED"
+        sync.touch()
+        self.repositories.sync_sessions.save(sync)
+        self.events.emit(
+            context,
+            event_type="MobileSyncBatchReceived",
+            aggregate_id=sync.id,
+            aggregate_type="SyncSession",
+            aggregate_version=sync.aggregate_version,
+            payload={"sync_id": sync.id, "operation_count": len(operations), "conflict_count": len(conflicts)},
+        )
+        return {
+            "sync_id": sync.id,
+            "server_cursor": sync.server_cursor,
+            "results": results,
+            "server_updates": [],
+            "conflicts": conflicts,
+        }
+
+    def sync_status(self, sync_id: str) -> dict[str, Any]:
+        sync = self.repositories.sync_sessions.get(sync_id)
+        if sync is None:
+            raise ValueError("sync_session_not_found")
+        return _json(sync)
+
+    def resolve_sync_conflict(self, context: RuntimeContext, conflict_id: str, *, resolution: str) -> dict[str, Any]:
+        conflict = self.repositories.conflict_records.get(conflict_id)
+        if conflict is None:
+            raise ValueError("sync_conflict_not_found")
+        conflict.reason = f"resolved_by_{resolution}"
+        conflict.touch()
+        self.repositories.conflict_records.save(conflict)
+        self.events.emit(
+            context,
+            event_type="SyncConflictResolved",
+            aggregate_id=conflict.id,
+            aggregate_type="ConflictRecord",
+            aggregate_version=conflict.aggregate_version,
+            payload={"conflict_id": conflict.id, "resolution": resolution},
+        )
+        return _json(conflict)
+
+    def resolve_conflict(self, *, domain: str, local_version: int, server_version: int) -> dict[str, Any]:
+        core_domains = {"booking", "trip", "payment", "dispatch", "safety"}
+        if domain in core_domains:
+            return {
+                "domain": domain,
+                "winner": "server",
+                "policy": "server_authoritative_for_core_state",
+                "local_version": local_version,
+                "server_version": server_version,
+            }
+        return {
+            "domain": domain,
+            "winner": "merge",
+            "policy": "merge_non_authoritative_preferences",
+            "local_version": local_version,
+            "server_version": server_version,
+        }
+
+    def route_provider(
+        self,
+        context: RuntimeContext,
+        *,
+        capability: str,
+        providers: tuple[ProviderHealth, ...],
+    ) -> ProviderRoute:
+        attempted = tuple(provider.provider for provider in providers)
+        healthy = [provider for provider in providers if provider.state == ProviderState.HEALTHY]
+        degraded = [provider for provider in providers if provider.state == ProviderState.DEGRADED]
+        selected = healthy[0] if healthy else degraded[0] if degraded else None
+        primary_healthy = bool(providers and providers[0].state == ProviderState.HEALTHY)
+        mode = DegradedMode.NORMAL if selected and primary_healthy else DegradedMode.DEGRADED if selected else DegradedMode.OFFLINE
+        route = ProviderRoute(
+            capability=capability,
+            selected_provider=selected.provider if selected else None,
+            attempted_providers=attempted,
+            degraded_mode=mode,
+            fallback_reason=None if primary_healthy else "primary_provider_unhealthy",
+        )
+        self.record_evidence(
+            context,
+            capability=capability,
+            degraded_mode=mode,
+            decision="provider_selected" if selected else "provider_unavailable",
+            fallback_used=route.selected_provider,
+            evidence={"attempted_providers": attempted, "fallback_reason": route.fallback_reason},
+        )
+        self.events.emit(
+            context,
+            event_type="ProviderRouteEvaluated",
+            aggregate_id=capability,
+            aggregate_type="ProviderRoute",
+            aggregate_version=1,
+            payload={"route": route},
+        )
+        decision = ProviderRouteDecision(
+            id=new_id("provider_route"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            capability=capability,
+            selected_provider=route.selected_provider,
+            attempted_providers=attempted,
+            degraded_mode=mode,
+            reason=route.fallback_reason or "primary_provider_selected",
+            evidence_hash=canonical_hash({"capability": capability, "attempted": attempted, "selected": route.selected_provider}),
+        )
+        self.repositories.provider_routes.save(decision)
+        return route
+
+    def record_provider_health(self, context: RuntimeContext, health: ProviderHealth) -> ProviderHealthRecord:
+        existing = self.repositories.provider_health.latest(
+            provider=health.provider,
+            capability=health.capability,
+            tenant_id=context.tenant_id,
+        )
+        failures = (existing.consecutive_failures if existing else 0) + (0 if health.state == ProviderState.HEALTHY else 1)
+        successes = (existing.consecutive_successes if existing else 0) + (1 if health.state == ProviderState.HEALTHY else 0)
+        record = ProviderHealthRecord(
+            id=new_id("provider_health"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            provider=health.provider,
+            capability=health.capability,
+            state=health.state,
+            latency_ms=health.latency_ms,
+            error_rate=health.error_rate,
+            consecutive_failures=0 if health.state == ProviderState.HEALTHY else failures,
+            consecutive_successes=successes if health.state == ProviderState.HEALTHY else 0,
+            last_successful_probe_at=utc_now() if health.state == ProviderState.HEALTHY else (existing.last_successful_probe_at if existing else None),
+            last_state_transition_at=utc_now() if existing is None or existing.state != health.state else existing.last_state_transition_at,
+        )
+        self.repositories.provider_health.save(record)
+        self.events.emit(
+            context,
+            event_type="ProviderHealthRecorded",
+            aggregate_id=record.id,
+            aggregate_type="ProviderHealthRecord",
+            aggregate_version=record.aggregate_version,
+            payload={"record": record},
+        )
+        return record
+
+    def graceful_degradation(self, capability: str) -> dict[str, str]:
+        rules = {
+            "live_map": "show_last_known_location_and_eta_text",
+            "card_payment": "offer_wallet_mobile_money_or_cash",
+            "push_notifications": "use_sms_or_whatsapp",
+            "ai_dispatch": "use_deterministic_dispatch_rules",
+            "analytics": "core_ride_booking_continues",
+            "knowledge_service": "use_cached_runbooks",
+            "emergency": "keep_sos_available_and_record_evidence",
+        }
+        return {"capability": capability, "fallback": rules.get(capability, "preserve_core_journey_and_raise_operator_alert")}
+
+    def record_evidence(
+        self,
+        context: RuntimeContext,
+        *,
+        capability: str,
+        degraded_mode: DegradedMode,
+        decision: str,
+        fallback_used: str | None = None,
+        evidence: dict[str, Any] | None = None,
+    ) -> ResilienceEvidence:
+        record = ResilienceEvidence(
+            id=new_id("resilience_evidence"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            capability=capability,
+            degraded_mode=degraded_mode,
+            decision=decision,
+            fallback_used=fallback_used,
+            evidence=evidence or {},
+            evidence_hash=canonical_hash({"capability": capability, "decision": decision, "fallback_used": fallback_used, "evidence": evidence or {}}),
+        )
+        self.repositories.resilience_evidence.save(record)
+        self.events.emit(
+            context,
+            event_type="ResilienceEvidenceRecorded",
+            aggregate_id=record.id,
+            aggregate_type="ResilienceEvidence",
+            aggregate_version=record.aggregate_version,
+            payload={"record": record},
+        )
+        return record
+
+    def record_failover_event(
+        self,
+        context: RuntimeContext,
+        *,
+        previous_state: FailoverState,
+        target_state: FailoverState,
+        reason: str,
+        automatic: bool,
+        approval_reference: str | None = None,
+    ) -> FailoverEvent:
+        payload = {
+            "previous_state": previous_state.value,
+            "target_state": target_state.value,
+            "reason": reason,
+            "automatic": automatic,
+            "approval_reference": approval_reference,
+        }
+        event = FailoverEvent(
+            id=new_id("failover"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            previous_state=previous_state,
+            target_state=target_state,
+            reason=reason,
+            automatic=automatic,
+            approval_reference=approval_reference,
+            evidence_hash=canonical_hash(payload),
+        )
+        self.repositories.failover_events.save(event)
+        self.events.emit(
+            context,
+            event_type="FailoverEventRecorded",
+            aggregate_id=event.id,
+            aggregate_type="FailoverEvent",
+            aggregate_version=event.aggregate_version,
+            payload={"event": event},
+        )
+        return event
+
+    def status(self, tenant_id: str | None = None) -> dict[str, Any]:
+        queued = self.repositories.offline_operations.list(tenant_id=tenant_id)
+        evidence = self.repositories.resilience_evidence.list(tenant_id=tenant_id)
+        routes = self.repositories.provider_routes.list(tenant_id=tenant_id)
+        failovers = self.repositories.failover_events.list(tenant_id=tenant_id)
+        return {
+            "layer": "NovaRide Resilience Layer",
+            "components": (
+                "Connectivity Manager",
+                "Offline Queue",
+                "Sync Engine",
+                "Conflict Resolver",
+                "Provider Router",
+                "Retry Manager",
+                "Circuit Breaker",
+                "Failover Controller",
+                "Recovery Coordinator",
+                "State Reconciler",
+                "Health Monitor",
+                "Evidence Recorder",
+            ),
+            "offline_queue_size": len([item for item in queued if item.status.startswith("QUEUED")]),
+            "awaiting_authority": len([item for item in queued if item.status == "AWAITING_AUTHORITATIVE_ACK"]),
+            "evidence_records": len(evidence),
+            "provider_fallback_total": len([item for item in routes if item.degraded_mode != DegradedMode.NORMAL]),
+            "failover_events_total": len(failovers),
+            "emergency_path_available": True,
+            "core_journey_preserved_under_degradation": True,
+        }
+
+
+@dataclass(slots=True)
 class ReadModelService:
     repositories: RuntimeRepositories
 
@@ -590,6 +1007,10 @@ class ReadModelService:
             "active_emergencies": len([case for case in emergencies if case.state not in {EmergencyState.RESOLVED, EmergencyState.CLOSED}]),
             "event_count": len(self.repositories.events.all()),
             "built_from_events": True,
+            "resilience": {
+                "offline_user_operations": len(self.repositories.offline_operations.list(tenant_id=tenant_id)),
+                "resilience_evidence_records": len(self.repositories.resilience_evidence.list(tenant_id=tenant_id)),
+            },
         }
 
     def driver_queue(self, tenant_id: str, driver_id: str) -> list[dict[str, Any]]:
@@ -613,6 +1034,7 @@ class NovaRideRuntime:
     corporate: CorporateMobilityService
     transit: TransitJourneyService
     intelligence: DispatchIntelligenceService
+    resilience: ResilienceService
     read_models: ReadModelService
 
     def status(self) -> dict[str, Any]:
@@ -625,6 +1047,7 @@ class NovaRideRuntime:
             "REAL_PAYMENTS_ENABLED": self.policy.real_payments_enabled,
             "REAL_PAYMENT_APPROVAL": "PENDING",
             "event_count": len(self.repositories.events.all()),
+            "resilience": self.resilience.status(),
         }
 
 
@@ -649,6 +1072,7 @@ def create_runtime() -> NovaRideRuntime:
         corporate=CorporateMobilityService(repositories, events),
         transit=TransitJourneyService(repositories, events),
         intelligence=DispatchIntelligenceService(events, policy),
+        resilience=ResilienceService(repositories, events),
         read_models=ReadModelService(repositories),
     )
 

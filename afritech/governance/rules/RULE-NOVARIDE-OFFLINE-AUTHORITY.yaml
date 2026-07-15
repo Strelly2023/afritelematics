@@ -1,0 +1,5 @@
+id: RULE-NOVARIDE-OFFLINE-AUTHORITY
+status: active
+requirements:
+  - Offline state may queue safe operations and telemetry.
+  - Offline state must not confirm booking, dispatchability, payment, identity verification, or emergency resolution.

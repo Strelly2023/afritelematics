@@ -1,0 +1,73 @@
+profiles:
+  local:
+    evidence_status: DEVELOPMENT_VERIFIED
+    services:
+      postgres: container
+      redpanda: single-node
+      temporal: development-server
+      kms: localstack
+      object_lock: localstack
+      neo4j: container
+      observability: local
+    production_claim_allowed: false
+
+  integration:
+    evidence_status: NON_PRODUCTION_KMS_VERIFIED
+    services:
+      postgres: managed-compatible-cluster
+      redpanda: three-node
+      temporal: ha-non-production
+      kms: non-production-asymmetric-key
+      object_lock: test-bucket
+      neo4j: clustered
+      observability: otel-collector
+    production_claim_allowed: false
+
+  production:
+    evidence_status: KMS_VERIFIED
+    services:
+      postgres: multi-az-aurora-or-postgresql
+      redpanda: production-cluster
+      temporal: highly-available
+      kms: aws-kms-asymmetric-key-security-account
+      object_lock: s3-compliance-mode-archive-account
+      neo4j: production-projection-cluster
+      observability: managed-otel-prometheus-alerting
+      routing: route53-global-accelerator-regional-albs
+    production_claim_allowed: true
+
+required_environment:
+  common:
+    - NOVACODEPRO_PROFILE
+    - NOVACODEPRO_DATABASE_URL
+    - NOVACODEPRO_TEMPORAL_TARGET
+    - NOVACODEPRO_EVENT_BROKERS
+    - NOVACODEPRO_SCHEMA_REGISTRY_URL
+    - NOVACODEPRO_NEO4J_URI
+    - OTEL_EXPORTER_OTLP_ENDPOINT
+  kms_and_archive:
+    - NOVACODEPRO_EVIDENCE_KMS_KEY_ID
+    - NOVACODEPRO_EVIDENCE_BUCKET
+  production_only:
+    - NOVACODEPRO_ROUTE53_ZONE_ID
+    - NOVACODEPRO_GLOBAL_ACCELERATOR_ARN
+    - NOVACODEPRO_AUDIT_VERIFIER_ROLE_ARN
+
+completion_gates:
+  - postgres_rls_negative_tests
+  - pitr_restore
+  - replica_promotion
+  - temporal_worker_restart
+  - temporal_replay
+  - redpanda_replay
+  - consumer_inbox_deduplication
+  - kms_signature_verification
+  - s3_object_lock_overwrite_denial
+  - neo4j_projection_rebuild
+  - twin_replay_state_hash
+  - eros_business_validation
+  - agent_kill_switch_containment
+  - regional_failover
+  - governed_failback
+  - independent_audit_verification
+

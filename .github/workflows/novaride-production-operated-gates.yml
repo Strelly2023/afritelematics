@@ -1,0 +1,36 @@
+name: NovaRide Production Operated Gates
+
+on:
+  pull_request:
+    paths:
+      - "afritech/novaride_runtime/**"
+      - "afritech/api/novaride_runtime_api.py"
+      - "deploy/novaride/**"
+      - "config/novaride/resilience/**"
+      - "tests/novaride_runtime/**"
+      - "apps/novaride-operations/**"
+      - "rider_app/core/services/offlineQueue.service.ts"
+      - "driver_app/core/services/offlineQueue.service.ts"
+  workflow_dispatch:
+
+jobs:
+  production-operated-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Runtime, persistence, API, deployment, alert, dashboard, and evidence gates
+        run: |
+          pytest \
+            afritech/tests/api/test_novaride_next_generation.py \
+            tests/novaride_runtime/unit \
+            tests/novaride_runtime/integration \
+            tests/novaride_runtime/contracts \
+            tests/novaride_runtime/persistence \
+            tests/novaride_runtime/deployment
+      - name: DR evidence dry run
+        run: python scripts/novaride/run_dr_exercise.py --exercise emergency-path-verification --environment controlled_pilot --region KE --output reports/novaride/dr

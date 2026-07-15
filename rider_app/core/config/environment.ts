@@ -28,9 +28,22 @@ export const USE_MOCK_API =
 export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
 
-export const ATTESTATION_POLICY =
-  process.env.EXPO_PUBLIC_NOVARIDE_ATTESTATION_POLICY ||
-  (TEST_MODE ? "public_pilot_fallback" : "strict");
+export type AttestationPolicy = "strict" | "public_pilot_fallback" | "public_pilot_degraded";
+
+function normalizeAttestationPolicy(value: string | undefined): AttestationPolicy {
+  if (
+    value === "strict" ||
+    value === "public_pilot_fallback" ||
+    value === "public_pilot_degraded"
+  ) {
+    return value;
+  }
+  return TEST_MODE ? "public_pilot_fallback" : "strict";
+}
+
+export const ATTESTATION_POLICY = normalizeAttestationPolicy(
+  process.env.EXPO_PUBLIC_NOVARIDE_ATTESTATION_POLICY,
+);
 
 export const APP_VERSION =
   process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.3";

@@ -1,0 +1,1 @@
+{"title":"NovaRide Circuit Breakers","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Circuit State","targets":[{"expr":"novaride_circuit_breaker_state"}]},{"type":"timeseries","title":"Circuit Opens","targets":[{"expr":"novaride_circuit_breaker_open_total"}]}]}

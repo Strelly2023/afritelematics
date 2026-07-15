@@ -1,0 +1,23 @@
+exercises:
+  - zone_loss_simulation
+  - database_primary_failure
+  - kafka_broker_loss
+  - payment_provider_outage
+  - map_provider_outage
+  - push_provider_outage
+  - internet_partition_simulation
+  - regional_control_plane_isolation
+  - offline_queue_replay
+  - emergency_path_verification
+
+required_evidence:
+  - start_time
+  - detection_time
+  - failover_time
+  - recovery_time
+  - data_loss_measurement
+  - rto_result
+  - rpo_result
+  - failed_controls
+  - corrective_actions
+  - evidence_package

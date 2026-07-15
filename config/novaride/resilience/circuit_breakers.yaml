@@ -1,0 +1,24 @@
+circuit_breakers:
+  card_primary:
+    failure_threshold: 5
+    rolling_window_seconds: 30
+    open_duration_seconds: 60
+    half_open_max_calls: 3
+
+  mobile_money:
+    failure_threshold: 5
+    rolling_window_seconds: 30
+    open_duration_seconds: 60
+    half_open_max_calls: 3
+
+  maps_google:
+    failure_threshold: 5
+    rolling_window_seconds: 30
+    open_duration_seconds: 60
+    half_open_max_calls: 3
+
+  emergency_dispatch:
+    failure_threshold: 2
+    rolling_window_seconds: 10
+    open_duration_seconds: 15
+    half_open_max_calls: 1

@@ -1,0 +1,1 @@
+{"title":"NovaRide Mobile Offline Synchronization","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Offline Queue Depth","targets":[{"expr":"novaride_offline_queue_depth"}]},{"type":"timeseries","title":"Oldest Command","targets":[{"expr":"novaride_offline_queue_oldest_seconds"}]}]}

@@ -36,6 +36,7 @@ from afritech.architecture.novaride_architecture import (
     verify_novaride_architecture_publication,
     verify_novaride_architecture_contract,
 )
+from afritech.architecture.novaride_next_generation import novaride_next_generation_manifest
 from afritech.architecture.novaride_super_app import (
     novaid_digital_nation_contract,
     novaid_gen_sovereign_contract,
@@ -2697,6 +2698,10 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.get("/novaride/platform/architecture-contract")
     def novaride_platform_architecture_contract() -> dict[str, Any]:
         return _novaride_platform_architecture_contract()
+
+    @router.get("/novaride/next-generation")
+    def novaride_next_generation_contract() -> dict[str, Any]:
+        return novaride_next_generation_manifest()
 
     @router.get("/novaride/{surface_key}/workspace")
     def novaride_workspace(surface_key: str) -> dict[str, Any]:

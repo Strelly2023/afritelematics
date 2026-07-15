@@ -1,0 +1,7 @@
+{
+  "compatibility_policy": "additive_fields_allowed_required_field_removal_forbidden",
+  "missing_required_events": [],
+  "registered_event_count": 37,
+  "schema_version": "2026.2",
+  "status": "PASS"
+}

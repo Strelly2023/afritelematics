@@ -1,0 +1,6 @@
+id: RULE-NOVARIDE-RUNTIME-SAFETY
+status: active
+requirements:
+  - Emergency activation must be idempotent.
+  - Emergency evidence must be locked at creation.
+  - Emergency resolution requires authorized operator control and cannot be completed by Rider, Driver, NovaAI, or offline state.

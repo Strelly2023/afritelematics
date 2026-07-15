@@ -1,0 +1,38 @@
+{
+  "build_commit": "local-uncommitted",
+  "container_digests": [],
+  "migration_version": "0008_novaride_resilience_hardening",
+  "environment": "development",
+  "regions": ["AU", "KE"],
+  "zones": ["zone-a", "zone-b", "zone-c"],
+  "test_results": {
+    "novaride_runtime_suite": "58 passed",
+    "rider_app_typecheck": "passed",
+    "driver_app_typecheck": "passed"
+  },
+  "slo_validation": "deterministic_local",
+  "provider_probe_results": "mock_transport_and_synthetic_probe_verified",
+  "database_recovery_result": "not_live_tested",
+  "kafka_recovery_result": "not_live_tested",
+  "mobile_synchronization_result": "signed_sync_and_replay_rejection_verified",
+  "emergency_path_result": "synthetic_contract_verified_not_live_tested",
+  "security_result": "signed_sync_nonce_replay_and_production_fail_closed_verified",
+  "accessibility_result": "operations_window_static_accessibility_controls_present_manual_review_required",
+  "dr_exercise_result": "dry_run_evidence_generation_verified",
+  "unresolved_risks": [
+    "live_postgresql_not_verified",
+    "live_kafka_not_verified",
+    "live_redis_not_verified",
+    "live_kubernetes_failover_not_verified",
+    "live_database_promotion_not_verified",
+    "live_emergency_path_not_verified",
+    "manual_accessibility_review_required"
+  ],
+  "evidence_references": [
+    "tests/novaride_runtime",
+    "reports/novaride/dr",
+    "deploy/novaride/production",
+    "deploy/novaride/monitoring"
+  ],
+  "final_status": "CONDITIONALLY_READY"
+}

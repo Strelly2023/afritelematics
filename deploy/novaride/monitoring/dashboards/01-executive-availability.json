@@ -1,0 +1,1 @@
+{"title":"NovaRide Executive Availability","schemaVersion":39,"version":1,"panels":[{"type":"stat","title":"Emergency Path","targets":[{"expr":"novaride_emergency_path_available"}]},{"type":"stat","title":"Region Degraded Mode","targets":[{"expr":"novaride_region_degraded_mode"}]}]}

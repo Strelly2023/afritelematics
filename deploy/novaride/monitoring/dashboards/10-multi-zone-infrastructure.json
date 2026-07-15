@@ -1,0 +1,1 @@
+{"title":"NovaRide Multi-Zone Infrastructure","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Region Mode","targets":[{"expr":"novaride_region_degraded_mode"}]},{"type":"timeseries","title":"Failover Events","targets":[{"expr":"novaride_failover_events_total"}]}]}

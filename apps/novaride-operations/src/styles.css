@@ -1,0 +1,32 @@
+.resilience-window {
+  font-family: system-ui, sans-serif;
+  color: #101418;
+  background: #f7f8fa;
+  min-height: 100vh;
+  padding: 24px;
+}
+.panel-grid,
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.panel,
+button {
+  border: 1px solid #39424e;
+  border-radius: 6px;
+  background: #fff;
+  padding: 12px;
+}
+.panel span {
+  font-weight: 700;
+}
+button:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+.mode-normal span::before { content: "OK: "; }
+.mode-degraded span::before { content: "Warning: "; }
+.mode-offline span::before { content: "Offline: "; }
+.mode-emergency_only span::before { content: "Emergency: "; }
+.mode-recovering span::before { content: "Recovering: "; }

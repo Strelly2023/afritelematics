@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novaride-outbox-publisher
+  labels:
+    app: novaride-outbox-publisher
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: novaride-outbox-publisher
+  template:
+    metadata:
+      labels:
+        app: novaride-outbox-publisher
+    spec:
+      serviceAccountName: novaride-runtime
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: novaride-outbox-publisher
+      containers:
+        - name: worker
+          image: novaride-api:2026.2
+          args: ["python", "-m", "afritech.novaride_runtime.workers.outbox_worker"]
+          envFrom:
+            - configMapRef:
+                name: novaride-runtime-config
+            - secretRef:
+                name: novaride-runtime-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novaride-provider-probes
+  labels:
+    app: novaride-provider-probes
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: novaride-provider-probes
+  template:
+    metadata:
+      labels:
+        app: novaride-provider-probes
+    spec:
+      serviceAccountName: novaride-runtime
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: novaride-provider-probes
+      containers:
+        - name: worker
+          image: novaride-api:2026.2
+          args: ["python", "-m", "afritech.novaride_runtime.workers.provider_probe_worker"]
+          envFrom:
+            - configMapRef:
+                name: novaride-runtime-config
+            - secretRef:
+                name: novaride-runtime-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novaride-mobile-sync-worker
+  labels:
+    app: novaride-mobile-sync-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: novaride-mobile-sync-worker
+  template:
+    metadata:
+      labels:
+        app: novaride-mobile-sync-worker
+    spec:
+      serviceAccountName: novaride-runtime
+      containers:
+        - name: worker
+          image: novaride-api:2026.2
+          args: ["python", "-m", "afritech.novaride_runtime.workers.mobile_sync_worker"]
+          envFrom:
+            - configMapRef:
+                name: novaride-runtime-config
+            - secretRef:
+                name: novaride-runtime-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novaride-reconciliation-worker
+  labels:
+    app: novaride-reconciliation-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novaride-reconciliation-worker
+  template:
+    metadata:
+      labels:
+        app: novaride-reconciliation-worker
+    spec:
+      serviceAccountName: novaride-runtime
+      containers:
+        - name: worker
+          image: novaride-api:2026.2
+          args: ["python", "-m", "afritech.novaride_runtime.workers.reconciliation_worker"]
+          envFrom:
+            - configMapRef:
+                name: novaride-runtime-config
+            - secretRef:
+                name: novaride-runtime-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novaride-resilience-evaluator
+  labels:
+    app: novaride-resilience-evaluator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: novaride-resilience-evaluator
+  template:
+    metadata:
+      labels:
+        app: novaride-resilience-evaluator
+    spec:
+      serviceAccountName: novaride-runtime
+      containers:
+        - name: worker
+          image: novaride-api:2026.2
+          args: ["python", "-m", "afritech.novaride_runtime.workers.resilience_evaluator"]
+          envFrom:
+            - configMapRef:
+                name: novaride-runtime-config
+            - secretRef:
+                name: novaride-runtime-secrets

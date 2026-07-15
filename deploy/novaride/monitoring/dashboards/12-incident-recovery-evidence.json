@@ -1,0 +1,1 @@
+{"title":"NovaRide Incident and Recovery Evidence","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Evidence Total","targets":[{"expr":"novaride_resilience_evidence_total"}]},{"type":"timeseries","title":"Conflicts","targets":[{"expr":"novaride_sync_conflicts_total"}]}]}

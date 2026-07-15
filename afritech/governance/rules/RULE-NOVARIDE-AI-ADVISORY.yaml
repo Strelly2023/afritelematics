@@ -1,0 +1,5 @@
+id: RULE-NOVARIDE-AI-ADVISORY
+status: active
+requirements:
+  - NovaAI recommendations are advisory inputs.
+  - NovaAI must not independently dispatch, price, suspend, refund, lend, insure, approve, or resolve emergencies.

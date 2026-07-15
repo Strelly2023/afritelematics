@@ -1,0 +1,28 @@
+groups:
+  - name: novaride-resilience
+    rules:
+      - alert: NovaRideEmergencyPathUnavailable
+        expr: novaride_emergency_path_available == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "NovaRide emergency path is unavailable"
+
+      - alert: NovaRideOfflineQueueBacklog
+        expr: novaride_offline_queue_depth > 10000
+        for: 10m
+        labels:
+          severity: high
+
+      - alert: NovaRideProviderFallbackSpike
+        expr: rate(novaride_provider_fallback_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+
+      - alert: NovaRideSyncOldestCommand
+        expr: novaride_offline_sync_age_seconds > 900
+        for: 5m
+        labels:
+          severity: high

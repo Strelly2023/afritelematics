@@ -1,0 +1,1 @@
+{"title":"NovaRide Kafka and Event Processing","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Consumer Lag","targets":[{"expr":"novaride_kafka_consumer_lag"}]},{"type":"timeseries","title":"Outbox Failures","targets":[{"expr":"novaride_outbox_publish_failures_total"}]}]}

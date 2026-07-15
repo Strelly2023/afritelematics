@@ -1,0 +1,1 @@
+{"app":"novaride-compliance","version":"2026.2.0","route_shell":true,"auth_guard":"NovaID","rbac":["COMPLIANCE_OFFICER","AUDITOR"],"api_sdk":"@novaride/api-sdk","design_system":"novaride-design-system","error_boundary":true,"health_diagnostics":true,"feature_flags":true,"accessibility_baseline":"WCAG-aligned","status":"runtime_shell_ready"}

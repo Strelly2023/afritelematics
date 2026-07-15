@@ -1,0 +1,1 @@
+{"title":"NovaRide SLO and Error Budget","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Sync Failures","targets":[{"expr":"novaride_offline_sync_failures_total"}]},{"type":"timeseries","title":"Dispatch Success","targets":[{"expr":"novaride_dispatch_success_total"}]}]}

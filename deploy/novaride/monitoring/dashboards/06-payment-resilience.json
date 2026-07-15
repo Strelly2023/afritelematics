@@ -1,0 +1,1 @@
+{"title":"NovaRide Payment Resilience","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Payment Fallbacks","targets":[{"expr":"novaride_payment_fallback_total"}]},{"type":"timeseries","title":"Provider Fallbacks","targets":[{"expr":"novaride_provider_fallback_total"}]}]}

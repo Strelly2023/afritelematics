@@ -11,7 +11,13 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field, model_validator
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
-from afritech.novapay import NovaPayEcosystem, NovaPayRepository
+from afritech.novapay import NovaPayEcosystem, NovaPayRepository, novapay_ecosystem_contract
+from afritech.novapay.ecosystem_contract import (
+    novapay_authority_boundaries,
+    novapay_backend_contract,
+    novapay_frontend_contract,
+    novapay_production_gate_report,
+)
 
 
 def _service() -> NovaPayEcosystem:
@@ -521,6 +527,26 @@ def build_novapay_ecosystem_router(service: NovaPayEcosystem | None = None) -> A
             "apps": ecosystem.app_surfaces(),
             "trust": ecosystem.trust_surfaces(),
         }
+
+    @router.get("/ecosystem/architecture")
+    def ecosystem_architecture(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return novapay_ecosystem_contract()
+
+    @router.get("/ecosystem/backend")
+    def ecosystem_backend(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return novapay_backend_contract()
+
+    @router.get("/ecosystem/frontend")
+    def ecosystem_frontend(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return novapay_frontend_contract()
+
+    @router.get("/ecosystem/boundaries")
+    def ecosystem_boundaries(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return novapay_authority_boundaries()
+
+    @router.get("/ecosystem/production-gates")
+    def ecosystem_production_gates(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:
+        return novapay_production_gate_report()
 
     @router.get("/ai/insights")
     def insights(claims: JWTClaims = Depends(readable)) -> dict[str, Any]:

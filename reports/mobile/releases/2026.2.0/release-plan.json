@@ -1,0 +1,10 @@
+{
+  "version": "2026.2.0",
+  "status": "PENDING",
+  "reason": "Fresh APK builds, signing, immutable publication, public download verification, and physical-device smoke tests were not executed in this environment.",
+  "release_channel": "PUBLIC_PILOT",
+  "environment": "PUBLIC_PILOT",
+  "api_host": "https://api.afritechnology.com",
+  "GA_ALLOWED": false,
+  "REAL_PAYMENTS_ENABLED": false
+}

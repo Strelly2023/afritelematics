@@ -109,6 +109,35 @@ class OfferState(StrEnum):
     EXPIRED = "EXPIRED"
 
 
+class ProviderState(StrEnum):
+    HEALTHY = "HEALTHY"
+    DEGRADED = "DEGRADED"
+    UNAVAILABLE = "UNAVAILABLE"
+
+
+class DegradedMode(StrEnum):
+    NORMAL = "NORMAL"
+    DEGRADED = "DEGRADED"
+    OFFLINE = "OFFLINE"
+    EMERGENCY_ONLY = "EMERGENCY_ONLY"
+
+
+class CircuitBreakerState(StrEnum):
+    CLOSED = "CLOSED"
+    OPEN = "OPEN"
+    HALF_OPEN = "HALF_OPEN"
+
+
+class FailoverState(StrEnum):
+    NORMAL = "NORMAL"
+    ZONE_DEGRADED = "ZONE_DEGRADED"
+    ZONE_FAILOVER = "ZONE_FAILOVER"
+    REGION_DEGRADED = "REGION_DEGRADED"
+    REGION_ISOLATED = "REGION_ISOLATED"
+    EMERGENCY_ONLY = "EMERGENCY_ONLY"
+    RECOVERING = "RECOVERING"
+
+
 @dataclass(frozen=True, slots=True)
 class RuntimeContext:
     tenant_id: str
@@ -216,10 +245,111 @@ class DriverDiagnosticState(Aggregate):
 class OfflineOperation(Aggregate):
     actor_id: str = ""
     operation_type: str = ""
+    encrypted_payload: dict[str, Any] = field(default_factory=dict)
     payload_hash: str = ""
     idempotency_key: str = ""
     authority_required: bool = False
     status: str = "QUEUED"
+    conflict_policy: str = "server_authoritative_for_core_state"
+    replayable: bool = True
+    attempt_count: int = 0
+    next_attempt_at: datetime | None = None
+    last_error_code: str | None = None
+    priority: str = "NORMAL"
+
+
+@dataclass(slots=True)
+class ResilienceEvidence(Aggregate):
+    capability: str = ""
+    degraded_mode: DegradedMode = DegradedMode.NORMAL
+    decision: str = ""
+    fallback_used: str | None = None
+    evidence: dict[str, Any] = field(default_factory=dict)
+    evidence_hash: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderHealth:
+    provider: str
+    capability: str
+    state: ProviderState
+    latency_ms: int = 0
+    error_rate: Decimal = Decimal("0")
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderRoute:
+    capability: str
+    selected_provider: str | None
+    attempted_providers: tuple[str, ...]
+    degraded_mode: DegradedMode
+    fallback_reason: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SyncResult:
+    queued: int
+    synced: int
+    awaiting_authority: int
+    conflicts_resolved: int
+    status: str
+
+
+@dataclass(slots=True)
+class ProviderHealthRecord(Aggregate):
+    provider: str = ""
+    capability: str = ""
+    state: ProviderState = ProviderState.HEALTHY
+    latency_ms: int = 0
+    error_rate: Decimal = Decimal("0")
+    timeout_rate: Decimal = Decimal("0")
+    success_rate: Decimal = Decimal("1")
+    consecutive_failures: int = 0
+    consecutive_successes: int = 0
+    last_successful_probe_at: datetime | None = None
+    last_state_transition_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class ProviderRouteDecision(Aggregate):
+    capability: str = ""
+    selected_provider: str | None = None
+    attempted_providers: tuple[str, ...] = ()
+    degraded_mode: DegradedMode = DegradedMode.NORMAL
+    reason: str = ""
+    evidence_hash: str = ""
+
+
+@dataclass(slots=True)
+class SyncSession(Aggregate):
+    device_id: str = ""
+    last_server_cursor: str | None = None
+    server_cursor: str = ""
+    status: str = "RECEIVED"
+    operation_count: int = 0
+
+
+@dataclass(slots=True)
+class ConflictRecord(Aggregate):
+    sync_session_id: str = ""
+    operation_id: str = ""
+    domain: str = ""
+    local_version: int = 0
+    server_version: int = 0
+    policy_selected: str = ""
+    winner: str = ""
+    reason: str = ""
+    correlation_id: str | None = None
+
+
+@dataclass(slots=True)
+class FailoverEvent(Aggregate):
+    previous_state: FailoverState = FailoverState.NORMAL
+    target_state: FailoverState = FailoverState.NORMAL
+    reason: str = ""
+    automatic: bool = False
+    approval_reference: str | None = None
+    evidence_hash: str = ""
 
 
 @dataclass(slots=True)

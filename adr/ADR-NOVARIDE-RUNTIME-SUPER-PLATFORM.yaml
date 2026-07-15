@@ -1,0 +1,13 @@
+id: ADR-NOVARIDE-RUNTIME-SUPER-PLATFORM
+status: accepted
+date: 2026-07-14
+decision: Implement NovaRide runtime as a domain-separated mobility super platform.
+context:
+  - NovaRide owns mobility state, dispatch, pricing policy, fleet mobility, logistics, corporate transport, and transit journey integration.
+  - NovaID owns identity and authority claims.
+  - NovaPay owns ledgers, payment execution, settlement, payouts, refunds, lending, savings, and insurance transactions.
+  - NovaTrust owns signed evidence, receipts, immutable audit, and replay integrity.
+consequences:
+  - Runtime services emit immutable mobility events.
+  - Financial operations remain references to NovaPay.
+  - GA and real payments remain disabled until explicit approval.

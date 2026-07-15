@@ -1,0 +1,1 @@
+{"title":"NovaRide PostgreSQL and Outbox","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Replication Lag","targets":[{"expr":"novaride_database_replication_lag_seconds"}]},{"type":"timeseries","title":"Outbox Backlog","targets":[{"expr":"novaride_outbox_backlog"}]}]}

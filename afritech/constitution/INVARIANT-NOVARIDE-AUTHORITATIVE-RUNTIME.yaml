@@ -1,0 +1,6 @@
+id: INVARIANT-NOVARIDE-AUTHORITATIVE-RUNTIME
+status: active
+rules:
+  - Rider, Driver, Operator, and frontend local state must not become authoritative for dispatch, booking confirmation, payment, identity, or emergency resolution.
+  - Core NovaRide services own booking, trip, dispatch, route, pricing-policy, safety, fleet-mobility, logistics, corporate-transport, and transit journey state.
+  - All material transitions must emit integrity-hashed events.

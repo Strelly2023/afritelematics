@@ -1,0 +1,1 @@
+{"title":"NovaRide Provider Health","schemaVersion":39,"version":1,"panels":[{"type":"timeseries","title":"Provider Health State","targets":[{"expr":"novaride_provider_health_state"}]},{"type":"timeseries","title":"Probe Latency","targets":[{"expr":"novaride_provider_probe_latency_seconds"}]}]}

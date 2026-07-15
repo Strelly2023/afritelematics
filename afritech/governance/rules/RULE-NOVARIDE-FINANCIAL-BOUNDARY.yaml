@@ -1,0 +1,6 @@
+id: RULE-NOVARIDE-FINANCIAL-BOUNDARY
+status: active
+requirements:
+  - NovaRide may store NovaPay references only.
+  - NovaRide must not implement a financial ledger.
+  - REAL_PAYMENTS_ENABLED must remain false without explicit NovaPay and governance approval.
