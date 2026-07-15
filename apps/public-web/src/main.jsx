@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { audiences, fallbackProducts } from "./data.js";
+import { audiences, fallbackProducts, fallbackServices } from "./data.js";
 import { loadPublicGateway, searchPublic, submitContact } from "./api.js";
 import "./styles.css";
 
@@ -8,6 +8,7 @@ const pages = {
   "/": "Home",
   "/platform": "Platform",
   "/products": "Products",
+  "/apps": "Apps",
   "/solutions": "Solutions",
   "/industries": "Industries",
   "/developers": "Developers",
@@ -47,9 +48,20 @@ function Badge({ children, tone = "neutral" }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;
 }
 
+function uniqueNav(nav) {
+  const seen = new Set();
+  return nav.filter((item) => {
+    if (seen.has(item.href)) {
+      return false;
+    }
+    seen.add(item.href);
+    return true;
+  });
+}
+
 function Header({ site, path }) {
   const [open, setOpen] = useState(false);
-  const nav = site.navigation || [];
+  const nav = uniqueNav([...(site.navigation || []), { label: "Apps", href: "/apps" }, { label: "Status", href: "/status" }, { label: "Verify", href: "/verify" }, { label: "Downloads", href: "/downloads" }]);
   return (
     <header className="site-header">
       <div className="bar">
@@ -144,6 +156,25 @@ function ProductGrid({ products }) {
   );
 }
 
+function ServiceCard({ service }) {
+  const tone = service.authentication_required ? "warning" : "trust";
+  return (
+    <article className="product-card">
+      <div className="card-top">
+        <h3>{service.name}</h3>
+        <Badge tone={tone}>{service.status}</Badge>
+      </div>
+      <p>{service.domain}</p>
+      <dl>
+        <div><dt>Category</dt><dd>{service.category}</dd></div>
+        <div><dt>Indexing</dt><dd>{service.indexing}</dd></div>
+        <div><dt>Auth</dt><dd>{service.authentication_required ? "Required" : "Public"}</dd></div>
+      </dl>
+      <a className="text-action" href={service.url} rel="noreferrer">Open surface</a>
+    </article>
+  );
+}
+
 function PlatformSection() {
   const capabilities = [
     ["NovaID", "One identity across every experience."],
@@ -167,6 +198,34 @@ function PlatformSection() {
           </article>
         ))}
       </div>
+    </section>
+  );
+}
+
+function FabricSection({ services }) {
+  const grouped = services.reduce((acc, service) => {
+    const key = service.category || "Other";
+    acc[key] = [...(acc[key] || []), service];
+    return acc;
+  }, {});
+  return (
+    <section className="band" aria-labelledby="fabric-title">
+      <div className="section-heading">
+        <Badge tone="info">Operational fabric</Badge>
+        <h2 id="fabric-title">Product, portal, and platform surfaces</h2>
+        <p>The public gateway exposes each surface with its actual exposure boundary instead of collapsing everything into one generic destination.</p>
+      </div>
+      {Object.entries(grouped).map(([category, records]) => (
+        <div key={category} className="fabric-group">
+          <div className="fabric-group-head">
+            <h3>{category}</h3>
+            <p>{records.length} surfaces</p>
+          </div>
+          <div className="grid services-grid">
+            {records.map((service) => <ServiceCard key={service.slug} service={service} />)}
+          </div>
+        </div>
+      ))}
     </section>
   );
 }
@@ -233,6 +292,29 @@ function TrustLayer({ trust, status }) {
   );
 }
 
+function AppsPage({ services }) {
+  return (
+    <section className="detail">
+      <Badge tone="info">Application surfaces</Badge>
+      <h1>Apps and portal gateways</h1>
+      <p>Each surface is labeled with its exposure boundary, authentication posture, and indexing policy. Internal applications stay out of the public root.</p>
+      <div className="grid services-grid">
+        {services.map((service) => <ServiceCard key={service.slug} service={service} />)}
+      </div>
+      <div className="detail-grid">
+        <article>
+          <h2>Public experience</h2>
+          <p>Corporate pages, product discovery, trust content, and status information are publicly indexable when appropriate.</p>
+        </article>
+        <article>
+          <h2>Private workspaces</h2>
+          <p>Customer, operator, and NovaCodePro experiences remain isolated behind authenticated subdomains and noindex rules.</p>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function Home({ data }) {
   return (
     <>
@@ -240,6 +322,7 @@ function Home({ data }) {
       <Hero site={data.site} status={data.status} />
       <ProductGrid products={data.products} />
       <PlatformSection />
+      <FabricSection services={data.services || fallbackServices} />
       <AudienceTabs />
       <TrustLayer trust={data.trust} status={data.status} />
       <Insights />
@@ -289,11 +372,15 @@ function SearchPage() {
       setState({ status: "success", results: result.results || [] });
     } catch (error) {
       const q = query.toLowerCase();
+      const productResults = fallbackProducts
+        .filter((product) => `${product.name} ${product.summary} ${product.family}`.toLowerCase().includes(q))
+        .map((product) => ({ title: product.name, summary: product.summary, href: `/products/${product.slug}`, availability: product.availability }));
+      const serviceResults = fallbackServices
+        .filter((service) => `${service.name} ${service.category} ${service.domain}`.toLowerCase().includes(q))
+        .map((service) => ({ title: service.name, summary: `${service.domain} · ${service.indexing}`, href: service.url, availability: service.status }));
       setState({
         status: "degraded",
-        results: fallbackProducts
-          .filter((product) => `${product.name} ${product.summary} ${product.family}`.toLowerCase().includes(q))
-          .map((product) => ({ title: product.name, summary: product.summary, href: `/products/${product.slug}`, availability: product.availability })),
+        results: [...productResults, ...serviceResults],
       });
     }
   }
@@ -429,6 +516,40 @@ function ContactCta() {
   );
 }
 
+function VerifyPage() {
+  return (
+    <GenericPage title="Verify" description="Verification checks route receipts, release evidence, and public claims through governed evidence records.">
+      <div className="detail-grid">
+        <article>
+          <h2>Receipt verification</h2>
+          <p>Check signed receipts and tracked references against the evidence store.</p>
+        </article>
+        <article>
+          <h2>Release verification</h2>
+          <p>Confirm a release identifier, approved version, and associated readiness evidence.</p>
+        </article>
+      </div>
+    </GenericPage>
+  );
+}
+
+function DownloadsPage() {
+  return (
+    <GenericPage title="Downloads" description="Signed artifacts, release bundles, and evidence exports are published through governed download paths.">
+      <div className="detail-grid">
+        <article>
+          <h2>Public mobile builds</h2>
+          <p>Approved release artifacts are exposed only when verified for public distribution.</p>
+        </article>
+        <article>
+          <h2>Evidence exports</h2>
+          <p>Verification packages and signed evidence exports are published with explicit hashes.</p>
+        </article>
+      </div>
+    </GenericPage>
+  );
+}
+
 function StatusPage({ status }) {
   return (
     <GenericPage title="Public Status" description={status.note || "Measured status appears here after live operational verification."}>
@@ -462,10 +583,16 @@ function App() {
     <Home data={data} />
   ) : route === "/products" ? (
     <ProductGrid products={data.products} />
+  ) : route === "/apps" ? (
+    <AppsPage services={data.services || fallbackServices} />
   ) : route === "/platform" ? (
     <><PlatformSection /><AudienceTabs /></>
   ) : route === "/trust" ? (
     <TrustLayer trust={data.trust} status={data.status} />
+  ) : route === "/verify" ? (
+    <VerifyPage />
+  ) : route === "/downloads" ? (
+    <DownloadsPage />
   ) : route === "/contact" ? (
     <ContactPage />
   ) : route === "/search" ? (

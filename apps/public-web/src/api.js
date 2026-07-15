@@ -1,4 +1,4 @@
-import { fallbackProducts, fallbackSite, fallbackTrust } from "./data.js";
+import { fallbackProducts, fallbackServices, fallbackSite, fallbackTrust } from "./data.js";
 
 const API_BASE = import.meta.env.VITE_AFRITECH_PUBLIC_API_URL || "";
 
@@ -32,15 +32,23 @@ export async function loadPublicGateway() {
       request("/v1/public/trust"),
       request("/v1/public/status"),
     ]);
+    let services = fallbackServices;
+    try {
+      const catalog = await request("/v1/catalog/services");
+      services = catalog.services || fallbackServices;
+    } catch {
+      services = fallbackServices;
+    }
     return {
       site,
       products: products.products,
       trust,
       status,
+      services,
       degraded: false,
     };
   } catch (error) {
-    return { ...state, degraded: true, error: String(error.message || error) };
+    return { ...state, services: fallbackServices, degraded: true, error: String(error.message || error) };
   }
 }
 

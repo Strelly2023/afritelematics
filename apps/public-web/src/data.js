@@ -11,6 +11,7 @@ export const fallbackSite = {
   navigation: [
     { label: "Platform", href: "/platform" },
     { label: "Products", href: "/products" },
+    { label: "Apps", href: "/apps" },
     { label: "Solutions", href: "/solutions" },
     { label: "Developers", href: "/developers" },
     { label: "Trust Center", href: "/trust" },
@@ -141,6 +142,69 @@ export const fallbackTrust = {
     },
   ],
 };
+
+export const fallbackServices = [
+  {
+    name: "Public Website",
+    slug: "public-web",
+    url: "https://afritechnology.com",
+    domain: "afritechnology.com",
+    category: "Public Experience",
+    status: "CONFIGURED",
+    indexing: "index,follow",
+    authentication_required: false,
+  },
+  {
+    name: "Customer Application Gateway",
+    slug: "app",
+    url: "https://app.afritechnology.com",
+    domain: "app.afritechnology.com",
+    category: "Customer Portals",
+    status: "CONFIGURED",
+    indexing: "noindex,nofollow",
+    authentication_required: true,
+  },
+  {
+    name: "NovaCodePro",
+    slug: "novacodepro",
+    url: "https://novacodepro.afritechnology.com",
+    domain: "novacodepro.afritechnology.com",
+    category: "Platform",
+    status: "CONFIGURED",
+    indexing: "noindex,nofollow",
+    authentication_required: true,
+  },
+  {
+    name: "Developer Portal",
+    slug: "developer",
+    url: "https://developer.afritechnology.com",
+    domain: "developer.afritechnology.com",
+    category: "Platform",
+    status: "CONFIGURED",
+    indexing: "index,follow",
+    authentication_required: false,
+  },
+  {
+    name: "Operator Workspace",
+    slug: "operator",
+    url: "https://operator.afritechnology.com",
+    domain: "operator.afritechnology.com",
+    category: "Customer Portals",
+    status: "PRIVATE",
+    indexing: "noindex,nofollow",
+    authentication_required: true,
+  },
+  {
+    name: "Business Portal",
+    slug: "business",
+    url: "https://business.afritechnology.com",
+    domain: "business.afritechnology.com",
+    category: "Customer Portals",
+    status: "CONFIGURED",
+    indexing: "noindex,nofollow",
+    authentication_required: true,
+  },
+];
 
 export const audiences = {
   Customers: {

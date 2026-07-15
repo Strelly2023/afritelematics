@@ -77,7 +77,11 @@ p { color: var(--muted); line-height: 1.65; }
 .band { background: var(--surface-alt); border-block: 1px solid var(--border); }
 .section-heading { max-width: 760px; margin-bottom: 24px; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .product-card, .capability, .trust-record, .article-card, .result, .detail-grid article { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+.fabric-group { margin-top: 22px; }
+.fabric-group-head { display: flex; justify-content: space-between; gap: 12px; align-items: end; margin-bottom: 14px; }
+.fabric-group-head p { margin: 0; }
 .card-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
 dl { display: grid; gap: 10px; margin: 18px 0; }
 dt { color: var(--muted); font-size: 0.82rem; }

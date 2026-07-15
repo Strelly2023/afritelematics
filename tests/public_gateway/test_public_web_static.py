@@ -21,6 +21,7 @@ def test_public_web_routes_and_contact_states_exist() -> None:
     for route in [
         '"/platform"',
         '"/products"',
+        '"/apps"',
         '"/solutions"',
         '"/industries"',
         '"/developers"',
