@@ -44,3 +44,11 @@ def test_public_web_robots_blocks_internal_operator_paths() -> None:
     assert "Disallow: /operator" in robots
     assert "Sitemap: https://afritechnology.com/sitemap.xml" in robots
 
+
+def test_public_web_preview_allows_afritechnology_hosts() -> None:
+    vite_config = (APP / "vite.config.js").read_text()
+
+    assert "afritechnology.com" in vite_config
+    assert "www.afritechnology.com" in vite_config
+    assert "app.afritechnology.com" in vite_config
+    assert "allowedHosts" in vite_config
