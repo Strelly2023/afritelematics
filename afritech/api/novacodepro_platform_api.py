@@ -693,9 +693,11 @@ class EventTopicRequest(BaseModel):
 
 
 class EventSchemaRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     topic: str
     version: str = "1.0"
-    schema: dict[str, Any] = Field(default_factory=dict)
+    event_schema: dict[str, Any] = Field(default_factory=dict, alias="schema")
     compatibility: str = "BACKWARD"
 
 
@@ -2169,7 +2171,7 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
 
     @router.post("/events/schemas")
     def create_event_schema(payload: EventSchemaRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
-        return service.create_event_schema(payload.model_dump())
+        return service.create_event_schema(payload.model_dump(by_alias=True))
 
     @router.post("/events/replays")
     def create_event_replay(payload: EventReplayRequest, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
