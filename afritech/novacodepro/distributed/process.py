@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from afritech.api.auth.jwt_device_auth import build_auth_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
 from afritech.api.novacodepro_workflow_fabric_api import build_novacodepro_workflow_fabric_router
+from afritech.api.solution_engineering_api import build_solution_engineering_router
 from afritech.novacodepro.platform import NovaCodeProPlatform, NovaCodeProRepository, get_novacodepro_platform
 from afritech.novacodepro.distributed.broker import build_durable_event_broker
 from afritech.novacodepro.distributed.tracing import DistributedTracingMiddleware
@@ -114,6 +115,8 @@ def build_process_app(*, service_name: str, db_env_var: str, title: str | None =
     app.include_router(build_novacodepro_platform_router(platform))
     if service_name == "workflow":
         app.include_router(build_novacodepro_workflow_fabric_router(WorkflowFabricService(platform)))
+    if service_name == "solution":
+        app.include_router(build_solution_engineering_router())
 
     @app.get("/health")
     def health() -> dict[str, Any]:
