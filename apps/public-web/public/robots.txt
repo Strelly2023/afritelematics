@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /internal
+Disallow: /operator
+Sitemap: https://afritechnology.com/sitemap.xml

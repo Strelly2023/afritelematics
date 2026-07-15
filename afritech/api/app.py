@@ -39,6 +39,7 @@ from afritech.api.partner_governance_api import build_partner_governance_router
 from afritech.api.partner_certification_api import build_partner_certification_router
 from afritech.api.api_catalog_api import build_api_catalog_router
 from afritech.api.public_verification_api import build_public_verification_router
+from afritech.api.public_gateway_api import build_enterprise_service_catalog_router, build_public_gateway_router
 from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
@@ -354,6 +355,8 @@ app.include_router(
         partner_store=partner_registry_store,
     )
 )
+app.include_router(build_public_gateway_router())
+app.include_router(build_enterprise_service_catalog_router())
 
 # ✅ Public architecture proof and partner demo API
 app.include_router(build_architecture_proof_router())

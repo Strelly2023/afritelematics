@@ -1,6 +1,6 @@
 server {
   listen 80;
-  server_name ${AFRITECH_DOMAIN} app.${AFRITECH_DOMAIN} api.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} novacodepro.${AFRITECH_DOMAIN};
+  server_name ${AFRITECH_DOMAIN} www.${AFRITECH_DOMAIN} app.${AFRITECH_DOMAIN} api.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} novacodepro.${AFRITECH_DOMAIN};
 
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
@@ -13,7 +13,79 @@ server {
 
 server {
   listen 443 ssl http2;
-  server_name ${AFRITECH_DOMAIN} app.${AFRITECH_DOMAIN};
+  server_name www.${AFRITECH_DOMAIN};
+
+  ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${AFRITECH_DOMAIN}/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 1d;
+
+  return 301 https://${AFRITECH_DOMAIN}$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name ${AFRITECH_DOMAIN};
+  resolver 127.0.0.11 valid=10s ipv6=off;
+  set $afritech_api afritech-api:8000;
+  set $public_web public-web:4175;
+
+  ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${AFRITECH_DOMAIN}/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 1d;
+
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header X-Frame-Options "DENY" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+  add_header Content-Security-Policy "default-src 'self'; connect-src 'self' https://api.${AFRITECH_DOMAIN}; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+
+  client_max_body_size 10m;
+
+  location = /healthz {
+    access_log off;
+    add_header Content-Type text/plain;
+    return 200 'ok';
+  }
+
+  location /health {
+    proxy_pass http://$afritech_api;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  location /public/ {
+    proxy_pass http://$afritech_api;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  location /v1/public/ {
+    proxy_pass http://$afritech_api;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  location / {
+    proxy_pass http://$public_web;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+server {
+  listen 443 ssl http2;
+  server_name app.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
   set $afritech_dashboard afritech-dashboard:4173;
@@ -28,19 +100,19 @@ server {
   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
   add_header X-Content-Type-Options "nosniff" always;
   add_header X-Frame-Options "DENY" always;
+  add_header X-Robots-Tag "noindex, nofollow" always;
   add_header Referrer-Policy "strict-origin-when-cross-origin" always;
   add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
 
   client_max_body_size 10m;
 
-  location /health {
-    proxy_pass http://$afritech_api;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  location = /healthz {
+    access_log off;
+    add_header Content-Type text/plain;
+    return 200 'ok';
   }
 
-  location /public/ {
+  location /health {
     proxy_pass http://$afritech_api;
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto https;

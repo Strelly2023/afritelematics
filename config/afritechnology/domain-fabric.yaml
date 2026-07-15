@@ -1,0 +1,84 @@
+schema: afritechnology.domain_fabric.v1
+canonical_domain: afritechnology.com
+wildcard_dns_policy: PRODUCTION_EXPLICIT_RECORDS_ONLY
+unknown_host_policy: RETURN_404_OR_TLS_EDGE_REJECT
+edge_target:
+  desired: Route53 -> CloudFront -> WAF -> ALB -> ingress -> service
+  current_repository_state: docker-compose-nginx-public-web-api
+domains:
+  - host: afritechnology.com
+    category: Public Experience
+    service: public-web
+    indexing: index,follow
+    authentication_required: false
+  - host: www.afritechnology.com
+    category: Public Experience
+    service: redirect-to-canonical
+    indexing: index,follow
+    authentication_required: false
+  - host: app.afritechnology.com
+    category: Customer Portals
+    service: customer-application-gateway
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: api.afritechnology.com
+    category: Platform
+    service: afritech-api
+    indexing: noindex,nofollow
+    authentication_required: mixed
+  - host: novacodepro.afritechnology.com
+    category: Platform
+    service: novacodepro-portal
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: developer.afritechnology.com
+    category: Platform
+    service: developer-platform
+    indexing: index,follow
+    authentication_required: false
+  - host: trust.afritechnology.com
+    category: Public Experience
+    service: public-trust-api
+    indexing: index,follow
+    authentication_required: false
+  - host: verify.afritechnology.com
+    category: Public Experience
+    service: public-verification-api
+    indexing: index,follow
+    authentication_required: false
+  - host: download.afritechnology.com
+    category: Public Experience
+    service: signed-download-center
+    indexing: index,follow
+    authentication_required: false
+  - host: support.afritechnology.com
+    category: Public Experience
+    service: support-center
+    indexing: index,follow
+    authentication_required: false
+  - host: operator.afritechnology.com
+    category: Customer Portals
+    service: operator-workspace
+    indexing: noindex,nofollow
+    authentication_required: true
+    status: planned_explicit_dns
+  - host: business.afritechnology.com
+    category: Customer Portals
+    service: business-workspace
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: merchant.afritechnology.com
+    category: Customer Portals
+    service: merchant-portal
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: agent.afritechnology.com
+    category: Customer Portals
+    service: agent-portal
+    indexing: noindex,nofollow
+    authentication_required: true
+forbidden:
+  - host_pattern: "*.afritechnology.com"
+    reason: Production wildcard DNS can accidentally expose undeclared services.
+  - public_root_content: AfriRide Operator Dashboard
+    reason: Public root must never serve internal or operator UI.
