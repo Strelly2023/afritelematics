@@ -14,5 +14,15 @@ required_signals:
 providers:
   opentelemetry:
     endpoint_env: OTEL_EXPORTER_OTLP_ENDPOINT
+    collector_health_url_env: AFRITECH_OTEL_COLLECTOR_HEALTH_URL
+  prometheus:
+    base_url_env: AFRITECH_PROMETHEUS_URL
+    required_targets:
+      - afritech-api
+      - otel-collector
+      - nginx-exporter
+      - node-exporter
+      - postgres-exporter
+      - cadvisor
   azure_monitor:
     connection_string_env: APPLICATIONINSIGHTS_CONNECTION_STRING

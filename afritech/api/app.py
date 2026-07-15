@@ -112,6 +112,7 @@ from afritech.partner_governance import PartnerGovernanceStore, seed_partner_gov
 from afritech.partner_verification import PartnerVerificationStore
 from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
+from afritech.observability.opentelemetry import configure_fastapi_observability
 
 
 # ============================================================
@@ -133,6 +134,7 @@ app.add_middleware(
 )
 app.add_middleware(JsonRequestLoggingMiddleware)
 app.add_middleware(SchemaRegistryMiddleware)
+configure_fastapi_observability(app)
 
 # ============================================================
 # CORE SYSTEM

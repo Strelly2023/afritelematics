@@ -11,6 +11,11 @@ services:
       AFRITECH_RUNTIME_ENVIRONMENT: production
       AFRITECH_AGENT_STATE_PATH: /var/lib/afritech/agents/production.sqlite3
       AFRITECH_AGENT_MINIMUM_CONFIDENCE: "0.85"
+      AFRITECH_OTEL_ENABLED: ${AFRITECH_OTEL_ENABLED:-true}
+      OTEL_SERVICE_NAME: afritech-api
+      OTEL_SERVICE_NAMESPACE: afritech
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_RESOURCE_ATTRIBUTES: deployment.environment=production,service.version=0.7.0
     volumes:
       - ./secrets/eth_private_key:/run/secrets/eth_private_key:ro
       - ./secrets/afritech_private_key.pem:/run/secrets/afritech_private_key.pem:ro
@@ -175,9 +180,16 @@ services:
     image: otel/opentelemetry-collector-contrib:0.109.0
     profiles: ["monitoring"]
     volumes:
-      - ./monitoring/opentelemetry/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro
+      - ./monitoring/opentelemetry/config.yaml:/etc/otelcol-contrib/config.yaml:ro
     command:
       - --config=/etc/otelcol-contrib/config.yaml
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:13133:13133"
+    expose:
+      - "9464"
+    restart: unless-stopped
 
 volumes:
   afritech_anchor_index:

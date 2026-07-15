@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `572`
+- Startup-safe closure size: `574`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `70`
+- Direct startup imports from `afritech.api.app`: `71`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (572 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (574 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (70)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (71)"]
 ```
 
 ## Repository Architecture Inventory
@@ -82,7 +82,7 @@ flowchart TD
     Ride --> Backend["backend (30 files)"]
     Ride --> Django["django_app (99 files)"]
     Ui --> Dashboard["src (6 files)"]
-    Deploy --> Production["production (12 files)"]
+    Deploy --> Production["production (15 files)"]
 ```
 
 ## Repo Area Counts
@@ -100,7 +100,7 @@ flowchart TD
 - `afriride_backend`: `30` files
 - `afriride_django`: `99` files
 - `dashboard_ui`: `6` files
-- `deploy_production`: `12` files
+- `deploy_production`: `15` files
 
 ## Startup Inventory
 
@@ -211,7 +211,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (457)
+### Other (459)
 
 - `afritech`
 - `afritech.afripay`
@@ -599,6 +599,8 @@ flowchart TD
 - `afritech.novascript.v2.remediation`
 - `afritech.novascript.v2.tools`
 - `afritech.novascript.v2.workflow`
+- `afritech.observability`
+- `afritech.observability.opentelemetry`
 - `afritech.ops_dashboard`
 - `afritech.partner_certification`
 - `afritech.partner_governance`
@@ -763,6 +765,7 @@ flowchart TD
 - `afritech.middleware.distributed_governance`
 - `afritech.middleware.multi_region_redis`
 - `afritech.middleware.request_logging`
+- `afritech.observability.opentelemetry`
 - `afritech.partner_certification`
 - `afritech.partner_governance`
 - `afritech.partner_registry`
