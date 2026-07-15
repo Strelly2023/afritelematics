@@ -27,4 +27,7 @@ test("public website distinguishes availability states", () => {
   assert.match(data, /Controlled Pilot/);
   assert.match(data, /Coming Soon/);
   assert.match(data, /Available/);
+  assert.match(data, /NovaRide Rider/);
+  assert.match(data, /Release certificate/);
+  assert.match(data, /Kiswahili/);
 });

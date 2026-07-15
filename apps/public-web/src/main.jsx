@@ -34,6 +34,20 @@ const pages = {
   "/docs": "Developer Portal",
 };
 
+const PRODUCT_LANDING_ROUTES = [
+  "/products/novacodepro",
+  "/products/novaride",
+  "/products/novapay",
+  "/products/novaid",
+  "/products/novatrust",
+  "/products/novacommerce",
+  "/products/novacloud",
+  "/products/novagateway",
+  "/products/novadata",
+  "/products/novaconnect",
+  "/products/novagov",
+];
+
 function navigate(path) {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -116,6 +130,25 @@ const LOCALES = {
     dashboard: "Tableau",
     quickActions: "Actions rapides",
   },
+  sw: {
+    navExplore: "Gundua",
+    navProducts: "Bidhaa",
+    navApps: "Programu",
+    navSolutions: "Suluhisho",
+    navIndustries: "Viwanda",
+    navDevelopers: "Wasanidi",
+    navPartners: "Washirika",
+    navSupport: "Msaada",
+    navTrust: "Uaminifu",
+    navCompany: "Kampuni",
+    search: "Tafuta",
+    aiAssistant: "NovaAI",
+    workspace: "Eneo",
+    signIn: "Ingia",
+    guest: "Mgeni",
+    dashboard: "Dashibodi",
+    quickActions: "Vitendo vya haraka",
+  },
 };
 
 function localeCopy(language) {
@@ -145,13 +178,35 @@ const LABEL_TRANSLATIONS = {
     "AI assistant": "Assistant IA",
     "NovaAI": "NovaAI",
   },
+  sw: {
+    Explore: "Gundua",
+    Products: "Bidhaa",
+    Apps: "Programu",
+    Solutions: "Suluhisho",
+    Industries: "Viwanda",
+    Developers: "Wasanidi",
+    Partners: "Washirika",
+    Support: "Msaada",
+    Trust: "Uaminifu",
+    Company: "Kampuni",
+    "Start a project": "Anza mradi",
+    "Open dashboard": "Fungua dashibodi",
+    "Search knowledge": "Tafuta maarifa",
+    "Verify evidence": "Thibitisha ushahidi",
+    "View downloads": "Tazama vipakuliwa",
+    "Command Palette": "Menyu ya amri",
+    Notifications: "Arifa",
+    Workspace: "Eneo",
+    "AI assistant": "Msaidizi wa AI",
+    "NovaAI": "NovaAI",
+  },
 };
 
 function translateLabel(label, language) {
   return LABEL_TRANSLATIONS[language]?.[label] || label;
 }
 
-function buildSearchIndex(site, products, services) {
+function buildSearchIndex(site, products, services, downloads, verifications) {
   const navEntries = uniqueNav([...(site.navigation || []), ...(site.shell?.navigation || [])]).map((item) => ({
     type: "navigation",
     title: item.label,
@@ -172,6 +227,13 @@ function buildSearchIndex(site, products, services) {
     { type: "doc", title: "Knowledge Portal", summary: "Runbooks, playbooks, FAQs, architecture, and guides.", href: "/knowledge", availability: "Public" },
     { type: "doc", title: "Release Verification", summary: "Receipt and release evidence verification.", href: "/verify", availability: "Public" },
   ];
+  const launcherEntries = (site.launcher || []).map((item) => ({
+    type: "app",
+    title: item.name,
+    summary: `${item.audience} · ${item.availability} · ${item.release_channel}`,
+    href: item.url,
+    availability: item.availability,
+  }));
   const productResults = products.map((product) => ({
     type: "product",
     title: product.name,
@@ -186,7 +248,21 @@ function buildSearchIndex(site, products, services) {
     href: service.url,
     availability: service.status,
   }));
-  return [...navEntries, ...quickActions, ...docs, ...productResults, ...serviceResults];
+  const downloadResults = (downloads || []).map((item) => ({
+    type: "download",
+    title: item.name,
+    summary: `${item.category} · ${item.version} · ${item.supported_platforms?.[0] || "Public verification"}`,
+    href: item.href,
+    availability: item.version,
+  }));
+  const verificationResults = (verifications || []).map((item) => ({
+    type: "verification",
+    title: item.name,
+    summary: `${item.category} · ${item.evidence}`,
+    href: item.lookup,
+    availability: "Public",
+  }));
+  return [...navEntries, ...quickActions, ...docs, ...launcherEntries, ...productResults, ...serviceResults, ...downloadResults, ...verificationResults];
 }
 
 function assistantReply(prompt, workspace) {
@@ -210,6 +286,26 @@ function assistantReply(prompt, workspace) {
     return "Your workspace dashboard will surface projects, approvals, tasks, evidence, and recommendations.";
   }
   return "I can route you to products, apps, trust, support, knowledge, or a project start workflow.";
+}
+
+function toneForAvailability(value) {
+  const normalized = String(value || "").toLowerCase();
+  if (normalized.includes("available") || normalized.includes("healthy") || normalized.includes("enforced")) return "trust";
+  if (normalized.includes("pilot") || normalized.includes("planned") || normalized.includes("coming")) return "warning";
+  return "info";
+}
+
+function joinText(items, separator = ", ") {
+  return (items || []).filter(Boolean).join(separator);
+}
+
+function openHref(href) {
+  if (!href) return;
+  if (href.startsWith("/")) {
+    navigate(href);
+    return;
+  }
+  window.location.assign(href);
 }
 
 function Header({ site, path }) {
@@ -337,7 +433,7 @@ function NovaShellChrome({
                 <Badge tone={item.type === "product" ? "trust" : item.type === "app" ? "warning" : "info"}>{item.type}</Badge>
                 <h3>{item.title}</h3>
                 <p>{item.summary}</p>
-                <button className="text-action" onClick={() => navigate(item.href)} type="button">Open result</button>
+                <button className="text-action" onClick={() => openHref(item.href)} type="button">Open result</button>
               </article>
             ))}
           </div>
@@ -418,18 +514,24 @@ function EcosystemVisual() {
 }
 
 function ProductCard({ product }) {
-  const tone = product.availability === "Available" ? "success" : product.availability === "Coming Soon" ? "warning" : "info";
+  const tone = toneForAvailability(product.availability);
   return (
     <article className="product-card">
       <div className="card-top">
-        <h3>{product.name}</h3>
+        <div>
+          <span className="brand-mark mini" aria-hidden="true">{(product.icon || product.name).slice(0, 2)}</span>
+          <Badge tone="info">{product.release_channel || product.family}</Badge>
+          <h3>{product.name}</h3>
+        </div>
         <Badge tone={tone}>{product.availability}</Badge>
       </div>
       <p>{product.summary}</p>
       <dl>
         <div><dt>Family</dt><dd>{product.family}</dd></div>
+        <div><dt>Version</dt><dd>{product.release_version || product.version || "Published"}</dd></div>
         <div><dt>Regions</dt><dd>{(product.regions || []).join(", ")}</dd></div>
         <div><dt>Lifecycle</dt><dd>{product.lifecycle}</dd></div>
+        <div><dt>Trust</dt><dd>{product.trust_status || "Verified"}</dd></div>
       </dl>
       <button className="text-action" onClick={() => navigate(`/products/${product.slug}`)}>View product</button>
     </article>
@@ -451,21 +553,116 @@ function ProductGrid({ products }) {
   );
 }
 
+function ProductsPage({ products }) {
+  const [query, setQuery] = useState("");
+  const [availability, setAvailability] = useState("All");
+  const [family, setFamily] = useState("All");
+  const [region, setRegion] = useState("All");
+  const families = useMemo(() => ["All", ...new Set(products.map((product) => product.family))], [products]);
+  const regions = useMemo(() => ["All", ...new Set(products.flatMap((product) => product.regions || []))], [products]);
+  const filtered = products.filter((product) => {
+    const text = `${product.name} ${product.summary} ${product.family} ${(product.audiences || []).join(" ")} ${(product.features || []).join(" ")}`.toLowerCase();
+    const matchesQuery = !query || text.includes(query.toLowerCase());
+    const matchesAvailability = availability === "All" || product.availability === availability;
+    const matchesFamily = family === "All" || product.family === family;
+    const matchesRegion = region === "All" || (product.regions || []).includes(region);
+    return matchesQuery && matchesAvailability && matchesFamily && matchesRegion;
+  });
+  return (
+    <section className="detail">
+      <Badge tone="info">Products</Badge>
+      <h1>Product catalog</h1>
+      <p>Browse governed products with explicit availability, region coverage, and trust posture. Pilot products remain labeled as such.</p>
+      <div className="search-form">
+        <div className="form-grid">
+          <label>Search<input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, audiences, or capabilities" /></label>
+          <label>Availability
+            <select value={availability} onChange={(event) => setAvailability(event.target.value)}>
+              {["All", "Available", "Controlled Pilot", "Partner Access", "Coming Soon"].map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label>Family
+            <select value={family} onChange={(event) => setFamily(event.target.value)}>
+              {families.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+          <label>Region
+            <select value={region} onChange={(event) => setRegion(event.target.value)}>
+              {regions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </div>
+      <div className="grid products-grid">
+        {filtered.map((product) => <ProductCard key={product.product_id} product={product} />)}
+      </div>
+      <div className="detail-grid">
+        <article>
+          <h2>Featured routes</h2>
+          <p>{filtered.slice(0, 4).map((product) => product.name).join(", ")}</p>
+        </article>
+        <article>
+          <h2>Commercial note</h2>
+          <p>Pricing and procurement terms are handled through the guided contact workflow and release approvals.</p>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function ServiceCard({ service }) {
   const tone = service.authentication_required ? "warning" : "trust";
   return (
     <article className="product-card">
       <div className="card-top">
-        <h3>{service.name}</h3>
+        <div>
+          <span className="brand-mark mini" aria-hidden="true">{(service.icon || service.name).slice(0, 2)}</span>
+          <Badge tone="info">{service.audience || service.category}</Badge>
+          <h3>{service.name}</h3>
+        </div>
         <Badge tone={tone}>{service.status}</Badge>
       </div>
       <p>{service.domain}</p>
       <dl>
         <div><dt>Category</dt><dd>{service.category}</dd></div>
+        <div><dt>Version</dt><dd>{service.version || "Published"}</dd></div>
+        <div><dt>Region</dt><dd>{service.region || "Global"}</dd></div>
+        <div><dt>Health</dt><dd>{service.health || "Healthy"}</dd></div>
         <div><dt>Indexing</dt><dd>{service.indexing}</dd></div>
         <div><dt>Auth</dt><dd>{service.authentication_required ? "Required" : "Public"}</dd></div>
       </dl>
       <a className="text-action" href={service.url} rel="noreferrer">Open surface</a>
+    </article>
+  );
+}
+
+function LauncherCard({ item }) {
+  const tone = toneForAvailability(item.availability);
+  return (
+    <article className="product-card">
+      <div className="card-top">
+        <div>
+          <span className="brand-mark mini" aria-hidden="true">{item.icon || item.name.slice(0, 2)}</span>
+          <Badge tone="info">{item.audience}</Badge>
+          <h3>{item.name}</h3>
+        </div>
+        <Badge tone={tone}>{item.availability}</Badge>
+      </div>
+      <p>{item.summary}</p>
+      <dl>
+        <div><dt>Authentication</dt><dd>{item.authentication_required ? "Required" : "Public"}</dd></div>
+        <div><dt>Version</dt><dd>{item.version}</dd></div>
+        <div><dt>Region</dt><dd>{item.region}</dd></div>
+        <div><dt>Health</dt><dd>{item.health}</dd></div>
+        <div><dt>Release channel</dt><dd>{item.release_channel}</dd></div>
+      </dl>
+      <a className="text-action" href={item.url} rel="noreferrer">Launch</a>
     </article>
   );
 }
@@ -605,13 +802,31 @@ function TrustLayer({ trust, status }) {
   );
 }
 
-function AppsPage({ services }) {
+function AppsPage({ launcher, services }) {
+  const grouped = useMemo(() => launcher.reduce((acc, item) => {
+    const key = item.audience || "Other";
+    acc[key] = [...(acc[key] || []), item];
+    return acc;
+  }, {}), [launcher]);
   return (
     <section className="detail">
       <Badge tone="info">Application surfaces</Badge>
-      <h1>Apps and portal gateways</h1>
-      <p>Each surface is labeled with its exposure boundary, authentication posture, and indexing policy. Internal applications stay out of the public root.</p>
+      <h1>Application launcher</h1>
+      <p>Customers, businesses, partners, employees, and developers enter through a shared launcher. Each card shows availability, authentication, region, and release channel.</p>
       <div className="grid services-grid">
+        {Object.entries(grouped).map(([audience, records]) => (
+          <div key={audience} className="fabric-group">
+            <div className="fabric-group-head">
+              <h2>{audience}</h2>
+              <p>{records.length} apps</p>
+            </div>
+            <div className="grid launcher-grid">
+              {records.map((item) => <LauncherCard key={item.slug} item={item} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="detail-grid">
         {services.map((service) => <ServiceCard key={service.slug} service={service} />)}
       </div>
       <div className="detail-grid">
@@ -635,9 +850,66 @@ function Home({ data }) {
       <Hero site={data.site} status={data.status} />
       <ProductGrid products={data.products} />
       <PlatformSection />
+      <section className="section" aria-labelledby="launcher-title">
+        <div className="section-heading">
+          <Badge tone="info">Launcher</Badge>
+          <h2 id="launcher-title">One entry point for customers, partners, employees, and developers</h2>
+          <p>Launch surfaces are grouped by audience and annotated with operational posture.</p>
+        </div>
+        <div className="grid launcher-grid">
+          {(data.site?.launcher || fallbackSite.launcher || []).slice(0, 6).map((item) => <LauncherCard key={item.slug} item={item} />)}
+        </div>
+      </section>
       <FabricSection services={data.services || fallbackServices} />
       <AudienceTabs />
+      <section className="band" aria-labelledby="docs-title">
+        <div className="section-heading">
+          <Badge tone="info">Documentation</Badge>
+          <h2 id="docs-title">Developer docs, architecture, security, support, and knowledge</h2>
+        </div>
+        <div className="detail-grid">
+          {(data.site?.documentation_sections || fallbackSite.documentation_sections || []).map((section) => (
+            <article key={section.title} className="result">
+              <h3>{section.title}</h3>
+              <p>{section.summary}</p>
+              <button className="text-action" onClick={() => navigate(section.href)} type="button">Open section</button>
+            </article>
+          ))}
+        </div>
+      </section>
       <TrustLayer trust={data.trust} status={data.status} />
+      <section className="section" aria-labelledby="downloads-title">
+        <div className="section-heading">
+          <Badge tone="info">Downloads</Badge>
+          <h2 id="downloads-title">Download Center</h2>
+          <p>Signed artifacts and release evidence are published through governed download paths.</p>
+        </div>
+        <div className="detail-grid">
+          {(data.downloads || data.site?.downloads || []).slice(0, 4).map((artifact) => (
+            <article key={`${artifact.category}-${artifact.name}`} className="result">
+              <Badge tone="trust">{artifact.category}</Badge>
+              <h3>{artifact.name}</h3>
+              <p>{artifact.version} · {artifact.supported_platforms?.join(", ")}</p>
+              <small>{artifact.checksum}</small>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="band" aria-labelledby="verify-title">
+        <div className="section-heading">
+          <Badge tone="trust">Verification</Badge>
+          <h2 id="verify-title">Receipts, release certificates, and public evidence</h2>
+        </div>
+        <div className="detail-grid">
+          {(data.verifications || data.site?.verification_records || []).slice(0, 4).map((record) => (
+            <article key={`${record.category}-${record.name}`} className="result">
+              <Badge tone="info">{record.category}</Badge>
+              <h3>{record.name}</h3>
+              <p>{record.summary}</p>
+            </article>
+          ))}
+        </div>
+      </section>
       <Insights />
       <ContactCta />
     </>
@@ -648,21 +920,40 @@ function ProductDetail({ products, slug }) {
   const product = products.find((item) => item.slug === slug) || fallbackProducts.find((item) => item.slug === slug);
   if (!product) return <GenericPage title="Product not found" description="The requested product is not published in the public catalog." />;
   const sections = [
-    ["Capabilities", (product.features || []).join(", ")],
-    ["Architecture", `${product.name} is served through governed public routes and authenticated portals.`],
-    ["Pricing", "Pricing and commercial terms are provided through the contact workflow and approved product guidance."],
+    ["Capabilities", joinText(product.features)],
+    ["Architecture", joinText(product.architecture) || `${product.name} is served through governed public routes and authenticated portals.`],
+    ["Pricing", product.pricing || "Commercial terms are provided through the contact workflow and approved product guidance."],
     ["Demo", `Open ${product.portal_url}`],
     ["Documentation", product.documentation_url || "/developers"],
     ["API", product.api_url || "/developers"],
     ["Downloads", product.downloads_url || "/downloads"],
     ["Roadmap", product.lifecycle],
     ["Support", product.support_url || "/support"],
+    ["Trust", product.trust_status || "Verified"],
   ];
   return (
     <section className="detail">
-      <Badge tone={product.availability === "Available" ? "trust" : product.availability === "Coming Soon" ? "warning" : "info"}>{product.availability}</Badge>
+      <Badge tone={toneForAvailability(product.availability)}>{product.availability}</Badge>
       <h1>{product.name}</h1>
       <p>{product.summary}</p>
+      <div className="detail-grid">
+        <article>
+          <h2>Release channel</h2>
+          <p>{product.release_channel || "General availability"}</p>
+        </article>
+        <article>
+          <h2>Version</h2>
+          <p>{product.release_version || "Published"}</p>
+        </article>
+        <article>
+          <h2>Health</h2>
+          <p>{product.health || "Healthy"}</p>
+        </article>
+        <article>
+          <h2>Regions</h2>
+          <p>{joinText(product.regions)}</p>
+        </article>
+      </div>
       <div className="detail-grid">
         {sections.map(([title, summary]) => (
           <article key={title}>
@@ -671,6 +962,26 @@ function ProductDetail({ products, slug }) {
           </article>
         ))}
       </div>
+      {product.screenshots && (
+        <div className="grid">
+          {product.screenshots.map((shot) => (
+            <article key={shot} className="result">
+              <h3>{shot}</h3>
+              <p>Approved preview from the governed product record.</p>
+            </article>
+          ))}
+        </div>
+      )}
+      {product.faqs && (
+        <div className="detail-grid">
+          {product.faqs.map((faq) => (
+            <article key={faq}>
+              <h2>FAQ</h2>
+              <p>{faq}</p>
+            </article>
+          ))}
+        </div>
+      )}
       <a className="button primary" href={product.portal_url}>Open product destination</a>
     </section>
   );
@@ -704,9 +1015,15 @@ function SearchPage() {
       const serviceResults = fallbackServices
         .filter((service) => `${service.name} ${service.category} ${service.domain}`.toLowerCase().includes(q))
         .map((service) => ({ title: service.name, summary: `${service.domain} · ${service.indexing}`, href: service.url, availability: service.status }));
+      const downloadResults = (fallbackSite.downloads || [])
+        .filter((artifact) => `${artifact.name} ${artifact.category} ${artifact.version} ${artifact.checksum}`.toLowerCase().includes(q))
+        .map((artifact) => ({ type: "download", title: artifact.name, summary: `${artifact.category} · ${artifact.version}`, href: artifact.href, availability: artifact.version }));
+      const verificationResults = (fallbackSite.verifications || [])
+        .filter((record) => `${record.name} ${record.category} ${record.summary} ${record.evidence}`.toLowerCase().includes(q))
+        .map((record) => ({ type: "verification", title: record.name, summary: `${record.category} · ${record.evidence}`, href: record.lookup, availability: "Public" }));
       setState({
         status: "degraded",
-        results: [...productResults, ...serviceResults],
+        results: [...productResults, ...serviceResults, ...downloadResults, ...verificationResults],
       });
     }
   }
@@ -724,9 +1041,10 @@ function SearchPage() {
         {state.status === "loading" && <p>Searching...</p>}
         {state.results.map((result) => (
           <article key={`${result.href}-${result.title}`} className="result">
+            <Badge tone={result.type === "download" ? "warning" : result.type === "verification" ? "trust" : "info"}>{result.type || "result"}</Badge>
             <h2>{result.title}</h2>
             <p>{result.summary}</p>
-            <button className="text-action" onClick={() => navigate(result.href)}>Open result</button>
+            <button className="text-action" onClick={() => openHref(result.href)}>Open result</button>
           </article>
         ))}
       </div>
@@ -914,13 +1232,28 @@ function PartnerPage() {
   );
 }
 
-function DeveloperExperiencePage() {
-  const features = ["API Explorer", "Swagger", "SDK Downloads", "CLI", "Examples", "Sandbox", "Authentication", "Rate limits", "Status"];
+function DeveloperExperiencePage({ site = fallbackSite }) {
+  const sections = site.documentation_sections || [
+    { title: "Developer Docs", summary: "API reference, SDKs, sandbox, and status.", href: "/developers" },
+    { title: "Quick Starts", summary: "Launch guides for customers, businesses, partners, and developers.", href: "/knowledge" },
+    { title: "Security", summary: "Trust, verification, and release integrity.", href: "/trust" },
+    { title: "Support", summary: "Guided support entry and contact workflow.", href: "/support" },
+  ];
+  const features = ["API Explorer", "OpenAPI", "SDK Downloads", "CLI", "Examples", "Sandbox", "Authentication", "Rate limits", "Status", "Changelog"];
   return (
     <section className="detail">
       <Badge tone="info">Developers</Badge>
       <h1>Developer portal</h1>
       <p>Documentation, API discovery, and sandbox tooling are exposed as a governed experience.</p>
+      <div className="detail-grid">
+        {sections.map((section) => (
+          <article key={section.title}>
+            <h2>{section.title}</h2>
+            <p>{section.summary}</p>
+            <button className="text-action" type="button" onClick={() => navigate(section.href)}>Open section</button>
+          </article>
+        ))}
+      </div>
       <div className="grid">
         {features.map((feature) => (
           <article className="result" key={feature}>
@@ -958,7 +1291,7 @@ function ArchitectureExplorerPage() {
   );
 }
 
-function VerifyPage() {
+function VerifyPage({ records = fallbackSite.verifications || [] }) {
   return (
     <GenericPage title="Verify" description="Verification checks route receipts, release evidence, and public claims through governed evidence records.">
       <div className="detail-grid">
@@ -971,13 +1304,28 @@ function VerifyPage() {
           <p>Confirm a release identifier, approved version, and associated readiness evidence.</p>
         </article>
       </div>
+      <div className="grid">
+        {records.map((record) => (
+          <article key={`${record.category}-${record.name}`} className="result">
+            <Badge tone={record.category === "Releases" ? "warning" : record.category === "Certificates" ? "trust" : "info"}>{record.category}</Badge>
+            <h3>{record.name}</h3>
+            <p>{record.summary}</p>
+            <p>{record.evidence}</p>
+          </article>
+        ))}
+      </div>
     </GenericPage>
   );
 }
 
-function DownloadsPage() {
+function DownloadsPage({ artifacts = fallbackSite.downloads || [] }) {
+  const grouped = useMemo(() => artifacts.reduce((acc, artifact) => {
+    const key = artifact.category || "Other";
+    acc[key] = [...(acc[key] || []), artifact];
+    return acc;
+  }, {}), [artifacts]);
   return (
-    <GenericPage title="Downloads" description="Signed artifacts, release bundles, and evidence exports are published through governed download paths.">
+    <GenericPage title="Download Center" description="Signed artifacts, release bundles, and evidence exports are published through governed download paths.">
       <div className="detail-grid">
         <article>
           <h2>Public mobile builds</h2>
@@ -988,6 +1336,30 @@ function DownloadsPage() {
           <p>Verification packages and signed evidence exports are published with explicit hashes.</p>
         </article>
       </div>
+      {Object.entries(grouped).map(([category, items]) => (
+        <section key={category} className="fabric-group">
+          <div className="fabric-group-head">
+            <h2>{category}</h2>
+            <p>{items.length} artifacts</p>
+          </div>
+          <div className="grid">
+            {items.map((artifact) => (
+              <article key={`${artifact.name}-${artifact.version}`} className="result">
+                <Badge tone={category === "Evidence Packages" ? "trust" : "warning"}>{artifact.version}</Badge>
+                <h3>{artifact.name}</h3>
+                <p>{joinText(artifact.supported_platforms)}</p>
+                <p><code>{artifact.checksum}</code></p>
+                <p><code>{artifact.signature}</code></p>
+                <p>{artifact.published_at}</p>
+                <div className="actions">
+                  <a className="text-action" href={artifact.href} rel="noreferrer">Open artifact</a>
+                  <button className="text-action" type="button" onClick={() => navigate(artifact.release_notes)}>Release notes</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </GenericPage>
   );
 }
@@ -1012,6 +1384,17 @@ function StatusPage({ status }) {
           <h2>Regions</h2>
           <p>{(status.regions || []).map((region) => region.region).join(", ")}</p>
         </article>
+      </div>
+      <div className="grid">
+        {["Gateway", "Authentication", "Payments", "Messaging", "Observability"].map((name) => {
+          const component = (status.components || []).find((item) => item.name.toLowerCase().includes(name.toLowerCase()));
+          return (
+            <article className="capability" key={name}>
+              <h2>{name}</h2>
+              <p>{component?.state || "Measured via public evidence"}</p>
+            </article>
+          );
+        })}
       </div>
       <div className="grid">
         {(status.components || []).map((component) => (
@@ -1050,7 +1433,23 @@ function App() {
   useEffect(() => {
     const title = pages[path] ? `${pages[path]} | AfriTechnology` : path.startsWith("/products/") ? "Product | AfriTechnology" : "AfriTechnology | Trusted Digital Platforms";
     document.title = path === "/" ? "AfriTechnology | Trusted Digital Platforms" : title;
-  }, [path]);
+    const description = path === "/downloads"
+      ? "Signed artifacts, checksums, and release evidence for AfriTechnology."
+      : path === "/verify"
+        ? "Receipt, release, and evidence verification for the AfriTechnology ecosystem."
+        : path === "/apps"
+          ? "Application launcher and governed portal discovery for the AfriTechnology ecosystem."
+          : path === "/products"
+            ? "Governed product catalog for AfriTechnology platforms and services."
+            : "Secure, intelligent, and connected digital platforms for payments, mobility, identity, commerce, healthcare, logistics, government, and enterprise operations.";
+    const robots = path === "/dashboard" ? "noindex,nofollow" : "index,follow";
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('meta[name="robots"]')?.setAttribute("content", robots);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", document.title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", path === "/" ? "https://afritechnology.com/" : `https://afritechnology.com${path}`);
+    document.documentElement.lang = language === "sw" ? "sw" : language === "fr" ? "fr" : "en";
+  }, [path, language]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.language = language;
@@ -1072,9 +1471,13 @@ function App() {
   }, []);
   const shellSite = data?.site || fallbackSite;
   const shellServices = data?.services || fallbackServices;
-  const shellStatus = data?.status || { overall: "CONFIGURED", note: "Loading status...", components: [], history: [] };
   const shellProducts = data?.products || fallbackProducts;
-  const searchIndex = useMemo(() => buildSearchIndex(shellSite, shellProducts, shellServices), [shellSite, shellProducts, shellServices]);
+  const shellDownloads = data?.downloads || shellSite.downloads || [];
+  const shellVerifications = data?.verifications || shellSite.verifications || [];
+  const searchIndex = useMemo(
+    () => buildSearchIndex(shellSite, shellProducts, shellServices, shellDownloads, shellVerifications),
+    [shellSite, shellProducts, shellServices, shellDownloads, shellVerifications],
+  );
   const route = useMemo(() => path.replace(/\/$/, "") || "/", [path]);
   if (!data) return <main id="main" className="loading" aria-live="polite">Loading AfriTechnology...</main>;
   const page = route.startsWith("/products/") ? (
@@ -1082,9 +1485,9 @@ function App() {
   ) : route === "/" ? (
     <Home data={data} />
   ) : route === "/products" ? (
-    <ProductGrid products={data.products} />
+    <ProductsPage products={data.products} />
   ) : route === "/apps" ? (
-    <AppsPage services={data.services || fallbackServices} />
+    <AppsPage launcher={shellSite.launcher || fallbackSite.launcher || []} services={shellServices} />
   ) : route === "/dashboard" ? (
     <DashboardPage workspace={workspace} status={data.status} products={data.products} services={data.services || fallbackServices} />
   ) : route === "/platform" ? (
@@ -1096,9 +1499,9 @@ function App() {
   ) : route === "/partners" ? (
     <PartnerPage />
   ) : route === "/verify" ? (
-    <VerifyPage />
+    <VerifyPage records={shellVerifications} />
   ) : route === "/downloads" ? (
-    <DownloadsPage />
+    <DownloadsPage artifacts={shellDownloads} />
   ) : route === "/contact" ? (
     <ContactPage />
   ) : route === "/search" ? (
@@ -1106,7 +1509,7 @@ function App() {
   ) : route === "/status" ? (
     <StatusPage status={data.status} />
   ) : route === "/developers" ? (
-    <DeveloperExperiencePage />
+    <DeveloperExperiencePage site={shellSite} />
   ) : route === "/solutions" ? (
     <GenericPage title="Solutions" description="Audience-specific paths for customers, businesses, enterprises, developers, partners, and governments." />
   ) : route === "/industries" ? (
@@ -1117,16 +1520,12 @@ function App() {
     <GenericPage title="Support" description="Support requests are routed through the contact workflow and assigned an auditable reference." />
   ) : route === "/accessibility" ? (
     <GenericPage title="Accessibility" description="AfriTechnology targets WCAG 2.2 AA with automated checks and human review for major releases." />
-  ) : route === "/knowledge" ? (
-    <KnowledgePage />
-  ) : route === "/partners" ? (
-    <PartnerPage />
   ) : route === "/legal/privacy" ? (
     <GenericPage title="Privacy" description="Privacy-conscious analytics, consent-aware routing, and data minimization are required for public workflows." />
   ) : route === "/legal/terms" ? (
     <GenericPage title="Terms" description="Public terms and product-specific terms are governed content records." />
   ) : route === "/docs" ? (
-    <DeveloperExperiencePage />
+    <DeveloperExperiencePage site={shellSite} />
   ) : (
     <GenericPage title={pages[route] || "AfriTechnology"} description="This page is part of the public AfriTechnology gateway and does not serve internal dashboards." />
   );

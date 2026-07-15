@@ -23,6 +23,9 @@ def test_public_web_routes_and_contact_states_exist() -> None:
         '"/products"',
         '"/apps"',
         '"/dashboard"',
+        '"/products/novaride"',
+        '"/products/novapay"',
+        '"/products/novacloud"',
         '"/solutions"',
         '"/industries"',
         '"/developers"',
@@ -47,6 +50,9 @@ def test_public_web_routes_and_contact_states_exist() -> None:
         "global-search",
         "Quick actions",
         "Notifications",
+        "Application launcher",
+        "Download Center",
+        "Verification",
     ]:
         assert marker in source
     assert "recoverable" in source

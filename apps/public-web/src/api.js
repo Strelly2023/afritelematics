@@ -18,6 +18,8 @@ export async function loadPublicGateway() {
     site: fallbackSite,
     products: fallbackProducts,
     trust: fallbackTrust,
+    downloads: fallbackSite.downloads || [],
+    verifications: fallbackSite.verifications || [],
     status: {
       overall: "DEGRADED",
       note: "Live status API unavailable. Public content remains available from approved fallback records.",
@@ -32,6 +34,8 @@ export async function loadPublicGateway() {
       request("/v1/public/trust"),
       request("/v1/public/status"),
     ]);
+    let downloads = site.downloads || fallbackSite.downloads || [];
+    let verifications = site.verification_records || fallbackSite.verifications || [];
     let services = fallbackServices;
     try {
       const catalog = await request("/v1/catalog/services");
@@ -39,12 +43,26 @@ export async function loadPublicGateway() {
     } catch {
       services = fallbackServices;
     }
+    try {
+      const artifactCatalog = await request("/v1/public/downloads");
+      downloads = artifactCatalog.artifacts || downloads;
+    } catch {
+      downloads = downloads;
+    }
+    try {
+      const verificationCatalog = await request("/v1/public/verifications");
+      verifications = verificationCatalog.records || verifications;
+    } catch {
+      verifications = verifications;
+    }
     return {
       site,
       products: products.products,
       trust,
       status,
       services,
+      downloads,
+      verifications,
       degraded: false,
     };
   } catch (error) {

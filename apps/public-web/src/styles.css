@@ -83,6 +83,7 @@ a { color: inherit; }
 .brand, .nav-link, .signin, .footer button { background: transparent; border: 0; color: var(--text); text-decoration: none; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; }
 .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; background: var(--primary); color: white; }
+.brand-mark.mini { width: 28px; height: 28px; font-size: 0.72rem; margin-bottom: 8px; }
 .nav { display: flex; gap: 6px; flex: 1; justify-content: center; }
 .nav-link { padding: 10px 12px; border-radius: 8px; color: var(--muted); }
 .nav-link.active, .nav-link:focus, .nav-link:hover { background: var(--surface-alt); color: var(--text); outline: none; }
@@ -118,6 +119,7 @@ p { color: var(--muted); line-height: 1.65; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.launcher-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .product-card, .capability, .trust-record, .article-card, .result, .detail-grid article { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
 .fabric-group { margin-top: 22px; }
 .fabric-group-head { display: flex; justify-content: space-between; gap: 12px; align-items: end; margin-bottom: 14px; }
@@ -147,6 +149,7 @@ textarea { min-height: 140px; resize: vertical; }
 .checkbox input { min-height: auto; }
 .form-hint { margin: 0; }
 .results { margin-top: 20px; display: grid; gap: 12px; }
+.result code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; word-break: break-word; color: var(--text); background: var(--surface-alt); padding: 2px 6px; border-radius: 6px; }
 .loading { display: grid; place-items: center; padding: 80px 20px; }
 .footer { border-top: 1px solid var(--border); padding: 24px 20px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; color: var(--muted); }
 :focus-visible { outline: 3px solid var(--energy); outline-offset: 2px; }
@@ -155,7 +158,7 @@ textarea { min-height: 140px; resize: vertical; }
   .shell-topline { grid-template-columns: 1fr; }
   .shell-actions { justify-content: start; }
   .shell-nav { overflow-x: auto; padding-bottom: 2px; }
-  .command-results, .services-grid, .dashboard-grid { grid-template-columns: 1fr; }
+  .command-results, .services-grid, .dashboard-grid, .launcher-grid { grid-template-columns: 1fr; }
   .menu-button { display: inline-flex; min-height: 40px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); align-items: center; padding: 0 12px; }
   .nav { display: none; width: 100%; order: 5; justify-content: start; flex-wrap: wrap; }
   .nav.nav-open { display: flex; }
