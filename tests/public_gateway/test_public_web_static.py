@@ -22,9 +22,13 @@ def test_public_web_routes_and_contact_states_exist() -> None:
         '"/platform"',
         '"/products"',
         '"/apps"',
+        '"/dashboard"',
         '"/solutions"',
         '"/industries"',
         '"/developers"',
+        '"/knowledge"',
+        '"/partners"',
+        '"/architecture"',
         '"/trust"',
         '"/contact"',
         '"/support"',
@@ -35,6 +39,16 @@ def test_public_web_routes_and_contact_states_exist() -> None:
         '"/downloads"',
     ]:
         assert route in source
+    for marker in [
+        "NovaShell",
+        "Command Palette",
+        "Workspace",
+        "NovaAI",
+        "global-search",
+        "Quick actions",
+        "Notifications",
+    ]:
+        assert marker in source
     assert "recoverable" in source
     assert "Your input has been preserved" in source
 

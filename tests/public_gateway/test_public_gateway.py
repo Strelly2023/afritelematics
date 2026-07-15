@@ -22,6 +22,8 @@ def test_public_site_metadata_is_corporate_not_operator_dashboard() -> None:
     assert metadata["canonical"] == "https://afritechnology.com/"
     assert "AfriRide Operator Dashboard" not in metadata["title"]
     assert metadata["robots"] == "index,follow"
+    assert "shell" in response.json()
+    assert response.json()["shell"]["navigation"][0]["label"] == "Explore"
 
 
 def test_product_catalog_distinguishes_lifecycle_and_availability() -> None:
@@ -75,6 +77,29 @@ def test_enterprise_service_catalog_is_machine_readable_and_explicit() -> None:
     assert services["afritechnology.com"]["name"] == "Public Website"
     assert services["app.afritechnology.com"]["indexing"] == "noindex,nofollow"
     assert services["novacodepro.afritechnology.com"]["authentication_required"] is True
+
+
+def test_public_search_spans_products_apps_and_trust_records() -> None:
+    client = TestClient(app)
+    response = client.post("/v1/public/search", json={"query": "NovaCodePro"})
+
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert any(result["type"] == "product" and result["title"] == "NovaCodePro" for result in results)
+    assert any(result["type"] == "app" and result["title"] == "NovaCodePro" for result in results)
+
+
+def test_public_status_reports_real_measurement_fields_without_invented_uptime() -> None:
+    client = TestClient(app)
+    response = client.get("/v1/public/status")
+
+    assert response.status_code == 200
+    status = response.json()
+    assert status["measured_uptime"] is None
+    assert status["current_incidents"] == []
+    assert "latency" in status
+    assert "regions" in status
+    assert "history" in status
 
 
 def test_security_disclosure_routes_to_security_owner() -> None:

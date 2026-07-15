@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { audiences, fallbackProducts, fallbackServices } from "./data.js";
+import { audiences, fallbackProducts, fallbackServices, fallbackSite } from "./data.js";
 import { loadPublicGateway, searchPublic, submitContact } from "./api.js";
 import "./styles.css";
 
@@ -20,6 +20,10 @@ const pages = {
   "/careers": "Careers",
   "/contact": "Contact",
   "/support": "Support",
+  "/dashboard": "Dashboard",
+  "/knowledge": "Knowledge",
+  "/partners": "Partners",
+  "/architecture": "Architecture",
   "/legal/privacy": "Privacy",
   "/legal/terms": "Terms",
   "/accessibility": "Accessibility",
@@ -27,6 +31,7 @@ const pages = {
   "/status": "Status",
   "/verify": "Verify",
   "/downloads": "Downloads",
+  "/docs": "Developer Portal",
 };
 
 function navigate(path) {
@@ -48,6 +53,19 @@ function Badge({ children, tone = "neutral" }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;
 }
 
+function useStoredState(key, fallback) {
+  const [value, setValue] = useState(() => {
+    if (typeof window === "undefined") {
+      return fallback;
+    }
+    return window.localStorage.getItem(key) || fallback;
+  });
+  useEffect(() => {
+    window.localStorage.setItem(key, value);
+  }, [key, value]);
+  return [value, setValue];
+}
+
 function uniqueNav(nav) {
   const seen = new Set();
   return nav.filter((item) => {
@@ -57,6 +75,141 @@ function uniqueNav(nav) {
     seen.add(item.href);
     return true;
   });
+}
+
+const LOCALES = {
+  en: {
+    navExplore: "Explore",
+    navProducts: "Products",
+    navApps: "Apps",
+    navSolutions: "Solutions",
+    navIndustries: "Industries",
+    navDevelopers: "Developers",
+    navPartners: "Partners",
+    navSupport: "Support",
+    navTrust: "Trust",
+    navCompany: "Company",
+    search: "Search",
+    aiAssistant: "NovaAI",
+    workspace: "Workspace",
+    signIn: "Sign in",
+    guest: "Guest",
+    dashboard: "Dashboard",
+    quickActions: "Quick actions",
+  },
+  fr: {
+    navExplore: "Explorer",
+    navProducts: "Produits",
+    navApps: "Applications",
+    navSolutions: "Solutions",
+    navIndustries: "Secteurs",
+    navDevelopers: "Développeurs",
+    navPartners: "Partenaires",
+    navSupport: "Assistance",
+    navTrust: "Confiance",
+    navCompany: "Entreprise",
+    search: "Rechercher",
+    aiAssistant: "NovaAI",
+    workspace: "Espace",
+    signIn: "Connexion",
+    guest: "Invité",
+    dashboard: "Tableau",
+    quickActions: "Actions rapides",
+  },
+};
+
+function localeCopy(language) {
+  return LOCALES[language] || LOCALES.en;
+}
+
+const LABEL_TRANSLATIONS = {
+  fr: {
+    Explore: "Explorer",
+    Products: "Produits",
+    Apps: "Applications",
+    Solutions: "Solutions",
+    Industries: "Secteurs",
+    Developers: "Développeurs",
+    Partners: "Partenaires",
+    Support: "Assistance",
+    Trust: "Confiance",
+    Company: "Entreprise",
+    "Start a project": "Démarrer un projet",
+    "Open dashboard": "Ouvrir le tableau",
+    "Search knowledge": "Rechercher le savoir",
+    "Verify evidence": "Vérifier la preuve",
+    "View downloads": "Voir les téléchargements",
+    "Command Palette": "Palette de commandes",
+    Notifications: "Notifications",
+    Workspace: "Espace",
+    "AI assistant": "Assistant IA",
+    "NovaAI": "NovaAI",
+  },
+};
+
+function translateLabel(label, language) {
+  return LABEL_TRANSLATIONS[language]?.[label] || label;
+}
+
+function buildSearchIndex(site, products, services) {
+  const navEntries = uniqueNav([...(site.navigation || []), ...(site.shell?.navigation || [])]).map((item) => ({
+    type: "navigation",
+    title: item.label,
+    summary: `Open ${item.label}`,
+    href: item.href,
+    availability: "Public",
+  }));
+  const quickActions = (site.shell?.quick_actions || []).map((item) => ({
+    type: "action",
+    title: item.label,
+    summary: "Quick action",
+    href: item.href,
+    availability: "Public",
+  }));
+  const docs = [
+    { type: "doc", title: "Public Gateway", summary: "Canonical public website and application gateway.", href: "/trust", availability: "Public" },
+    { type: "doc", title: "Developer Docs", summary: "API explorer, sandbox, SDKs, examples, status.", href: "/developers", availability: "Public" },
+    { type: "doc", title: "Knowledge Portal", summary: "Runbooks, playbooks, FAQs, architecture, and guides.", href: "/knowledge", availability: "Public" },
+    { type: "doc", title: "Release Verification", summary: "Receipt and release evidence verification.", href: "/verify", availability: "Public" },
+  ];
+  const productResults = products.map((product) => ({
+    type: "product",
+    title: product.name,
+    summary: product.summary,
+    href: `/products/${product.slug}`,
+    availability: product.availability,
+  }));
+  const serviceResults = services.map((service) => ({
+    type: "app",
+    title: service.name,
+    summary: `${service.domain} · ${service.status} · ${service.indexing}`,
+    href: service.url,
+    availability: service.status,
+  }));
+  return [...navEntries, ...quickActions, ...docs, ...productResults, ...serviceResults];
+}
+
+function assistantReply(prompt, workspace) {
+  const text = prompt.trim().toLowerCase();
+  if (!text) {
+    return "Ask NovaAI about products, APIs, trust, or your workspace.";
+  }
+  if (text.includes("payment")) {
+    return "NovaPay, NovaCodePro, and NovaTrust are the best match for governed payment and release workflows.";
+  }
+  if (text.includes("ride") || text.includes("mobility")) {
+    return "NovaRide, dispatch, fleet, support, and evidence surfaces are the strongest mobility path.";
+  }
+  if (text.includes("api") || text.includes("sdk")) {
+    return "Open the Developer Portal for API Explorer, SDKs, sandbox, authentication, and rate limits.";
+  }
+  if (text.includes("trust") || text.includes("verify")) {
+    return "Use the Trust Center, Verify page, and Downloads page for evidence-backed claims.";
+  }
+  if (workspace !== "guest") {
+    return "Your workspace dashboard will surface projects, approvals, tasks, evidence, and recommendations.";
+  }
+  return "I can route you to products, apps, trust, support, knowledge, or a project start workflow.";
 }
 
 function Header({ site, path }) {
@@ -84,6 +237,148 @@ function Header({ site, path }) {
         </a>
       </div>
     </header>
+  );
+}
+
+function NovaShellChrome({
+  site,
+  path,
+  language,
+  setLanguage,
+  workspace,
+  setWorkspace,
+  signedIn,
+  setSignedIn,
+  theme,
+  setTheme,
+  commandOpen,
+  setCommandOpen,
+  assistantOpen,
+  setAssistantOpen,
+  notificationsOpen,
+  setNotificationsOpen,
+  searchTerm,
+  setSearchTerm,
+  searchIndex,
+}) {
+  const copy = localeCopy(language);
+  const quickActions = (site.shell?.quick_actions || []).map((item) => ({ ...item, label: translateLabel(item.label, language) }));
+  const nav = uniqueNav(site.shell?.navigation || site.navigation || []).map((item) => ({ ...item, label: translateLabel(item.label, language) }));
+  const workspaceOptions = site.shell?.workspace_options || [];
+  const languageOptions = site.shell?.language_options || [];
+  const suggestions = (site.shell?.assistant_prompts || []).slice(0, 4);
+  const commandResults = searchIndex.filter((item) => {
+    const haystack = `${item.title} ${item.summary} ${item.availability} ${item.href}`.toLowerCase();
+    return searchTerm.trim() ? haystack.includes(searchTerm.trim().toLowerCase()) : true;
+  }).slice(0, 8);
+  const notifications = [
+    { title: "NovaTrust evidence updated", summary: "New signed release evidence is available.", tone: "trust" },
+    { title: "Workspace ready", summary: `${workspace === "guest" ? "Guest" : workspaceOptions.find((item) => item.key === workspace)?.label || workspace} shell loaded.`, tone: "info" },
+    { title: "Contact SLA running", summary: "New enquiries are routed with references and owners.", tone: "warning" },
+  ];
+  return (
+    <section className="shell" aria-label="NovaShell">
+      <header className="shell-header">
+        <div className="shell-topline">
+          <button className="brand" onClick={() => navigate("/")} aria-label="AfriTechnology home">
+            <span className="brand-mark">AT</span>
+            <span>AfriTechnology</span>
+          </button>
+          <div className="shell-search">
+            <label className="sr-only" htmlFor="global-search">{copy.search}</label>
+            <input id="global-search" value={searchTerm} onChange={(event) => { setSearchTerm(event.target.value); setCommandOpen(true); }} placeholder={`${copy.search} products, apps, docs, APIs, support...`} onFocus={() => setCommandOpen(true)} />
+            <button className="button secondary compact" onClick={() => setCommandOpen(!commandOpen)} type="button">⌘K</button>
+          </div>
+          <div className="shell-actions">
+            <button className="button secondary compact" type="button" onClick={() => setAssistantOpen(!assistantOpen)}>{translateLabel(copy.aiAssistant, language)}</button>
+            <button className="button secondary compact" type="button" onClick={() => setNotificationsOpen(!notificationsOpen)} aria-label="Notifications">●</button>
+            <select className="compact-select" value={workspace} onChange={(event) => setWorkspace(event.target.value)}>
+              {workspaceOptions.map((option) => (
+                <option key={option.key} value={option.key}>{option.label}</option>
+              ))}
+            </select>
+            <select className="compact-select" value={language} onChange={(event) => setLanguage(event.target.value)}>
+              {languageOptions.map((option) => (
+                <option key={option.code} value={option.code}>{option.label}</option>
+              ))}
+            </select>
+            <button className="button secondary compact" type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light" : "Dark"}</button>
+            <button className="button primary compact" type="button" onClick={() => setSignedIn(!signedIn)}>{signedIn ? "Signed in" : copy.signIn}</button>
+          </div>
+        </div>
+        <nav className="shell-nav" aria-label="Primary shell">
+          {nav.map((item) => (
+            <button key={item.href} className={path === item.href ? "nav-link active" : "nav-link"} onClick={() => navigate(item.href)}>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <div className="shell-quick-actions">
+          <span className="shell-label">{translateLabel(copy.quickActions, language)}</span>
+          {quickActions.map((action) => (
+            <button key={action.href} className="quick-action" type="button" onClick={() => navigate(action.href)}>
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {commandOpen && (
+        <section className="shell-panel shell-command" aria-label="Command palette">
+          <div className="panel-head">
+              <h2>{translateLabel("Command Palette", language)}</h2>
+            <button className="text-action" onClick={() => setCommandOpen(false)}>Close</button>
+          </div>
+          <p>Search products, apps, documentation, APIs, trust records, and public actions.</p>
+          <input className="command-input" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Type to search..." />
+          <div className="results command-results">
+            {commandResults.map((item) => (
+              <article className="result" key={`${item.type}:${item.href}:${item.title}`}>
+                <Badge tone={item.type === "product" ? "trust" : item.type === "app" ? "warning" : "info"}>{item.type}</Badge>
+                <h3>{item.title}</h3>
+                <p>{item.summary}</p>
+                <button className="text-action" onClick={() => navigate(item.href)} type="button">Open result</button>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="shell-grid">
+        {assistantOpen && (
+          <section className="shell-panel shell-assistant" aria-label="NovaAI assistant">
+            <div className="panel-head">
+            <h2>{translateLabel("NovaAI", language)}</h2>
+              <button className="text-action" onClick={() => setAssistantOpen(false)}>Close</button>
+            </div>
+            <p>Conversational product discovery, architecture guidance, and trusted support routing.</p>
+            <div className="assistant-chips">
+              {suggestions.map((prompt) => (
+                <button key={prompt} className="chip" type="button" onClick={() => setSearchTerm(prompt)}>{prompt}</button>
+              ))}
+            </div>
+            <p className="assistant-answer">{assistantReply(searchTerm, workspace)}</p>
+          </section>
+        )}
+        {notificationsOpen && (
+          <section className="shell-panel shell-notifications" aria-label="Notifications">
+            <div className="panel-head">
+              <h2>Notifications</h2>
+              <button className="text-action" onClick={() => setNotificationsOpen(false)}>Close</button>
+            </div>
+            <div className="results">
+              {notifications.map((item) => (
+                <article className="result" key={item.title}>
+                  <Badge tone={item.tone}>{item.tone}</Badge>
+                  <h3>{item.title}</h3>
+                  <p>{item.summary}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -277,6 +572,24 @@ function TrustLayer({ trust, status }) {
         <h2 id="trust-title">Evidence-backed public claims</h2>
         <p>{status.note || "Trust records show scope, owner, and evidence references."}</p>
       </div>
+      <div className="detail-grid">
+        <article>
+          <h3>Security</h3>
+          <p>Zero-trust routing, no invented certifications, and evidence-backed claims only.</p>
+        </article>
+        <article>
+          <h3>Compliance</h3>
+          <p>Policy, release, and approval records are separated from public marketing claims.</p>
+        </article>
+        <article>
+          <h3>Certificates</h3>
+          <p>Readiness, release, and verification certificates are generated from approved evidence.</p>
+        </article>
+        <article>
+          <h3>Data residency</h3>
+          <p>Supported regions are displayed explicitly and do not imply unverified availability.</p>
+        </article>
+      </div>
       <div className="grid trust-grid">
         {(trust.records || []).map((record) => (
           <article className="trust-record" key={record.id}>
@@ -334,16 +647,29 @@ function Home({ data }) {
 function ProductDetail({ products, slug }) {
   const product = products.find((item) => item.slug === slug) || fallbackProducts.find((item) => item.slug === slug);
   if (!product) return <GenericPage title="Product not found" description="The requested product is not published in the public catalog." />;
+  const sections = [
+    ["Capabilities", (product.features || []).join(", ")],
+    ["Architecture", `${product.name} is served through governed public routes and authenticated portals.`],
+    ["Pricing", "Pricing and commercial terms are provided through the contact workflow and approved product guidance."],
+    ["Demo", `Open ${product.portal_url}`],
+    ["Documentation", product.documentation_url || "/developers"],
+    ["API", product.api_url || "/developers"],
+    ["Downloads", product.downloads_url || "/downloads"],
+    ["Roadmap", product.lifecycle],
+    ["Support", product.support_url || "/support"],
+  ];
   return (
     <section className="detail">
-      <Badge>{product.availability}</Badge>
+      <Badge tone={product.availability === "Available" ? "trust" : product.availability === "Coming Soon" ? "warning" : "info"}>{product.availability}</Badge>
       <h1>{product.name}</h1>
       <p>{product.summary}</p>
       <div className="detail-grid">
-        <article><h2>Features</h2><ul>{(product.features || []).map((item) => <li key={item}>{item}</li>)}</ul></article>
-        <article><h2>Audiences</h2><p>{(product.audiences || []).join(", ")}</p></article>
-        <article><h2>Regions</h2><p>{(product.regions || []).join(", ")}</p></article>
-        <article><h2>Lifecycle</h2><p>{product.lifecycle}</p></article>
+        {sections.map(([title, summary]) => (
+          <article key={title}>
+            <h2>{title}</h2>
+            <p>{summary}</p>
+          </article>
+        ))}
       </div>
       <a className="button primary" href={product.portal_url}>Open product destination</a>
     </section>
@@ -516,6 +842,122 @@ function ContactCta() {
   );
 }
 
+function DashboardPage({ workspace, status, products, services }) {
+  const workspaceLabel = workspace === "guest" ? "Guest" : workspace[0].toUpperCase() + workspace.slice(1);
+  return (
+    <section className="detail">
+      <Badge tone="trust">Workspace</Badge>
+      <h1>{workspaceLabel} dashboard</h1>
+      <p>Signed-in users see projects, approvals, saved items, and AI recommendations from the shared shell.</p>
+      <div className="grid dashboard-grid">
+        <article className="result"><h2>Recent projects</h2><p>Governed delivery, product rollouts, integration work, and release verification.</p></article>
+        <article className="result"><h2>Approvals</h2><p>Pending product, release, and policy approvals are grouped here.</p></article>
+        <article className="result"><h2>Notifications</h2><p>Evidence updates, release notices, and support responses appear in one stream.</p></article>
+        <article className="result"><h2>Health</h2><p>{status.overall} · {status.components?.length || 0} monitored public surfaces.</p></article>
+      </div>
+      <div className="detail-grid">
+        <article>
+          <h2>Recommended products</h2>
+          <p>{products.slice(0, 3).map((product) => product.name).join(", ")}</p>
+        </article>
+        <article>
+          <h2>Relevant surfaces</h2>
+          <p>{services.slice(0, 3).map((service) => service.name).join(", ")}</p>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function KnowledgePage() {
+  const topics = [
+    ["Architecture", "Reference architecture, models, and platform boundaries."],
+    ["Runbooks", "Operational procedures and recovery steps."],
+    ["Policies", "Governed rules for safety, finance, and compliance."],
+    ["Guides", "Task-oriented product and integration guidance."],
+    ["FAQs", "Common questions for customers, partners, and developers."],
+    ["Tutorials", "Walkthroughs for supported workflows and release steps."],
+  ];
+  return (
+    <section className="detail">
+      <Badge>Knowledge</Badge>
+      <h1>Enterprise knowledge portal</h1>
+      <p>A single place for architecture, runbooks, playbooks, FAQs, and governed operational guidance.</p>
+      <div className="grid">
+        {topics.map(([name, summary]) => (
+          <article className="result" key={name}>
+            <h2>{name}</h2>
+            <p>{summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PartnerPage() {
+  const features = ["Partner dashboard", "Partner APIs", "Marketplace", "Training", "Certification", "Revenue", "Co-selling", "Support handoff"];
+  return (
+    <section className="detail">
+      <Badge tone="info">Partners</Badge>
+      <h1>Partner portal</h1>
+      <p>Partner access groups integration, certification, and co-selling into a governed workspace.</p>
+      <div className="grid">
+        {features.map((feature) => (
+          <article className="result" key={feature}>
+            <h2>{feature}</h2>
+            <p>Tracked through the shell and the partner program workflow.</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DeveloperExperiencePage() {
+  const features = ["API Explorer", "Swagger", "SDK Downloads", "CLI", "Examples", "Sandbox", "Authentication", "Rate limits", "Status"];
+  return (
+    <section className="detail">
+      <Badge tone="info">Developers</Badge>
+      <h1>Developer portal</h1>
+      <p>Documentation, API discovery, and sandbox tooling are exposed as a governed experience.</p>
+      <div className="grid">
+        {features.map((feature) => (
+          <article className="result" key={feature}>
+            <h2>{feature}</h2>
+            <p>Available through the public shell and platform routes.</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ArchitectureExplorerPage() {
+  const layers = [
+    ["Governance", "Policies, approvals, risk, compliance."],
+    ["Platform", "NovaID, NovaAI, NovaCloud, NovaGateway."],
+    ["Knowledge", "Runbooks, ADRs, evidence, lessons learned."],
+    ["Products", "NovaRide, NovaPay, NovaHealth, NovaCommerce."],
+    ["Apps", "Public web, portals, dashboards, and workspace shells."],
+  ];
+  return (
+    <section className="detail">
+      <Badge tone="trust">Architecture</Badge>
+      <h1>Enterprise architecture explorer</h1>
+      <p>Navigate the layers from governance to apps using governed records rather than static diagrams.</p>
+      <div className="detail-grid">
+        {layers.map(([name, summary]) => (
+          <article key={name}>
+            <h2>{name}</h2>
+            <p>{summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function VerifyPage() {
   return (
     <GenericPage title="Verify" description="Verification checks route receipts, release evidence, and public claims through governed evidence records.">
@@ -553,11 +995,37 @@ function DownloadsPage() {
 function StatusPage({ status }) {
   return (
     <GenericPage title="Public Status" description={status.note || "Measured status appears here after live operational verification."}>
+      <div className="detail-grid">
+        <article>
+          <h2>Current incidents</h2>
+          <p>{(status.current_incidents || []).length ? status.current_incidents.map((incident) => incident.title).join(", ") : "None reported."}</p>
+        </article>
+        <article>
+          <h2>Latency</h2>
+          <p>{status.latency?.p95_ms ? `p95 ${status.latency.p95_ms}ms` : "No measured latency yet."}</p>
+        </article>
+        <article>
+          <h2>Availability</h2>
+          <p>{status.availability ? `${status.availability.public_site} · ${status.availability.apps} · ${status.availability.api}` : status.overall}</p>
+        </article>
+        <article>
+          <h2>Regions</h2>
+          <p>{(status.regions || []).map((region) => region.region).join(", ")}</p>
+        </article>
+      </div>
       <div className="grid">
         {(status.components || []).map((component) => (
           <article className="capability" key={component.name}>
             <h2>{component.name}</h2>
             <p>{component.state}</p>
+          </article>
+        ))}
+      </div>
+      <div className="detail-grid">
+        {(status.history || []).map((entry) => (
+          <article key={entry.label}>
+            <h2>{entry.label}</h2>
+            <p>{entry.value}</p>
           </article>
         ))}
       </div>
@@ -568,6 +1036,14 @@ function StatusPage({ status }) {
 function App() {
   const path = usePath();
   const [data, setData] = useState(null);
+  const [theme, setTheme] = useStoredState("afritech-public-theme", "light");
+  const [language, setLanguage] = useStoredState("afritech-public-language", "en");
+  const [workspace, setWorkspace] = useStoredState("afritech-public-workspace", "guest");
+  const [signedIn, setSignedIn] = useStoredState("afritech-public-signed-in", "false");
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(true);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     loadPublicGateway().then(setData);
   }, []);
@@ -575,6 +1051,30 @@ function App() {
     const title = pages[path] ? `${pages[path]} | AfriTechnology` : path.startsWith("/products/") ? "Product | AfriTechnology" : "AfriTechnology | Trusted Digital Platforms";
     document.title = path === "/" ? "AfriTechnology | Trusted Digital Platforms" : title;
   }, [path]);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.language = language;
+  }, [theme, language]);
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen((current) => !current);
+      }
+      if (event.key === "Escape") {
+        setCommandOpen(false);
+        setAssistantOpen(false);
+        setNotificationsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+  const shellSite = data?.site || fallbackSite;
+  const shellServices = data?.services || fallbackServices;
+  const shellStatus = data?.status || { overall: "CONFIGURED", note: "Loading status...", components: [], history: [] };
+  const shellProducts = data?.products || fallbackProducts;
+  const searchIndex = useMemo(() => buildSearchIndex(shellSite, shellProducts, shellServices), [shellSite, shellProducts, shellServices]);
   const route = useMemo(() => path.replace(/\/$/, "") || "/", [path]);
   if (!data) return <main id="main" className="loading" aria-live="polite">Loading AfriTechnology...</main>;
   const page = route.startsWith("/products/") ? (
@@ -585,10 +1085,16 @@ function App() {
     <ProductGrid products={data.products} />
   ) : route === "/apps" ? (
     <AppsPage services={data.services || fallbackServices} />
+  ) : route === "/dashboard" ? (
+    <DashboardPage workspace={workspace} status={data.status} products={data.products} services={data.services || fallbackServices} />
   ) : route === "/platform" ? (
     <><PlatformSection /><AudienceTabs /></>
   ) : route === "/trust" ? (
     <TrustLayer trust={data.trust} status={data.status} />
+  ) : route === "/knowledge" ? (
+    <KnowledgePage />
+  ) : route === "/partners" ? (
+    <PartnerPage />
   ) : route === "/verify" ? (
     <VerifyPage />
   ) : route === "/downloads" ? (
@@ -600,25 +1106,53 @@ function App() {
   ) : route === "/status" ? (
     <StatusPage status={data.status} />
   ) : route === "/developers" ? (
-    <GenericPage title="Developer Platform" description="API catalog, sandbox, SDKs, webhooks, usage, changelog, and support are kept separate from internal portals." />
+    <DeveloperExperiencePage />
   ) : route === "/solutions" ? (
     <GenericPage title="Solutions" description="Audience-specific paths for customers, businesses, enterprises, developers, partners, and governments." />
   ) : route === "/industries" ? (
     <GenericPage title="Industries" description="Payments, mobility, identity, commerce, healthcare, logistics, government, and enterprise operations." />
+  ) : route === "/architecture" ? (
+    <ArchitectureExplorerPage />
   ) : route === "/support" ? (
     <GenericPage title="Support" description="Support requests are routed through the contact workflow and assigned an auditable reference." />
   ) : route === "/accessibility" ? (
     <GenericPage title="Accessibility" description="AfriTechnology targets WCAG 2.2 AA with automated checks and human review for major releases." />
+  ) : route === "/knowledge" ? (
+    <KnowledgePage />
+  ) : route === "/partners" ? (
+    <PartnerPage />
   ) : route === "/legal/privacy" ? (
     <GenericPage title="Privacy" description="Privacy-conscious analytics, consent-aware routing, and data minimization are required for public workflows." />
   ) : route === "/legal/terms" ? (
     <GenericPage title="Terms" description="Public terms and product-specific terms are governed content records." />
+  ) : route === "/docs" ? (
+    <DeveloperExperiencePage />
   ) : (
     <GenericPage title={pages[route] || "AfriTechnology"} description="This page is part of the public AfriTechnology gateway and does not serve internal dashboards." />
   );
   return (
     <>
-      <Header site={data.site} path={route} />
+      <NovaShellChrome
+        site={shellSite}
+        path={route}
+        language={language}
+        setLanguage={setLanguage}
+        workspace={workspace}
+        setWorkspace={setWorkspace}
+        signedIn={signedIn === "true"}
+        setSignedIn={(value) => setSignedIn(String(value))}
+        theme={theme}
+        setTheme={setTheme}
+        commandOpen={commandOpen}
+        setCommandOpen={setCommandOpen}
+        assistantOpen={assistantOpen}
+        setAssistantOpen={setAssistantOpen}
+        notificationsOpen={notificationsOpen}
+        setNotificationsOpen={setNotificationsOpen}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchIndex={searchIndex}
+      />
       <main id="main">{page}</main>
       <footer className="footer">
         <span>AfriTechnology</span>

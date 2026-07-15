@@ -192,11 +192,53 @@ TRUST_RECORDS: list[dict[str, Any]] = [
 NAVIGATION = [
     {"label": "Platform", "href": "/platform"},
     {"label": "Products", "href": "/products"},
+    {"label": "Apps", "href": "/apps"},
     {"label": "Solutions", "href": "/solutions"},
     {"label": "Developers", "href": "/developers"},
     {"label": "Trust Center", "href": "/trust"},
     {"label": "Company", "href": "/about"},
     {"label": "Contact", "href": "/contact"},
+]
+
+SHELL_NAVIGATION = [
+    {"label": "Explore", "href": "/"},
+    {"label": "Products", "href": "/products"},
+    {"label": "Apps", "href": "/apps"},
+    {"label": "Solutions", "href": "/solutions"},
+    {"label": "Industries", "href": "/industries"},
+    {"label": "Developers", "href": "/developers"},
+    {"label": "Partners", "href": "/partners"},
+    {"label": "Support", "href": "/support"},
+    {"label": "Trust", "href": "/trust"},
+    {"label": "Company", "href": "/about"},
+]
+
+QUICK_ACTIONS = [
+    {"label": "Start a project", "href": "/contact"},
+    {"label": "Open dashboard", "href": "/dashboard"},
+    {"label": "Search knowledge", "href": "/knowledge"},
+    {"label": "Verify evidence", "href": "/verify"},
+    {"label": "View downloads", "href": "/downloads"},
+]
+
+ASSISTANT_PROMPTS = [
+    "Find the right product for payments or mobility",
+    "Show me the trusted developer path",
+    "Open my workspace dashboard",
+    "Help me verify a release or receipt",
+    "Explain the difference between public and private surfaces",
+]
+
+WORKSPACE_OPTIONS = [
+    {"key": "guest", "label": "Guest", "description": "Public browsing with approved discovery content."},
+    {"key": "customer", "label": "Customer", "description": "Open products, downloads, support, and saved items."},
+    {"key": "enterprise", "label": "Enterprise", "description": "Projects, approvals, evidence, and AI recommendations."},
+    {"key": "partner", "label": "Partner", "description": "Integration, certification, and partner program access."},
+]
+
+LANGUAGE_OPTIONS = [
+    {"code": "en", "label": "English"},
+    {"code": "fr", "label": "Français"},
 ]
 
 SERVICE_CATALOG: list[dict[str, Any]] = [
@@ -372,6 +414,21 @@ def build_public_gateway_router() -> APIRouter:
             "supporting_message": "AfriTechnology builds secure, intelligent, and connected digital platforms for payments, mobility, identity, commerce, healthcare, logistics, government, and enterprise operations.",
             "metadata": _public_metadata(),
             "navigation": NAVIGATION,
+            "shell": {
+                "navigation": SHELL_NAVIGATION,
+                "quick_actions": QUICK_ACTIONS,
+                "assistant_prompts": ASSISTANT_PROMPTS,
+                "workspace_options": WORKSPACE_OPTIONS,
+                "language_options": LANGUAGE_OPTIONS,
+                "capabilities": [
+                    "Global search",
+                    "AI assistant",
+                    "Command palette",
+                    "Workspace switching",
+                    "Theme switching",
+                    "Notifications",
+                ],
+            },
             "portal_destinations": {
                 "app": "https://app.afritechnology.com",
                 "novacodepro": "https://novacodepro.afritechnology.com",
@@ -421,6 +478,27 @@ def build_public_gateway_router() -> APIRouter:
             "environment": "production",
             "measured_uptime": None,
             "note": "Public status only reports measured values after live verification evidence exists.",
+            "current_incidents": [],
+            "latency": {
+                "p50_ms": None,
+                "p95_ms": None,
+                "p99_ms": None,
+            },
+            "availability": {
+                "public_site": "CONFIGURED",
+                "apps": "SEPARATE_SUBDOMAIN",
+                "api": "HEALTH_CHECKED",
+            },
+            "regions": [
+                {"region": "Australia", "state": "ACTIVE"},
+                {"region": "Africa", "state": "ACTIVE"},
+            ],
+            "maintenance": [],
+            "history": [
+                {"label": "Release evidence", "value": "Available"},
+                {"label": "Rollback verification", "value": "Required for promotion"},
+                {"label": "Historical uptime", "value": "Measured only"},
+            ],
             "components": [
                 {"name": "Public website", "state": "CONFIGURED"},
                 {"name": "API", "state": "HEALTH_CHECKED"},
@@ -455,6 +533,32 @@ def build_public_gateway_router() -> APIRouter:
                         "summary": product["summary"],
                         "href": f"/products/{product['slug']}",
                         "availability": product["availability"],
+                    }
+                )
+        for service in SERVICE_CATALOG:
+            haystack = " ".join([service["name"], service["category"], service["domain"], service["status"], service["indexing"]]).lower()
+            if query in haystack:
+                if payload.availability and service["status"].lower() != payload.availability.lower():
+                    continue
+                results.append(
+                    {
+                        "type": "app",
+                        "title": service["name"],
+                        "summary": f"{service['domain']} · {service['status']} · {service['indexing']}",
+                        "href": service["url"],
+                        "availability": service["status"],
+                    }
+                )
+        for record in TRUST_RECORDS:
+            haystack = " ".join([record["title"], record["scope"], record["status"], record["owner"], record["evidence_ref"]]).lower()
+            if query in haystack:
+                results.append(
+                    {
+                        "type": "trust",
+                        "title": record["title"],
+                        "summary": f"{record['scope']} · {record['status']} · {record['owner']}",
+                        "href": "/trust",
+                        "availability": record["status"],
                     }
                 )
         return {"query": payload.query, "results": results, "count": len(results), "generated_at": _now()}
