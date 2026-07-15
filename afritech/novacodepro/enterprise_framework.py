@@ -587,6 +587,75 @@ def build_enterprise_digital_twin_model() -> dict[str, Any]:
     }
 
 
+def build_enterprise_technology_model() -> dict[str, Any]:
+    return {
+        "id": "netm",
+        "name": "NovaTech Enterprise Technology Model",
+        "version": "1.0",
+        "generated_at": _now(),
+        "domains": [
+            "Application Runtime",
+            "API Gateway",
+            "Data Platform",
+            "Observability",
+            "Identity and Access",
+            "Security Controls",
+            "Automation",
+            "Deployment",
+        ],
+        "runtime_stack": [
+            "FastAPI",
+            "Docker Compose",
+            "NGINX",
+            "OpenTelemetry",
+            "Prometheus",
+            "Grafana",
+        ],
+        "governance": {
+            "technology_changes_require_evidence": True,
+            "production_credentials_not_stored_in_source": True,
+            "ai_authority": "ADVISORY_ONLY",
+        },
+    }
+
+
+def build_enterprise_governance_model() -> dict[str, Any]:
+    return {
+        "id": "negm",
+        "name": "NovaTech Enterprise Governance Model",
+        "version": "1.0",
+        "generated_at": _now(),
+        "governance_chain": [
+            "Identity",
+            "Authentication",
+            "Role Resolution",
+            "Policy Evaluation",
+            "Risk Evaluation",
+            "Compliance Evaluation",
+            "Approval",
+            "Execution",
+            "Evidence",
+            "Audit",
+        ],
+        "approval_boundaries": {
+            "nova_ai_authority": "ADVISORY_ONLY",
+            "prr_approval_requires_human": True,
+            "executive_approval_requires_human": True,
+            "ga_separate_from_payment_activation": True,
+            "real_payment_activation_requires_financial_governance": True,
+        },
+        "states": [
+            "DRAFT",
+            "EVIDENCE_COLLECTING",
+            "READY_FOR_REVIEW",
+            "APPROVED",
+            "REJECTED",
+            "EXPIRED",
+            "REVOKED",
+        ],
+    }
+
+
 def build_enterprise_architecture_framework() -> dict[str, Any]:
     return {
         "id": "natech-framework",
@@ -601,6 +670,8 @@ def build_enterprise_architecture_framework() -> dict[str, Any]:
             "nedm": build_enterprise_data_architecture(),
             "nerm": build_enterprise_resilience_model(),
             "nekm": build_enterprise_meta_model(),
+            "netm": build_enterprise_technology_model(),
+            "negm": build_enterprise_governance_model(),
             "nai": build_enterprise_ai_architecture(),
             "ndtm": build_enterprise_digital_twin_model(),
         },
@@ -616,6 +687,8 @@ __all__ = [
     "build_enterprise_meta_model",
     "build_enterprise_data_architecture",
     "build_enterprise_resilience_model",
+    "build_enterprise_technology_model",
+    "build_enterprise_governance_model",
     "build_enterprise_ai_architecture",
     "build_enterprise_digital_twin_model",
 ]
