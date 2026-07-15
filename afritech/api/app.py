@@ -74,6 +74,7 @@ from afritech.api.core_platform_api import (
 from afritech.api.novapay_ecosystem_api import build_novapay_ecosystem_router
 from afritech.api.novaid_api import build_novaid_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
+from afritech.api.novacodepro_workflow_fabric_api import build_novacodepro_workflow_fabric_router
 from afritech.api.novacodepro_operational_verification_api import build_novacodepro_operational_verification_router
 from afritech.api.novaportal_suite_api import build_novaportal_suite_router
 from afritech.api.novapay_runtime_api import build_novapay_runtime_router
@@ -387,6 +388,7 @@ app.include_router(
 app.include_router(build_novapay_ecosystem_router())
 app.include_router(build_novaid_router())
 app.include_router(build_novacodepro_platform_router())
+app.include_router(build_novacodepro_workflow_fabric_router())
 app.include_router(build_novacodepro_operational_verification_router())
 app.include_router(build_novacodepro_session_router())
 app.include_router(build_novaportal_suite_router())

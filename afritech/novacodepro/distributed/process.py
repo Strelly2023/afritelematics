@@ -9,11 +9,13 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 
 from afritech.api.auth.jwt_device_auth import build_auth_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
+from afritech.api.novacodepro_workflow_fabric_api import build_novacodepro_workflow_fabric_router
 from afritech.novacodepro.platform import NovaCodeProPlatform, NovaCodeProRepository, get_novacodepro_platform
 from afritech.novacodepro.distributed.broker import build_durable_event_broker
 from afritech.novacodepro.distributed.tracing import DistributedTracingMiddleware
 from afritech.novacodepro.distributed.workers import AgentExecutionWorker, OutboxWorker
 from afritech.novacodepro.service_registry import get_service_definition
+from afritech.novacodepro.workflow_fabric import WorkflowFabricService
 
 
 def _db_path_from_env(env_var: str, default_name: str) -> Path:
@@ -26,7 +28,7 @@ SERVICE_ROUTE_ALLOWLIST: dict[str, tuple[str, ...]] = {
     "tenant": ("/health", "/ready", "/metrics"),
     "federation": ("/health", "/ready", "/metrics", "/v1/novacodepro/federation/", "/v1/novacodepro/regions/"),
     "solution": ("/health", "/ready", "/metrics", "/v1/novacodepro/solutions", "/v1/novacodepro/workflows", "/v1/novacodepro/projects", "/v1/novacodepro/artifacts"),
-    "workflow": ("/health", "/ready", "/metrics", "/v1/novacodepro/workflows", "/v1/outbox"),
+    "workflow": ("/health", "/ready", "/metrics", "/v1/novacodepro/workflows", "/v1/workflows", "/v1/workflow-fabric", "/v1/outbox"),
     "approval": ("/health", "/ready", "/metrics", "/v1/novacodepro/approvals"),
     "agent": ("/health", "/ready", "/metrics", "/v1/novacodepro/agents", "/v1/outbox", "/v1/workers/agents/drain"),
     "evidence": ("/health", "/ready", "/metrics", "/v1/novacodepro/evidence/"),
@@ -110,6 +112,8 @@ def build_process_app(*, service_name: str, db_env_var: str, title: str | None =
     if service_name == "gateway":
         app.include_router(build_auth_router())
     app.include_router(build_novacodepro_platform_router(platform))
+    if service_name == "workflow":
+        app.include_router(build_novacodepro_workflow_fabric_router(WorkflowFabricService(platform)))
 
     @app.get("/health")
     def health() -> dict[str, Any]:
