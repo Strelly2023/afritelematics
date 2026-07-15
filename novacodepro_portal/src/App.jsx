@@ -28,10 +28,16 @@ import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 const NAV_ITEMS = [
   "Dashboard",
   "Applications",
+  "Apps",
   "Projects",
   "Engineering",
   "Operations",
   "Operational Verification",
+  "Verification",
+  "Developer Portal",
+  "Mobile",
+  "Inspector",
+  "Desktop",
   "Customers",
   "Partners",
   "Employees",
@@ -62,6 +68,11 @@ const COMMANDS = [
   "Open board pack",
   "Review risk register",
   "Approve strategy",
+  "Open developer portal",
+  "Open mobile companion",
+  "Open inspector app",
+  "Open desktop app",
+  "Open verification center",
   "Switch to Production",
   "Switch to Staging",
 ];
@@ -1579,6 +1590,104 @@ const MARKETPLACE = [
   "HR",
   "AI",
   "IoT",
+];
+
+const EXPERIENCE_CHANNELS = [
+  {
+    id: "web",
+    title: "Web Frontend",
+    domain: "novacodepro.afritechnology.com",
+    summary: "Unified enterprise workspace for engineering delivery, governance, PRR, and executive approvals.",
+    availability: "Primary",
+    auth: "NovaID required",
+    version: "Web 1.0",
+    region: "Global",
+    evidence: "Workspace session and governed state",
+    command: "Open web frontend",
+  },
+  {
+    id: "mobile",
+    title: "Mobile App",
+    domain: "NovaCodePro mobile companion",
+    summary: "Executive and operational companion for alerts, incidents, approvals, evidence, and release status.",
+    availability: "Companion",
+    auth: "Passkey + biometrics",
+    version: "Mobile 1.0",
+    region: "Offline capable",
+    evidence: "Push, review, and on-call workflows",
+    command: "Open mobile companion",
+  },
+  {
+    id: "inspector",
+    title: "Inspector App",
+    domain: "NovaCodePro certification",
+    summary: "Field certification, scanning, evidence capture, signed checklists, and offline sync.",
+    availability: "Certified",
+    auth: "Device trust",
+    version: "Inspector 1.0",
+    region: "Offline first",
+    evidence: "QR, barcode, screenshot, and video capture",
+    command: "Open inspector app",
+  },
+  {
+    id: "desktop",
+    title: "Desktop App",
+    domain: "Tauri workspace",
+    summary: "Local coding workspace with editor, terminal, agent runtime, builds, and artifact inspection.",
+    availability: "Engineering",
+    auth: "Local secure session",
+    version: "Desktop 1.0",
+    region: "macOS, Windows, Linux",
+    evidence: "Local project and artifact sync",
+    command: "Open desktop app",
+  },
+  {
+    id: "cli",
+    title: "CLI",
+    domain: "Automation surface",
+    summary: "Command-line control for scaffolding, workflows, verification, deployment, and governance checks.",
+    availability: "Automation",
+    auth: "Token or passkey session",
+    version: "CLI 1.0",
+    region: "Local and remote",
+    evidence: "Scripted actions and logs",
+    command: "Open CLI commands",
+  },
+  {
+    id: "developer",
+    title: "Developer Portal",
+    domain: "developer.afritechnology.com",
+    summary: "API docs, SDKs, sandbox access, webhooks, status, tutorials, and partner onboarding.",
+    availability: "Public",
+    auth: "Public + sign in",
+    version: "Portal 1.0",
+    region: "Global",
+    evidence: "API docs and release notes",
+    command: "Open developer portal",
+  },
+];
+
+const OPERATIONAL_VERIFICATION_STEPS = [
+  {
+    status: "Configured",
+    detail: "Verification scopes, evidence sources, and channel ownership are defined.",
+  },
+  {
+    status: "Executed",
+    detail: "Tests, checks, and validation jobs have run against the active workspace.",
+  },
+  {
+    status: "Verified",
+    detail: "Observed results match the governed expectations for the release candidate.",
+  },
+  {
+    status: "Certified",
+    detail: "Release evidence, signatures, and reference proofs are captured and stored.",
+  },
+  {
+    status: "Approved",
+    detail: "PRR, GA governance, and executive approval are recorded separately from local state.",
+  },
 ];
 
 const DIGITAL_TWIN_LAYERS = [
@@ -5873,6 +5982,118 @@ function App() {
                   <p>Install, govern, certify, and remove from the NovaCodePro workspace.</p>
                 </article>
               ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">NovaCodePro Experience Platform</p>
+                <h2>One governed suite across web, mobile, inspector, desktop, CLI, and developer channels</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Web, mobile, and desktop share the same platform contract</span>
+                <span>Inspector and developer channels stay evidence-driven</span>
+              </div>
+            </div>
+            <div className="experience-suite-grid">
+              {EXPERIENCE_CHANNELS.map((channel) => (
+                <article className="experience-card" key={channel.id}>
+                  <div className="experience-card-head">
+                    <div>
+                      <p className="section-label">{channel.title}</p>
+                      <strong>{channel.domain}</strong>
+                    </div>
+                    <span className="status-pill">{channel.availability}</span>
+                  </div>
+                  <p className="studio-note">{channel.summary}</p>
+                  <dl className="service-meta compact">
+                    <div>
+                      <dt>Auth</dt>
+                      <dd>{channel.auth}</dd>
+                    </div>
+                    <div>
+                      <dt>Version</dt>
+                      <dd>{channel.version}</dd>
+                    </div>
+                    <div>
+                      <dt>Region</dt>
+                      <dd>{channel.region}</dd>
+                    </div>
+                    <div>
+                      <dt>Evidence</dt>
+                      <dd>{channel.evidence}</dd>
+                    </div>
+                  </dl>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.runCommand(channel.command)}
+                  >
+                    {channel.command}
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Operational Verification</p>
+                <h2>Configured, executed, verified, certified, and approved as distinct states</h2>
+              </div>
+              <div className="layout-hint">
+                <span>Local UI state is not authoritative</span>
+                <span>Evidence and approvals remain separate</span>
+              </div>
+            </div>
+            <div className="verification-track">
+              {OPERATIONAL_VERIFICATION_STEPS.map((step, index) => (
+                <article className="verification-card" key={step.status}>
+                  <p className="section-label">{String(index + 1).padStart(2, "0")}</p>
+                  <strong>{step.status}</strong>
+                  <p>{step.detail}</p>
+                </article>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Developer portal</p>
+                <strong>APIs, SDKs, tutorials, sandbox, auth, webhooks, changelog, and status</strong>
+                <div className="artifact-list">
+                  {DEVELOPER_SURFACES.map((surface) => (
+                    <div className="artifact-row" key={surface.name}>
+                      <strong>{surface.name}</strong>
+                      <span>{surface.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Product experiences</p>
+                <strong>Public product landing pages share the same governed platform language</strong>
+                <div className="compact-list">
+                  {[
+                    "NovaRide",
+                    "NovaPay",
+                    "NovaID",
+                    "NovaTrust",
+                    "NovaCloud",
+                    "NovaGateway",
+                    "NovaData",
+                    "NovaConnect",
+                    "NovaGov",
+                  ].map((product) => (
+                    <span className="compact-pill" key={product}>
+                      {product}
+                    </span>
+                  ))}
+                </div>
+                <p className="studio-note">
+                  Each product surface should keep availability, authentication, evidence, and lifecycle labels honest.
+                </p>
+              </article>
             </div>
           </section>
 

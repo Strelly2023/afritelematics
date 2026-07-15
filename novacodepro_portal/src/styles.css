@@ -1301,6 +1301,49 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.experience-suite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.verification-track {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.experience-card,
+.verification-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(141, 172, 197, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.experience-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.experience-card strong {
+  display: block;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+.experience-card .service-meta {
+  margin-top: 0;
+}
+
+.experience-card .toolbar-chip {
+  width: fit-content;
+}
+
 .module-card {
   padding: 16px;
 }
@@ -1509,6 +1552,10 @@ button {
   color: #e8f2fa;
   font-size: 0.88rem;
   word-break: break-word;
+}
+
+.service-meta.compact {
+  margin-bottom: 0;
 }
 
 .universal-card,
@@ -1766,6 +1813,8 @@ button {
   .universal-grid,
   .center-grid,
   .marketplace-grid,
+  .experience-suite-grid,
+  .verification-track,
   .twin-shell,
   .template-strip,
   .service-grid,
@@ -1813,6 +1862,11 @@ button {
 
   .service-grid.marketplace,
   .service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-suite-grid,
+  .verification-track {
     grid-template-columns: 1fr;
   }
 

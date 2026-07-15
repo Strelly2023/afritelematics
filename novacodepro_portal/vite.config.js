@@ -25,7 +25,7 @@ function resolveGitCommit() {
 }
 
 const buildInfo = {
-  application: "NovaCodePro Portal",
+  application: "NovaCodePro Experience Platform",
   version: packageJson.version,
   build_id: `${packageJson.version}-${resolveGitCommit()}`,
   commit: resolveGitCommit(),
