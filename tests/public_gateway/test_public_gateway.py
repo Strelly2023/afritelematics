@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import yaml
 from fastapi.testclient import TestClient
 
 from afritech.api.app import app
+from afritech.architecture.domain_fabric import DOMAIN_FABRIC_PATH, load_domain_fabric, validate_domain_fabric
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -98,7 +100,7 @@ def test_security_disclosure_routes_to_security_owner() -> None:
 def test_nginx_public_root_is_not_dashboard_upstream() -> None:
     template = (ROOT / "deploy/production/nginx/trust-node.conf.template").read_text()
 
-    public_block_start = template.index("server_name ${AFRITECH_DOMAIN};")
+    public_block_start = template.index("server_name ${AFRITECH_DOMAIN} about.${AFRITECH_DOMAIN}")
     public_block_end = template.index("server_name app.${AFRITECH_DOMAIN};")
     public_block = template[public_block_start:public_block_end]
 
@@ -109,6 +111,8 @@ def test_nginx_public_root_is_not_dashboard_upstream() -> None:
     assert "location /rides/" not in public_block
     assert "location /driver/" not in public_block
     assert "location /ws/" not in public_block
+    assert "listen 80 default_server;" in template
+    assert "return 404;" in template
 
 
 def test_app_subdomain_is_noindexed_and_separate() -> None:
@@ -123,9 +127,44 @@ def test_app_subdomain_is_noindexed_and_separate() -> None:
     assert "proxy_pass http://$afritech_dashboard;" in app_block
 
 
-def test_domain_fabric_rejects_production_wildcard_dns() -> None:
-    fabric = (ROOT / "config/afritechnology/domain-fabric.yaml").read_text()
+def test_caddyfile_separates_public_root_from_app_portal() -> None:
+    caddyfile = (ROOT / "deploy/production/Caddyfile").read_text()
 
-    assert "wildcard_dns_policy: PRODUCTION_EXPLICIT_RECORDS_ONLY" in fabric
-    assert 'host_pattern: "*.afritechnology.com"' in fabric
-    assert "AfriRide Operator Dashboard" in fabric
+    assert "http://afritechnology.com, http://about.afritechnology.com" in caddyfile
+    assert "reverse_proxy public-web:4175" in caddyfile
+    assert "http://app.afritechnology.com" in caddyfile
+    assert "X-Robots-Tag \"noindex, nofollow\"" in caddyfile
+    assert "reverse_proxy afritech-dashboard:4173" in caddyfile
+    assert "http://afritechnology.com, http://app.afritechnology.com" not in caddyfile
+
+
+def test_domain_fabric_rejects_production_wildcard_dns() -> None:
+    fabric_text = (ROOT / "config/afritechnology/domain-fabric.yaml").read_text()
+    fabric = yaml.safe_load(fabric_text)
+
+    assert fabric["wildcard_dns_policy"] == "PRODUCTION_EXPLICIT_RECORDS_ONLY"
+    assert any(entry["host_pattern"] == "*.afritechnology.com" for entry in fabric["forbidden"])
+    assert fabric["private_hosted_zone"]["domain"] == "internal.afritechnology.com"
+    assert fabric["private_hosted_zone"]["access_model"] == "zero-trust-private-hosted-zone"
+
+    validate_domain_fabric(load_domain_fabric(DOMAIN_FABRIC_PATH))
+
+    public_hosts = {record["host"] for record in fabric["domains"] if record["exposure"] != "private"}
+    private_hosts = {record["host"] for record in fabric["domains"] if record["exposure"] == "private"}
+
+    assert "afritechnology.com" in public_hosts
+    assert "app.afritechnology.com" in public_hosts
+    assert "monitoring.internal.afritechnology.com" in private_hosts
+    assert "vault.internal.afritechnology.com" in private_hosts
+    assert all(not host.startswith("*.") for host in public_hosts)
+
+
+def test_routing_isolation_reports_private_access_boundary_without_leaking_private_service_state() -> None:
+    client = TestClient(app)
+    response = client.get("/v1/public/routing-isolation")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["domain_fabric"]["private_hosted_zone"] == "internal.afritechnology.com"
+    assert payload["private_access_boundary"]["publicly_exposed_internal_services"] == 0
+    assert "vault.internal.afritechnology.com" not in payload["domain_fabric"]["public_hosts"]

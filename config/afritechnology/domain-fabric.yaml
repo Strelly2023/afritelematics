@@ -9,72 +9,146 @@ domains:
   - host: afritechnology.com
     category: Public Experience
     service: public-web
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: www.afritechnology.com
     category: Public Experience
     service: redirect-to-canonical
+    exposure: public
+    indexing: index,follow
+    authentication_required: false
+  - host: about.afritechnology.com
+    category: Public Experience
+    service: public-web
+    exposure: public
+    indexing: index,follow
+    authentication_required: false
+  - host: careers.afritechnology.com
+    category: Public Experience
+    service: public-web
+    exposure: public
+    indexing: index,follow
+    authentication_required: false
+  - host: news.afritechnology.com
+    category: Public Experience
+    service: public-web
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: app.afritechnology.com
     category: Customer Portals
     service: customer-application-gateway
+    exposure: public_authenticated
     indexing: noindex,nofollow
     authentication_required: true
   - host: api.afritechnology.com
     category: Platform
     service: afritech-api
+    exposure: public_controlled
     indexing: noindex,nofollow
     authentication_required: mixed
   - host: novacodepro.afritechnology.com
     category: Platform
     service: novacodepro-portal
+    exposure: public_authenticated
     indexing: noindex,nofollow
     authentication_required: true
   - host: developer.afritechnology.com
     category: Platform
     service: developer-platform
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: trust.afritechnology.com
     category: Public Experience
     service: public-trust-api
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: verify.afritechnology.com
     category: Public Experience
     service: public-verification-api
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: download.afritechnology.com
     category: Public Experience
     service: signed-download-center
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: support.afritechnology.com
     category: Public Experience
     service: support-center
+    exposure: public
     indexing: index,follow
     authentication_required: false
   - host: operator.afritechnology.com
     category: Customer Portals
     service: operator-workspace
+    exposure: public_authenticated
     indexing: noindex,nofollow
     authentication_required: true
     status: planned_explicit_dns
   - host: business.afritechnology.com
     category: Customer Portals
     service: business-workspace
+    exposure: public_authenticated
     indexing: noindex,nofollow
     authentication_required: true
   - host: merchant.afritechnology.com
     category: Customer Portals
     service: merchant-portal
+    exposure: public_authenticated
     indexing: noindex,nofollow
     authentication_required: true
   - host: agent.afritechnology.com
     category: Customer Portals
     service: agent-portal
+    exposure: public_authenticated
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: monitoring.internal.afritechnology.com
+    category: Internal
+    service: monitoring
+    exposure: private
+    zone: internal.afritechnology.com
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: grafana.internal.afritechnology.com
+    category: Internal
+    service: grafana
+    exposure: private
+    zone: internal.afritechnology.com
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: prometheus.internal.afritechnology.com
+    category: Internal
+    service: prometheus
+    exposure: private
+    zone: internal.afritechnology.com
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: kibana.internal.afritechnology.com
+    category: Internal
+    service: kibana
+    exposure: private
+    zone: internal.afritechnology.com
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: jaeger.internal.afritechnology.com
+    category: Internal
+    service: jaeger
+    exposure: private
+    zone: internal.afritechnology.com
+    indexing: noindex,nofollow
+    authentication_required: true
+  - host: vault.internal.afritechnology.com
+    category: Internal
+    service: vault
+    exposure: private
+    zone: internal.afritechnology.com
     indexing: noindex,nofollow
     authentication_required: true
 forbidden:
@@ -82,3 +156,7 @@ forbidden:
     reason: Production wildcard DNS can accidentally expose undeclared services.
   - public_root_content: AfriRide Operator Dashboard
     reason: Public root must never serve internal or operator UI.
+private_hosted_zone:
+  domain: internal.afritechnology.com
+  access_model: zero-trust-private-hosted-zone
+  public_dns_records: []

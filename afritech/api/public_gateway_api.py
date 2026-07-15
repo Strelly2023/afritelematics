@@ -14,6 +14,8 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from afritech.architecture.domain_fabric import summarize_domain_fabric
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -487,11 +489,18 @@ def build_public_gateway_router() -> APIRouter:
 
     @router.get("/routing-isolation")
     def routing_isolation() -> dict[str, Any]:
+        fabric_summary = summarize_domain_fabric()
         return {
             "public_domain": PUBLIC_DOMAIN,
             "public_title": PUBLIC_TITLE,
             "forbidden_public_titles": sorted(OPERATOR_TITLES),
             "public_root_requires_authentication": False,
+            "domain_fabric": fabric_summary,
+            "private_access_boundary": {
+                "private_hosted_zone": "internal.afritechnology.com",
+                "access_model": "zero-trust-private-hosted-zone",
+                "publicly_exposed_internal_services": 0,
+            },
             "internal_portals": {
                 "app.afritechnology.com": {"purpose": "Customer application gateway", "robots": "noindex,nofollow"},
                 "operator.afritechnology.com": {"purpose": "Operator workspace", "robots": "noindex,nofollow", "authentication_required": True},

@@ -2,7 +2,7 @@
 	auto_https off
 }
 
-http://afritechnology.com, http://app.afritechnology.com {
+http://afritechnology.com, http://about.afritechnology.com, http://careers.afritechnology.com, http://news.afritechnology.com, http://trust.afritechnology.com, http://status.afritechnology.com, http://verify.afritechnology.com, http://developer.afritechnology.com, http://docs.afritechnology.com, http://sdk.afritechnology.com, http://events.afritechnology.com, http://gateway.afritechnology.com, http://support.afritechnology.com, http://download.afritechnology.com {
 	encode gzip zstd
 
 	header {
@@ -14,6 +14,30 @@ http://afritechnology.com, http://app.afritechnology.com {
 	@public_verify path /public/*
 	handle @public_verify {
 		reverse_proxy afritech-api:8000
+	}
+
+	@api path /health /v1/*
+	handle @api {
+		reverse_proxy afritech-api:8000
+	}
+
+	handle {
+		reverse_proxy public-web:4175
+	}
+}
+
+http://www.afritechnology.com {
+	redir https://afritechnology.com{uri}
+}
+
+http://app.afritechnology.com {
+	encode gzip zstd
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+		Referrer-Policy "strict-origin-when-cross-origin"
 	}
 
 	@api path /health /auth/* /v1/* /ws/* /rides/* /system/* /passenger/* /driver/* /ride/*

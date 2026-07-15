@@ -1,6 +1,6 @@
 server {
   listen 80;
-  server_name ${AFRITECH_DOMAIN} www.${AFRITECH_DOMAIN} app.${AFRITECH_DOMAIN} api.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} novacodepro.${AFRITECH_DOMAIN};
+  server_name ${AFRITECH_DOMAIN} www.${AFRITECH_DOMAIN} about.${AFRITECH_DOMAIN} careers.${AFRITECH_DOMAIN} news.${AFRITECH_DOMAIN} trust.${AFRITECH_DOMAIN} status.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} app.${AFRITECH_DOMAIN} api.${AFRITECH_DOMAIN} novacodepro.${AFRITECH_DOMAIN} developer.${AFRITECH_DOMAIN} docs.${AFRITECH_DOMAIN} sdk.${AFRITECH_DOMAIN} events.${AFRITECH_DOMAIN} gateway.${AFRITECH_DOMAIN} support.${AFRITECH_DOMAIN} download.${AFRITECH_DOMAIN} business.${AFRITECH_DOMAIN} merchant.${AFRITECH_DOMAIN} agent.${AFRITECH_DOMAIN} operator.${AFRITECH_DOMAIN};
 
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
@@ -8,6 +8,15 @@ server {
 
   location / {
     return 301 https://$host$request_uri;
+  }
+}
+
+server {
+  listen 80 default_server;
+  server_name _;
+
+  location / {
+    return 404;
   }
 }
 
@@ -27,7 +36,7 @@ server {
 
 server {
   listen 443 ssl http2;
-  server_name ${AFRITECH_DOMAIN};
+  server_name ${AFRITECH_DOMAIN} about.${AFRITECH_DOMAIN} careers.${AFRITECH_DOMAIN} news.${AFRITECH_DOMAIN} trust.${AFRITECH_DOMAIN} status.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} developer.${AFRITECH_DOMAIN} docs.${AFRITECH_DOMAIN} sdk.${AFRITECH_DOMAIN} events.${AFRITECH_DOMAIN} gateway.${AFRITECH_DOMAIN} support.${AFRITECH_DOMAIN} download.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
   set $public_web public-web:4175;
@@ -274,5 +283,21 @@ server {
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+server {
+  listen 443 ssl http2 default_server;
+  server_name _;
+
+  ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${AFRITECH_DOMAIN}/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 1d;
+
+  location / {
+    return 404;
   }
 }
