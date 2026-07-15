@@ -1,0 +1,23 @@
+"""Repository protocols."""
+
+from __future__ import annotations
+
+from typing import Protocol, TypeVar
+
+from afritech.novaride_runtime.events.envelope import MobilityEvent
+from afritech.novaride_runtime.models import Aggregate
+
+T = TypeVar("T", bound=Aggregate)
+
+
+class Repository(Protocol[T]):
+    def save(self, aggregate: T) -> T: ...
+    def get(self, aggregate_id: str) -> T | None: ...
+    def list(self, *, tenant_id: str | None = None) -> list[T]: ...
+
+
+class EventRepository(Protocol):
+    def append(self, event: MobilityEvent) -> MobilityEvent: ...
+    def all(self) -> list[MobilityEvent]: ...
+    def by_aggregate(self, aggregate_id: str) -> list[MobilityEvent]: ...
+    def by_correlation(self, correlation_id: str) -> list[MobilityEvent]: ...
