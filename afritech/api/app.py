@@ -44,6 +44,7 @@ from afritech.api.ops_governance_api import build_ops_governance_router
 from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
+from afritech.api.novaride_runtime_api import build_novaride_runtime_router
 from afritech.api.phase0_api import build_phase0_router
 from afritech.api.phase1_api import build_phase1_router
 from afritech.api.phase2_api import build_phase2_router
@@ -114,6 +115,7 @@ from afritech.partner_verification import PartnerVerificationStore
 from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
 from afritech.observability.opentelemetry import configure_fastapi_observability
+from afritech.novaride_runtime.replay.dependencies import build_default_replay_repository
 
 
 # ============================================================
@@ -175,6 +177,7 @@ adaptive_sla_controller = AdaptiveSLAController(
 )
 app.state.adaptive_sla_controller = adaptive_sla_controller
 app.state.autonomous_control_plane = autonomous_control_plane
+app.state.novaride_replay_repository = build_default_replay_repository()
 app.add_middleware(
     DistributedGovernanceMiddleware,
     store=partner_governance_store,
@@ -364,6 +367,7 @@ app.include_router(build_architecture_proof_router())
 # ✅ NovaRide mobile release readiness API
 app.include_router(build_afriride_mobile_release_router())
 app.include_router(build_afriride_next_gen_mobile_router())
+app.include_router(build_novaride_runtime_router())
 
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())

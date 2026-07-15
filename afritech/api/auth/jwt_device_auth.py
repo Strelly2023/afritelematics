@@ -31,9 +31,25 @@ class JWTClaims:
     sub: str
     role: str
     organization_id: str
-    exp: int
-    sid: str | None = None
+    tenant_id: str = ""
+    workspace_id: str | None = None
+    roles: tuple[str, ...] = ()
+    permissions: tuple[str, ...] = ()
+    region: str = "australia-southeast"
+    exp: int = 0
+    sid: str = ""
     token_kind: str = "access"
+
+
+class InvalidTokenError(ValueError):
+    pass
+
+
+def _tuple_claim(payload: dict[str, object], name: str) -> tuple[str, ...]:
+    value = payload.get(name, [])
+    if not isinstance(value, list):
+        raise InvalidTokenError(f"{name}_must_be_list")
+    return tuple(str(item) for item in value)
 
 
 class JWTService:
@@ -51,6 +67,11 @@ class JWTService:
         *,
         role: str = "OPERATOR",
         organization_id: str | None = None,
+        tenant_id: str | None = None,
+        workspace_id: str | None = None,
+        roles: tuple[str, ...] | list[str] | None = None,
+        permissions: tuple[str, ...] | list[str] | None = None,
+        region: str | None = None,
         session_id: str | None = None,
         token_kind: str = "access",
         issued_at: int | None = None,
@@ -68,6 +89,16 @@ class JWTService:
         }
         if organization_id:
             payload["organization_id"] = organization_id
+        if tenant_id:
+            payload["tenant_id"] = tenant_id
+        if workspace_id:
+            payload["workspace_id"] = workspace_id
+        if roles:
+            payload["roles"] = list(roles)
+        if permissions:
+            payload["permissions"] = list(permissions)
+        if region:
+            payload["region"] = region
         if session_id:
             payload["sid"] = session_id
         signing_input = ".".join(
@@ -95,22 +126,31 @@ class JWTService:
         if header.get("alg") != "HS256":
             raise ValueError("invalid_algorithm")
 
-        payload = json.loads(_b64url_decode(encoded_payload))
+        try:
+            payload = json.loads(_b64url_decode(encoded_payload))
+        except json.JSONDecodeError as exc:
+            raise InvalidTokenError("invalid_payload") from exc
         current_time = int(time.time()) if now is None else now
         if int(payload["exp"]) < current_time:
-            raise ValueError("token_expired")
+            raise InvalidTokenError("token_expired")
         role = canonical_role_name(str(payload.get("role", "OPERATOR")))
         if role not in AUTH_ROLES:
-            raise ValueError("invalid_role")
+            raise InvalidTokenError("invalid_role")
         organization_id = str(
             payload.get("organization_id", payload.get("tenant_id", "afritech-core"))
         )
+        tenant_id = str(payload.get("tenant_id", organization_id))
         return JWTClaims(
             sub=str(payload["sub"]),
             role=role,
             organization_id=organization_id,
+            tenant_id=tenant_id,
+            workspace_id=str(payload["workspace_id"]) if payload.get("workspace_id") is not None else None,
+            roles=_tuple_claim(payload, "roles"),
+            permissions=_tuple_claim(payload, "permissions"),
+            region=str(payload.get("region", "australia-southeast")),
             exp=int(payload["exp"]),
-            sid=str(payload["sid"]) if payload.get("sid") else None,
+            sid=str(payload["sid"]) if payload.get("sid") else "",
             token_kind=str(payload.get("token_kind", "access")),
         )
 
@@ -496,7 +536,7 @@ def _claims_from_credentials(
         raise HTTPException(status_code=401, detail="bearer token required")
     try:
         return jwt.verify_token(credentials.credentials)
-    except ValueError as exc:
+    except (InvalidTokenError, ValueError) as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
 
 
