@@ -1,0 +1,7 @@
+version: "1.0"
+status: repository_implemented_live_evidence_pending
+invariants:
+  ga_allowed: false
+  real_payments_enabled: false
+  nova_ai_authority: ADVISORY_ONLY
+reports_dir: reports/novacodepro/operational-verification

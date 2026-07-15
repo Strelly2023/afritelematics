@@ -1,0 +1,9 @@
+enabled: true
+runner: playwright
+threshold: 0.01
+baseline_required: approved
+browsers: [chromium, firefox, webkit]
+viewports: [mobile, tablet, desktop]
+themes: [light, dark]
+dynamic_region_masking: true
+motion_disabled: true

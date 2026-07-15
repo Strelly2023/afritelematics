@@ -1,0 +1,1 @@
+PROVIDER = "azure_monitor"

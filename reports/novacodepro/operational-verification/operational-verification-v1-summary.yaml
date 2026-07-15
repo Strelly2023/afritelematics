@@ -1,0 +1,77 @@
+version: "1.0"
+
+repository:
+  implemented: true
+  tests_passed: 84
+  tests_failed: 0
+  portal_build: passed
+  migration_status: created
+
+observability:
+  configured: true
+  executed: false
+  verified: false
+  provider: opentelemetry
+  evidence_refs: []
+
+accessibility:
+  configured: true
+  executed: false
+  verified: false
+  wcag_level: AA
+  critical_violations: null
+  serious_violations: null
+  human_screen_reader_validation: PENDING
+  evidence_refs: []
+
+visual_regression:
+  configured: true
+  executed: false
+  verified: false
+  approved_baseline: false
+  regressions: null
+  evidence_refs: []
+
+digital_ux_twin:
+  configured: true
+  telemetry_connected: false
+  telemetry_fresh: false
+  executed: false
+  verified: false
+  evidence_refs: []
+
+prr:
+  package_generated: true
+  package_signed: true
+  recommendation: READY_FOR_PRR_APPROVAL
+  approved: false
+  evidence_refs: []
+
+executive:
+  approval_requested: false
+  approved: false
+  approver_id: null
+  approver_role: null
+  signature: null
+  evidence_refs: []
+
+ga:
+  eligible: false
+  authorized: false
+  active: false
+  reason: Live evidence and governance approvals pending.
+
+payments:
+  current_state: DISABLED
+  finance_approved: false
+  risk_approved: false
+  provider_certified: false
+  settlement_verified: false
+  reconciliation_verified: false
+  fraud_verified: false
+  real_payments_enabled: false
+
+honest_status:
+  repository: OPERATIONAL_VERIFICATION_AUTOMATION_V1_IMPLEMENTED
+  live_environment: EVIDENCE_PENDING
+  governance: APPROVAL_PENDING

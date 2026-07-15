@@ -1,0 +1,5 @@
+required_human: true
+four_eyes: true
+roles: [ENGINEERING_APPROVER, SECURITY_APPROVER, OPERATIONS_APPROVER, COMPLIANCE_APPROVER, PRODUCT_APPROVER, PRR_CHAIR, AUDITOR]
+executive_roles: [CTO, COO, CISO, CEO, AUTHORIZED_EXECUTIVE]
+step_up_authentication: configurable

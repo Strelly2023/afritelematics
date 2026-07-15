@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import hmac
 import os
 import re
 import sqlite3
@@ -12,8 +13,17 @@ from pathlib import Path
 from typing import Any
 
 from afritech.novacodepro.enterprise_framework import (
+    build_enterprise_ai_architecture,
     build_enterprise_architecture_framework,
+    build_enterprise_capability_model,
+    build_enterprise_data_architecture,
+    build_enterprise_digital_twin_model,
+    build_enterprise_governance_model,
+    build_enterprise_meta_model,
+    build_enterprise_operating_model,
     build_enterprise_plane_model,
+    build_enterprise_resilience_model,
+    build_enterprise_technology_model,
     build_nera_manifest,
 )
 from afritech.novacodepro.enterprise_os import (
@@ -34,6 +44,18 @@ from afritech.novacodepro.eros import (
     derive_resilience_scores,
     execute_recovery,
     simulate_twin,
+)
+from afritech.novacodepro.operating_fabric import EnterpriseExecutionContext, EnterpriseOperatingFabric, normalize_role
+from afritech.novacodepro.production_readiness import validate_production_dependencies
+from afritech.novacodepro.ux_operating_system import (
+    assess_ux_release_readiness,
+    build_ux_artifact_record,
+    build_ux_evidence_package,
+    build_uxos_service_record,
+    sign_ux_record,
+    ux_operating_system_summary,
+    uxos_operational_completion_matrix,
+    validate_ux_state_transition,
 )
 
 
@@ -1961,17 +1983,64 @@ class NovaCodeProPlatform:
             reasons.extend(f"{item.lower()}_approval_missing" for item in missing)
         if str(payload.get("environment") or "").lower() == "production" and not payload.get("rollback_plan"):
             reasons.append("rollback_plan_missing")
-        decision = "ALLOW" if not reasons else "DENY"
+        conditions: list[dict[str, Any]] = []
+        reason_codes = [reason.upper() for reason in reasons]
+        production = str(payload.get("environment") or "").lower() == "production"
+        criticality = str(payload.get("criticality") or "").upper()
+        risk_classification = str(payload.get("risk_classification") or "").upper()
+        if production:
+            reason_codes.append("PRODUCTION_ENVIRONMENT")
+        if criticality in {"TIER_0", "TIER_1"}:
+            reason_codes.append(f"{criticality}_CAPABILITY")
+        if risk_classification in {"HIGH", "CRITICAL"}:
+            reason_codes.append(f"{risk_classification}_RISK")
+        if required:
+            conditions.append({"type": "APPROVAL", "required_roles": required, "quorum": int(policy.get("quorum") or 1)})
+        if production or criticality in {"TIER_0", "TIER_1"}:
+            conditions.append({"type": "EVIDENCE", "required": ["SIMULATION_RESULT", "ROLLBACK_VALIDATION"]})
+        if "policy_inactive" in reasons or "rollback_plan_missing" in reasons:
+            outcome = "DENY"
+        elif missing or production or criticality in {"TIER_0", "TIER_1"} or risk_classification in {"HIGH", "CRITICAL"}:
+            outcome = "REQUIRE_APPROVAL"
+        elif conditions:
+            outcome = "PERMIT_WITH_CONDITIONS"
+        else:
+            outcome = "PERMIT"
+        decision = "ALLOW" if outcome in {"PERMIT", "PERMIT_WITH_CONDITIONS"} else "DENY"
+        evaluated_at = _now()
+        input_hash = self._payload_hash(
+            {
+                "policy_id": policy_id,
+                "environment": payload.get("environment"),
+                "criticality": payload.get("criticality"),
+                "risk_classification": payload.get("risk_classification"),
+                "approvals": approvals,
+                "rollback_plan": payload.get("rollback_plan"),
+            }
+        )
+        decision_id = _new_id("pdec")
         result = {
+            "id": decision_id,
+            "decision_id": decision_id,
             "policy_id": policy["id"],
             "policy": policy,
             "decision": decision,
+            "outcome": outcome,
+            "policy_version": f"{policy['id']}@{policy.get('version', '1')}",
+            "matched_rules": [code.lower() for code in reason_codes] or ["default-permit"],
+            "conditions": conditions,
+            "reason_codes": sorted(set(reason_codes)),
+            "evaluated_at": evaluated_at,
+            "expires_at": evaluated_at,
+            "input_hash": f"sha256:{input_hash}",
+            "engine_version": "novapolicy-local-2.0",
             "reasons": reasons,
             "required_approvals": required,
             "quorum": int(policy.get("quorum") or 1),
             "tenant_id": self._tenant_id(str(payload.get("tenant_id") or "")),
             "environment": str(payload.get("environment") or "development"),
         }
+        self.repository.upsert("policy_decision", result)
         self.repository.append_event(
             _event_envelope(
                 event_type="policy.evaluated",
@@ -2088,6 +2157,8 @@ class NovaCodeProPlatform:
         return self.repository.get("evidence_bundle", evidence_id)
 
     def create_evidence_bundle(self, payload: dict[str, Any]) -> dict[str, Any]:
+        verification_status = str(payload.get("verification_status") or "")
+        local_signature_mode = bool(payload.get("local_signature_mode", True))
         bundle = {
             "id": str(payload.get("id") or _new_id("evidence")),
             "tenant_id": self._tenant_id(str(payload.get("tenant_id") or "")),
@@ -2104,7 +2175,16 @@ class NovaCodeProPlatform:
         }
         canonical = {k: bundle[k] for k in ("tenant_id", "workflow_id", "actor", "action", "policy_id", "artifact_ids", "occurred_at", "payload")}
         bundle["hash"] = str(payload.get("hash") or self._payload_hash(canonical))
-        bundle["signature"] = str(payload.get("signature") or f"sig-{bundle['hash'][:16]}")
+        signature_payload = f"NOVATECH_EVIDENCE:sha256:{bundle['hash']}".encode("utf-8")
+        bundle["signature_algorithm"] = str(payload.get("signature_algorithm") or "HMAC_SHA_256_LOCAL")
+        bundle["signing_key_id"] = str(payload.get("signing_key_id") or "local://novacodepro/evidence-development-key")
+        bundle["signature"] = str(
+            payload.get("signature")
+            or hmac.new(b"novacodepro-local-evidence-key", signature_payload, hashlib.sha256).hexdigest()
+        )
+        if not verification_status:
+            verification_status = "DEVELOPMENT_VERIFIED" if local_signature_mode and bundle["verified"] else "LEGACY_UNVERIFIED"
+        bundle["verification_status"] = verification_status
         self.repository.upsert("evidence_bundle", bundle)
         self.repository.append_event(
             _event_envelope(
@@ -2127,11 +2207,15 @@ class NovaCodeProPlatform:
         if bundle is None:
             raise KeyError("evidence_not_found")
         canonical = {k: bundle[k] for k in ("tenant_id", "workflow_id", "actor", "action", "policy_id", "artifact_ids", "occurred_at", "payload")}
-        verified = bundle.get("hash") == self._payload_hash(canonical)
+        expected_hash = self._payload_hash(canonical)
+        signature_payload = f"NOVATECH_EVIDENCE:sha256:{expected_hash}".encode("utf-8")
+        expected_signature = hmac.new(b"novacodepro-local-evidence-key", signature_payload, hashlib.sha256).hexdigest()
+        verified = bundle.get("hash") == expected_hash and bundle.get("signature") == expected_signature
         bundle["verified"] = verified
+        bundle["verification_status"] = "DEVELOPMENT_VERIFIED" if verified else "LEGACY_UNVERIFIED"
         bundle["updated_at"] = _now()
         self.repository.upsert("evidence_bundle", bundle)
-        return {"evidence_id": evidence_id, "verified": verified, "bundle": bundle}
+        return {"evidence_id": evidence_id, "verified": verified, "verification_status": bundle["verification_status"], "bundle": bundle}
 
     def search_evidence_bundles(self, query: str) -> list[dict[str, Any]]:
         needle = query.lower().strip()
@@ -3486,11 +3570,39 @@ class NovaCodeProPlatform:
         decision = decision.lower().strip()
         if decision not in {"approve", "reject"}:
             raise ValueError("unsupported_decision")
-        approval["status"] = "APPROVED" if decision == "approve" else "REJECTED"
+        if str(approval.get("requested_by") or "") == actor and decision == "approve":
+            raise PermissionError("segregation_of_duties_violation")
+        votes = list(approval.get("votes") or [])
+        votes.append(
+            {
+                "subject_id": actor,
+                "decision": "APPROVE" if decision == "approve" else "REJECT",
+                "role": "APPROVER",
+                "decided_at": _now(),
+                "note": note,
+            }
+        )
+        approval["votes"] = votes
+        required_quorum = int(approval.get("required_quorum") or approval.get("quorum") or 1)
+        approval["required_quorum"] = required_quorum
+        approved_votes = [vote for vote in votes if vote.get("decision") == "APPROVE"]
+        if decision == "reject":
+            approval["status"] = "REJECTED"
+        elif len(approved_votes) >= required_quorum:
+            approval["status"] = "APPROVED"
+        else:
+            approval["status"] = "PARTIALLY_APPROVED"
         approval["approved_by"] = actor
         approval["decided_at"] = _now()
         approval["decision"] = decision
-        approval["signature"] = f"sig-{_new_id('approval')}"
+        approval["signature"] = self._payload_hash(
+            {
+                "approval_id": approval["id"],
+                "subject_hash": approval.get("subject_hash", ""),
+                "votes": votes,
+                "status": approval["status"],
+            }
+        )
         approval["audit_event_id"] = _new_id("audit")
         approval["updated_at"] = _now()
         approval.setdefault("notes", [])
@@ -3521,6 +3633,53 @@ class NovaCodeProPlatform:
             detail="Protected approval decision recorded in the durable backend.",
         )
         return approval
+
+    def verify_approval_integrity(self, approval_id: str, plan: dict[str, Any], actor_authorities: dict[str, set[str]] | None = None) -> dict[str, Any]:
+        approval = self.repository.get("approval", approval_id)
+        if approval is None:
+            raise KeyError("approval_not_found")
+        if str(approval.get("status") or "") != "APPROVED":
+            raise PermissionError("approval_not_approved")
+        if approval.get("consumed_at") and not approval.get("reusable"):
+            raise PermissionError("approval_already_consumed")
+        expires_at = str(approval.get("expires_at") or "")
+        if expires_at and expires_at <= _now():
+            raise PermissionError("approval_expired")
+        expected_hash = str(approval.get("subject_hash") or "")
+        current_hash = f"sha256:{self._payload_hash(plan)}"
+        if expected_hash and current_hash != expected_hash:
+            raise PermissionError("approved_subject_changed")
+        votes = [vote for vote in list(approval.get("votes") or []) if vote.get("decision") == "APPROVE"]
+        authorities = actor_authorities or {str(vote.get("subject_id")): {str(vote.get("role") or "APPROVER")} for vote in votes}
+        valid_votes = [
+            vote
+            for vote in votes
+            if str(vote.get("role") or "APPROVER") in authorities.get(str(vote.get("subject_id")), set())
+        ]
+        if len(valid_votes) < int(approval.get("required_quorum") or 1):
+            raise PermissionError("approval_quorum_not_met")
+        requester_id = str(approval.get("requested_by") or "")
+        if any(str(vote.get("subject_id") or "") == requester_id for vote in valid_votes):
+            raise PermissionError("segregation_of_duties_violation")
+        unsatisfied = [
+            condition
+            for condition in list(approval.get("conditions") or [])
+            if isinstance(condition, dict) and condition.get("status") not in {None, "SATISFIED"}
+        ]
+        if unsatisfied:
+            raise PermissionError("approval_conditions_unsatisfied")
+        return {"approval_id": approval_id, "verified": True, "valid_votes": len(valid_votes), "subject_hash": expected_hash}
+
+    def consume_approval(self, approval_id: str, plan: dict[str, Any]) -> dict[str, Any]:
+        result = self.verify_approval_integrity(approval_id, plan)
+        approval = self.repository.get("approval", approval_id)
+        if approval is None:
+            raise KeyError("approval_not_found")
+        approval["status"] = "CONSUMED"
+        approval["consumed_at"] = _now()
+        approval["updated_at"] = _now()
+        self.repository.upsert("approval", approval)
+        return {**result, "status": "CONSUMED"}
 
     def create_deployment(self, payload: dict[str, Any]) -> dict[str, Any]:
         workflow = self.repository.get("workflow", str(payload.get("workflow_id") or ""))
@@ -3909,6 +4068,250 @@ class NovaCodeProPlatform:
             )
         )
         return artifact
+
+    def ux_operating_system(self) -> dict[str, Any]:
+        return ux_operating_system_summary()
+
+    def uxos_operational_status(self) -> dict[str, Any]:
+        records = {
+            kind: self.repository.list(kind)
+            for kind in (
+                "ux_design_sync",
+                "ux_visual_regression",
+                "ux_accessibility_scan",
+                "ux_analytics_event",
+                "ux_experiment",
+                "ux_knowledge_edge",
+                "ux_digital_twin_simulation",
+            )
+        }
+        return {
+            **uxos_operational_completion_matrix(),
+            "record_counts": {kind: len(items) for kind, items in records.items()},
+            "latest_records": {kind: items[:3] for kind, items in records.items()},
+        }
+
+    def ux_artifacts(self) -> list[dict[str, Any]]:
+        return self.repository.list("ux_artifact")
+
+    def create_ux_artifact(self, payload: dict[str, Any]) -> dict[str, Any]:
+        now = _now()
+        artifact = build_ux_artifact_record(payload, now, _new_id("uxart"))
+        artifact = sign_ux_record(artifact)
+        self.repository.upsert("ux_artifact", artifact)
+        self.repository.append_audit(
+            kind="ux",
+            actor=str(payload.get("actor") or "NovaCodePro"),
+            service="UX Governance Center",
+            subject=artifact["artifact"],
+            action="ux.artifact.created",
+            evidence=artifact["digital_signature"],
+            detail="Versioned UX artifact stored with traceability and governance metadata.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="ux.artifact.created",
+                actor_type="service",
+                actor_id="ux-governance-center",
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=str(payload.get("project_id") or ""),
+                workflow_id=str(payload.get("workflow_id") or ""),
+                correlation_id=artifact["id"],
+                causation_id=artifact["id"],
+                data={"artifact_id": artifact["id"], "artifact_type": artifact["artifact_type"], "state": artifact["approval_state"]},
+            )
+        )
+        return artifact
+
+    def transition_ux_artifact(self, artifact_id: str, target_state: str, actor: str = "NovaID", note: str = "") -> dict[str, Any]:
+        artifact = self.repository.get("ux_artifact", artifact_id)
+        if artifact is None:
+            raise KeyError("ux_artifact_not_found")
+        validation = validate_ux_state_transition(str(artifact.get("approval_state") or "DRAFT"), target_state)
+        if not validation["valid"]:
+            raise ValueError(str(validation["reason"]))
+        now = _now()
+        artifact["approval_state"] = target_state
+        artifact["status"] = target_state
+        artifact["history"] = [
+            {
+                "at": now,
+                "action": "ux_artifact.transitioned",
+                "state": target_state,
+                "actor": actor,
+                "note": note,
+            },
+            *list(artifact.get("history") or []),
+        ]
+        artifact["updated_at"] = now
+        artifact = sign_ux_record(artifact)
+        self.repository.upsert("ux_artifact", artifact)
+        self.repository.append_audit(
+            kind="ux",
+            actor=actor,
+            service="UX Governance Center",
+            subject=artifact["artifact"],
+            action="ux.artifact.transitioned",
+            evidence=artifact["digital_signature"],
+            detail=f"UX artifact moved to {target_state}.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="ux.artifact.transitioned",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id="",
+                workflow_id="",
+                correlation_id=artifact_id,
+                causation_id=artifact_id,
+                data={"artifact_id": artifact_id, "state": target_state, "note": note},
+            )
+        )
+        return artifact
+
+    def attach_ux_evidence(self, artifact_id: str, evidence_refs: list[str], actor: str = "NovaTrust") -> dict[str, Any]:
+        artifact = self.repository.get("ux_artifact", artifact_id)
+        if artifact is None:
+            raise KeyError("ux_artifact_not_found")
+        refs = list(dict.fromkeys([*list(artifact.get("evidence") or []), *evidence_refs]))
+        artifact["evidence"] = refs
+        artifact["history"] = [
+            {
+                "at": _now(),
+                "action": "ux_artifact.evidence_attached",
+                "state": artifact.get("approval_state") or "DRAFT",
+                "actor": actor,
+                "evidence_refs": evidence_refs,
+            },
+            *list(artifact.get("history") or []),
+        ]
+        artifact["updated_at"] = _now()
+        artifact = sign_ux_record(artifact)
+        package = build_ux_evidence_package(artifact, refs, _now(), _new_id("uxevidence"))
+        self.repository.upsert("ux_artifact", artifact)
+        self.repository.upsert("ux_evidence_package", package)
+        self.repository.append_audit(
+            kind="ux",
+            actor=actor,
+            service="Evidence Studio",
+            subject=artifact["artifact"],
+            action="ux.evidence.attached",
+            evidence=package["digital_signature"],
+            detail="UX evidence package generated and linked to artifact traceability.",
+        )
+        return {"artifact": artifact, "evidence_package": package}
+
+    def ux_release_readiness(self) -> dict[str, Any]:
+        artifacts = self.ux_artifacts()
+        assessment = assess_ux_release_readiness(artifacts)
+        release = {
+            "id": _new_id("uxrel"),
+            "status": assessment["status"],
+            "complete": assessment["complete"],
+            "artifact_count": len(artifacts),
+            "assessment": assessment,
+            "created_at": _now(),
+            "updated_at": _now(),
+        }
+        release["digital_signature"] = sign_ux_record(release)["digital_signature"]
+        self.repository.upsert("ux_release_readiness", release)
+        self.repository.append_audit(
+            kind="ux",
+            actor="NovaCodePro",
+            service="UX Verification Center",
+            subject="Production UX release readiness",
+            action="ux.release.assessed",
+            evidence=release["digital_signature"],
+            detail="Production UX release readiness assessed against traceability, evidence, and governance gates.",
+        )
+        return release
+
+    def create_uxos_service_record(self, kind: str, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        record = build_uxos_service_record(kind, payload, _now(), _new_id(kind.replace("ux_", "uxos")))
+        self.repository.upsert(kind, record)
+        self.repository.append_audit(
+            kind="uxos",
+            actor=actor,
+            service=str(payload.get("service") or "UXOS Service Fabric"),
+            subject=record["subject"],
+            action=f"{kind}.recorded",
+            evidence=record["digital_signature"],
+            detail="UXOS service record captured; operational completion remains pending until live evidence is verified.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type=f"{kind}.recorded",
+                actor_type="service",
+                actor_id=str(payload.get("service") or "uxos-service-fabric"),
+                tenant_id=self.tenants()[0]["id"],
+                organization_id=self.tenants()[0]["id"],
+                project_id=str(payload.get("project_id") or ""),
+                workflow_id=str(payload.get("workflow_id") or ""),
+                correlation_id=record["id"],
+                causation_id=record["id"],
+                data={"record_id": record["id"], "record_type": kind, "status": record["status"]},
+            )
+        )
+        return record
+
+    def create_ux_design_sync(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Design Integration Service",
+            "status": "SYNC_CONFIGURED_EVIDENCE_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_design_sync", data, actor=actor)
+
+    def create_ux_visual_regression(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Visual Regression Service",
+            "status": "COMPARISON_RECORDED_BASELINE_APPROVAL_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_visual_regression", data, actor=actor)
+
+    def create_ux_accessibility_scan(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Accessibility Service",
+            "status": "SCAN_RECORDED_RELEASE_APPROVAL_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_accessibility_scan", data, actor=actor)
+
+    def record_ux_analytics_event(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Analytics Service",
+            "status": "TELEMETRY_RECORDED_PRODUCTION_VALIDATION_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_analytics_event", data, actor=actor)
+
+    def create_ux_experiment(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Experiment Service",
+            "status": "EXPERIMENT_DRAFT_APPROVAL_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_experiment", data, actor=actor)
+
+    def create_ux_knowledge_edge(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Knowledge Graph Service",
+            "status": "EDGE_RECORDED_GRAPH_POPULATION_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_knowledge_edge", data, actor=actor)
+
+    def create_ux_digital_twin_simulation(self, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        data = {
+            "service": "Digital Twin Service",
+            "status": "SIMULATION_RECORDED_PRODUCTION_TELEMETRY_PENDING",
+            **payload,
+        }
+        return self.create_uxos_service_record("ux_digital_twin_simulation", data, actor=actor)
 
     def create_thread(self, payload: dict[str, Any]) -> dict[str, Any]:
         thread = {
@@ -4451,6 +4854,116 @@ class NovaCodeProPlatform:
             ],
         }
 
+    def operating_fabric(self) -> EnterpriseOperatingFabric:
+        return EnterpriseOperatingFabric(self)
+
+    def operating_fabric_manifest(self) -> dict[str, Any]:
+        return self.operating_fabric().manifest()
+
+    def enterprise_objects(self) -> list[dict[str, Any]]:
+        return self.operating_fabric().enterprise_objects()
+
+    def enterprise_capabilities(self) -> list[dict[str, Any]]:
+        return self.operating_fabric().capability_registry()
+
+    def submit_enterprise_request(
+        self,
+        payload: dict[str, Any],
+        *,
+        context: EnterpriseExecutionContext | None = None,
+        idempotency_key: str | None = None,
+    ) -> dict[str, Any]:
+        return self.operating_fabric().submit_enterprise_request(payload, context=context, idempotency_key=idempotency_key)
+
+    def enterprise_relationships(self) -> list[dict[str, Any]]:
+        return self.repository.list("enterprise_relationship")
+
+    def enterprise_command_center(self) -> dict[str, Any]:
+        return self.operating_fabric().command_center()
+
+    def normalize_authority_role(self, role: str) -> dict[str, Any]:
+        return {"input": role, "canonical_role": normalize_role(role)}
+
+    def sovereign_maturity_report(self) -> dict[str, Any]:
+        production_dependencies = validate_production_dependencies()
+        outbox = self.repository.list_outbox(limit=1000, status=None)
+        evidence = self.evidence_bundles()
+        relationships = self.enterprise_relationships()
+        workflows = self.workflows()
+        development_verified = [item for item in evidence if item.get("verification_status") == "DEVELOPMENT_VERIFIED"]
+        kms_verified = [item for item in evidence if item.get("verification_status") == "KMS_VERIFIED"]
+        domains = [
+            {
+                "domain": "Trusted Execution Context",
+                "level": "ENFORCED",
+                "score": 8,
+                "evidence": ["JWT-derived EnterpriseExecutionContext", "payload authority rejection tests"],
+                "exceptions": ["NovaID membership lookup is simulated by JWT claims in local tests"],
+            },
+            {
+                "domain": "Workflow Runtime",
+                "level": "IMPLEMENTED",
+                "score": 7,
+                "evidence": [f"{len(workflows)} workflow records", "approval-first planning"],
+                "exceptions": ["Temporal worker restart and deterministic replay not proven in this environment"]
+                + (["Temporal target not configured"] if "NOVACODEPRO_TEMPORAL_TARGET" in production_dependencies["missing"] else []),
+            },
+            {
+                "domain": "Event Fabric",
+                "level": "INTEGRATED",
+                "score": 7,
+                "evidence": [f"{len(outbox)} outbox records", "domain event persistence"],
+                "exceptions": ["Kafka/Redpanda broker failure, replay, and consumer lag proof not executed"]
+                + (["Event brokers not configured"] if "NOVACODEPRO_EVENT_BROKERS" in production_dependencies["missing"] else []),
+            },
+            {
+                "domain": "Cryptographic Evidence",
+                "level": "AUTOMATED_CHECKED",
+                "score": 7,
+                "evidence": [f"{len(development_verified)} locally verified evidence bundles"],
+                "exceptions": ["AWS KMS asymmetric signatures and S3 Object Lock are not configured locally"]
+                + (
+                    ["KMS signing key or immutable bucket missing"]
+                    if {"NOVACODEPRO_EVIDENCE_KMS_KEY_ID", "NOVACODEPRO_EVIDENCE_BUCKET"} & set(production_dependencies["missing"])
+                    else []
+                ),
+            },
+            {
+                "domain": "Typed Enterprise Graph",
+                "level": "INTEGRATED",
+                "score": 8,
+                "evidence": [f"{len(relationships)} typed relationships"],
+                "exceptions": ["Neo4j projection rebuild proof not executed"],
+            },
+            {
+                "domain": "Independent Verification",
+                "level": "UNASSESSED",
+                "score": 4,
+                "evidence": [f"{len(kms_verified)} KMS-verified evidence bundles"],
+                "exceptions": ["Separate signer/verifier/audit roles require cloud deployment"],
+            },
+            {
+                "domain": "Multi-Region Recovery",
+                "level": "DOCUMENTED",
+                "score": 5,
+                "evidence": ["EROS and NERM manifests", "local twin/recovery APIs"],
+                "exceptions": ["Route 53/Global Accelerator failover and failback evidence not available locally"],
+            },
+        ]
+        overall_score = min(domain["score"] for domain in domains)
+        return {
+            "id": "novacodepro-sovereign-maturity",
+            "status": "ADVANCED_IMPLEMENTATION_IN_PROGRESS",
+            "score": overall_score,
+            "as_of": _now(),
+            "production_dependencies": production_dependencies,
+            "scoring_rule": "A domain reaches 10 only when implemented, enforced, failure-tested, observable, recoverable, independently verified, and supported by immutable evidence.",
+            "domains": domains,
+        }
+
+    def production_readiness(self, environment: str | None = None) -> dict[str, Any]:
+        return validate_production_dependencies(environment)
+
     def nera_manifest(self) -> dict[str, Any]:
         return build_nera_manifest()
 
@@ -4459,6 +4972,33 @@ class NovaCodeProPlatform:
 
     def eros_manifest(self) -> dict[str, Any]:
         return build_eros_manifest()
+
+    def capability_model(self) -> dict[str, Any]:
+        return build_enterprise_capability_model()
+
+    def operating_model(self) -> dict[str, Any]:
+        return build_enterprise_operating_model()
+
+    def data_model(self) -> dict[str, Any]:
+        return build_enterprise_data_architecture()
+
+    def knowledge_model(self) -> dict[str, Any]:
+        return build_enterprise_meta_model()
+
+    def technology_model(self) -> dict[str, Any]:
+        return build_enterprise_technology_model()
+
+    def governance_model(self) -> dict[str, Any]:
+        return build_enterprise_governance_model()
+
+    def ai_model(self) -> dict[str, Any]:
+        return build_enterprise_ai_architecture()
+
+    def digital_twin_model(self) -> dict[str, Any]:
+        return build_enterprise_digital_twin_model()
+
+    def resilience_model(self) -> dict[str, Any]:
+        return build_enterprise_resilience_model()
 
     def architecture_framework(self) -> dict[str, Any]:
         return build_enterprise_architecture_framework()

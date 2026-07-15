@@ -1,0 +1,4 @@
+id: INVARIANT-NOVACODEPRO-GA-SEPARATE-FROM-PAYMENTS
+rule: GA approval never enables real payments.
+ga_allowed_initial: false
+real_payments_enabled_initial: false

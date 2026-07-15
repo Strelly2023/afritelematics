@@ -1,0 +1,13 @@
+enabled: true
+minimum_sample_size: 100
+freshness_minutes: 60
+required_coverage:
+  device: true
+  network: true
+  journey: true
+  accessibility: true
+  region: true
+privacy:
+  pseudonymous_sessions: true
+  no_raw_personal_identifiers: true
+  sensitive_field_redaction: true

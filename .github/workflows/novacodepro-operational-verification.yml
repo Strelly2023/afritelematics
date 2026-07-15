@@ -1,0 +1,30 @@
+name: NovaCodePro Operational Verification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "afritech/novacodepro/operational_verification/**"
+      - "afritech/api/novacodepro_operational_verification_api.py"
+      - "scripts/novacodepro/**"
+      - "tests/novacodepro/operational_verification/**"
+
+jobs:
+  operational-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e .
+      - name: backend unit and contract tests
+        run: python -m pytest -q tests/novacodepro/operational_verification
+      - name: accessibility-critical
+        run: python scripts/novacodepro/operational_verification/verify_accessibility.py
+      - name: visual-regression
+        run: python scripts/novacodepro/operational_verification/verify_visual_regression.py
+      - name: prr-evidence-preview
+        run: python scripts/novacodepro/operational_verification/generate_prr_package.py
+      - name: governance-guards
+        run: python -m compileall -q afritech/guards

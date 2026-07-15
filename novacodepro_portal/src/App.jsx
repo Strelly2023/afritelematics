@@ -3,11 +3,16 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AGENT_MARKETPLACE,
   AUTOMATION_TEMPLATES,
+  COMPLETION_STANDARD,
   DEVELOPER_SURFACES,
   INTEGRATIONS,
+  OPERATIONAL_READINESS_PROGRAM,
   PLATFORM_CENTERS,
   SERVICE_CATALOG,
   SOLUTION_TEMPLATES,
+  UX_COMPONENT_REGISTRY,
+  UXOS_RUNTIME_SERVICES,
+  UX_OPERATING_SYSTEM,
   WORKFLOW_STAGES,
   platformRuntime,
 } from "./platform/runtime.js";
@@ -26,6 +31,7 @@ const NAV_ITEMS = [
   "Projects",
   "Engineering",
   "Operations",
+  "Operational Verification",
   "Customers",
   "Partners",
   "Employees",
@@ -2579,6 +2585,67 @@ function App() {
     ];
   }, [platformSummary?.platform_health, runtime.auditTrail, runtime.automationRuns.length, runtime.knowledgeGraph.length, selectedRequest?.workflow]);
 
+  const uxOperatingSummary = useMemo(() => {
+    const uxModel = runtime.uxOperatingSystem || UX_OPERATING_SYSTEM;
+    const artifacts = runtime.uxArtifacts || [];
+    const evidenceCount = artifacts.reduce((total, artifact) => total + (artifact.evidence?.length || 0), 0);
+    const approvedComponents = (runtime.uxComponentRegistry || UX_COMPONENT_REGISTRY).filter(
+      (component) => component.status === "APPROVED",
+    ).length;
+    return {
+      model: uxModel,
+      artifacts,
+      evidenceCount,
+      approvedComponents,
+      serviceCount: (runtime.uxosRuntimeServices || UXOS_RUNTIME_SERVICES).length,
+      serviceRecords: runtime.uxosServiceRecords || [],
+      readiness: runtime.uxReleaseReadiness || { status: "EVIDENCE_PENDING", gaAllowed: false, missing: [] },
+      visibleLifecycle: uxModel.lifecycle.slice(0, 8),
+      approvalLifecycle: uxModel.stateModel.slice(-5),
+    };
+  }, [runtime.uxArtifacts, runtime.uxComponentRegistry, runtime.uxOperatingSystem, runtime.uxReleaseReadiness, runtime.uxosRuntimeServices, runtime.uxosServiceRecords]);
+
+  const completionSummary = useMemo(() => {
+    const dashboard = runtime.completionDashboard || {
+      rows: COMPLETION_STANDARD.domains.map((domain) => ({
+        domain,
+        repository: domain !== "GA Promotion",
+        operational: false,
+        governance: "PENDING",
+      })),
+      gaAllowed: false,
+      realPaymentsEnabled: false,
+    };
+    return {
+      standard: runtime.completionStandard || COMPLETION_STANDARD,
+      dashboard,
+      assessment: runtime.completionAssessment || {
+        level: "Repository Complete",
+        repositoryComplete: true,
+        operationalVerified: false,
+        governanceApproved: false,
+        productionReady: false,
+        gaAllowed: false,
+        realPaymentsEnabled: false,
+        missingProductionGates: COMPLETION_STANDARD.productionReadyGates,
+      },
+    };
+  }, [runtime.completionAssessment, runtime.completionDashboard, runtime.completionStandard]);
+
+  const operationalReadinessSummary = useMemo(() => {
+    return {
+      program: runtime.operationalReadinessProgram || OPERATIONAL_READINESS_PROGRAM,
+      assessment: runtime.operationalReadinessAssessment || {
+        status: "OPERATIONAL_READINESS_BLOCKED",
+        repositoryComplete: true,
+        operationalVerified: false,
+        governanceComplete: false,
+        gaAllowed: false,
+        realPaymentsEnabled: false,
+      },
+    };
+  }, [runtime.operationalReadinessAssessment, runtime.operationalReadinessProgram]);
+
   useEffect(() => {
     setSelectedJourneyStageId(selectedRequest?.workflow?.[selectedRequest.stageIndex]?.id ?? workflowJourneyStages[0]?.id ?? "intent");
   }, [selectedRequest?.id, selectedRequest?.stageIndex, workflowJourneyStages]);
@@ -3989,6 +4056,217 @@ function App() {
                     Reject
                   </button>
                 </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Operational Readiness Program</p>
+                <h2>Live evidence and governance control production operation</h2>
+              </div>
+              <div className="layout-hint">
+                <span>{operationalReadinessSummary.assessment.status}</span>
+                <span>Payments {operationalReadinessSummary.assessment.realPaymentsEnabled ? "enabled" : "blocked"}</span>
+              </div>
+            </div>
+            <div className="center-grid">
+              {[
+                ["Maturity layers", operationalReadinessSummary.program.maturityLayers.length, "Architecture, implementation, verification, approval, and production operation."],
+                ["Studios", operationalReadinessSummary.program.studios.length, "EDOS studios own APIs, stores, events, evidence, governance, dashboards, and audit."],
+                ["Payment providers", operationalReadinessSummary.program.paymentActivation.providers.length, "Provider connectors remain isolated from product deployment."],
+                ["Telemetry stages", operationalReadinessSummary.program.telemetryPipeline.length, "Application telemetry feeds analytics, evidence, knowledge graph, and digital twin."],
+              ].map(([label, value, note]) => (
+                <article className="center-card" key={label}>
+                  <p className="section-label">{label}</p>
+                  <strong>{value}</strong>
+                  <p>{note}</p>
+                </article>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Readiness matrix</p>
+                <strong>Repository credit without production claims</strong>
+                <div className="artifact-list">
+                  {operationalReadinessSummary.program.readinessMatrix.slice(0, 8).map((row) => (
+                    <div className="artifact-row" key={row.capability}>
+                      <strong>{row.capability}</strong>
+                      <span>
+                        Repository {row.repository ? "complete" : "open"} · Operational {row.operational ? "verified" : "pending"} · Governance {row.governance}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Payment activation</p>
+                <strong>Sandbox and provider evidence before production payments</strong>
+                <div className="compact-list">
+                  {operationalReadinessSummary.program.paymentActivation.interface.map((operation) => (
+                    <span className="compact-pill" key={operation}>
+                      {operation}
+                    </span>
+                  ))}
+                </div>
+                <p className="studio-note">
+                  GA allowed: {operationalReadinessSummary.assessment.gaAllowed ? "true" : "false"} · Real payments:
+                  {" "}{operationalReadinessSummary.assessment.realPaymentsEnabled ? "true" : "false"}
+                </p>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Actions</p>
+                <strong>Evaluate evidence-gated operation</strong>
+                <div className="studio-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.evaluateOperationalReadiness({})}
+                  >
+                    Blocked state
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.evaluateOperationalReadiness({
+                        evidence: {
+                          designSync: "PASS",
+                          visualRegression: "PASS",
+                          accessibility: "PASS",
+                          openTelemetry: "PASS",
+                          analytics: "PASS",
+                          digitalUxTwin: "PASS",
+                          automatedPrr: "PASS",
+                        },
+                        approvals: {
+                          ux: "APPROVED",
+                          engineering: "APPROVED",
+                          security: "APPROVED",
+                          operations: "APPROVED",
+                          compliance: "APPROVED",
+                          prr: "APPROVED",
+                          executive: "APPROVED",
+                        },
+                      })
+                    }
+                  >
+                    GA only
+                  </button>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Enterprise Completion Standard</p>
+                <h2>Repository, operational, and governance status stay separate</h2>
+              </div>
+              <div className="layout-hint">
+                <span>{completionSummary.assessment.level}</span>
+                <span>GA {completionSummary.assessment.gaAllowed ? "allowed" : "blocked"}</span>
+              </div>
+            </div>
+            <div className="center-grid">
+              {[
+                ["Repository", completionSummary.assessment.repositoryComplete ? "Complete" : "Open", "Code, tests, APIs, UI, SDK, automation, documentation, and evidence models."],
+                ["Operational", completionSummary.assessment.operationalVerified ? "Verified" : "Pending", "Live telemetry, visual regression, accessibility, experiments, alerts, traces, and runtime evidence."],
+                ["Governance", completionSummary.assessment.governanceApproved ? "Approved" : "Pending", "UX, engineering, security, operations, compliance, product, and executive approvals."],
+                ["Production", completionSummary.assessment.productionReady ? "Ready" : "Blocked", "Production readiness requires every operational gate before GA can be considered."],
+                ["GA", completionSummary.assessment.gaAllowed ? "Allowed" : "Blocked", "General Availability requires production readiness and executive authorization."],
+                ["Real payments", completionSummary.assessment.realPaymentsEnabled ? "Enabled" : "Blocked", "Payment activation stays outside UXOS and requires financial authority."],
+              ].map(([label, value, note]) => (
+                <article className="center-card" key={label}>
+                  <p className="section-label">{label}</p>
+                  <strong>{value}</strong>
+                  <p>{note}</p>
+                </article>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Completion dashboard</p>
+                <strong>Dimensional status by domain</strong>
+                <div className="artifact-list">
+                  {completionSummary.dashboard.rows.slice(0, 8).map((row) => (
+                    <div className="artifact-row" key={row.domain}>
+                      <strong>{row.domain}</strong>
+                      <span>
+                        Repository {row.repository ? "complete" : "open"} · Operational {row.operational ? "verified" : "pending"} · Governance {row.governance}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Production gates</p>
+                <strong>{completionSummary.assessment.missingProductionGates.length} gates pending</strong>
+                <div className="compact-list">
+                  {completionSummary.assessment.missingProductionGates.slice(0, 9).map((gate) => (
+                    <span className="compact-pill" key={gate}>
+                      {gate}
+                    </span>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Actions</p>
+                <strong>Evaluate without conflating completion states</strong>
+                <div className="studio-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.evaluateCompletionState({
+                        repositoryComplete: true,
+                        operationalVerified: false,
+                        governanceApproved: false,
+                      })
+                    }
+                  >
+                    Repository complete
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.evaluateCompletionState({
+                        repositoryComplete: true,
+                        operationalVerified: true,
+                        governanceApproved: true,
+                        productionReadyGates: Object.fromEntries(
+                          COMPLETION_STANDARD.productionReadyGates.map((gate) => [gate, true]),
+                        ),
+                        executiveAuthorized: false,
+                      })
+                    }
+                  >
+                    Production ready
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.evaluateCompletionState({
+                        repositoryComplete: true,
+                        operationalVerified: true,
+                        governanceApproved: true,
+                        productionReadyGates: Object.fromEntries(
+                          COMPLETION_STANDARD.productionReadyGates.map((gate) => [gate, true]),
+                        ),
+                        executiveAuthorized: true,
+                      })
+                    }
+                  >
+                    Executive GA
+                  </button>
+                </div>
+                <p className="studio-note">
+                  These controls model approval state only. They do not enable real payments or bypass designated human authorities.
+                </p>
               </article>
             </div>
           </section>
@@ -5422,6 +5700,142 @@ function App() {
                   </div>
                 </article>
               ))}
+            </div>
+          </section>
+
+          <section className="surface-band">
+            <div className="band-header">
+              <div>
+                <p className="section-label">Enterprise UX Operating System</p>
+                <h2>Governed design-to-operations lifecycle</h2>
+              </div>
+              <div className="layout-hint">
+                <span>{uxOperatingSummary.model.status}</span>
+                <span>{uxOperatingSummary.readiness.status}</span>
+              </div>
+            </div>
+            <div className="center-grid">
+              {[
+                ["Studios", uxOperatingSummary.model.studios.length, "Coordinated UX studios own artifacts, approvals, metrics, and evidence."],
+                ["Artifacts", uxOperatingSummary.artifacts.length, "Requirements, journeys, prototypes, reviews, handoff, and verification records."],
+                ["Evidence", uxOperatingSummary.evidenceCount, "Evidence references linked to versioned UX artifacts."],
+                ["Components", uxOperatingSummary.approvedComponents, "Approved enterprise component assets in the governed registry."],
+                ["Services", uxOperatingSummary.serviceCount, "Runtime UXOS services for integration, regression, analytics, experiments, graph, and twin."],
+                ["Service records", uxOperatingSummary.serviceRecords.length, "Evidence-pending records from UXOS service automation."],
+              ].map(([label, value, note]) => (
+                <article className="center-card" key={label}>
+                  <p className="section-label">{label}</p>
+                  <strong>{value}</strong>
+                  <p>{note}</p>
+                </article>
+              ))}
+            </div>
+            <div className="studio-grid">
+              <article className="studio-card">
+                <p className="section-label">Lifecycle</p>
+                <strong>From strategy to continuous optimization</strong>
+                <div className="artifact-list">
+                  {uxOperatingSummary.visibleLifecycle.map((stage, index) => (
+                    <div className="artifact-row" key={stage}>
+                      <strong>{String(index + 1).padStart(2, "0")} · {stage}</strong>
+                      <span>Traceable design workstream stage</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Governed artifacts</p>
+                <strong>Versioned UX assets with evidence</strong>
+                <div className="artifact-list">
+                  {uxOperatingSummary.artifacts.slice(0, 5).map((artifact) => (
+                    <div className="artifact-row" key={artifact.id}>
+                      <strong>{artifact.artifact}</strong>
+                      <span>
+                        {artifact.studio} · {artifact.approvalState} · {artifact.evidence?.length || 0} evidence refs
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">State gates</p>
+                <strong>PRR and executive approval remain separate</strong>
+                <div className="compact-list">
+                  {uxOperatingSummary.approvalLifecycle.map((state) => (
+                    <span className="compact-pill" key={state}>
+                      {state}
+                    </span>
+                  ))}
+                </div>
+                <p className="studio-note">
+                  GA allowed: {uxOperatingSummary.readiness.gaAllowed ? "true" : "false"} · Real payments remain
+                  governed outside UX approval.
+                </p>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Service fabric</p>
+                <strong>Runtime UXOS services publish evidence</strong>
+                <div className="compact-list">
+                  {(runtime.uxosRuntimeServices || UXOS_RUNTIME_SERVICES).slice(0, 8).map((service) => (
+                    <span className="compact-pill" key={service}>
+                      {service}
+                    </span>
+                  ))}
+                </div>
+                <div className="artifact-list">
+                  {uxOperatingSummary.serviceRecords.slice(0, 3).map((record) => (
+                    <div className="artifact-row" key={record.id}>
+                      <strong>{record.subject}</strong>
+                      <span>{record.kind} · {record.status}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="studio-card">
+                <p className="section-label">Actions</p>
+                <strong>Capture, evidence, assess</strong>
+                <div className="studio-actions">
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.createUxArtifact({
+                        artifact: "New governed UX artifact",
+                        artifactType: "wireframe",
+                        studio: "Wireframe Studio",
+                      })
+                    }
+                  >
+                    Create artifact
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.attachUxEvidence(uxOperatingSummary.artifacts[0]?.id, "ux-review-evidence.yaml")}
+                  >
+                    Attach evidence
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() => platformRuntime.assessUxReleaseReadiness()}
+                  >
+                    Assess release
+                  </button>
+                  <button
+                    type="button"
+                    className="toolbar-chip"
+                    onClick={() =>
+                      platformRuntime.recordUxosService("ux_visual_regression", {
+                        subject: "Dashboard baseline comparison",
+                        provider: "Chrome",
+                      })
+                    }
+                  >
+                    Record service
+                  </button>
+                </div>
+              </article>
             </div>
           </section>
 

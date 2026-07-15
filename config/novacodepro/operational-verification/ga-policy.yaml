@@ -1,0 +1,6 @@
+ga_decisions: [GA_BLOCKED, GA_ELIGIBLE, GA_AUTHORIZED, GA_ACTIVE, GA_REVOKED]
+initial_state: GA_BLOCKED
+server_side_only: true
+requires_prr_approval: true
+requires_executive_authorization: true
+real_payments_enabled: false

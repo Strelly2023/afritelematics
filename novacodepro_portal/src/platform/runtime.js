@@ -19,7 +19,8 @@ const STORAGE_KEY = "novacodepro.platform.runtime.v1";
 const NERA_ARCHITECTURE = {
   id: "nera",
   name: "NovaTech Enterprise Reference Architecture",
-  version: "1.0",
+  version: "2.0",
+  status: "Enterprise Reference Standard",
   layers: [
     {
       id: "corporate-governance",
@@ -38,12 +39,22 @@ const NERA_ARCHITECTURE = {
     },
     {
       id: "knowledge-intelligence",
-      name: "Knowledge & Intelligence Layer",
+      name: "Knowledge & Intelligence Plane",
       purpose: "Enterprise memory, reasoning, and digital twin intelligence.",
     },
     {
+      id: "enterprise-ai",
+      name: "Enterprise AI Plane",
+      purpose: "Governed model, agent, reasoning, memory, and tool runtime.",
+    },
+    {
+      id: "digital-twin-resilience",
+      name: "Digital Twin & Resilience Plane",
+      purpose: "Enterprise state, simulations, recovery planning, validation, replay, evidence, and scoring.",
+    },
+    {
       id: "business-products",
-      name: "Business Product Layer",
+      name: "Business Product Plane",
       purpose: "Customer-facing and partner-facing products.",
     },
     {
@@ -78,7 +89,59 @@ const NERA_ARCHITECTURE = {
     "NovaReporting",
     "NovaAdministration",
   ],
+  canonicalEnterpriseStructure: [
+    "Corporate Governance",
+    "Enterprise Governance Plane",
+    "Enterprise Platform Plane",
+    "Knowledge & Intelligence Plane",
+    "Enterprise AI Plane",
+    "Digital Twin & Resilience Plane",
+    "Business Product Plane",
+    "Enterprise Operations Plane",
+    "Shared Enterprise Services",
+    "Infrastructure & Regional Runtime",
+  ],
+  portalStates: ["Loading", "Ready", "Empty", "Degraded", "Unavailable", "Forbidden", "Error", "Recovery"],
 };
+
+const CANONICAL_STATE_VIEWS = [
+  "Observed State",
+  "Desired State",
+  "Predicted State",
+  "Simulated State",
+  "Approved State",
+  "Recovered State",
+];
+
+const AUTHORITY_LEVELS = [
+  { level: 0, mode: "Observe" },
+  { level: 1, mode: "Recommend" },
+  { level: 2, mode: "Prepare" },
+  { level: 3, mode: "Execute with Approval" },
+  { level: 4, mode: "Execute under Pre-Approval" },
+  { level: 5, mode: "Emergency Containment" },
+];
+
+const CAPABILITY_DOMAINS = [
+  "Strategy, Governance & Leadership",
+  "Enterprise Architecture & Transformation",
+  "Product & Portfolio Management",
+  "Customer, Partner & Market Management",
+  "Software Engineering & Digital Delivery",
+  "Platform, Cloud & Infrastructure",
+  "Data, Knowledge & Intelligence",
+  "Artificial Intelligence & Agent Operations",
+  "Identity, Security, Trust & Privacy",
+  "Risk, Compliance, Legal & Audit",
+  "Enterprise Operations & Service Management",
+  "Resilience, Continuity & Recovery",
+  "Finance, Commercial & Procurement",
+  "People, Workforce & Organization",
+  "Sales, Marketing & Communications",
+  "Ecosystem, Integration & Developer Enablement",
+  "Industry Product Capabilities",
+  "Enterprise Measurement & Improvement",
+];
 
 const NEAF_MODEL = {
   id: "neaf",
@@ -143,31 +206,27 @@ const NEAF_MODEL = {
 const EROS_MANIFEST = {
   id: "eros",
   name: "NovaDigitalTwin Enterprise Resilience Operating System",
-  version: "2.0",
-  coreViews: [
-    "Observed State",
-    "Desired State",
-    "Predicted State",
-    "Simulated State",
-    "Approved State",
-    "Recovered State",
-  ],
-  authorityLevels: [
-    { level: 0, mode: "Observe" },
-    { level: 1, mode: "Recommend" },
-    { level: 2, mode: "Prepare" },
-    { level: 3, mode: "Execute with Approval" },
-    { level: 4, mode: "Execute Pre-Approved" },
-    { level: 5, mode: "Emergency Containment" },
-  ],
+  version: "3.0",
+  status: "Enterprise Reference Standard",
+  coreViews: CANONICAL_STATE_VIEWS,
+  authorityLevels: AUTHORITY_LEVELS,
   runtimeServices: [
+    "Observation Engine",
+    "State Intelligence Engine",
+    "Dependency Intelligence Engine",
+    "Risk Intelligence Engine",
+    "Prediction Engine",
     "Twin Registry",
     "Twin State",
     "Twin Graph",
     "Simulation Engine",
+    "Decision Intelligence Engine",
+    "Recovery Planner",
     "Recovery Orchestrator",
+    "Validation Engine",
     "Evidence Ledger",
     "Replay Engine",
+    "Learning Engine",
     "Optimization Engine",
   ],
   lifecycle: [
@@ -186,11 +245,17 @@ const EROS_MANIFEST = {
   twinHierarchy: [
     "Enterprise Twin",
     "Organization Twins",
+    "Business Unit Twins",
+    "Capability Twins",
     "Product Twins",
     "Platform Twins",
     "Service Twins",
+    "Application Twins",
+    "Workflow Twins",
+    "Data Twins",
     "Process Twins",
     "Infrastructure Twins",
+    "Region Twins",
     "Financial Twins",
     "Security Twins",
     "Risk Twins",
@@ -209,6 +274,428 @@ const EROS_MANIFEST = {
     "Decision Memory",
     "Historical Memory",
   ],
+  simulationClasses: [
+    "Infrastructure failure",
+    "Region outage",
+    "Database failure",
+    "Network partition",
+    "Capacity exhaustion",
+    "Cyberattack",
+    "Identity compromise",
+    "Certificate expiry",
+    "Vendor outage",
+    "Supply-chain disruption",
+    "Regulatory change",
+    "Financial stress",
+    "Data corruption",
+    "AI model degradation",
+    "Product launch surge",
+    "Organizational restructuring",
+  ],
+  recoveryValidation: ["Infrastructure Validation", "Application Validation", "Dependency Validation", "Business Validation", "Security Validation", "Data Integrity Validation", "Evidence Verification"],
+};
+
+const UX_OPERATING_SYSTEM = {
+  id: "novacodepro-ux-os",
+  name: "NovaCodePro Enterprise UX Operating System",
+  status: "Implemented · Evidence pending",
+  lifecycle: [
+    "Business Strategy",
+    "Requirements Engineering",
+    "Research Intelligence",
+    "Experience Strategy",
+    "Information Architecture",
+    "Journey Engineering",
+    "Wireframe Studio",
+    "Design System",
+    "Visual Design",
+    "Prototype Studio",
+    "Accessibility Engine",
+    "Usability Validation",
+    "AI UX Review",
+    "Design Governance",
+    "Developer Handoff",
+    "Implementation Verification",
+    "Performance Validation",
+    "Security Validation",
+    "Operational Validation",
+    "Production Readiness Review",
+    "Executive Approval",
+    "Continuous Optimization",
+  ],
+  stateModel: [
+    "DRAFT",
+    "RESEARCH_COMPLETE",
+    "IA_APPROVED",
+    "JOURNEYS_APPROVED",
+    "WIREFRAME_APPROVED",
+    "DESIGN_SYSTEM_APPROVED",
+    "VISUAL_DESIGN_APPROVED",
+    "PROTOTYPE_VALIDATED",
+    "ACCESSIBILITY_APPROVED",
+    "LOCALIZATION_APPROVED",
+    "USABILITY_APPROVED",
+    "HANDOFF_COMPLETE",
+    "IMPLEMENTATION_VERIFIED",
+    "PERFORMANCE_APPROVED",
+    "SECURITY_APPROVED",
+    "READY_FOR_PRR_APPROVAL",
+    "PRR_APPROVED",
+    "EXECUTIVE_APPROVED",
+    "GENERAL_AVAILABILITY",
+  ],
+  studios: [
+    "Requirements Studio",
+    "Research Studio",
+    "Journey Studio",
+    "Wireframe Studio",
+    "Prototype Studio",
+    "Design System Studio",
+    "Accessibility Studio",
+    "Localization Studio",
+    "Motion Studio",
+    "Mobile Studio",
+    "Desktop Studio",
+    "Dashboard Studio",
+    "AI Design Studio",
+    "Component Studio",
+    "Design Review Center",
+    "Handoff Center",
+    "Verification Center",
+    "UX Analytics Center",
+    "Experiment Center",
+    "UX Governance Center",
+  ],
+  agents: [
+    "Requirements Agent",
+    "Research Agent",
+    "Journey Agent",
+    "Wireframe Agent",
+    "Visual Design Agent",
+    "Accessibility Agent",
+    "Localization Agent",
+    "Prototype Agent",
+    "Design Review Agent",
+    "Implementation Verification Agent",
+    "Analytics Agent",
+    "Optimization Agent",
+  ],
+  governance: {
+    gaAllowed: false,
+    realPaymentsEnabled: false,
+    boundary: "UX approval does not approve PRR, executive authorization, payment activation, or GA.",
+  },
+};
+
+const UX_COMPONENT_REGISTRY = [
+  "Buttons",
+  "Cards",
+  "Forms",
+  "Inputs",
+  "Lists",
+  "Maps",
+  "Charts",
+  "Dialogs",
+  "Navigation",
+  "Data Tables",
+  "Date Pickers",
+  "Media",
+  "Notifications",
+].map((component, index) => ({
+  id: `ux-component-${component.toLowerCase().replaceAll(" ", "-")}`,
+  component,
+  version: `2026.${index + 1}.0`,
+  owner: "NovaCodePro Design System",
+  status: index < 8 ? "APPROVED" : "DRAFT",
+  accessibility: index < 8 ? "WCAG 2.2 AA" : "Review pending",
+  performance: index < 8 ? "Within budget" : "Budget pending",
+}));
+
+const UX_ARTIFACT_SEED = [
+  {
+    id: "uxart-requirements",
+    artifact: "NovaRide booking requirements",
+    artifactType: "requirement",
+    studio: "Requirements Studio",
+    owner: "Product",
+    approvalState: "RESEARCH_COMPLETE",
+    version: "v1",
+    evidence: ["requirements-specification.yaml", "acceptance-criteria.yaml"],
+  },
+  {
+    id: "uxart-prototype",
+    artifact: "Rider booking prototype",
+    artifactType: "prototype",
+    studio: "Prototype Studio",
+    owner: "UX",
+    approvalState: "PROTOTYPE_VALIDATED",
+    version: "v3",
+    evidence: ["prototype-validation.yaml", "failure-simulation-report.yaml"],
+  },
+  {
+    id: "uxart-accessibility",
+    artifact: "Rider accessibility review",
+    artifactType: "accessibility_review",
+    studio: "Accessibility Studio",
+    owner: "Accessibility",
+    approvalState: "ACCESSIBILITY_APPROVED",
+    version: "v2",
+    evidence: ["accessibility-report.yaml", "assistive-tech-evidence/"],
+  },
+  {
+    id: "uxart-verification",
+    artifact: "Implementation verification",
+    artifactType: "implementation_verification",
+    studio: "Verification Center",
+    owner: "Quality",
+    approvalState: "IMPLEMENTATION_VERIFIED",
+    version: "v1",
+    evidence: ["ux-verification.yaml", "visual-regression/"],
+  },
+];
+
+const UXOS_RUNTIME_SERVICES = [
+  "UX Gateway",
+  "UX Artifact Service",
+  "Journey Service",
+  "Design System Service",
+  "Design Integration Service",
+  "Accessibility Service",
+  "Visual Regression Service",
+  "Analytics Service",
+  "Experiment Service",
+  "Knowledge Graph Service",
+  "Digital Twin Service",
+  "Evidence Service",
+  "Governance Service",
+  "PRR Service",
+  "Executive Approval Service",
+];
+
+const COMPLETION_STANDARD = {
+  name: "NovaCodePro Enterprise Completion Standard",
+  levels: [
+    "Repository Complete",
+    "Operationally Verified",
+    "Governance Approved",
+    "Production Ready",
+    "General Availability",
+  ],
+  repositoryDeliverables: [
+    "Architecture",
+    "Domain Models",
+    "Services",
+    "Persistent Stores",
+    "REST APIs",
+    "SDKs",
+    "Portal UI",
+    "CLI",
+    "Automation",
+    "Documentation",
+    "Evidence Models",
+    "Governance Models",
+    "Tests",
+    "CI Validation",
+  ],
+  operationalVerifications: [
+    "Design synchronization",
+    "Visual regression",
+    "Accessibility automation",
+    "Telemetry collection",
+    "Experiment execution",
+    "Knowledge graph synchronization",
+    "Digital twin simulation",
+    "Container deployment",
+    "Monitoring",
+    "Alerting",
+    "Tracing",
+    "Runtime Performance",
+  ],
+  governanceApprovals: ["UX Lead", "Engineering Lead", "Security", "Operations", "Compliance", "Product", "Executive"],
+  productionReadyGates: [
+    "Evidence Complete",
+    "Monitoring Healthy",
+    "Alerts Verified",
+    "Backups Verified",
+    "Recovery Tested",
+    "Observability Verified",
+    "Performance Verified",
+    "Security Verified",
+    "Compliance Verified",
+  ],
+  domains: [
+    "UXOS Services",
+    "APIs",
+    "Portal",
+    "Design Integration",
+    "Visual Regression",
+    "Accessibility",
+    "Analytics",
+    "Experimentation",
+    "Knowledge Graph",
+    "Digital UX Twin",
+    "PRR",
+    "GA Promotion",
+  ],
+  invariants: {
+    gaAllowed: false,
+    realPaymentsEnabled: false,
+  },
+};
+
+function buildCompletionDashboard() {
+  return {
+    status: "DIMENSIONAL_COMPLETION_DASHBOARD",
+    columns: ["Repository", "Operational", "Governance"],
+    rows: COMPLETION_STANDARD.domains.map((domain) => ({
+      domain,
+      repository: domain !== "GA Promotion",
+      operational: false,
+      governance: "PENDING",
+    })),
+    gaAllowed: false,
+    realPaymentsEnabled: false,
+  };
+}
+
+const OPERATIONAL_READINESS_PROGRAM = {
+  name: "NovaCodePro Operational Readiness Program",
+  maturityLayers: [
+    "Enterprise Architecture",
+    "Repository Implementation",
+    "Operational Verification",
+    "Governance Approval",
+    "Production Operation",
+  ],
+  studios: [
+    "Requirements Studio",
+    "Architecture Studio",
+    "UX Studio",
+    "AI Engineering Studio",
+    "API Studio",
+    "Security Studio",
+    "Build Studio",
+    "Release Studio",
+    "Deployment Studio",
+    "Runtime Studio",
+    "Verification Studio",
+    "Replay Studio",
+    "Observability Studio",
+    "Evidence Studio",
+    "Compliance Studio",
+    "PRR Center",
+    "Executive Approval Center",
+    "GA Governance Center",
+    "Enterprise Command Center",
+  ],
+  paymentActivation: {
+    providers: ["Stripe", "Adyen", "PayPal", "Square", "Braintree", "Regional Providers", "Mobile Money Providers", "Bank Rails"],
+    interface: ["Authorize", "Capture", "Refund", "Void", "Dispute", "Settlement", "Webhook", "Reconciliation"],
+    requirements: ["sandboxCertification", "webhookVerification", "reconciliationValidation", "fraudControls", "failoverTesting"],
+  },
+  integrationFabric: {
+    design: ["Figma", "Penpot", "Storybook", "Zeroheight", "Design Tokens"],
+    engineering: ["GitHub", "CI/CD", "Package Registry", "Artifact Repository"],
+    operations: ["Prometheus", "Grafana", "OpenTelemetry", "Alertmanager", "Cloud Monitoring"],
+    accessibility: ["axe-core", "Pa11y", "Lighthouse", "Accessibility Insights"],
+    knowledge: ["Requirements", "Architecture Decisions", "Pull Requests", "Tests", "Evidence", "Releases", "Runbooks"],
+  },
+  telemetryPipeline: ["Application", "OpenTelemetry", "Collector", "Metrics", "Logs", "Traces", "Analytics", "Evidence", "Knowledge Graph", "Digital Twin"],
+  readinessMatrix: [
+    ["UX Operating System", true, false, "PENDING"],
+    ["AI Engineering", true, false, "PENDING"],
+    ["Design Integration", true, false, "PENDING"],
+    ["Visual Regression", true, false, "PENDING"],
+    ["Accessibility Automation", true, false, "PENDING"],
+    ["OpenTelemetry", true, false, "PENDING"],
+    ["Production Analytics", true, false, "PENDING"],
+    ["Digital UX Twin", true, false, "PENDING"],
+    ["Automated PRR", true, false, "PENDING"],
+    ["Executive Workflow", true, false, "PENDING"],
+    ["Payment Sandbox", true, false, "PENDING"],
+    ["Production Payments", false, false, "PENDING"],
+    ["General Availability", false, false, "PENDING"],
+  ].map(([capability, repository, operational, governance]) => ({ capability, repository, operational, governance })),
+  invariants: {
+    gaAllowed: false,
+    realPaymentsEnabled: false,
+  },
+};
+
+const NECM_MODEL = {
+  id: "necm",
+  name: "NovaTech Enterprise Capability Model",
+  version: "2.0",
+  capabilityDomains: CAPABILITY_DOMAINS,
+  capabilities: CAPABILITY_DOMAINS,
+  criticalityModel: ["TIER_0", "TIER_1", "TIER_2", "TIER_3", "TIER_4"],
+  healthModel: ["HEALTHY", "DEGRADED", "AT_RISK", "UNAVAILABLE", "RECOVERING", "SUSPENDED", "RETIRED"],
+};
+
+const NEOM_MODEL = {
+  id: "neom",
+  name: "NovaTech Enterprise Operating Model",
+  version: "2.0",
+  people: ["Executives", "Product Managers", "Engineers", "Analysts", "Operators", "Legal", "Compliance"],
+  roles: ["Owner", "Steward", "Approver", "Operator", "Agent", "Reviewer"],
+  workspaces: ["NovaCodePro", "Customer Platforms", "Partner Platforms", "Enterprise Analytics"],
+  deliveryModel: ["Describe", "Understand", "Architect", "Plan", "Assign", "Develop", "Review", "Test", "Govern", "Approve", "Release", "Deploy", "Verify", "Learn"],
+};
+
+const NEDM_MODEL = {
+  id: "nedm",
+  name: "NovaTech Enterprise Data Model",
+  version: "2.0",
+  dataPlanes: ["Master Data Plane", "Reference Data Plane", "Transactional Data Plane", "Operational Data Plane", "Event and Temporal Data Plane", "Analytical Data Plane", "Knowledge and Semantic Data Plane", "Digital Twin Data Plane", "AI and Agent Data Plane", "Governance and Evidence Data Plane", "Security and Privacy Data Plane", "External and Partner Data Plane"],
+  classifications: ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "REGULATED", "SECRET"],
+};
+
+const NEKM_MODEL = {
+  id: "nekm",
+  name: "NovaTech Enterprise Knowledge Model",
+  version: "2.0",
+  knowledgeTypes: ["Descriptive", "Procedural", "Decision", "Experiential", "Regulatory", "Analytical", "AI"],
+  memoryClasses: ["Working Memory", "Session Memory", "Workspace Memory", "Project Memory", "Product Memory", "Domain Memory", "Operational Memory", "Governance Memory", "Incident Memory", "Recovery Memory", "Decision Memory", "Architecture Memory", "AI Memory", "Historical Enterprise Memory"],
+};
+
+const NETM_MODEL = {
+  id: "netm",
+  name: "NovaTech Enterprise Technology Model",
+  version: "2.0",
+  technologyDomains: ["Enterprise Platform", "Application Platform", "AI Platform", "Identity Platform", "Integration Platform", "Data Platform", "Knowledge Platform", "Digital Twin Platform", "Cloud Platform", "Infrastructure Platform", "Security Platform", "Developer Platform", "DevSecOps Platform", "Observability Platform", "Automation Platform", "Resilience Platform"],
+};
+
+const NEGM_MODEL = {
+  id: "negm",
+  name: "NovaTech Enterprise Governance Model",
+  version: "2.0",
+  governanceChain: ["Identity", "Authentication", "Role and Attribute Resolution", "Policy Evaluation", "Risk Evaluation", "Compliance Evaluation", "Authority and Approval", "Execution", "Evidence and Audit"],
+  authorityLevels: AUTHORITY_LEVELS,
+};
+
+const NEAM_MODEL = {
+  id: "neam",
+  name: "NovaTech Enterprise AI Model",
+  version: "2.0",
+  riskClasses: ["AI-0 Informational", "AI-1 Low Risk", "AI-2 Moderate Risk", "AI-3 High Risk", "AI-4 Critical"],
+  authorityLevels: AUTHORITY_LEVELS,
+};
+
+const NEDTM_MODEL = {
+  id: "nedtm",
+  aliases: ["ndtm"],
+  name: "NovaTech Enterprise Digital Twin Model",
+  version: "2.0",
+  stateViews: CANONICAL_STATE_VIEWS,
+  capabilities: ["Twin registry", "Observation ingestion", "State reconciliation", "Relationship graph", "Snapshots", "Replay support", "Prediction", "Scenario simulation", "Cascading failure analysis", "Decision support", "Approved state transition", "Recovery planning", "Recovery execution", "Recovery validation", "Evidence capture", "RTO/RPO analysis", "Model drift detection", "Twin calibration"],
+};
+
+const NERM_MODEL = {
+  id: "nerm",
+  name: "NovaTech Enterprise Resilience Model",
+  version: "2.0",
+  objectives: ["RTO", "RPO", "MTD", "MBCO", "WRT", "Recovery capacity objective"],
+  validationLayers: ["Infrastructure", "Application", "Dependency", "Data", "Security and compliance", "Business outcome"],
 };
 
 const ENTERPRISE_ARCHITECTURE_FRAMEWORK = {
@@ -218,36 +705,29 @@ const ENTERPRISE_ARCHITECTURE_FRAMEWORK = {
   models: {
     neaf: NEAF_MODEL,
     nera: NERA_ARCHITECTURE,
-    necm: {
-      id: "necm",
-      name: "NovaTech Enterprise Capability Model",
-      capabilities: [
-        "Identity",
-        "Security",
-        "Payments",
-        "Mobility",
-        "Commerce",
-        "Healthcare",
-        "Education",
-        "Agriculture",
-        "Workflow",
-        "Approvals",
-        "AI",
-        "Knowledge",
-        "Analytics",
-        "Observability",
-        "Compliance",
-        "Risk",
-        "Audit",
-      ],
-    },
-    neom: {
-      id: "neom",
-      name: "NovaTech Enterprise Operating Model",
-      people: ["Executives", "Product Managers", "Engineers", "Analysts", "Operators", "Legal", "Compliance"],
-      roles: ["Owner", "Steward", "Approver", "Operator", "Agent", "Reviewer"],
-      workspaces: ["NovaCodePro", "Customer Platforms", "Partner Platforms", "Enterprise Analytics"],
-    },
+    necm: NECM_MODEL,
+    neom: NEOM_MODEL,
+    nedm: NEDM_MODEL,
+    nekm: NEKM_MODEL,
+    netm: NETM_MODEL,
+    negm: NEGM_MODEL,
+    neam: NEAM_MODEL,
+    nedtm: NEDTM_MODEL,
+    ndtm: { ...NEDTM_MODEL, id: "ndtm", canonicalId: "nedtm", aliasFor: "nedtm" },
+    nerm: NERM_MODEL,
+  },
+  modelRelationships: {
+    NERA: "Defines enterprise structure",
+    NECM: "Defines capabilities",
+    NEOM: "Defines people, AI, and processes",
+    NEDM: "Defines information and authoritative data",
+    NEKM: "Defines knowledge, meaning, decisions, and memory",
+    NETM: "Defines technologies and standards",
+    NEGM: "Defines authority and control",
+    NEAM: "Defines AI, models, agents, and human oversight",
+    NEDTM: "Defines enterprise state",
+    NERM: "Defines resilience and recovery",
+    EROS: "Operationalizes resilience",
   },
 };
 
@@ -559,6 +1039,38 @@ function seedState() {
     ],
     commandHistory: [],
     neraArchitecture: NERA_ARCHITECTURE,
+    uxOperatingSystem: UX_OPERATING_SYSTEM,
+    uxComponentRegistry: UX_COMPONENT_REGISTRY,
+    uxArtifacts: UX_ARTIFACT_SEED,
+    uxEvidencePackages: [],
+    uxosServiceRecords: [],
+    uxosRuntimeServices: UXOS_RUNTIME_SERVICES,
+    completionStandard: COMPLETION_STANDARD,
+    completionDashboard: buildCompletionDashboard(),
+    completionAssessment: {
+      level: "Repository Complete",
+      repositoryComplete: true,
+      operationalVerified: false,
+      governanceApproved: false,
+      productionReady: false,
+      gaAllowed: false,
+      realPaymentsEnabled: false,
+      missingProductionGates: [...COMPLETION_STANDARD.productionReadyGates],
+    },
+    operationalReadinessProgram: OPERATIONAL_READINESS_PROGRAM,
+    operationalReadinessAssessment: {
+      status: "OPERATIONAL_READINESS_BLOCKED",
+      repositoryComplete: true,
+      operationalVerified: false,
+      governanceComplete: false,
+      gaAllowed: false,
+      realPaymentsEnabled: false,
+    },
+    uxReleaseReadiness: {
+      status: "EVIDENCE_PENDING",
+      gaAllowed: false,
+      missing: ["PRR approval", "Executive approval", "Live production UX evidence"],
+    },
     developerSurfaces: DEVELOPER_SURFACES,
   };
 }
@@ -618,6 +1130,18 @@ function loadState() {
       automationRuns: pickArray(parsed.automationRuns, base.automationRuns),
       connectedIntegrations: pickArray(parsed.connectedIntegrations, base.connectedIntegrations),
       installedAgents: pickArray(parsed.installedAgents, base.installedAgents),
+      uxOperatingSystem: parsed.uxOperatingSystem ?? base.uxOperatingSystem,
+      uxComponentRegistry: pickArray(parsed.uxComponentRegistry, base.uxComponentRegistry),
+      uxArtifacts: pickArray(parsed.uxArtifacts, base.uxArtifacts),
+      uxEvidencePackages: pickArray(parsed.uxEvidencePackages, base.uxEvidencePackages),
+      uxosServiceRecords: pickArray(parsed.uxosServiceRecords, base.uxosServiceRecords),
+      uxosRuntimeServices: pickArray(parsed.uxosRuntimeServices, base.uxosRuntimeServices),
+      completionStandard: parsed.completionStandard ?? base.completionStandard,
+      completionDashboard: parsed.completionDashboard ?? base.completionDashboard,
+      completionAssessment: parsed.completionAssessment ?? base.completionAssessment,
+      operationalReadinessProgram: parsed.operationalReadinessProgram ?? base.operationalReadinessProgram,
+      operationalReadinessAssessment: parsed.operationalReadinessAssessment ?? base.operationalReadinessAssessment,
+      uxReleaseReadiness: parsed.uxReleaseReadiness ?? base.uxReleaseReadiness,
       developerSurfaces: pickArray(parsed.developerSurfaces, base.developerSurfaces),
     };
   } catch {
@@ -1694,6 +2218,236 @@ function createSolution(payload) {
     );
   }
 
+  function createUxArtifact(input = {}) {
+    const artifact = {
+      id: `uxart-${Math.random().toString(36).slice(2, 10)}`,
+      artifact: input.artifact || input.title || "New UX artifact",
+      artifactType: input.artifactType || input.artifact_type || "design_artifact",
+      studio: input.studio || "UX Governance Center",
+      owner: input.owner || "NovaCodePro UX",
+      approvalState: input.approvalState || "DRAFT",
+      version: input.version || "v1",
+      evidence: Array.isArray(input.evidence) ? input.evidence : [],
+      traceability: input.traceability || {},
+      createdAt: nowIso(),
+    };
+    setState({
+      ...state,
+      uxArtifacts: [artifact, ...state.uxArtifacts],
+    });
+    emit(
+      appendAudit({
+        actor: "NovaCodePro",
+        action: "ux.artifact.created",
+        service: "UX Governance Center",
+        subject: artifact.artifact,
+        evidence: artifact.version,
+        detail: "UX artifact captured with owner, version, evidence, and traceability.",
+      }),
+    );
+    return artifact;
+  }
+
+  function attachUxEvidence(artifactId, evidenceRef = "ux-evidence.yaml") {
+    const artifact = state.uxArtifacts.find((item) => item.id === artifactId);
+    if (!artifact) {
+      return null;
+    }
+    const evidence = Array.from(new Set([...(artifact.evidence || []), evidenceRef]));
+    const updatedArtifact = { ...artifact, evidence };
+    const evidencePackage = {
+      id: `uxevidence-${Math.random().toString(36).slice(2, 10)}`,
+      artifactId,
+      artifact: artifact.artifact,
+      status: "EVIDENCE_CAPTURED",
+      evidence,
+      createdAt: nowIso(),
+    };
+    setState({
+      ...state,
+      uxArtifacts: state.uxArtifacts.map((item) => (item.id === artifactId ? updatedArtifact : item)),
+      uxEvidencePackages: [evidencePackage, ...state.uxEvidencePackages],
+    });
+    emit(
+      appendAudit({
+        actor: "NovaTrust",
+        action: "ux.evidence.attached",
+        service: "Evidence Studio",
+        subject: artifact.artifact,
+        evidence: evidenceRef,
+        detail: "UX evidence package linked to a governed design artifact.",
+      }),
+    );
+    return evidencePackage;
+  }
+
+  function assessUxReleaseReadiness() {
+    const requiredTypes = ["requirement", "prototype", "accessibility_review", "implementation_verification"];
+    const missingTypes = requiredTypes.filter(
+      (type) => !state.uxArtifacts.some((artifact) => artifact.artifactType === type),
+    );
+    const evidenceMissing = state.uxArtifacts.filter((artifact) => !(artifact.evidence || []).length);
+    const readiness = {
+      status: missingTypes.length || evidenceMissing.length ? "EVIDENCE_PENDING" : "READY_FOR_PRR_APPROVAL",
+      gaAllowed: false,
+      realPaymentsEnabled: false,
+      artifactCount: state.uxArtifacts.length,
+      evidencePackageCount: state.uxEvidencePackages.length,
+      missing: [
+        ...missingTypes.map((type) => `Missing ${type}`),
+        ...evidenceMissing.map((artifact) => `Evidence pending: ${artifact.artifact}`),
+        "PRR approval",
+        "Executive approval",
+      ],
+      assessedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      uxReleaseReadiness: readiness,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaCodePro",
+        action: "ux.release.assessed",
+        service: "UX Verification Center",
+        subject: "Production UX release",
+        evidence: readiness.status,
+        detail: "UX release readiness assessed while preserving PRR and executive approval gates.",
+      }),
+    );
+    return readiness;
+  }
+
+  function recordUxosService(kind, input = {}) {
+    const record = {
+      id: `uxos-${Math.random().toString(36).slice(2, 10)}`,
+      kind,
+      subject: input.subject || kind,
+      provider: input.provider || "",
+      status: input.status || "EVIDENCE_PENDING",
+      operationalComplete: false,
+      gaAllowed: false,
+      evidence: Array.isArray(input.evidence) ? input.evidence : [],
+      createdAt: nowIso(),
+    };
+    setState({
+      ...state,
+      uxosServiceRecords: [record, ...state.uxosServiceRecords],
+    });
+    emit(
+      appendAudit({
+        actor: "NovaCodePro",
+        action: `${kind}.recorded`,
+        service: "UXOS Service Fabric",
+        subject: record.subject,
+        evidence: record.status,
+        detail: "UXOS service record captured; live operational completion remains evidence-gated.",
+      }),
+    );
+    return record;
+  }
+
+  function evaluateCompletionState(input = {}) {
+    const gates = input.productionReadyGates || {};
+    const repositoryComplete = Boolean(input.repositoryComplete);
+    const operationalVerified = Boolean(input.operationalVerified);
+    const governanceApproved = Boolean(input.governanceApproved);
+    const productionReady = Boolean(
+      repositoryComplete &&
+        operationalVerified &&
+        governanceApproved &&
+        COMPLETION_STANDARD.productionReadyGates.every((gate) => gates[gate] === true),
+    );
+    const gaAllowed = Boolean(productionReady && input.executiveAuthorized === true);
+    const assessment = {
+      level: gaAllowed
+        ? "General Availability"
+        : productionReady
+          ? "Production Ready"
+          : governanceApproved
+            ? "Governance Approved"
+            : operationalVerified
+              ? "Operationally Verified"
+              : repositoryComplete
+                ? "Repository Complete"
+                : "Incomplete",
+      repositoryComplete,
+      operationalVerified,
+      governanceApproved,
+      productionReady,
+      gaAllowed,
+      realPaymentsEnabled: false,
+      missingProductionGates: COMPLETION_STANDARD.productionReadyGates.filter((gate) => gates[gate] !== true),
+      evaluatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      completionAssessment: assessment,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaCodePro",
+        action: "completion.standard.evaluated",
+        service: "Enterprise Completion Dashboard",
+        subject: assessment.level,
+        evidence: gaAllowed ? "GA_ALLOWED" : "GA_BLOCKED",
+        detail: "Completion evaluated across repository, operational, and governance dimensions without enabling real payments.",
+      }),
+    );
+    return assessment;
+  }
+
+  function evaluateOperationalReadiness(input = {}) {
+    const evidence = input.evidence || {};
+    const approvals = input.approvals || {};
+    const paymentEvidence = input.paymentEvidence || {};
+    const requiredEvidence = [
+      "designSync",
+      "visualRegression",
+      "accessibility",
+      "openTelemetry",
+      "analytics",
+      "digitalUxTwin",
+      "automatedPrr",
+    ];
+    const requiredApprovals = ["ux", "engineering", "security", "operations", "compliance", "prr", "executive"];
+    const operationalVerified = requiredEvidence.every((key) => evidence[key] === "PASS");
+    const governanceComplete = requiredApprovals.every((key) => approvals[key] === "APPROVED");
+    const paymentVerified = OPERATIONAL_READINESS_PROGRAM.paymentActivation.requirements.every(
+      (key) => paymentEvidence[key] === "PASS",
+    );
+    const gaAllowed = Boolean(operationalVerified && governanceComplete);
+    const assessment = {
+      status: gaAllowed ? "PRODUCTION_OPERATION_ALLOWED" : "OPERATIONAL_READINESS_BLOCKED",
+      repositoryComplete: true,
+      operationalVerified,
+      governanceComplete,
+      gaAllowed,
+      realPaymentsEnabled: Boolean(gaAllowed && paymentVerified),
+      missingEvidence: requiredEvidence.filter((key) => evidence[key] !== "PASS"),
+      missingApprovals: requiredApprovals.filter((key) => approvals[key] !== "APPROVED"),
+      missingPaymentEvidence: OPERATIONAL_READINESS_PROGRAM.paymentActivation.requirements.filter(
+        (key) => paymentEvidence[key] !== "PASS",
+      ),
+      evaluatedAt: nowIso(),
+    };
+    setState({
+      ...state,
+      operationalReadinessAssessment: assessment,
+    });
+    emit(
+      appendAudit({
+        actor: "NovaCodePro",
+        action: "operational.readiness.evaluated",
+        service: "Operational Readiness Program",
+        subject: assessment.status,
+        evidence: assessment.realPaymentsEnabled ? "PAYMENTS_ALLOWED" : "PAYMENTS_BLOCKED",
+        detail: "Operational readiness evaluated with separate live evidence, governance, and payment activation gates.",
+      }),
+    );
+    return assessment;
+  }
+
   function runCommand(command) {
     setState({
       ...state,
@@ -1745,6 +2499,12 @@ function createSolution(payload) {
     retryWorkflow,
     rejectWorkflow,
     attachArtifact,
+    createUxArtifact,
+    attachUxEvidence,
+    assessUxReleaseReadiness,
+    recordUxosService,
+    evaluateCompletionState,
+    evaluateOperationalReadiness,
     runCommand,
   };
 }
@@ -1762,6 +2522,11 @@ export {
   KNOWLEDGE_GRAPH,
   NEAF_MODEL,
   EROS_MANIFEST,
+  COMPLETION_STANDARD,
+  OPERATIONAL_READINESS_PROGRAM,
+  UX_OPERATING_SYSTEM,
+  UX_COMPONENT_REGISTRY,
+  UXOS_RUNTIME_SERVICES,
   PLATFORM_CENTERS,
   PROJECTS,
   SERVICE_CATALOG,

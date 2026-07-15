@@ -1,0 +1,12 @@
+initial_state: DISABLED
+states: [DISABLED, SANDBOX, PILOT_REAL, PRODUCTION_ELIGIBLE, ACTIVATION_AUTHORIZED, ENABLED, SUSPENDED, REVOKED]
+requires_separate_financial_governance: true
+required_controls:
+  - finance_approval
+  - risk_approval
+  - provider_certification
+  - settlement_validation
+  - reconciliation_validation
+  - fraud_validation
+  - production_credentials_verification
+  - secret_management_verification

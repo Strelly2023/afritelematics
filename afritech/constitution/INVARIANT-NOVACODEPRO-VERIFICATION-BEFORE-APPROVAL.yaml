@@ -1,0 +1,6 @@
+id: INVARIANT-NOVACODEPRO-VERIFICATION-BEFORE-APPROVAL
+rule: APPROVAL requires verified, non-expired evidence from trusted repositories.
+forbidden:
+  - CONFIGURED_TO_VERIFIED
+  - EXECUTED_TO_APPROVED
+  - CLIENT_REQUEST_TO_APPROVED

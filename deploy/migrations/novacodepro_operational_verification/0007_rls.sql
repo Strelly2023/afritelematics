@@ -1,0 +1,6 @@
+ALTER TABLE operational_verification_programs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE operational_verification_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evidence_envelopes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prr_packages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE approval_workflows ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payment_activation_assessments ENABLE ROW LEVEL SECURITY;

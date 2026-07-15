@@ -46,6 +46,7 @@ afritech-verify-session = "afritech.tools.partner_verification_session_cli:run"
 novapay-verify = "afritech.tools.novapay_verify_cli:run"
 novaride-verify = "afritech.tools.novaride_verify_cli:run"
 novatrust-verify = "afritech.tools.novatrust_verifier_cli:run"
+novacodepro = "afritech.tools.novacodepro_cli:main"
 architecture-validate = "architecture_validator.cli:main"
 architecture-self-heal = "architecture_validator.remediation.cli:main"
 

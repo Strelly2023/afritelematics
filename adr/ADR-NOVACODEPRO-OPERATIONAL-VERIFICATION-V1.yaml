@@ -1,0 +1,7 @@
+id: ADR-NOVACODEPRO-OPERATIONAL-VERIFICATION-V1
+status: accepted
+title: NovaCodePro Operational Verification Automation v1
+decision: >
+  Repository implementation, operational verification, certification, approval,
+  GA, and payment activation are separate states. Automation may collect and
+  package evidence, but it cannot self-approve production or payments.

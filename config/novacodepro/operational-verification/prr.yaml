@@ -1,0 +1,5 @@
+enabled: true
+domains: [quality, security, performance, accessibility, ux, operations, observability, resilience, deployment, mobile_release, architecture, governance]
+recommendation_without_approval: READY_FOR_PRR_APPROVAL
+ga_allowed: false
+real_payments_enabled: false

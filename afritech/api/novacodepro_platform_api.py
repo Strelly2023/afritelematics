@@ -14,6 +14,12 @@ from afritech.afriprogramming.rbac import canonical_role_name, role_definition
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles, _cookie_secure
 from afritech.api.auth.novacodepro_session_store import get_default_novacodepro_session_store
 from afritech.novacodepro import NovaCodeProPlatform, get_novacodepro_platform
+from afritech.novacodepro.completion_standard import (
+    build_completion_evidence,
+    completion_dashboard,
+    completion_standard_model,
+    evaluate_completion_state,
+)
 from afritech.novacodepro.edos import (
     authority_model,
     backend_service_architecture,
@@ -30,6 +36,23 @@ from afritech.novacodepro.edos import (
     prr_governance_workflow,
 )
 from afritech.novacodepro.operating_fabric import EnterpriseExecutionContext, normalize_role
+from afritech.novacodepro.production_readiness import (
+    evaluate_ga_governance,
+    evaluate_operational_readiness,
+    operational_readiness_program,
+    production_completion_program,
+)
+from afritech.novacodepro.ux_operating_system import (
+    ai_design_studio_model,
+    component_registry_model,
+    digital_ux_twin_model,
+    enterprise_design_knowledge_graph_model,
+    ux_operating_system_summary,
+    ux_studio_registry,
+    ux_validation_model,
+    uxos_operational_completion_matrix,
+    uxos_service_architecture,
+)
 from afritech.novacodepro.workspace import build_workspace_manifest
 
 
@@ -254,6 +277,63 @@ class ArtifactCreateRequest(BaseModel):
     version: str = "v1"
     checksum: str = ""
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class UXArtifactCreateRequest(BaseModel):
+    artifact: str
+    artifact_type: str = "design_artifact"
+    studio: str = "UX Governance Center"
+    owner: str = "NovaCodePro UX"
+    reviewers: list[str] = Field(default_factory=list)
+    approval_state: str = "DRAFT"
+    version: str = "v1"
+    traceability: dict[str, Any] = Field(default_factory=dict)
+    evidence: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class UXArtifactTransitionRequest(BaseModel):
+    target_state: str
+    note: str = ""
+
+
+class UXEvidenceAttachRequest(BaseModel):
+    evidence_refs: list[str] = Field(default_factory=list)
+
+
+class UXOSServiceRecordRequest(BaseModel):
+    subject: str
+    provider: str = ""
+    environment: str = "development"
+    version: str = "v1"
+    evidence_refs: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class CompletionEvaluationRequest(BaseModel):
+    repository_complete: bool = False
+    operational_verified: bool = False
+    governance_approved: bool = False
+    production_ready_gates: dict[str, bool] = Field(default_factory=dict)
+    executive_authorized: bool = False
+
+
+class CompletionEvidenceRequest(BaseModel):
+    capability: str
+    environment: str = "development"
+    executor: str = "NovaCodePro"
+    status: str = "EVIDENCE_PENDING"
+    artifacts: list[str] = Field(default_factory=list)
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    logs: list[str] = Field(default_factory=list)
+    screenshots: list[str] = Field(default_factory=list)
+    trace_ids: list[str] = Field(default_factory=list)
+
+
+class OperationalReadinessEvaluationRequest(BaseModel):
+    evidence: dict[str, str] = Field(default_factory=dict)
+    approvals: dict[str, str] = Field(default_factory=dict)
+    payment_evidence: dict[str, str] = Field(default_factory=dict)
 
 
 class ProjectCreateRequest(BaseModel):
@@ -671,6 +751,7 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     router = APIRouter(prefix="/v1/novacodepro", tags=["novacodepro"])
     observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
     editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
+    ux_editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER", "UI_UX_DESIGNER")
 
     def _tenant_context(claims: JWTClaims) -> str:
         return str(claims.organization_id or "novatech")
@@ -1779,6 +1860,178 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/edos/continuous-compliance")
     def enterprise_delivery_continuous_compliance(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return continuous_compliance_model()
+
+    @router.get("/edos/production-completion")
+    def enterprise_delivery_production_completion(
+        environment: str = "production",
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return production_completion_program(environment)
+
+    @router.post("/edos/production-completion/ga-gate")
+    def enterprise_delivery_ga_gate(
+        payload: dict[str, Any] | None = None,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        body = payload or {}
+        return evaluate_ga_governance(
+            evidence=dict(body.get("evidence") or {}),
+            approvals=dict(body.get("approvals") or {}),
+        )
+
+    @router.get("/edos/operational-readiness")
+    def enterprise_delivery_operational_readiness(
+        environment: str = "production",
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return operational_readiness_program(environment)
+
+    @router.post("/edos/operational-readiness/evaluate")
+    def evaluate_enterprise_operational_readiness(
+        payload: OperationalReadinessEvaluationRequest,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return evaluate_operational_readiness(
+            evidence=payload.evidence,
+            approvals=payload.approvals,
+            payment_evidence=payload.payment_evidence,
+        )
+
+    @router.get("/edos/ux-operating-system")
+    def enterprise_delivery_ux_operating_system(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return ux_operating_system_summary()
+
+    @router.get("/edos/ux-operating-system/studios")
+    def enterprise_delivery_ux_studios(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return ux_studio_registry()
+
+    @router.get("/edos/ux-operating-system/components")
+    def enterprise_delivery_ux_components(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return component_registry_model()
+
+    @router.get("/edos/ux-operating-system/ai-design")
+    def enterprise_delivery_ai_design_studio(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return ai_design_studio_model()
+
+    @router.get("/edos/ux-operating-system/validation")
+    def enterprise_delivery_ux_validation(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return ux_validation_model()
+
+    @router.get("/edos/ux-operating-system/services")
+    def enterprise_delivery_uxos_services(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return uxos_service_architecture()
+
+    @router.get("/edos/ux-operating-system/knowledge-graph")
+    def enterprise_delivery_uxos_knowledge_graph(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return enterprise_design_knowledge_graph_model()
+
+    @router.get("/edos/ux-operating-system/digital-twin")
+    def enterprise_delivery_uxos_digital_twin(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return digital_ux_twin_model()
+
+    @router.get("/edos/ux-operating-system/operational-completion")
+    def enterprise_delivery_uxos_operational_completion(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return uxos_operational_completion_matrix()
+
+    @router.get("/completion-standard")
+    def enterprise_completion_standard(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return completion_standard_model()
+
+    @router.get("/completion-standard/dashboard")
+    def enterprise_completion_dashboard(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return completion_dashboard()
+
+    @router.post("/completion-standard/evaluate")
+    def evaluate_enterprise_completion(
+        payload: CompletionEvaluationRequest,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        return evaluate_completion_state(
+            repository_complete=payload.repository_complete,
+            operational_verified=payload.operational_verified,
+            governance_approved=payload.governance_approved,
+            production_ready_gates=payload.production_ready_gates,
+            executive_authorized=payload.executive_authorized,
+        )
+
+    @router.post("/completion-standard/evidence")
+    def create_completion_evidence(
+        payload: CompletionEvidenceRequest,
+        claims: JWTClaims = Depends(ux_editor),
+    ) -> dict[str, Any]:
+        body = payload.model_dump()
+        body["executor"] = body.get("executor") or claims.sub
+        return build_completion_evidence(body)
+
+    @router.get("/ux/artifacts")
+    def list_ux_artifacts(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:
+        return service.ux_artifacts()
+
+    @router.post("/ux/artifacts")
+    def create_ux_artifact(payload: UXArtifactCreateRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        data = payload.model_dump()
+        data["actor"] = claims.sub
+        return service.create_ux_artifact(data)
+
+    @router.post("/ux/artifacts/{artifact_id}/transition")
+    def transition_ux_artifact(
+        artifact_id: str,
+        payload: UXArtifactTransitionRequest,
+        claims: JWTClaims = Depends(ux_editor),
+    ) -> dict[str, Any]:
+        try:
+            return service.transition_ux_artifact(artifact_id, payload.target_state, actor=claims.sub, note=payload.note)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="ux_artifact_not_found") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @router.post("/ux/artifacts/{artifact_id}/evidence")
+    def attach_ux_artifact_evidence(
+        artifact_id: str,
+        payload: UXEvidenceAttachRequest,
+        claims: JWTClaims = Depends(ux_editor),
+    ) -> dict[str, Any]:
+        try:
+            return service.attach_ux_evidence(artifact_id, payload.evidence_refs, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="ux_artifact_not_found") from exc
+
+    @router.post("/ux/releases/readiness")
+    def assess_ux_release_readiness(claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.ux_release_readiness()
+
+    @router.get("/uxos/operational-status")
+    def uxos_operational_status(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return service.uxos_operational_status()
+
+    @router.post("/uxos/design-sync")
+    def create_ux_design_sync(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_design_sync(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/visual-regression")
+    def create_ux_visual_regression(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_visual_regression(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/accessibility-scans")
+    def create_ux_accessibility_scan(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_accessibility_scan(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/analytics-events")
+    def record_ux_analytics_event(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.record_ux_analytics_event(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/experiments")
+    def create_ux_experiment(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_experiment(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/knowledge-edges")
+    def create_ux_knowledge_edge(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_knowledge_edge(payload.model_dump(), actor=claims.sub)
+
+    @router.post("/uxos/digital-twin-simulations")
+    def create_ux_digital_twin_simulation(payload: UXOSServiceRecordRequest, claims: JWTClaims = Depends(ux_editor)) -> dict[str, Any]:
+        return service.create_ux_digital_twin_simulation(payload.model_dump(), actor=claims.sub)
 
     @router.get("/enterprise-objects")
     def enterprise_objects(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:

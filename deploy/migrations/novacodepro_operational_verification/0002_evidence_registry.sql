@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS evidence_envelopes (evidence_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, release_id TEXT NOT NULL, status TEXT NOT NULL, checksum TEXT NOT NULL, signature TEXT NOT NULL, payload JSONB NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS evidence_artifacts (id TEXT PRIMARY KEY, evidence_id TEXT NOT NULL, artifact_uri TEXT NOT NULL, checksum TEXT NOT NULL, payload JSONB NOT NULL);

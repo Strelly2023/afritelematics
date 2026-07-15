@@ -1,0 +1,18 @@
+enabled: true
+required_providers:
+  - opentelemetry
+  - prometheus
+optional_providers:
+  - azure_monitor
+  - application_insights
+required_signals:
+  - traces
+  - metrics
+  - logs
+  - errors
+  - performance
+providers:
+  opentelemetry:
+    endpoint_env: OTEL_EXPORTER_OTLP_ENDPOINT
+  azure_monitor:
+    connection_string_env: APPLICATIONINSIGHTS_CONNECTION_STRING
