@@ -25,7 +25,11 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
-import { createDefaultFrontendRuntimeConfig, loadFrontendRuntimeConfig } from "./platform/frontendConfig.js";
+import {
+  createDefaultFrontendRuntimeConfig,
+  loadFrontendRuntimeConfig,
+  resolveFrontendRuntimeConfigUrl,
+} from "./platform/frontendConfig.js";
 import { createDefaultProductFrontendRegistry } from "./platform/productFrontendRegistry.js";
 import {
   registerDefaultFrontendManifests,
@@ -1834,9 +1838,10 @@ const AUTH_ROLE_DISPLAY_LABELS = {
   EXTERNAL_REGULATOR: "Regulator",
 };
 
-const AUTH_API_BASE = String(import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || "")
+const AUTH_API_BASE = String(import.meta.env.VITE_NOVACODEPRO_API_BASE_URL || import.meta.env.VITE_AFRIRIDE_API_URL || "")
   .replace(/\/v1\/?$/, "")
   .replace(/\/$/, "");
+const FRONTEND_RUNTIME_CONFIG_URL = resolveFrontendRuntimeConfigUrl();
 const SESSION_API_BASE = `${AUTH_API_BASE}/v1/novacodepro/session`;
 const AUTH_WARNING_MS = 2 * 60 * 1000;
 
@@ -2008,7 +2013,7 @@ function App() {
     let active = true;
     const controller = new AbortController();
     setFrontendRuntimeState("LOADING");
-    loadFrontendRuntimeConfig({ signal: controller.signal })
+    loadFrontendRuntimeConfig({ signal: controller.signal, runtimeConfigUrl: FRONTEND_RUNTIME_CONFIG_URL })
       .then((config) => {
         if (!active) {
           return;

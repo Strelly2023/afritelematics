@@ -5,6 +5,7 @@ import {
   createDefaultFrontendRuntimeConfig,
   loadFrontendRuntimeConfig,
   normalizeFrontendRuntimeConfig,
+  resolveFrontendRuntimeConfigUrl,
 } from "../src/platform/frontendConfig.js";
 
 test("frontend runtime config falls back to build info defaults", () => {
@@ -37,6 +38,8 @@ test("frontend runtime config normalizes runtime.json payloads", () => {
 
 test("frontend runtime config loader prefers runtime.json when available", async () => {
   const originalFetch = global.fetch;
+  const originalLocation = global.location;
+  global.location = { origin: "https://novacodepro.afritechnology.com" };
   global.fetch = async () => ({
     ok: true,
     json: async () => ({
@@ -58,8 +61,9 @@ test("frontend runtime config loader prefers runtime.json when available", async
     assert.equal(config.environment, "staging");
     assert.equal(config.maintenanceMode, true);
     assert.equal(config.source, "runtime.json");
+    assert.equal(resolveFrontendRuntimeConfigUrl(), "https://novacodepro.afritechnology.com/config/runtime.json");
   } finally {
     global.fetch = originalFetch;
+    global.location = originalLocation;
   }
 });
-

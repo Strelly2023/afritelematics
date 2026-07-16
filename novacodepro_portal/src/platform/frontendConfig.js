@@ -16,6 +16,10 @@ function getBaseOrigin() {
   return globalThis.location?.origin || "http://localhost";
 }
 
+function getFrontendBaseUrl() {
+  return typeof import.meta !== "undefined" && import.meta?.env?.BASE_URL ? import.meta.env.BASE_URL : "/";
+}
+
 const DEFAULT_FRONTEND_RUNTIME_CONFIG = {
   environment: "production",
   region: "AU",
@@ -95,9 +99,14 @@ export function createDefaultFrontendRuntimeConfig() {
   return { ...DEFAULT_FRONTEND_RUNTIME_CONFIG };
 }
 
+export function resolveFrontendRuntimeConfigUrl(runtimeConfigPath = "config/runtime.json") {
+  const normalizedPath = String(runtimeConfigPath || "config/runtime.json").replace(/^\/+/, "");
+  return new URL(normalizedPath, new URL(getFrontendBaseUrl(), getBaseOrigin())).toString();
+}
+
 export async function loadFrontendRuntimeConfig({
   fetchImpl = globalThis.fetch,
-  runtimeConfigUrl = "/config/runtime.json",
+  runtimeConfigUrl = resolveFrontendRuntimeConfigUrl(),
   signal,
 } = {}) {
   if (typeof fetchImpl !== "function") {
