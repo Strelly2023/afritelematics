@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { ROUTES } from "../platform/routes.js";
 import { createSolutionEngineeringClient } from "../platform/solutionEngineeringApi.js";
+import { buildUniversalAIWorkspaceModel, UniversalAIWorkspace } from "../platform/aiWorkspace.jsx";
 import {
   buildSolutionProjectPath,
   isSolutionRoute,
@@ -1338,6 +1339,196 @@ export function SolutionEngineeringPortal({
   };
 
   const currentWindowTitle = route?.kind === "project" ? solutionSectionLabel(route.section) : "Overview";
+  const solutionAiModel = useMemo(
+    () =>
+      buildUniversalAIWorkspaceModel({
+        session,
+        role,
+        roleLabel: roleLabel(role),
+        workspace: "Customer Solutions",
+        project: project.name,
+        tenant: session?.tenant_id || session?.organization,
+        organization: session?.organization,
+        environment: project.environment,
+        route: currentWindowTitle,
+        modelLabel: "NovaCodePro portal",
+        statusLabel: online ? "Live project data" : "Offline",
+        connection: {
+          connected: false,
+          backend: false,
+          runtime: true,
+          reason: "NovaAI backend is not connected in the portal yet.",
+          lastSyncedAt: project.updated_at || null,
+        },
+        request: {
+          id: project.id,
+          title: project.name,
+          request: project.idea || project.summary || "",
+          status: project.stage || "IDEA",
+          summary: project.discovery_summary || project.summary || "Project context loaded from live backend data.",
+          confidence: null,
+          intent: route?.kind === "project" ? route.section : "overview",
+          outcome: project.summary || project.idea || "",
+          scope: project.scope || project.surfaces || "Not connected",
+          tools: [route?.section || "overview"],
+          approvals: project.approvals || [],
+          questions: project.follow_up_questions || [],
+          files: project.attachments || [],
+          approvalsState: (project.approvals || []).length ? "PENDING" : "NOT_REQUIRED",
+        },
+        requestState: project.stage || "IDEA",
+        requestSummary: project.discovery_summary || project.summary || "",
+        requestOutcome: project.summary || project.idea || "",
+        requestScope: project.scope || project.surfaces || "Not connected",
+        requestTools: [route?.section || "overview"],
+        requestApprovals: project.approvals || [],
+        requestQuestions: project.follow_up_questions || [],
+        requestFiles: project.attachments || [],
+        requestArtifacts: [
+          ...(project.requirements || []),
+          ...(project.designs || []),
+          ...(project.deliverables || []),
+        ],
+        requestApprovalsState: (project.approvals || []).length ? "PENDING" : "NOT_REQUIRED",
+        executionState: workflowState.data?.workflowSummary?.status || project.stage || "IDEA",
+        knowledgeState: (project.knowledge || []).length ? "PUBLISHED" : "DRAFT",
+        currentAgentTasks: [],
+        conversations: project.timeline || [],
+        savedPrompts: [project.idea || project.summary || "Open project"],
+        approvedSolutions: project.deliverables || [],
+        sharedConversations: [],
+        recentRequests: project.support_cases || [],
+        suggestedPrompts: [
+          "Ask NovaAI about this project",
+          "Generate a discovery summary",
+          "Review pending approvals",
+          "Compare versions",
+        ],
+        artifacts: [
+          ...(project.requirements || []),
+          ...(project.designs || []),
+          ...(project.deliverables || []),
+          ...(project.evidence || []),
+        ],
+        timeline: workflowState.data?.timeline || project.timeline || [],
+        approvals: project.approvals || [],
+        evidence: project.evidence || [],
+        knowledge: project.knowledge || [],
+        policies: summaryState.data?.policy_summary || [],
+        standards: workflowState.data?.workflowSummary?.standards || [],
+        context: {
+          customer: project.customer_name || project.customer_id || "Unknown",
+          project: project.name,
+          repository: project.repository || "Not connected",
+          branch: project.branch || "Not connected",
+          commit: project.commit || "Not connected",
+          activeArtifact: project.designs?.[0]?.title || project.requirements?.[0]?.summary || "Not connected",
+          planSummary: project.summary || project.discovery_summary || "",
+          filesChanged: (project.designs || []).length || "Not connected",
+          apisChanged: "Not connected",
+          migrations: "Not connected",
+          testsAdded: (project.tests || []).length || "Not connected",
+          securityResult: project.security_review?.status || "Not assessed",
+          complianceResult: project.compliance_review?.status || "Not assessed",
+          rollbackPlan: project.release?.rollback_plan || "Not connected",
+          riskLevel: project.risk_level || "medium",
+          complianceImpact: project.compliance_status || "Not assessed",
+          currentStep: route?.section || project.stage || "overview",
+          queuedSteps: project.timeline?.length || 0,
+          failedSteps: project.timeline?.filter((entry) => String(entry.status || "").toLowerCase() === "failed").length || 0,
+          cancelledSteps: project.timeline?.filter((entry) => String(entry.status || "").toLowerCase() === "cancelled").length || 0,
+          retries: workflowState.data?.workflowSummary?.retryQueue || 0,
+          estimatedRemaining: project.stage || "Not connected",
+        },
+        metrics: {
+          customers: customersState.data?.length || 0,
+          projects: projectsState.data?.length || 0,
+          approvals: (project.approvals || []).length,
+          evidence: (project.evidence || []).length,
+        },
+        supportedActions: {
+          ask: true,
+          plan: true,
+          generate: true,
+          analyze: true,
+          review: true,
+          compare: true,
+          createWorkflow: true,
+        },
+      }),
+    [
+      currentWindowTitle,
+      customersState.data,
+      online,
+      projectsState.data,
+      project,
+      role,
+      session,
+      summaryState.data,
+      workflowState.data,
+    ],
+  );
+  const portalAiNotice = "NovaAI backend is not connected yet. Live project context is available.";
+  const portalAiActions = {
+    ask: () => setStatusMessage(portalAiNotice),
+    plan: () => setStatusMessage(portalAiNotice),
+    generate: () => setStatusMessage(portalAiNotice),
+    analyze: () => setStatusMessage(portalAiNotice),
+    review: () => setStatusMessage(portalAiNotice),
+    compare: () => setStatusMessage(portalAiNotice),
+    createWorkflow: () => setStatusMessage(portalAiNotice),
+    cancel: () => setStatusMessage("Request cancelled locally."),
+    confirmInterpretation: () => setStatusMessage(portalAiNotice),
+    correctInterpretation: () => setStatusMessage(portalAiNotice),
+    addContext: () => setStatusMessage(portalAiNotice),
+    requestClarification: () => setStatusMessage(portalAiNotice),
+    regeneratePlan: () => setStatusMessage(portalAiNotice),
+    inspectAgentWork: () => setStatusMessage(portalAiNotice),
+    pauseAgent: () => setStatusMessage(portalAiNotice),
+    cancelAgent: () => setStatusMessage(portalAiNotice),
+    retryAgent: () => setStatusMessage(portalAiNotice),
+    reassignAgent: () => setStatusMessage(portalAiNotice),
+    requestAgentReview: () => setStatusMessage(portalAiNotice),
+    openAgentOutput: () => setStatusMessage(portalAiNotice),
+    openAgentEvidence: () => setStatusMessage(portalAiNotice),
+    openArtifact: () => setStatusMessage(portalAiNotice),
+    compareArtifact: () => setStatusMessage(portalAiNotice),
+    reviewArtifact: () => setStatusMessage(portalAiNotice),
+    commentArtifact: () => setStatusMessage(portalAiNotice),
+    requestChangesArtifact: () => setStatusMessage(portalAiNotice),
+    approveArtifact: () => setStatusMessage(portalAiNotice),
+    rejectArtifact: () => setStatusMessage(portalAiNotice),
+    regenerateArtifact: () => setStatusMessage(portalAiNotice),
+    exportArtifact: () => setStatusMessage(portalAiNotice),
+    openSpecializedTool: () => setStatusMessage(portalAiNotice),
+    approveReview: () => setStatusMessage(portalAiNotice),
+    rejectReview: () => setStatusMessage(portalAiNotice),
+    requestReviewChanges: () => setStatusMessage(portalAiNotice),
+    editReview: () => setStatusMessage(portalAiNotice),
+    askFollowUp: () => setStatusMessage(portalAiNotice),
+    sendToReviewer: () => setStatusMessage(portalAiNotice),
+    compareReviewVersion: () => setStatusMessage(portalAiNotice),
+    openEvidence: () => setStatusMessage(portalAiNotice),
+    approve: () => setStatusMessage(portalAiNotice),
+    reject: () => setStatusMessage(portalAiNotice),
+    requestChanges: () => setStatusMessage(portalAiNotice),
+    delegate: () => setStatusMessage(portalAiNotice),
+    openRelatedArtifact: () => setStatusMessage(portalAiNotice),
+    openPolicy: () => setStatusMessage(portalAiNotice),
+    pauseExecution: () => setStatusMessage(portalAiNotice),
+    resumeExecution: () => setStatusMessage(portalAiNotice),
+    cancelExecution: () => setStatusMessage(portalAiNotice),
+    retryFailedStep: () => setStatusMessage(portalAiNotice),
+    openLogs: () => setStatusMessage(portalAiNotice),
+    openTraces: () => setStatusMessage(portalAiNotice),
+    rollbackExecution: () => setStatusMessage(portalAiNotice),
+    viewKnowledge: () => setStatusMessage(portalAiNotice),
+    publishKnowledge: () => setStatusMessage(portalAiNotice),
+    compareKnowledge: () => setStatusMessage(portalAiNotice),
+    supersedeKnowledge: () => setStatusMessage(portalAiNotice),
+    linkKnowledgeToProject: () => setStatusMessage(portalAiNotice),
+    createTemplate: () => setStatusMessage(portalAiNotice),
+  };
 
   const solutionStatusTone = online ? "success" : "warning";
   const solutionStatusLabel = online ? "Online" : "Offline";
@@ -1353,6 +1544,21 @@ export function SolutionEngineeringPortal({
           ))}
         </nav>
         <main className="solution-main">
+          <UniversalAIWorkspace
+            model={solutionAiModel}
+            requestValue={project.idea || project.summary || ""}
+            onRequestChange={(value) => setStatusMessage(value ? `AI draft updated for ${project.name}.` : "")}
+            attachments={project.attachments || []}
+            selectedMode="ask"
+            selectedAgents={[]}
+            selectedContextSources={["Project", "Workspace"]}
+            selectedProjectArtifact={project.designs?.[0]?.title || project.requirements?.[0]?.summary || ""}
+            selectedIncident=""
+            selectedRequirement={project.requirements?.[0]?.summary || ""}
+            selectedToolContext={currentWindowTitle}
+            onAction={portalAiActions}
+            onChooseSuggestion={(suggestion) => setStatusMessage(`${suggestion} is not connected to the portal AI backend yet.`)}
+          />
           <ProjectHeader
             project={project}
             session={session}
@@ -1395,24 +1601,39 @@ export function SolutionEngineeringPortal({
   }
 
   return (
-    <div className="solution-shell">
-      <nav className="solution-nav" aria-label="Customer Solutions navigation">
-        {roleNavigation.map((item) => (
-          <button
-            key={item.id}
+      <div className="solution-shell">
+        <nav className="solution-nav" aria-label="Customer Solutions navigation">
+          {roleNavigation.map((item) => (
+            <button
+              key={item.id}
             type="button"
             className={item.id === "overview" ? "nav-item active" : "nav-item"}
             onClick={() => navigateTo(item.path)}
           >
             {item.label}
           </button>
-        ))}
-      </nav>
-      <main className="solution-main">
-        {loadLanding && !landingState.data ? (
-          <LoadingState label="Loading customer solutions" />
-        ) : landingState.status === "error" ? (
-          <ErrorState
+          ))}
+        </nav>
+        <main className="solution-main">
+          <UniversalAIWorkspace
+            model={solutionAiModel}
+            requestValue={project.idea || project.summary || ""}
+            onRequestChange={(value) => setStatusMessage(value ? `AI draft updated for ${project.name}.` : "")}
+            attachments={project.attachments || []}
+            selectedMode="ask"
+            selectedAgents={[]}
+            selectedContextSources={["Project", "Workspace"]}
+            selectedProjectArtifact={project.designs?.[0]?.title || project.requirements?.[0]?.summary || ""}
+            selectedIncident=""
+            selectedRequirement={project.requirements?.[0]?.summary || ""}
+            selectedToolContext="Overview"
+            onAction={portalAiActions}
+            onChooseSuggestion={(suggestion) => setStatusMessage(`${suggestion} is not connected to the portal AI backend yet.`)}
+          />
+          {loadLanding && !landingState.data ? (
+            <LoadingState label="Loading customer solutions" />
+          ) : landingState.status === "error" ? (
+            <ErrorState
             title="Customer Solutions unavailable"
             message={landingState.error || "Unable to load live customer solutions."}
             action={<button type="button" className="toolbar-chip" onClick={() => navigate(ROUTES.dashboard)}>Return to dashboard</button>}

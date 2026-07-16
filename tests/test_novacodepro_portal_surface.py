@@ -11,6 +11,9 @@ CATALOG = ROOT / "novacodepro_portal" / "src" / "platform" / "catalog.js"
 SOLUTION_PORTAL = ROOT / "novacodepro_portal" / "src" / "solutions" / "SolutionEngineeringPortal.jsx"
 SOLUTION_ROUTES = ROOT / "novacodepro_portal" / "src" / "platform" / "solutionRoutes.js"
 SOLUTION_API = ROOT / "novacodepro_portal" / "src" / "platform" / "solutionEngineeringApi.js"
+AI_WORKSPACE = ROOT / "novacodepro_portal" / "src" / "platform" / "aiWorkspace.jsx"
+AI_WORKSPACE_MODEL = ROOT / "novacodepro_portal" / "src" / "platform" / "aiWorkspaceModel.js"
+AI_WORKSPACE_API = ROOT / "novacodepro_portal" / "src" / "platform" / "aiWorkspaceApi.js"
 
 
 def test_novacodepro_portal_is_a_separate_vite_app() -> None:
@@ -29,6 +32,9 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
             SOLUTION_PORTAL.read_text(encoding="utf-8"),
             SOLUTION_ROUTES.read_text(encoding="utf-8"),
             SOLUTION_API.read_text(encoding="utf-8"),
+            AI_WORKSPACE.read_text(encoding="utf-8"),
+            AI_WORKSPACE_MODEL.read_text(encoding="utf-8"),
+            AI_WORKSPACE_API.read_text(encoding="utf-8"),
         ]
     )
     for token in [
@@ -145,6 +151,18 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
         "Approvals",
         "Knowledge",
         "Evidence",
+        "Universal AI Workspace",
+        "AIRequestComposer",
+        "AIUnderstandingPanel",
+        "AgentCollaborationPanel",
+        "ExecutionTimeline",
+        "ArtifactExplorer",
+        "ApprovalWorkspace",
+        "ExecutionMonitor",
+        "KnowledgeCapturePanel",
+        "WorkspaceContextPanel",
+        "AISuggestionsPanel",
+        "NotConnectedError",
         "/novacodepro/solutions",
         "/v1/solution-engineering",
         "/v1/workflow-fabric",

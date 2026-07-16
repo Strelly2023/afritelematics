@@ -1783,6 +1783,238 @@ button {
   font-size: 0.82rem;
 }
 
+.ai-workspace {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid rgba(117, 139, 156, 0.18);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(11, 18, 28, 0.96), rgba(7, 12, 18, 0.98));
+  box-shadow: 0 26px 54px rgba(0, 0, 0, 0.24);
+}
+
+.ai-workspace-header,
+.ai-panel-head,
+.ai-agent-head {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ai-header-badges,
+.ai-composer-meta,
+.ai-panel-actions,
+.ai-composer-toolbar,
+.ai-composer-support,
+.ai-attachment-grid,
+.ai-detail-list,
+.ai-filter-row,
+.chip-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ai-badge {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 120px;
+  padding: 10px 12px;
+  border: 1px solid rgba(117, 139, 156, 0.2);
+  border-radius: 10px;
+  background: rgba(11, 19, 28, 0.76);
+}
+
+.ai-badge strong {
+  font-size: 11px;
+  letter-spacing: 0;
+  color: #8fa8bc;
+  text-transform: uppercase;
+}
+
+.ai-badge span {
+  font-size: 13px;
+  color: #edf4ff;
+}
+
+.tone-success { border-color: rgba(100, 196, 150, 0.32); }
+.tone-warning { border-color: rgba(240, 182, 102, 0.32); }
+.tone-info { border-color: rgba(123, 171, 247, 0.32); }
+.tone-neutral { border-color: rgba(117, 139, 156, 0.2); }
+
+.ai-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.9fr) minmax(0, 1.4fr) minmax(250px, 0.95fr);
+  gap: 16px;
+}
+
+.ai-rail,
+.ai-main {
+  display: grid;
+  gap: 16px;
+}
+
+.ai-panel {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(117, 139, 156, 0.16);
+  border-radius: 16px;
+  background: rgba(8, 14, 22, 0.8);
+}
+
+.ai-panel h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.ai-banner {
+  padding: 12px 14px;
+  border: 1px solid rgba(240, 182, 102, 0.36);
+  border-radius: 12px;
+  background: rgba(58, 40, 10, 0.28);
+  color: #edf4ff;
+}
+
+.ai-list,
+.ai-timeline,
+.ai-agent-list,
+.ai-artifact-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-list-button,
+.ai-list-row,
+.ai-timeline-item,
+.ai-agent-card,
+.ai-artifact-card {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(117, 139, 156, 0.16);
+  background: rgba(9, 15, 23, 0.82);
+}
+
+.ai-list-button {
+  text-align: left;
+  width: 100%;
+  color: #edf4ff;
+}
+
+.ai-list-button strong,
+.ai-list-row strong,
+.ai-timeline-item strong,
+.ai-agent-card strong,
+.ai-artifact-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ai-list-row,
+.ai-timeline-item,
+.ai-agent-card,
+.ai-artifact-card {
+  display: grid;
+  gap: 6px;
+}
+
+.ai-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(117, 139, 156, 0.15);
+}
+
+.ai-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #69d2a4, #7baff7);
+}
+
+.ai-composer-wrap {
+  display: grid;
+}
+
+.ai-composer-field {
+  display: grid;
+  gap: 8px;
+}
+
+.ai-composer-field textarea,
+.ai-composer-support input,
+.ai-composer-support select,
+.ai-filter-row input {
+  width: 100%;
+}
+
+.ai-attachment-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid rgba(117, 139, 156, 0.14);
+  border-radius: 12px;
+  background: rgba(11, 19, 28, 0.72);
+}
+
+.ai-transcript {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-message {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(117, 139, 156, 0.16);
+  background: rgba(11, 19, 28, 0.72);
+}
+
+.ai-message.user {
+  border-color: rgba(123, 171, 247, 0.28);
+}
+
+.ai-message.ai {
+  border-color: rgba(105, 210, 164, 0.28);
+}
+
+.ai-warning,
+.ai-error {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(240, 182, 102, 0.36);
+  background: rgba(58, 40, 10, 0.24);
+}
+
+.ai-error {
+  border-color: rgba(245, 133, 133, 0.36);
+  background: rgba(68, 14, 20, 0.26);
+}
+
+.ai-secondary-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ai-detail-list.compact,
+.ai-panel-actions.compact {
+  gap: 8px;
+}
+
+.ai-panel-actions .toolbar-chip:disabled,
+.ai-composer-toolbar .toolbar-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-empty {
+  min-height: 90px;
+}
+
 .solution-shell {
   display: grid;
   grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
@@ -2103,6 +2335,8 @@ button {
   .workflow-rail,
   .hero-card.request-console,
   .dual-grid,
+  .ai-workspace-grid,
+  .ai-secondary-grid,
   .starter-grid {
     grid-template-columns: 1fr;
   }
@@ -2149,6 +2383,23 @@ button {
   .experience-suite-grid,
   .verification-track {
     grid-template-columns: 1fr;
+  }
+
+  .ai-workspace-header,
+  .ai-panel-head,
+  .ai-agent-head {
+    flex-direction: column;
+  }
+
+  .ai-header-badges,
+  .ai-composer-meta,
+  .ai-panel-actions,
+  .ai-composer-toolbar,
+  .ai-composer-support,
+  .ai-attachment-grid,
+  .ai-detail-list,
+  .ai-filter-row {
+    width: 100%;
   }
 
   .field-grid {
@@ -2203,6 +2454,16 @@ button {
   .starter-grid,
   .dual-grid,
   .maturity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-workspace {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .ai-workspace-grid,
+  .ai-secondary-grid {
     grid-template-columns: 1fr;
   }
 

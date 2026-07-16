@@ -17,6 +17,7 @@ import {
   platformRuntime,
 } from "./platform/runtime.js";
 import { fetchBootstrap, normalizeBootstrapResponse } from "./platform/bootstrap.js";
+import { buildUniversalAIWorkspaceModel, UniversalAIWorkspace } from "./platform/aiWorkspace.jsx";
 import { ROUTES } from "./platform/routes.js";
 import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
 import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
@@ -2347,6 +2348,178 @@ function App() {
   const activeKnowledgeNode =
     runtime.knowledgeGraph.find((node) => node.id === runtime.selectedKnowledgeNodeId) ??
     runtime.knowledgeGraph[0];
+
+  const aiWorkspaceModel = useMemo(
+    () =>
+      buildUniversalAIWorkspaceModel({
+        session,
+        role: authDisplayRole,
+        roleLabel: authDisplayRoleLabel,
+        workspace: "Role Workspace",
+        project: activeProject?.name || selectedRequest?.title,
+        tenant: activeTenant?.name || session?.tenant_id,
+        organization: activeRole.organization || session?.organization,
+        environment,
+        route: currentPathname.replace("/novacodepro", "") || "/dashboard",
+        modelLabel: `${NOVACODEPRO_BUILD_INFO.version} · ${NOVACODEPRO_BUILD_INFO.commit}`,
+        statusLabel: "Local runtime",
+        connection: {
+          connected: false,
+          backend: false,
+          runtime: true,
+          reason: "No backend AI orchestration API is connected yet.",
+          lastSyncedAt: runtime.auditTrail?.[0]?.at || null,
+        },
+        request: selectedRequest,
+        requestState: selectedRequest?.status || "IDLE",
+        requestSummary,
+        requestConfidence: selectedRequest?.confidence ?? null,
+        requestIntent: selectedRequest?.domain || selectedRequest?.templateId || "Unknown",
+        requestOutcome: selectedRequest?.summary || selectedRequest?.request || "",
+        requestScope: selectedRequest?.surfaces?.join(", ") || "Not connected",
+        requestTools: [selectedMode?.label, selectedWindowId, selectedOutputTab].filter(Boolean),
+        requestApprovals: runtime.approvalRoutes,
+        requestQuestions: ["What outcome is required?", "Which approvals are mandatory?", "Which systems change?"],
+        requestFiles: composerAttachments,
+        requestArtifacts: selectedRequest?.artifacts || [],
+        requestApprovalsState: (selectedRequest?.approvals || []).length ? "PENDING" : "NOT_REQUIRED",
+        executionState: selectedRequest?.workflow?.[selectedRequest?.stageIndex ?? 0]?.status || selectedRequest?.status || "IDLE",
+        knowledgeState: runtime.knowledgeGraph.length ? "PUBLISHED" : "DRAFT",
+        currentAgentTasks:
+          runtime.agentTeams.length > 0
+            ? runtime.agentTeams.map((team) => ({
+                id: team.id,
+                name: team.title || team.name || "Agent team",
+                role: team.role || "Agent team",
+                currentTask: team.summary || "Coordinated AI workstream",
+                state: team.status || "RUNNING",
+                progress: team.progress || 0,
+                startedAt: team.startedAt || team.createdAt || null,
+                completedAt: team.completedAt || null,
+                outputs: team.outputs || [],
+                errors: team.errors || [],
+                evidence: team.evidence || [],
+                handoffTarget: team.handoffTarget || "",
+              }))
+            : (composerAgents || []).map((agent, index) => ({
+                id: `${agent}-${index}`,
+                name: agent,
+                role: agent,
+                currentTask: `Waiting for backend orchestration for ${agent}`,
+                state: "NOT_CONNECTED",
+                progress: 0,
+                startedAt: null,
+                completedAt: null,
+                outputs: [],
+                errors: [],
+                evidence: [],
+                handoffTarget: "NovaAI backend",
+              })),
+        conversations: runtime.collaborationThreads,
+        savedPrompts: runtime.commandHistory,
+        approvedSolutions: runtime.solutionRequests.filter((request) => request.status === "operating"),
+        sharedConversations: runtime.collaborationThreads.filter((thread) => thread.shared),
+        recentRequests: runtime.solutionRequests.slice(0, 5),
+        suggestedPrompts: activeRole.actions.slice(0, 6),
+        artifacts: selectedRequest?.artifacts || [],
+        timeline: runtime.auditTrail.map((entry) => ({
+          id: entry.id,
+          timestamp: entry.at,
+          actor: entry.actor,
+          agent: entry.service,
+          tool: entry.service,
+          status: entry.action,
+          correlationId: entry.correlationId || entry.id,
+          evidenceReference: entry.evidence,
+          duration: entry.duration || "",
+          severity: entry.severity || "info",
+          summary: entry.action,
+          error: entry.error || "",
+          artifact: entry.subject,
+          stage: currentStage?.label || "",
+        })),
+        approvals: runtime.approvalRoutes,
+        evidence: runtime.evidenceBundles,
+        knowledge: runtime.knowledgeGraph,
+        policies: runtime.approvalPolicies,
+        standards: runtime.neraArchitecture?.platformDomains || [],
+        context: {
+          customer: activeProject?.customer || "Customer",
+          project: activeProject?.name || selectedRequest?.title || "NovaCodePro",
+          repository: activeProject?.repository || "Not connected",
+          branch: activeProject?.branch || "Not connected",
+          commit: activeProject?.commit || NOVACODEPRO_BUILD_INFO.commit,
+          activeArtifact: selectedRequest?.artifacts?.[0]?.title || activeKnowledgeNode?.title || "Not connected",
+          planSummary: requestSummary,
+          filesChanged: selectedRequest?.artifacts?.length || "Not connected",
+          apisChanged: "Not connected",
+          migrations: "Not connected",
+          testsAdded: "Not connected",
+          securityResult: runtime.riskRegister[0]?.status || "Not assessed",
+          complianceResult: "Not assessed",
+          rollbackPlan: "Revert via governed release rollback.",
+          riskLevel: selectedRequest?.compliance || "medium",
+          complianceImpact: selectedRequest?.compliance || "enterprise",
+          currentStep: currentStage?.label || "Intent analysis",
+          queuedSteps: selectedRequest?.workflow?.length ? selectedRequest.workflow.length - (selectedRequest.stageIndex ?? 0) : 0,
+          failedSteps: selectedRequest?.workflow?.filter((stage) => stage.status === "failed").length || 0,
+          cancelledSteps: selectedRequest?.workflow?.filter((stage) => stage.status === "cancelled").length || 0,
+          retries: runtime.eventBus?.retryQueue || 0,
+          estimatedRemaining: selectedRequest?.workflow?.length ? `${Math.max(1, selectedRequest.workflow.length - (selectedRequest.stageIndex ?? 0))} stages` : "Not connected",
+        },
+        metrics: {
+          requests: runtime.solutionRequests.length,
+          approvals: runtime.approvalRoutes.length,
+          evidence: runtime.evidenceBundles.length,
+        },
+        supportedActions: {
+          ask: true,
+          plan: true,
+          generate: true,
+          analyze: true,
+          review: true,
+          compare: true,
+          createWorkflow: true,
+        },
+      }),
+    [
+      activeProject?.commit,
+      activeProject?.customer,
+      activeProject?.name,
+      activeKnowledgeNode?.title,
+      activeRole.actions,
+      activeRole.organization,
+      activeTenant?.name,
+      authDisplayRole,
+      authDisplayRoleLabel,
+      composerAgents,
+      composerAttachments,
+      currentPathname,
+      currentStage?.label,
+      environment,
+      requestSummary,
+      runtime.auditTrail,
+      runtime.approvalPolicies,
+      runtime.approvalRoutes,
+      runtime.commandCenterSnapshots,
+      runtime.commandHistory,
+      runtime.evidenceBundles,
+      runtime.eventBus?.retryQueue,
+      runtime.knowledgeGraph,
+      runtime.neraArchitecture?.platformDomains,
+      runtime.solutionRequests,
+      runtime.agentTeams,
+      runtime.collaborationThreads,
+      selectedMode?.label,
+      selectedOutputTab,
+      selectedRequest,
+      selectedWindowId,
+      session,
+      activeKnowledgeNode?.title,
+      NOVACODEPRO_BUILD_INFO.commit,
+      NOVACODEPRO_BUILD_INFO.version,
+    ],
+  );
   const renderBootstrapLoading = (title, message, code) => (
     <div className="auth-shell">
       <header className="auth-topbar">
@@ -2918,6 +3091,10 @@ function App() {
     event.target.value = "";
   };
 
+  const removeComposerAttachment = (attachmentId) => {
+    setComposerAttachments((current) => current.filter((attachment) => attachment.id !== attachmentId));
+  };
+
   const submitComposer = (action) => {
     const prompt = composerPrompt.trim();
     if (!prompt) {
@@ -3470,98 +3647,91 @@ function App() {
         </div>
       ) : null}
 
-      <section className="hero-card request-console">
-        <div className="console-main">
-          <div className="console-intro">
-            <p className="eyebrow">Intent-first enterprise operating model</p>
-            <h1>What would you like NovaCodePro to accomplish today?</h1>
-            <p className="hero-summary">
-              Describe the goal. NovaCodePro will infer the workflow, assemble the right agents, apply policy, and
-              prepare the solution for review and execution.
-            </p>
-            <div className="hero-badges">
-              <span className="badge">Role: {authDisplayRoleLabel}</span>
-              <span className="badge">Organization: {activeRole.organization || "NovaTech"}</span>
-              <span className="badge">Environment: {environment}</span>
-              <span className="badge">Workspace: {activeProject?.name || "NovaCodePro"}</span>
-              <span className="badge">Tenant: {activeTenant?.name || "NovaTech"}</span>
-            </div>
-          </div>
-
-          <label className="composer-field">
-            <span>Describe the outcome, not the menu path.</span>
-            <textarea
-              rows="4"
-              value={composerPrompt}
-              onChange={(event) => setComposerPrompt(event.target.value)}
-              placeholder="Build a governed NovaRide fleet management module with approvals, evidence, and deployment checks."
-            />
-          </label>
-
-          <div className="composer-actions">
-            <button type="button" className="toolbar-chip" onClick={() => submitComposer("Plan only")}>
-              Plan
-            </button>
-            <button type="button" className="toolbar-chip" onClick={() => setSelectedOutputTab("Overview")}>
-              Review workspace
-            </button>
-            <button type="button" className="primary-action" onClick={() => submitComposer("Send and execute")}>
-              Generate solution
-            </button>
-          </div>
-
-          <div className="starter-grid">
-            {STARTER_REQUESTS.map((request) => (
-              <button
-                type="button"
-                key={request}
-                className="starter-card"
-                onClick={() => setComposerPrompt(request)}
-              >
-                {request}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <aside className="console-aside">
-          <section className="console-card">
-            <p className="section-label">Enterprise workflow</p>
-            <strong>Ask, generate, review, approve, execute, verify, learn</strong>
-            <div className="artifact-list">
-              {[
-                "Intent classification",
-                "Context and memory retrieval",
-                "Agent and tool selection",
-                "Governed solution generation",
-                "Human review and approval",
-                "Verified execution and evidence",
-              ].map((item) => (
-                <div className="artifact-row" key={item}>
-                  <strong>{item}</strong>
-                  <span>Built into the platform loop</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="console-card">
-            <p className="section-label">Suggested requests</p>
-            <div className="starter-grid">
-              {activeRole.actions.slice(0, 4).map((action) => (
-                <button
-                  key={action}
-                  type="button"
-                  className="starter-card"
-                  onClick={() => setComposerPrompt(action)}
-                >
-                  {action}
-                </button>
-              ))}
-            </div>
-          </section>
-        </aside>
-      </section>
+      <UniversalAIWorkspace
+        model={aiWorkspaceModel}
+        requestValue={composerPrompt}
+        onRequestChange={setComposerPrompt}
+        attachments={composerAttachments}
+        onAttachmentUpload={handleAttachmentUpload}
+        onRemoveAttachment={removeComposerAttachment}
+        selectedMode={composerMode}
+        onModeChange={setComposerMode}
+        selectedAgents={composerAgents}
+        onToggleAgent={toggleComposerAgent}
+        selectedContextSources={composerContextSources}
+        onToggleContextSource={toggleComposerContextSource}
+        selectedProjectArtifact={selectedRequest?.artifacts?.[0]?.title || ""}
+        selectedIncident={runtime.auditTrail[0]?.subject || ""}
+        selectedRequirement={selectedRequest?.artifacts?.[0]?.title || ""}
+        selectedToolContext={selectedOutputTab}
+        onAction={{
+          ask: () => setSelectedOutputTab("Overview"),
+          plan: () => submitComposer("Plan only"),
+          generate: () => submitComposer("Send and execute"),
+          analyze: () => setSelectedOutputTab("Design"),
+          review: () => setSelectedOutputTab("Evidence"),
+          compare: () => setSelectedOutputTab("Files"),
+          createWorkflow: () => platformRuntime.runCommand("Generate Workflow"),
+          cancel: () => {
+            setComposerPrompt("");
+            setComposerAttachments([]);
+            setSelectedOutputTab("Overview");
+          },
+          confirmInterpretation: () => setSelectedOutputTab("Overview"),
+          correctInterpretation: () => setSelectedOutputTab("Plan"),
+          addContext: () => setSelectedOutputTab("Files"),
+          requestClarification: () => setSelectedOutputTab("Overview"),
+          regeneratePlan: () => setSelectedOutputTab("Plan"),
+          inspectAgentWork: (agent) => platformRuntime.runCommand(`Inspect ${agent?.name || "agent"}`),
+          pauseAgent: (agent) => platformRuntime.runCommand(`Pause ${agent?.name || "agent"}`),
+          cancelAgent: (agent) => platformRuntime.runCommand(`Cancel ${agent?.name || "agent"}`),
+          retryAgent: (agent) => platformRuntime.runCommand(`Retry ${agent?.name || "agent"}`),
+          reassignAgent: (agent) => platformRuntime.runCommand(`Reassign ${agent?.name || "agent"}`),
+          requestAgentReview: (agent) => platformRuntime.runCommand(`Request review for ${agent?.name || "agent"}`),
+          openAgentOutput: (agent) => platformRuntime.runCommand(`Open output for ${agent?.name || "agent"}`),
+          openAgentEvidence: (agent) => platformRuntime.runCommand(`Open evidence for ${agent?.name || "agent"}`),
+          openArtifact: (artifact) => platformRuntime.runCommand(`Open artifact ${artifact?.title || artifact?.id || ""}`),
+          compareArtifact: (artifact) => platformRuntime.runCommand(`Compare artifact ${artifact?.title || artifact?.id || ""}`),
+          reviewArtifact: (artifact) => platformRuntime.runCommand(`Review artifact ${artifact?.title || artifact?.id || ""}`),
+          commentArtifact: (artifact) => platformRuntime.runCommand(`Comment on artifact ${artifact?.title || artifact?.id || ""}`),
+          requestChangesArtifact: (artifact) => platformRuntime.runCommand(`Request changes for ${artifact?.title || artifact?.id || ""}`),
+          approveArtifact: (artifact) => platformRuntime.runCommand(`Approve artifact ${artifact?.title || artifact?.id || ""}`),
+          rejectArtifact: (artifact) => platformRuntime.runCommand(`Reject artifact ${artifact?.title || artifact?.id || ""}`),
+          regenerateArtifact: (artifact) => platformRuntime.runCommand(`Regenerate artifact ${artifact?.title || artifact?.id || ""}`),
+          exportArtifact: (artifact) => platformRuntime.runCommand(`Export artifact ${artifact?.title || artifact?.id || ""}`),
+          openSpecializedTool: (artifact) => platformRuntime.runCommand(`Open specialized tool for ${artifact?.title || artifact?.id || ""}`),
+          approveReview: () => platformRuntime.runCommand("Approve review"),
+          rejectReview: () => platformRuntime.runCommand("Reject review"),
+          requestReviewChanges: () => platformRuntime.runCommand("Request review changes"),
+          editReview: () => platformRuntime.runCommand("Edit review"),
+          askFollowUp: () => platformRuntime.runCommand("Ask follow-up"),
+          sendToReviewer: () => platformRuntime.runCommand("Send to reviewer"),
+          compareReviewVersion: () => platformRuntime.runCommand("Compare review version"),
+          openEvidence: () => setSelectedOutputTab("Evidence"),
+          approve: () => platformRuntime.runCommand("Approve"),
+          reject: () => platformRuntime.runCommand("Reject"),
+          requestChanges: () => platformRuntime.runCommand("Request changes"),
+          delegate: () => platformRuntime.runCommand("Delegate"),
+          openRelatedArtifact: () => platformRuntime.runCommand("Open related artifact"),
+          openPolicy: () => platformRuntime.runCommand("Open policy"),
+          pauseExecution: () => platformRuntime.runCommand("Pause execution"),
+          resumeExecution: () => platformRuntime.runCommand("Resume execution"),
+          cancelExecution: () => platformRuntime.runCommand("Cancel execution"),
+          retryFailedStep: () => platformRuntime.runCommand("Retry failed step"),
+          openLogs: () => platformRuntime.runCommand("Open logs"),
+          openTraces: () => platformRuntime.runCommand("Open traces"),
+          rollbackExecution: () => platformRuntime.runCommand("Rollback execution"),
+          viewKnowledge: () => setSelectedOutputTab("Evidence"),
+          publishKnowledge: () => platformRuntime.runCommand("Publish knowledge"),
+          compareKnowledge: () => platformRuntime.runCommand("Compare knowledge"),
+          supersedeKnowledge: () => platformRuntime.runCommand("Supersede knowledge"),
+          linkKnowledgeToProject: () => platformRuntime.runCommand("Link knowledge to project"),
+          createTemplate: () => platformRuntime.runCommand("Create template"),
+        }}
+        onChooseSuggestion={(suggestion) => setComposerPrompt(suggestion)}
+        timelineFilters={{}}
+        onTimelineFilterChange={() => {}}
+      />
 
       <RoleWorkspaceWindows
         model={roleWorkspaceModel}
