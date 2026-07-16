@@ -4,16 +4,34 @@ set -euo pipefail
 ROOT_URL="${1:-https://novacodepro.afritechnology.com}"
 API_URL="${2:-https://api.afritechnology.com}"
 
-curl_text() {
-  curl --compressed -fsS "$1"
-}
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-curl_text "${ROOT_URL}/novacodepro/" >/dev/null
-curl_text "${ROOT_URL}/novacodepro/login" >/dev/null
-curl_text "${ROOT_URL}/novacodepro/dashboard" >/dev/null
-curl_text "${ROOT_URL}/novacodepro/solutions" >/dev/null
-curl_text "${ROOT_URL}/novacodepro/solutions/customers" >/dev/null
-curl_text "${API_URL}/health" >/dev/null
+INDEX_FILE="$TMP_DIR/index.html"
+BUNDLE_FILE="$TMP_DIR/portal.js"
+
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}/novacodepro/?cache=$(date +%s)" \
+  -o "$INDEX_FILE"
+
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}/novacodepro/login?cache=$(date +%s)" \
+  >/dev/null
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}/novacodepro/dashboard?cache=$(date +%s)" \
+  >/dev/null
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}/novacodepro/solutions?cache=$(date +%s)" \
+  >/dev/null
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}/novacodepro/solutions/customers?cache=$(date +%s)" \
+  >/dev/null
+curl -fsS "${API_URL}/health" >/dev/null
 
 UNAUTH_STATUS="$(curl --compressed -s -o /dev/null -w "%{http_code}" "${API_URL}/v1/solution-engineering")"
 if [[ "${UNAUTH_STATUS}" != "401" && "${UNAUTH_STATUS}" != "403" ]]; then
@@ -21,25 +39,23 @@ if [[ "${UNAUTH_STATUS}" != "401" && "${UNAUTH_STATUS}" != "403" ]]; then
   exit 1
 fi
 
-INDEX_HTML="$(curl_text "${ROOT_URL}/novacodepro/")"
-ASSET_PATHS="$(
-  printf '%s' "${INDEX_HTML}" \
-    | grep -oE '/novacodepro/assets/[^"]+\.js' \
-    | sort -u
+BUNDLE_PATH="$(
+  grep -oE '/novacodepro/assets/index-[^"]+\.js' "$INDEX_FILE" |
+    head -n 1
 )"
-if [[ -z "${ASSET_PATHS}" ]]; then
+
+if [[ -z "${BUNDLE_PATH}" ]]; then
   echo "Unable to locate portal bundle path" >&2
   exit 1
 fi
 
-ASSET_BUNDLE="$(
-  while IFS= read -r asset; do
-    [[ -z "${asset}" ]] && continue
-    curl_text "${ROOT_URL}${asset}"
-  done <<< "${ASSET_PATHS}"
-)"
+curl -fsS \
+  -H 'Cache-Control: no-cache' \
+  "${ROOT_URL}${BUNDLE_PATH}?cache=$(date +%s)" \
+  -o "$BUNDLE_FILE"
+
 for label in "Customer Solutions" "Discovery Workspace" "Requirements Studio" "Architecture Studio" "Workflow Fabric"; do
-  if ! printf '%s' "${ASSET_BUNDLE}" | grep -q "${label}"; then
+  if ! grep -aFq -- "${label}" "$BUNDLE_FILE"; then
     echo "Portal bundle does not contain ${label}" >&2
     exit 1
   fi
