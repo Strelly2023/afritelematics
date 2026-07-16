@@ -20,6 +20,7 @@ REQUIRED_FILES = (
     DATA_GOVERNANCE_ROOT / "ownership.py",
     DATA_GOVERNANCE_ROOT / "guards.py",
     DATA_GOVERNANCE_ROOT / "registry.py",
+    DATA_GOVERNANCE_ROOT / "enterprise.py",
     GOVERNANCE_RULE,
     GOVERNANCE_BINDING,
     ADR,
@@ -64,6 +65,7 @@ def _validate_registry_source() -> None:
         "DATA_DECENTRALIZATION_STATUS",
         "GOVERNED_DECENTRALIZATION_DEFINED",
         "validate_data_governance_registry",
+        "validate_enterprise_data_model",
         "direct database sharing is forbidden",
     ):
         if needle not in source:

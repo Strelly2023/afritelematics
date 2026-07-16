@@ -25,6 +25,15 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
+import { createDefaultFrontendRuntimeConfig, loadFrontendRuntimeConfig } from "./platform/frontendConfig.js";
+import { createDefaultProductFrontendRegistry } from "./platform/productFrontendRegistry.js";
+import {
+  registerDefaultFrontendManifests,
+  registerDefaultInteractionManifests,
+  registerDefaultRenderingManifests,
+} from "./platform/productFrontendManifests.js";
+import { createDefaultRenderingRegistry } from "./platform/rendering/index.js";
+import { createDefaultInteractionRegistry } from "./platform/interaction/index.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 
@@ -1872,6 +1881,27 @@ function toPairArray(value) {
   return [];
 }
 
+function buildSessionFromAuthPayload(payload, fallbackRole, fallbackEmail) {
+  const source = payload?.session && typeof payload.session === "object" ? payload.session : payload?.user ?? payload ?? {};
+  const context = payload?.context && typeof payload.context === "object" ? payload.context : {};
+  const roles = Array.isArray(payload?.roles) && payload.roles.length ? payload.roles : [fallbackRole];
+  const assignedRoles = Array.isArray(source.assigned_roles) && source.assigned_roles.length ? source.assigned_roles : roles;
+  return {
+    session_id: source.session_id ?? context.session_id ?? null,
+    user_id: source.user_id ?? source.id ?? source.username ?? fallbackEmail,
+    email: source.email ?? fallbackEmail,
+    display_name: source.display_name ?? source.name ?? fallbackEmail,
+    organization: source.organization ?? payload?.organization?.id ?? payload?.tenant?.id ?? "novatech",
+    active_role: source.active_role ?? roles[0] ?? fallbackRole,
+    assigned_roles: assignedRoles,
+    status: source.status ?? "active",
+    created_at: source.created_at ?? context.created_at ?? new Date().toISOString(),
+    last_seen_at: source.last_seen_at ?? context.last_seen_at ?? new Date().toISOString(),
+    absolute_expires_at: source.absolute_expires_at ?? context.absolute_expires_at ?? new Date().toISOString(),
+    idle_expires_at: source.idle_expires_at ?? context.idle_expires_at ?? new Date().toISOString(),
+  };
+}
+
 function App() {
   const initialPathname = typeof window !== "undefined" ? window.location.pathname : ROUTES.login;
   const initialLoginRole = resolveWorkspaceLoginRoleFromPathname(initialPathname) || "ADMIN";
@@ -1886,13 +1916,15 @@ function App() {
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [session, setSession] = useState(null);
   const [sessionWarning, setSessionWarning] = useState(false);
+  const [frontendRuntimeConfig, setFrontendRuntimeConfig] = useState(() => createDefaultFrontendRuntimeConfig());
+  const [frontendRuntimeState, setFrontendRuntimeState] = useState("LOADING");
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
   const [loginEmail, setLoginEmail] = useState("platformadministrator.test@afritechnology.com");
   const [loginPassword, setLoginPassword] = useState("NovaCodePro123!");
   const [loginRole, setLoginRole] = useState(initialLoginRole);
   const [loginError, setLoginError] = useState("");
-  const [toolView, setToolView] = useState("main");
+  const [toolView, setToolView] = useState("ai");
   const [smartCommand, setSmartCommand] = useState("");
   const [roleId, setRoleId] = useState(resolveProfileIdForRole(initialLoginRole));
   const [search, setSearch] = useState("");
@@ -1970,6 +2002,31 @@ function App() {
     const handlePopState = () => setCurrentPathname(window.location.pathname);
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setFrontendRuntimeState("LOADING");
+    loadFrontendRuntimeConfig({ signal: controller.signal })
+      .then((config) => {
+        if (!active) {
+          return;
+        }
+        setFrontendRuntimeConfig(config);
+        setFrontendRuntimeState(config.source === "runtime.json" ? "READY" : "FALLBACK");
+      })
+      .catch(() => {
+        if (!active) {
+          return;
+        }
+        setFrontendRuntimeConfig(createDefaultFrontendRuntimeConfig());
+        setFrontendRuntimeState("FALLBACK");
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -2119,41 +2176,37 @@ function App() {
       fetchBootstrap(AUTH_API_BASE, {})
         .then(({ response, payload }) => {
           if (!response.ok) {
-            throw new Error("session_expired");
+            if (response.status === 401 || response.status === 403) {
+              throw new Error("session_expired");
+            }
+            throw new Error(response.statusText || "session_refresh_failed");
           }
           const normalized = normalizeBootstrapResponse(payload);
-          const nextSession = {
-            session_id: normalized.context?.session_id ?? null,
-            user_id: normalized.user?.id ?? normalized.user?.username ?? "djuma.platformadmin",
-            email: normalized.user?.email ?? loginEmail,
-            display_name: normalized.user?.display_name ?? "Djuma Platform Administrator",
-            organization: normalized.organization?.id ?? "novatech",
-            active_role: normalized.roles?.[0] ?? "PLATFORM_ADMIN",
-            assigned_roles: normalized.roles ?? ["PLATFORM_ADMIN", "ADMIN"],
-            status: "active",
-            created_at: normalized.context?.created_at ?? new Date().toISOString(),
-            last_seen_at: normalized.context?.last_seen_at ?? new Date().toISOString(),
-            absolute_expires_at: normalized.context?.absolute_expires_at ?? new Date().toISOString(),
-            idle_expires_at: normalized.context?.idle_expires_at ?? new Date().toISOString(),
-          };
+          const nextSession = buildSessionFromAuthPayload(normalized, normalized.roles?.[0] ?? loginRole, loginEmail);
           setSession(nextSession);
           setSessionWarning(Date.parse(nextSession.idle_expires_at) - Date.now() <= AUTH_WARNING_MS);
         })
-        .catch(() => {
-          setBootstrapState("SESSION_EXPIRED");
-          setBootstrapError("Your session expired. Please sign in again.");
-          setSession(null);
-          setAuthStatus("signed-out");
-          setAccountMenuOpen(false);
-          setShowRoleSwitcher(false);
-          setSessionWarning(false);
-          setRoleId(ROLE_PROFILES[0].id);
-          clearNovaCodeProSessionState();
-          navigateTo(ROUTES.loginWithReason("session_expired"), { replace: true });
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : String(error || "session_refresh_failed");
+          if (/session(_| )?(expired|required|revoked)/i.test(message)) {
+            setBootstrapState("SESSION_EXPIRED");
+            setBootstrapError("Your session expired. Please sign in again.");
+            setSession(null);
+            setAuthStatus("signed-out");
+            setAccountMenuOpen(false);
+            setShowRoleSwitcher(false);
+            setSessionWarning(false);
+            setRoleId(ROLE_PROFILES[0].id);
+            clearNovaCodeProSessionState();
+            navigateTo(ROUTES.loginWithReason("session_expired"), { replace: true });
+            return;
+          }
+          setBootstrapState("DEGRADED");
+          setBootstrapError(message);
         });
     }, 60000);
     return () => window.clearInterval(interval);
-  }, [authStatus]);
+  }, [authStatus, loginEmail, loginRole]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -2175,32 +2228,11 @@ function App() {
       if (!response.ok) {
         throw new Error(payload.detail || "Login failed");
       }
-      const { response: bootstrapResponse, payload: bootstrapPayload } = await fetchBootstrap(AUTH_API_BASE, {});
-      if (!bootstrapResponse.ok) {
-        const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
-        const code = String(detail.code || bootstrapResponse.statusText || "SESSION_EXPIRED").toUpperCase();
-        throw new Error(detail.message || code || "Unable to establish a dashboard session");
-      }
-      const normalized = normalizeBootstrapResponse(bootstrapPayload);
-      setSession({
-        session_id: normalized.context?.session_id ?? payload.session?.session_id ?? null,
-        user_id: normalized.user?.id ?? payload.session?.user_id ?? loginEmail,
-        email: normalized.user?.email ?? payload.session?.email ?? loginEmail,
-        display_name: normalized.user?.display_name ?? payload.session?.display_name ?? "Djuma Platform Administrator",
-        organization: normalized.organization?.id ?? payload.session?.organization ?? "novatech",
-        active_role: normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN",
-        assigned_roles: normalized.roles ?? payload.session?.assigned_roles ?? ["PLATFORM_ADMIN", "ADMIN"],
-        status: "active",
-        created_at: normalized.context?.created_at ?? payload.session?.created_at ?? new Date().toISOString(),
-        last_seen_at: normalized.context?.last_seen_at ?? payload.session?.last_seen_at ?? new Date().toISOString(),
-        absolute_expires_at:
-          normalized.context?.absolute_expires_at ?? payload.session?.absolute_expires_at ?? new Date().toISOString(),
-        idle_expires_at:
-          normalized.context?.idle_expires_at ?? payload.session?.idle_expires_at ?? new Date().toISOString(),
-      });
-      setRoleId(resolveProfileIdForRole(normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN"));
-      setSelectedWindowId(resolveFirstWindowIdForRole(normalized.roles?.[0] ?? payload.session?.active_role ?? "PLATFORM_ADMIN"));
-      setEnvironment(normalized.workspace?.selected_environment ?? "Production");
+      const loginSession = buildSessionFromAuthPayload(payload, loginRole, loginEmail);
+      setSession(loginSession);
+      setRoleId(resolveProfileIdForRole(loginSession.active_role ?? loginRole));
+      setSelectedWindowId(resolveFirstWindowIdForRole(loginSession.active_role ?? loginRole));
+      setEnvironment("Production");
       setAuthStatus("signed-in");
       setBootstrapState("READY");
       setBootstrapError("");
@@ -2208,9 +2240,56 @@ function App() {
       setShowRoleSwitcher(false);
       setActiveWorkspaceSurfaceId("dashboard");
       const returnTo = new URLSearchParams(window.location.search).get("returnTo");
-      const loginRoute =
+      let nextRoute =
         returnTo ||
-        (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole));
+        (isSolutionRoute(currentPathname) ? currentPathname : ROUTES.roleDashboard(loginSession.active_role ?? loginRole));
+      try {
+        const { response: bootstrapResponse, payload: bootstrapPayload } = await fetchBootstrap(AUTH_API_BASE, {});
+        if (bootstrapResponse.ok) {
+          const normalized = normalizeBootstrapResponse(bootstrapPayload);
+          const normalizedSession = buildSessionFromAuthPayload(
+            normalized,
+            normalized.roles?.[0] ?? loginSession.active_role ?? loginRole,
+            normalized.user?.email ?? loginSession.email ?? loginEmail,
+          );
+          setBootstrapContext(normalized);
+          setSession((current) => ({
+            ...(current || {}),
+            ...normalizedSession,
+            email: normalizedSession.email ?? current?.email ?? loginEmail,
+            display_name: normalizedSession.display_name ?? current?.display_name ?? loginSession.display_name,
+            organization: normalized.organization?.id ?? current?.organization ?? loginSession.organization ?? "novatech",
+            active_role: normalized.roles?.[0] ?? current?.active_role ?? loginSession.active_role ?? loginRole,
+            assigned_roles: normalized.roles ?? current?.assigned_roles ?? loginSession.assigned_roles ?? [loginRole],
+          }));
+          setRoleId(resolveProfileIdForRole(normalized.roles?.[0] ?? loginSession.active_role ?? loginRole));
+          setEnvironment(normalized.workspace?.selected_environment ?? "Production");
+          setBootstrapState("READY");
+          setBootstrapError("");
+          nextRoute =
+            returnTo ||
+            (isSolutionRoute(currentPathname)
+              ? currentPathname
+              : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? loginSession.active_role ?? loginRole));
+        } else if (bootstrapResponse.status === 401 || bootstrapResponse.status === 403) {
+          const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
+          const code = String(detail.code || bootstrapResponse.statusText || "SESSION_EXPIRED").toUpperCase();
+          throw new Error(detail.message || code || "Unable to establish a dashboard session");
+        } else {
+          const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
+          setBootstrapState("DEGRADED");
+          setBootstrapError(detail.message || bootstrapResponse.statusText || "Bootstrap service unavailable.");
+        }
+      } catch (bootstrapError) {
+        const message = bootstrapError instanceof Error ? bootstrapError.message : String(bootstrapError || "SESSION_EXPIRED");
+        if (/session(_| )?(expired|required|revoked)/i.test(message)) {
+          throw new Error(message);
+        }
+        setBootstrapState("DEGRADED");
+        setBootstrapError(message);
+      }
+      const loginRoute =
+        nextRoute;
       navigateTo(loginRoute, { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Login failed";
@@ -2348,6 +2427,27 @@ function App() {
   const activeKnowledgeNode =
     runtime.knowledgeGraph.find((node) => node.id === runtime.selectedKnowledgeNodeId) ??
     runtime.knowledgeGraph[0];
+  const frontendRegistry = useMemo(() => {
+    const registry = createDefaultProductFrontendRegistry();
+    registerDefaultFrontendManifests(registry);
+    return registry;
+  }, []);
+  const renderingRegistry = useMemo(() => {
+    const registry = createDefaultRenderingRegistry();
+    registerDefaultRenderingManifests(registry);
+    return registry;
+  }, []);
+  const interactionRegistry = useMemo(() => {
+    const registry = createDefaultInteractionRegistry();
+    registerDefaultInteractionManifests(registry);
+    return registry;
+  }, []);
+  const frontendProducts = frontendRegistry.list();
+  const enabledFrontendProducts = frontendRuntimeConfig.enabledProducts.length
+    ? frontendRuntimeConfig.enabledProducts
+    : frontendProducts.map((product) => product.productCode);
+  const renderingSnapshot = renderingRegistry.snapshot();
+  const interactionSnapshot = interactionRegistry.snapshot();
 
   const aiWorkspaceModel = useMemo(
     () =>
@@ -2355,14 +2455,17 @@ function App() {
         session,
         role: authDisplayRole,
         roleLabel: authDisplayRoleLabel,
-        workspace: "Role Workspace",
+        workspace: "Universal AI Workspace",
         project: activeProject?.name || selectedRequest?.title,
         tenant: activeTenant?.name || session?.tenant_id,
         organization: activeRole.organization || session?.organization,
         environment,
         route: currentPathname.replace("/novacodepro", "") || "/dashboard",
         modelLabel: `${NOVACODEPRO_BUILD_INFO.version} · ${NOVACODEPRO_BUILD_INFO.commit}`,
-        statusLabel: "Local runtime",
+        statusLabel:
+          frontendRuntimeState === "READY"
+            ? "Frontend runtime loaded"
+            : "Using fallback runtime config",
         connection: {
           connected: false,
           backend: false,
@@ -2449,6 +2552,14 @@ function App() {
           repository: activeProject?.repository || "Not connected",
           branch: activeProject?.branch || "Not connected",
           commit: activeProject?.commit || NOVACODEPRO_BUILD_INFO.commit,
+          frontendEnvironment: frontendRuntimeConfig.environment,
+          frontendRegion: frontendRuntimeConfig.region,
+          frontendReleaseVersion: frontendRuntimeConfig.releaseVersion,
+          frontendBuildCommit: frontendRuntimeConfig.buildCommit,
+          frontendApiBaseUrl: frontendRuntimeConfig.apiBaseUrl,
+          frontendAuthBaseUrl: frontendRuntimeConfig.authBaseUrl,
+          frontendEnabledProducts: enabledFrontendProducts,
+          frontendConfigSource: frontendRuntimeConfig.source,
           activeArtifact: selectedRequest?.artifacts?.[0]?.title || activeKnowledgeNode?.title || "Not connected",
           planSummary: requestSummary,
           filesChanged: selectedRequest?.artifacts?.length || "Not connected",
@@ -2516,6 +2627,15 @@ function App() {
       selectedWindowId,
       session,
       activeKnowledgeNode?.title,
+      enabledFrontendProducts,
+      frontendRuntimeConfig.apiBaseUrl,
+      frontendRuntimeConfig.authBaseUrl,
+      frontendRuntimeConfig.buildCommit,
+      frontendRuntimeConfig.environment,
+      frontendRuntimeConfig.region,
+      frontendRuntimeConfig.releaseVersion,
+      frontendRuntimeConfig.source,
+      frontendRuntimeState,
       NOVACODEPRO_BUILD_INFO.commit,
       NOVACODEPRO_BUILD_INFO.version,
     ],
@@ -2809,7 +2929,7 @@ function App() {
 
   const secondaryWindows = activeRole.windows.filter((window) => window.id !== selectedWindow.id);
   useEffect(() => {
-    setToolView("main");
+    setToolView("ai");
   }, [roleId, selectedWindowId]);
   const localAdminSummary = useMemo(() => {
     const serviceRegistry = platformSummary?.service_registry ?? [];
@@ -3755,6 +3875,24 @@ function App() {
             </div>
           </div>
 
+          <div className="sidebar-card frontend-runtime-card">
+            <p className="section-label">Frontend platform</p>
+            <strong>
+              {frontendRuntimeConfig.environment} · {frontendRuntimeConfig.region}
+            </strong>
+            <span>
+              Release {frontendRuntimeConfig.releaseVersion} · Commit {frontendRuntimeConfig.buildCommit}
+            </span>
+          <span>Source: {frontendRuntimeConfig.source}</span>
+          <span>Products: {enabledFrontendProducts.join(", ")}</span>
+          <div className="identity-meta">
+            <span>API: {frontendRuntimeConfig.apiBaseUrl}</span>
+            <span>Auth: {frontendRuntimeConfig.authBaseUrl}</span>
+            <span>Rendering: {renderingSnapshot.productCount} product modules</span>
+            <span>Interactions: {interactionSnapshot.interactionCount} governed actions</span>
+          </div>
+        </div>
+
           <nav className="nav-list" aria-label="Primary navigation">
             {NAV_ITEMS.map((item) => (
               <button
@@ -3818,24 +3956,25 @@ function App() {
           <section className="hero-card request-console">
             <div className="console-main">
               <div className="console-intro">
-                <p className="eyebrow">Business-first enterprise operating workflow</p>
-                <h1>What would you like NovaCodePro to build or solve?</h1>
+                <p className="eyebrow">AI-native governed workspace</p>
+                <h1>Universal AI Workspace</h1>
                 <p className="hero-summary">
-                  Describe a product, upload an existing project, report a problem, or ask
-                  NovaCodePro to design, implement, test, secure, or deploy a governed solution.
+                  Ask NovaCodePro to reason over the current project, generate a plan, coordinate
+                  agents, route approvals, execute governed work, verify outcomes, and capture evidence.
                 </p>
                 <div className="hero-badges">
                   <span className="badge">Organization: {activeRole.organization}</span>
                   <span className="badge">Environment: {environment}</span>
-                  <span className="badge">Workspace: Solution Studio</span>
+                  <span className="badge">Workspace: Universal AI</span>
                   <span className="badge">Tenant: {activeTenant.name}</span>
                   <span className="badge">Project: {activeProject.name}</span>
                   <span className="badge">Mode: {selectedMode.label}</span>
+                  <span className="badge">Frontend: {frontendRuntimeConfig.environment}</span>
                 </div>
               </div>
 
               <article className="output-card doctrine-card">
-                <p className="section-label">Platform doctrine</p>
+                <p className="section-label">AI doctrine</p>
                 <strong>AI proposes. Policies constrain. Humans authorize. Systems execute.</strong>
                 <p className="studio-note">
                   Evidence proves, operations verify, and governance supervises every protected action.

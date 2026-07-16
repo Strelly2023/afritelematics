@@ -74,7 +74,6 @@ export function buildRoleWorkspaceModel({
   const latestEvidenceBundle = runtime?.evidenceBundles?.[0] ?? null;
   const latestRiskItem = runtime?.riskRegister?.[0] ?? null;
   const activeSignals = asPairList(activeRole?.signals).slice(0, 4);
-  const roleMetrics = asPairList(activeRole?.metrics);
   const quickActions = clampList(activeRole?.actions, 4);
   const operationalActions = [
     "Execute",
@@ -105,42 +104,46 @@ export function buildRoleWorkspaceModel({
         anchorId: ROLE_WORKSPACE_SURFACES[0].anchorId,
         label: ROLE_WORKSPACE_SURFACES[0].label,
         status: healthScore,
-        title: `${activeRole?.label || "Role"} dashboard`,
-        summary: `Personalized home and decision surface for ${activeRole?.domain || "the active role"}.`,
+        title: "Universal AI Workspace",
+        summary:
+          "Conversational request intake, context retrieval, planning, artifact generation, review, approval, execution, verification, and evidence capture.",
         metrics: [
-          ...roleMetrics.slice(0, 4),
+          ["Requests", toCountLabel(runtime?.solutionRequests?.length, "0")],
+          ["Agents", toCountLabel(activeRole?.agents?.length, "0")],
+          ["Artifacts", toCountLabel(runtime?.evidenceBundles?.length, "0")],
+          ["Approvals", toCountLabel(runtime?.approvalRoutes?.length, "0")],
           ["Environment", environment],
-          ["Workspace", activeProject?.name || "NovaTech"],
           ["Tenant", activeTenant?.name || "NovaTech"],
-          ["Session", authDisplayRoleLabel],
         ],
         highlights: [
-          `Attention queue: ${quickActions[0] || "No open work"}`,
-          `Active work: ${activeRequest?.title || suggestedTitle || "Ready for a new request"}`,
-          `Workflow status: ${activeRequest?.status || "draft"} / ${workflowProgress || 0}%`,
-          `Top signal: ${activeSignals[0]?.[0] ? `${activeSignals[0][0]} ${activeSignals[0][1]}` : "No active signal"}`,
+          `AI request: ${activeRequest?.title || suggestedTitle || "Ready for a new request"}`,
+          `Lifecycle: ${activeRequest?.status || "draft"} / ${workflowProgress || 0}%`,
+          `Primary agents: ${clampList(activeRole?.agents, 3).join(", ") || "NovaAI backend"}`,
+          `Evidence state: ${runtime?.evidenceBundles?.length ? "Published" : "Pending"}`,
         ],
         lists: [
           {
-            label: "Pending approvals",
-            rows: clampList(runtime?.approvalRoutes, 3).map((route) => ({
-              title: route.subject,
-              detail: `${route.policyId} · ${route.required?.join(", ") || "Review required"}`,
-            })),
+            label: "AI workspace panels",
+            rows: [
+              { title: "AI Understanding", detail: "Intent, context, risk, and unresolved questions" },
+              { title: "Agent Collaboration", detail: "Discovery, architecture, QA, security, and operations" },
+              { title: "Artifact Explorer", detail: "Requirements, designs, code, tests, evidence, and knowledge" },
+            ],
           },
           {
-            label: "Recent activity",
-            rows: clampList(runtime?.auditTrail, 3).map((entry) => ({
-              title: entry.action,
-              detail: `${entry.service} · ${entry.at}`,
-            })),
+            label: "Governed actions",
+            rows: [
+              { title: "Ask NovaAI", detail: "Intake requests and generate a plan" },
+              { title: "Plan / Generate", detail: "Create artifacts from approved context" },
+              { title: "Review / Approve", detail: "Route actions through governed review" },
+            ],
           },
         ],
         actions: [
           { label: "Ask NovaAI", command: "Ask NovaAI" },
-          { label: "Open Operations", command: "Open Operations" },
-          { label: "Open AI Studio", command: "Open AI Studio" },
-          { label: "Open Chat Workspace", command: "Open Chat Workspace" },
+          { label: "Plan", command: "Plan" },
+          { label: "Generate", command: "Generate" },
+          { label: "Open Evidence", command: "Open Evidence" },
         ],
       },
       {

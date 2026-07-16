@@ -1,0 +1,19 @@
+{
+  "environment": "public-pilot",
+  "region": "AU",
+  "releaseVersion": "2026.07.0",
+  "buildCommit": "unknown",
+  "apiBaseUrl": "https://api.afritechnology.com",
+  "authBaseUrl": "https://identity.afritechnology.com",
+  "websocketUrl": "wss://api.afritechnology.com/ws",
+  "enabledProducts": [
+    "novacodepro",
+    "solution-engineering"
+  ],
+  "defaultLocale": "en-AU",
+  "defaultTimezone": "Australia/Melbourne",
+  "maintenanceMode": false,
+  "supportUrl": "https://support.afritechnology.com",
+  "statusUrl": "https://status.afritechnology.com",
+  "source": "runtime.json"
+}

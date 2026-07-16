@@ -80,7 +80,7 @@ test("role workspace model exposes the four operating windows", () => {
     model.windows.map((window) => window.id),
     ["dashboard", "operations", "studio", "chat"],
   );
-  assert.match(model.windows[0].summary, /Product and delivery/);
+  assert.match(model.windows[0].summary, /Conversational request intake/);
   assert.match(model.windows[1].summary, /Real-time command/);
   assert.match(model.windows[2].summary, /governed creation surface/);
   assert.match(model.windows[3].summary, /Conversation/);
@@ -111,7 +111,7 @@ test("role workspace model carries role-specific dashboard and chat context", ()
     suggestedTitle: "Privacy policy review",
   });
 
-  assert.ok(model.windows[0].highlights.some((item) => item.includes("Review contract")));
+  assert.ok(model.windows[0].highlights.some((item) => item.includes("Privacy policy review")));
   assert.ok(model.windows[1].actions.some((action) => action.label === "Investigate"));
   assert.ok(
     model.windows[2].metrics.some(
@@ -153,6 +153,6 @@ test("role workspace model tolerates object-shaped signals and metrics", () => {
   });
 
   assert.equal(model.windows.length, 4);
-  assert.ok(model.windows[0].metrics.some((metric) => metric.label === "Platform health"));
+  assert.ok(model.windows[0].metrics.some((metric) => Array.isArray(metric) && metric[0] === "Requests"));
   assert.ok(model.windows[1].lists[1].rows.some((row) => row.title === "API health"));
 });

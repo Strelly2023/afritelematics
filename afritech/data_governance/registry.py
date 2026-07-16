@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from afritech.data_governance.contracts import DataGovernanceViolation
+from afritech.data_governance.enterprise import validate_enterprise_data_model
 from afritech.data_governance.ownership import DATA_OWNERSHIP_REGISTRY
 
 
@@ -12,6 +13,7 @@ INV_DATA_001 = (
 )
 
 DATA_DECENTRALIZATION_STATUS = "GOVERNED_DECENTRALIZATION_DEFINED"
+DATA_ENTERPRISE_MODEL_STATUS = "SHARED_ENTERPRISE_DATA_MODEL_DEFINED"
 
 
 def validate_data_governance_registry() -> bool:
@@ -32,4 +34,5 @@ def validate_data_governance_registry() -> bool:
 
     if "AfriPay" not in seen_domains:
         raise DataGovernanceViolation("AfriPay evidence domain must be declared")
+    validate_enterprise_data_model()
     return True

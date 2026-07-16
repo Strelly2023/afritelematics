@@ -1,139 +1,16 @@
+import { createNovaTechIntegrationClient } from "./integrationClient.js";
+
 const DEFAULT_TIMEOUT_MS = 12000;
 
 function nowIso() {
   return new Date().toISOString();
 }
 
-function randomId(prefix) {
-  const token = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
-  return `${prefix}-${token}`;
-}
-
-function normalizePath(baseUrl, path) {
-  const root = String(baseUrl || "").replace(/\/$/, "");
-  return `${root}${path.startsWith("/") ? path : `/${path}`}`;
-}
-
-async function readPayload(response) {
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
-}
-
-function normalizeError(error, fallbackCode = "APPLICATION_ERROR") {
-  if (error && typeof error === "object" && "code" in error) {
-    return error;
-  }
-  return {
-    code: fallbackCode,
-    message: error instanceof Error ? error.message : String(error || fallbackCode),
-  };
-}
-
-function createHeaders({ session, correlationId, idempotencyKey, contentType = true }) {
-  const headers = {
-    accept: "application/json",
-    "x-requested-with": "fetch",
-  };
-  if (contentType) {
-    headers["content-type"] = "application/json";
-  }
-  if (correlationId) {
-    headers["x-correlation-id"] = correlationId;
-  }
-  if (idempotencyKey) {
-    headers["x-idempotency-key"] = idempotencyKey;
-  }
-  const tenantId = session?.tenant_id || session?.tenant || session?.organization || "";
-  const organizationId = session?.organization_id || session?.organization || tenantId || "";
-  if (tenantId) {
-    headers["x-tenant-id"] = String(tenantId);
-  }
-  if (organizationId) {
-    headers["x-organization-id"] = String(organizationId);
-  }
-  if (session?.active_role) {
-    headers["x-role"] = String(session.active_role);
-  }
-  return headers;
-}
-
-function createClientError(response, payload, fallbackCode = "APPLICATION_ERROR") {
-  const detail = payload?.detail ?? payload ?? {};
-  const code = String(detail.code || response.statusText || fallbackCode).toUpperCase();
-  return {
-    status: response.status,
-    code,
-    message: detail.message || detail.error || detail.detail || response.statusText || fallbackCode,
-    detail,
-  };
-}
-
 export function createSolutionEngineeringClient({ baseUrl = "", session = {}, timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
-  async function request(path, { method = "GET", body, retrySafe = false, parse = "json", correlationId, idempotencyKey } = {}) {
-    const target = normalizePath(baseUrl, path);
-    const controller = new AbortController();
-    const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
-    const headers = createHeaders({
-      session,
-      correlationId: correlationId || randomId("corr"),
-      idempotencyKey,
-      contentType: body !== undefined && body !== null && method !== "GET",
-    });
-
-    const execute = async () => {
-      const response = await fetch(target, {
-        method,
-        credentials: "include",
-        headers,
-        signal: controller.signal,
-        body: body === undefined || body === null ? undefined : JSON.stringify(body),
-      });
-      const payload = await readPayload(response);
-      if (!response.ok) {
-        throw createClientError(response, payload);
-      }
-      if (parse === "text") {
-        return payload ?? "";
-      }
-      return payload ?? {};
-    };
-
-    try {
-      try {
-        return await execute();
-      } catch (error) {
-        if (!retrySafe || controller.signal.aborted) {
-          throw error;
-        }
-        return await execute();
-      }
-    } catch (error) {
-      throw normalizeError(error);
-    } finally {
-      globalThis.clearTimeout(timer);
-    }
-  }
-
-  async function safeGet(path) {
-    return request(path, { retrySafe: true });
-  }
-
-  async function mutation(path, body, options = {}) {
-    return request(path, {
-      method: options.method || "POST",
-      body,
-      idempotencyKey: options.idempotencyKey || randomId("ncp"),
-      correlationId: options.correlationId || randomId("corr"),
-      parse: options.parse || "json",
-    });
-  }
+  const integrationClient = createNovaTechIntegrationClient({ baseUrl, session, timeoutMs, fetchImpl: globalThis.fetch });
+  const request = (path, options = {}) => integrationClient.request(path, options);
+  const safeGet = (path) => integrationClient.safeGet(path);
+  const mutation = (path, body, options = {}) => integrationClient.mutation(path, body, options);
 
   return {
     request,
@@ -202,8 +79,8 @@ export function createSolutionEngineeringClient({ baseUrl = "", session = {}, ti
     getWorkflowReplay: (workflowId) => safeGet(`/v1/workflows/${encodeURIComponent(workflowId)}/replay`),
     getWorkflowAnalytics: (workflowId) => safeGet(`/v1/workflows/${encodeURIComponent(workflowId)}/analytics`),
     getWorkflowEvidence: (workflowId) => safeGet(`/v1/workflows/${encodeURIComponent(workflowId)}/evidence`),
-    createIdempotencyKey: () => randomId("ncp"),
-    createCorrelationId: () => randomId("corr"),
+    createIdempotencyKey: () => integrationClient.createIdempotencyKey(),
+    createCorrelationId: () => integrationClient.createCorrelationId(),
     nowIso,
   };
 }

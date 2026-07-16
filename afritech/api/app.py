@@ -67,6 +67,7 @@ from afritech.api.novacodepro_workspace_api import build_novacodepro_workspace_r
 from afritech.api.novascript_api import build_novascript_public_router, build_novascript_router
 from afritech.api.novatech_intranet_api import build_novatech_intranet_router
 from afritech.api.documentation_compliance_api import build_documentation_compliance_router
+from afritech.api.data_governance_api import build_data_governance_router
 from afritech.api.core_platform_api import (
     build_core_platform_router,
     build_public_trust_explorer_router,
@@ -75,6 +76,15 @@ from afritech.api.novapay_ecosystem_api import build_novapay_ecosystem_router
 from afritech.api.novaid_api import build_novaid_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
 from afritech.api.novacodepro_workflow_fabric_api import build_novacodepro_workflow_fabric_router
+from afritech.api.executable_runtime_api import build_executable_runtime_router
+from afritech.api.runtime_activation_api import build_runtime_activation_router
+from afritech.api.runtime_infrastructure_api import build_runtime_infrastructure_router
+from afritech.api.runtime_verification_api import build_runtime_verification_router
+from afritech.api.runtime_worker_api import build_runtime_worker_router
+from afritech.api.runtime_operations_api import build_runtime_operations_router
+from afritech.api.api_platform_admin_api import build_api_platform_admin_router
+from afritech.api.integration_platform_api import build_integration_platform_router
+from afritech.api.platform_runtime_api import build_platform_runtime_router
 from afritech.api.solution_engineering_api import build_solution_engineering_router
 from afritech.api.novacodepro_operational_verification_api import build_novacodepro_operational_verification_router
 from afritech.api.novaportal_suite_api import build_novaportal_suite_router
@@ -118,6 +128,18 @@ from afritech.standards_dependency import StandardsDependencyStore
 from afritech.trust_network import TrustRegistryStore
 from afritech.observability.opentelemetry import configure_fastapi_observability
 from afritech.novaride_runtime.replay.dependencies import build_default_replay_repository
+from afritech.platform_runtime import build_default_product_runtime_registry
+from afritech.platform_runtime.activation import ProductActivationService
+from afritech.platform_runtime.deployment_verifier import DeploymentVerifier
+from afritech.platform_runtime.executable_runtime import ExecutableProductRuntime
+from afritech.platform_runtime.provisioning import InfrastructureProvisioner
+from afritech.platform_runtime.runtime_evidence import RuntimeEvidenceService
+from afritech.platform_runtime.route_registry import RouteRegistry
+from afritech.api_platform import EndpointRegistry
+from afritech.platform_runtime.adapters.base import AdapterExecutionMode
+from afritech.platform_runtime.operational import OperationalRuntimeOrchestrator, PersistentEvidenceStore, RecoveryRunner, RollbackCoordinator, RuntimeVerificationService
+from afritech.platform_runtime.persistence.repository import build_runtime_control_repository
+from afritech.platform_runtime.worker_supervisor import WorkerSupervisor
 
 
 # ============================================================
@@ -180,6 +202,45 @@ adaptive_sla_controller = AdaptiveSLAController(
 app.state.adaptive_sla_controller = adaptive_sla_controller
 app.state.autonomous_control_plane = autonomous_control_plane
 app.state.novaride_replay_repository = build_default_replay_repository()
+app.state.platform_runtime_registry = build_default_product_runtime_registry()
+app.state.api_platform_endpoint_registry = EndpointRegistry()
+app.state.platform_runtime_route_registry = RouteRegistry()
+app.state.platform_runtime_worker_supervisor = WorkerSupervisor()
+app.state.platform_runtime_infrastructure_provisioner = InfrastructureProvisioner()
+app.state.platform_runtime_activation_service = ProductActivationService()
+app.state.platform_runtime_evidence_service = RuntimeEvidenceService()
+app.state.platform_runtime_verifier = DeploymentVerifier()
+_runtime_control_repo = build_runtime_control_repository(
+    dsn=os.environ.get("NOVATECH_POSTGRES_DSN") or os.environ.get("DATABASE_URL") or "",
+    sqlite_path=Path(os.environ.get("NOVATECH_RUNTIME_CONTROL_SQLITE_PATH") or "/var/lib/afritech/runtime-control.sqlite3"),
+)
+app.state.platform_runtime_control_repository = _runtime_control_repo
+app.state.platform_runtime_persistent_evidence_store = PersistentEvidenceStore(
+    repository=_runtime_control_repo,
+    object_root=Path(os.environ.get("NOVATECH_EVIDENCE_ROOT") or "/var/lib/afritech/runtime-evidence"),
+)
+app.state.platform_runtime_orchestrator = OperationalRuntimeOrchestrator(
+    repository=_runtime_control_repo,
+    evidence_store=app.state.platform_runtime_persistent_evidence_store,
+    verifier=RuntimeVerificationService(),
+    recovery_runner=RecoveryRunner(),
+    rollback_coordinator=RollbackCoordinator(),
+    adapter_modes={
+        "postgres": AdapterExecutionMode.REAL,
+        "redis": AdapterExecutionMode.REAL,
+        "nats": AdapterExecutionMode.UNAVAILABLE,
+        "object_storage": AdapterExecutionMode.REAL,
+    },
+)
+app.state.platform_executable_runtime = ExecutableProductRuntime(
+    app.state.platform_runtime_registry,
+    route_registry=app.state.platform_runtime_route_registry,
+    worker_supervisor=app.state.platform_runtime_worker_supervisor,
+    infrastructure_provisioner=app.state.platform_runtime_infrastructure_provisioner,
+    activation_service=app.state.platform_runtime_activation_service,
+    evidence_service=app.state.platform_runtime_evidence_service,
+    deployment_verifier=app.state.platform_runtime_verifier,
+)
 app.add_middleware(
     DistributedGovernanceMiddleware,
     store=partner_governance_store,
@@ -375,12 +436,22 @@ app.include_router(build_novaride_runtime_router())
 app.include_router(build_dashboard_gateway_router())
 app.include_router(build_novacodepro_workspace_router())
 app.include_router(build_novatech_intranet_router())
+app.include_router(build_data_governance_router())
 app.include_router(build_documentation_compliance_router())
 app.include_router(build_schema_registry_router())
 
 # ✅ NovaTechSol core platform API
 app.include_router(build_core_platform_router())
 app.include_router(build_public_trust_explorer_router())
+app.include_router(build_platform_runtime_router(app.state.platform_runtime_registry))
+app.include_router(build_executable_runtime_router(app.state.platform_executable_runtime))
+app.include_router(build_runtime_activation_router(app.state.platform_runtime_activation_service))
+app.include_router(build_runtime_worker_router(app.state.platform_runtime_worker_supervisor))
+app.include_router(build_runtime_infrastructure_router(app.state.platform_runtime_infrastructure_provisioner))
+app.include_router(build_runtime_verification_router(app.state.platform_runtime_verifier))
+app.include_router(build_runtime_operations_router(app.state.platform_runtime_orchestrator))
+app.include_router(build_api_platform_admin_router(app.state.api_platform_endpoint_registry))
+app.include_router(build_integration_platform_router())
 app.include_router(
     build_novapay_runtime_router(
         governance_store=partner_governance_store,
@@ -656,6 +727,60 @@ def metrics() -> Response:
         content=_prometheus_metrics_text(),
         media_type="text/plain; version=0.0.4; charset=utf-8",
     )
+
+
+@app.get("/health/products")
+def health_products() -> dict[str, Any]:
+    return app.state.platform_runtime_registry.health_snapshot()
+
+
+@app.get("/health/products/{product_code}")
+def health_product(product_code: str) -> dict[str, Any]:
+    registry = app.state.platform_runtime_registry
+    try:
+        product = registry.get_product(product_code)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="unknown_product") from exc
+    return {
+        "platform": "NovaTech",
+        "product": product,
+        "health": registry.health_snapshot()["products"].get(product_code.lower(), {"status": "unknown"}),
+    }
+
+
+@app.get("/health/runtime")
+def health_runtime() -> dict[str, Any]:
+    return {
+        "status": "ready",
+        "control_store": "ready" if app.state.platform_runtime_control_repository else "unavailable",
+        "adapters": app.state.platform_runtime_orchestrator.adapter_modes,
+        "reconciliation": {"status": "ready", "last_run_at": ""},
+    }
+
+
+@app.get("/health/runtime/control-store")
+def health_runtime_control_store() -> dict[str, Any]:
+    return {"status": "ready", "backend": type(app.state.platform_runtime_control_repository).__name__}
+
+
+@app.get("/health/runtime/adapters")
+def health_runtime_adapters() -> dict[str, Any]:
+    return {"status": "ready", "adapters": {key: value.value for key, value in app.state.platform_runtime_orchestrator.adapter_modes.items()}}
+
+
+@app.get("/health/runtime/reconciliation")
+def health_runtime_reconciliation() -> dict[str, Any]:
+    return {"status": "ready", "last_run_at": ""}
+
+
+@app.get("/health/runtime/deployments")
+def health_runtime_deployments() -> dict[str, Any]:
+    return {"status": "ready", "deployments": []}
+
+
+@app.get("/health/runtime/evidence")
+def health_runtime_evidence() -> dict[str, Any]:
+    return {"status": "ready", "evidence_root": str(app.state.platform_runtime_persistent_evidence_store.object_root)}
 
 
 @app.get("/v1/metrics")
