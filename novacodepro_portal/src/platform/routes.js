@@ -27,6 +27,12 @@ export const ROUTES = {
   login: appPath("/login"),
   dashboard: appPath("/dashboard"),
   logout: appPath("/logout"),
+  solutionRoot: appPath("/solutions"),
+  solutionCustomers: appPath("/solutions/customers"),
+  solutionProjects: appPath("/solutions/projects"),
+  solutionProject(projectId, section = "dashboard") {
+    return appPath(`/solutions/projects/${encodeURIComponent(projectId)}/${section}`);
+  },
   roleDashboard(role) {
     const slug = resolveWorkspaceSlugFromLoginRole(role) || "workspace";
     return appPath(`/workspace/${encodeURIComponent(slug)}/dashboard`);

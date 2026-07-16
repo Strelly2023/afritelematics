@@ -21,6 +21,8 @@ import { ROUTES } from "./platform/routes.js";
 import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
 import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
 import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoutes.js";
+import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
+import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
@@ -1873,6 +1875,7 @@ function App() {
   const initialPathname = typeof window !== "undefined" ? window.location.pathname : ROUTES.login;
   const initialLoginRole = resolveWorkspaceLoginRoleFromPathname(initialPathname) || "ADMIN";
   const attachmentInputRef = useRef(null);
+  const [currentPathname, setCurrentPathname] = useState(initialPathname);
   const runtime = usePlatformRuntime();
   const [platformSummary, setPlatformSummary] = useState(null);
   const [authStatus, setAuthStatus] = useState("checking");
@@ -1952,6 +1955,22 @@ function App() {
     languages: "English, French, and Swahili.",
   });
 
+  const navigateTo = (path, { replace = false } = {}) => {
+    const target = path.startsWith("/novacodepro") ? path : `/novacodepro${path.startsWith("/") ? path : `/${path}`}`;
+    if (replace) {
+      window.history.replaceState({}, "", target);
+    } else {
+      window.history.pushState({}, "", target);
+    }
+    setCurrentPathname(target);
+  };
+
+  useEffect(() => {
+    const handlePopState = () => setCurrentPathname(window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => {
     if (authStatus !== "signed-in") {
       return undefined;
@@ -1993,7 +2012,7 @@ function App() {
             setSession(null);
             setAuthStatus("signed-out");
             clearNovaCodeProSessionState();
-            window.history.replaceState({}, "", ROUTES.login);
+            navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
             return;
           }
           if (response.status === 403) {
@@ -2023,7 +2042,7 @@ function App() {
           setSession(null);
           setAuthStatus("signed-out");
           clearNovaCodeProSessionState();
-          window.history.replaceState({}, "", ROUTES.login);
+          navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
           return;
         }
         setBootstrapContext(normalized);
@@ -2048,8 +2067,11 @@ function App() {
         setBootstrapError("");
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
-        const bootstrapRoute = normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN");
-        window.history.replaceState({}, "", bootstrapRoute);
+        const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+        const bootstrapRoute =
+          returnTo ||
+          (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN"));
+        navigateTo(bootstrapRoute, { replace: true });
       } catch (error) {
         if (!active) {
           return;
@@ -2126,7 +2148,7 @@ function App() {
           setSessionWarning(false);
           setRoleId(ROLE_PROFILES[0].id);
           clearNovaCodeProSessionState();
-          window.history.replaceState({}, "", ROUTES.login);
+          navigateTo(ROUTES.loginWithReason("session_expired"), { replace: true });
         });
     }, 60000);
     return () => window.clearInterval(interval);
@@ -2184,8 +2206,11 @@ function App() {
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
       setActiveWorkspaceSurfaceId("dashboard");
-      const loginRoute = normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole);
-      window.history.replaceState({}, "", loginRoute);
+      const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+      const loginRoute =
+        returnTo ||
+        (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? payload.session?.active_role ?? loginRole));
+      navigateTo(loginRoute, { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Login failed";
       if (/session(_| )?(expired|required)/i.test(message)) {
@@ -2222,7 +2247,7 @@ function App() {
     setRoleId(ROLE_PROFILES[0].id);
     setSelectedWindowId(resolveFirstWindowIdForRole("ADMIN"));
     setActiveWorkspaceSurfaceId("dashboard");
-    window.history.replaceState({}, "", ROUTES.login);
+    navigateTo(ROUTES.loginWithReason("session_expired"), { replace: true });
   };
 
   const handleStaySignedIn = async () => {
@@ -3337,6 +3362,17 @@ function App() {
   }
   if (authStatus !== "signed-in") {
     return signedOutScreen;
+  }
+  if (isSolutionRoute(currentPathname)) {
+    return (
+      <SolutionEngineeringPortal
+        session={session}
+        pathname={currentPathname}
+        navigate={(path, options) => navigateTo(path, options)}
+        baseUrl={AUTH_API_BASE}
+        onLogout={handleLogout}
+      />
+    );
   }
 
   return (

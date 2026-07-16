@@ -8,6 +8,9 @@ APP = ROOT / "novacodepro_portal" / "src" / "App.jsx"
 PACKAGE = ROOT / "novacodepro_portal" / "package.json"
 RUNTIME = ROOT / "novacodepro_portal" / "src" / "platform" / "runtime.js"
 CATALOG = ROOT / "novacodepro_portal" / "src" / "platform" / "catalog.js"
+SOLUTION_PORTAL = ROOT / "novacodepro_portal" / "src" / "solutions" / "SolutionEngineeringPortal.jsx"
+SOLUTION_ROUTES = ROOT / "novacodepro_portal" / "src" / "platform" / "solutionRoutes.js"
+SOLUTION_API = ROOT / "novacodepro_portal" / "src" / "platform" / "solutionEngineeringApi.js"
 
 
 def test_novacodepro_portal_is_a_separate_vite_app() -> None:
@@ -23,6 +26,9 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
             APP.read_text(encoding="utf-8"),
             CATALOG.read_text(encoding="utf-8"),
             RUNTIME.read_text(encoding="utf-8"),
+            SOLUTION_PORTAL.read_text(encoding="utf-8"),
+            SOLUTION_ROUTES.read_text(encoding="utf-8"),
+            SOLUTION_API.read_text(encoding="utf-8"),
         ]
     )
     for token in [
@@ -120,6 +126,28 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
         "Digital twin",
         "Marketplace",
         "Command Service",
+        "Customer Solutions",
+        "Discovery Workspace",
+        "Requirements Studio",
+        "Business Analysis Studio",
+        "UX/UI Studio",
+        "Architecture Studio",
+        "Engineering Studio",
+        "Quality Studio",
+        "Security Studio",
+        "Compliance & Risk Studio",
+        "Release Studio",
+        "Deployment Studio",
+        "Customer Acceptance Portal",
+        "Operations Layer",
+        "Support and Evolution",
+        "Workflow Fabric",
+        "Approvals",
+        "Knowledge",
+        "Evidence",
+        "/novacodepro/solutions",
+        "/v1/solution-engineering",
+        "/v1/workflow-fabric",
     ]:
         assert token in text
 
