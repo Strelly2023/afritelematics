@@ -83,6 +83,7 @@ from afritech.api.runtime_verification_api import build_runtime_verification_rou
 from afritech.api.runtime_worker_api import build_runtime_worker_router
 from afritech.api.runtime_operations_api import build_runtime_operations_router
 from afritech.api.api_platform_admin_api import build_api_platform_admin_router
+from afritech.api.delivery_platform_api import build_delivery_platform_router
 from afritech.api.integration_platform_api import build_integration_platform_router
 from afritech.api.platform_runtime_api import build_platform_runtime_router
 from afritech.api.solution_engineering_api import build_solution_engineering_router
@@ -451,6 +452,7 @@ app.include_router(build_runtime_infrastructure_router(app.state.platform_runtim
 app.include_router(build_runtime_verification_router(app.state.platform_runtime_verifier))
 app.include_router(build_runtime_operations_router(app.state.platform_runtime_orchestrator))
 app.include_router(build_api_platform_admin_router(app.state.api_platform_endpoint_registry))
+app.include_router(build_delivery_platform_router())
 app.include_router(build_integration_platform_router())
 app.include_router(
     build_novapay_runtime_router(
