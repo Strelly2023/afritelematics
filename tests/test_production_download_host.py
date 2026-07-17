@@ -41,6 +41,22 @@ def test_novacodepro_host_routes_api_calls_to_fastapi() -> None:
     assert "proxy_pass http://novacodepro-portal:4174;" in novacodepro_block
 
 
+def test_main_domain_routes_health_and_v1_calls_to_fastapi() -> None:
+    source = NGINX_TEMPLATE.read_text(encoding="utf-8")
+
+    main_block = source.split("server_name afritechnology.com www.afritechnology.com app.afritechnology.com;", maxsplit=1)[1].split(
+        "server {",
+        maxsplit=1,
+    )[0]
+    assert "set $afritech_api afritech-api:8000;" in main_block
+    assert "location /health {" in main_block
+    assert "location /v1/ {" in main_block
+    assert "location / {" in main_block
+    assert main_block.index("location /health {") < main_block.index("location /v1/ {")
+    assert main_block.index("location /v1/ {") < main_block.index("location / {")
+    assert "proxy_pass http://$afritech_api;" in main_block
+
+
 def test_trust_node_nginx_mounts_release_apks_read_only() -> None:
     source = TRUST_NODE_COMPOSE.read_text(encoding="utf-8")
 
