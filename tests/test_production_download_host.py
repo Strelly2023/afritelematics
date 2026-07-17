@@ -33,6 +33,8 @@ def test_novacodepro_host_routes_api_calls_to_fastapi() -> None:
         maxsplit=1,
     )[0]
     assert "set $afritech_api afritech-api:8000;" in novacodepro_block
+    assert "location = / {" in novacodepro_block
+    assert "return 302 /novacodepro/;" in novacodepro_block
     assert "location /v1/" in novacodepro_block
     assert "location /api/" in novacodepro_block
     assert novacodepro_block.index("location /v1/") < novacodepro_block.index("location / {")

@@ -87,6 +87,10 @@ server {
         return 200 'ok';
     }
 
+    location = / {
+        return 302 /novacodepro/;
+    }
+
     location /v1/ {
         proxy_pass http://$afritech_api;
         proxy_set_header Host $host;
