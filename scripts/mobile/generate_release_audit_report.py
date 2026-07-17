@@ -12,7 +12,7 @@ from release_lineage import current_android_fingerprint
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.3")
+VERSION = os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.4")
 RELEASE_DIR = ROOT / f"apk-public/novaride/releases/{VERSION}"
 REPORT = RELEASE_DIR / "release-audit-report.json"
 

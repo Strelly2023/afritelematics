@@ -8,14 +8,14 @@ EXPECTED_RELEASE_FINGERPRINT = (
     "117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc"
 )
 EXPECTED_V2_FINGERPRINT = (
-    "3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472"
+    "5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61"
 )
 
 
 def test_release_manifest_tracks_signing_fingerprint() -> None:
     for path in [
-        ROOT / "docs/mobile/release/novaride_rider_v2026.1.3_manifest.json",
-        ROOT / "docs/mobile/release/novaride_driver_v2026.1.3_manifest.json",
+        ROOT / "docs/mobile/release/novaride_rider_v2026.1.4_manifest.json",
+        ROOT / "docs/mobile/release/novaride_driver_v2026.1.4_manifest.json",
     ]:
         text = path.read_text(encoding="utf-8")
         assert "signing_certificate_fingerprint" in text

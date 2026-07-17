@@ -17,7 +17,7 @@
 - [ ] `AFRIRIDE_ANDROID_KEY_ALIAS=novaride-release`
 - [ ] `AFRIRIDE_ANDROID_KEY_PASSWORD` configured in a secret manager
 - [ ] `SIGNING_SECRET_PROVIDER` set to an approved provider
-- [ ] release keystore fingerprint verified as `117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc`
+- [ ] release keystore fingerprint verified as `5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61`
 - [ ] `scripts/mobile/release_health_check.sh` passes
 - [ ] Rider APK built
 - [ ] Driver APK built

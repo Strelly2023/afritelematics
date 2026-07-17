@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import {
+  Alert,
+  BackHandler,
   Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View,
 } from "react-native";
 
 import { useRideFlow } from "./state/providers/useRideFlow";
 import { apiRequest } from "./core/api/client";
 import { loginPilot, extractAuthIdentity } from "./core/api/auth.service";
-import { clearSession, restoreSession } from "./core/api/session";
+import { clearAppSession, restoreAppSession } from "./core/api/session";
 import { APP_LOCALE, ORGANIZATION_ID, REGION_ID, TEST_MODE } from "./core/config/environment";
 import { runtimeConfig } from "./core/config/runtimeConfig";
 import { RiderLoginScreen } from "./ui/screens/RiderLoginScreen";
@@ -17,6 +19,7 @@ import {
   SyncBanner,
 } from "../afriride_system/mobile/shared/mobileExcellence";
 import { useGlobalRuntime } from "../afriride_system/mobile/shared/globalRuntime";
+import { clearRiderMobilityState } from "./core/services/mobility.service";
 
 type RiderTab = "Home" | "Book Ride" | "Trips" | "Wallet" | "Safety" | "Receipts" | "Profile";
 type BookingStage = "places" | "category" | "fare" | "matching" | "tracking" | "trip" | "payment" | "receipt";
@@ -187,8 +190,8 @@ export default function NovaRideRiderApp() {
   const [loginError, setLoginError] = useState("");
   const [loginDiagnostic, setLoginDiagnostic] = useState("");
   const [riderId, setRiderId] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const palette = dark ? darkTheme : lightTheme;
-  const { requestedRide, submitRideRequest } = useRideFlow(riderId);
   const globalRuntime = useGlobalRuntime(
     apiRequest,
     ORGANIZATION_ID,
@@ -196,11 +199,45 @@ export default function NovaRideRiderApp() {
     APP_LOCALE || undefined,
   );
 
+  const performLogout = React.useCallback(
+    async (reason = "Logged out", skipBackend = false) => {
+      setLoggingOut(true);
+      try {
+        if (!skipBackend) {
+          await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined);
+        }
+        await clearRiderMobilityState().catch(() => undefined);
+        await clearAppSession().catch(() => undefined);
+      } finally {
+        setAuthenticated(false);
+        setRiderId("");
+        setLoginError("");
+        setLoginDiagnostic("");
+        setPassword("pilot");
+        setTab("Home");
+        setStage("places");
+        setPickup("Current location");
+        setDestination("");
+        setRideType("NovaRide Standard");
+        setState("success");
+        setMessage(reason);
+        setLoggingOut(false);
+      }
+    },
+    [],
+  );
+
+  const handleSessionExpired = React.useCallback(async () => {
+    await performLogout("Session expired. Sign in again.", true);
+  }, [performLogout]);
+
+  const { requestedRide, submitRideRequest } = useRideFlow(riderId, handleSessionExpired);
+
   React.useEffect(() => {
     let active = true;
     void (async () => {
       try {
-        const restored = await restoreSession();
+        const restored = await restoreAppSession();
         if (!active || !restored.token) return;
         const restoredRiderId =
           typeof restored.metadata?.riderId === "string" && restored.metadata.riderId
@@ -214,13 +251,18 @@ export default function NovaRideRiderApp() {
           setAuthenticated(true);
         }
       } catch {
-        await clearSession().catch(() => undefined);
+        await clearAppSession().catch(() => undefined);
       }
     })();
     return () => {
       active = false;
     };
   }, []);
+
+  React.useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => !authenticated);
+    return () => sub.remove();
+  }, [authenticated]);
 
   const login = async () => {
     setAuthenticating(true);
@@ -251,15 +293,10 @@ export default function NovaRideRiderApp() {
   };
 
   const logout = async () => {
-    await clearSession().catch(() => undefined);
-    setAuthenticated(false);
-    setRiderId("");
-    setLoginError("");
-    setLoginDiagnostic("");
-    setPassword("pilot");
-    setTab("Home");
-    setStage("places");
-    setMessage("Logged out");
+    Alert.alert("Log out of NovaRide?", "You can log in again as a different rider after logout.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Log out", style: "destructive", onPress: () => void performLogout("Logged out") },
+    ]);
   };
 
   const action = (label: string, next?: BookingStage) => {
@@ -295,6 +332,11 @@ export default function NovaRideRiderApp() {
     setState("offline");
     setMessage("Ride request queued offline and will sync automatically");
   };
+
+  const canConfirmFare = Boolean(destination.trim());
+  const canRequestRide = authenticated && Boolean(destination.trim()) && Boolean(pickup.trim());
+  const canOperateTrip = stage === "tracking" || stage === "trip" || stage === "payment" || stage === "receipt";
+  const canReviewReceipt = stage === "receipt";
 
   return (
     <AdaptiveScaffold
@@ -389,14 +431,70 @@ export default function NovaRideRiderApp() {
                 <Text style={styles.fareTitle}>Fare estimate · AUD 18.40</Text>
                 <Text style={styles.fareDetail}>Base 3.50 · Distance 11.90 · Time 1.75 · Safety/booking 1.25</Text>
               </View>
-              <Action primary label="Confirm Fare" onPress={() => action("Fare confirmed", "matching")} />
-              <Action primary label="Request Ride" onPress={() => void requestRide()} />
+              <Action
+                primary
+                label="Confirm Fare"
+                onPress={() => action("Fare confirmed", "matching")}
+                disabled={!canConfirmFare}
+                helperText={!canConfirmFare ? "Enter a destination to request a fare quote." : undefined}
+              />
+              <Action
+                primary
+                label="Request Ride"
+                onPress={() => void requestRide()}
+                disabled={!canRequestRide || state === "loading"}
+                helperText={!canRequestRide ? "Pickup and destination are required before dispatch." : undefined}
+              />
               {stage === "tracking" && <DriverTrustCard />}
-              {stage === "tracking" && <View style={styles.row}><Action label="Contact Driver" onPress={() => action("Calling driver")} /><Action label="Share Trip" onPress={() => action("Trip sharing enabled")} /></View>}
-              <View style={styles.row}><Action danger label="SOS" onPress={sos} /><Action label="QR Ride Verification" onPress={() => action("Vehicle and driver QR verified", "trip")} /></View>
-              <Action label="Pay" onPress={() => action("NovaPay payment completed", "receipt")} />
-              <View style={styles.row}><Action label="Rate Driver" onPress={() => action("Driver rated 5 stars")} /><Action label="Open Dispute" onPress={() => action("Dispute case opened")} /></View>
-              <View style={styles.row}><Action label="View Receipt" onPress={() => action("Digital proof receipt NRR-2026-001")} /><Action label="View Replay" onPress={() => action("Signed trip replay verified")} /></View>
+              {stage === "tracking" && (
+                <View style={styles.row}>
+                  <Action label="Contact Driver" onPress={() => action("Calling driver")} />
+                  <Action label="Share Trip" onPress={() => action("Trip sharing enabled")} />
+                </View>
+              )}
+              <View style={styles.row}>
+                <Action danger label="SOS" onPress={sos} />
+                <Action
+                  label="QR Ride Verification"
+                  onPress={() => action("Vehicle and driver QR verified", "trip")}
+                  disabled={!canOperateTrip}
+                  helperText={!canOperateTrip ? "Verification becomes available once a driver is assigned." : undefined}
+                />
+              </View>
+              <Action
+                label="Pay"
+                onPress={() => action("NovaPay payment completed", "receipt")}
+                disabled={!canReviewReceipt}
+                helperText={!canReviewReceipt ? "Payment is available after trip completion." : undefined}
+              />
+              <View style={styles.row}>
+                <Action
+                  label="Rate Driver"
+                  onPress={() => action("Driver rated 5 stars")}
+                  disabled={!canReviewReceipt}
+                  helperText={!canReviewReceipt ? "Rate the driver after the receipt is available." : undefined}
+                />
+                <Action
+                  label="Open Dispute"
+                  onPress={() => action("Dispute case opened")}
+                  disabled={!canReviewReceipt}
+                  helperText={!canReviewReceipt ? "Disputes open after receipt issuance." : undefined}
+                />
+              </View>
+              <View style={styles.row}>
+                <Action
+                  label="View Receipt"
+                  onPress={() => action("Digital proof receipt NRR-2026-001")}
+                  disabled={!canReviewReceipt}
+                  helperText={!canReviewReceipt ? "Receipt becomes available after payment." : undefined}
+                />
+                <Action
+                  label="View Replay"
+                  onPress={() => action("Signed trip replay verified")}
+                  disabled={!canReviewReceipt}
+                  helperText={!canReviewReceipt ? "Replay is available after trip completion." : undefined}
+                />
+              </View>
             </View>
           )}
           {tab === "Home" && (
@@ -456,6 +554,14 @@ export default function NovaRideRiderApp() {
           {tab === "Profile" && (
             <View style={[styles.sheet, { backgroundColor: palette.surface }]}>
               <Text style={[styles.title, { color: palette.text }]}>Profile</Text>
+              <View style={styles.profileCard}>
+                <Text style={styles.profileTitle}>Account</Text>
+                <Text style={{ color: palette.text, fontWeight: "800" }}>{email}</Text>
+                <Text style={{ color: palette.muted }}>Rider ID: {riderId || "pending"}</Text>
+                <Text style={{ color: palette.muted }}>
+                  Session: {authenticated ? "Active" : "Signed out"}
+                </Text>
+              </View>
               <View style={styles.row}>
                 {PROFILE_ACTIONS.map((label) => (
                   <Action
@@ -466,6 +572,13 @@ export default function NovaRideRiderApp() {
                   />
                 ))}
               </View>
+              <Action
+                danger
+                label={loggingOut ? "Logging out…" : "Log out"}
+                onPress={logout}
+                disabled={loggingOut}
+                helperText={loggingOut ? "Ending session and clearing secure storage." : undefined}
+              />
             </View>
           )}
           <View style={[styles.timeline, { backgroundColor: palette.surface }]}>
@@ -485,8 +598,40 @@ export default function NovaRideRiderApp() {
   );
 }
 
-function Action({ label, onPress, primary, danger }: { label: string; onPress: () => void; primary?: boolean; danger?: boolean }) {
-  return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={[styles.button, primary && styles.primary, danger && styles.danger]}><Text style={primary || danger ? styles.buttonInverse : styles.buttonText}>{label}</Text></Pressable>;
+function Action({
+  label,
+  onPress,
+  primary,
+  danger,
+  disabled,
+  helperText,
+}: {
+  label: string;
+  onPress: () => void;
+  primary?: boolean;
+  danger?: boolean;
+  disabled?: boolean;
+  helperText?: string;
+}) {
+  return (
+    <View style={styles.actionSlot}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={helperText ? `${label}. ${helperText}` : label}
+        accessibilityState={{ disabled: Boolean(disabled) }}
+        onPress={disabled ? undefined : onPress}
+        style={[
+          styles.button,
+          primary && styles.primary,
+          danger && styles.danger,
+          disabled && styles.disabledButton,
+        ]}
+      >
+        <Text style={primary || danger ? styles.buttonInverse : styles.buttonText}>{label}</Text>
+      </Pressable>
+      {disabled && helperText ? <Text style={styles.helperText}>{helperText}</Text> : null}
+    </View>
+  );
 }
 function DriverTrustCard() { return <View style={styles.trust}><Text style={styles.trustTitle}>✓ Driver & vehicle verified</Text><Text>Amara K. · 4.96 ★ · Toyota Camry · NOVA-26</Text><Text>NovaID · Vehicle compliance · Trust score 96</Text></View>; }
 function SmartMobilityBenefitsPanel({ palette, onAction }: { palette: typeof lightTheme; onAction: (label: string, next?: BookingStage) => void }) {
@@ -541,7 +686,12 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderRadius: 14, padding: 14 }, row: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   button: { backgroundColor: "#EEEAFD", padding: 13, borderRadius: 13, flexGrow: 1, alignItems: "center" }, buttonText: { color: "#4A35B5", fontWeight: "800" },
   primary: { backgroundColor: "#5B3DF5" }, danger: { backgroundColor: "#D9293E" }, buttonInverse: { color: "#FFF", fontWeight: "900" },
+  disabledButton: { opacity: 0.55 },
+  actionSlot: { flexGrow: 1, gap: 4, minWidth: "46%" },
+  helperText: { color: "#6E7486", fontSize: 11, fontWeight: "700" },
   rideType: { flexDirection: "row", justifyContent: "space-between", padding: 13, borderRadius: 14 }, selected: { backgroundColor: "#EEEAFD" }, itemTitle: { fontWeight: "800" }, fare: { fontWeight: "900" },
+  profileCard: { backgroundColor: "#EEF7F3", borderRadius: 14, gap: 4, padding: 14 },
+  profileTitle: { color: "#087A50", fontWeight: "900", textTransform: "uppercase" },
   fareCard: { backgroundColor: "#EEF7F3", padding: 14, borderRadius: 14 }, fareTitle: { color: "#087A50", fontWeight: "900" }, fareDetail: { color: "#345448", marginTop: 5 },
   trust: { backgroundColor: "#E8FBF2", borderRadius: 14, padding: 14, gap: 4 }, trustTitle: { color: "#087A50", fontWeight: "900" },
   mosGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },

@@ -152,6 +152,9 @@ export async function setAvailability(
     `/v1/driver/${encodeURIComponent(driverId)}/availability`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `availability:${encodeURIComponent(driverId)}:${status}`,
+      },
       body: {
         status,
       },
@@ -214,6 +217,9 @@ export async function acceptRide(
     `/v1/driver/rides/${encodeURIComponent(rideId)}/accept`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `accept:${encodeURIComponent(driverId)}:${encodeURIComponent(rideId)}`,
+      },
       body: { driver_id: driverId },
     },
   );
@@ -246,6 +252,9 @@ export async function rejectRide(
     `/v1/driver/rides/${encodeURIComponent(rideId)}/reject`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `reject:${encodeURIComponent(driverId)}:${encodeURIComponent(rideId)}`,
+      },
       body: { driver_id: driverId },
     },
   );
@@ -265,6 +274,9 @@ export async function markArrived(
     `/v1/driver/rides/${encodeURIComponent(rideId)}/arrive`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `arrive:${encodeURIComponent(driverId)}:${encodeURIComponent(rideId)}`,
+      },
       body: { driver_id: driverId },
     },
   );
@@ -284,6 +296,9 @@ export async function startTrip(
     `/v1/driver/rides/${encodeURIComponent(rideId)}/start`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `start:${encodeURIComponent(driverId)}:${encodeURIComponent(rideId)}`,
+      },
       body: { driver_id: driverId },
     },
   );
@@ -303,6 +318,9 @@ export async function completeTrip(
     `/v1/driver/rides/${encodeURIComponent(rideId)}/complete`,
     {
       method: "POST",
+      headers: {
+        "Idempotency-Key": `complete:${encodeURIComponent(driverId)}:${encodeURIComponent(rideId)}`,
+      },
       body: { driver_id: driverId },
     },
   );

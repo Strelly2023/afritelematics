@@ -15,7 +15,7 @@ from release_lineage import android_package_ids, current_android_fingerprint
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_VERSION = os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.3")
+DEFAULT_VERSION = os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.4")
 PLACEHOLDERS = {"pending", "pending-release-build", "pending-apksigner", "unknown"}
 
 

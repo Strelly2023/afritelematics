@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-version="${NOVARIDE_RELEASE_VERSION:-2026.1.3}"
+version="${NOVARIDE_RELEASE_VERSION:-2026.1.4}"
 release_dir="$root/apk-public/novaride/releases/$version"
 cert_pem="$release_dir/release_certificate.pem"
 cert_sha="$release_dir/release_certificate.sha256"

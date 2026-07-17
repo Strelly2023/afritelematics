@@ -25,9 +25,13 @@ def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     assert '"owner": "ostrinov23"' in app_config
     assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
+    assert "2026.1.4" in app_config
     assert 'globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")' in app
     assert "NovaRide Driver" in app
     assert 'throw new Error("Test mode required")' not in app
+    assert "clearAppSession" in app
+    assert "restoreAppSession" in app
+    assert "Log out" in app
 
 
 def test_driver_api_layer_owns_required_http_paths() -> None:
@@ -44,6 +48,7 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     assert "/v1/driver/rides/${encodeURIComponent(rideId)}/complete" in source
     assert "/v1/driver/${encodeURIComponent(driverId)}/earnings" in source
     assert "/v1/driver/${encodeURIComponent(driverId)}/replay-history" in source
+    assert "Idempotency-Key" in source
     assert "trust_score" in source
     assert "replay_verified" in source
     assert "/pilot/evidence" in evidence
@@ -60,6 +65,7 @@ def test_driver_flow_hydrates_availability_and_polls_for_new_rides() -> None:
     assert "refreshQueue" in source
     assert "setTimeout(refreshQueue, QUEUE_POLL_INTERVAL_MS)" in source
     assert 'state.availability?.status !== "available"' in source
+    assert "handleSessionExpired" in source
 
 
 def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
@@ -120,8 +126,10 @@ def test_driver_home_enforces_shift_before_availability() -> None:
 
     assert 'sessionLabel' in source
     assert '"No active trip"' in source
-    assert 'disabled={loading || !diagnostics.shiftStarted || isAvailable}' in source
+    assert 'disabled={loading || !canGoAvailable}' in source
+    assert "health?.networkConnected === false" in source
     assert "Start the shift to enable GPS, telemetry, and availability." in source
+    assert "End shift" in source
     assert "readCurrentPosition()" in pilot_hook
     assert "captureLocationEvidence(driverId, lastPosition, position)" in pilot_hook
 
@@ -163,6 +171,10 @@ def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
     assert "app_resumed" in pilot_hook
     assert "crash_event" in app
     assert "ride_accept_latency" in models
+    assert "clearAppSession" in app
+    assert "restoreAppSession" in app
+    assert "loggingOut" in app
+    assert "logoutButton" in app
 
 
 def test_ride_requests_screen_exposes_accept_and_reject_only() -> None:

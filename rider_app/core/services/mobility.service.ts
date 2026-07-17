@@ -91,6 +91,10 @@ export async function synchronizeRiderQueue() {
   return remaining.length;
 }
 
+export async function clearRiderMobilityState() {
+  await AsyncStorage.multiRemove([QUEUE_KEY, PUSH_KEY]);
+}
+
 export async function registerRiderPush(riderId: string) {
   if (!Device.isDevice) return null;
   const permission = await Notifications.requestPermissionsAsync();

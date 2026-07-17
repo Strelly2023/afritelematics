@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PROVENANCE = ROOT / "reports/mobile/releases/2026.1.3/novaride-release-provenance.json"
+PROVENANCE = ROOT / "reports/mobile/releases/2026.1.4/novaride-release-provenance.json"
 PLACEHOLDER = re.compile(r"^(pending|pending-release-build|unknown)$", re.I)
 
 

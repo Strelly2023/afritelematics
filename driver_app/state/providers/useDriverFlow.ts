@@ -28,6 +28,17 @@ import { queueDriverOperation } from "../../core/services/mobility.service";
 
 const QUEUE_POLL_INTERVAL_MS = 4000;
 const DRIVER_IDENTITY_REQUIRED_MESSAGE = "Driver identity is unavailable. Sign in again.";
+
+function isSessionExpired(error: unknown): boolean {
+  const text = error instanceof Error ? error.message.toLowerCase() : String(error || "").toLowerCase();
+  return (
+    text.includes("sign in again") ||
+    text.includes("authentication_required") ||
+    text.includes("authorization_denied") ||
+    text.includes("session_revoked") ||
+    text.includes("token_revoked")
+  );
+}
 export const DRIVER_CONNECTIVITY_STATES = [
   "NETWORK_OFFLINE",
   "API_UNAVAILABLE",
@@ -40,7 +51,7 @@ export const DRIVER_CONNECTIVITY_STATES = [
   "OFF_DUTY",
 ] as const;
 
-export function useDriverFlow(driverId: string) {
+export function useDriverFlow(driverId: string, handleSessionExpired?: () => void | Promise<void>) {
   const [state, setState] = useState<DriverAppState>(initialDriverAppState);
   const [realtimeState, setRealtimeState] =
     useState<RealtimeConnectionState>("idle");
@@ -111,6 +122,9 @@ export function useDriverFlow(driverId: string) {
             ? "Availability saved locally. Server confirmation is required before dispatchable status."
             : "Availability saved and will sync automatically.",
       }));
+      if (isSessionExpired(error)) {
+        await handleSessionExpired?.();
+      }
     }
   }
 
@@ -197,6 +211,9 @@ export function useDriverFlow(driverId: string) {
             error:
               "Ride queue sync failed. Driver status remains offline until the server confirms availability.",
           }));
+          if (isSessionExpired(error)) {
+            await handleSessionExpired?.();
+          }
         }
       } finally {
         if (active) {
@@ -279,6 +296,9 @@ export function useDriverFlow(driverId: string) {
         loading: false,
         error: error instanceof Error ? error.message : "accept_unavailable",
       }));
+      if (isSessionExpired(error)) {
+        await handleSessionExpired?.();
+      }
     }
   }
 
@@ -299,6 +319,9 @@ export function useDriverFlow(driverId: string) {
       }));
     } catch (error) {
       setError(error, "reject_unavailable");
+      if (isSessionExpired(error)) {
+        await handleSessionExpired?.();
+      }
     }
   }
 
@@ -338,6 +361,9 @@ export function useDriverFlow(driverId: string) {
       }));
     } catch (error) {
       setError(error, "trip_update_unavailable");
+      if (isSessionExpired(error)) {
+        await handleSessionExpired?.();
+      }
     }
   }
 

@@ -53,5 +53,5 @@ scripts/mobile/release_health_check.sh
 The health check must verify the certificate SHA-256:
 
 ```text
-117f77e5e461c6a111ae83d7b32cf84aa76f5be3287692795f54a229bccd12cc
+5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61
 ```

@@ -47,5 +47,5 @@ unless the historical fingerprint is verified.
 Current NovaRide v2 lineage fingerprint:
 
 ```text
-3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472
+5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61
 ```

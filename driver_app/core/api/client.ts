@@ -245,11 +245,12 @@ export async function apiRequest<T>(
   assertSecureTransport(API_BASE_URL, TEST_MODE);
 
   try {
+    const token = getAuthToken();
     const response = await fetch(buildRequestUrl(path), {
       method,
       headers: {
         "Content-Type": "application/json",
-        ...(getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...requestSecurityHeaders(method),
         ...instrumentationHeaders(clientEvent),
         ...(options.headers || {}),

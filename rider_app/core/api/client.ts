@@ -16,9 +16,13 @@ type RequestOptions = {
   headers?: Record<string, string>;
 };
 
-function toApiError(payload: unknown, fallback: string): Error {
+function toApiError(payload: unknown, fallback: string, status?: number): Error {
   if (payload && typeof payload === "object" && "detail" in payload) {
-    return new Error(String(payload.detail));
+    const detail = String(payload.detail);
+    if (status === 401 || status === 403 || /token|session|auth/i.test(detail)) {
+      return new Error("Sign in again.");
+    }
+    return new Error(detail);
   }
   return new Error(fallback);
 }
@@ -55,11 +59,12 @@ export async function apiRequest<T>(
   assertSecureTransport(API_BASE_URL, TEST_MODE);
 
   try {
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         "Content-Type": "application/json",
-        ...(getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...requestSecurityHeaders(method),
         ...instrumentationHeaders(clientEvent),
         ...(options.headers || {}),
@@ -74,7 +79,7 @@ export async function apiRequest<T>(
     const payload = await readResponsePayload(response);
 
     if (!response.ok) {
-      throw toApiError(payload, "api_request_failed");
+      throw toApiError(payload, "api_request_failed", response.status);
     }
 
     return payload as T;

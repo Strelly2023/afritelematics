@@ -115,6 +115,13 @@ export async function requestRide(
 
   const result = await apiRequest<RideRequestResponse>("/v1/rider/rides", {
     method: "POST",
+    headers: {
+      "Idempotency-Key": [
+        payload.riderId,
+        payload.pickup,
+        payload.dropoff,
+      ].map((part) => encodeURIComponent(String(part || ""))).join(":"),
+    },
     body: {
       rider_id: payload.riderId,
       pickup: payload.pickup,

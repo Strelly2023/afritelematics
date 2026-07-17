@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = "2026.1.3"
+VERSION = "2026.1.4"
 
 
 def version_code(path: Path) -> int:
@@ -20,8 +20,8 @@ def version_code(path: Path) -> int:
 
 def main() -> int:
     expected_codes = {
-        "rider_app": 6,
-        "driver_app": 6,
+        "rider_app": 7,
+        "driver_app": 7,
     }
     for app, minimum_version_code in expected_codes.items():
         app_json = json.loads((ROOT / app / "app.json").read_text(encoding="utf-8"))["expo"]

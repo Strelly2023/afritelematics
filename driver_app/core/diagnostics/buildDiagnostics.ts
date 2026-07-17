@@ -6,7 +6,7 @@ export function runBuildDiagnostics(): DiagnosticCheck[] {
     {
       key: "app_version",
       label: "App version",
-      status: runtimeConfig.releaseVersion === "2026.1.3" ? "PASS" : "FAIL",
+      status: runtimeConfig.releaseVersion === "2026.1.4" ? "PASS" : "FAIL",
       safeSummary: `${runtimeConfig.appName} ${runtimeConfig.releaseVersion}`,
       technicalReference: `versionCode=${runtimeConfig.versionCode} buildId=${runtimeConfig.buildId}`,
     },

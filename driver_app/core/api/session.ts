@@ -6,19 +6,29 @@ import {
   restoreSession,
 } from "../../../afriride_system/mobile/shared/secureSession";
 
+const APP_NAME = "driver";
+
 export async function setAuthToken(token: string | null): Promise<void> {
-  await persistSession(token, { app: "driver" });
+  await persistSession(token, { app: APP_NAME }, APP_NAME);
 }
 
 export async function setAuthSession(
   token: string | null,
   metadata: Record<string, unknown> = {},
 ): Promise<void> {
-  await persistSession(token, { app: "driver", ...metadata });
+  await persistSession(token, { app: APP_NAME, ...metadata }, APP_NAME);
 }
 
 export function getAuthToken(): string | null {
-  return getMemoryToken();
+  return getMemoryToken(APP_NAME);
 }
 
-export { clearSession, requireBiometricUnlock, restoreSession };
+export async function clearAppSession(): Promise<void> {
+  await clearSession(APP_NAME);
+}
+
+export async function restoreAppSession() {
+  return restoreSession(APP_NAME);
+}
+
+export { requireBiometricUnlock };

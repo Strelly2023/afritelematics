@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-version="2026.1.3"
+version="2026.1.4"
 channel="public-pilot"
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 release_dir="$root/apk-public/novaride/releases/$version"
@@ -45,9 +45,9 @@ for app in rider driver; do
   mv "$alias_tmp" "$alias_apk"
   write_sha256 "$alias_apk" "$alias_apk.sha256"
 done
-cp "$root/docs/mobile/release/novaride_rider_v2026.1.3_manifest.json" "$release_dir/novaride_rider_v2026.1.3_manifest.json"
-cp "$root/docs/mobile/release/novaride_driver_v2026.1.3_manifest.json" "$release_dir/novaride_driver_v2026.1.3_manifest.json"
-cp "$root/docs/mobile/release/NOVARIDE_V2026_1_3_RELEASE_NOTES.md" "$release_dir/NOVARIDE_V2026_1_3_RELEASE_NOTES.md"
+cp "$root/docs/mobile/release/novaride_rider_v2026.1.4_manifest.json" "$release_dir/novaride_rider_v2026.1.4_manifest.json"
+cp "$root/docs/mobile/release/novaride_driver_v2026.1.4_manifest.json" "$release_dir/novaride_driver_v2026.1.4_manifest.json"
+cp "$root/docs/mobile/release/NOVARIDE_V2026_1_4_RELEASE_NOTES.md" "$release_dir/NOVARIDE_V2026_1_4_RELEASE_NOTES.md"
 
 python3 "$root/scripts/mobile/assert_release_provenance.py"
 python3 "$root/scripts/mobile/generate_release_audit_report.py"

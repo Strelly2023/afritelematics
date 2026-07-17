@@ -239,6 +239,11 @@ export async function stopDriverBackgroundMobility() {
   await synchronizeDriverQueue();
 }
 
+export async function clearDriverMobilityState() {
+  await stopDriverBackgroundMobility().catch(() => undefined);
+  await AsyncStorage.multiRemove([QUEUE_KEY, ACTIVE_DRIVER_KEY, PUSH_KEY]);
+}
+
 export async function openDriverNavigation(destination: string) {
   const query = encodeURIComponent(destination);
   const url = Platform.select({

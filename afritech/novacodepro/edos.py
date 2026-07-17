@@ -681,11 +681,11 @@ def infrastructure_certification_records() -> list[dict[str, Any]]:
 def mobile_release_certificate() -> dict[str, Any]:
     pending_device = CertificationState(implemented=True, verified=True, certified=False, approved=False, evidence_refs=("reports/mobile/releases",), notes="Build, signing, SBOM, provenance, publication, and download checks may be implemented; physical device certification remains separate.")
     return {
-        "release_id": "novaride-driver-2026.1.3",
+        "release_id": "novaride-driver-2026.1.4",
         "release": {
             "product": "NovaRide",
             "application": "Driver",
-            "version": "2026.1.3",
+            "version": "2026.1.4",
         },
         "status": "CERTIFICATION_PENDING_DEVICE_AND_APPROVAL",
         "build": {"passed": True},

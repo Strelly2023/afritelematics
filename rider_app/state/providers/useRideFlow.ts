@@ -22,7 +22,18 @@ import { enqueueRiderOperation } from "../../core/services/mobility.service";
 
 const POLL_INTERVAL_MS = 4000;
 
-export function useRideFlow(riderId: string) {
+function isSessionExpired(error: unknown): boolean {
+  const text = error instanceof Error ? error.message.toLowerCase() : String(error || "").toLowerCase();
+  return (
+    text.includes("sign in again") ||
+    text.includes("authentication_required") ||
+    text.includes("authorization_denied") ||
+    text.includes("session_revoked") ||
+    text.includes("token_revoked")
+  );
+}
+
+export function useRideFlow(riderId: string, onSessionExpired?: () => void | Promise<void>) {
   const [state, setState] = useState<RiderAppState>(initialRiderAppState);
   const [realtimeState, setRealtimeState] =
     useState<RealtimeConnectionState>("idle");
@@ -85,6 +96,9 @@ export function useRideFlow(riderId: string) {
         error: error instanceof Error ? error.message : "request_failed",
         loading: false,
       }));
+      if (isSessionExpired(error)) {
+        await onSessionExpired?.();
+      }
       return null;
     }
   }
@@ -124,6 +138,9 @@ export function useRideFlow(riderId: string) {
             ...current,
             error: error instanceof Error ? error.message : "status_unavailable",
           }));
+          if (isSessionExpired(error)) {
+            await onSessionExpired?.();
+          }
         }
       } finally {
         if (active) timeout = setTimeout(refreshStatus, POLL_INTERVAL_MS);

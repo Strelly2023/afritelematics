@@ -1,54 +1,83 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const TOKEN_KEY = "afriride.auth.token.v2";
-const SESSION_KEY = "afriride.auth.session.v2";
-let memoryToken = null;
+const TOKEN_PREFIX = "afriride.auth.token.v2";
+const SESSION_PREFIX = "afriride.auth.session.v2";
+const memoryTokens = new Map();
 
-export function getMemoryToken() {
-  return memoryToken;
+function normalizeAppName(app = "shared") {
+  return String(app || "shared").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
 }
 
-export async function persistSession(token, metadata = {}) {
-  memoryToken = token && token.trim() ? token.trim() : null;
-  if (!memoryToken) {
+function tokenKey(app) {
+  return `${TOKEN_PREFIX}.${normalizeAppName(app)}`;
+}
+
+function sessionKey(app) {
+  return `${SESSION_PREFIX}.${normalizeAppName(app)}`;
+}
+
+function setMemoryToken(app, token) {
+  const key = normalizeAppName(app);
+  if (token && token.trim()) {
+    memoryTokens.set(key, token.trim());
+    return;
+  }
+  memoryTokens.delete(key);
+}
+
+export function getMemoryToken(app = "shared") {
+  return memoryTokens.get(normalizeAppName(app)) || null;
+}
+
+export async function persistSession(token, metadata = {}, app = metadata?.app || "shared") {
+  const normalizedApp = normalizeAppName(app);
+  const safeToken = token && token.trim() ? token.trim() : null;
+  setMemoryToken(normalizedApp, safeToken);
+  if (!safeToken) {
     await Promise.all([
-      SecureStore.deleteItemAsync(TOKEN_KEY),
-      SecureStore.deleteItemAsync(SESSION_KEY),
+      SecureStore.deleteItemAsync(tokenKey(normalizedApp)),
+      SecureStore.deleteItemAsync(sessionKey(normalizedApp)),
     ]);
     return;
   }
-  await SecureStore.setItemAsync(TOKEN_KEY, memoryToken, {
+  await SecureStore.setItemAsync(tokenKey(normalizedApp), safeToken, {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });
   await SecureStore.setItemAsync(
-    SESSION_KEY,
-    JSON.stringify({ ...metadata, storedAt: new Date().toISOString() }),
+    sessionKey(normalizedApp),
+    JSON.stringify({
+      ...metadata,
+      app: normalizedApp,
+      storedAt: new Date().toISOString(),
+    }),
     { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY },
   );
 }
 
-export async function restoreSession() {
-  memoryToken = await SecureStore.getItemAsync(TOKEN_KEY);
-  const raw = await SecureStore.getItemAsync(SESSION_KEY);
+export async function restoreSession(app = "shared") {
+  const normalizedApp = normalizeAppName(app);
+  const token = await SecureStore.getItemAsync(tokenKey(normalizedApp));
+  setMemoryToken(normalizedApp, token);
+  const raw = await SecureStore.getItemAsync(sessionKey(normalizedApp));
   if (!raw) {
     return {
-      token: memoryToken,
+      token: getMemoryToken(normalizedApp),
       metadata: null,
     };
   }
 
   try {
     return {
-      token: memoryToken,
+      token: getMemoryToken(normalizedApp),
       metadata: JSON.parse(raw),
     };
   } catch {
     await Promise.all([
-      SecureStore.deleteItemAsync(TOKEN_KEY),
-      SecureStore.deleteItemAsync(SESSION_KEY),
+      SecureStore.deleteItemAsync(tokenKey(normalizedApp)),
+      SecureStore.deleteItemAsync(sessionKey(normalizedApp)),
     ]);
-    memoryToken = null;
+    setMemoryToken(normalizedApp, null);
     return {
       token: null,
       metadata: null,
@@ -72,8 +101,8 @@ export async function requireBiometricUnlock(reason = "Unlock AfriRide") {
   return { success: result === "enabled", reason: result ? null : "authentication_failed" };
 }
 
-export async function clearSession() {
-  return persistSession(null);
+export async function clearSession(app = "shared") {
+  return persistSession(null, {}, app);
 }
 
 export function requestSecurityHeaders(method) {

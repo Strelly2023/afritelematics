@@ -17,6 +17,7 @@ def test_novaride_rider_branding_and_android_identity() -> None:
     strings = read("android/app/src/main/res/values/strings.xml")
     assert config["name"] == "NovaRide Rider"
     assert config["android"]["package"] == "com.novatech.novaride.rider"
+    assert config["version"] == "2026.1.4"
     assert "com.novatech.novaride.rider" in gradle
     assert "NovaRide Rider" in strings
 
@@ -24,7 +25,10 @@ def test_novaride_rider_branding_and_android_identity() -> None:
 def test_rider_map_first_tabs_and_required_actions() -> None:
     app = read("App.tsx")
     assert "RiderLoginScreen" in app
-    assert "Logout" in app
+    assert "clearAppSession" in app
+    assert "restoreAppSession" in app
+    assert "Log out" in app
+    assert "profileCard" in app
     for tab in ["Home", "Trips", "Safety", "Receipts", "Profile"]:
         assert tab in app
     for action in [
@@ -35,6 +39,8 @@ def test_rider_map_first_tabs_and_required_actions() -> None:
         assert f'label="{action}"' in app or action == "Choose Ride Type"
     assert "Live rides map" in app
     assert "onPress=" in app
+    assert "disabled={!canReviewReceipt}" in app
+    assert "Session: {authenticated ? \"Active\" : \"Signed out\"}" in app
 
 
 def test_rider_booking_safety_payment_and_evidence_flows() -> None:
@@ -43,12 +49,13 @@ def test_rider_booking_safety_payment_and_evidence_flows() -> None:
         "choose pickup/dropoff", "review fare", "request ride", "match driver",
         "verify vehicle/driver", "NovaPay payment completed", "Digital proof receipt",
         "SOS active", "Operations notified", "Evidence frozen", "Replay package signed",
-        "NovaID verified",
+        "NovaID verified", "canConfirmFare", "canRequestRide", "canReviewReceipt",
     ]:
         assert marker.lower() in app.lower()
     assert "useRideFlow" in app
     assert "submitRideRequest" in app
     assert "Ride request submitted" in app
+    assert "Idempotency-Key" in read("core/api/ride.service.ts")
 
 
 def test_rider_accessibility_theme_and_offline_states() -> None:
@@ -58,3 +65,5 @@ def test_rider_accessibility_theme_and_offline_states() -> None:
     assert "darkTheme" in app
     assert "low-bandwidth" in app.lower()
     assert '"offline"' in app
+    assert "Logging out…" in app
+    assert "clearRiderMobilityState" in app

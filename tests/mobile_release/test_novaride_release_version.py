@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = "2026.1.3"
+VERSION = "2026.1.4"
 
 
 def read(path: str) -> str:
@@ -15,8 +15,8 @@ def read(path: str) -> str:
 
 def test_novaride_apps_versions_are_2026_1_2() -> None:
     expected_codes = {
-        "rider_app": 6,
-        "driver_app": 6,
+        "rider_app": 7,
+        "driver_app": 7,
     }
     for app, expected_code in expected_codes.items():
         config = json.loads(read(f"{app}/app.json"))["expo"]

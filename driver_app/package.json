@@ -1,6 +1,6 @@
 {
   "name": "novaride-driver-app",
-  "version": "2026.1.3",
+  "version": "2026.1.4",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {

@@ -1,0 +1,31 @@
+{
+  "product": "NovaRide",
+  "version": "2026.1.4",
+  "build_time": "2026-07-17T11:15:49.766046+00:00",
+  "signed": false,
+  "fingerprint": "5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61",
+  "artifact_integrity_verified": true,
+  "device_smoke_verified": false,
+  "verified": false,
+  "published": false,
+  "ga_allowed": false,
+  "real_payments_enabled": false,
+  "artifacts": {
+    "rider": {
+      "apk": "novaride-rider-v2026.1.4-public-pilot.apk",
+      "present": true,
+      "byte_size": 73332247,
+      "sha256": "565b36d7799f1a2ddad4cf73bb0cb56917b7763dc26d1df20f7a12e9683f4b6d",
+      "sha256_file_present": true,
+      "manifest_match": true
+    },
+    "driver": {
+      "apk": "novaride-driver-v2026.1.4-public-pilot.apk",
+      "present": true,
+      "byte_size": 62323460,
+      "sha256": "84358daaca9e6e3dfd371fec13ce69e08f548b846fdebd07bc356512201d61db",
+      "sha256_file_present": true,
+      "manifest_match": true
+    }
+  }
+}

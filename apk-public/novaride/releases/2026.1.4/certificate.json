@@ -1,0 +1,9 @@
+{
+  "product": "NovaRide",
+  "version": "2026.1.4",
+  "android_alias": "novaride-release",
+  "certificate_sha256": "5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61",
+  "generated_at": "2026-07-17T11:15:33.719341+00:00",
+  "certificate_pem": "release_certificate.pem",
+  "certificate_file_sha256": "release_certificate.sha256"
+}

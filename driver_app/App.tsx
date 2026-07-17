@@ -1,5 +1,7 @@
 import React, { Component, useEffect, useState } from "react";
 import {
+  Alert,
+  BackHandler,
   SafeAreaView,
   Pressable,
   ScrollView,
@@ -14,9 +16,9 @@ import { usePilotEvidence } from "./state/providers/usePilotEvidence";
 import { loginPilot } from "./core/api/auth.service";
 import { extractAuthIdentity } from "./core/api/auth.service";
 import {
-  clearSession,
+  clearAppSession,
   requireBiometricUnlock,
-  restoreSession,
+  restoreAppSession,
 } from "./core/api/session";
 import {
   APP_LOCALE,
@@ -51,6 +53,7 @@ import { spacing } from "./ui/theme/spacing";
 import { ProductTabs } from "./ui/widgets/ProductTabs";
 import { DriverNavigationMap } from "./ui/widgets/DriverNavigationMap";
 import { useDriverMobility } from "./state/providers/useDriverMobility";
+import { clearDriverMobilityState } from "./core/services/mobility.service";
 import {
   AdaptiveScaffold,
   AnimatedEntrance,
@@ -161,7 +164,7 @@ class DriverAppErrorBoundary extends Component<{ children: React.ReactNode }, Dr
   }
 
   override componentDidCatch(error: Error) {
-    void clearSession().catch(() => undefined);
+    void clearAppSession().catch(() => undefined);
     console.error("NovaRide Driver crash boundary", error);
   }
 
@@ -202,6 +205,7 @@ function DriverApp() {
   const [loginError, setLoginError] = useState("");
   const [loginDiagnostic, setLoginDiagnostic] = useState("");
   const [driverId, setDriverId] = useState(runtimeConfig.driverId || "");
+  const [loggingOut, setLoggingOut] = useState(false);
   const [connectivityChecks, setConnectivityChecks] = useState<ConnectivityCheck[]>([]);
   const [checkingConnection, setCheckingConnection] = useState(false);
   const globalRuntime = useGlobalRuntime(
@@ -210,6 +214,37 @@ function DriverApp() {
     REGION_ID,
     APP_LOCALE || undefined,
   );
+  async function performLogout(reason = "Logged out", skipBackend = false) {
+    if (trip) {
+      setLoginError("Complete or recover the active trip before logging out.");
+      return;
+    }
+    setLoggingOut(true);
+    try {
+      if (availability?.status === "available") {
+        await updateAvailability("offline").catch(() => undefined);
+      }
+      await mobility.stop().catch(() => undefined);
+      await clearDriverMobilityState().catch(() => undefined);
+      if (!skipBackend) {
+        await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined);
+      }
+      await clearAppSession().catch(() => undefined);
+    } finally {
+      setAuthenticated(false);
+      setDriverId("");
+      setLoginError("");
+      setLoginDiagnostic(reason);
+      setPassword("pilot");
+      setActiveTab("dashboard");
+      setCheckingConnection(false);
+      setConnectivityChecks([]);
+      setLoggingOut(false);
+    }
+  }
+  const handleSessionExpired = React.useCallback(async () => {
+    await performLogout("Session expired. Sign in again.", true);
+  }, []);
   const localizedDriverTabs: Array<{ key: PrimaryDriverTab; label: string }> = [
     { key: "dashboard", label: "Dashboard" },
     { key: "requests", label: "Requests" },
@@ -232,7 +267,7 @@ function DriverApp() {
     startTrip,
     trip,
     updateAvailability,
-  } = useDriverFlow(driverId);
+  } = useDriverFlow(driverId, handleSessionExpired);
   const operator = useOperatorDashboard();
   const { capture, diagnostics, startShift } = usePilotEvidence(driverId);
   const mobility = useDriverMobility(
@@ -252,11 +287,23 @@ function DriverApp() {
     }
   }
 
+  const requestLogout = React.useCallback(() => {
+    Alert.alert("Log out of NovaRide?", "You can log in again as a different driver after logout.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Log out", style: "destructive", onPress: () => void performLogout("Logged out") },
+    ]);
+  }, [performLogout]);
+
+  React.useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => !authenticated);
+    return () => sub.remove();
+  }, [authenticated]);
+
   useEffect(() => {
     let active = true;
     void (async () => {
       try {
-        const restored = await restoreSession();
+        const restored = await restoreAppSession();
         if (!restored.token || !active) return;
         const restoredDriverId =
           typeof restored.metadata?.driverId === "string" && restored.metadata.driverId
@@ -272,13 +319,13 @@ function DriverApp() {
           ? { success: true }
           : await requireBiometricUnlock("Unlock NovaRide Driver");
         if (active && unlock.success) setAuthenticated(true);
-        else if (!unlock.success) await clearSession();
+        else if (!unlock.success) await clearAppSession();
       } catch (error) {
         if (active) {
           const failure = describeLoginFailure(error);
           setLoginError(failure.message);
           setLoginDiagnostic(failure.diagnostic);
-          await clearSession().catch(() => undefined);
+          await clearAppSession().catch(() => undefined);
         }
       }
     })();
@@ -465,6 +512,7 @@ function DriverApp() {
                       availability={availability}
                       earnings={earnings}
                       diagnostics={diagnostics}
+                      health={mobility.health}
                       loading={loading}
                       onGoAvailable={() => updateAvailability("available")}
                       onGoOffline={async () => {
@@ -480,6 +528,18 @@ function DriverApp() {
                         }
                       }}
                       onStartShift={startShift}
+                      onEndShift={async () => {
+                        try {
+                          await updateAvailability("offline");
+                          await mobility.stop();
+                        } catch (offlineError) {
+                          setLoginError(
+                            offlineError instanceof Error
+                              ? offlineError.message
+                              : "end_shift_failed",
+                          );
+                        }
+                      }}
                     />
                   <DriverCloudPanel />
                 </>
@@ -548,6 +608,8 @@ function DriverApp() {
                     email={email}
                     availability={availability}
                     earnings={earnings}
+                    onLogout={requestLogout}
+                    loggingOut={loggingOut}
                   />
                   <DriverNotificationsScreen notifications={notifications} />
                 </>
@@ -557,6 +619,9 @@ function DriverApp() {
                   onVehicle={() => setActiveTab("vehicle")}
                   onSafety={() => setActiveTab("safety")}
                   onDiagnostics={() => setActiveTab("safety")}
+                  onSettings={() => setActiveTab("profile")}
+                  onLogout={requestLogout}
+                  loggingOut={loggingOut}
                 />
               ) : null}
             </AnimatedEntrance>
@@ -579,10 +644,16 @@ function MoreScreen({
   onVehicle,
   onSafety,
   onDiagnostics,
+  onSettings,
+  onLogout,
+  loggingOut,
 }: {
   onVehicle: () => void;
   onSafety: () => void;
   onDiagnostics: () => void;
+  onSettings: () => void;
+  onLogout: () => void;
+  loggingOut?: boolean;
 }) {
   return (
     <View style={styles.moreCard}>
@@ -593,9 +664,17 @@ function MoreScreen({
       <View style={styles.moreGrid}>
         <MoreAction label="Vehicle" detail="Documents and compliance" onPress={onVehicle} />
         <MoreAction label="Safety" detail="Trust profile and replay" onPress={onSafety} />
-        <MoreAction label="Settings" detail="Profile and account controls" onPress={onDiagnostics} />
+        <MoreAction label="Settings" detail="Profile and account controls" onPress={onSettings} />
         <MoreAction label="Support" detail="Diagnostics and connection checks" onPress={onDiagnostics} />
       </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: Boolean(loggingOut) }}
+        onPress={loggingOut ? undefined : onLogout}
+        style={[styles.logoutButton, loggingOut ? styles.logoutButtonDisabled : null]}
+      >
+        <Text style={styles.logoutButtonLabel}>{loggingOut ? "Logging out…" : "Log out"}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -717,6 +796,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: spacing.md,
     padding: spacing.lg,
+  },
+  logoutButton: {
+    alignItems: "center",
+    backgroundColor: colors.danger,
+    borderRadius: 12,
+    minHeight: 48,
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  logoutButtonDisabled: {
+    opacity: 0.6,
+  },
+  logoutButtonLabel: {
+    color: colors.panel,
+    fontSize: 16,
+    fontWeight: "900",
   },
   moreGrid: {
     flexDirection: "row",

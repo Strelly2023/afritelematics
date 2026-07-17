@@ -46,7 +46,7 @@ export const ATTESTATION_POLICY = normalizeAttestationPolicy(
 );
 
 export const APP_VERSION =
-  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.3";
+  process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.4";
 
 export const RELEASE_CHANNEL =
   process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";

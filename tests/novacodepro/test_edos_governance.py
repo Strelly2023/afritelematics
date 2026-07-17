@@ -128,7 +128,7 @@ def test_mobile_release_certificate_preserves_device_and_approval_pending() -> N
     certificate = mobile_release_certificate()
 
     assert certificate["status"] == "CERTIFICATION_PENDING_DEVICE_AND_APPROVAL"
-    assert certificate["release"] == {"product": "NovaRide", "application": "Driver", "version": "2026.1.3"}
+    assert certificate["release"] == {"product": "NovaRide", "application": "Driver", "version": "2026.1.4"}
     assert certificate["build"]["passed"] is True
     assert certificate["tests"]["passed"] is True
     assert certificate["device"]["certified"] is False

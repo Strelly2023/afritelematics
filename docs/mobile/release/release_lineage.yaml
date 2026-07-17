@@ -21,7 +21,7 @@ release_lineage:
       - id: v2
         active: true
         alias: novaride-release
-        certificate_sha256: 3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472
+        certificate_sha256: 5bd809c088bb1634af02f2880fba44d13f732635fcb2eff74aa49ca8f47f9d61
         status: production
         custody_status: escrowed-macos-keychain-pending-secondary-backup
         verified_release_versions: []

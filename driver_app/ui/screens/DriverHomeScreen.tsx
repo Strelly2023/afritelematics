@@ -10,25 +10,30 @@ import { PrimaryButton } from "../widgets/PrimaryButton";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import type { DriverMobilityHealth } from "../../core/services/mobility.service";
 
 type DriverHomeScreenProps = {
   availability: DriverAvailability | null;
   earnings: EarningsSummary | null;
   diagnostics: DiagnosticsSnapshot;
+  health: DriverMobilityHealth | null;
   loading: boolean;
   onGoAvailable: () => void;
   onGoOffline: () => void;
   onStartShift: () => void;
+  onEndShift: () => void;
 };
 
 export function DriverHomeScreen({
   availability,
   earnings,
   diagnostics,
+  health,
   loading,
   onGoAvailable,
   onGoOffline,
   onStartShift,
+  onEndShift,
 }: DriverHomeScreenProps) {
   const trustScore = availability?.trustScore || earnings?.trustScore || 94;
   const trips = earnings?.rideCount || availability?.verifiedRides || 0;
@@ -43,6 +48,27 @@ export function DriverHomeScreen({
     : diagnostics.shiftStarted
       ? "Server confirmation pending"
       : "No active trip";
+  const availabilityReason = !diagnostics.shiftStarted
+    ? "Start the shift to enable GPS, telemetry, and availability."
+    : health?.networkConnected === false
+      ? "Go online once the network connection is restored."
+      : health?.backgroundLocation === false
+        ? "Grant location permissions first."
+        : health?.deviceTrusted === false
+          ? "Use a trusted device before going available."
+          : !diagnostics.lastLocation
+            ? "Waiting for a valid GPS fix."
+            : isAvailable
+              ? "You are currently dispatchable."
+              : "Go available once the shift, GPS, and network checks pass.";
+  const canGoAvailable =
+    diagnostics.shiftStarted &&
+    !isAvailable &&
+    health?.networkConnected !== false &&
+    health?.backgroundLocation !== false &&
+    health?.deviceTrusted !== false &&
+    Boolean(diagnostics.lastLocation);
+  const canGoOffline = isAvailable;
   const [intelligence, setIntelligence] = useState<DriverIntelligenceFeed | null>(null);
 
   useEffect(() => {
@@ -232,24 +258,20 @@ export function DriverHomeScreen({
           <PrimaryButton
             label={isAvailable ? "Available" : "Go available"}
             onPress={onGoAvailable}
-            disabled={loading || !diagnostics.shiftStarted || isAvailable}
+            disabled={loading || !canGoAvailable}
           />
           <PrimaryButton
             label="Go offline"
             onPress={onGoOffline}
-            disabled={loading || !isAvailable}
+            disabled={loading || !canGoOffline}
             tone="danger"
           />
           <PrimaryButton
-            label={diagnostics.shiftStarted ? "Shift started" : "Start shift"}
-            onPress={onStartShift}
-            disabled={loading || diagnostics.shiftStarted}
+            label={diagnostics.shiftStarted ? "End shift" : "Start shift"}
+            onPress={diagnostics.shiftStarted ? onEndShift : onStartShift}
+            disabled={loading}
           />
-          {!diagnostics.shiftStarted ? (
-            <Text style={styles.actionHint}>
-              Start the shift to enable GPS, telemetry, and availability.
-            </Text>
-          ) : null}
+          <Text style={styles.actionHint}>{availabilityReason}</Text>
         </View>
       </SurfacePanel>
     </View>

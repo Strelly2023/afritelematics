@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import type { DriverAvailability, EarningsSummary } from "../../core/models/driver";
 import { DriverReputationCard } from "../widgets/DriverReputationCard";
+import { PrimaryButton } from "../widgets/PrimaryButton";
 import { TrustScoreCard } from "../widgets/TrustScoreCard";
 import { SurfacePanel } from "../widgets/SurfacePanel";
 import { colors } from "../theme/colors";
@@ -13,6 +14,8 @@ type DriverProfileScreenProps = {
   email: string;
   availability: DriverAvailability | null;
   earnings: EarningsSummary | null;
+  onLogout: () => void;
+  loggingOut?: boolean;
 };
 
 export function DriverProfileScreen({
@@ -20,6 +23,8 @@ export function DriverProfileScreen({
   email,
   availability,
   earnings,
+  onLogout,
+  loggingOut,
 }: DriverProfileScreenProps) {
   const trustScore = earnings?.trustScore || availability?.trustScore || 94;
   const verifiedRides = availability?.verifiedRides || earnings?.verifiedRideCount || 0;
@@ -46,6 +51,12 @@ export function DriverProfileScreen({
         <Text style={styles.label}>Availability</Text>
         <Text style={styles.status}>{availability?.status || "offline"}</Text>
       </View>
+      <PrimaryButton
+        label={loggingOut ? "Logging out…" : "Log out"}
+        onPress={onLogout}
+        tone="danger"
+        disabled={Boolean(loggingOut)}
+      />
     </SurfacePanel>
   );
 }

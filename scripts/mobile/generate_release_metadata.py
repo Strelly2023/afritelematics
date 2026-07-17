@@ -13,7 +13,7 @@ from release_lineage import android_package_ids, current_android_fingerprint
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSIONS = {"rider": 6, "driver": 6}
+VERSIONS = {"rider": 7, "driver": 7}
 
 
 def sha256(path: Path) -> str:
@@ -32,7 +32,7 @@ def git_value(*args: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", default=os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.3"))
+    parser.add_argument("--version", default=os.environ.get("NOVARIDE_RELEASE_VERSION", "2026.1.4"))
     parser.add_argument("--release-dir", type=Path)
     parser.add_argument("--publication-base", default="https://download.afritechnology.com/novaride/releases")
     args = parser.parse_args()
