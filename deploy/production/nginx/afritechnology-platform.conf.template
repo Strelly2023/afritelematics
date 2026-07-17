@@ -27,7 +27,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name afritechnology.com www.afritechnology.com app.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -49,7 +50,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name api.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -71,7 +73,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name novacodepro.afritechnology.com;
 
     ssl_certificate ${NOVACODEPRO_SSL_CERTIFICATE};
@@ -110,7 +113,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name identity.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -132,7 +136,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name trust.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -154,7 +159,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name merchant.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -176,7 +182,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name business.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -198,7 +205,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name operator.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -220,7 +228,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name agent.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -242,7 +251,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name fleet.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -264,7 +274,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name support.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -286,7 +297,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name status.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -308,7 +320,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name developer.afritechnology.com docs.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -330,7 +343,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name download.afritechnology.com;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;
@@ -505,7 +519,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2 default_server;
+    listen 443 ssl default_server;
+    http2 on;
     server_name _;
 
     ssl_certificate /etc/letsencrypt/live/afritechnology.com/fullchain.pem;

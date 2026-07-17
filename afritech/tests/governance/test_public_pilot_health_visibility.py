@@ -80,7 +80,7 @@ def test_docker_compose_contains_healthchecks() -> None:
     assert "interval: 30s" in text
     assert "timeout: 5s" in text
     assert "retries: 5" in text
-    assert "start_period: 20s" in text
+    assert "start_period: 30s" in text
 
 
 def test_monitoring_documents_and_prometheus_config_exist() -> None:

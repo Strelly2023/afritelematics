@@ -21,7 +21,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name www.${AFRITECH_DOMAIN};
 
   ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
@@ -35,7 +36,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name ${AFRITECH_DOMAIN} about.${AFRITECH_DOMAIN} careers.${AFRITECH_DOMAIN} news.${AFRITECH_DOMAIN} trust.${AFRITECH_DOMAIN} status.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN} developer.${AFRITECH_DOMAIN} docs.${AFRITECH_DOMAIN} sdk.${AFRITECH_DOMAIN} events.${AFRITECH_DOMAIN} gateway.${AFRITECH_DOMAIN} support.${AFRITECH_DOMAIN} download.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
@@ -93,7 +95,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name app.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
@@ -210,7 +213,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name novacodepro.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
@@ -258,7 +262,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name api.${AFRITECH_DOMAIN} verify.${AFRITECH_DOMAIN};
   resolver 127.0.0.11 valid=10s ipv6=off;
   set $afritech_api afritech-api:8000;
@@ -287,7 +292,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2 default_server;
+  listen 443 ssl default_server;
+  http2 on;
   server_name _;
 
   ssl_certificate /etc/letsencrypt/live/${AFRITECH_DOMAIN}/fullchain.pem;
