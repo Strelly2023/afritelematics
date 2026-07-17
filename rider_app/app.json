@@ -24,6 +24,19 @@
       "bundleIdentifier": "com.novatech.novaride.rider",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSPinnedDomains": {
+            "api.afritechnology.com": {
+              "NSIncludesSubdomains": true,
+              "NSPinnedCAIdentities": [
+                {
+                  "SPKI-SHA256-BASE64": "brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4="
+                }
+              ]
+            }
+          }
+        },
         "NSCameraUsageDescription": "NovaRide uses the camera for QR payment and receipt capture flows.",
         "NSUserNotificationUsageDescription": "NovaRide sends payment, security, and transfer notifications."
       }

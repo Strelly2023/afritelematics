@@ -23,6 +23,7 @@ record_node_signal = resilience.record_node_signal
 record_replay_divergence = resilience.record_replay_divergence
 
 
+@pytest.mark.django_db
 def test_consensus_accepts_majority_and_exposes_minority_nodes():
     result = evaluate_state_hash_consensus(
         {"node-a": "state-1", "node-b": "state-1", "node-c": "state-2"}

@@ -39,8 +39,8 @@ def test_novacodepro_portal_covers_the_expected_workspaces() -> None:
     )
     for token in [
         "NovaCodePro",
-        "What would you like NovaCodePro to build or solve?",
-        "Platform doctrine",
+        "What would you like to accomplish today?",
+        "AI doctrine",
         "AI proposes. Policies constrain. Humans authorize. Systems execute.",
         "Request summary",
         "Suggested solution",

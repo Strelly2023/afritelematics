@@ -4,12 +4,31 @@ import os
 import sys
 from pathlib import Path
 
-import pytest
-
-
-_DJANGO_TABLES_READY = False
 ROOT = Path(__file__).resolve().parent
 DJANGO_APP = ROOT / "afriride_system/django_app"
+PYTEST_RUNTIME = Path(
+    os.environ.get("AFRITECH_PYTEST_RUNTIME", f"/tmp/afritech-pytest-{os.getpid()}")
+)
+PYTEST_WORKER = os.environ.get("PYTEST_XDIST_WORKER")
+if PYTEST_WORKER:
+    PYTEST_RUNTIME = PYTEST_RUNTIME / PYTEST_WORKER
+PYTEST_RUNTIME.mkdir(parents=True, exist_ok=True)
+
+# API modules construct persistent repositories at import time. Keep collection
+# isolated from production filesystem defaults and from the tracked db.sqlite3.
+_runtime_environment = {
+    "NOVATECH_RUNTIME_CONTROL_SQLITE_PATH": PYTEST_RUNTIME / "runtime-control.sqlite3",
+    "NOVATECH_EVIDENCE_ROOT": PYTEST_RUNTIME / "runtime-evidence",
+    "AFRIRIDE_DB_PATH": PYTEST_RUNTIME / "pilot-state.sqlite3",
+}
+for _name, _path in _runtime_environment.items():
+    if PYTEST_WORKER:
+        # The controller's generated paths are inherited by xdist workers.
+        # Override them so workers never share mutable runtime state.
+        os.environ[_name] = str(_path)
+    else:
+        os.environ.setdefault(_name, str(_path))
+os.environ.setdefault("AFRIPAY_CELERY_ALWAYS_EAGER", "1")
 
 if str(DJANGO_APP) not in sys.path:
     sys.path.insert(0, str(DJANGO_APP))
@@ -30,58 +49,6 @@ def pytest_configure() -> None:
     if not apps.ready:
         django.setup()
 
-    _ensure_django_tables()
-
-
-def _ensure_django_tables() -> None:
-    global _DJANGO_TABLES_READY
-
-    if _DJANGO_TABLES_READY:
-        return
-
-    try:
-        from django.apps import apps
-        from django.db import connection
-    except ModuleNotFoundError:
-        return
-
-    existing_tables = set(connection.introspection.table_names())
-
-    with connection.schema_editor() as schema:
-        for model in apps.get_models():
-            if model._meta.db_table in existing_tables:
-                continue
-            schema.create_model(model)
-            existing_tables.add(model._meta.db_table)
-
-    _DJANGO_TABLES_READY = True
-
-
-def _clear_django_tables() -> None:
-    try:
-        from django.apps import apps
-        from django.db import DatabaseError, connection
-    except ModuleNotFoundError:
-        return
-
-    connection.disable_constraint_checking()
-    try:
-        for model in reversed(apps.get_models()):
-            try:
-                model.objects.all().delete()
-            except DatabaseError:
-                continue
-    finally:
-        connection.enable_constraint_checking()
-
-
-@pytest.fixture(autouse=True)
-def _django_db_marker_compat(request: pytest.FixtureRequest):
-    if request.node.get_closest_marker("django_db") is None:
-        yield
-        return
-
-    _ensure_django_tables()
-    _clear_django_tables()
-    yield
-    _clear_django_tables()
+    # Database creation belongs to pytest-django's django_db setup. Accessing the
+    # connection during pytest_configure bypasses its blocker and makes clean
+    # environments fail before collection.

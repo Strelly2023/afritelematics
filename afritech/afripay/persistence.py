@@ -152,7 +152,7 @@ def _payload_hash(payload: dict[str, Any]) -> str:
     ).hexdigest()
 
 
-def _with_retry(operation, *, attempts: int = 12, base_delay: float = 0.05):
+def _with_retry(operation, *, attempts: int = 40, base_delay: float = 0.02):
     last_error: Exception | None = None
     for attempt in range(attempts):
         try:

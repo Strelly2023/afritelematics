@@ -5,11 +5,12 @@ from __future__ import annotations
 from decimal import Decimal
 from hashlib import sha256
 import json
+import time
 from importlib import import_module
 from typing import Any
 
-from django.db import transaction as db_transaction
-from django.db import IntegrityError
+from django.db import close_old_connections, transaction as db_transaction
+from django.db import IntegrityError, OperationalError
 
 from afritech.afripay.api import AfriPayService
 from afritech.afripay.events import canonical_hash
@@ -100,37 +101,44 @@ def ensure_pool(provider: str, currency: str):
 
 def append_event(event_type: str, aggregate_id: str, payload: dict[str, Any]):
     models = _afripay_models()
-    previous = models.EventRecord.objects.filter(aggregate_id=aggregate_id).order_by("-id").first()
-    previous_hash = previous.hash_chain if previous is not None else "GENESIS"
     event_id = "evt." + canonical_hash({"event_type": event_type, "aggregate_id": aggregate_id, "payload": payload})[:24]
-    hash_chain = sha256(
-        json.dumps(
-            {
-                "event_id": event_id,
-                "event_type": event_type,
-                "aggregate_id": aggregate_id,
-                "payload": payload,
-                "previous_hash": previous_hash,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-            default=str,
-        ).encode("utf-8")
-    ).hexdigest()
-    try:
-        with db_transaction.atomic():
-            return models.EventRecord.objects.create(
-                event_id=event_id,
-                event_type=event_type,
-                aggregate_id=aggregate_id,
-                payload=payload,
-                hash_chain=hash_chain,
-            )
-    except IntegrityError:
-        existing = models.EventRecord.objects.filter(event_id=event_id).first()
-        if existing is None:
-            raise
-        return existing
+    for attempt in range(40):
+        try:
+            existing = models.EventRecord.objects.filter(event_id=event_id).first()
+            if existing is not None:
+                return existing
+            previous = models.EventRecord.objects.filter(aggregate_id=aggregate_id).order_by("-id").first()
+            previous_hash = previous.hash_chain if previous is not None else "GENESIS"
+            hash_chain = sha256(
+                json.dumps(
+                    {
+                        "event_id": event_id,
+                        "event_type": event_type,
+                        "aggregate_id": aggregate_id,
+                        "payload": payload,
+                        "previous_hash": previous_hash,
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest()
+            with db_transaction.atomic():
+                return models.EventRecord.objects.create(
+                    event_id=event_id,
+                    event_type=event_type,
+                    aggregate_id=aggregate_id,
+                    payload=payload,
+                    hash_chain=hash_chain,
+                )
+        except (IntegrityError, OperationalError) as exc:
+            if isinstance(exc, OperationalError) and "locked" not in str(exc).lower():
+                raise
+            if attempt == 39:
+                raise
+            close_old_connections()
+            time.sleep(0.005 * (attempt + 1))
+    raise RuntimeError("event persistence retry exhausted")
 
 
 def _post_ledger_entry(models, tx):

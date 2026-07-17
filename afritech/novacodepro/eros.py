@@ -564,6 +564,9 @@ def simulate_twin(twin: dict[str, Any], payload: dict[str, Any]) -> dict[str, An
         },
     })
     simulated["scores"] = dict(simulated["resilience"])
+    required_approvals = list(payload.get("required_approvals") or (
+        ["NovaPolicy", "NovaRisk", "NovaCompliance"] if blast_radius >= 3 else ["NovaPolicy"]
+    ))
     return {
         "id": _new_id("simulation"),
         "twin_id": simulated["id"],
@@ -579,9 +582,8 @@ def simulate_twin(twin: dict[str, Any], payload: dict[str, Any]) -> dict[str, An
             "validate downstream dependencies",
             "capture evidence",
         ]),
-        "required_approvals": list(payload.get("required_approvals") or (
-            ["NovaPolicy", "NovaRisk", "NovaCompliance"] if blast_radius >= 3 else ["NovaPolicy"]
-        )),
+        "approval_required": bool(required_approvals),
+        "required_approvals": required_approvals,
         "confidence": float(payload.get("confidence") or min(0.99, 0.7 + blast_radius * 0.04)),
         "simulated_twin": simulated,
         "created_at": _now(),

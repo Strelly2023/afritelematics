@@ -1,4 +1,4 @@
-id: RULE-043
+id: RULE-072
 name: public_pilot_safety
 status: ACTIVE
 classification: PUBLIC_PILOT_SAFETY_RULE
@@ -10,7 +10,7 @@ description: >
 
 linked_artifacts:
   adr: adr/ADR-0023-public-pilot-activation.yaml
-  binding: afritech/governance/bindings/BIND-022-public-pilot-compliance.yaml
+  binding: afritech/governance/bindings/BIND-050-public-pilot-compliance.yaml
   guard: afritech/guards/guard_public_pilot_release.py
   limits_guard: afritech/guards/guard_public_pilot_limits.py
   geography_guard: afritech/guards/guard_public_pilot_geography.py

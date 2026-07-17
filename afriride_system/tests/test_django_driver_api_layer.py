@@ -12,6 +12,9 @@ from afritech.api import afriride_driver_views
 from afriride_system.django_app.config.middleware import AFRIRIDE_ALLOWED_HEADERS
 
 
+pytestmark = pytest.mark.django_db
+
+
 ROOT = Path(__file__).resolve().parents[2]
 DJANGO_APP = ROOT / "afriride_system/django_app"
 

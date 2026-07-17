@@ -4,12 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version"
+        description: Release version
         required: true
-        default: "2026.1.1"
+        default: 2026.1.3
   push:
     tags:
-      - "novaride-mobile-v*"
+      - novaride-mobile-v*
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_VERSION: ${{ inputs.version || '2026.1.3' }}
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
 
 jobs:
   preflight:
@@ -18,132 +26,193 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Version and host gates
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Version and source host gates
         run: |
           python3 scripts/mobile/assert_version_increment.py
           python3 scripts/mobile/assert_no_stale_api_hosts.py
-          python3 scripts/mobile/verify_release_manifest.py
 
-  typecheck:
-    runs-on: ubuntu-latest
-    needs: preflight
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Rider typecheck
-        working-directory: rider_app
-        run: npm ci && npm run typecheck
-      - name: Driver typecheck
-        working-directory: driver_app
-        run: npm ci && npm run typecheck
-
-  unit-tests:
+  source-validation:
     runs-on: ubuntu-latest
     needs: preflight
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            rider_app/package-lock.json
+            driver_app/package-lock.json
+      - run: npm --prefix rider_app ci
+      - run: npm --prefix driver_app ci
+      - run: npm --prefix rider_app run typecheck
+      - run: npm --prefix driver_app run typecheck
       - name: Mobile release tests
         run: python3 -m pytest -q tests/mobile_release rider_app/tests driver_app/tests
-
-  contract-tests:
-    runs-on: ubuntu-latest
-    needs: preflight
-    steps:
-      - uses: actions/checkout@v4
       - name: API contract preflight
         run: python3 scripts/mobile/verify_novaride_api_contract.py
 
-  android-build:
+  signed-android-build:
     runs-on: ubuntu-latest
-    needs: [typecheck, unit-tests, contract-tests]
+    needs: source-validation
+    environment: mobile-public-pilot-staging
     steps:
       - uses: actions/checkout@v4
-      - name: Build Rider APK
-        working-directory: rider_app/android
-        run: ./gradlew clean assembleRelease
-      - name: Build Driver APK
-        working-directory: driver_app/android
-        run: ./gradlew clean assembleRelease
-
-  apk-validation:
-    runs-on: ubuntu-latest
-    needs: android-build
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate APK scripts are present
-        run: |
-          test -x scripts/mobile/verify_apk_artifact.sh || chmod +x scripts/mobile/verify_apk_artifact.sh
-          test -f scripts/mobile/verify_public_apk_release.py
-
-  signing-validation:
-    runs-on: ubuntu-latest
-    needs: android-build
-    steps:
-      - uses: actions/checkout@v4
-      - name: Materialize signing keystore
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Materialize and verify release signing authority
         env:
           AFRIRIDE_ANDROID_KEYSTORE_BASE64: ${{ secrets.AFRIRIDE_ANDROID_KEYSTORE_BASE64 }}
-        run: |
-          export AFRIRIDE_ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/novaride-release-keystore.jks"
-          scripts/mobile/materialize_android_keystore.sh "$AFRIRIDE_ANDROID_KEYSTORE_PATH"
-          echo "AFRIRIDE_ANDROID_KEYSTORE_PATH=$AFRIRIDE_ANDROID_KEYSTORE_PATH" >> "$GITHUB_ENV"
-      - name: Verify signing credentials
-        env:
           AFRIRIDE_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEYSTORE_PASSWORD }}
           AFRIRIDE_ANDROID_KEY_ALIAS: ${{ secrets.AFRIRIDE_ANDROID_KEY_ALIAS }}
           AFRIRIDE_ANDROID_KEY_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEY_PASSWORD }}
           SIGNING_SECRET_PROVIDER: github-actions
-        run: scripts/mobile/verify_release_signing_credentials.sh
+        run: |
+          export AFRIRIDE_ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/novaride-release-keystore.jks"
+          scripts/mobile/materialize_android_keystore.sh "$AFRIRIDE_ANDROID_KEYSTORE_PATH"
+          echo "AFRIRIDE_ANDROID_KEYSTORE_PATH=$AFRIRIDE_ANDROID_KEYSTORE_PATH" >> "$GITHUB_ENV"
+          scripts/mobile/verify_release_signing_credentials.sh
+      - name: Build signed Rider and Driver APKs
+        env:
+          AFRIRIDE_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEYSTORE_PASSWORD }}
+          AFRIRIDE_ANDROID_KEY_ALIAS: ${{ secrets.AFRIRIDE_ANDROID_KEY_ALIAS }}
+          AFRIRIDE_ANDROID_KEY_PASSWORD: ${{ secrets.AFRIRIDE_ANDROID_KEY_PASSWORD }}
+        run: |
+          rider_app/android/gradlew -p rider_app/android clean assembleRelease
+          driver_app/android/gradlew -p driver_app/android clean assembleRelease
+          mkdir -p "apk-public/novaride/releases/$RELEASE_VERSION"
+          cp rider_app/android/app/build/outputs/apk/release/app-release.apk "apk-public/novaride/releases/$RELEASE_VERSION/novaride-rider-v$RELEASE_VERSION-public-pilot.apk"
+          cp driver_app/android/app/build/outputs/apk/release/app-release.apk "apk-public/novaride/releases/$RELEASE_VERSION/novaride-driver-v$RELEASE_VERSION-public-pilot.apk"
+      - name: Bind signed APKs to manifest and provenance
+        env:
+          NOVARIDE_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+        run: |
+          python3 scripts/mobile/generate_release_metadata.py --version "$RELEASE_VERSION"
+          python3 scripts/mobile/verify_release_manifest.py --version "$RELEASE_VERSION" --require-apk-tools
+          python3 scripts/mobile/assert_release_provenance.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: novaride-signed-${{ env.RELEASE_VERSION }}
+          path: |
+            apk-public/novaride/releases/${{ env.RELEASE_VERSION }}/
+            reports/mobile/releases/${{ env.RELEASE_VERSION }}/novaride-release-provenance.json
+          if-no-files-found: error
+          retention-days: 30
 
-  publication-staging:
+  artifact-validation:
     runs-on: ubuntu-latest
-    needs: [apk-validation, signing-validation]
-    environment: mobile-public-pilot-staging
+    needs: signed-android-build
     steps:
       - uses: actions/checkout@v4
-      - name: Stage publication
-        run: echo "stage immutable artifacts"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: novaride-signed-${{ env.RELEASE_VERSION }}
+          path: release-bundle
+      - name: Revalidate transferred APK bytes
+        run: |
+          python3 scripts/mobile/verify_release_manifest.py --version "$RELEASE_VERSION" --release-dir "release-bundle/apk-public/novaride/releases/$RELEASE_VERSION" --require-apk-tools
 
-  public-url-validation:
+  device-smoke:
     runs-on: ubuntu-latest
-    needs: publication-staging
+    needs: artifact-validation
+    strategy:
+      matrix:
+        app: [rider, driver]
+        package:
+          - com.novatech.novaride.rider
+          - com.novatech.novaride.driver
+        exclude:
+          - app: rider
+            package: com.novatech.novaride.driver
+          - app: driver
+            package: com.novatech.novaride.rider
     steps:
       - uses: actions/checkout@v4
-      - name: Public URL validation
-        run: echo "verify static APK URLs before production approval"
-
-  release-approval:
-    runs-on: ubuntu-latest
-    needs: public-url-validation
-    environment: mobile-public-pilot-production
-    steps:
-      - run: echo "manual approval required by protected environment"
+      - uses: actions/download-artifact@v4
+        with:
+          name: novaride-signed-${{ env.RELEASE_VERSION }}
+          path: release-bundle
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          script: |
+            adb install "release-bundle/apk-public/novaride/releases/$RELEASE_VERSION/novaride-${{ matrix.app }}-v$RELEASE_VERSION-public-pilot.apk"
+            adb shell monkey -p "${{ matrix.package }}" -c android.intent.category.LAUNCHER 1
+            adb shell pidof "${{ matrix.package }}"
 
   publication-production:
     runs-on: ubuntu-latest
-    needs: release-approval
+    needs: device-smoke
     environment: mobile-public-pilot-production
     steps:
       - uses: actions/checkout@v4
-      - name: Publish production
-        run: echo "publish immutable APKs after approval"
+      - uses: actions/download-artifact@v4
+        with:
+          name: novaride-signed-${{ env.RELEASE_VERSION }}
+          path: release-bundle
+      - name: Configure publication SSH trust
+        env:
+          NOVARIDE_PUBLICATION_SSH_KEY: ${{ secrets.NOVARIDE_PUBLICATION_SSH_KEY }}
+          NOVARIDE_PUBLICATION_KNOWN_HOSTS: ${{ secrets.NOVARIDE_PUBLICATION_KNOWN_HOSTS }}
+        run: |
+          test -n "$NOVARIDE_PUBLICATION_SSH_KEY"
+          test -n "$NOVARIDE_PUBLICATION_KNOWN_HOSTS"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$NOVARIDE_PUBLICATION_SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$NOVARIDE_PUBLICATION_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+      - name: Publish immutable release bundle
+        env:
+          NOVARIDE_PUBLICATION_TARGET: ${{ secrets.NOVARIDE_PUBLICATION_TARGET }}
+        run: bash scripts/mobile/publish_static_release.sh "release-bundle/apk-public/novaride/releases/$RELEASE_VERSION" "$RELEASE_VERSION"
 
-  post-publication-smoke-test:
+  post-publication-verification:
     runs-on: ubuntu-latest
     needs: publication-production
     steps:
-      - run: echo "run post-publication smoke test checklist"
+      - uses: actions/checkout@v4
+      - name: Verify public Rider and Driver bytes
+        run: |
+          base="https://download.afritechnology.com/novaride/releases/$RELEASE_VERSION"
+          python3 scripts/mobile/verify_public_apk_release.py --apk-url "$base/novaride-rider-v$RELEASE_VERSION-public-pilot.apk" --sha256-url "$base/novaride-rider-v$RELEASE_VERSION-public-pilot.apk.sha256"
+          python3 scripts/mobile/verify_public_apk_release.py --apk-url "$base/novaride-driver-v$RELEASE_VERSION-public-pilot.apk" --sha256-url "$base/novaride-driver-v$RELEASE_VERSION-public-pilot.apk.sha256"
 
   release-report:
     runs-on: ubuntu-latest
-    needs: post-publication-smoke-test
+    needs: post-publication-verification
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: novaride-signed-${{ env.RELEASE_VERSION }}
+          path: release-bundle
       - name: Generate release audit report
-        run: python3 scripts/mobile/generate_release_audit_report.py
+        env:
+          NOVARIDE_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+          NOVARIDE_SIGNING_VERIFIED: "1"
+          NOVARIDE_DEVICE_SMOKE_VERIFIED: "1"
+          NOVARIDE_PUBLICATION_VERIFIED: "1"
+        run: |
+          rm -rf "apk-public/novaride/releases/$RELEASE_VERSION"
+          mkdir -p "apk-public/novaride/releases/$RELEASE_VERSION"
+          cp -R "release-bundle/apk-public/novaride/releases/$RELEASE_VERSION/." "apk-public/novaride/releases/$RELEASE_VERSION/"
+          python3 scripts/mobile/generate_release_audit_report.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: novaride-release-audit-${{ env.RELEASE_VERSION }}
+          path: apk-public/novaride/releases/${{ env.RELEASE_VERSION }}/release-audit-report.json
+          if-no-files-found: error

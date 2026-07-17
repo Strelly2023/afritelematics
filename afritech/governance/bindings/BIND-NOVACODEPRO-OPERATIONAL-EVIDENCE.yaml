@@ -4,3 +4,7 @@ binds:
   - INVARIANT-NOVACODEPRO-VERIFICATION-BEFORE-APPROVAL
   - INVARIANT-NOVACODEPRO-GA-SEPARATE-FROM-PAYMENTS
 enforcement: guards_and_api_policy
+ci:
+  tests:
+    - tests/novacodepro/operational_verification/e2e/test_honest_e2e.py
+    - tests/novacodepro/operational_verification/approvals/test_approvals.py

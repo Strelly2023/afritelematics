@@ -102,6 +102,7 @@ const ts = require('./novapay_consumer_app/node_modules/typescript');
 const fs = require('fs');
 const vm = require('vm');
 let source = fs.readFileSync('packages/novatech-platform-sdk/src/index.ts', 'utf8');
+source = source.replace(/^export \*.*$/gm, '');
 source = source.replace(/export /g, '');
 source += '\\nresult = { corridors: scenarioCorridors.length, documented: scenarioRegistrySummary.currentDocumentedJourneys, target: scenarioRegistrySummary.totalTarget, ids: scenarioCorridors.map((item) => item.corridorId) };';
 const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2021 } }).outputText;

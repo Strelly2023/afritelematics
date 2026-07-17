@@ -74,9 +74,9 @@ def test_nginx_template_contains_healthz_probe() -> None:
 
 def test_docker_compose_contains_healthchecks() -> None:
     text = COMPOSE.read_text(encoding="utf-8")
-    assert 'test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]' in text
-    assert 'test: ["CMD", "wget", "-qO-", "http://localhost:4173"]' in text
-    assert 'test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]' in text
+    assert 'test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]' in text
+    assert 'test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4173/"]' in text
+    assert 'test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]' in text
     assert "interval: 30s" in text
     assert "timeout: 5s" in text
     assert "retries: 5" in text

@@ -56,7 +56,7 @@ def test_public_pilot_approval_and_exit_report_are_present() -> None:
     assert len(approval["approved_devices"]) == 40
     assert "READY_FOR_PRR" in report
     assert "PRODUCTION_READINESS_REVIEW" in prr
-    assert "BLOCKED" in prr
+    assert "blocked_by_prr_review: true" in prr
 
 
 def test_public_pilot_docs_exist() -> None:

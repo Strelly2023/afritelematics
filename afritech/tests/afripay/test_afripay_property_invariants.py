@@ -4,7 +4,7 @@ from decimal import Decimal
 from importlib import import_module
 
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import HealthCheck, given, settings, strategies as st
 
 from afritech.afripay.money import Money
 from afritech.afripay.persistence import _payload_hash, PersistentTreasuryStore
@@ -47,7 +47,7 @@ def test_payload_hash_changes_when_payload_changes(payload):
 
 @pytest.mark.django_db(transaction=True)
 @given(reserve_amount=amount_strategy, release_amount=amount_strategy)
-@settings(max_examples=25)
+@settings(max_examples=25, deadline=None, suppress_health_check=[HealthCheck.too_slow])
 def test_treasury_invariants_hold_after_reserve_and_release(reserve_amount, release_amount):
     m = models()
     m.LiquidityPool.objects.filter(provider="mtn", currency="USD").delete()

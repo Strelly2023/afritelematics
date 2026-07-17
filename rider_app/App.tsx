@@ -4,11 +4,19 @@ import {
 } from "react-native";
 
 import { useRideFlow } from "./state/providers/useRideFlow";
+import { apiRequest } from "./core/api/client";
 import { loginPilot, extractAuthIdentity } from "./core/api/auth.service";
 import { clearSession, restoreSession } from "./core/api/session";
-import { ORGANIZATION_ID, TEST_MODE } from "./core/config/environment";
+import { APP_LOCALE, ORGANIZATION_ID, REGION_ID, TEST_MODE } from "./core/config/environment";
 import { runtimeConfig } from "./core/config/runtimeConfig";
 import { RiderLoginScreen } from "./ui/screens/RiderLoginScreen";
+import {
+  AdaptiveScaffold,
+  AnimatedEntrance,
+  SkeletonBlock,
+  SyncBanner,
+} from "../afriride_system/mobile/shared/mobileExcellence";
+import { useGlobalRuntime } from "../afriride_system/mobile/shared/globalRuntime";
 
 type RiderTab = "Home" | "Book Ride" | "Trips" | "Wallet" | "Safety" | "Receipts" | "Profile";
 type BookingStage = "places" | "category" | "fare" | "matching" | "tracking" | "trip" | "payment" | "receipt";
@@ -181,6 +189,12 @@ export default function NovaRideRiderApp() {
   const [riderId, setRiderId] = useState("");
   const palette = dark ? darkTheme : lightTheme;
   const { requestedRide, submitRideRequest } = useRideFlow(riderId);
+  const globalRuntime = useGlobalRuntime(
+    apiRequest,
+    ORGANIZATION_ID,
+    REGION_ID,
+    APP_LOCALE || undefined,
+  );
 
   React.useEffect(() => {
     let active = true;
@@ -283,6 +297,19 @@ export default function NovaRideRiderApp() {
   };
 
   return (
+    <AdaptiveScaffold
+      testID="rider-adaptive-scaffold"
+      brandColor={globalRuntime.brand.primary_color}
+      navigation={authenticated ? (
+        <View style={[styles.tabs, { backgroundColor: palette.surface }]}>
+          {(["Home", "Book Ride", "Trips", "Wallet", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => (
+            <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}>
+              <Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : undefined}
+    >
     <View style={[styles.screen, { backgroundColor: palette.background }]}>
       <StatusBar barStyle={dark ? "light-content" : "dark-content"} />
       <SafeAreaView style={styles.safe}>
@@ -290,7 +317,7 @@ export default function NovaRideRiderApp() {
           <View style={styles.loginShell}>
             <View style={styles.header}>
               <View>
-                <Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text>
+                <Text style={[styles.brand, { color: palette.text }]}>{globalRuntime.brand.name}</Text>
                 <Text style={styles.kicker}>
                   RIDER · NOVAID VERIFIED · {runtimeConfig.releaseChannel}
                 </Text>
@@ -322,7 +349,7 @@ export default function NovaRideRiderApp() {
           <>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.brand, { color: palette.text }]}>NovaRide</Text>
+            <Text style={[styles.brand, { color: palette.text }]}>{globalRuntime.brand.name}</Text>
             <Text style={styles.kicker}>RIDER · NOVAID VERIFIED · {runtimeConfig.releaseChannel}</Text>
             <Text style={[styles.versionLabel, { color: palette.muted }]}>
               v{runtimeConfig.releaseVersion} · API {runtimeConfig.apiBaseUrl}
@@ -330,7 +357,10 @@ export default function NovaRideRiderApp() {
           </View>
           <Pressable accessibilityRole="button" accessibilityLabel="Toggle dark or light mode" onPress={() => setDark(!dark)} style={[styles.icon, { backgroundColor: palette.surface }]}><Text>{dark ? "☀" : "☾"}</Text></Pressable>
         </View>
+        <SyncBanner online={state !== "offline"} pending={state === "offline" ? 1 : 0} />
+        <AnimatedEntrance>
         <ScrollView contentContainerStyle={styles.content}>
+          {state === "loading" ? <SkeletonBlock height={96} /> : null}
           <View accessibilityLabel="Live rides map" style={styles.map}>
             <Text style={styles.mapPin}>●</Text><Text style={styles.mapRoad}>╱━━━━━━●━━━━━━╲</Text>
             <Text style={styles.mapLabel}>Map-first live city view · Low-bandwidth ready</Text>
@@ -444,13 +474,14 @@ export default function NovaRideRiderApp() {
           </View>
           {!!message && <Text accessibilityLiveRegion="polite" style={styles.success}>{message}</Text>}
           {requestedRide ? <Text style={{ color: palette.muted, textAlign: "center" }}>Request ID: {requestedRide.rideId}</Text> : null}
-          <Text style={{ color: palette.muted, textAlign: "center" }}>{state === "offline" ? "Offline · request queued safely" : "Online · Live tracking available"}</Text>
+          <Text style={{ color: palette.muted, textAlign: "center" }}>{state === "offline" ? "Offline · request queued safely" : `Online · ${globalRuntime.region.currency} · Live tracking available`}</Text>
         </ScrollView>
-          <View style={[styles.tabs, { backgroundColor: palette.surface }]}>{(["Home", "Book Ride", "Trips", "Wallet", "Safety", "Receipts", "Profile"] as RiderTab[]).map((item) => <Pressable accessibilityRole="tab" accessibilityLabel={`${item} tab`} key={item} onPress={() => setTab(item)}><Text style={{ color: item === tab ? "#5B3DF5" : palette.muted, fontWeight: "800" }}>{item}</Text></Pressable>)}</View>
+        </AnimatedEntrance>
           </>
         )}
       </SafeAreaView>
     </View>
+    </AdaptiveScaffold>
   );
 }
 

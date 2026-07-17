@@ -3,11 +3,29 @@ import { createRoot } from "react-dom/client";
 import { audiences, fallbackProducts, fallbackServices, fallbackSite } from "./data.js";
 import { loadPublicGateway, searchPublic, submitContact } from "./api.js";
 import "./styles.css";
+import { NovaHouseReachDetail } from "./novahousereach.jsx";
+import { NovaDashDoorDetail } from "./novadashdoor.jsx";
+import { NovaLogisticsDetail } from "./novalogistics.jsx";
+import { NovaPayDetail } from "./novapay.jsx";
+import { NovaIDDetail } from "./novaid.jsx";
+import { NovaTrustDetail } from "./novatrust.jsx";
+import { NovaCommerceDetail } from "./novacommerce.jsx";
+import { NovaCloudDetail } from "./novacloud.jsx";
+import { NovaConnectDetail } from "./novaconnect.jsx";
 
 const pages = {
   "/": "Home",
   "/platform": "Platform",
   "/products": "Products",
+  "/products/novahousereach": "NovaHouseReach",
+  "/products/novadashdoor": "NovaDashDoor",
+  "/products/novalogistics": "NovaLogistics X",
+  "/products/novapay": "NovaPay",
+  "/products/novaid": "NovaID",
+  "/products/novatrust": "NovaTrust",
+  "/products/novacommerce": "NovaCommerce",
+  "/products/novacloud": "NovaCloud",
+  "/products/novaconnect": "NovaConnect",
   "/apps": "Apps",
   "/solutions": "Solutions",
   "/industries": "Industries",
@@ -1269,9 +1287,9 @@ function DeveloperExperiencePage({ site = fallbackSite }) {
 function ArchitectureExplorerPage() {
   const layers = [
     ["Governance", "Policies, approvals, risk, compliance."],
-    ["Platform", "NovaID, NovaAI, NovaCloud, NovaGateway."],
+    ["Platform", "NovaID, NovaAI, NovaCloud, NovaConnect, NovaGateway."],
     ["Knowledge", "Runbooks, ADRs, evidence, lessons learned."],
-    ["Products", "NovaRide, NovaPay, NovaHealth, NovaCommerce."],
+    ["Products", "NovaRide, NovaPay, NovaHealth, NovaCommerce, NovaHouseReach, NovaDashDoor, NovaLogistics."],
     ["Apps", "Public web, portals, dashboards, and workspace shells."],
   ];
   return (
@@ -1431,7 +1449,20 @@ function App() {
     loadPublicGateway().then(setData);
   }, []);
   useEffect(() => {
-    const title = pages[path] ? `${pages[path]} | AfriTechnology` : path.startsWith("/products/") ? "Product | AfriTechnology" : "AfriTechnology | Trusted Digital Platforms";
+    const isNovaHouseReach = path === "/products/novahousereach";
+    const isNovaDashDoor = path === "/products/novadashdoor";
+    const isNovaLogistics = path === "/products/novalogistics";
+    const isNovaPay = path === "/products/novapay";
+    const isNovaID = path === "/products/novaid";
+    const isNovaTrust = path === "/products/novatrust";
+    const isNovaCommerce = path === "/products/novacommerce";
+    const isNovaCloud = path === "/products/novacloud";
+    const isNovaConnect = path === "/products/novaconnect";
+    const title = pages[path]
+      ? `${pages[path]} | AfriTechnology`
+      : path.startsWith("/products/")
+        ? "Product | AfriTechnology"
+        : "AfriTechnology | Trusted Digital Platforms";
     document.title = path === "/" ? "AfriTechnology | Trusted Digital Platforms" : title;
     const description = path === "/downloads"
       ? "Signed artifacts, checksums, and release evidence for AfriTechnology."
@@ -1441,6 +1472,24 @@ function App() {
           ? "Application launcher and governed portal discovery for the AfriTechnology ecosystem."
           : path === "/products"
             ? "Governed product catalog for AfriTechnology platforms and services."
+            : isNovaHouseReach
+              ? "NovaHouseReach is NovaTech's property operating system for discovery, finance, lease management, maintenance, and trust."
+              : isNovaDashDoor
+                ? "NovaDashDoor is NovaTech's AI-powered local commerce and last-mile delivery platform."
+                : isNovaLogistics
+                  ? "NovaLogistics X is NovaTech's logistics operating system for parcels, freight, warehousing, and chain of custody."
+                  : isNovaPay
+                    ? "NovaPay is NovaTech's payments and financial operations platform for wallets, settlement, and trust-backed money movement."
+                    : isNovaID
+                      ? "NovaID is NovaTech's identity and access platform for passkeys, verification, consent, and device trust."
+                      : isNovaTrust
+                        ? "NovaTrust is NovaTech's evidence, assurance, policy, and verification platform."
+                        : isNovaCommerce
+                          ? "NovaCommerce is NovaTech's commerce operating system for merchants, customers, inventory, and checkout."
+                          : isNovaCloud
+                            ? "NovaCloud is NovaTech's cloud infrastructure and platform services layer."
+                            : isNovaConnect
+                              ? "NovaConnect is NovaTech's API gateway, integrations, and partner ecosystem."
             : "Secure, intelligent, and connected digital platforms for payments, mobility, identity, commerce, healthcare, logistics, government, and enterprise operations.";
     const robots = path === "/dashboard" ? "noindex,nofollow" : "index,follow";
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
@@ -1481,7 +1530,27 @@ function App() {
   const route = useMemo(() => path.replace(/\/$/, "") || "/", [path]);
   if (!data) return <main id="main" className="loading" aria-live="polite">Loading AfriTechnology...</main>;
   const page = route.startsWith("/products/") ? (
-    <ProductDetail products={data.products} slug={route.split("/").pop()} />
+    route === "/products/novahousereach" ? (
+      <NovaHouseReachDetail navigate={navigate} />
+    ) : route === "/products/novadashdoor" ? (
+      <NovaDashDoorDetail navigate={navigate} />
+    ) : route === "/products/novalogistics" ? (
+      <NovaLogisticsDetail navigate={navigate} />
+    ) : route === "/products/novapay" ? (
+      <NovaPayDetail navigate={navigate} />
+    ) : route === "/products/novaid" ? (
+      <NovaIDDetail navigate={navigate} />
+    ) : route === "/products/novatrust" ? (
+      <NovaTrustDetail navigate={navigate} />
+    ) : route === "/products/novacommerce" ? (
+      <NovaCommerceDetail navigate={navigate} />
+    ) : route === "/products/novacloud" ? (
+      <NovaCloudDetail navigate={navigate} />
+    ) : route === "/products/novaconnect" ? (
+      <NovaConnectDetail navigate={navigate} />
+    ) : (
+      <ProductDetail products={data.products} slug={route.split("/").pop()} />
+    )
   ) : route === "/" ? (
     <Home data={data} />
   ) : route === "/products" ? (

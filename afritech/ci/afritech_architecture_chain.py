@@ -189,7 +189,11 @@ class ArchitectureChainValidator:
                         raise ArchitectureViolation(f"{sub_id} missing enforcement logic")
                     self.state.rule_ids.add(sub_id)
                     self.state.rule_to_invariants[sub_id] = linked
-            elif "enforcement" not in payload and "rule" not in payload:
+            elif (
+                "enforcement" not in payload
+                and "rule" not in payload
+                and "requirements" not in payload
+            ):
                 raise ArchitectureViolation(f"{rule_id} missing enforcement logic")
         print("✅ RULE Check: PASS")
 
@@ -326,8 +330,17 @@ def _python_attr_exists(path: Path, attr: str) -> bool:
 
 def _read_tests_source() -> str:
     chunks: list[str] = []
-    for path in TESTS_DIR.rglob("test_*.py"):
-        chunks.append(path.read_text(encoding="utf-8"))
+    test_roots = (
+        TESTS_DIR,
+        ROOT / "tests",
+        ROOT / "afriride_system/tests",
+        ROOT / "ecosystems/afriride/tests",
+    )
+    for test_root in test_roots:
+        if not test_root.exists():
+            continue
+        for path in test_root.rglob("test_*.py"):
+            chunks.append(path.read_text(encoding="utf-8"))
     return "\n".join(chunks)
 
 

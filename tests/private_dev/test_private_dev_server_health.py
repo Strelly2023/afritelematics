@@ -5,6 +5,8 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
+from afritech.api.auth.jwt_device_auth import JWT
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afriride_system.api.main import app
 
 
@@ -39,6 +41,10 @@ def test_private_dev_server_health_and_authorized_snapshots() -> None:
 
 def test_rider_request_reaches_driver_queue_in_private_dev() -> None:
     client = TestClient(app)
+    driver_token = JWT.create_token(
+        "driver-1", role="DRIVER", organization_id=DEFAULT_ORGANIZATION_ID
+    )
+    driver_headers = {"Authorization": f"Bearer {driver_token}"}
     ride_id = f"ride-private-dev-{uuid4().hex[:8]}"
     rider_request = client.post(
         "/v1/rider/rides",
@@ -59,10 +65,11 @@ def test_rider_request_reaches_driver_queue_in_private_dev() -> None:
     driver_online = client.post(
         "/v1/driver/driver-1/availability",
         json={"status": "available"},
+        headers=driver_headers,
     )
     assert driver_online.status_code == 200
 
-    queue = client.get("/v1/driver/driver-1/ride-queue")
+    queue = client.get("/v1/driver/driver-1/ride-queue", headers=driver_headers)
     assert queue.status_code == 200
     assert queue.json()["requested_count"] >= 1
     assert any(item["ride_id"] == ride_id for item in queue.json()["items"])

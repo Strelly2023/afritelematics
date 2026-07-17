@@ -3250,7 +3250,7 @@ def build_afriride_next_gen_mobile_router() -> APIRouter:
     @router.post("/drivers/location")
     def update_driver_location_compat(
         payload: DriverLocationRequest,
-        claims: JWTClaims = Depends(require_driver_self_or_roles("OPERATOR", "FLEET_OWNER")),
+        claims: JWTClaims = Depends(get_current_claims),
         gateway=Depends(get_gateway),
     ) -> dict[str, Any]:
         _require_driver_self_or_roles(payload.driver_id, claims=claims, allowed_roles=("OPERATOR", "FLEET_OWNER"))

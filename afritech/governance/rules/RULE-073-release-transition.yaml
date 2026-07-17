@@ -1,4 +1,4 @@
-id: RULE-044
+id: RULE-073
 name: release_transition
 status: ACTIVE
 classification: RELEASE_TRANSITION_RULE
@@ -10,7 +10,7 @@ description: >
 
 linked_artifacts:
   adr: adr/ADR-0024-release-governance.yaml
-  binding: afritech/governance/bindings/BIND-023-release-domains.yaml
+  binding: afritech/governance/bindings/BIND-051-release-domains.yaml
   release_config: config/release.json
   prr: docs/prr/PRR-001-production-readiness-review.yaml
 

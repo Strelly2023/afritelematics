@@ -110,7 +110,7 @@ def test_android_and_ios_certificate_pins_are_configured() -> None:
 
 def test_android_apps_ship_native_play_integrity_bridge() -> None:
     packages = {
-        "rider_app": "com/ostrinov23/afririderapp",
+        "rider_app": "com/novatech/novaride/rider",
         "driver_app": "com/ostrinov23/afriridedrivertest",
     }
     for app, package in packages.items():
@@ -123,4 +123,4 @@ def test_android_apps_ship_native_play_integrity_bridge() -> None:
         assert "requestIntegrityToken" in module
         assert "response.token()" in module
         assert "com.google.android.play:integrity:1.5.0" in build
-        assert "add(AfriRideIntegrityPackage())" in application
+        assert "add(NovaRideIntegrityPackage())" in application

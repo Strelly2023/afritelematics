@@ -848,8 +848,8 @@ def build_enterprise_resilience_model() -> dict[str, Any]:
 
 def build_enterprise_plane_model() -> dict[str, Any]:
     return {
-        "id": "neaf",
-        "name": "NovaTech Enterprise Architecture Framework",
+        "id": "nepm",
+        "name": "NovaTech Enterprise Plane Model",
         "version": "2.0",
         "generated_at": _now(),
         "sequence": [

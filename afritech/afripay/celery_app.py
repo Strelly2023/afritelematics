@@ -29,6 +29,9 @@ class LocalTask:
 
 
 if Celery is not None:
+    always_eager = os.environ.get("AFRIPAY_CELERY_ALWAYS_EAGER", "0").lower() in {
+        "1", "true", "yes", "on"
+    }
     app = Celery(
         "afripay",
         broker=os.environ.get("CELERY_BROKER_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0")),
@@ -40,6 +43,8 @@ if Celery is not None:
         worker_prefetch_multiplier=1,
         task_time_limit=120,
         result_expires=3600,
+        task_always_eager=always_eager,
+        task_store_eager_result=False,
     )
 else:
     app = None

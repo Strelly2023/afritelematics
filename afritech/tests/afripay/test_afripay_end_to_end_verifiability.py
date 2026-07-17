@@ -78,7 +78,12 @@ def test_end_to_end_payment_export_anchor_and_validation_are_consistent(monkeypa
     assert export_response.status_code == 200
     assert export_response.data["scope"] == "transaction"
     assert export_response.data["reference"] == "e2e.verifiable.tx.001"
-    assert export_response.data["transaction_report_hash"] == global_report.transaction_reports[0].report_hash()
+    transaction_report = next(
+        report
+        for report in global_report.transaction_reports
+        if report.reference == "e2e.verifiable.tx.001"
+    )
+    assert export_response.data["transaction_report_hash"] == transaction_report.report_hash()
     assert export_response.data["transaction_inclusion_proof"]["verified"] is True
     assert export_response.data["transaction_zk_attestation"]["verified"] is True
 

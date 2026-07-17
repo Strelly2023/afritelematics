@@ -102,6 +102,7 @@ def test_ci_runner_rejects_unknown_module(tmp_path: Path):
         runner.run_module("os")
 
 
+@pytest.mark.serial
 def test_ci_runner_allows_phase_2_orchestrator_on_repo_root():
     result = CIRunner(root=".").run_phase_2_orchestrator_preview()
 

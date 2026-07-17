@@ -2,22 +2,32 @@
   "release": "2026.1.3",
   "channel": "PUBLIC_PILOT",
   "environment": "PUBLIC_PILOT",
-  "approval_status": "blocked_public_download_urls_not_redeployed",
+  "approval_status": "blocked_pending_publication_and_device_verification",
   "ga_allowed": false,
   "real_payments_enabled": false,
   "artifacts": {
     "rider": {
       "file": "novaride-rider-v2026.1.3-public-pilot.apk",
-      "sha256": "eb23651fae425abf425082ef9eaf2d443705b1f19b57373d2903835a8ca10889",
-      "byte_size": 73321450,
-      "ipa_file": "novaride-rider-v2026.1.3-public-pilot.ipa",
+      "sha256": "949108d090c449888688d59085244b8a21406ef0fd1af62c183cc570fcf53160",
+      "byte_size": 73322904,
+      "package_id": "com.novatech.novaride.rider",
+      "version_name": "2026.1.3",
+      "version_code": 6,
+      "signing_certificate_sha256": "3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472",
+      "source_commit": "2de0537321bea3571709856116ffae696067e916",
+      "publication_url": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-rider-v2026.1.3-public-pilot.apk",
       "ipa_status": "not_built_in_this_release_run"
     },
     "driver": {
       "file": "novaride-driver-v2026.1.3-public-pilot.apk",
-      "sha256": "9309e4f122371482b7345888eea624d818b94f8941a9cb00369edee4cf7411c4",
-      "byte_size": 62318877,
-      "ipa_file": "novaride-driver-v2026.1.3-public-pilot.ipa",
+      "sha256": "32f71600203ff78cb1f507cbe0f447fa5fa89506e3b29e3306102512461730b1",
+      "byte_size": 62320560,
+      "package_id": "com.novatech.novaride.driver",
+      "version_name": "2026.1.3",
+      "version_code": 6,
+      "signing_certificate_sha256": "3de0116d5971ddb3e6fba4338686c8bfea68db2d87c8ab589b2178117ee8c472",
+      "source_commit": "2de0537321bea3571709856116ffae696067e916",
+      "publication_url": "https://download.afritechnology.com/novaride/releases/2026.1.3/novaride-driver-v2026.1.3-public-pilot.apk",
       "ipa_status": "not_built_in_this_release_run"
     }
   }

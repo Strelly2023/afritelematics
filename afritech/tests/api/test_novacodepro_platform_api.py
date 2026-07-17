@@ -269,7 +269,7 @@ def test_novacodepro_platform_cloud_native_services(tmp_path: Path) -> None:
 
     approval_decision = client.post(
         f"/v1/novacodepro/approvals/{approval_id}/approve",
-        headers=_headers(role="ADMIN"),
+        headers=_headers(role="ADMIN", user_id="security-approver"),
         json={"note": "Security approval granted"},
     )
     assert approval_decision.status_code == 200

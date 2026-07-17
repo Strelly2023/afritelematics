@@ -2,6 +2,8 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi.testclient import TestClient
 
+from afritech.api.auth.jwt_device_auth import JWT as DeviceJWT
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
@@ -10,6 +12,13 @@ from afriride_system.operations.fleet_twin import TrustSafetyEngine, build_fleet
 
 def auth(role: str, actor: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {JWT.create_token(actor, role)}"}
+
+
+def device_auth(role: str, actor: str) -> dict[str, str]:
+    token = DeviceJWT.create_token(
+        actor, role=role, organization_id=DEFAULT_ORGANIZATION_ID
+    )
+    return {"Authorization": f"Bearer {token}"}
 
 
 def telemetry(driver_id: str, **overrides):
@@ -85,6 +94,7 @@ def test_location_signal_creates_incident_and_command_center_displays_it() -> No
             "device_trusted": False,
             "timestamp": datetime.now(UTC).isoformat(),
         },
+        headers=device_auth("DRIVER", "driver-spoof"),
     )
     assert response.status_code == 200
     assert response.json()["safety_signal_count"] >= 3

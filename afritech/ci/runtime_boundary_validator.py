@@ -200,7 +200,11 @@ class RuntimeBoundaryValidator:
     def _discover_modules(self) -> dict[str, Path]:
         modules: dict[str, Path] = {}
         for path in self.root.rglob("*.py"):
-            if any(part in {"__pycache__", ".git", "venv", ".venv", "node_modules"} for part in path.parts):
+            if any(
+                part in {"__pycache__", ".git", "venv", "node_modules"}
+                or part.startswith(".venv")
+                for part in path.parts
+            ):
                 continue
             module = self._module_name_from_path(path)
             if module:

@@ -114,6 +114,26 @@ allowed_occurrences:
     class: transition_policy
     reason: declares AfriConnectTL Phase 2 lifecycle, evidence, and planned-only replay authority
 
+  - path: afritech/api/delivery_platform_api.py
+    class: transition_policy
+    reason: returns explicit planning-state responses without claiming that proposed delivery or optimisation work has executed
+
+  - path: afritech/data_governance/enterprise.py
+    class: state_vocabulary
+    reason: defines and uses the governed lifecycle state for data-domain plans that have not been activated
+
+  - path: afritech/novacodepro/solution_engineering.py
+    class: transition_policy
+    reason: defines the governed solution-project lifecycle and its pre-implementation planning state
+
+  - path: afritech/novaride_runtime/events/replay_planner.py
+    class: state_vocabulary
+    reason: defines the replay-plan outcome state before execution produces an authoritative result
+
+  - path: afritech/platform_runtime/operational/orchestrator.py
+    class: transition_policy
+    reason: labels generated operational actions as plans pending governed execution
+
   - path: afritech/proof/constitutional_profiles.py
     class: documentation_history
     reason: module docstring asserts non-partial profile semantics

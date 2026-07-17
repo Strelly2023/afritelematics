@@ -55,7 +55,8 @@ def test_rider_and_driver_keep_optimistic_offline_operations() -> None:
     assert "enqueueRiderOperation" in rider
     assert "network.isConnected" in rider
     assert "queueDriverOperation" in driver
-    assert "availability: current.availability || previous" in driver
+    assert "availability: safeAvailability" in driver
+    assert "requests: []" in driver
     assert "requests: current.requests.filter((request) => request.rideId !== rideId)" in driver
 
 

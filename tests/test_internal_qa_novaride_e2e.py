@@ -5,6 +5,8 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
+from afritech.api.auth.jwt_device_auth import JWT
+from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afriride_system.api.main import app
 from tests.internal_qa._helpers import BUTTON_REGISTRY_PATH, read_json, read_text
 from tests.private_dev._helpers import assert_contains_all
@@ -31,6 +33,10 @@ def test_novaride_internal_qa_ride_lifecycle_reaches_driver_queue() -> None:
     client = TestClient(app)
     token = client.post("/auth/token", json={"user_id": "qa-operator", "role": "ADMIN"}).json()["token"]
     headers = {"Authorization": f"Bearer {token}"}
+    driver_token = JWT.create_token(
+        "driver-1", role="DRIVER", organization_id=DEFAULT_ORGANIZATION_ID
+    )
+    driver_headers = {"Authorization": f"Bearer {driver_token}"}
 
     ride_id = f"qa-ride-{uuid4().hex[:8]}"
     rider_request = client.post(
@@ -49,10 +55,14 @@ def test_novaride_internal_qa_ride_lifecycle_reaches_driver_queue() -> None:
     assert rider_request.status_code == 200
     assert rider_request.json()["status"] == "requested"
 
-    driver_online = client.post("/v1/driver/driver-1/availability", json={"status": "available"})
+    driver_online = client.post(
+        "/v1/driver/driver-1/availability",
+        json={"status": "available"},
+        headers=driver_headers,
+    )
     assert driver_online.status_code == 200
 
-    queue = client.get("/v1/driver/driver-1/ride-queue")
+    queue = client.get("/v1/driver/driver-1/ride-queue", headers=driver_headers)
     assert queue.status_code == 200
     assert any(item["ride_id"] == ride_id for item in queue.json()["items"])
 

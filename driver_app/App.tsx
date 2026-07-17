@@ -396,7 +396,7 @@ function DriverApp() {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <Text style={styles.title}>
-                NovaRide {globalRuntime.t("app.driver")}
+                {globalRuntime.brand.name} {globalRuntime.t("app.driver")}
               </Text>
               <Text style={styles.modePill}>
                 {globalRuntime.t(TEST_MODE ? "mode.pilot" : "mode.live")}

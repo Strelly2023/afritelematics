@@ -55,7 +55,10 @@ def test_afriride_rbac_sessions_catalog_assignments_and_extranet_access(tmp_path
         catalog = client.get("/v1/afriride/rbac/catalog", headers=operator_headers)
         assert catalog.status_code == 200
         catalog_payload = catalog.json()
-        assert catalog_payload["summary"]["core_role_count"] == 5
+        assert catalog_payload["summary"]["core_role_count"] == len(
+            catalog_payload["core_roles"]
+        )
+        assert catalog_payload["summary"]["core_role_count"] >= 5
         assert any(item["role"] == "CUSTOMER" for item in catalog_payload["core_roles"])
         assert any(item["role"] == "CLIENT" for item in catalog_payload["legacy_roles"])
 

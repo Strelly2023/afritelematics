@@ -7,3 +7,7 @@ boundaries:
   NovaTrust: [signed_evidence, immutable_audit, receipts, replay, evidence_integrity]
   NovaAI: [advisory_recommendations_only]
   NovaCodePro: [build, tests, release, deployment, provenance, observability_configuration, release_evidence]
+ci:
+  tests:
+    - tests/test_novaride_x_mos.py
+    - afritech/tests/ci/test_afritech_architecture_chain.py

@@ -92,6 +92,21 @@ def test_mobile_release_workflow_has_signing_ci_gate() -> None:
     assert "SIGNING_SECRET_PROVIDER: github-actions" in source
     assert "verify_release_signing_credentials.sh" in source
     assert "materialize_android_keystore.sh" in source
+    assert "actions/upload-artifact@v4" in source
+    assert "actions/download-artifact@v4" in source
+    assert "--require-apk-tools" in source
+    assert "publish_static_release.sh" in source
+    assert 'echo "stage immutable artifacts"' not in source
+    assert 'echo "publish immutable APKs after approval"' not in source
+
+
+def test_manifest_validator_recomputes_binary_identity() -> None:
+    source = (ROOT / "scripts/mobile/verify_release_manifest.py").read_text(encoding="utf-8")
+    assert "apk.stat().st_size" in source
+    assert "sha256(apk)" in source
+    assert "aapt" in source
+    assert "apksigner" in source
+    assert "--require-apk-tools" in source
 
 
 def test_new_lineage_creation_is_guarded_by_explicit_approval() -> None:
