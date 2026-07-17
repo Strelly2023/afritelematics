@@ -347,3 +347,17 @@ def test_session_bootstrap_requires_authentication(tmp_path: Path) -> None:
     bootstrap = client.get("/v1/novacodepro/session")
     assert bootstrap.status_code == 401
     assert bootstrap.json()["detail"]["code"] == "session_required"
+
+
+def test_novacodepro_platform_exposes_app_registry(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    response = client.get("/v1/novacodepro/app-registry", headers=_headers(role="ADMIN"))
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["platform"] == "NovaCodePro"
+    assert payload["contractVersion"] == 1
+    assert payload["launcher"]["count"] >= 10
+    assert any(app["id"] == "workspace" for app in payload["apps"])
+    assert any(app["id"] == "requests" for app in payload["apps"])
+    assert any(app["id"] == "projects" for app in payload["apps"])

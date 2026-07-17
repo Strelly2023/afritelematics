@@ -15,6 +15,9 @@ venv/
 *.log
 .tmp/
 .secrets/
+.gradle-local/
+.venv-review/
+afriride-release.jks
 
 # Legacy scratch documents (explicit)
 AfriTech_Progress.txt

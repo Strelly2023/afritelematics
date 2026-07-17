@@ -24,6 +24,8 @@ import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
 import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoutes.js";
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
+import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
+import { parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
   createDefaultFrontendRuntimeConfig,
@@ -3665,6 +3667,17 @@ function App() {
   if (authStatus !== "signed-in") {
     return signedOutScreen;
   }
+  if (parseNovaCodeProRoute(currentPathname)) {
+    return (
+      <NovaCodeProWorkspaceHub
+        session={session}
+        pathname={currentPathname}
+        navigate={(path, options) => navigateTo(path, options)}
+        baseUrl={AUTH_API_BASE}
+        onLogout={handleLogout}
+      />
+    );
+  }
   if (isSolutionRoute(currentPathname)) {
     return (
       <SolutionEngineeringPortal
@@ -3699,6 +3712,9 @@ function App() {
         </label>
 
         <div className="topbar-actions">
+          <button type="button" className="toolbar-chip" onClick={() => navigateTo(ROUTES.workspaceRoot)}>
+            Workspace Hub
+          </button>
           <button type="button" className="toolbar-chip" onClick={() => setPaletteOpen(true)}>
             Command Palette
           </button>

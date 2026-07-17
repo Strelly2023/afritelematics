@@ -54,6 +54,9 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     allowedHosts,
+    fs: {
+      allow: [path.resolve(rootDir, "..")],
+    },
   },
   preview: {
     host: "0.0.0.0",

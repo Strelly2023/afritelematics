@@ -54,6 +54,7 @@ from afritech.novacodepro.ux_operating_system import (
     uxos_service_architecture,
 )
 from afritech.novacodepro.workspace import build_workspace_manifest
+from services.administration.app_registry import build_app_registry_manifest
 
 
 def _service() -> NovaCodeProPlatform:
@@ -793,6 +794,16 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.get("/status")
     def status(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return service.status()
+
+    @router.get("/app-registry")
+    @router.get("/apps")
+    def app_registry(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return build_app_registry_manifest(
+            permissions=role_definition(normalize_role(claims.role)).get("permissions", ()),
+            environment=os.environ.get("NOVACODEPRO_ENVIRONMENT")
+            or os.environ.get("AFRITECH_ENV")
+            or "development",
+        )
 
     @router.get("/admin/summary")
     def admin_summary(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:

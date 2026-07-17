@@ -1,0 +1,9 @@
+ M db.sqlite3
+?? .gradle-local/
+?? .venv-review/
+?? afriride-release.jks
+?? apk-public/novaride/releases/2026.1.4/novaride-driver-v2026.1.4-public-pilot.apk.sha256
+?? apk-public/novaride/releases/2026.1.4/novaride-rider-v2026.1.4-public-pilot.apk.sha256
+?? apk/novaride-driver-v2026.1.4-public-pilot.apk.sha256
+?? apk/novaride-rider-v2026.1.4-public-pilot.apk.sha256
+?? artifacts/
