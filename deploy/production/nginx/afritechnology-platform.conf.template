@@ -57,6 +57,59 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+
+    ###########################################################################
+    # NCP-007 — Development Studio and NovaCodePro routing
+    ###########################################################################
+
+    # Development Studio API.
+    # This must remain before the frontend location / fallback.
+    location ^~ /api/ {
+        proxy_pass http://$afritech_api;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-ID $request_id;
+
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # NovaCodePro runtime configuration.
+    #
+    # The upstream URI explicitly maps the public path:
+    #   /novacodepro/config/runtime.json
+    #
+    # to:
+    #   /config/runtime.json
+    location = /novacodepro/config/runtime.json {
+        proxy_pass http://novacodepro-portal:4174/config/runtime.json;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-ID $request_id;
+
+        add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+    }
+
+    # NovaCodePro portal routes on the primary domain.
+    location ^~ /novacodepro/ {
+        proxy_pass http://novacodepro-portal:4174;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     location / {
         proxy_pass http://afritech-dashboard:4173;
         proxy_set_header Host $host;
