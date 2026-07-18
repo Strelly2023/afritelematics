@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "test:e2e": "node --test tests/ncp003E2E.test.js tests/ncp004E2E.test.js tests/ncp005E2E.test.js",
-    "test:accessibility": "node --test tests/ncp005Accessibility.test.js",
+    "test:e2e": "node --test tests/ncp003E2E.test.js tests/ncp004E2E.test.js tests/ncp005E2E.test.js tests/ncp006bE2E.test.js",
+    "test:accessibility": "node --test tests/ncp005Accessibility.test.js tests/ncp006bAccessibility.test.js",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1"
   },

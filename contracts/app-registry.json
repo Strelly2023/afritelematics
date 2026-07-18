@@ -93,7 +93,7 @@
       "icon": "design",
       "requiredPermissions": ["design.read"],
       "featureFlag": "novacodepro.design.enabled",
-      "status": "preview",
+      "status": "internal",
       "domain": "engineering",
       "description": "Wireframes, design tokens, responsive layouts, and accessibility review.",
       "order": 60

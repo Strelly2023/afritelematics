@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `745`
+- Startup-safe closure size: `748`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `99`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (745 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (748 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (109 files)"]
+    Core --> Api["api (110 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (18 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `109` files
+- `api`: `110` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `18` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (118)
+### Api (119)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -139,6 +139,7 @@ flowchart TD
 - `afritech.api.novacodepro_ncp004_api`
 - `afritech.api.novacodepro_ncp005_api`
 - `afritech.api.novacodepro_ncp006a_api`
+- `afritech.api.novacodepro_ncp006b_api`
 - `afritech.api.novacodepro_operational_verification_api`
 - `afritech.api.novacodepro_platform_api`
 - `afritech.api.novacodepro_workflow_fabric_api`
@@ -254,7 +255,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (587)
+### Other (589)
 
 - `afritech`
 - `afritech.afripay`
@@ -630,6 +631,7 @@ flowchart TD
 - `afritech.novacodepro.ncp004`
 - `afritech.novacodepro.ncp005`
 - `afritech.novacodepro.ncp006a`
+- `afritech.novacodepro.ncp006b`
 - `afritech.novacodepro.operating_fabric`
 - `afritech.novacodepro.operational_verification`
 - `afritech.novacodepro.operational_verification.enums`
@@ -652,6 +654,7 @@ flowchart TD
 - `afritech.novaid.ai`
 - `afritech.novaid.core`
 - `afritech.novaid.repository`
+- `afritech.novaid.security`
 - `afritech.novaid.service`
 - `afritech.novaid.standards`
 - `afritech.novaid.surfaces`
