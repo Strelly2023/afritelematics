@@ -81,7 +81,7 @@
       "icon": "architecture",
       "requiredPermissions": ["architecture.read"],
       "featureFlag": "novacodepro.architecture.enabled",
-      "status": "preview",
+      "status": "internal",
       "domain": "engineering",
       "description": "C4, ADR, dependency, and topology views for solution architecture.",
       "order": 50

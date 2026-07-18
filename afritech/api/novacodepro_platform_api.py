@@ -44,6 +44,7 @@ from afritech.novacodepro.production_readiness import (
 )
 from afritech.api.novacodepro_ncp003_api import build_novacodepro_ncp003_router
 from afritech.api.novacodepro_ncp004_api import build_novacodepro_ncp004_router
+from afritech.api.novacodepro_ncp006a_api import build_novacodepro_ncp006a_router
 from afritech.api.novacodepro_ncp005_api import build_novacodepro_ncp005_router
 from afritech.novacodepro.ux_operating_system import (
     ai_design_studio_model,
@@ -195,6 +196,13 @@ def _build_session_bootstrap(service: NovaCodeProPlatform, request: Request) -> 
         "roles.read",
         "tenants.read",
         "architecture.read",
+        "architecture.create",
+        "architecture.update",
+        "architecture.review",
+        "architecture.approve",
+        "architecture.baseline",
+        "architecture.validate",
+        "architecture.traceability",
         "nera.read",
         "eros.read",
         "digital_twin.read",
@@ -758,6 +766,7 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     router.include_router(build_novacodepro_ncp003_router(service))
     router.include_router(build_novacodepro_ncp004_router(service))
     router.include_router(build_novacodepro_ncp005_router(service))
+    router.include_router(build_novacodepro_ncp006a_router(service))
     observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
     editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
     ux_editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER", "UI_UX_DESIGNER")
