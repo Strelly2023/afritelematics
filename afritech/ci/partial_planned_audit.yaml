@@ -50,6 +50,10 @@ allowed_occurrences:
     class: validator_policy
     reason: tests assert the governed feature registry status vocabulary without authorizing production activation
 
+  - path: afritech/novacodepro/ncp008.py
+    class: state_vocabulary
+    reason: declares governed operations planning and terminal lifecycle vocabulary without authorizing production activation
+
   - path: afritech/epoch/epoch_semantics.yaml
     class: state_vocabulary
     reason: canonical epoch semantic vocabulary

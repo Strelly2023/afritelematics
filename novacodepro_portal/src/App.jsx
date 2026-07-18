@@ -31,6 +31,7 @@ import { NCP006APortal } from "./novacodepro/NCP006APortal.jsx";
 import { NCP006BPortal } from "./novacodepro/NCP006BPortal.jsx";
 import { NCP005Portal } from "./novacodepro/NCP005Portal.jsx";
 import { NCP007Portal } from "./novacodepro/NCP007Portal.jsx";
+import { NCP008Portal } from "./novacodepro/NCP008Portal.jsx";
 import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
@@ -3775,6 +3776,17 @@ function App() {
     if (parsedRoute.appId === "development") {
       return (
         <NCP007Portal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      );
+    }
+    if (parsedRoute.appId === "operations") {
+      return (
+        <NCP008Portal
           session={session}
           pathname={currentPathname}
           navigate={(path, options) => navigateTo(path, options)}

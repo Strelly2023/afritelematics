@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BASE ?= origin/main
 HEAD ?= HEAD
 
-.PHONY: test-fast test-changed test-lf test-full test-release novacodepro-dev novacodepro-test novacodepro-ncp003-test novacodepro-ncp004-test novacodepro-ncp005-test novacodepro-ncp006b-test novacodepro-ncp007-test novacodepro-e2e novacodepro-ncp004-e2e novacodepro-ncp005-e2e novacodepro-ncp006b-e2e novacodepro-ncp007-e2e novacodepro-build novacodepro-down novacodepro-ai-worker novacodepro-knowledge-worker novacodepro-design-worker novacodepro-design-validate novacodepro-development-worker novacodepro-ncp006b-accessibility
+.PHONY: test-fast test-changed test-lf test-full test-release novacodepro-dev novacodepro-test novacodepro-ncp003-test novacodepro-ncp004-test novacodepro-ncp005-test novacodepro-ncp006b-test novacodepro-ncp007-test novacodepro-ncp008-test novacodepro-e2e novacodepro-ncp004-e2e novacodepro-ncp005-e2e novacodepro-ncp006b-e2e novacodepro-ncp007-e2e novacodepro-ncp008-e2e novacodepro-build novacodepro-down novacodepro-ai-worker novacodepro-knowledge-worker novacodepro-design-worker novacodepro-design-validate novacodepro-development-worker novacodepro-ncp006b-accessibility ncp008-test ncp008-api-test ncp008-portal-test ncp008-e2e ncp008-verify ncp008-worker
 
 test-fast:
 	./scripts/test_fast.sh
@@ -40,6 +40,9 @@ novacodepro-ncp006b-test:
 novacodepro-ncp007-test:
 	./scripts/novacodepro/test_ncp007.sh
 
+novacodepro-ncp008-test:
+	./scripts/novacodepro/test_ncp008.sh
+
 novacodepro-e2e:
 	./scripts/novacodepro/e2e_ncp003.sh
 
@@ -54,6 +57,9 @@ novacodepro-ncp006b-e2e:
 
 novacodepro-ncp007-e2e:
 	./scripts/novacodepro/e2e_ncp007.sh
+
+novacodepro-ncp008-e2e:
+	./scripts/novacodepro/e2e_ncp008.sh
 
 novacodepro-build:
 	cd novacodepro_portal && npm run build
@@ -78,3 +84,21 @@ novacodepro-design-validate:
 
 novacodepro-ncp006b-accessibility:
 	./scripts/novacodepro/accessibility_ncp006b.sh
+
+ncp008-test:
+	./scripts/novacodepro/test_ncp008.sh
+
+ncp008-api-test:
+	./venv/bin/python -m pytest afritech/tests/api/test_novacodepro_ncp008_api.py -q
+
+ncp008-portal-test:
+	cd novacodepro_portal && npm test -- --test-name-pattern "NCP-008"
+
+ncp008-e2e:
+	./scripts/novacodepro/e2e_ncp008.sh
+
+ncp008-verify:
+	./verify_ncp008.sh
+
+ncp008-worker:
+	./scripts/novacodepro/operations_worker.sh
