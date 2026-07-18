@@ -55,6 +55,106 @@ def _canonical_roles(account: dict[str, Any]) -> list[str]:
     return [str(account["role"]).upper()]
 
 
+def _effective_permissions(role: str) -> list[str]:
+    canonical = canonical_role_name(role)
+    permissions = list(role_definition(canonical).get("permissions", ()))
+    if canonical in {"ADMIN", "PLATFORM_ADMIN", "PLATFORM_OWNER", "SUPER_ADMIN", "SYSTEM_ADMIN"}:
+        extras = [
+            "workspace.read",
+            "workspace.create",
+            "workspace.update",
+            "workspace.member.read",
+            "workspace.member.manage",
+            "workspace.settings.manage",
+            "workspace.activity.read",
+            "workspace.notification.read",
+            "workspace.favorite.manage",
+            "project.read",
+            "project.create",
+            "project.update",
+            "project.archive",
+            "project.member.manage",
+            "project.milestone.manage",
+            "project.work_item.manage",
+            "project.risk.manage",
+            "request.read",
+            "request.create",
+            "request.update",
+            "request.submit",
+            "request.assign",
+            "request.comment",
+            "request.transition",
+            "request.archive",
+            "notification.read",
+            "attachment.upload",
+            "attachment.read",
+            "comment.create",
+        ]
+    elif canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER"}:
+        extras = [
+            "workspace.read",
+            "workspace.update",
+            "workspace.activity.read",
+            "workspace.notification.read",
+            "workspace.favorite.manage",
+            "project.read",
+            "project.create",
+            "project.update",
+            "project.archive",
+            "project.member.manage",
+            "project.milestone.manage",
+            "project.work_item.manage",
+            "project.risk.manage",
+            "request.read",
+            "request.create",
+            "request.update",
+            "request.submit",
+            "request.assign",
+            "request.comment",
+            "request.transition",
+            "request.archive",
+            "notification.read",
+            "attachment.upload",
+            "attachment.read",
+            "comment.create",
+        ]
+    elif canonical == "CUSTOMER":
+        extras = [
+            "workspace.read",
+            "workspace.activity.read",
+            "workspace.notification.read",
+            "request.read",
+            "request.create",
+            "request.comment",
+            "attachment.upload",
+            "attachment.read",
+            "comment.create",
+            "notification.read",
+        ]
+    elif canonical == "AUDITOR":
+        extras = [
+            "workspace.read",
+            "workspace.activity.read",
+            "request.read",
+            "notification.read",
+        ]
+    elif canonical == "EXTERNAL_REGULATOR":
+        extras = [
+            "workspace.read",
+            "request.read",
+        ]
+    else:
+        extras = [
+            "workspace.read",
+            "request.read",
+            "notification.read",
+        ]
+    for permission in extras:
+        if permission not in permissions:
+            permissions.append(permission)
+    return permissions
+
+
 def _default_jwt_service() -> Any:
     return LocalJWTService()
 
@@ -74,6 +174,9 @@ class SessionJWTClaims:
     role: str
     organization_id: str
     exp: int
+    tenant_id: str | None = None
+    workspace_id: str | None = None
+    permissions: list[str] | tuple[str, ...] = ()
     sid: str | None = None
     token_kind: str = "access"
 
@@ -177,6 +280,7 @@ class NovaCodeProSessionStore:
                     display_name TEXT NOT NULL,
                     organization TEXT NOT NULL,
                     active_role TEXT NOT NULL,
+                    workspace_id TEXT,
                     assigned_roles TEXT NOT NULL,
                     status TEXT NOT NULL,
                     created_at TEXT NOT NULL,
@@ -199,6 +303,10 @@ class NovaCodeProSessionStore:
                 );
                 """
             )
+            columns = {str(row[1]) for row in connection.execute("PRAGMA table_info(novacodepro_sessions)").fetchall()}
+            if "workspace_id" not in columns:
+                connection.execute("ALTER TABLE novacodepro_sessions ADD COLUMN workspace_id TEXT")
+            connection.commit()
 
     def _record_event(
         self,
@@ -252,7 +360,7 @@ class NovaCodeProSessionStore:
 
     def _session_payload(self, row: sqlite3.Row) -> dict[str, Any]:
         canonical_role = canonical_role_name(str(row["active_role"]))
-        permissions = list(role_definition(canonical_role).get("permissions", ()))
+        permissions = _effective_permissions(canonical_role)
         return {
             "session_id": row["session_id"],
             "user_id": row["user_id"],
@@ -262,6 +370,7 @@ class NovaCodeProSessionStore:
             "organization_id": row["organization"],
             "tenant_id": row["organization"],
             "active_role": row["active_role"],
+            "workspace_id": row["workspace_id"],
             "assigned_roles": json.loads(row["assigned_roles"]),
             "permissions": permissions,
             "status": row["status"],
@@ -348,10 +457,12 @@ class NovaCodeProSessionStore:
         now = _utcnow()
         absolute_expires_at = now + timedelta(hours=self.absolute_timeout_hours)
         idle_expires_at = now + timedelta(minutes=self.idle_timeout_minutes)
+        workspace_id = f"enterprise-{requested_role.lower().replace('_', '-')}"
         access_token = self.jwt_service.create_token(
             account["username"],
             role=requested_role,
             organization_id="NovaTech",
+            workspace_id=workspace_id,
             issued_at=int(now.timestamp()),
             session_id=session_id,
         )
@@ -361,11 +472,11 @@ class NovaCodeProSessionStore:
             connection.execute(
                 """
                 INSERT INTO novacodepro_sessions (
-                    session_id, user_id, email, display_name, organization, active_role,
+                    session_id, user_id, email, display_name, organization, active_role, workspace_id,
                     assigned_roles, status, created_at, last_seen_at, absolute_expires_at,
                     idle_expires_at, access_token_hash, refresh_token_hash, csrf_token_hash
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     session_id,
@@ -374,6 +485,7 @@ class NovaCodeProSessionStore:
                     f'{account["first_name"]} {account["last_name"]}',
                     "NovaTech",
                     requested_role,
+                    workspace_id,
                     json.dumps(normalized_roles),
                     "active",
                     _iso(now),
@@ -418,6 +530,9 @@ class NovaCodeProSessionStore:
             sub=str(refreshed["user_id"]),
             role=str(refreshed["active_role"]),
             organization_id=str(refreshed["organization"]),
+            tenant_id=str(refreshed["organization"]),
+            workspace_id=str(refreshed["workspace_id"]) if refreshed["workspace_id"] else None,
+            permissions=_effective_permissions(str(refreshed["active_role"])),
             exp=int(_parse_iso(refreshed["absolute_expires_at"]).timestamp()),
             sid=str(refreshed["session_id"]),
         )
@@ -466,8 +581,9 @@ class NovaCodeProSessionStore:
                 "organization_id": claims.organization_id,
                 "tenant_id": claims.organization_id,
                 "active_role": claims.role,
+                "workspace_id": claims.workspace_id,
                 "assigned_roles": [claims.role],
-                "permissions": list(role_definition(canonical_role).get("permissions", ())),
+                "permissions": list(claims.permissions) if getattr(claims, "permissions", None) else _effective_permissions(canonical_role),
                 "status": "active",
                 "created_at": _iso(_utcnow()),
                 "last_seen_at": _iso(_utcnow()),
@@ -503,6 +619,7 @@ class NovaCodeProSessionStore:
             row["user_id"],
             role=requested_role,
             organization_id=row["organization"],
+            workspace_id=row["workspace_id"],
             issued_at=int(now.timestamp()),
             session_id=row["session_id"],
         )
@@ -525,6 +642,49 @@ class NovaCodeProSessionStore:
         assert refreshed is not None
         return {
             "access_token": access_token,
+            "session": self._session_payload(refreshed),
+            "claims": self.get_claims_for_session(refreshed["session_id"]).__dict__,
+        }
+
+    def select_workspace(self, request: Request, workspace_id: str) -> dict[str, Any]:
+        claims = self.claims_from_request(request)
+        if claims is None or not claims.sid:
+            raise HTTPException(status_code=401, detail="session_required")
+        row = self._validate_session_row(self._load_session_row(claims.sid))
+        now = _utcnow()
+        access_token = self.jwt_service.create_token(
+            row["user_id"],
+            role=row["active_role"],
+            organization_id=row["organization"],
+            workspace_id=workspace_id,
+            issued_at=int(now.timestamp()),
+            session_id=row["session_id"],
+        )
+        refresh_token = secrets.token_urlsafe(48)
+        csrf_token = secrets.token_urlsafe(24)
+        self._update_session(
+            row["session_id"],
+            workspace_id=workspace_id,
+            last_seen_at=_iso(now),
+            idle_expires_at=_iso(now + timedelta(minutes=self.idle_timeout_minutes)),
+            access_token_hash=_hash_token(access_token),
+            refresh_token_hash=_hash_token(refresh_token),
+            csrf_token_hash=_hash_token(csrf_token),
+        )
+        self._record_event(
+            event_type="WORKSPACE_SELECT",
+            actor=row["user_id"],
+            role=row["active_role"],
+            organization=row["organization"],
+            payload={"workspace_id": workspace_id},
+            session_id=row["session_id"],
+        )
+        refreshed = self._load_session_row(row["session_id"])
+        assert refreshed is not None
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "csrf_token": csrf_token,
             "session": self._session_payload(refreshed),
             "claims": self.get_claims_for_session(refreshed["session_id"]).__dict__,
         }

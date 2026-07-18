@@ -42,6 +42,7 @@ from afritech.novacodepro.production_readiness import (
     operational_readiness_program,
     production_completion_program,
 )
+from afritech.api.novacodepro_ncp003_api import build_novacodepro_ncp003_router
 from afritech.novacodepro.ux_operating_system import (
     ai_design_studio_model,
     component_registry_model,
@@ -752,6 +753,7 @@ class DeadLetterRequest(BaseModel):
 def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = None) -> APIRouter:
     service = platform or _service()
     router = APIRouter(prefix="/v1/novacodepro", tags=["novacodepro"])
+    router.include_router(build_novacodepro_ncp003_router(service))
     observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
     editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
     ux_editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER", "UI_UX_DESIGNER")
@@ -2283,6 +2285,8 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     @router.post("/regions/{region_id}/reconcile")
     def region_reconcile(region_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
         return service.reconcile_region(region_id)
+
+    router.include_router(build_novacodepro_ncp003_router(service))
 
     return router
 

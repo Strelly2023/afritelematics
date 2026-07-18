@@ -126,6 +126,10 @@ allowed_occurrences:
     class: transition_policy
     reason: defines the governed solution-project lifecycle and its pre-implementation planning state
 
+  - path: afritech/novacodepro/ncp003.py
+    class: state_vocabulary
+    reason: defines governed workspace, project, request, and transition status vocabularies for the NCP-003 implementation
+
   - path: afritech/novaride_runtime/events/replay_planner.py
     class: state_vocabulary
     reason: defines the replay-plan outcome state before execution produces an authoritative result

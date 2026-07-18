@@ -25,6 +25,7 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
+import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
 import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
@@ -3710,6 +3711,18 @@ function App() {
     return forbiddenScreen;
   }
   if (parseNovaCodeProRoute(currentPathname)) {
+    const parsedRoute = parseNovaCodeProRoute(currentPathname);
+    if (["workspace", "projects", "requests"].includes(parsedRoute.appId)) {
+      return (
+        <NCP003Portal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      );
+    }
     return (
       <NovaCodeProWorkspaceHub
         session={session}
