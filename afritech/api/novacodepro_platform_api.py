@@ -44,6 +44,7 @@ from afritech.novacodepro.production_readiness import (
 )
 from afritech.api.novacodepro_ncp003_api import build_novacodepro_ncp003_router
 from afritech.api.novacodepro_ncp004_api import build_novacodepro_ncp004_router
+from afritech.api.novacodepro_ncp007_api import build_novacodepro_ncp007_router
 from afritech.api.novacodepro_ncp006b_api import build_novacodepro_ncp006b_router
 from afritech.api.novacodepro_ncp006a_api import build_novacodepro_ncp006a_router
 from afritech.api.novacodepro_ncp005_api import build_novacodepro_ncp005_router
@@ -769,6 +770,7 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     router.include_router(build_novacodepro_ncp005_router(service))
     router.include_router(build_novacodepro_ncp006a_router(service))
     router.include_router(build_novacodepro_ncp006b_router(service))
+    router.include_router(build_novacodepro_ncp007_router(service))
     observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
     editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
     ux_editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER", "UI_UX_DESIGNER")

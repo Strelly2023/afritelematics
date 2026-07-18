@@ -99,6 +99,18 @@
       "order": 60
     },
     {
+      "id": "development",
+      "name": "Development Studio",
+      "route": "/novacodepro/development",
+      "icon": "development",
+      "requiredPermissions": ["development.workspace.read"],
+      "featureFlag": "novacodepro.development.enabled",
+      "status": "internal",
+      "domain": "engineering",
+      "description": "Governed code generation, repository browsing, validation, reviews, approvals, and evidence.",
+      "order": 65
+    },
+    {
       "id": "code",
       "name": "Code Studio",
       "route": "/novacodepro/code",
