@@ -27,6 +27,7 @@ import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
 import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
 import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
+import { NCP005Portal } from "./novacodepro/NCP005Portal.jsx";
 import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
@@ -2648,7 +2649,7 @@ function App() {
     <div className="auth-shell">
       <header className="auth-topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaCodePro bootstrapping</p>
             <strong>NovaCodePro</strong>
@@ -2679,7 +2680,7 @@ function App() {
     <div className="auth-shell">
       <header className="auth-topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaCodePro recovery screen</p>
             <strong>NovaCodePro</strong>
@@ -2757,7 +2758,7 @@ function App() {
     <div className="auth-shell">
       <header className="auth-topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaCodePro access control</p>
             <strong>NovaCodePro</strong>
@@ -2801,7 +2802,7 @@ function App() {
     <div className="auth-shell">
         <header className="auth-topbar">
           <div className="brand-block">
-            <div className="brand-mark">N</div>
+            <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
             <div>
               <p className="eyebrow">NovaTech enterprise workspace</p>
               <strong>NovaCodePro</strong>
@@ -3735,6 +3736,17 @@ function App() {
         />
       );
     }
+    if (["requirements", "knowledge"].includes(parsedRoute.appId)) {
+      return (
+        <NCP005Portal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      );
+    }
     return (
       <NovaCodeProWorkspaceHub
         session={session}
@@ -3761,7 +3773,7 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaTech enterprise workspace</p>
             <strong>NovaCodePro</strong>

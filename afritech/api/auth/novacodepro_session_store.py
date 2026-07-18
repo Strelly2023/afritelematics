@@ -95,6 +95,22 @@ def _effective_permissions(role: str) -> list[str]:
             "ai.approve",
             "ai.manage",
             "ai.policy",
+            "requirements.read",
+            "requirements.create",
+            "requirements.update",
+            "requirements.review",
+            "requirements.approve",
+            "requirements.baseline",
+            "requirements.traceability",
+            "knowledge.read",
+            "knowledge.create",
+            "knowledge.update",
+            "knowledge.review",
+            "knowledge.approve",
+            "knowledge.publish",
+            "knowledge.archive",
+            "knowledge.search",
+            "knowledge.citation",
         ]
     elif canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER"}:
         extras = [
@@ -127,6 +143,22 @@ def _effective_permissions(role: str) -> list[str]:
             "ai.request",
             "ai.execute",
             "ai.approve",
+            "requirements.read",
+            "requirements.create",
+            "requirements.update",
+            "requirements.review",
+            "requirements.approve",
+            "requirements.baseline",
+            "requirements.traceability",
+            "knowledge.read",
+            "knowledge.create",
+            "knowledge.update",
+            "knowledge.review",
+            "knowledge.approve",
+            "knowledge.publish",
+            "knowledge.archive",
+            "knowledge.search",
+            "knowledge.citation",
         ]
     elif canonical == "CUSTOMER":
         extras = [
@@ -142,6 +174,9 @@ def _effective_permissions(role: str) -> list[str]:
             "notification.read",
             "ai.read",
             "ai.request",
+            "requirements.read",
+            "knowledge.read",
+            "knowledge.search",
         ]
     elif canonical == "AUDITOR":
         extras = [
@@ -150,18 +185,27 @@ def _effective_permissions(role: str) -> list[str]:
             "request.read",
             "notification.read",
             "ai.read",
+            "requirements.read",
+            "requirements.traceability",
+            "knowledge.read",
+            "knowledge.search",
         ]
     elif canonical == "EXTERNAL_REGULATOR":
         extras = [
             "workspace.read",
             "request.read",
             "ai.read",
+            "requirements.read",
+            "knowledge.read",
+            "knowledge.search",
         ]
     else:
         extras = [
             "workspace.read",
             "request.read",
             "notification.read",
+            "requirements.read",
+            "knowledge.read",
         ]
     for permission in extras:
         if permission not in permissions:

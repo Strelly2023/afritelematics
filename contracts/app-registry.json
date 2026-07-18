@@ -51,6 +51,30 @@
       "order": 40
     },
     {
+      "id": "requirements",
+      "name": "Requirements Manager",
+      "route": "/novacodepro/requirements",
+      "icon": "requirements",
+      "requiredPermissions": ["requirements.read"],
+      "featureFlag": "novacodepro.requirements.enabled",
+      "status": "internal",
+      "domain": "governance",
+      "description": "Versioned requirements, reviews, approvals, baselines, and traceability.",
+      "order": 45
+    },
+    {
+      "id": "knowledge",
+      "name": "Knowledge Hub",
+      "route": "/novacodepro/knowledge",
+      "icon": "knowledge",
+      "requiredPermissions": ["knowledge.read"],
+      "featureFlag": "novacodepro.knowledge.enabled",
+      "status": "internal",
+      "domain": "governance",
+      "description": "Governed knowledge documents, citations, search, review, and replay.",
+      "order": 46
+    },
+    {
       "id": "architecture",
       "name": "Architecture Studio",
       "route": "/novacodepro/architecture",

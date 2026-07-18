@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BASE ?= origin/main
 HEAD ?= HEAD
 
-.PHONY: test-fast test-changed test-lf test-full test-release novacodepro-dev novacodepro-test novacodepro-ncp003-test novacodepro-ncp004-test novacodepro-e2e novacodepro-ncp004-e2e novacodepro-build novacodepro-down novacodepro-ai-worker
+.PHONY: test-fast test-changed test-lf test-full test-release novacodepro-dev novacodepro-test novacodepro-ncp003-test novacodepro-ncp004-test novacodepro-ncp005-test novacodepro-e2e novacodepro-ncp004-e2e novacodepro-ncp005-e2e novacodepro-build novacodepro-down novacodepro-ai-worker novacodepro-knowledge-worker
 
 test-fast:
 	./scripts/test_fast.sh
@@ -31,11 +31,17 @@ novacodepro-ncp003-test:
 novacodepro-ncp004-test:
 	./scripts/novacodepro/test_ncp004.sh
 
+novacodepro-ncp005-test:
+	./scripts/novacodepro/test_ncp005.sh
+
 novacodepro-e2e:
 	./scripts/novacodepro/e2e_ncp003.sh
 
 novacodepro-ncp004-e2e:
 	./scripts/novacodepro/e2e_ncp004.sh
+
+novacodepro-ncp005-e2e:
+	./scripts/novacodepro/e2e_ncp005.sh
 
 novacodepro-build:
 	cd novacodepro_portal && npm run build
@@ -45,3 +51,6 @@ novacodepro-down:
 
 novacodepro-ai-worker:
 	./scripts/novacodepro/ai_worker.sh
+
+novacodepro-knowledge-worker:
+	./scripts/novacodepro/knowledge_worker.sh
