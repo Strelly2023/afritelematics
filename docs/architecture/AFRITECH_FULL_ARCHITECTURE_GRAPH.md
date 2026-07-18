@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `753`
+- Startup-safe closure size: `773`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `100`
+- Direct startup imports from `afritech.api.app`: `102`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (753 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (773 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (100)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (102)"]
 ```
 
 ## Repository Architecture Inventory
@@ -256,7 +256,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (593)
+### Other (613)
 
 - `afritech`
 - `afritech.afripay`
@@ -657,12 +657,32 @@ flowchart TD
 - `afritech.novacodepro.workspace`
 - `afritech.novaid`
 - `afritech.novaid.ai`
+- `afritech.novaid.api`
+- `afritech.novaid.application`
+- `afritech.novaid.application.authentication`
+- `afritech.novaid.application.lockout`
+- `afritech.novaid.application.passwords`
+- `afritech.novaid.application.sessions`
+- `afritech.novaid.config`
 - `afritech.novaid.core`
+- `afritech.novaid.domain`
+- `afritech.novaid.domain.models`
+- `afritech.novaid.observability`
+- `afritech.novaid.outbox`
+- `afritech.novaid.persistence`
+- `afritech.novaid.persistence.migrations`
+- `afritech.novaid.persistence.pool`
+- `afritech.novaid.persistence.postgres`
+- `afritech.novaid.persistence.sqlite`
 - `afritech.novaid.repository`
+- `afritech.novaid.revocation`
+- `afritech.novaid.revocation_delivery`
+- `afritech.novaid.runtime`
 - `afritech.novaid.security`
 - `afritech.novaid.service`
 - `afritech.novaid.standards`
 - `afritech.novaid.surfaces`
+- `afritech.novaid.tokens`
 - `afritech.novaid.trust`
 - `afritech.novapay`
 - `afritech.novapay.ecosystem_contract`
@@ -961,6 +981,8 @@ flowchart TD
 - `afritech.middleware.distributed_governance`
 - `afritech.middleware.multi_region_redis`
 - `afritech.middleware.request_logging`
+- `afritech.novacodepro.platform`
+- `afritech.novaid.runtime`
 - `afritech.novaride_runtime.replay.dependencies`
 - `afritech.observability.opentelemetry`
 - `afritech.partner_certification`

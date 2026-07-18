@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const allowedHosts = [
+  "afritechnology.com",
+  "www.afritechnology.com",
   "novacodepro.afritechnology.com",
   "localhost",
   "127.0.0.1",
