@@ -67,4 +67,17 @@ export function parseNovaCodeProRoute(pathname: string): { path: string; appId: 
   };
 }
 
+export function isNovaCodeProRouteAccessible(pathname: string, permissions: Iterable<string> = []): boolean {
+  const route = parseNovaCodeProRoute(pathname);
+  if (!route) {
+    return true;
+  }
+  const allowed = new Set(Array.from(permissions, (value) => String(value)));
+  const app = listNovaCodeProApps().find((item) => item.id === route.appId);
+  if (!app) {
+    return false;
+  }
+  return app.status !== "disabled" && (app.requiredPermissions.length === 0 || app.requiredPermissions.every((permission) => allowed.has(permission)));
+}
+
 export default NOVACODEPRO_APP_REGISTRY;

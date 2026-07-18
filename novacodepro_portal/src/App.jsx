@@ -25,7 +25,7 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
-import { parseNovaCodeProRoute } from "./platform/appRegistry.js";
+import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
   createDefaultFrontendRuntimeConfig,
@@ -1893,14 +1893,21 @@ function buildSessionFromAuthPayload(payload, fallbackRole, fallbackEmail) {
   const context = payload?.context && typeof payload.context === "object" ? payload.context : {};
   const roles = Array.isArray(payload?.roles) && payload.roles.length ? payload.roles : [fallbackRole];
   const assignedRoles = Array.isArray(source.assigned_roles) && source.assigned_roles.length ? source.assigned_roles : roles;
+  const permissions = Array.isArray(payload?.permissions) ? payload.permissions : Array.isArray(source.permissions) ? source.permissions : [];
+  const tenantId = source.tenant_id ?? payload?.tenant?.id ?? payload?.organization?.id ?? source.organization ?? null;
+  const workspace = payload?.workspace && typeof payload.workspace === "object" ? payload.workspace : null;
   return {
     session_id: source.session_id ?? context.session_id ?? null,
     user_id: source.user_id ?? source.id ?? source.username ?? fallbackEmail,
     email: source.email ?? fallbackEmail,
     display_name: source.display_name ?? source.name ?? fallbackEmail,
-    organization: source.organization ?? payload?.organization?.id ?? payload?.tenant?.id ?? "novatech",
+    organization: source.organization ?? payload?.organization?.id ?? payload?.tenant?.id ?? null,
+    tenant_id: tenantId,
+    workspace_id: source.workspace_id ?? workspace?.id ?? null,
+    workspace,
     active_role: source.active_role ?? roles[0] ?? fallbackRole,
     assigned_roles: assignedRoles,
+    permissions,
     status: source.status ?? "active",
     created_at: source.created_at ?? context.created_at ?? new Date().toISOString(),
     last_seen_at: source.last_seen_at ?? context.last_seen_at ?? new Date().toISOString(),
@@ -2111,20 +2118,8 @@ function App() {
           return;
         }
         setBootstrapContext(normalized);
-        setSession({
-          session_id: normalized.context?.session_id ?? null,
-          user_id: normalized.user?.id ?? normalized.user?.username ?? "djuma.platformadmin",
-          email: normalized.user?.email ?? loginEmail,
-          display_name: normalized.user?.display_name ?? "Djuma Platform Administrator",
-          organization: normalized.organization?.id ?? "novatech",
-          active_role: normalized.roles?.[0] ?? "PLATFORM_ADMIN",
-          assigned_roles: normalized.roles ?? ["PLATFORM_ADMIN", "ADMIN"],
-          status: "active",
-          created_at: normalized.context?.created_at ?? new Date().toISOString(),
-          last_seen_at: normalized.context?.last_seen_at ?? new Date().toISOString(),
-          absolute_expires_at: normalized.context?.absolute_expires_at ?? new Date().toISOString(),
-          idle_expires_at: normalized.context?.idle_expires_at ?? new Date().toISOString(),
-        });
+        const nextSession = buildSessionFromAuthPayload(normalized, normalized.roles?.[0] ?? "PLATFORM_ADMIN", loginEmail);
+        setSession(nextSession);
         setRoleId(resolveProfileIdForRole(normalized.roles?.[0] ?? "PLATFORM_ADMIN"));
         setEnvironment(normalized.workspace?.selected_environment ?? "Production");
         setAuthStatus("signed-in");
@@ -2265,7 +2260,7 @@ function App() {
             ...normalizedSession,
             email: normalizedSession.email ?? current?.email ?? loginEmail,
             display_name: normalizedSession.display_name ?? current?.display_name ?? loginSession.display_name,
-            organization: normalized.organization?.id ?? current?.organization ?? loginSession.organization ?? "novatech",
+            organization: normalized.organization?.id ?? current?.organization ?? loginSession.organization ?? null,
             active_role: normalized.roles?.[0] ?? current?.active_role ?? loginSession.active_role ?? loginRole,
             assigned_roles: normalized.roles ?? current?.assigned_roles ?? loginSession.assigned_roles ?? [loginRole],
           }));
@@ -2755,6 +2750,50 @@ function App() {
     "NovaCodePro could not load this workspace.",
     bootstrapError || "A managed recovery state is required before the dashboard can render.",
     bootstrapState,
+  );
+  const forbiddenScreen = (
+    <div className="auth-shell">
+      <header className="auth-topbar">
+        <div className="brand-block">
+          <div className="brand-mark">N</div>
+          <div>
+            <p className="eyebrow">NovaCodePro access control</p>
+            <strong>NovaCodePro</strong>
+          </div>
+        </div>
+      </header>
+
+      <main className="auth-panel">
+        <section className="auth-copy">
+          <p className="section-label">Forbidden</p>
+          <h1>You do not have access to this workspace route.</h1>
+          <p className="hero-summary">
+            The current session does not have the permissions required for this application or section.
+          </p>
+          <p className="auth-error">State: FORBIDDEN</p>
+        </section>
+        <div className="auth-form">
+          <button
+            type="button"
+            className="novaid-button"
+            onClick={() => {
+              setBootstrapState("loading");
+              setBootstrapError("");
+              setAuthStatus("checking");
+              setBootstrapAttempt((value) => value + 1);
+            }}
+          >
+            Recheck access
+          </button>
+          <button type="button" className="secondary-action" onClick={() => navigateTo(ROUTES.dashboard, { replace: true })}>
+            Open dashboard
+          </button>
+          <button type="button" className="secondary-action" onClick={handleLogout}>
+            Sign out
+          </button>
+        </div>
+      </main>
+    </div>
   );
   const signedOutScreen = (
     <div className="auth-shell">
@@ -3661,11 +3700,14 @@ function App() {
   if (bootstrapState === "loading") {
     return bootstrapLoadingScreen;
   }
-  if (["API_UNAVAILABLE", "APPLICATION_ERROR", "FORBIDDEN", "WORKSPACE_REQUIRED", "TENANT_REQUIRED"].includes(bootstrapState)) {
+  if (["API_UNAVAILABLE", "APPLICATION_ERROR", "WORKSPACE_REQUIRED", "TENANT_REQUIRED"].includes(bootstrapState)) {
     return bootstrapRecoveryScreen;
   }
   if (authStatus !== "signed-in") {
     return signedOutScreen;
+  }
+  if (isNovaCodeProRouteAccessible(currentPathname, session?.permissions || []) === false) {
+    return forbiddenScreen;
   }
   if (parseNovaCodeProRoute(currentPathname)) {
     return (

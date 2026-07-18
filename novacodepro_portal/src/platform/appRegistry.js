@@ -28,6 +28,15 @@ export function buildNovaCodeProAppLauncher(permissions = []) {
   }));
 }
 
+export function isNovaCodeProRouteAccessible(pathname, permissions = []) {
+  const route = parseNovaCodeProRoute(pathname);
+  if (!route) {
+    return true;
+  }
+  const app = buildNovaCodeProAppLauncher(permissions).find((item) => item.id === route.appId);
+  return Boolean(app?.accessible ?? false);
+}
+
 export function findNovaCodeProAppByPath(pathname) {
   const normalized = normalizePath(pathname);
   const matches = listNovaCodeProApps()

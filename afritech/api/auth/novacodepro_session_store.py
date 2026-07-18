@@ -16,6 +16,7 @@ from typing import Any
 
 from fastapi import HTTPException, Request
 
+from afritech.afriprogramming.rbac import canonical_role_name, role_definition
 from afritech.novacodepro.auth_accounts import AUTH_PASSWORD, find_account
 
 
@@ -250,14 +251,19 @@ class NovaCodeProSessionStore:
             connection.commit()
 
     def _session_payload(self, row: sqlite3.Row) -> dict[str, Any]:
+        canonical_role = canonical_role_name(str(row["active_role"]))
+        permissions = list(role_definition(canonical_role).get("permissions", ()))
         return {
             "session_id": row["session_id"],
             "user_id": row["user_id"],
             "email": row["email"],
             "display_name": row["display_name"],
             "organization": row["organization"],
+            "organization_id": row["organization"],
+            "tenant_id": row["organization"],
             "active_role": row["active_role"],
             "assigned_roles": json.loads(row["assigned_roles"]),
+            "permissions": permissions,
             "status": row["status"],
             "created_at": row["created_at"],
             "last_seen_at": row["last_seen_at"],
@@ -450,14 +456,18 @@ class NovaCodeProSessionStore:
             assert refreshed is not None
             payload = self._session_payload(refreshed)
         else:
+            canonical_role = canonical_role_name(str(claims.role))
             payload = {
                 "session_id": None,
                 "user_id": claims.sub,
                 "email": None,
                 "display_name": claims.sub,
                 "organization": claims.organization_id,
+                "organization_id": claims.organization_id,
+                "tenant_id": claims.organization_id,
                 "active_role": claims.role,
                 "assigned_roles": [claims.role],
+                "permissions": list(role_definition(canonical_role).get("permissions", ())),
                 "status": "active",
                 "created_at": _iso(_utcnow()),
                 "last_seen_at": _iso(_utcnow()),

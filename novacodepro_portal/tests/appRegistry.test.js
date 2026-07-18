@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   buildNovaCodeProAppLauncher,
   findNovaCodeProAppByPath,
+  isNovaCodeProRouteAccessible,
   listNovaCodeProApps,
   parseNovaCodeProRoute,
 } from "../src/platform/appRegistry.js";
@@ -43,4 +44,9 @@ test("NovaCodePro route parsing resolves the launcher surfaces", () => {
   assert.equal(findNovaCodeProAppByPath("/novacodepro/requests").id, "requests");
   assert.equal(ROUTES.workspaceRoot, "/novacodepro/workspace");
   assert.equal(ROUTES.requestsRoot, "/novacodepro/requests");
+});
+
+test("NovaCodePro route access blocks forbidden apps", () => {
+  assert.equal(isNovaCodeProRouteAccessible("/novacodepro/workspace", ["workspace.read"]), true);
+  assert.equal(isNovaCodeProRouteAccessible("/novacodepro/security", ["workspace.read"]), false);
 });

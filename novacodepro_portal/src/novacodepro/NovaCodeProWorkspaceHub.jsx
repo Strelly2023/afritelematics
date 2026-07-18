@@ -62,17 +62,25 @@ export function NovaCodeProWorkspaceHub({ session, pathname, navigate, baseUrl =
       setLoadingState("loading");
       setError("");
       try {
-        const [workspaceList, projectList] = await Promise.all([
-          client.listWorkspaces().catch(() => []),
-          client.listProjects().catch(() => []),
-        ]);
+        const [workspaceResult, projectResult] = await Promise.allSettled([client.listWorkspaces(), client.listProjects()]);
         if (cancelled) {
           return;
         }
+        const workspaceList = workspaceResult.status === "fulfilled" ? workspaceResult.value : [];
+        const projectList = projectResult.status === "fulfilled" ? projectResult.value : [];
         setWorkspaces(Array.isArray(workspaceList) ? workspaceList : []);
         setProjects(Array.isArray(projectList) ? projectList : []);
-        setSelectedWorkspaceId((workspaceList && workspaceList[0]?.id) || "");
-        setSelectedProjectId((projectList && projectList[0]?.id) || "");
+        setSelectedWorkspaceId((Array.isArray(workspaceList) && workspaceList[0]?.id) || "");
+        setSelectedProjectId((Array.isArray(projectList) && projectList[0]?.id) || "");
+        if (workspaceResult.status === "rejected" || projectResult.status === "rejected") {
+          const message =
+            workspaceResult.status === "rejected"
+              ? workspaceResult.reason?.message || "Unable to load workspaces."
+              : projectResult.reason?.message || "Unable to load projects.";
+          setLoadingState("partial");
+          setError(message);
+          return;
+        }
         setLoadingState("ready");
       } catch (fetchError) {
         if (cancelled) {
@@ -108,15 +116,17 @@ export function NovaCodeProWorkspaceHub({ session, pathname, navigate, baseUrl =
     setError("");
     setResult(null);
     try {
+      const tenantId = session?.tenant_id || session?.organization?.id || "";
+      if (!tenantId) {
+        throw new Error("Tenant context is required.");
+      }
       const createdProject = await client.createProject({
         name: projectName.trim(),
-        tenant_id: session?.organization?.id || "novacodepro",
-        organization_id: session?.organization?.id || "novacodepro",
         idea: projectSummary.trim(),
         request: projectSummary.trim(),
         domain: "novacodepro",
         region: "Australia",
-        owner: session?.user?.id || session?.user?.username || "novacodepro-user",
+        owner: session?.user?.id || session?.user?.username || "",
         surfaces: ["workspace", "projects", "requests", "ai"],
       });
       const projectId = createdProject?.id || createdProject?.project_id || "";
@@ -146,6 +156,10 @@ export function NovaCodeProWorkspaceHub({ session, pathname, navigate, baseUrl =
     setError("");
     setResult(null);
     try {
+      const tenantId = session?.tenant_id || session?.organization?.id || "";
+      if (!tenantId) {
+        throw new Error("Tenant context is required.");
+      }
       let projectId = selectedProjectId || projects[0]?.id || "";
       if (!projectId) {
         const createdProject = await client.createProject({
@@ -154,8 +168,7 @@ export function NovaCodeProWorkspaceHub({ session, pathname, navigate, baseUrl =
           request: projectSummary.trim(),
           domain: "novacodepro",
           region: "Australia",
-          organization_id: session?.organization?.id || "novacodepro",
-          owner: session?.user?.id || session?.user?.username || "novacodepro-user",
+          owner: session?.user?.id || session?.user?.username || "",
           surfaces: ["workspace", "projects", "requests", "ai"],
         });
         projectId = createdProject?.id || createdProject?.project_id || "";

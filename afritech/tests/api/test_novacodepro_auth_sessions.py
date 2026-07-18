@@ -46,6 +46,7 @@ def test_login_session_workspace_and_logout_cycle(tmp_path: Path) -> None:
     assert session.status_code == 200
     assert session.json()["canonical_role"] == "PLATFORM_ADMIN"
     assert session.json()["workspace"]["home_route"] == "/novacodepro/dashboard"
+    assert session.json()["permissions"]
 
     workspace = client.get("/v1/novacodepro/workspace")
     assert workspace.status_code == 200
@@ -82,6 +83,7 @@ def test_canonical_session_aliases_work_without_platform_router(tmp_path: Path) 
     session = client.get("/v1/novacodepro/session")
     assert session.status_code == 200
     assert session.json()["active_role"] == "ADMIN"
+    assert session.json()["permissions"]
 
     bootstrap = client.get("/v1/novacodepro/session/bootstrap")
     assert bootstrap.status_code == 200
@@ -141,3 +143,26 @@ def test_invalid_login_and_forbidden_role_switch(tmp_path: Path) -> None:
 
     forbidden = client.post("/v1/auth/switch-role", json={"role": "ADMIN"})
     assert forbidden.status_code == 403
+
+
+def test_revoked_session_cannot_refresh_and_registry_forbidden_for_customer(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    login = client.post(
+        "/v1/novacodepro/session/login",
+        json={
+            "email": "regulator.test@afritechnology.com",
+            "password": "NovaCodePro123!",
+            "role": "EXTERNAL_REGULATOR",
+        },
+    )
+    assert login.status_code == 200
+
+    registry = client.get("/v1/novacodepro/app-registry")
+    assert registry.status_code == 403
+
+    logout = client.post("/v1/novacodepro/session/logout")
+    assert logout.status_code == 200
+
+    refresh = client.post("/v1/novacodepro/session/refresh")
+    assert refresh.status_code == 401
