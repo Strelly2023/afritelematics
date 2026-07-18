@@ -5520,6 +5520,7 @@ function App() {
                 <p className="studio-note">
                   {activeAutomationTemplate.stages.length} workflow stages, each with audit and state.
                 </p>
+                {activeAutomationTemplate.outcome ? <div className="automation-outcome"><span>Target outcome</span><strong>{activeAutomationTemplate.outcome}</strong></div> : null}
                 <div className="workflow-track compact">
                   {activeAutomationTemplate.stages.map((stage, index) => (
                     <React.Fragment key={stage}>
@@ -5562,6 +5563,18 @@ function App() {
                 </div>
               </article>
             </div>
+            {activeAutomationTemplate.phases?.length ? (
+              <div className="mobile-lifecycle" aria-label={`${activeAutomationTemplate.title} lifecycle`}>
+                {activeAutomationTemplate.phases.map((phase, index) => (
+                  <article className="lifecycle-phase" key={phase.id}>
+                    <div className="lifecycle-phase-header"><span>{String(index + 1).padStart(2, "0")}</span><div><p>{phase.owner}</p><h3>{phase.title}</h3></div></div>
+                    <ul>{phase.tasks.map((task) => <li key={task}>{task}</li>)}</ul>
+                    <div className="lifecycle-deliverables">{phase.deliverables.map((deliverable) => <span key={deliverable}>{deliverable}</span>)}</div>
+                    <footer><span>Approval gate</span><strong>{phase.gate}</strong></footer>
+                  </article>
+                ))}
+              </div>
+            ) : null}
           </section>
 
           <section className="surface-band">

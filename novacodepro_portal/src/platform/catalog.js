@@ -651,9 +651,42 @@ export const KNOWLEDGE_GRAPH = [
 export const AUTOMATION_TEMPLATES = [
   {
     id: "template-mobile-app",
-    title: "Create mobile app",
-    description: "Request a mobile product, scaffold apps, tests, and deployment artifacts.",
+    title: "Build a production-ready mobile app",
+    description: "Move from validated product strategy to governed iOS and Android release with evidence at every gate.",
     stages: ["intent", "business", "architecture", "design", "implementation", "testing", "security", "deployment"],
+    outcome: "A store-ready, observable mobile MVP with an owned roadmap and auditable release evidence.",
+    phases: [
+      {
+        id: "strategy", title: "Strategy & discovery", owner: "Product", gate: "Problem and MVP approved",
+        tasks: ["Define the user, core problem, and measurable success criteria.", "Map direct competitors and articulate the product's differentiated value.", "Prioritise the smallest testable MVP and move non-essential ideas to the roadmap."],
+        deliverables: ["Product brief", "Competitive landscape", "MVP scorecard"],
+      },
+      {
+        id: "planning", title: "Architecture & delivery plan", owner: "Product + Engineering", gate: "Architecture decision approved",
+        tasks: ["Choose native Swift/Kotlin or cross-platform Flutter/React Native against product constraints.", "Decide supported platforms, OS baseline, offline behaviour, and device capabilities.", "Select managed/no-code services or custom frontend, backend, database, and API components."],
+        deliverables: ["Architecture decision record", "Delivery plan", "Risk register"],
+      },
+      {
+        id: "design", title: "Product & experience design", owner: "Design", gate: "Usability baseline accepted",
+        tasks: ["Map primary, alternate, empty, error, onboarding, and recovery user flows.", "Create accessible wireframes with clear information hierarchy and platform conventions.", "Validate an interactive prototype with representative users before implementation."],
+        deliverables: ["User-flow map", "Wireframes", "Tested prototype", "Design tokens"],
+      },
+      {
+        id: "development", title: "Governed development", owner: "Engineering", gate: "Build and review evidence complete",
+        tasks: ["Provision reproducible IDE, repository, branching, CI, signing, and environment configuration.", "Implement secure APIs, identity, data storage, migrations, notifications, and synchronisation.", "Build the mobile interface, local state, accessibility, device integrations, and telemetry."],
+        deliverables: ["Source repositories", "API contract", "Signed builds", "Technical documentation"],
+      },
+      {
+        id: "quality", title: "Quality, security & readiness", owner: "Quality + Security", gate: "Release candidate approved",
+        tasks: ["Automate unit, integration, contract, UI, and end-to-end acceptance tests.", "Verify supported devices, screen sizes, OS versions, permissions, and degraded-network behaviour.", "Assess privacy, secrets, dependencies, data handling, accessibility, performance, and load."],
+        deliverables: ["Test report", "Device matrix", "Security assessment", "Release candidate"],
+      },
+      {
+        id: "release", title: "Release & continuous improvement", owner: "Release + Product", gate: "Store release authorised",
+        tasks: ["Prepare compliant listings, privacy disclosures, search metadata, screenshots, and support details.", "Distribute staged builds through TestFlight and Play testing tracks before store submission.", "Monitor crashes, performance, analytics, reviews, and support signals; triage them into the roadmap."],
+        deliverables: ["Store listing pack", "Release evidence", "Monitoring dashboard", "Maintenance plan"],
+      },
+    ],
   },
   {
     id: "template-banking-backend",

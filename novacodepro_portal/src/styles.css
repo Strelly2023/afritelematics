@@ -1415,6 +1415,21 @@ button {
   background: rgba(105, 210, 164, 0.1);
 }
 
+.automation-outcome { display: grid; gap: 6px; margin: 18px 0; padding: 14px 16px; border: 1px solid rgba(104, 128, 255, 0.24); border-radius: 14px; background: rgba(104, 128, 255, 0.08); }
+.automation-outcome span, .lifecycle-phase-header p, .lifecycle-phase footer span { color: #b8c9d8; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.mobile-lifecycle { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.lifecycle-phase { display: flex; min-width: 0; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid rgba(141, 172, 197, 0.14); border-radius: 18px; background: rgba(255, 255, 255, 0.03); }
+.lifecycle-phase-header { display: flex; gap: 12px; align-items: flex-start; }
+.lifecycle-phase-header > span { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 10px; color: #69d2a4; background: rgba(105, 210, 164, 0.1); font-weight: 800; }
+.lifecycle-phase-header p, .lifecycle-phase-header h3 { margin: 0; }
+.lifecycle-phase ul { display: grid; gap: 9px; margin: 0; padding-left: 18px; color: #b8c9d8; line-height: 1.45; }
+.lifecycle-deliverables { display: flex; flex-wrap: wrap; gap: 7px; }
+.lifecycle-deliverables span { padding: 6px 9px; border: 1px solid rgba(141, 172, 197, 0.14); border-radius: 999px; font-size: 0.75rem; }
+.lifecycle-phase footer { display: grid; gap: 5px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(141, 172, 197, 0.14); }
+
+@media (max-width: 1050px) { .mobile-lifecycle { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .mobile-lifecycle { grid-template-columns: 1fr; } }
+
 .studio-grid {
   grid-template-columns: minmax(0, 1fr) minmax(340px, 1fr) minmax(260px, 0.7fr);
 }
