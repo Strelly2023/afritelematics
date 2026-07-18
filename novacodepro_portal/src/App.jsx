@@ -26,6 +26,7 @@ import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
 import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
+import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
 import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
@@ -3715,6 +3716,17 @@ function App() {
     if (["workspace", "projects", "requests"].includes(parsedRoute.appId)) {
       return (
         <NCP003Portal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      );
+    }
+    if (parsedRoute.appId === "ai") {
+      return (
+        <NCP004Portal
           session={session}
           pathname={currentPathname}
           navigate={(path, options) => navigateTo(path, options)}

@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `737`
+- Startup-safe closure size: `741`
 - Django-bound modules declared in repo: `284`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `99`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (737 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (741 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (105 files)"]
+    Core --> Api["api (107 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (18 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `105` files
+- `api`: `107` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `18` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (114)
+### Api (116)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -135,6 +135,8 @@ flowchart TD
 - `afritech.api.ingestion.event_ingestion`
 - `afritech.api.integration_platform_api`
 - `afritech.api.mobile_intelligence_api`
+- `afritech.api.novacodepro_ncp003_api`
+- `afritech.api.novacodepro_ncp004_api`
 - `afritech.api.novacodepro_operational_verification_api`
 - `afritech.api.novacodepro_platform_api`
 - `afritech.api.novacodepro_workflow_fabric_api`
@@ -250,7 +252,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (583)
+### Other (585)
 
 - `afritech`
 - `afritech.afripay`
@@ -622,6 +624,8 @@ flowchart TD
 - `afritech.novacodepro.enterprise_framework`
 - `afritech.novacodepro.enterprise_os`
 - `afritech.novacodepro.eros`
+- `afritech.novacodepro.ncp003`
+- `afritech.novacodepro.ncp004`
 - `afritech.novacodepro.operating_fabric`
 - `afritech.novacodepro.operational_verification`
 - `afritech.novacodepro.operational_verification.enums`

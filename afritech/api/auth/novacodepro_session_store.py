@@ -89,6 +89,12 @@ def _effective_permissions(role: str) -> list[str]:
             "attachment.upload",
             "attachment.read",
             "comment.create",
+            "ai.read",
+            "ai.request",
+            "ai.execute",
+            "ai.approve",
+            "ai.manage",
+            "ai.policy",
         ]
     elif canonical in {"DEVELOPER", "PRODUCT_MANAGER", "BUSINESS_ANALYST", "PROJECT_MANAGER", "ARCHITECT", "QA_ENGINEER", "DEVOPS_ENGINEER"}:
         extras = [
@@ -117,6 +123,10 @@ def _effective_permissions(role: str) -> list[str]:
             "attachment.upload",
             "attachment.read",
             "comment.create",
+            "ai.read",
+            "ai.request",
+            "ai.execute",
+            "ai.approve",
         ]
     elif canonical == "CUSTOMER":
         extras = [
@@ -130,6 +140,8 @@ def _effective_permissions(role: str) -> list[str]:
             "attachment.read",
             "comment.create",
             "notification.read",
+            "ai.read",
+            "ai.request",
         ]
     elif canonical == "AUDITOR":
         extras = [
@@ -137,11 +149,13 @@ def _effective_permissions(role: str) -> list[str]:
             "workspace.activity.read",
             "request.read",
             "notification.read",
+            "ai.read",
         ]
     elif canonical == "EXTERNAL_REGULATOR":
         extras = [
             "workspace.read",
             "request.read",
+            "ai.read",
         ]
     else:
         extras = [

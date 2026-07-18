@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "test:e2e": "node --test tests/ncp003E2E.test.js",
+    "test:e2e": "node --test tests/ncp003E2E.test.js tests/ncp004E2E.test.js",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1"
   },
