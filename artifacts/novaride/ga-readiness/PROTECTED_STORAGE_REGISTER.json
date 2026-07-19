@@ -1,0 +1,19 @@
+{
+  "timestamp_utc": "2026-07-19T23:06:16Z",
+  "protected_resources": [
+    "docker volumes",
+    "Docker.raw",
+    "PostgreSQL databases",
+    "Redis persistence",
+    "Kafka data",
+    "signing keys",
+    "Android keystores",
+    "certificates",
+    "APKs",
+    "emulator/simulator state",
+    "source files",
+    "package lockfiles",
+    "evidence archives",
+    "approved environment files"
+  ]
+}

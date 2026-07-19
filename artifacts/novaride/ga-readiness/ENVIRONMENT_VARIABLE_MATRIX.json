@@ -1,0 +1,170 @@
+{
+  "timestamp_utc": "2026-07-19T23:12:36Z",
+  "entries": [
+    {
+      "variable_name": "NOVARIDE_ENVIRONMENT",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "compose.operational / api / migrations",
+      "source": "deploy/novaride/.env.example",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be present or rely on compose default",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_PAYMENT_MODE",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "compose.operational / api / migrations",
+      "source": "deploy/novaride/.env.example",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be present or rely on compose default",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_REGION",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "compose.operational / api / migrations",
+      "source": "deploy/novaride/.env.example",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be present or rely on compose default",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_TENANT",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "compose.operational / api / migrations",
+      "source": "deploy/novaride/.env.example",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be present or rely on compose default",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "POSTGRES_PASSWORD",
+      "required_or_optional": "required",
+      "consumer_service": "compose.operational / api / migrations",
+      "source": "deploy/novaride/.env.example",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be present and non-empty",
+      "default_permitted": "no"
+    },
+    {
+      "variable_name": "NOVARIDE_POSTGRES_DSN",
+      "required_or_optional": "derived",
+      "consumer_service": "api and migrations",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must resolve without unresolved placeholders",
+      "default_permitted": "no"
+    },
+    {
+      "variable_name": "NOVATECH_POSTGRES_DSN",
+      "required_or_optional": "derived",
+      "consumer_service": "api and migrations",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must resolve without unresolved placeholders",
+      "default_permitted": "no"
+    },
+    {
+      "variable_name": "NOVARIDE_REDIS_URL",
+      "required_or_optional": "derived",
+      "consumer_service": "api and workers",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must resolve to redis service URL",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_EVENT_FABRIC_ADAPTER",
+      "required_or_optional": "required",
+      "consumer_service": "api and workers",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must equal kafka_outbox for current launch",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_KAFKA_BOOTSTRAP_SERVERS",
+      "required_or_optional": "derived",
+      "consumer_service": "api and workers",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must resolve to kafka service",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_KAFKA_SECURITY_PROTOCOL",
+      "required_or_optional": "required",
+      "consumer_service": "api and workers",
+      "source": "compose.operational.yml",
+      "present_or_missing": "present",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must equal PLAINTEXT for current local runtime",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_ENVIRONMENT",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "api, workers, migrations",
+      "source": "deploy/production/.env.production.trust-node or compose default",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be set to the approved narrow-GA environment label",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_REGION",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "api, workers, migrations",
+      "source": "deploy/production/.env.production.trust-node or compose default",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be set to the approved launch region",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_TENANT",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "api, workers, migrations",
+      "source": "deploy/production/.env.production.trust-node or compose default",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must be set to the approved launch tenant",
+      "default_permitted": "yes"
+    },
+    {
+      "variable_name": "NOVARIDE_PAYMENT_MODE",
+      "required_or_optional": "required_or_defaulted",
+      "consumer_service": "api and payment workers",
+      "source": "deploy/production/.env.production.trust-node or compose default",
+      "present_or_missing": "missing",
+      "secret_or_non_secret": "non_secret",
+      "allowed_environment": "narrow-ga-runtime",
+      "validation_rule": "must remain sandbox or controlled_pilot until approved live payments exist",
+      "default_permitted": "yes"
+    }
+  ]
+}

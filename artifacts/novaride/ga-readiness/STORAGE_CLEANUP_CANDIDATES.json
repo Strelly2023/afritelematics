@@ -1,0 +1,98 @@
+{
+  "timestamp_utc": "2026-07-19T23:11:35Z",
+  "candidates": [
+    {
+      "path": "/Users/ostrinov/.cache/codex-runtimes",
+      "size": "2.4G",
+      "classification": "reproducible_cache",
+      "status": "permission_blocked"
+    },
+    {
+      "path": "/Users/ostrinov/.npm/_cacache",
+      "size": "307M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/.npm/_npx",
+      "size": "356M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/.gradle/wrapper",
+      "size": "642M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/Google",
+      "size": "8.6G",
+      "classification": "reproducible_cache",
+      "status": "permission_blocked"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/NetBeans",
+      "size": "8.6G",
+      "classification": "reproducible_cache",
+      "status": "permission_blocked"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Android/sdk",
+      "size": "20G",
+      "classification": "reproducible_toolchain",
+      "status": "password_required"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/pip",
+      "size": "713M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/com.microsoft.VSCode.ShipIt",
+      "size": "1.3G",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/com.spotify.client",
+      "size": "1.4G",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/vscode-cpptools",
+      "size": "1.4G",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/com.operasoftware.Opera",
+      "size": "1.7G",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/Firefox",
+      "size": "953M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/Mozilla",
+      "size": "385M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    },
+    {
+      "path": "/Users/ostrinov/Library/Caches/Norton",
+      "size": "469M",
+      "classification": "reproducible_cache",
+      "status": "deletable"
+    }
+  ],
+  "attempted_cleanup": true,
+  "status": "BLOCKED_INFRASTRUCTURE",
+  "notes": "User-level delete attempts hit permission barriers on several cache trees; privileged delete required password and was not available."
+}
