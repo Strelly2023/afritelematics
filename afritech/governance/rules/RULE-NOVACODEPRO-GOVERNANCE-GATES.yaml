@@ -1,0 +1,32 @@
+id: RULE-NOVACODEPRO-GOVERNANCE-GATES
+title: NovaCodePro Governance Gates
+status: active
+scope: novacodepro/release
+consolidated_from:
+  - afritech/governance/rules/RULE-NOVACODEPRO-ACCESSIBILITY-GATE.yaml
+  - afritech/governance/rules/RULE-NOVACODEPRO-EXECUTIVE-APPROVAL.yaml
+  - afritech/governance/rules/RULE-NOVACODEPRO-OBSERVABILITY-EVIDENCE.yaml
+  - afritech/governance/rules/RULE-NOVACODEPRO-PAYMENT-ACTIVATION.yaml
+  - afritech/governance/rules/RULE-NOVACODEPRO-PRR-APPROVAL.yaml
+  - afritech/governance/rules/RULE-NOVACODEPRO-VISUAL-REGRESSION-GATE.yaml
+effective_version: 1
+rules:
+  - Accessibility verification requires executed tools and zero critical or serious violations.
+  - Executive approval requires PRR approval, evidence hash, scope, eligible role, and four-eyes validation.
+  - Observability is verified only after backend ingestion confirmation.
+  - Real payment activation requires independent finance, risk, provider, settlement, reconciliation, fraud, regulatory, and operations evidence.
+  - PRR approval requires signed evidence package and human reviewer decisions.
+  - Visual verification requires approved baselines and no unreviewed material differences.
+legacy_rule_catalog:
+  - id: RULE-NOVACODEPRO-ACCESSIBILITY-GATE
+    rule: Accessibility verification requires executed tools and zero critical or serious violations.
+  - id: RULE-NOVACODEPRO-EXECUTIVE-APPROVAL
+    rule: Executive approval requires PRR approval, evidence hash, scope, eligible role, and four-eyes validation.
+  - id: RULE-NOVACODEPRO-OBSERVABILITY-EVIDENCE
+    rule: Observability is verified only after backend ingestion confirmation.
+  - id: RULE-NOVACODEPRO-PAYMENT-ACTIVATION
+    rule: Real payment activation requires independent finance, risk, provider, settlement, reconciliation, fraud, regulatory, and operations evidence.
+  - id: RULE-NOVACODEPRO-PRR-APPROVAL
+    rule: PRR approval requires signed evidence package and human reviewer decisions.
+  - id: RULE-NOVACODEPRO-VISUAL-REGRESSION-GATE
+    rule: Visual verification requires approved baselines and no unreviewed material differences.

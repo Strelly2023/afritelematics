@@ -1,2 +1,0 @@
-id: RULE-NOVACODEPRO-VISUAL-REGRESSION-GATE
-rule: Visual verification requires approved baselines and no unreviewed material differences.

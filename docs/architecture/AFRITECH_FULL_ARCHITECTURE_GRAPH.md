@@ -12,8 +12,8 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `737`
-- Django-bound modules declared in repo: `284`
+- Startup-safe closure size: `747`
+- Django-bound modules declared in repo: `253`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `99`
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (737 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (747 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (284 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (253 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -250,7 +250,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (583)
+### Other (593)
 
 - `afritech`
 - `afritech.afripay`
@@ -642,8 +642,18 @@ flowchart TD
 - `afritech.novacodepro.workspace`
 - `afritech.novaid`
 - `afritech.novaid.ai`
+- `afritech.novaid.audit_replay`
 - `afritech.novaid.core`
+- `afritech.novaid.domain`
+- `afritech.novaid.domain.models`
+- `afritech.novaid.domain.webauthn`
+- `afritech.novaid.observability`
+- `afritech.novaid.persistence`
+- `afritech.novaid.persistence.pool`
+- `afritech.novaid.persistence.postgres`
+- `afritech.novaid.persistence.sqlite`
 - `afritech.novaid.repository`
+- `afritech.novaid.security`
 - `afritech.novaid.service`
 - `afritech.novaid.standards`
 - `afritech.novaid.surfaces`
