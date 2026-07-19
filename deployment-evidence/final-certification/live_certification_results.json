@@ -1,0 +1,1027 @@
+{
+  "ncp008": {
+    "approval_request": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-088f88676153",
+          "approval_required": false,
+          "approval_status": "",
+          "approved_at": "",
+          "approved_by": "",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:29:15.212526+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "development",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-f6fcfa23fa96",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:29:15.212577+00:00",
+          "organization_id": "afritech-core",
+          "payload_hash": "25cb0db4ba9a548b2a4d143effa7b845f7abe586443cb204ed4c6f64338614fa",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [],
+            "risk_level": "low",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:29:15.206460+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "low",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "approval_pending",
+          "tenant_id": "afritech-core",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:29:15.278993+00:00",
+          "updated_by": "usr_admin",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 2,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "approval": {
+          "action_id": "action-request-f6fcfa23fa96",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:29:15.261508+00:00",
+          "created_by": "usr_admin",
+          "decided_at": "",
+          "decided_by": "",
+          "decision_reason": "",
+          "environment_id": "development",
+          "id": "approval-088f88676153",
+          "organization_id": "afritech-core",
+          "requested_at": "2026-07-19T14:29:15.261491+00:00",
+          "required_role": "OPERATOR",
+          "separation_of_duties_satisfied": false,
+          "status": "PENDING",
+          "tenant_id": "afritech-core",
+          "updated_at": "2026-07-19T14:29:15.261512+00:00",
+          "updated_by": "usr_admin"
+        }
+      },
+      "status": 200
+    },
+    "approve": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-088f88676153",
+          "approval_required": false,
+          "approval_status": "",
+          "approved_at": "2026-07-19T14:29:15.337311+00:00",
+          "approved_by": "usr_admin",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:29:15.212526+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "development",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-f6fcfa23fa96",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:29:15.212577+00:00",
+          "organization_id": "afritech-core",
+          "payload_hash": "25cb0db4ba9a548b2a4d143effa7b845f7abe586443cb204ed4c6f64338614fa",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [],
+            "risk_level": "low",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:29:15.206460+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "low",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "approved",
+          "tenant_id": "afritech-core",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:29:15.342658+00:00",
+          "updated_by": "usr_admin",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 3,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "approval": {
+          "action_id": "action-request-f6fcfa23fa96",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:29:15.261508+00:00",
+          "created_by": "usr_admin",
+          "decided_at": "2026-07-19T14:29:15.324101+00:00",
+          "decided_by": "usr_admin",
+          "decision_reason": "approved live certification",
+          "environment_id": "development",
+          "id": "approval-088f88676153",
+          "organization_id": "afritech-core",
+          "requested_at": "2026-07-19T14:29:15.261491+00:00",
+          "required_role": "OPERATOR",
+          "separation_of_duties_satisfied": true,
+          "status": "APPROVED",
+          "tenant_id": "afritech-core",
+          "updated_at": "2026-07-19T14:29:15.324126+00:00",
+          "updated_by": "usr_admin"
+        }
+      },
+      "status": 200
+    },
+    "create_action": {
+      "body": {
+        "action_type": "service_restart",
+        "annotations": {},
+        "approval_policy_id": "",
+        "approval_required": false,
+        "approval_status": "",
+        "approved_at": "",
+        "approved_by": "",
+        "approved_version": "",
+        "architecture_baseline_id": "",
+        "architecture_model_id": "",
+        "archived_at": "",
+        "baseline_id": "",
+        "causation_id": "ncp008-usr_admin",
+        "change_set_id": "",
+        "classification": "INTERNAL",
+        "correlation_id": "ncp008-usr_admin",
+        "created_at": "2026-07-19T14:29:15.212526+00:00",
+        "created_by": "usr_admin",
+        "created_from_agent_id": "",
+        "created_from_execution_id": "",
+        "created_from_retrieval_id": "",
+        "created_from_tool_id": "",
+        "creation_method": "manual",
+        "criticality": "",
+        "dependencies": [],
+        "deployment_id": "",
+        "description": "Certification action",
+        "design_baseline_id": "",
+        "development_workspace_id": "",
+        "environment": "development",
+        "environment_id": "development",
+        "evaluated_at": "",
+        "evidence_id": "",
+        "evidence_reference": "",
+        "execution_id": "",
+        "human_verified": false,
+        "id": "action-request-f6fcfa23fa96",
+        "idempotency_key": "ncp008-action-live",
+        "incident_id": "",
+        "labels": {},
+        "legal_hold": false,
+        "metadata": {},
+        "normalized_parameters": {
+          "scope": "live-cert"
+        },
+        "observed_at": "2026-07-19T14:29:15.212577+00:00",
+        "organization_id": "afritech-core",
+        "payload_hash": "25cb0db4ba9a548b2a4d143effa7b845f7abe586443cb204ed4c6f64338614fa",
+        "policy_decision": "",
+        "policy_result": {
+          "decision": "allow",
+          "policy_version": "ncp008-1",
+          "prohibited_reasons": [],
+          "required_approvals": [],
+          "risk_level": "low",
+          "warnings": []
+        },
+        "project_id": null,
+        "published_at": "",
+        "reason": "",
+        "record_type": "action_request",
+        "region": "Australia",
+        "rejected_at": "",
+        "rejected_by": "",
+        "rejection_reason": "",
+        "release_id": "",
+        "request_id": null,
+        "requested_at": "2026-07-19T14:29:15.206460+00:00",
+        "requested_by": "usr_admin",
+        "requested_parameters": {
+          "scope": "live-cert"
+        },
+        "requirement_set_id": "",
+        "retention_policy_id": "",
+        "review_status": "",
+        "risk_level": "low",
+        "service_id": "",
+        "service_tier": "",
+        "source_digest": "",
+        "source_id": "",
+        "source_type": "manual",
+        "source_uri": "",
+        "source_version": "1",
+        "status": "requested",
+        "tenant_id": "afritech-core",
+        "timeline": [],
+        "title": "Live certification restart",
+        "updated_at": "2026-07-19T14:29:15.212526+00:00",
+        "updated_by": "usr_admin",
+        "verification_actor_id": "",
+        "verification_timestamp": "",
+        "version": 1,
+        "visibility": "INTERNAL",
+        "workspace_id": null
+      },
+      "status": 200
+    },
+    "create_environment": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "create_service": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "create_workspace": {
+      "body": {
+        "annotations": {},
+        "approval_status": "",
+        "approved_at": "",
+        "approved_by": "",
+        "approved_version": "",
+        "architecture_baseline_id": "",
+        "architecture_model_id": "",
+        "archived_at": "",
+        "baseline_id": "",
+        "causation_id": "ncp008-usr_admin",
+        "change_set_id": "",
+        "classification": "INTERNAL",
+        "correlation_id": "ncp008-usr_admin",
+        "created_at": "2026-07-19T14:29:15.110241+00:00",
+        "created_by": "usr_admin",
+        "created_from_agent_id": "",
+        "created_from_execution_id": "",
+        "created_from_retrieval_id": "",
+        "created_from_tool_id": "",
+        "creation_method": "manual",
+        "criticality": "",
+        "dependencies": [],
+        "deployment_id": "",
+        "design_baseline_id": "",
+        "development_workspace_id": "",
+        "environment": "development",
+        "environment_id": "development",
+        "environment_ids": [],
+        "evaluated_at": "",
+        "evidence_reference": "",
+        "human_verified": false,
+        "id": "operations-workspace-0594b1f714c9",
+        "idempotency_key": "ncp008-workspace-live",
+        "labels": {},
+        "legal_hold": false,
+        "metadata": {},
+        "name": "Live Certification Workspace",
+        "observed_at": "2026-07-19T14:29:15.110527+00:00",
+        "organization_id": "afritech-core",
+        "payload_hash": "b4f4b776fa22d5ef1def97942abe4b4423d271b3f4a50360eb3c76ed8a5b3df8",
+        "policy_decision": "",
+        "project_id": null,
+        "published_at": "",
+        "record_type": "operations_workspace",
+        "region": "Australia",
+        "region_ids": [
+          "australia-southeast"
+        ],
+        "release_id": "",
+        "request_id": null,
+        "requirement_set_id": "",
+        "retention_policy_id": "",
+        "review_status": "",
+        "service_id": "",
+        "service_ids": [],
+        "service_tier": "",
+        "source_digest": "",
+        "source_id": "",
+        "source_type": "manual",
+        "source_uri": "",
+        "source_version": "1",
+        "status": "ACTIVE",
+        "tenant_id": "afritech-core",
+        "timeline": [],
+        "updated_at": "2026-07-19T14:29:15.110241+00:00",
+        "updated_by": "usr_admin",
+        "verification_actor_id": "",
+        "verification_timestamp": "",
+        "version": 1,
+        "visibility": "INTERNAL",
+        "workspace_id": null
+      },
+      "status": 200
+    },
+    "evidence": {
+      "body": {
+        "evidence": []
+      },
+      "status": 200
+    },
+    "execute": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "unauthorized_create": {
+      "body": {
+        "error": {
+          "code": "{'CODE': 'OPERATIONS_FORBIDDEN', 'MESSAGE': 'INSUFFICIENT OPERATIONS PERMISSION'}",
+          "message": "{'code': 'OPERATIONS_FORBIDDEN', 'message': 'Insufficient operations permission'}"
+        }
+      },
+      "status": 403
+    },
+    "verify": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-088f88676153",
+          "approval_required": false,
+          "approval_status": "",
+          "approved_at": "2026-07-19T14:29:15.337311+00:00",
+          "approved_by": "usr_admin",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:29:15.212526+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "development",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-f6fcfa23fa96",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:29:15.212577+00:00",
+          "organization_id": "afritech-core",
+          "payload_hash": "25cb0db4ba9a548b2a4d143effa7b845f7abe586443cb204ed4c6f64338614fa",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [],
+            "risk_level": "low",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:29:15.206460+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "low",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "succeeded",
+          "tenant_id": "afritech-core",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:29:15.444134+00:00",
+          "updated_by": "usr_admin",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 4,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "execution": null,
+        "verification": {
+          "action_id": "action-request-f6fcfa23fa96",
+          "environment_id": "development",
+          "execution": null,
+          "execution_id": null,
+          "organization_id": "afritech-core",
+          "status": "verified"
+        }
+      },
+      "status": 200
+    }
+  },
+  "novaid": {
+    "api_cert": {
+      "authorize": {
+        "body": {
+          "decision": {
+            "checks": [
+              "tenant_aligned",
+              "role_allowed",
+              "scope_allowed",
+              "ownership_valid",
+              "risk_within_policy"
+            ],
+            "decision": "ALLOW",
+            "reason": "All core constraints passed",
+            "trace_id": "3a4d0b97371a07a79f075bd6"
+          },
+          "request": {
+            "action": "live_certification_action",
+            "metadata": {},
+            "organization_id": "afritech-core",
+            "required_roles": [
+              "CUSTOMER"
+            ],
+            "required_scopes": [
+              "identity.read"
+            ],
+            "resource_owner_id": "live-cert-novaid-001",
+            "risk_score": "0",
+            "risk_score_max": "0.70"
+          }
+        },
+        "status": 200
+      },
+      "command_center": {
+        "has_view": true,
+        "status": 200
+      },
+      "create_identity": {
+        "body": {
+          "attributes": {
+            "source": "live-certification"
+          },
+          "created_at": "2026-07-19T14:29:14.862778+00:00",
+          "display_name": "Live Certification Identity",
+          "identity": {
+            "devices": [
+              "device-live-cert-001"
+            ],
+            "email": "live-cert@example.invalid",
+            "identity_id": "live-cert-novaid-001",
+            "kyc_status": "verified",
+            "organization_id": "afritech-core",
+            "roles": [
+              "CUSTOMER"
+            ],
+            "scopes": [
+              "identity.read",
+              "identity.write"
+            ]
+          },
+          "identity_id": "live-cert-novaid-001",
+          "identity_type": "person",
+          "lifecycle_state": "active",
+          "organization_id": "afritech-core",
+          "payload": {
+            "attributes": {
+              "source": "live-certification"
+            },
+            "display_name": "Live Certification Identity",
+            "identity": {
+              "devices": [
+                "device-live-cert-001"
+              ],
+              "email": "live-cert@example.invalid",
+              "identity_id": "live-cert-novaid-001",
+              "kyc_status": "verified",
+              "organization_id": "afritech-core",
+              "roles": [
+                "CUSTOMER"
+              ],
+              "scopes": [
+                "identity.read",
+                "identity.write"
+              ]
+            },
+            "identity_id": "live-cert-novaid-001",
+            "identity_type": "person",
+            "lifecycle_state": "active",
+            "organization_id": "afritech-core",
+            "record_id": "live-cert-novaid-001",
+            "record_type": "novaid_identities",
+            "status": "active",
+            "verification_status": "verified"
+          },
+          "record_id": "live-cert-novaid-001",
+          "record_type": "novaid_identities",
+          "status": "active",
+          "updated_at": "2026-07-19T14:29:14.862778+00:00",
+          "verification_status": "verified"
+        },
+        "status": 200
+      },
+      "issue_credential": {
+        "body": {
+          "claims": {
+            "level": "pilot",
+            "source": "api_cert"
+          },
+          "created_at": "2026-07-19T14:29:14.883444+00:00",
+          "credential_id": "cred-258b0f6f8efe",
+          "credential_type": "live_cert_access",
+          "issuer": "NovaID",
+          "metadata": {
+            "scenario": "live-certification"
+          },
+          "organization_id": "afritech-core",
+          "payload": {
+            "claims": {
+              "level": "pilot",
+              "source": "api_cert"
+            },
+            "credential_id": "cred-258b0f6f8efe",
+            "credential_type": "live_cert_access",
+            "issuer": "NovaID",
+            "metadata": {
+              "scenario": "live-certification"
+            },
+            "organization_id": "afritech-core",
+            "record_id": "cred-258b0f6f8efe",
+            "record_type": "novaid_credentials",
+            "status": "issued",
+            "subject_id": "live-cert-novaid-001",
+            "trust_receipt": {
+              "event_hash": "81533eec1e443ac2df3e1fc9709c5296be4d4ae8097ad80d4ff586bd891b8dd9",
+              "event_type": "novaid.credential.issued",
+              "organization_id": "afritech-core",
+              "packet": {
+                "claims": {
+                  "level": "pilot",
+                  "source": "api_cert"
+                },
+                "credential_id": "cred-258b0f6f8efe",
+                "credential_type": "live_cert_access",
+                "event_hash": "81533eec1e443ac2df3e1fc9709c5296be4d4ae8097ad80d4ff586bd891b8dd9",
+                "issuer": "NovaID",
+                "metadata": {
+                  "scenario": "live-certification"
+                },
+                "organization_id": "afritech-core",
+                "status": "issued",
+                "subject_id": "live-cert-novaid-001"
+              },
+              "replay_status": "verified",
+              "subject_id": "live-cert-novaid-001",
+              "trust_id": "trust_b4eb67a97ef74c73"
+            }
+          },
+          "record_id": "cred-258b0f6f8efe",
+          "record_type": "novaid_credentials",
+          "status": "issued",
+          "subject_id": "live-cert-novaid-001",
+          "trust_receipt": {
+            "event_hash": "81533eec1e443ac2df3e1fc9709c5296be4d4ae8097ad80d4ff586bd891b8dd9",
+            "event_type": "novaid.credential.issued",
+            "organization_id": "afritech-core",
+            "packet": {
+              "claims": {
+                "level": "pilot",
+                "source": "api_cert"
+              },
+              "credential_id": "cred-258b0f6f8efe",
+              "credential_type": "live_cert_access",
+              "event_hash": "81533eec1e443ac2df3e1fc9709c5296be4d4ae8097ad80d4ff586bd891b8dd9",
+              "issuer": "NovaID",
+              "metadata": {
+                "scenario": "live-certification"
+              },
+              "organization_id": "afritech-core",
+              "status": "issued",
+              "subject_id": "live-cert-novaid-001"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-novaid-001",
+            "trust_id": "trust_b4eb67a97ef74c73"
+          },
+          "updated_at": "2026-07-19T14:29:14.883444+00:00"
+        },
+        "status": 200
+      },
+      "list_credentials": {
+        "count": 1,
+        "status": 200
+      },
+      "recovery": {
+        "body": {
+          "created_at": "2026-07-19T14:29:14.895501+00:00",
+          "evidence_refs": [
+            "evidence-api_cert-1"
+          ],
+          "method": "email",
+          "organization_id": "afritech-core",
+          "payload": {
+            "evidence_refs": [
+              "evidence-api_cert-1"
+            ],
+            "method": "email",
+            "organization_id": "afritech-core",
+            "record_id": "recovery-live-cert-novaid-001",
+            "record_type": "novaid_recovery_events",
+            "recovered_at": "2026-07-19T14:29:14.895429+00:00",
+            "status": "verified",
+            "trust_receipt": {
+              "event_hash": "2843a08dbf79093a2394444623dee1d072478bf3a4c73abdd25f873ac8a7dc68",
+              "event_type": "novaid.identity.recovered",
+              "organization_id": "afritech-core",
+              "packet": {
+                "event_hash": "2843a08dbf79093a2394444623dee1d072478bf3a4c73abdd25f873ac8a7dc68",
+                "evidence_refs": [
+                  "evidence-api_cert-1"
+                ],
+                "method": "email",
+                "recovered_at": "2026-07-19T14:29:14.895429+00:00",
+                "status": "verified"
+              },
+              "replay_status": "verified",
+              "subject_id": "live-cert-novaid-001",
+              "trust_id": "trust_db9bde8af56a4407"
+            }
+          },
+          "record_id": "recovery-live-cert-novaid-001",
+          "record_type": "novaid_recovery_events",
+          "recovered_at": "2026-07-19T14:29:14.895429+00:00",
+          "status": "verified",
+          "trust_receipt": {
+            "event_hash": "2843a08dbf79093a2394444623dee1d072478bf3a4c73abdd25f873ac8a7dc68",
+            "event_type": "novaid.identity.recovered",
+            "organization_id": "afritech-core",
+            "packet": {
+              "event_hash": "2843a08dbf79093a2394444623dee1d072478bf3a4c73abdd25f873ac8a7dc68",
+              "evidence_refs": [
+                "evidence-api_cert-1"
+              ],
+              "method": "email",
+              "recovered_at": "2026-07-19T14:29:14.895429+00:00",
+              "status": "verified"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-novaid-001",
+            "trust_id": "trust_db9bde8af56a4407"
+          },
+          "updated_at": "2026-07-19T14:29:14.895501+00:00"
+        },
+        "status": 200
+      },
+      "register_device": {
+        "body": {
+          "attested": true,
+          "created_at": "2026-07-19T14:29:14.877411+00:00",
+          "device_id": "device-api_cert",
+          "device_type": "mobile",
+          "identity_id": "live-cert-novaid-001",
+          "metadata": {
+            "instance": "api_cert"
+          },
+          "organization_id": "afritech-core",
+          "payload": {
+            "attested": true,
+            "device_id": "device-api_cert",
+            "device_type": "mobile",
+            "identity_id": "live-cert-novaid-001",
+            "metadata": {
+              "instance": "api_cert"
+            },
+            "organization_id": "afritech-core",
+            "public_key": "device-pubkey-live-cert",
+            "record_id": "device-api_cert",
+            "record_type": "novaid_devices",
+            "status": "trusted",
+            "trust_level": "trusted"
+          },
+          "public_key": "device-pubkey-live-cert",
+          "record_id": "device-api_cert",
+          "record_type": "novaid_devices",
+          "status": "trusted",
+          "trust_level": "trusted",
+          "updated_at": "2026-07-19T14:29:14.877411+00:00"
+        },
+        "status": 200
+      },
+      "register_passkey": {
+        "body": {
+          "attestation": "none",
+          "created_at": "2026-07-19T14:29:14.870146+00:00",
+          "credential_id": "cred-api_cert",
+          "identity_id": "live-cert-novaid-001",
+          "organization_id": "afritech-core",
+          "payload": {
+            "attestation": "none",
+            "credential_id": "cred-api_cert",
+            "identity_id": "live-cert-novaid-001",
+            "organization_id": "afritech-core",
+            "public_key": "public-key-live-cert",
+            "record_id": "cred-api_cert",
+            "record_type": "novaid_passkeys",
+            "rp_id": "novaid.afritech.local",
+            "status": "active",
+            "transport": "platform",
+            "user_handle": "live-cert-novaid-001"
+          },
+          "public_key": "public-key-live-cert",
+          "record_id": "cred-api_cert",
+          "record_type": "novaid_passkeys",
+          "rp_id": "novaid.afritech.local",
+          "status": "active",
+          "transport": "platform",
+          "updated_at": "2026-07-19T14:29:14.870146+00:00",
+          "user_handle": "live-cert-novaid-001"
+        },
+        "status": 200
+      },
+      "trust": {
+        "body": {
+          "receipt": {
+            "event_hash": "04455fc7dd281e5002b58323e88490369d5a37b4a4b6e1cd684b6ad92e49f585",
+            "event_type": "live.certification",
+            "organization_id": "afritech-core",
+            "packet": {
+              "event_hash": "04455fc7dd281e5002b58323e88490369d5a37b4a4b6e1cd684b6ad92e49f585",
+              "flow": "live-certification",
+              "instance": "api_cert"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-novaid-001",
+            "trust_id": "trust_769ea3a684f044a8"
+          },
+          "verified": true
+        },
+        "status": 200
+      }
+    },
+    "api_primary": {
+      "authorize": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "command_center": {
+        "has_view": false,
+        "status": 401
+      },
+      "create_identity": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "issue_credential": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "list_credentials": {
+        "count": 0,
+        "status": 401
+      },
+      "recovery": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "register_device": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "register_passkey": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "trust": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      }
+    },
+    "audit_replay_create": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "audit_replay_unauthorized_create": {
+      "body": {
+        "error": {
+          "code": "INSUFFICIENT_ROLE",
+          "message": "insufficient_role"
+        }
+      },
+      "status": 403
+    }
+  },
+  "novaride": {
+    "health": {
+      "body": {
+        "environment": "production",
+        "service": "afritech-api",
+        "status": "healthy",
+        "version": "0.7.0"
+      },
+      "status": 200
+    },
+    "live_smoke": {
+      "exit_code": 0,
+      "stderr_tail": "  0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   117  100    79  100    38   4824   2320 --:--:-- --:--:-- --:--:--  7312\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   204  100   204    0     0  13009      0 --:--:-- --:--:-- --:--:-- 13600\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   420  100   396  100    24  23500   1424 --:--:-- --:--:-- --:--:-- 26250\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   436  100   412  100    24  26132   1522 --:--:-- --:--:-- --:--:-- 29066\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   444  100   420  100    24  28802   1645 --:--:-- --:--:-- --:--:-- 31714\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   463  100   439  100    24  30165   1649 --:--:-- --:--:-- --:--:-- 33071\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1185  100  1185    0     0   107k      0 --:--:-- --:--:-- --:--:--  115k\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   855  100   855    0     0  86538      0 --:--:-- --:--:-- --:--:-- 95000\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1159  100  1159    0     0   105k      0 --:--:-- --:--:-- --:--:--  113k\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1195  100  1195    0     0  22110      0 --:--:-- --:--:-- --:--:-- 22129\n",
+      "stdout_tail": "true,\"hash_chain_verified\":true,\"invariant_violations\":[],\"terminal_event_hash\":\"34c603b14f8b96ab63527967630995fee2441e80b80d7e54c797239dcdc343af\",\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"replay_snapshot\"},\"replay_id\":\"replay-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"receipt_id\":\"receipt-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"replay_epoch\":1,\"reconstructed_status\":\"COMPLETED\",\"reconstructed_assigned_driver\":\"driver-1\"}\n==> Ride evidence\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:29:15 GMT\nserver: uvicorn\ncontent-length: 855\ncontent-type: application/json\nx-request-id: abcca3309a6b4865ba0873b92512a0d0\nx-trace-id: 0f9478abb3eb4ea1bdd402a73755d7e0\nx-span-id: 6afd646d41154ce7\ntraceparent: 00-0f9478abb3eb4ea1bdd402a73755d7e0-6afd646d41154ce7-01\n\n{\"ride_id\":\"live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"trace_hash\":\"3f25c1970664c4f42b72578c505dcd8646e707ec0da998e346e7bbd12ad50ba5\",\"replay_hash\":\"cddaabb949b5e4e81352d3565f509b08a7d6f1a37d61a05c823fff1c923d2796\",\"verification_status\":\"VERIFIED\",\"receipt_id\":\"receipt-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"generated_at\":\"2026-07-19T14:29:15Z\",\"replay_verified\":true,\"reconstructed_status\":\"COMPLETED\",\"reconstructed_assigned_driver\":\"driver-1\",\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"evidence_record\"}}\n==> Ride receipt\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:29:15 GMT\nserver: uvicorn\ncontent-length: 1159\ncontent-type: application/json\nx-request-id: fa1e67dc18494f65a91d24a78cf26cf5\nx-trace-id: 4461b2bda0594637a7e96062931c9a59\nx-span-id: a894310d38264d70\ntraceparent: 00-4461b2bda0594637a7e96062931c9a59-a894310d38264d70-01\n\n{\"ride_id\":\"live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"receipt_id\":\"receipt-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"status\":\"completed\",\"replay_id\":\"replay-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"trace_hash\":\"3f25c1970664c4f42b72578c505dcd8646e707ec0da998e346e7bbd12ad50ba5\",\"replay_hash\":\"cddaabb949b5e4e81352d3565f509b08a7d6f1a37d61a05c823fff1c923d2796\",\"receipt_hash\":\"785f8f781431cae1c881203f9b167e917be019ef4c2e6bb4b574a701ecc38126\",\"execution_fingerprint\":\"a9a8e8c950e7c831825e2ce6a85089583a7eb43616a582e23a635954017b9d78\",\"issued_at\":\"2026-07-19T14:29:15Z\",\"signature_validation\":{\"signature_mode\":\"hmac_sha256_receipt_v1\",\"signature\":\"c6b39a86b90cb94538afba018a11977c576e031b3d277fb95833c9f9beb113eb\",\"all_signatures_valid\":true},\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"receipt_record\"}}\n==> Ride ledger receipt\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:29:15 GMT\nserver: uvicorn\ncontent-length: 1195\ncontent-type: application/json\nx-request-id: c34d278612754372a0e2f3abf1aec0dc\nx-trace-id: 4f185726b8514a9ca31216d0c5de681a\nx-span-id: 1fcf4ecec109474d\ntraceparent: 00-4f185726b8514a9ca31216d0c5de681a-1fcf4ecec109474d-01\n\n{\"receipt_id\":\"ledger-receipt-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"generated_at\":\"2026-06-01T00:00:00Z\",\"ledger_proof\":{\"event_count\":8,\"ride_count\":1,\"completed_ride_count\":1,\"root_hash\":\"37afb926848ba46fa6c0e4ca832210ef26fffc2760305e82eb87c93519b938a8\",\"hash_mode\":\"sha256_canonical_chain\",\"chain_valid\":true},\"signature_validation\":{\"signature_mode\":\"rsa_pss_sha256\",\"all_signatures_valid\":true,\"invalid_signatures\":[]},\"key_governance\":{\"unknown_keys\":[],\"revoked_keys\":[],\"expired_keys\":[],\"inactive_keys\":[]},\"identity_validation\":{\"all_verified\":true,\"unverified_identities\":[]},\"device_validation\":{\"device_mismatches\":[]},\"legal_envelope\":{\"terms_version\":\"v1.0\",\"terms_mismatches\":[]},\"replay_proof\":{\"replay_valid\":true,\"replay_hash_match\":true},\"financial_summary\":{\"total_distance_km\":0.0,\"total_duration_min\":0,\"total_fare\":0.0},\"verdict\":\"VALID\",\"evidence_refs\":{\"event_log_id\":\"event-log-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\",\"replay_run_id\":\"replay-live-smoke-ride-ed7824d9-e77a-4bb0-a722-b6b10366f0fc\"},\"write_enabled\":false,\"authority\":\"derived_evidence_only\",\"receipt_hash\":\"fe8e92e2201e3f00e1e1ed56d22983387affceee47aa579c99e195a0c2ce2e27\"}\nLive smoke test completed.\n"
+    }
+  },
+  "stack_ps_exit": 0,
+  "stack_ps_stderr": "",
+  "stack_ps_stdout": "{\"Command\":\"\\\"uvicorn afritech.ap\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"1644887cc040\",\"Image\":\"production-afritech-api\",\"Labels\":\"com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/SourceKind=hostFile,com.docker.compose.config-hash=ceed866311f756bf1f5606a85a7530e108ab786d2c2089f4639b7758d01a6099,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=afritech-api-1,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/eth_private_key,desktop.docker.io/binds/0/Target=/run/secrets/eth_private_key,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_private_key.pem,desktop.docker.io/binds/1/Target=/run/secrets/afritech_private_key.pem,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_public_key.pem,desktop.docker.io/binds/2/Target=/run/secrets/afritech_public_key.pem,com.docker.compose.project=production,com.docker.compose.service=afritech-api,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:7d875c85a0187894f3be4d1e6bc3c9e55396bebd987587b09e94e122c29294dc,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/ports/8000/tcp=127.0.0.1:8001\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,production_afr\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-afritech-api-1\",\"Names\":\"production-afritech-api-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:8001-\\u003e8000/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":8000,\"PublishedPort\":8001,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"afritech-api\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"ba7ca5f9d890\",\"Image\":\"production-afritech-dashboard\",\"Labels\":\"com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=afritech-dashboard-1,com.docker.compose.service=afritech-dashboard,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=7c25ba1e0ed45e744c4b0d2ae31d24c0139f19dfd395c57674234bafeac0957d,com.docker.compose.container-number=1,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.image=sha256:8335407b7a4916def831c66369b8d258fb6fb5a0f0da31aed622e77be55912b5\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-afritech-dashboard-1\",\"Names\":\"production-afritech-dashboard-1\",\"Networks\":\"production_infra\",\"Ports\":\"4173/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4173,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"afritech-dashboard\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/bin/alertmanager -\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"a68cc5f19e35\",\"Image\":\"prom/alertmanager:v0.27.0\",\"Labels\":\"com.docker.compose.service=alertmanager,com.docker.compose.version=5.1.4,desktop.docker.io/binds/1/Target=/etc/alertmanager/alertmanager.yml,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,desktop.docker.io/ports.scheme=v2,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=alertmanager-1,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/alertmanager/alertmanager.yml,desktop.docker.io/ports/9093/tcp=127.0.0.1:9093,com.docker.compose.config-hash=d1647d09962f39ec7bd4f475e67181a794a9d378bb57fcb52483b948187abfa2,com.docker.compose.container-number=1,com.docker.compose.depends_on=,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.image=sha256:e13b6ed5cb929eeaee733479dce55e10eb3bc2e9c4586c705a4e8da41e5eacf5,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_ale\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-alertmanager-1\",\"Names\":\"production-alertmanager-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:9093-\\u003e9093/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":9093,\"PublishedPort\":9093,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"alertmanager\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"/usr/bin/cadvisor -\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"b3e8f8cc076e\",\"Image\":\"gcr.io/cadvisor/cadvisor:v0.49.1\",\"Labels\":\"com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.config-hash=c533b61c09d16a7c40ffcee9b37514a102b98cf5fe03e73378a3237bb7538060,com.docker.compose.image=sha256:3cde6faf0791ebf7b41d6f8ae7145466fed712ea6f252c935294d2608b1af388,desktop.docker.io/binds/1/Source=/var/run,com.docker.compose.project=production,com.docker.compose.replace=cadvisor-1,com.docker.compose.service=cadvisor,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/ports.scheme=v2,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.version=5.1.4,desktop.docker.io/binds/1/Target=/var/run\",\"LocalVolumes\":\"0\",\"Mounts\":\"/var/lib/docker,/host_mnt/priv\u2026,/,/sys\",\"Name\":\"production-cadvisor-1\",\"Names\":\"production-cadvisor-1\",\"Networks\":\"production_infra\",\"Ports\":\"8080/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8080,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"cadvisor\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/run.sh\\\"\",\"CreatedAt\":\"2026-07-19 16:03:05 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"30c2710d6116\",\"Image\":\"grafana/grafana:11.2.2\",\"Labels\":\"desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,desktop.docker.io/ports/3000/tcp=127.0.0.1:3000,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/provisioning,com.docker.compose.config-hash=6abe24721296901265bdaffb335fbb01273a8a9c436651e6ad63c4addc614709,com.docker.compose.depends_on=prometheus:service_started:false,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.service=grafana,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/dashboards,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.image=sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/var/lib/grafana/dashboards,maintainer=Grafana Labs \\u003chello@grafana.com\\u003e,com.docker.compose.version=5.1.4,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=grafana-1,desktop.docker.io/binds/0/Target=/etc/grafana/provisioning\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,production_gra\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-grafana-1\",\"Names\":\"production-grafana-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:3000-\\u003e3000/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":3000,\"PublishedPort\":3000,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"grafana\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"/entrypoint.sh redp\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:02 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"397e60dcf0f1\",\"Image\":\"redpandadata/redpanda:v24.1.5\",\"Labels\":\"com.docker.compose.version=5.1.4,org.opencontainers.image.authors=Redpanda Data \\u003chi@redpanda.com\\u003e,com.docker.compose.depends_on=,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=kafka-1,com.docker.compose.service=kafka,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=a0d86f42aada6ec1236d49b543dd75835eef53814c866b82b6f0df5bb8507f28,com.docker.compose.container-number=1,com.docker.compose.image=sha256:9ecdd11989c9dc3f43c74782e541144e4231f31bf26ce280f73587b2d32ed1f3,com.docker.compose.project=production\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_kaf\u2026\",\"Name\":\"production-kafka-1\",\"Names\":\"production-kafka-1\",\"Networks\":\"production_infra\",\"Ports\":\"8081-8082/tcp, 9092/tcp, 9644/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8081,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":8082,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":9092,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":9644,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"kafka\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/docker-entrypoint.\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:07:29 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"e97ca46e5f55\",\"Image\":\"nginx:1.27-alpine\",\"Labels\":\"desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/var/www/afritechnology-downloads,maintainer=NGINX Docker Maintainers \\u003cdocker-maint@nginx.com\\u003e,com.docker.compose.oneoff=False,com.docker.compose.version=5.1.4,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/443/tcp=:443,desktop.docker.io/ports/80/tcp=:80,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.service=nginx,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/15-novacodepro-cert.envsh,desktop.docker.io/binds/0/Target=/docker-entrypoint.d/15-novacodepro-cert.envsh,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.depends_on=afritech-dashboard:service_started:false,novacodepro-portal:service_started:false,afritech-api:service_healthy:false,public-web:service_started:false,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=nginx-1,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/afritechnology-platform.conf.template,desktop.docker.io/binds/1/Target=/etc/nginx/templates/default.conf.template,desktop.docker.io/binds/2/Target=/var/www/afritech-apk,com.docker.compose.config-hash=fb9d059cd6565b3502f8ee76f9397a4f4f9497e2caa7c37d7456377aba36537e,com.docker.compose.image=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk-public\",\"LocalVolumes\":\"2\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_cer\u2026,/host_mnt/priv\u2026,production_cer\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-nginx-1\",\"Names\":\"production-nginx-1\",\"Networks\":\"production_infra\",\"Ports\":\"0.0.0.0:80-\\u003e80/tcp, [::]:80-\\u003e80/tcp, 0.0.0.0:443-\\u003e443/tcp, [::]:443-\\u003e443/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"0.0.0.0\",\"TargetPort\":80,\"PublishedPort\":80,\"Protocol\":\"tcp\"},{\"URL\":\"::\",\"TargetPort\":80,\"PublishedPort\":80,\"Protocol\":\"tcp\"},{\"URL\":\"0.0.0.0\",\"TargetPort\":443,\"PublishedPort\":443,\"Protocol\":\"tcp\"},{\"URL\":\"::\",\"TargetPort\":443,\"PublishedPort\":443,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"nginx\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/usr/bin/nginx-prom\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:07:30 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"9a5c73bd5676\",\"Image\":\"nginx/nginx-prometheus-exporter:1.1.0\",\"Labels\":\"org.nginx.exporter.image.build.version=goreleaser,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.source=https://github.com/nginxinc/nginx-prometheus-exporter,org.opencontainers.image.vendor=NGINX Inc \\u003cintegrations@nginx.com\\u003e,com.docker.compose.config-hash=65bf69f5069c530a3acdd2a566fa642d7e5dcbcc6fe940407a16a7c0122d2a32,com.docker.compose.depends_on=nginx:service_started:false,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=nginx-exporter-1,org.opencontainers.image.created=2024-01-09T18:47:19.859Z,org.opencontainers.image.title=nginx-prometheus-exporter,com.docker.compose.container-number=1,com.docker.compose.project=production,org.opencontainers.image.revision=85fa58b9f8979eeed776a1df58495ef5baa4d9d7,org.opencontainers.image.url=https://github.com/nginxinc/nginx-prometheus-exporter,org.nginx.exporter.image.build.target=linux/arm64,com.docker.compose.service=nginx-exporter,com.docker.compose.version=5.1.4,org.opencontainers.image.description=NGINX Prometheus Exporter for NGINX and NGINX Plus,org.opencontainers.image.version=1.1.0,com.docker.compose.image=sha256:d710e0ff2505a7037dd21e47eae07025010c0de08a6247d1a704824823becfd0,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-nginx-exporter-1\",\"Names\":\"production-nginx-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"\",\"Project\":\"production\",\"Publishers\":[],\"RunningFor\":\"8 hours ago\",\"Service\":\"nginx-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"/bin/node_exporter \u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:02 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"d21dc733cbd3\",\"Image\":\"prom/node-exporter:v1.8.2\",\"Labels\":\"desktop.docker.io/ports.scheme=v2,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.config-hash=f6dbd95ac213de616ce4be4a907ab5389403440cce4206c14d6103a3f409826d,com.docker.compose.depends_on=,com.docker.compose.image=sha256:4032c6d5bfd752342c3e631c2f1de93ba6b86c41db6b167b9a35372c139e7706,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=node-exporter-1,com.docker.compose.service=node-exporter,com.docker.compose.container-number=1,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.version=5.1.4\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-node-exporter-1\",\"Names\":\"production-node-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"9100/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":9100,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"node-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"895be0a86497\",\"Image\":\"production-novacodepro-portal\",\"Labels\":\"com.docker.compose.container-number=1,com.docker.compose.image=sha256:767bc380312f30a250a885244ad081c790c86c5f52f5cf5b907696fb073db528,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=novacodepro-portal-1,com.docker.compose.service=novacodepro-portal,com.docker.compose.version=5.1.4,com.docker.compose.config-hash=7ffc183b93f526727e3e3dc8e35e8ba25613232c548a078fc29aa13eae173016,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-novacodepro-portal-1\",\"Names\":\"production-novacodepro-portal-1\",\"Networks\":\"production_infra\",\"Ports\":\"4174/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4174,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"novacodepro-portal\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/otelcol-contrib --\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"485299148f25\",\"Image\":\"otel/opentelemetry-collector-contrib:0.109.0\",\"Labels\":\"com.docker.compose.version=5.1.4,desktop.docker.io/binds/2/Target=/etc/otelcol-contrib/exporters.yaml,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/otel-collector.yml,org.opencontainers.image.version=0.109.0,com.docker.compose.service=otel-collector,desktop.docker.io/binds/0/Target=/etc/otelcol-contrib/config.yaml,org.opencontainers.image.revision=b07bcb3f966e134245b9879f8e8b5948a44bfc9f,org.opencontainers.image.source=https://github.com/open-telemetry/opentelemetry-collector-releases,com.docker.compose.config-hash=d02bacb0990baf99f4d88f59ba1944b79aa23743c1773486ce21e213ab817f64,com.docker.compose.depends_on=,desktop.docker.io/binds/1/Target=/etc/otelcol-contrib/pipelines.yaml,desktop.docker.io/binds/3/Target=/etc/otelcol-contrib/otel-collector.yml,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=otel-collector-1,org.opencontainers.image.created=2024-09-10T20:10:03Z,org.opencontainers.image.name=opentelemetry-collector-releases,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/exporters.yaml,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:af0f72b2d2493fc17f06cf3bc136548240cd7ebb2c8b1c8a7be6f3eb03068389,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/pipelines.yaml,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/ports/4317/tcp=127.0.0.1:4317,org.opencontainers.image.licenses=Apache-2.0,com.docker.compose.project=production,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/config.yaml,desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/ports/13133/tcp=127.0.0.1:13133,desktop.docker.io/ports/4318/tcp=127.0.0.1:4318,com.docker.compose.container-number=1,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node\",\"LocalVolumes\":\"0\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-otel-collector-1\",\"Names\":\"production-otel-collector-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:4317-4318-\\u003e4317-4318/tcp, 127.0.0.1:13133-\\u003e13133/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":4317,\"PublishedPort\":4317,\"Protocol\":\"tcp\"},{\"URL\":\"127.0.0.1\",\"TargetPort\":4318,\"PublishedPort\":4318,\"Protocol\":\"tcp\"},{\"URL\":\"127.0.0.1\",\"TargetPort\":13133,\"PublishedPort\":13133,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"otel-collector\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"6b8393ee3e53\",\"Image\":\"postgres:16-alpine\",\"Labels\":\"com.docker.compose.image=sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=postgres-1,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.service=postgres,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=d621924fda367fadf77355ef3c001d559500cbad2ab71706ca1fca34dd4cf61d,com.docker.compose.depends_on=\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_pos\u2026\",\"Name\":\"production-postgres-1\",\"Names\":\"production-postgres-1\",\"Networks\":\"production_infra\",\"Ports\":\"5432/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":5432,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"postgres\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"/bin/postgres_expor\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"fea58f3f5ace\",\"Image\":\"prometheuscommunity/postgres-exporter:v0.15.0\",\"Labels\":\"com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.config-hash=b8e5bd86eb5ffdf35b807e54e5d460ff7fbe7ca0c71a2100ae441a76275979c1,com.docker.compose.container-number=1,com.docker.compose.image=sha256:386b12d19eab2a37d7cd8ca8b4c7491cc7a830d9581f49af6c98a393da9605e6,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=postgres-exporter,com.docker.compose.depends_on=postgres:service_started:false,com.docker.compose.oneoff=False,com.docker.compose.replace=postgres-exporter-1\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-postgres-exporter-1\",\"Names\":\"production-postgres-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"9187/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":9187,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"postgres-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"/bin/prometheus --c\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"241513e8f9e0\",\"Image\":\"prom/prometheus:v2.54.1\",\"Labels\":\"maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=prometheus-1,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/prometheus.yml,desktop.docker.io/binds/1/Target=/etc/prometheus/prometheus.yml,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/alerts.yml,desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/etc/prometheus/recording_rules.yml,desktop.docker.io/binds/4/SourceKind=hostFile,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.container-number=1,com.docker.compose.depends_on=redis:service_started:false,kafka:service_started:false,postgres:service_started:false,com.docker.compose.image=sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/recording_rules.yml,desktop.docker.io/binds/4/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=5822a6bf1346657b48544756afadf23a9bbe4fb4e15f7d263a84ad82fbb75fcd,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/2/Target=/etc/prometheus/alerts.yml,desktop.docker.io/ports/9090/tcp=127.0.0.1:9090,com.docker.compose.version=5.1.4,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.service=prometheus,desktop.docker.io/binds/4/Target=/etc/prometheus\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_pro\u2026\",\"Name\":\"production-prometheus-1\",\"Names\":\"production-prometheus-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:9090-\\u003e9090/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":9090,\"PublishedPort\":9090,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"prometheus\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"e122ae835cc9\",\"Image\":\"production-public-web\",\"Labels\":\"com.docker.compose.config-hash=c40929dfcc9b35036bbcead5f027838c2c8167e723797f4521cb4eb987e33641,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=public-web,com.docker.compose.version=5.1.4,com.docker.compose.container-number=1,com.docker.compose.image=sha256:a681b854c3fc7f3c382c07615bb42638ba95f63783b10fb28ffb38b2189e082c,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=public-web-1,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-public-web-1\",\"Names\":\"production-public-web-1\",\"Networks\":\"production_infra\",\"Ports\":\"4175/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4175,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"public-web\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"0d2451a2f681\",\"Image\":\"redis:7.4-alpine\",\"Labels\":\"com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.service=redis,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=redis-1,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=22be69bd8f9840076c38c411782a9cdd4c6003463f8ee639ece3e797e81c844b,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99,com.docker.compose.project=production\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_red\u2026\",\"Name\":\"production-redis-1\",\"Names\":\"production-redis-1\",\"Networks\":\"production_infra\",\"Ports\":\"6379/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":6379,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"8 hours ago\",\"Service\":\"redis\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 8 hours (healthy)\"}\n",
+  "tokens": {
+    "admin_role": "ADMIN",
+    "customer_role": "CUSTOMER",
+    "operator_role": "OPERATOR"
+  }
+}

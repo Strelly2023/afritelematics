@@ -1,0 +1,201 @@
+Testing AfriRide live system: http://127.0.0.1:8001
+
+==> Health
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 90
+content-type: application/json
+x-request-id: 59f5d27853cf4f939ce22fa3a81b1ffc
+x-trace-id: 8484b23afddf41499de01d3e70ab12e9
+x-span-id: 38a4f00a4328447a
+traceparent: 00-8484b23afddf41499de01d3e70ab12e9-38a4f00a4328447a-01
+
+{"status":"healthy","service":"afritech-api","version":"0.7.0","environment":"production"}
+==> Active rides
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 12
+content-type: application/json
+x-request-id: 4fe012df3a7148098b6ed739a91e74a2
+x-trace-id: 2fff6abb08da4619a209a13df13c12a1
+x-span-id: 52a5742d0c9c430f
+traceparent: 00-2fff6abb08da4619a209a13df13c12a1-52a5742d0c9c430f-01
+
+{"rides":[]}
+==> Replay health
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 488
+content-type: application/json
+x-request-id: 82596ca38a3346ebb9f59e0ed8c48d44
+x-trace-id: 38c0caaf66c84eacaddde8b9ca46b1a0
+x-span-id: 523fe452e6484c66
+traceparent: 00-38c0caaf66c84eacaddde8b9ca46b1a0-523fe452e6484c66-01
+
+{"replay_success_rate":"100%","failures":0,"hash_chain_failures":0,"last_failed_ride_id":null,"status":"PASS","authority":{"doc_id":"DOC-ARCH-001","doc_version":"1.0.0","governed_invariants":["I3_NO_SILENT_MUTATION","I4_DETERMINISTIC_EXECUTION","I5_REPLAY_REQUIRED","I6_REPLAY_AUTHORITY","I7_TRANSCRIPT_COMPLETENESS","I8_TRANSCRIPT_HASH_STABILITY","I11_AUTHORITY_DECLARATION"],"authority_hash":"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc","surface":"replay_health"}}
+==> Evidence summary
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 513
+content-type: application/json
+x-request-id: ca31eccc1b5743269e477e8de1a42b49
+x-trace-id: c1074cad941b4622b1b8b0202dce113e
+x-span-id: 4c5a704180784796
+traceparent: 00-c1074cad941b4622b1b8b0202dce113e-4c5a704180784796-01
+
+{"receipts_count":0,"trace_count":0,"missing_traces":0,"hash_chain_failures":0,"total_rides":0,"valid_traces":0,"invalid_traces":0,"authority":{"doc_id":"DOC-ARCH-001","doc_version":"1.0.0","governed_invariants":["I3_NO_SILENT_MUTATION","I4_DETERMINISTIC_EXECUTION","I5_REPLAY_REQUIRED","I6_REPLAY_AUTHORITY","I7_TRANSCRIPT_COMPLETENESS","I8_TRANSCRIPT_HASH_STABILITY","I11_AUTHORITY_DECLARATION"],"authority_hash":"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc","surface":"evidence_pipeline"}}
+==> System guards
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 17
+content-type: application/json
+x-request-id: 0f8026bf9ead4f34983647dc77309e32
+x-trace-id: 12b2f996ee394231b03c746e91118776
+x-span-id: 708e2e1ed8dc467b
+traceparent: 00-12b2f996ee394231b03c746e91118776-708e2e1ed8dc467b-01
+
+{"violations":[]}
+==> Driver online
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 79
+content-type: application/json
+x-request-id: ab73b11fcc5440968a715b7b79c29264
+x-trace-id: 74eb92c2a481453c945155b956e44808
+x-span-id: 54ffd0bcaf2a4408
+traceparent: 00-74eb92c2a481453c945155b956e44808-54ffd0bcaf2a4408-01
+
+{"status":"success","data":{"driver_id":"driver-1","online":true},"error":null}
+Creating test ride...
+{
+  "status": "success",
+  "data": {
+    "ride_id": "live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b",
+    "passenger_id": "rider-1",
+    "pickup": "Point A",
+    "destination": "Point B",
+    "status": "REQUESTED",
+    "assigned_driver": null,
+    "trace_hash": null,
+    "state_hash": null,
+    "events": [
+      "ride_requested"
+    ]
+  },
+  "error": null
+}
+==> Assigned rides
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 204
+content-type: application/json
+x-request-id: c0e09306cd3a44a8948a80cf998c32b0
+x-trace-id: c6522b8112b744318f8bd779f59170b6
+x-span-id: ab3974938d2d4cec
+traceparent: 00-c6522b8112b744318f8bd779f59170b6-ab3974938d2d4cec-01
+
+{"rides":[{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","pickup":"Point A","dropoff":"Point B","status":"assigned","assigned_driver_id":"driver-1","receipt_id":null,"replay_id":null}]}
+==> Ride accept
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 396
+content-type: application/json
+x-request-id: 07deb9b2b0cd4adbb1ebd62e7253ddba
+x-trace-id: 7f3b9f18f5114573bb0d5a766e9b63c2
+x-span-id: 000d5b2380d345c0
+traceparent: 00-7f3b9f18f5114573bb0d5a766e9b63c2-000d5b2380d345c0-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","passenger_id":"rider-1","pickup":"Point A","destination":"Point B","status":"DRIVER_ASSIGNED","assigned_driver":"driver-1","trace_hash":"dd957c4252dd7189c7dccd36be5e574cf645953b4e47ad072df3fb90da6b1269","state_hash":"13d0ad19ad1ec7834f19f8892b35d3aff6632f180a91e9a55b5b274308fb94a1","events":["ride_requested","driver_assigned"]}
+==> Driver arrived
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 412
+content-type: application/json
+x-request-id: 88af29ffae49414daeb5e4619dcb065f
+x-trace-id: eea92ad333f742a8ba187dbb48d6df44
+x-span-id: e04dc9dbe6e74772
+traceparent: 00-eea92ad333f742a8ba187dbb48d6df44-e04dc9dbe6e74772-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","passenger_id":"rider-1","pickup":"Point A","destination":"Point B","status":"DRIVER_ARRIVED","assigned_driver":"driver-1","trace_hash":"dd957c4252dd7189c7dccd36be5e574cf645953b4e47ad072df3fb90da6b1269","state_hash":"13d0ad19ad1ec7834f19f8892b35d3aff6632f180a91e9a55b5b274308fb94a1","events":["ride_requested","driver_assigned","driver_arrived"]}
+==> Ride start
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 420
+content-type: application/json
+x-request-id: 98978f78365b4efb89e1361bf67b4aa7
+x-trace-id: 9485e5ffa9b44eb4a98a4f0bce49504a
+x-span-id: 9cea647d796843ff
+traceparent: 00-9485e5ffa9b44eb4a98a4f0bce49504a-9cea647d796843ff-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","passenger_id":"rider-1","pickup":"Point A","destination":"Point B","status":"IN_TRIP","assigned_driver":"driver-1","trace_hash":"dd957c4252dd7189c7dccd36be5e574cf645953b4e47ad072df3fb90da6b1269","state_hash":"13d0ad19ad1ec7834f19f8892b35d3aff6632f180a91e9a55b5b274308fb94a1","events":["ride_requested","driver_assigned","driver_arrived","trip_started"]}
+==> Ride complete
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 439
+content-type: application/json
+x-request-id: 759aca83d6824ddf904c49b7b5dcb372
+x-trace-id: 5f8c4619583a444aa04aa4f40f911eac
+x-span-id: bf2efa1e10244656
+traceparent: 00-5f8c4619583a444aa04aa4f40f911eac-bf2efa1e10244656-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","passenger_id":"rider-1","pickup":"Point A","destination":"Point B","status":"COMPLETED","assigned_driver":"driver-1","trace_hash":"dd957c4252dd7189c7dccd36be5e574cf645953b4e47ad072df3fb90da6b1269","state_hash":"13d0ad19ad1ec7834f19f8892b35d3aff6632f180a91e9a55b5b274308fb94a1","events":["ride_requested","driver_assigned","driver_arrived","trip_started","trip_completed"]}
+==> Ride replay
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 1185
+content-type: application/json
+x-request-id: 36b66580b06842049df2bcc2dbfcb36b
+x-trace-id: 311329175b334806a107c3b090eb04a9
+x-span-id: e7d39ee67eca41d8
+traceparent: 00-311329175b334806a107c3b090eb04a9-e7d39ee67eca41d8-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","status":"COMPLETED","assigned_driver":"driver-1","passenger_id":"rider-1","transitions":["REQUESTED","DRIVER_ACCEPTED","ARRIVED","STARTED","COMPLETED"],"trace_hash":"fcb1d3b243d94ed2d24ff01dbd2e65e4af67d000a9b14e8b0c4f76e0df4384da","replay_hash":"4b2790e467e13b49ac73027d088e04fab675f6100c9c84cc3ab77a6ab52fe254","replay_verified":true,"ordered":true,"hash_chain_verified":true,"invariant_violations":[],"terminal_event_hash":"068e3adac7dceb55d3e7bd4daf7c1888dae130c8852d5a7064ef0dbbaee9a4f7","authority":{"doc_id":"DOC-ARCH-001","doc_version":"1.0.0","governed_invariants":["I3_NO_SILENT_MUTATION","I4_DETERMINISTIC_EXECUTION","I5_REPLAY_REQUIRED","I6_REPLAY_AUTHORITY","I7_TRANSCRIPT_COMPLETENESS","I8_TRANSCRIPT_HASH_STABILITY","I11_AUTHORITY_DECLARATION"],"authority_hash":"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc","surface":"replay_snapshot"},"replay_id":"replay-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","receipt_id":"receipt-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","replay_epoch":1,"reconstructed_status":"COMPLETED","reconstructed_assigned_driver":"driver-1"}
+==> Ride evidence
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 855
+content-type: application/json
+x-request-id: 85476da48b7f473697e47d5dcdd7a675
+x-trace-id: 50ffb697a0124e7b9d3b36d5cfdba430
+x-span-id: 205ffcc0a34f45c0
+traceparent: 00-50ffb697a0124e7b9d3b36d5cfdba430-205ffcc0a34f45c0-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","trace_hash":"fcb1d3b243d94ed2d24ff01dbd2e65e4af67d000a9b14e8b0c4f76e0df4384da","replay_hash":"4b2790e467e13b49ac73027d088e04fab675f6100c9c84cc3ab77a6ab52fe254","verification_status":"VERIFIED","receipt_id":"receipt-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","generated_at":"2026-07-19T14:54:21Z","replay_verified":true,"reconstructed_status":"COMPLETED","reconstructed_assigned_driver":"driver-1","authority":{"doc_id":"DOC-ARCH-001","doc_version":"1.0.0","governed_invariants":["I3_NO_SILENT_MUTATION","I4_DETERMINISTIC_EXECUTION","I5_REPLAY_REQUIRED","I6_REPLAY_AUTHORITY","I7_TRANSCRIPT_COMPLETENESS","I8_TRANSCRIPT_HASH_STABILITY","I11_AUTHORITY_DECLARATION"],"authority_hash":"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc","surface":"evidence_record"}}
+==> Ride receipt
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 1159
+content-type: application/json
+x-request-id: b2268d3e1eb24861a4e5fd72927ff204
+x-trace-id: 3e5c137c60034bc58ea516973d1d6900
+x-span-id: 1595d450225a4231
+traceparent: 00-3e5c137c60034bc58ea516973d1d6900-1595d450225a4231-01
+
+{"ride_id":"live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","receipt_id":"receipt-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","status":"completed","replay_id":"replay-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","trace_hash":"fcb1d3b243d94ed2d24ff01dbd2e65e4af67d000a9b14e8b0c4f76e0df4384da","replay_hash":"4b2790e467e13b49ac73027d088e04fab675f6100c9c84cc3ab77a6ab52fe254","receipt_hash":"9b1123c9cc3fc1dff8f6d91978be2180d653ad8f7005da38666f1e3ed24146f1","execution_fingerprint":"d89abb0acb920a938f0b91ef8d0fcbd6144277a07578bd617a2d4041c117c202","issued_at":"2026-07-19T14:54:21Z","signature_validation":{"signature_mode":"hmac_sha256_receipt_v1","signature":"0100516ac5f764475038761f770c0c505d13ee63cf68ce280047225dee44bcc4","all_signatures_valid":true},"authority":{"doc_id":"DOC-ARCH-001","doc_version":"1.0.0","governed_invariants":["I3_NO_SILENT_MUTATION","I4_DETERMINISTIC_EXECUTION","I5_REPLAY_REQUIRED","I6_REPLAY_AUTHORITY","I7_TRANSCRIPT_COMPLETENESS","I8_TRANSCRIPT_HASH_STABILITY","I11_AUTHORITY_DECLARATION"],"authority_hash":"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc","surface":"receipt_record"}}
+==> Ride ledger receipt
+HTTP/1.1 200 OK
+date: Sun, 19 Jul 2026 14:54:20 GMT
+server: uvicorn
+content-length: 1195
+content-type: application/json
+x-request-id: 0236a3d215c440a99b778db40bb6318e
+x-trace-id: 3eb0c45999a8429283d635c94922e4b1
+x-span-id: f07be88a7127487e
+traceparent: 00-3eb0c45999a8429283d635c94922e4b1-f07be88a7127487e-01
+
+{"receipt_id":"ledger-receipt-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","generated_at":"2026-06-01T00:00:00Z","ledger_proof":{"event_count":8,"ride_count":1,"completed_ride_count":1,"root_hash":"c8c93de77a4e42971cb8a83ba8ce779c71949fd4605c8ba3000ff489b72907ca","hash_mode":"sha256_canonical_chain","chain_valid":true},"signature_validation":{"signature_mode":"rsa_pss_sha256","all_signatures_valid":true,"invalid_signatures":[]},"key_governance":{"unknown_keys":[],"revoked_keys":[],"expired_keys":[],"inactive_keys":[]},"identity_validation":{"all_verified":true,"unverified_identities":[]},"device_validation":{"device_mismatches":[]},"legal_envelope":{"terms_version":"v1.0","terms_mismatches":[]},"replay_proof":{"replay_valid":true,"replay_hash_match":true},"financial_summary":{"total_distance_km":0.0,"total_duration_min":0,"total_fare":0.0},"verdict":"VALID","evidence_refs":{"event_log_id":"event-log-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b","replay_run_id":"replay-live-smoke-ride-b7920402-153c-4668-a6ff-920f0bde9d7b"},"write_enabled":false,"authority":"derived_evidence_only","receipt_hash":"8f0b7fac79d8abb4428a31295e1a958649709ef15f91c2df99a5ebd77d88f861"}
+Live smoke test completed.

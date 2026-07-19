@@ -1,0 +1,50 @@
+{
+  "admin": "3fdf128f-c0dd-42fc-8d22-6481c1936550",
+  "customer": "89731781-dc6f-4856-b6dd-c7a393570962",
+  "health": [
+    200,
+    {
+      "authority": {
+        "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
+        "doc_id": "DOC-ARCH-001",
+        "doc_version": "1.0.0",
+        "governed_invariants": [
+          "I3_NO_SILENT_MUTATION",
+          "I4_DETERMINISTIC_EXECUTION",
+          "I5_REPLAY_REQUIRED",
+          "I6_REPLAY_AUTHORITY",
+          "I7_TRANSCRIPT_COMPLETENESS",
+          "I8_TRANSCRIPT_HASH_STABILITY",
+          "I11_AUTHORITY_DECLARATION"
+        ],
+        "surface": "replay_health"
+      },
+      "failures": 0,
+      "hash_chain_failures": 0,
+      "last_failed_ride_id": null,
+      "replay_success_rate": "100%",
+      "status": "PASS"
+    }
+  ],
+  "ncp008_unauthorized": [
+    403,
+    {
+      "error": {
+        "code": "{'CODE': 'OPERATIONS_FORBIDDEN', 'MESSAGE': 'INSUFFICIENT OPERATIONS PERMISSION'}",
+        "message": "{'code': 'OPERATIONS_FORBIDDEN', 'message': 'Insufficient operations permission'}"
+      }
+    }
+  ],
+  "operator": "89daee13-7cbd-4599-a32f-4963206dca38",
+  "org": "4e023976-1f4d-4164-aba8-10d32d5499fe",
+  "replay_create": [
+    500,
+    {
+      "error": {
+        "code": "SERVER_ERROR",
+        "message": "internal server error"
+      }
+    }
+  ],
+  "replay_id": null
+}

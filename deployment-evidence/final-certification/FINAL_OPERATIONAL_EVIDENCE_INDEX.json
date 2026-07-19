@@ -1,0 +1,31 @@
+{
+  "evidence_files": [
+    "load_harness_results.json",
+    "NOVAID_NCP008_LIVE_RESULTS_8003_CERT_TENANT.json",
+    "NOVAID_CERT_TENANT_UUID.txt",
+    "NOVAID_NCP008_REPLAY_AUTH_RESULTS.json",
+    "NOVARIDE_LIVE_SMOKE_8001.txt",
+    "BACKUP_RESTORE_TMPDB.txt",
+    "BACKUP_SHA256.txt",
+    "live_uuid_fix.json",
+    "live_uuid_run.json",
+    "live_certification_results.json",
+    "live_certification_results_success.json",
+    "live_uuid_fix.json"
+  ],
+  "live_stack": {
+    "afritech_api": "healthy",
+    "grafana": "running",
+    "kafka": "healthy",
+    "nginx": "healthy",
+    "otel_collector": "running",
+    "postgres": "healthy",
+    "prometheus": "running",
+    "redis": "healthy"
+  },
+  "repository": {
+    "branch": "afriride-live-pilot-001",
+    "head": "ed6fc4caa5028129f4ae8bc4cc435aba90973064",
+    "remote_head": "ed6fc4caa5028129f4ae8bc4cc435aba90973064"
+  }
+}

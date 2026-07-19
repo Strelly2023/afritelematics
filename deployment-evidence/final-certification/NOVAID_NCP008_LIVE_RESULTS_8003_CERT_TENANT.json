@@ -1,0 +1,170 @@
+{
+  "admin": "17119fa5-4514-4373-ae95-3154510a64fd",
+  "customer": "877ee04c-e85b-4793-8131-afae5db0123e",
+  "health": [
+    200,
+    {
+      "authority": {
+        "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
+        "doc_id": "DOC-ARCH-001",
+        "doc_version": "1.0.0",
+        "governed_invariants": [
+          "I3_NO_SILENT_MUTATION",
+          "I4_DETERMINISTIC_EXECUTION",
+          "I5_REPLAY_REQUIRED",
+          "I6_REPLAY_AUTHORITY",
+          "I7_TRANSCRIPT_COMPLETENESS",
+          "I8_TRANSCRIPT_HASH_STABILITY",
+          "I11_AUTHORITY_DECLARATION"
+        ],
+        "surface": "replay_health"
+      },
+      "failures": 0,
+      "hash_chain_failures": 0,
+      "last_failed_ride_id": null,
+      "replay_success_rate": "100%",
+      "status": "PASS"
+    }
+  ],
+  "ncp008_unauthorized": [
+    403,
+    {
+      "error": {
+        "code": "{'CODE': 'OPERATIONS_FORBIDDEN', 'MESSAGE': 'INSUFFICIENT OPERATIONS PERMISSION'}",
+        "message": "{'code': 'OPERATIONS_FORBIDDEN', 'message': 'Insufficient operations permission'}"
+      }
+    }
+  ],
+  "operator": "3ac4a217-16b0-46b6-8521-481e20fcde51",
+  "org": "b96d3f24-6323-4d47-ad19-2eeeb87ed8f5",
+  "replay_approval_request": [
+    200,
+    {
+      "approval_id": "670a7400-c7ce-40d2-805d-625f549185dd",
+      "status": "approval_pending"
+    }
+  ],
+  "replay_approve": [
+    200,
+    {
+      "approval_id": "dc0be6f2-0a60-4327-90f3-20c0f4c759df",
+      "status": "approved"
+    }
+  ],
+  "replay_create": [
+    200,
+    {
+      "aggregate_filters": {
+        "actor_identity_id": "17119fa5-4514-4373-ae95-3154510a64fd"
+      },
+      "approved_at": null,
+      "approved_by": null,
+      "cancelled_at": null,
+      "completed_at": null,
+      "correlation_id": "b278c2c5-c808-4c9e-8636-0918b8298a1b",
+      "created_at": "2026-07-19 14:54:02.512262+00:00",
+      "dry_run": true,
+      "end_time": null,
+      "environment_id": "",
+      "event_type_filters": [
+        "credential.issued",
+        "credential.revoked"
+      ],
+      "evidence_id": null,
+      "executed_by": null,
+      "maximum_events": 25,
+      "organization_id": "b96d3f24-6323-4d47-ad19-2eeeb87ed8f5",
+      "reason": "live certification replay",
+      "replay_mode": "dry_run",
+      "replay_request_id": "becbef26-19ae-41ae-8dd0-8d4405f3a1d4",
+      "request_id": "3394c0cc-cd27-4592-b662-54b902120f2d",
+      "requested_by": "17119fa5-4514-4373-ae95-3154510a64fd",
+      "risk_level": "moderate",
+      "source_checkpoint": null,
+      "start_time": null,
+      "started_at": null,
+      "status": "requested",
+      "subject_filters": {
+        "subject_identity_id": "17119fa5-4514-4373-ae95-3154510a64fd"
+      },
+      "target_checkpoint": null,
+      "tenant_id": "b96d3f24-6323-4d47-ad19-2eeeb87ed8f5"
+    }
+  ],
+  "replay_evaluate": [
+    200,
+    {
+      "denied_events": 0,
+      "eligible_events": 0,
+      "malformed_events": 0,
+      "matched_events": 0,
+      "replay_request_id": "becbef26-19ae-41ae-8dd0-8d4405f3a1d4",
+      "required_approval": false,
+      "risk_level": "moderate",
+      "warnings": [
+        "no_matching_events"
+      ],
+      "would_apply": 0,
+      "would_skip": 0
+    }
+  ],
+  "replay_evidence": [
+    200,
+    {
+      "counts": {
+        "applied": 0,
+        "matched": 0,
+        "skipped": 0
+      },
+      "request": {
+        "aggregate_filters": {
+          "actor_identity_id": "17119fa5-4514-4373-ae95-3154510a64fd"
+        },
+        "approved_at": "2026-07-19 14:54:02.564599+00:00",
+        "approved_by": "3ac4a217-16b0-46b6-8521-481e20fcde51",
+        "cancelled_at": null,
+        "completed_at": "2026-07-19 14:54:02.573096+00:00",
+        "correlation_id": "b278c2c5-c808-4c9e-8636-0918b8298a1b",
+        "created_at": "2026-07-19 14:54:02.512262+00:00",
+        "dry_run": true,
+        "end_time": null,
+        "environment_id": "",
+        "event_type_filters": [
+          "credential.issued",
+          "credential.revoked"
+        ],
+        "evidence_id": "27fb9236-a044-46b0-8499-ef3acd69c409",
+        "executed_by": "3ac4a217-16b0-46b6-8521-481e20fcde51",
+        "maximum_events": 25,
+        "organization_id": "b96d3f24-6323-4d47-ad19-2eeeb87ed8f5",
+        "reason": "live certification replay",
+        "replay_mode": "dry_run",
+        "replay_request_id": "becbef26-19ae-41ae-8dd0-8d4405f3a1d4",
+        "request_id": "3394c0cc-cd27-4592-b662-54b902120f2d",
+        "requested_by": "17119fa5-4514-4373-ae95-3154510a64fd",
+        "risk_level": "moderate",
+        "source_checkpoint": null,
+        "start_time": null,
+        "started_at": "2026-07-19 14:54:02.573096+00:00",
+        "status": "completed",
+        "subject_filters": {
+          "subject_identity_id": "17119fa5-4514-4373-ae95-3154510a64fd"
+        },
+        "target_checkpoint": null,
+        "tenant_id": "b96d3f24-6323-4d47-ad19-2eeeb87ed8f5"
+      },
+      "results": []
+    }
+  ],
+  "replay_execute": [
+    200,
+    {
+      "applied_events": 0,
+      "evidence_id": "27fb9236-a044-46b0-8499-ef3acd69c409",
+      "replay_request_id": "becbef26-19ae-41ae-8dd0-8d4405f3a1d4",
+      "skipped_events": 0,
+      "status": "completed"
+    }
+  ],
+  "replay_id": "becbef26-19ae-41ae-8dd0-8d4405f3a1d4"
+}

@@ -1,0 +1,4 @@
+{
+  "status": "PARTIAL",
+  "notes": "controlled restarts were not fully executed in this turn; stack remained healthy during certification probes"
+}

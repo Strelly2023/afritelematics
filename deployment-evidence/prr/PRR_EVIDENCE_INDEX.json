@@ -1,0 +1,8 @@
+{
+  "evidence": [
+    "deployment-evidence/final-certification/FINAL_GATE_MATRIX.json",
+    "deployment-evidence/final-certification/NOVAID_NCP008_LIVE_RESULTS_8003_CERT_TENANT.json",
+    "deployment-evidence/final-certification/NOVARIDE_LIVE_SMOKE_8001.txt",
+    "deployment-evidence/final-certification/BACKUP_SHA256.txt"
+  ]
+}

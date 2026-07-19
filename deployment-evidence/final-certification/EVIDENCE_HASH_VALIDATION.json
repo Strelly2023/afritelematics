@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "algorithm": "sha256sum -c",
+  "evidence_file": "deployment-evidence/final-certification/SHA256SUMS"
+}

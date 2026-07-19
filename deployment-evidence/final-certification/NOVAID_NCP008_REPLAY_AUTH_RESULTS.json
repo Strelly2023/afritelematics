@@ -1,0 +1,58 @@
+{
+  "admin": "66af2e8b-71d3-4240-b3ce-89075e7c7f7d",
+  "customer": "6f54b77d-5de1-42bf-b4e6-9fb49ad9d32f",
+  "ncp008_unauthorized": {
+    "body": {
+      "error": {
+        "code": "INVALID_SIGNATURE",
+        "message": "invalid_signature"
+      }
+    },
+    "ok": false,
+    "status": 401
+  },
+  "novaid_replay": {
+    "approval_request": {
+      "body": {},
+      "ok": false,
+      "status": null
+    },
+    "approve": {
+      "body": {},
+      "ok": false,
+      "status": null
+    },
+    "create": {
+      "body": {
+        "error": {
+          "code": "INVALID_SIGNATURE",
+          "message": "invalid_signature"
+        }
+      },
+      "ok": false,
+      "status": 401
+    },
+    "evaluate": {
+      "body": {},
+      "ok": false,
+      "status": null
+    },
+    "evidence": {
+      "body": {},
+      "ok": false,
+      "status": null
+    },
+    "execute": {
+      "body": {},
+      "ok": false,
+      "status": null
+    }
+  },
+  "operator": "cef011fe-4cf3-4242-a772-91c90f7ad7a6",
+  "org": "5c738824-e717-4fd7-af8f-e2302911fbcc",
+  "token_statuses": {
+    "admin": 200,
+    "customer": 200,
+    "operator": 200
+  }
+}

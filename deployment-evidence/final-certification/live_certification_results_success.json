@@ -1,0 +1,1148 @@
+{
+  "action_id": "action-request-0c133efc1c99",
+  "cross": {
+    "primary_reads_identity": {
+      "body": {
+        "error": {
+          "code": "INVALID_SIGNATURE",
+          "message": "invalid_signature"
+        }
+      },
+      "status": 401
+    }
+  },
+  "identity_id": "live-cert-40213a96e5fb",
+  "ncp008": {
+    "approval_request": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-7ea3fa982d6c",
+          "approval_required": true,
+          "approval_status": "",
+          "approved_at": "",
+          "approved_by": "",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:32:22.872628+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-0c133efc1c99",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:32:22.872672+00:00",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload_hash": "02e33a5aad6d2ac561e9f5ea64a4c2a40b4b4425c63c7c1ccb92af088c12c3db",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [
+              "operations.action.approve"
+            ],
+            "risk_level": "high",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:32:22.866825+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "high",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "approval_pending",
+          "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:32:22.945232+00:00",
+          "updated_by": "usr_admin",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 2,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "approval": {
+          "action_id": "action-request-0c133efc1c99",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:32:22.928279+00:00",
+          "created_by": "usr_admin",
+          "decided_at": "",
+          "decided_by": "",
+          "decision_reason": "",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "id": "approval-7ea3fa982d6c",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "requested_at": "2026-07-19T14:32:22.928261+00:00",
+          "required_role": "OPERATIONS_APPROVER",
+          "separation_of_duties_satisfied": false,
+          "status": "PENDING",
+          "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "updated_at": "2026-07-19T14:32:22.928282+00:00",
+          "updated_by": "usr_admin"
+        }
+      },
+      "status": 200
+    },
+    "approve": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-7ea3fa982d6c",
+          "approval_required": true,
+          "approval_status": "",
+          "approved_at": "2026-07-19T14:32:23.001758+00:00",
+          "approved_by": "usr_operator",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:32:22.872628+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-0c133efc1c99",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:32:22.872672+00:00",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload_hash": "02e33a5aad6d2ac561e9f5ea64a4c2a40b4b4425c63c7c1ccb92af088c12c3db",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [
+              "operations.action.approve"
+            ],
+            "risk_level": "high",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:32:22.866825+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "high",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "approved",
+          "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:32:23.007290+00:00",
+          "updated_by": "usr_operator",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 3,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "approval": {
+          "action_id": "action-request-0c133efc1c99",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:32:22.928279+00:00",
+          "created_by": "usr_admin",
+          "decided_at": "2026-07-19T14:32:22.990727+00:00",
+          "decided_by": "usr_operator",
+          "decision_reason": "approved live certification",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "id": "approval-7ea3fa982d6c",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "requested_at": "2026-07-19T14:32:22.928261+00:00",
+          "required_role": "OPERATIONS_APPROVER",
+          "separation_of_duties_satisfied": true,
+          "status": "APPROVED",
+          "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "updated_at": "2026-07-19T14:32:22.990741+00:00",
+          "updated_by": "usr_admin"
+        }
+      },
+      "status": 200
+    },
+    "create_action": {
+      "body": {
+        "action_type": "service_restart",
+        "annotations": {},
+        "approval_policy_id": "",
+        "approval_required": true,
+        "approval_status": "",
+        "approved_at": "",
+        "approved_by": "",
+        "approved_version": "",
+        "architecture_baseline_id": "",
+        "architecture_model_id": "",
+        "archived_at": "",
+        "baseline_id": "",
+        "causation_id": "ncp008-usr_admin",
+        "change_set_id": "",
+        "classification": "INTERNAL",
+        "correlation_id": "ncp008-usr_admin",
+        "created_at": "2026-07-19T14:32:22.872628+00:00",
+        "created_by": "usr_admin",
+        "created_from_agent_id": "",
+        "created_from_execution_id": "",
+        "created_from_retrieval_id": "",
+        "created_from_tool_id": "",
+        "creation_method": "manual",
+        "criticality": "",
+        "dependencies": [],
+        "deployment_id": "",
+        "description": "Certification action",
+        "design_baseline_id": "",
+        "development_workspace_id": "",
+        "environment": "development",
+        "environment_id": "runtime-environment-9d1a86c798b9",
+        "evaluated_at": "",
+        "evidence_id": "",
+        "evidence_reference": "",
+        "execution_id": "",
+        "human_verified": false,
+        "id": "action-request-0c133efc1c99",
+        "idempotency_key": "ncp008-action-live",
+        "incident_id": "",
+        "labels": {},
+        "legal_hold": false,
+        "metadata": {},
+        "normalized_parameters": {
+          "scope": "live-cert"
+        },
+        "observed_at": "2026-07-19T14:32:22.872672+00:00",
+        "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "payload_hash": "02e33a5aad6d2ac561e9f5ea64a4c2a40b4b4425c63c7c1ccb92af088c12c3db",
+        "policy_decision": "",
+        "policy_result": {
+          "decision": "allow",
+          "policy_version": "ncp008-1",
+          "prohibited_reasons": [],
+          "required_approvals": [
+            "operations.action.approve"
+          ],
+          "risk_level": "high",
+          "warnings": []
+        },
+        "project_id": null,
+        "published_at": "",
+        "reason": "",
+        "record_type": "action_request",
+        "region": "Australia",
+        "rejected_at": "",
+        "rejected_by": "",
+        "rejection_reason": "",
+        "release_id": "",
+        "request_id": null,
+        "requested_at": "2026-07-19T14:32:22.866825+00:00",
+        "requested_by": "usr_admin",
+        "requested_parameters": {
+          "scope": "live-cert"
+        },
+        "requirement_set_id": "",
+        "retention_policy_id": "",
+        "review_status": "",
+        "risk_level": "high",
+        "service_id": "",
+        "service_tier": "",
+        "source_digest": "",
+        "source_id": "",
+        "source_type": "manual",
+        "source_uri": "",
+        "source_version": "1",
+        "status": "requested",
+        "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "timeline": [],
+        "title": "Live certification restart",
+        "updated_at": "2026-07-19T14:32:22.872628+00:00",
+        "updated_by": "usr_admin",
+        "verification_actor_id": "",
+        "verification_timestamp": "",
+        "version": 1,
+        "visibility": "INTERNAL",
+        "workspace_id": null
+      },
+      "status": 200
+    },
+    "create_environment": {
+      "body": {
+        "annotations": {},
+        "approval_status": "",
+        "approved_at": "",
+        "approved_by": "",
+        "approved_version": "",
+        "architecture_baseline_id": "",
+        "architecture_model_id": "",
+        "archived_at": "",
+        "baseline_id": "",
+        "causation_id": "ncp008-usr_admin",
+        "change_set_id": "",
+        "classification": "INTERNAL",
+        "correlation_id": "ncp008-usr_admin",
+        "created_at": "2026-07-19T14:32:22.784635+00:00",
+        "created_by": "usr_admin",
+        "created_from_agent_id": "",
+        "created_from_execution_id": "",
+        "created_from_retrieval_id": "",
+        "created_from_tool_id": "",
+        "creation_method": "manual",
+        "criticality": "",
+        "dependencies": [],
+        "deployment_id": "",
+        "design_baseline_id": "",
+        "development_workspace_id": "",
+        "environment": "development",
+        "environment_id": "development",
+        "environment_type": "PRODUCTION",
+        "evaluated_at": "",
+        "evidence_reference": "",
+        "human_verified": false,
+        "id": "runtime-environment-9d1a86c798b9",
+        "idempotency_key": "ncp008-env-live",
+        "labels": {},
+        "legal_hold": false,
+        "metadata": {},
+        "name": "Live Certification Environment",
+        "observed_at": "2026-07-19T14:32:22.784693+00:00",
+        "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "payload_hash": "0b694e014d1b0c637b42e5773e8ce43c4c2f0b20f9d25123f63e4c5798042607",
+        "policy_decision": "",
+        "project_id": null,
+        "published_at": "",
+        "record_type": "runtime_environment",
+        "region": "Australia",
+        "release_id": "",
+        "request_id": null,
+        "requirement_set_id": "",
+        "retention_policy_id": "",
+        "review_status": "",
+        "service_id": "",
+        "service_tier": "",
+        "source_digest": "",
+        "source_id": "",
+        "source_type": "manual",
+        "source_uri": "",
+        "source_version": "1",
+        "status": "PLANNED",
+        "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "tenant_scope": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "timeline": [],
+        "type": "PRODUCTION",
+        "updated_at": "2026-07-19T14:32:22.784635+00:00",
+        "updated_by": "usr_admin",
+        "verification_actor_id": "",
+        "verification_timestamp": "",
+        "version": 1,
+        "visibility": "INTERNAL",
+        "workspace_id": null,
+        "zones": [
+          "zone-a"
+        ]
+      },
+      "status": 200
+    },
+    "create_service": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "create_workspace": {
+      "body": {
+        "annotations": {},
+        "approval_status": "",
+        "approved_at": "",
+        "approved_by": "",
+        "approved_version": "",
+        "architecture_baseline_id": "",
+        "architecture_model_id": "",
+        "archived_at": "",
+        "baseline_id": "",
+        "causation_id": "ncp008-usr_admin",
+        "change_set_id": "",
+        "classification": "INTERNAL",
+        "correlation_id": "ncp008-usr_admin",
+        "created_at": "2026-07-19T14:32:22.723635+00:00",
+        "created_by": "usr_admin",
+        "created_from_agent_id": "",
+        "created_from_execution_id": "",
+        "created_from_retrieval_id": "",
+        "created_from_tool_id": "",
+        "creation_method": "manual",
+        "criticality": "",
+        "dependencies": [],
+        "deployment_id": "",
+        "design_baseline_id": "",
+        "development_workspace_id": "",
+        "environment": "development",
+        "environment_id": "development",
+        "environment_ids": [],
+        "evaluated_at": "",
+        "evidence_reference": "",
+        "human_verified": false,
+        "id": "operations-workspace-9eb42aa1b3e7",
+        "idempotency_key": "ncp008-workspace-live",
+        "labels": {},
+        "legal_hold": false,
+        "metadata": {},
+        "name": "Live Certification Workspace",
+        "observed_at": "2026-07-19T14:32:22.724183+00:00",
+        "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "payload_hash": "b4f4b776fa22d5ef1def97942abe4b4423d271b3f4a50360eb3c76ed8a5b3df8",
+        "policy_decision": "",
+        "project_id": null,
+        "published_at": "",
+        "record_type": "operations_workspace",
+        "region": "Australia",
+        "region_ids": [
+          "australia-southeast"
+        ],
+        "release_id": "",
+        "request_id": null,
+        "requirement_set_id": "",
+        "retention_policy_id": "",
+        "review_status": "",
+        "service_id": "",
+        "service_ids": [],
+        "service_tier": "",
+        "source_digest": "",
+        "source_id": "",
+        "source_type": "manual",
+        "source_uri": "",
+        "source_version": "1",
+        "status": "ACTIVE",
+        "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+        "timeline": [],
+        "updated_at": "2026-07-19T14:32:22.723635+00:00",
+        "updated_by": "usr_admin",
+        "verification_actor_id": "",
+        "verification_timestamp": "",
+        "version": 1,
+        "visibility": "INTERNAL",
+        "workspace_id": null
+      },
+      "status": 200
+    },
+    "evidence": {
+      "body": {
+        "evidence": []
+      },
+      "status": 200
+    },
+    "execute": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "unauthorized_create": {
+      "body": {
+        "error": {
+          "code": "{'CODE': 'OPERATIONS_FORBIDDEN', 'MESSAGE': 'INSUFFICIENT OPERATIONS PERMISSION'}",
+          "message": "{'code': 'OPERATIONS_FORBIDDEN', 'message': 'Insufficient operations permission'}"
+        }
+      },
+      "status": 403
+    },
+    "verify": {
+      "body": {
+        "action": {
+          "action_type": "service_restart",
+          "annotations": {},
+          "approval_policy_id": "approval-7ea3fa982d6c",
+          "approval_required": true,
+          "approval_status": "",
+          "approved_at": "2026-07-19T14:32:23.001758+00:00",
+          "approved_by": "usr_operator",
+          "approved_version": "",
+          "architecture_baseline_id": "",
+          "architecture_model_id": "",
+          "archived_at": "",
+          "baseline_id": "",
+          "causation_id": "ncp008-usr_admin",
+          "change_set_id": "",
+          "classification": "INTERNAL",
+          "correlation_id": "ncp008-usr_admin",
+          "created_at": "2026-07-19T14:32:22.872628+00:00",
+          "created_by": "usr_admin",
+          "created_from_agent_id": "",
+          "created_from_execution_id": "",
+          "created_from_retrieval_id": "",
+          "created_from_tool_id": "",
+          "creation_method": "manual",
+          "criticality": "",
+          "dependencies": [],
+          "deployment_id": "",
+          "description": "Certification action",
+          "design_baseline_id": "",
+          "development_workspace_id": "",
+          "environment": "development",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "evaluated_at": "",
+          "evidence_id": "",
+          "evidence_reference": "",
+          "execution_id": "",
+          "human_verified": false,
+          "id": "action-request-0c133efc1c99",
+          "idempotency_key": "ncp008-action-live",
+          "incident_id": "",
+          "labels": {},
+          "legal_hold": false,
+          "metadata": {},
+          "normalized_parameters": {
+            "scope": "live-cert"
+          },
+          "observed_at": "2026-07-19T14:32:22.872672+00:00",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload_hash": "02e33a5aad6d2ac561e9f5ea64a4c2a40b4b4425c63c7c1ccb92af088c12c3db",
+          "policy_decision": "",
+          "policy_result": {
+            "decision": "allow",
+            "policy_version": "ncp008-1",
+            "prohibited_reasons": [],
+            "required_approvals": [
+              "operations.action.approve"
+            ],
+            "risk_level": "high",
+            "warnings": []
+          },
+          "project_id": null,
+          "published_at": "",
+          "reason": "",
+          "record_type": "action_request",
+          "region": "Australia",
+          "rejected_at": "",
+          "rejected_by": "",
+          "rejection_reason": "",
+          "release_id": "",
+          "request_id": null,
+          "requested_at": "2026-07-19T14:32:22.866825+00:00",
+          "requested_by": "usr_admin",
+          "requested_parameters": {
+            "scope": "live-cert"
+          },
+          "requirement_set_id": "",
+          "retention_policy_id": "",
+          "review_status": "",
+          "risk_level": "high",
+          "service_id": "",
+          "service_tier": "",
+          "source_digest": "",
+          "source_id": "",
+          "source_type": "manual",
+          "source_uri": "",
+          "source_version": "1",
+          "status": "succeeded",
+          "tenant_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "timeline": [],
+          "title": "Live certification restart",
+          "updated_at": "2026-07-19T14:32:23.087046+00:00",
+          "updated_by": "usr_admin",
+          "verification_actor_id": "",
+          "verification_timestamp": "",
+          "version": 4,
+          "visibility": "INTERNAL",
+          "workspace_id": null
+        },
+        "execution": null,
+        "verification": {
+          "action_id": "action-request-0c133efc1c99",
+          "environment_id": "runtime-environment-9d1a86c798b9",
+          "execution": null,
+          "execution_id": null,
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "status": "verified"
+        }
+      },
+      "status": 200
+    }
+  },
+  "ncp_environment_id": "runtime-environment-9d1a86c798b9",
+  "ncp_service_id": null,
+  "novaid": {
+    "api_cert": {
+      "authorize": {
+        "body": {
+          "decision": {
+            "checks": [
+              "tenant_aligned",
+              "role_allowed",
+              "scope_allowed",
+              "ownership_valid",
+              "risk_within_policy"
+            ],
+            "decision": "ALLOW",
+            "reason": "All core constraints passed",
+            "trace_id": "96bea41be945acfb07d95a7b"
+          },
+          "request": {
+            "action": "live_certification_action",
+            "metadata": {},
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "required_roles": [
+              "CUSTOMER"
+            ],
+            "required_scopes": [
+              "identity.read"
+            ],
+            "resource_owner_id": "live-cert-40213a96e5fb",
+            "risk_score": "0",
+            "risk_score_max": "0.70"
+          }
+        },
+        "status": 200
+      },
+      "command_center": {
+        "has_view": true,
+        "status": 200
+      },
+      "create_identity": {
+        "body": {
+          "attributes": {
+            "source": "live-certification"
+          },
+          "created_at": "2026-07-19T14:32:22.470053+00:00",
+          "display_name": "Live Certification Identity",
+          "identity": {
+            "devices": [
+              "device-live-cert-001"
+            ],
+            "email": "live-cert@example.invalid",
+            "identity_id": "live-cert-40213a96e5fb",
+            "kyc_status": "verified",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "roles": [
+              "CUSTOMER"
+            ],
+            "scopes": [
+              "identity.read",
+              "identity.write"
+            ]
+          },
+          "identity_id": "live-cert-40213a96e5fb",
+          "identity_type": "person",
+          "lifecycle_state": "active",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload": {
+            "attributes": {
+              "source": "live-certification"
+            },
+            "display_name": "Live Certification Identity",
+            "identity": {
+              "devices": [
+                "device-live-cert-001"
+              ],
+              "email": "live-cert@example.invalid",
+              "identity_id": "live-cert-40213a96e5fb",
+              "kyc_status": "verified",
+              "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+              "roles": [
+                "CUSTOMER"
+              ],
+              "scopes": [
+                "identity.read",
+                "identity.write"
+              ]
+            },
+            "identity_id": "live-cert-40213a96e5fb",
+            "identity_type": "person",
+            "lifecycle_state": "active",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "record_id": "live-cert-40213a96e5fb",
+            "record_type": "novaid_identities",
+            "status": "active",
+            "verification_status": "verified"
+          },
+          "record_id": "live-cert-40213a96e5fb",
+          "record_type": "novaid_identities",
+          "status": "active",
+          "updated_at": "2026-07-19T14:32:22.470053+00:00",
+          "verification_status": "verified"
+        },
+        "status": 200
+      },
+      "get_identity": {
+        "body": {
+          "attributes": {
+            "source": "live-certification"
+          },
+          "display_name": "Live Certification Identity",
+          "identity": {
+            "devices": [
+              "device-api_cert",
+              "device-live-cert-001"
+            ],
+            "email": "live-cert@example.invalid",
+            "identity_id": "live-cert-40213a96e5fb",
+            "kyc_status": "verified",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "roles": [
+              "CUSTOMER"
+            ],
+            "scopes": [
+              "identity.read",
+              "identity.write"
+            ]
+          },
+          "identity_id": "live-cert-40213a96e5fb",
+          "identity_type": "person",
+          "lifecycle_state": "active",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "record_id": "live-cert-40213a96e5fb",
+          "record_type": "novaid_identities",
+          "status": "active",
+          "verification_status": "verified",
+          "view": "novaid_identity"
+        },
+        "status": 200
+      },
+      "issue_credential": {
+        "body": {
+          "claims": {
+            "level": "pilot",
+            "source": "api_cert"
+          },
+          "created_at": "2026-07-19T14:32:22.508661+00:00",
+          "credential_id": "cred-be9b5a8d3c7e",
+          "credential_type": "live_cert_access",
+          "issuer": "NovaID",
+          "metadata": {
+            "scenario": "live-certification"
+          },
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload": {
+            "claims": {
+              "level": "pilot",
+              "source": "api_cert"
+            },
+            "credential_id": "cred-be9b5a8d3c7e",
+            "credential_type": "live_cert_access",
+            "issuer": "NovaID",
+            "metadata": {
+              "scenario": "live-certification"
+            },
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "record_id": "cred-be9b5a8d3c7e",
+            "record_type": "novaid_credentials",
+            "status": "issued",
+            "subject_id": "live-cert-40213a96e5fb",
+            "trust_receipt": {
+              "event_hash": "e0734e9cb39babca9f170865557c4f6b7a0d7a72585702e680c49d173ab5c13f",
+              "event_type": "novaid.credential.issued",
+              "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+              "packet": {
+                "claims": {
+                  "level": "pilot",
+                  "source": "api_cert"
+                },
+                "credential_id": "cred-be9b5a8d3c7e",
+                "credential_type": "live_cert_access",
+                "event_hash": "e0734e9cb39babca9f170865557c4f6b7a0d7a72585702e680c49d173ab5c13f",
+                "issuer": "NovaID",
+                "metadata": {
+                  "scenario": "live-certification"
+                },
+                "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+                "status": "issued",
+                "subject_id": "live-cert-40213a96e5fb"
+              },
+              "replay_status": "verified",
+              "subject_id": "live-cert-40213a96e5fb",
+              "trust_id": "trust_f3bcaf7339ce45b6"
+            }
+          },
+          "record_id": "cred-be9b5a8d3c7e",
+          "record_type": "novaid_credentials",
+          "status": "issued",
+          "subject_id": "live-cert-40213a96e5fb",
+          "trust_receipt": {
+            "event_hash": "e0734e9cb39babca9f170865557c4f6b7a0d7a72585702e680c49d173ab5c13f",
+            "event_type": "novaid.credential.issued",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "packet": {
+              "claims": {
+                "level": "pilot",
+                "source": "api_cert"
+              },
+              "credential_id": "cred-be9b5a8d3c7e",
+              "credential_type": "live_cert_access",
+              "event_hash": "e0734e9cb39babca9f170865557c4f6b7a0d7a72585702e680c49d173ab5c13f",
+              "issuer": "NovaID",
+              "metadata": {
+                "scenario": "live-certification"
+              },
+              "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+              "status": "issued",
+              "subject_id": "live-cert-40213a96e5fb"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-40213a96e5fb",
+            "trust_id": "trust_f3bcaf7339ce45b6"
+          },
+          "updated_at": "2026-07-19T14:32:22.508661+00:00"
+        },
+        "status": 200
+      },
+      "recovery": {
+        "body": {
+          "created_at": "2026-07-19T14:32:22.520309+00:00",
+          "evidence_refs": [
+            "evidence-api_cert-1"
+          ],
+          "method": "email",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload": {
+            "evidence_refs": [
+              "evidence-api_cert-1"
+            ],
+            "method": "email",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "record_id": "recovery-live-cert-40213a96e5fb",
+            "record_type": "novaid_recovery_events",
+            "recovered_at": "2026-07-19T14:32:22.520189+00:00",
+            "status": "verified",
+            "trust_receipt": {
+              "event_hash": "f8062683213dabfbb45f92502d799ebfb8149c756e2c3eea70cb1f09b4ae732c",
+              "event_type": "novaid.identity.recovered",
+              "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+              "packet": {
+                "event_hash": "f8062683213dabfbb45f92502d799ebfb8149c756e2c3eea70cb1f09b4ae732c",
+                "evidence_refs": [
+                  "evidence-api_cert-1"
+                ],
+                "method": "email",
+                "recovered_at": "2026-07-19T14:32:22.520189+00:00",
+                "status": "verified"
+              },
+              "replay_status": "verified",
+              "subject_id": "live-cert-40213a96e5fb",
+              "trust_id": "trust_77be707d1b81497c"
+            }
+          },
+          "record_id": "recovery-live-cert-40213a96e5fb",
+          "record_type": "novaid_recovery_events",
+          "recovered_at": "2026-07-19T14:32:22.520189+00:00",
+          "status": "verified",
+          "trust_receipt": {
+            "event_hash": "f8062683213dabfbb45f92502d799ebfb8149c756e2c3eea70cb1f09b4ae732c",
+            "event_type": "novaid.identity.recovered",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "packet": {
+              "event_hash": "f8062683213dabfbb45f92502d799ebfb8149c756e2c3eea70cb1f09b4ae732c",
+              "evidence_refs": [
+                "evidence-api_cert-1"
+              ],
+              "method": "email",
+              "recovered_at": "2026-07-19T14:32:22.520189+00:00",
+              "status": "verified"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-40213a96e5fb",
+            "trust_id": "trust_77be707d1b81497c"
+          },
+          "updated_at": "2026-07-19T14:32:22.520309+00:00"
+        },
+        "status": 200
+      },
+      "register_device": {
+        "body": {
+          "attested": true,
+          "created_at": "2026-07-19T14:29:14.877411+00:00",
+          "device_id": "device-api_cert",
+          "device_type": "mobile",
+          "identity_id": "live-cert-40213a96e5fb",
+          "metadata": {
+            "instance": "api_cert"
+          },
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload": {
+            "attested": true,
+            "device_id": "device-api_cert",
+            "device_type": "mobile",
+            "identity_id": "live-cert-40213a96e5fb",
+            "metadata": {
+              "instance": "api_cert"
+            },
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "public_key": "device-pubkey-live-cert",
+            "record_id": "device-api_cert",
+            "record_type": "novaid_devices",
+            "status": "trusted",
+            "trust_level": "trusted"
+          },
+          "public_key": "device-pubkey-live-cert",
+          "record_id": "device-api_cert",
+          "record_type": "novaid_devices",
+          "status": "trusted",
+          "trust_level": "trusted",
+          "updated_at": "2026-07-19T14:32:22.497546+00:00"
+        },
+        "status": 200
+      },
+      "register_passkey": {
+        "body": {
+          "attestation": "none",
+          "created_at": "2026-07-19T14:29:14.870146+00:00",
+          "credential_id": "cred-api_cert",
+          "identity_id": "live-cert-40213a96e5fb",
+          "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+          "payload": {
+            "attestation": "none",
+            "credential_id": "cred-api_cert",
+            "identity_id": "live-cert-40213a96e5fb",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "public_key": "public-key-live-cert",
+            "record_id": "cred-api_cert",
+            "record_type": "novaid_passkeys",
+            "rp_id": "novaid.afritech.local",
+            "status": "active",
+            "transport": "platform",
+            "user_handle": "live-cert-40213a96e5fb"
+          },
+          "public_key": "public-key-live-cert",
+          "record_id": "cred-api_cert",
+          "record_type": "novaid_passkeys",
+          "rp_id": "novaid.afritech.local",
+          "status": "active",
+          "transport": "platform",
+          "updated_at": "2026-07-19T14:32:22.478873+00:00",
+          "user_handle": "live-cert-40213a96e5fb"
+        },
+        "status": 200
+      },
+      "trust": {
+        "body": {
+          "receipt": {
+            "event_hash": "04455fc7dd281e5002b58323e88490369d5a37b4a4b6e1cd684b6ad92e49f585",
+            "event_type": "live.certification",
+            "organization_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+            "packet": {
+              "event_hash": "04455fc7dd281e5002b58323e88490369d5a37b4a4b6e1cd684b6ad92e49f585",
+              "flow": "live-certification",
+              "instance": "api_cert"
+            },
+            "replay_status": "verified",
+            "subject_id": "live-cert-40213a96e5fb",
+            "trust_id": "trust_cd9326a0dbb14ca4"
+          },
+          "verified": true
+        },
+        "status": 200
+      }
+    },
+    "api_primary": {
+      "authorize": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "command_center": {
+        "has_view": false,
+        "status": 401
+      },
+      "create_identity": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "get_identity": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "issue_credential": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "recovery": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "register_device": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "register_passkey": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      },
+      "trust": {
+        "body": {
+          "error": {
+            "code": "INVALID_SIGNATURE",
+            "message": "invalid_signature"
+          }
+        },
+        "status": 401
+      }
+    },
+    "audit_replay_create": {
+      "body": {
+        "error": {
+          "code": "SERVER_ERROR",
+          "message": "internal server error"
+        }
+      },
+      "status": 500
+    },
+    "audit_replay_unauthorized_create": {
+      "body": {
+        "error": {
+          "code": "INSUFFICIENT_ROLE",
+          "message": "insufficient_role"
+        }
+      },
+      "status": 403
+    }
+  },
+  "novaride": {
+    "health": {
+      "body": {
+        "environment": "production",
+        "service": "afritech-api",
+        "status": "healthy",
+        "version": "0.7.0"
+      },
+      "status": 200
+    },
+    "live_smoke": {
+      "exit_code": 0,
+      "stderr_tail": "  0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   117  100    79  100    38   5478   2635 --:--:-- --:--:-- --:--:--  8357\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   204  100   204    0     0  19312      0 --:--:-- --:--:-- --:--:-- 20400\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   420  100   396  100    24  25198   1527 --:--:-- --:--:-- --:--:-- 28000\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   436  100   412  100    24  25214   1468 --:--:-- --:--:-- --:--:-- 27250\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   444  100   420  100    24  28208   1611 --:--:-- --:--:-- --:--:-- 31714\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   463  100   439  100    24  28226   1543 --:--:-- --:--:-- --:--:-- 30866\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1185  100  1185    0     0   105k      0 --:--:-- --:--:-- --:--:--  115k\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100   855  100   855    0     0  72506      0 --:--:-- --:--:-- --:--:-- 77727\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1159  100  1159    0     0   102k      0 --:--:-- --:--:-- --:--:--  102k\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  1195  100  1195    0     0  20401      0 --:--:-- --:--:-- --:--:-- 20603\n",
+      "stdout_tail": "true,\"hash_chain_verified\":true,\"invariant_violations\":[],\"terminal_event_hash\":\"14336e8aa99d89329b682028218989bed71829f1512b56ef19d0e5b5888caffe\",\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"replay_snapshot\"},\"replay_id\":\"replay-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"receipt_id\":\"receipt-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"replay_epoch\":1,\"reconstructed_status\":\"COMPLETED\",\"reconstructed_assigned_driver\":\"driver-1\"}\n==> Ride evidence\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:32:23 GMT\nserver: uvicorn\ncontent-length: 855\ncontent-type: application/json\nx-request-id: c30c8e8fbcc847c8a2375e0cda3b2857\nx-trace-id: 6e11f043d670496398e169fbfee95c38\nx-span-id: 2be2dcd6f99049bd\ntraceparent: 00-6e11f043d670496398e169fbfee95c38-2be2dcd6f99049bd-01\n\n{\"ride_id\":\"live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"trace_hash\":\"0a4a6266e93c882f376733d901ab84310c1736f6ea6ddbc0ca045f27d2ba878e\",\"replay_hash\":\"ed4c089277bebc2a24fb3ee6395e9107c8c90b3f383b4e1e9e2c51aabbadff08\",\"verification_status\":\"VERIFIED\",\"receipt_id\":\"receipt-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"generated_at\":\"2026-07-19T14:32:23Z\",\"replay_verified\":true,\"reconstructed_status\":\"COMPLETED\",\"reconstructed_assigned_driver\":\"driver-1\",\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"evidence_record\"}}\n==> Ride receipt\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:32:23 GMT\nserver: uvicorn\ncontent-length: 1159\ncontent-type: application/json\nx-request-id: 335b38cd2c2f4fbf9eb95ac3dcc09f60\nx-trace-id: fda30cb4536342239b832f1fdac2d998\nx-span-id: 42bfb1730cbc4d2d\ntraceparent: 00-fda30cb4536342239b832f1fdac2d998-42bfb1730cbc4d2d-01\n\n{\"ride_id\":\"live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"receipt_id\":\"receipt-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"status\":\"completed\",\"replay_id\":\"replay-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"trace_hash\":\"0a4a6266e93c882f376733d901ab84310c1736f6ea6ddbc0ca045f27d2ba878e\",\"replay_hash\":\"ed4c089277bebc2a24fb3ee6395e9107c8c90b3f383b4e1e9e2c51aabbadff08\",\"receipt_hash\":\"f26c51baf96bd080d5990eeee7dadb95151742ce89f2a06ce4527cbb1c74fc50\",\"execution_fingerprint\":\"670e863a679df08711c7377814c29e0ccb413747e688395088b4e4fbd818a9ec\",\"issued_at\":\"2026-07-19T14:32:23Z\",\"signature_validation\":{\"signature_mode\":\"hmac_sha256_receipt_v1\",\"signature\":\"cdb846f6750f173902623fee42671302e7a6c24e0911d18e898468ed3fd0f428\",\"all_signatures_valid\":true},\"authority\":{\"doc_id\":\"DOC-ARCH-001\",\"doc_version\":\"1.0.0\",\"governed_invariants\":[\"I3_NO_SILENT_MUTATION\",\"I4_DETERMINISTIC_EXECUTION\",\"I5_REPLAY_REQUIRED\",\"I6_REPLAY_AUTHORITY\",\"I7_TRANSCRIPT_COMPLETENESS\",\"I8_TRANSCRIPT_HASH_STABILITY\",\"I11_AUTHORITY_DECLARATION\"],\"authority_hash\":\"cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc\",\"surface\":\"receipt_record\"}}\n==> Ride ledger receipt\nHTTP/1.1 200 OK\ndate: Sun, 19 Jul 2026 14:32:23 GMT\nserver: uvicorn\ncontent-length: 1195\ncontent-type: application/json\nx-request-id: 89ea476b11f342e7be14e86351ca6ac5\nx-trace-id: 3b687a7dbbb6498bbf7c5d32854529f2\nx-span-id: 00befa2e52e14128\ntraceparent: 00-3b687a7dbbb6498bbf7c5d32854529f2-00befa2e52e14128-01\n\n{\"receipt_id\":\"ledger-receipt-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"generated_at\":\"2026-06-01T00:00:00Z\",\"ledger_proof\":{\"event_count\":8,\"ride_count\":1,\"completed_ride_count\":1,\"root_hash\":\"1736c9e03976a0e5f0f7fd58030819bb92468b28093bbd311b216aa952da7135\",\"hash_mode\":\"sha256_canonical_chain\",\"chain_valid\":true},\"signature_validation\":{\"signature_mode\":\"rsa_pss_sha256\",\"all_signatures_valid\":true,\"invalid_signatures\":[]},\"key_governance\":{\"unknown_keys\":[],\"revoked_keys\":[],\"expired_keys\":[],\"inactive_keys\":[]},\"identity_validation\":{\"all_verified\":true,\"unverified_identities\":[]},\"device_validation\":{\"device_mismatches\":[]},\"legal_envelope\":{\"terms_version\":\"v1.0\",\"terms_mismatches\":[]},\"replay_proof\":{\"replay_valid\":true,\"replay_hash_match\":true},\"financial_summary\":{\"total_distance_km\":0.0,\"total_duration_min\":0,\"total_fare\":0.0},\"verdict\":\"VALID\",\"evidence_refs\":{\"event_log_id\":\"event-log-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\",\"replay_run_id\":\"replay-live-smoke-ride-413e3c87-215a-45d8-a1f5-53d4a73f8b8a\"},\"write_enabled\":false,\"authority\":\"derived_evidence_only\",\"receipt_hash\":\"e2beb62be20c42cf20cd33aef617e35e564b7059f929b68492c7321ee847c5d0\"}\nLive smoke test completed.\n"
+    }
+  },
+  "org_id": "5682c17e-2fae-40e0-a4ae-3bd45f0d3477",
+  "replay_id": null
+}

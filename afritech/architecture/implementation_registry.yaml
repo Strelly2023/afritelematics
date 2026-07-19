@@ -5,13 +5,16 @@ metadata:
   status: ACTIVE
   mutability: CONTROLLED
   registry_class: CONSTITUTIONAL_IMPLEMENTATION_REGISTRY
-  description: "Canonical implementation registry governing deterministic implementation\
-    \ legitimacy, replay admissibility, proof admissibility, ontology-safe identity\
-    \ resolution, and closed-world execution participation within AfriTech.\nFilesystem\
-    \ paths must never independently define constitutional identity.\nCanonical identity\
-    \ resolution derives exclusively from:\n  - canonical module-path ontology\n \
-    \ - deterministic identity resolution\n  - replay-safe implementation semantics\n\
-    \  - invariant-preserving execution semantics\n"
+  description: |
+    Canonical implementation registry governing deterministic implementation legitimacy,
+    replay admissibility, proof admissibility, ontology-safe identity resolution, and
+    closed-world execution participation within AfriTech.
+    Filesystem paths must never independently define constitutional identity.
+    Canonical identity resolution derives exclusively from:
+      - canonical module-path ontology
+      - deterministic identity resolution
+      - replay-safe implementation semantics
+      - invariant-preserving execution semantics
 registry_composition:
   composition_mode: CANONICAL_AGGREGATION
   main_registry: afritech/architecture/implementation_registry.yaml
@@ -19,29 +22,37 @@ registry_composition:
     modules: afritech/architecture/sub_modules_registry.yaml
     enforcement: afritech/architecture/sub_enforcement_registry.yaml
   composition_rules:
-  - main_registry_defines_canonical_registry_identity
-  - sub_modules_registry_defines_declared_implementation_surfaces
-  - sub_enforcement_registry_defines_admissibility_and_purity_rules
-  - sub_registries_must_not_override_main_registry_authority
-  - aggregated_registry_must_be_deterministic
-  - missing_or_unreadable_sub_registry_is_ci_fail
+    - main_registry_defines_canonical_registry_identity
+    - sub_modules_registry_defines_declared_implementation_surfaces
+    - sub_enforcement_registry_defines_admissibility_and_purity_rules
+    - sub_registries_must_not_override_main_registry_authority
+    - aggregated_registry_must_be_deterministic
+    - missing_or_unreadable_sub_registry_is_ci_fail
   authority_resolution:
-    canonical_authority: ARCHITECTURE
-    sub_registry_authority_must_equal: ARCHITECTURE
-    conflict_policy: FAIL_CLOSED
+  canonical_authority: ARCHITECTURE
+  sub_registry_authority_must_equal: ARCHITECTURE
+  conflict_policy: FAIL_CLOSED
 required_loaded_sections:
-- implementation_states
-- implementations
-- rules
-- replay_alignment
-- closed_world_alignment
-- safety
-- registry_consistency_requirements
-- purity_gate
+  - implementation_states
+  - implementations
+  - rules
+  - replay_alignment
+  - closed_world_alignment
+  - safety
+  - registry_consistency_requirements
+  - purity_gate
 constitutional_assertion:
-  description: "Implementation legitimacy derives exclusively from:\n  - canonical\
-    \ module-path ontology\n  - deterministic execution semantics\n  - replay-safe\
-    \ operational behavior\n  - invariant preservation\n  - closed-world execution\
-    \ semantics\n\nImplementation legitimacy must never derive from:\n  - filesystem\
-    \ structure\n  - runtime activity alone\n  - observer-relative interpretation\n\
-    \  - speculative inference\n  - symbolic naming shortcuts\n"
+  description: |
+    Implementation legitimacy derives exclusively from:
+      - canonical module-path ontology
+      - deterministic execution semantics
+      - replay-safe operational behavior
+      - invariant preservation
+      - closed-world execution semantics
+
+    Implementation legitimacy must never derive from:
+      - filesystem structure
+      - runtime activity alone
+      - observer-relative interpretation
+      - speculative inference
+      - symbolic naming shortcuts

@@ -1,0 +1,50 @@
+{
+  "admin": "bfa32ad9-6247-4a51-a874-0f0240b0849a",
+  "customer": "9c50988c-7b5a-4775-8988-bfb1195299bd",
+  "health": [
+    200,
+    {
+      "authority": {
+        "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
+        "doc_id": "DOC-ARCH-001",
+        "doc_version": "1.0.0",
+        "governed_invariants": [
+          "I3_NO_SILENT_MUTATION",
+          "I4_DETERMINISTIC_EXECUTION",
+          "I5_REPLAY_REQUIRED",
+          "I6_REPLAY_AUTHORITY",
+          "I7_TRANSCRIPT_COMPLETENESS",
+          "I8_TRANSCRIPT_HASH_STABILITY",
+          "I11_AUTHORITY_DECLARATION"
+        ],
+        "surface": "replay_health"
+      },
+      "failures": 0,
+      "hash_chain_failures": 0,
+      "last_failed_ride_id": null,
+      "replay_success_rate": "100%",
+      "status": "PASS"
+    }
+  ],
+  "ncp008_unauthorized": [
+    401,
+    {
+      "error": {
+        "code": "INVALID_SIGNATURE",
+        "message": "invalid_signature"
+      }
+    }
+  ],
+  "operator": "a1bb9cfe-f5ad-46d8-b57d-3b60a2805cb3",
+  "org": "d6710fe5-d93f-41c4-961c-48ebf8dc2cf3",
+  "replay_create": [
+    401,
+    {
+      "error": {
+        "code": "INVALID_SIGNATURE",
+        "message": "invalid_signature"
+      }
+    }
+  ],
+  "replay_id": null
+}

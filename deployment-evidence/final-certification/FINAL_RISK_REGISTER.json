@@ -1,0 +1,29 @@
+{
+  "open_risks": [
+    {
+      "risk": "Load harness reports invalid traces under lifecycle load despite 100 rides completing",
+      "severity": "high",
+      "status": "open"
+    },
+    {
+      "risk": "External security assessment not executed",
+      "severity": "high",
+      "status": "open"
+    },
+    {
+      "risk": "Physical-device validation not executed",
+      "severity": "high",
+      "status": "open"
+    },
+    {
+      "risk": "Controlled/Public pilot evidence absent",
+      "severity": "high",
+      "status": "open"
+    },
+    {
+      "risk": "Formal human approvals absent",
+      "severity": "high",
+      "status": "open"
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "admin": "9012c418-1de5-47e2-bbf1-c0ed566c461c",
+  "cert_get_identity": {
+    "ok": true,
+    "status": 200
+  },
+  "cert_identity": {
+    "ok": true,
+    "status": 200
+  },
+  "customer": "098e5815-b347-437b-97cf-a0348b6b72dd",
+  "env_id": "env-4d0e6439bc",
+  "health": {
+    "ok": true,
+    "status": 200
+  },
+  "identity": "live-8ac0bbebbe",
+  "ncp_env": {
+    "body": {
+      "annotations": {},
+      "approval_status": "",
+      "approved_at": "",
+      "approved_by": "",
+      "approved_version": "",
+      "architecture_baseline_id": "",
+      "architecture_model_id": "",
+      "archived_at": "",
+      "baseline_id": "",
+      "causation_id": "ncp008-9012c418-1de5-47e2-bbf1-c0ed566c461c",
+      "change_set_id": "",
+      "classification": "INTERNAL",
+      "correlation_id": "ncp008-9012c418-1de5-47e2-bbf1-c0ed566c461c",
+      "created_at": "2026-07-19T14:35:35.718941+00:00",
+      "created_by": "9012c418-1de5-47e2-bbf1-c0ed566c461c",
+      "created_from_agent_id": "",
+      "created_from_execution_id": "",
+      "created_from_retrieval_id": "",
+      "created_from_tool_id": "",
+      "creation_method": "manual",
+      "criticality": "",
+      "dependencies": [],
+      "deployment_id": "",
+      "design_baseline_id": "",
+      "development_workspace_id": "",
+      "environment": "development",
+      "environment_id": "development",
+      "environment_type": "PRODUCTION",
+      "evaluated_at": "",
+      "evidence_reference": "",
+      "human_verified": false,
+      "id": "runtime-environment-4980e57aa8ae",
+      "idempotency_key": "env-live",
+      "labels": {},
+      "legal_hold": false,
+      "metadata": {},
+      "name": "Live Cert Env",
+      "observed_at": "2026-07-19T14:35:35.719266+00:00",
+      "organization_id": "9a8e3627-3396-4192-9df3-b0739533f5a4",
+      "payload_hash": "55ab06b140ddfd4bd57e00843ecfafc303994b6fda7c3f79c8583b983161124c",
+      "policy_decision": "",
+      "project_id": null,
+      "published_at": "",
+      "record_type": "runtime_environment",
+      "region": "Australia",
+      "release_id": "",
+      "request_id": null,
+      "requirement_set_id": "",
+      "retention_policy_id": "",
+      "review_status": "",
+      "service_id": "",
+      "service_tier": "",
+      "source_digest": "",
+      "source_id": "",
+      "source_type": "manual",
+      "source_uri": "",
+      "source_version": "1",
+      "status": "PLANNED",
+      "tenant_id": "9a8e3627-3396-4192-9df3-b0739533f5a4",
+      "tenant_scope": "9a8e3627-3396-4192-9df3-b0739533f5a4",
+      "timeline": [],
+      "type": "PRODUCTION",
+      "updated_at": "2026-07-19T14:35:35.718941+00:00",
+      "updated_by": "9012c418-1de5-47e2-bbf1-c0ed566c461c",
+      "verification_actor_id": "",
+      "verification_timestamp": "",
+      "version": 1,
+      "visibility": "INTERNAL",
+      "workspace_id": null,
+      "zones": [
+        "zone-a"
+      ]
+    },
+    "ok": true,
+    "status": 200
+  },
+  "ncp_svc": {
+    "body": {
+      "error": {
+        "code": "SERVER_ERROR",
+        "message": "internal server error"
+      }
+    },
+    "ok": false,
+    "status": 500
+  },
+  "ncp_unauthorized": {
+    "ok": true,
+    "status": 403
+  },
+  "novaride_smoke_exit": 0,
+  "operator": "64b9ba93-0687-40d1-b6b7-f2e1b5bb2b1c",
+  "org": "9a8e3627-3396-4192-9df3-b0739533f5a4",
+  "primary_get_identity": {
+    "ok": false,
+    "status": 401
+  },
+  "primary_identity": {
+    "ok": false,
+    "status": 401
+  },
+  "replay_create": {
+    "body": {
+      "error": {
+        "code": "SERVER_ERROR",
+        "message": "internal server error"
+      }
+    },
+    "ok": false,
+    "status": 500
+  },
+  "svc_id": "svc-4fcee28ef2"
+}
