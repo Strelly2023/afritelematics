@@ -124,6 +124,19 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    location = /novacodepro/config/runtime.json {
+        proxy_pass http://novacodepro-portal:4174/novacodepro/config/runtime.json;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-ID $request_id;
+
+        add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+    }
+
     location / {
         proxy_pass http://novacodepro-portal:4174;
         proxy_set_header Host $host;
