@@ -1,0 +1,23 @@
+{
+  "contract_replay": {
+    "command": "pytest -q tests/novaride_runtime/contracts/test_runtime_api.py tests/novaride_runtime/replay/test_verified_replay.py",
+    "status": "PASS",
+    "summary": {
+      "failed": 0,
+      "passed": 9,
+      "warnings": 12
+    },
+    "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+  },
+  "state_machine": {
+    "command": "pytest -q tests/novaride_runtime/unit/test_state_machines.py",
+    "status": "PASS",
+    "summary": {
+      "failed": 0,
+      "passed": 2,
+      "warnings": 0
+    },
+    "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+  },
+  "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+}

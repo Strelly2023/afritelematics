@@ -1,0 +1,34 @@
+{
+  "negative_evidence": [
+    {
+      "name": "live_e2e",
+      "reason": "production-equivalent runtime not renderable from current env file",
+      "status": "NOT_RUN"
+    }
+  ],
+  "notes": "Core lifecycle logic, contracts, and replay surfaces passed locally; live runtime evidence remains blocked.",
+  "positive_evidence": [
+    {
+      "command": "pytest -q tests/novaride_runtime/unit/test_state_machines.py",
+      "status": "PASS",
+      "summary": {
+        "failed": 0,
+        "passed": 2,
+        "warnings": 0
+      },
+      "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+    },
+    {
+      "command": "pytest -q tests/novaride_runtime/contracts/test_runtime_api.py tests/novaride_runtime/replay/test_verified_replay.py",
+      "status": "PASS",
+      "summary": {
+        "failed": 0,
+        "passed": 9,
+        "warnings": 12
+      },
+      "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+    }
+  ],
+  "status": "LOCALLY_VERIFIED",
+  "timestamp_utc": "2026-07-19T22:38:28.246592Z"
+}
