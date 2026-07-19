@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const allowedHosts = [
+  "afritechnology.com",
+  "www.afritechnology.com",
   "novacodepro.afritechnology.com",
   "localhost",
   "127.0.0.1",
@@ -54,6 +56,9 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     allowedHosts,
+    fs: {
+      allow: [path.resolve(rootDir, "..")],
+    },
   },
   preview: {
     host: "0.0.0.0",

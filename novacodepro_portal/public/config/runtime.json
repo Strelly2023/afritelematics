@@ -15,5 +15,13 @@
   "maintenanceMode": false,
   "supportUrl": "https://support.afritechnology.com",
   "statusUrl": "https://status.afritechnology.com",
+  "features": {
+    "operationsStudio": true
+  },
+  "operations": {
+    "basePath": "/api/v1/operations",
+    "mutationsEnabled": false,
+    "productionMutationsEnabled": false
+  },
   "source": "runtime.json"
 }

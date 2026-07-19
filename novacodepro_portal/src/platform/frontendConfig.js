@@ -34,6 +34,14 @@ const DEFAULT_FRONTEND_RUNTIME_CONFIG = {
   maintenanceMode: false,
   supportUrl: "",
   statusUrl: "",
+  features: {
+    operationsStudio: true,
+  },
+  operations: {
+    basePath: "/api/v1/operations",
+    mutationsEnabled: false,
+    productionMutationsEnabled: false,
+  },
   source: "build-info",
 };
 
@@ -91,6 +99,14 @@ export function normalizeFrontendRuntimeConfig(input = {}) {
     maintenanceMode: toBoolean(input.maintenanceMode ?? input.maintenance_mode ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.maintenanceMode),
     supportUrl: optionalUrl(input.supportUrl ?? input.support_url ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.supportUrl, "supportUrl"),
     statusUrl: optionalUrl(input.statusUrl ?? input.status_url ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.statusUrl, "statusUrl"),
+    features: {
+      operationsStudio: Boolean(input.features?.operationsStudio ?? input.features?.operations_studio ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.features.operationsStudio),
+    },
+    operations: {
+      basePath: requireString(input.operations?.basePath ?? input.operations?.base_path ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.operations.basePath, "operations.basePath"),
+      mutationsEnabled: Boolean(input.operations?.mutationsEnabled ?? input.operations?.mutations_enabled ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.operations.mutationsEnabled),
+      productionMutationsEnabled: Boolean(input.operations?.productionMutationsEnabled ?? input.operations?.production_mutations_enabled ?? DEFAULT_FRONTEND_RUNTIME_CONFIG.operations.productionMutationsEnabled),
+    },
     source: toStringOrEmpty(input.source) || "runtime.json",
   };
 }
