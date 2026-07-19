@@ -1,0 +1,23 @@
+{
+  "open_risks": [
+    {
+      "description": "GA scope remains sandbox/cash only; real payments are not certified.",
+      "id": "RISK-001",
+      "owner": "payments",
+      "severity": "HIGH"
+    },
+    {
+      "description": "Physical-device and pilot evidence are not yet present.",
+      "id": "RISK-002",
+      "owner": "mobile release / pilot owner",
+      "severity": "HIGH"
+    },
+    {
+      "description": "Root filesystem free space is critically low for additional container operations.",
+      "id": "RISK-003",
+      "owner": "platform",
+      "severity": "MEDIUM"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:31:34.917222Z"
+}

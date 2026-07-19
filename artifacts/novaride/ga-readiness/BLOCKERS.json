@@ -1,0 +1,137 @@
+{
+  "blockers": [
+    {
+      "affected_phases": [
+        "Phase 1",
+        "Phase 2"
+      ],
+      "affected_release_gates": [
+        "NR-DEV-000",
+        "NR-IQA-001",
+        "NR-OPS-001"
+      ],
+      "blocker_id": "GA-INFRA-001",
+      "description": "Operational compose cannot render because the trust-node env file omits required runtime variables.",
+      "evidence": [
+        "INFRASTRUCTURE_RESULTS.json",
+        "ENVIRONMENT_RECREATION.md"
+      ],
+      "impact": "No production-equivalent stack startup, restart, or migration validation in this turn.",
+      "owner": "platform",
+      "required_external_action": "Provide an approved populated runtime environment source.",
+      "safe_actions_attempted": [
+        "Rendered compose non-destructively",
+        "Inspected env files without printing secrets"
+      ],
+      "status": "BLOCKED_INFRASTRUCTURE"
+    },
+    {
+      "affected_phases": [
+        "Phase 4"
+      ],
+      "affected_release_gates": [
+        "NR-PAY-001",
+        "NR-GA-001"
+      ],
+      "blocker_id": "GA-EXT-001",
+      "description": "No live payment-provider certification evidence for this narrow GA turn.",
+      "evidence": [
+        "GA_SCOPE.json"
+      ],
+      "impact": "Real payment certification remains unverified.",
+      "owner": "payments",
+      "required_external_action": "Provide provider approval and live transaction evidence.",
+      "safe_actions_attempted": [
+        "Retained sandbox/cash scope only"
+      ],
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "affected_phases": [
+        "Phase 6"
+      ],
+      "affected_release_gates": [
+        "NR-MOB-001",
+        "NR-GA-001"
+      ],
+      "blocker_id": "GA-EXT-002",
+      "description": "No physical-device evidence for Rider/Driver release certification in this turn.",
+      "evidence": [
+        "GA_SCOPE.json"
+      ],
+      "impact": "Physical-device certification remains blocked.",
+      "owner": "mobile release",
+      "required_external_action": "Provide real device testing evidence.",
+      "safe_actions_attempted": [
+        "Maintained release-build posture in repo evidence only"
+      ],
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "affected_phases": [
+        "Phase 9"
+      ],
+      "affected_release_gates": [
+        "NR-CP-001",
+        "NR-PP-001",
+        "NR-GA-001"
+      ],
+      "blocker_id": "GA-EXT-003",
+      "description": "No controlled-pilot or public-pilot participant evidence in this turn.",
+      "evidence": [
+        "docs/pilot/approved_pilot_registry.json"
+      ],
+      "impact": "Pilot gates remain blocked.",
+      "owner": "pilot owner",
+      "required_external_action": "Execute real pilot participants and supply evidence.",
+      "safe_actions_attempted": [
+        "Selected scope from approved pilot docs only"
+      ],
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "affected_phases": [
+        "Phase 8"
+      ],
+      "affected_release_gates": [
+        "NR-SEC-001",
+        "NR-GA-001"
+      ],
+      "blocker_id": "GA-EXT-004",
+      "description": "No independent external security assessment evidence in this turn.",
+      "evidence": [
+        "SECURITY_RESULTS.json"
+      ],
+      "impact": "Security gate remains blocked.",
+      "owner": "security",
+      "required_external_action": "Provide an authorized external assessment.",
+      "safe_actions_attempted": [
+        "Retained internal-only evidence classification"
+      ],
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "affected_phases": [
+        "Phase 10"
+      ],
+      "affected_release_gates": [
+        "NR-PRR-001",
+        "NR-GA-001"
+      ],
+      "blocker_id": "GA-EXT-005",
+      "description": "No authenticated human approval set recorded in this turn.",
+      "evidence": [
+        "PRR_DECISION.md",
+        "GA_DECISION.md"
+      ],
+      "impact": "PRR and GA approval gates remain blocked.",
+      "owner": "release manager",
+      "required_external_action": "Collect authenticated human approvals.",
+      "safe_actions_attempted": [
+        "Prepared approval-truthful evidence only"
+      ],
+      "status": "BLOCKED_EXTERNAL"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:31:34.917222Z"
+}

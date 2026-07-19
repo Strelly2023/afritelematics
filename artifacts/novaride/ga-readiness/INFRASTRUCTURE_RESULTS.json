@@ -1,0 +1,109 @@
+{
+  "compose_file": "deploy/novaride/compose.operational.yml",
+  "compose_render": {
+    "command": "docker compose --env-file deploy/production/.env.production.trust-node -f deploy/novaride/compose.operational.yml config",
+    "evidence": {
+      "returncode": 1,
+      "stderr": "error while interpolating x-runtime-env.NOVARIDE_POSTGRES_DSN: required variable POSTGRES_PASSWORD is missing a value: required"
+    },
+    "reason": "required compose variables are absent from deploy/production/.env.production.trust-node",
+    "status": "BLOCKED_INFRASTRUCTURE"
+  },
+  "env_file": "deploy/production/.env.production.trust-node",
+  "expected_services": [
+    {
+      "reason": "compose render blocked",
+      "service": "postgres",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "migrations",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "redis",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "kafka",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "api-a",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "api-b",
+      "status": "NOT_RUN"
+    }
+  ],
+  "host": {
+    "disk_root": {
+      "cmd": [
+        "df",
+        "-h",
+        "/"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Filesystem        Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s1s1   460Gi    12Gi   6.3Gi    66%    459k   66M    1%   /"
+    },
+    "docker_compose_version": {
+      "cmd": [
+        "docker",
+        "compose",
+        "version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Docker Compose version v5.1.4"
+    },
+    "docker_info": {
+      "cmd": [
+        "docker",
+        "info"
+      ],
+      "returncode": 1,
+      "stderr": "permission denied while trying to connect to the docker API at unix:///Users/ostrinov/.docker/run/docker.sock",
+      "stdout": "Client:\n Version:    29.5.3\n Context:    desktop-linux\n Debug Mode: false\n Plugins:\n  agent: Docker AI Agent Runner (Docker Inc.)\n    Version:  v1.70.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-agent\n  ai: Docker AI Agent - Ask Gordon (Docker Inc.)\n    Version:  v1.24.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-ai\n  buildx: Docker Buildx (Docker Inc.)\n    Version:  v0.34.1-desktop.1\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-buildx\n  compose: Docker Compose (Docker Inc.)\n    Version:  v5.1.4\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-compose\n  debug: Get a shell into any image or container (Docker Inc.)\n    Version:  0.0.47\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-debug\n  desktop: Docker Desktop commands (Docker Inc.)\n    Version:  v0.3.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-desktop\n  dhi: CLI for managing Docker Hardened Images (Docker Inc.)\n    Version:  v0.0.4\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-dhi\n  extension: Manages Docker extensions (Docker Inc.)\n    Version:  v0.2.31\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-extension\n  init: Creates Docker-related starter files for your project (Docker Inc.)\n    Version:  v1.4.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-init\n  mcp: Docker MCP Plugin (Docker Inc.)\n    Version:  v0.42.2\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-mcp\n  model: Docker Model Runner (Docker Inc.)\n    Version:  v1.2.1\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-model\n  offload: Docker Offload (Docker Inc.)\n    Version:  v0.6.3\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-offload\n  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)\n    Version:  v0.1.3\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-pass\n  sandbox: Docker Sandbox (Docker Inc.)\n    Version:  v0.12.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-sandbox\n  scout: Docker Scout (Docker Inc.)\n    Version:  v1.21.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-scout\n\nServer:"
+    },
+    "docker_version": {
+      "cmd": [
+        "docker",
+        "version"
+      ],
+      "returncode": 1,
+      "stderr": "permission denied while trying to connect to the docker API at unix:///Users/ostrinov/.docker/run/docker.sock",
+      "stdout": "Client:\n Version:           29.5.3\n API version:       1.54\n Go version:        go1.26.4\n Git commit:        d1c06ef\n Built:             Wed Jun  3 17:59:08 2026\n OS/Arch:           darwin/arm64\n Context:           desktop-linux"
+    }
+  },
+  "scope": {
+    "fallback_mapping_strategy": "OS-native map intent fallback with browser URL handoff",
+    "launch_city": "Melbourne",
+    "launch_jurisdiction": "Australia",
+    "launch_region": "Victoria",
+    "operating_policies": [
+      "restricted pilot cohort only",
+      "approved devices only",
+      "staffed support coverage",
+      "sandbox or cash-only launch methods"
+    ],
+    "payment_methods": [
+      "cash",
+      "sandbox card"
+    ],
+    "payment_mode": "sandbox",
+    "primary_mapping_provider": "Google Maps navigation handoff",
+    "ride_category": "standard point-to-point",
+    "scope_notes": [
+      "Selected from repository pilot/strategy documents; no new jurisdiction or provider assumption added.",
+      "Real payment provider certification remains external unless separate evidence exists."
+    ]
+  },
+  "timestamp_utc": "2026-07-19T22:31:00.822996Z"
+}

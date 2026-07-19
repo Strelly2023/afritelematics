@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "docker compose --env-file deploy/production/.env.production.trust-node -f deploy/novaride/compose.operational.yml restart postgres",
+    "docker compose --env-file deploy/production/.env.production.trust-node -f deploy/novaride/compose.operational.yml restart redis",
+    "docker compose --env-file deploy/production/.env.production.trust-node -f deploy/novaride/compose.operational.yml restart kafka"
+  ],
+  "reason": "production-equivalent stack not renderable under current env file",
+  "status": "NOT_RUN",
+  "timestamp_utc": "2026-07-19T22:31:00.822996Z"
+}

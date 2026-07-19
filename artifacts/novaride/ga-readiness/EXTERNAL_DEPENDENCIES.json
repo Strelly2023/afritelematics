@@ -1,0 +1,35 @@
+{
+  "external_dependencies": [
+    {
+      "detail": "Missing required compose variables in deploy/production/.env.production.trust-node",
+      "name": "runtime secret source",
+      "status": "BLOCKED_INFRASTRUCTURE"
+    },
+    {
+      "detail": "No live provider approval/evidence in this turn",
+      "name": "payment provider",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "detail": "No Rider/Driver device evidence supplied",
+      "name": "physical devices",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "detail": "No real pilot journey evidence supplied",
+      "name": "pilot participants",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "detail": "No independent assessment supplied",
+      "name": "external security assessor",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "detail": "No authenticated approval records supplied",
+      "name": "human approvers",
+      "status": "BLOCKED_EXTERNAL"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:31:34.917222Z"
+}

@@ -1,0 +1,30 @@
+{
+  "decision": "GA_BLOCKED",
+  "gates": {
+    "NR-CP-001": "BLOCKED_EXTERNAL",
+    "NR-CPL-001": "BLOCKED_EXTERNAL",
+    "NR-DEV-000": "PASS",
+    "NR-DR-001": "BLOCKED_INFRASTRUCTURE",
+    "NR-E2E-001": "NOT_RUN",
+    "NR-E2E-002": "NOT_RUN",
+    "NR-GA-001": "BLOCKED_EXTERNAL",
+    "NR-ID-001": "PARTIAL",
+    "NR-IQA-001": "PARTIAL",
+    "NR-MOB-001": "BLOCKED_EXTERNAL",
+    "NR-OPS-001": "BLOCKED_INFRASTRUCTURE",
+    "NR-PAY-001": "BLOCKED_EXTERNAL",
+    "NR-PAYOUT-001": "BLOCKED_EXTERNAL",
+    "NR-PERF-001": "BLOCKED_INFRASTRUCTURE",
+    "NR-PP-001": "BLOCKED_EXTERNAL",
+    "NR-PRR-001": "BLOCKED_EXTERNAL",
+    "NR-RBK-001": "NOT_RUN",
+    "NR-SAF-001": "PARTIAL",
+    "NR-SEC-001": "BLOCKED_EXTERNAL"
+  },
+  "rationale": [
+    "Current launch env file cannot render the operational compose stack.",
+    "Real payment, physical device, external security, pilot, and human approvals remain external.",
+    "Load/DR and live runtime verification have not been executed in this turn."
+  ],
+  "timestamp_utc": "2026-07-19T22:32:06.248090Z"
+}

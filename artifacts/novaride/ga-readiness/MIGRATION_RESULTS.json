@@ -1,0 +1,6 @@
+{
+  "command": "docker compose --env-file deploy/production/.env.production.trust-node -f deploy/novaride/compose.operational.yml config",
+  "reason": "compose stack could not render because the runtime env file omits required variables",
+  "status": "NOT_RUN",
+  "timestamp_utc": "2026-07-19T22:31:00.822996Z"
+}

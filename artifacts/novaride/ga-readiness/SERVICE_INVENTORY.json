@@ -1,0 +1,36 @@
+{
+  "inventory_source": "deploy/novaride/compose.operational.yml",
+  "services": [
+    {
+      "reason": "compose render blocked",
+      "service": "postgres",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "migrations",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "redis",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "kafka",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "api-a",
+      "status": "NOT_RUN"
+    },
+    {
+      "reason": "compose render blocked",
+      "service": "api-b",
+      "status": "NOT_RUN"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:31:00.822996Z"
+}
