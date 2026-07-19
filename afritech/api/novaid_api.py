@@ -11,7 +11,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
-from afritech.novaid import NovaIDEcosystem, NovaIDRepository, build_core_catalog, build_standards_catalog
+from afritech.novaid import (
+    NovaIDEcosystem,
+    NovaIDRepository,
+    build_core_catalog,
+    build_standards_catalog,
+)
 
 
 def _service() -> NovaIDEcosystem:
@@ -209,7 +214,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return _surface("NovaID Partner App", "novaid_partner_app")
 
     @router.post("/identities")
-    def create_identity(payload: IdentityRequest, claims: JWTClaims = Depends(personal)) -> dict[str, Any]:
+    def create_identity(
+        payload: IdentityRequest, claims: JWTClaims = Depends(personal)
+    ) -> dict[str, Any]:
         return ecosystem.register_identity(**payload.model_dump())
 
     @router.get("/identities/{identity_id}")
@@ -219,8 +226,10 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
             raise HTTPException(status_code=404, detail="identity_not_found")
         return {"view": "novaid_identity", **record.payload}
 
-    @router.post("/auth")
-    def authenticate(payload: SessionRequest, claims: JWTClaims = Depends(personal)) -> dict[str, Any]:
+    @router.post("/legacy/auth", deprecated=True)
+    def authenticate(
+        payload: SessionRequest, claims: JWTClaims = Depends(personal)
+    ) -> dict[str, Any]:
         session = ecosystem.create_session(**payload.model_dump())
         trust = ecosystem.trust_receipt(
             subject_id=payload.identity_id,
@@ -244,7 +253,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         )
 
     @router.post("/biometrics")
-    def biometrics(payload: BiometricRequest, claims: JWTClaims = Depends(personal)) -> dict[str, Any]:
+    def biometrics(
+        payload: BiometricRequest, claims: JWTClaims = Depends(personal)
+    ) -> dict[str, Any]:
         return ecosystem.verify_biometric(**payload.model_dump())
 
     @router.post("/devices")
@@ -256,15 +267,24 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return {
             "view": "novaid_credentials",
             "organization_id": claims.organization_id,
-            "credentials": [record.payload for record in ecosystem.repository.list("novaid_credentials", organization_id=claims.organization_id)],
+            "credentials": [
+                record.payload
+                for record in ecosystem.repository.list(
+                    "novaid_credentials", organization_id=claims.organization_id
+                )
+            ],
         }
 
     @router.post("/credentials/issue")
-    def issue_credential(payload: CredentialIssueRequest, claims: JWTClaims = Depends(enterprise)) -> dict[str, Any]:
+    def issue_credential(
+        payload: CredentialIssueRequest, claims: JWTClaims = Depends(enterprise)
+    ) -> dict[str, Any]:
         return ecosystem.issue_credential(**payload.model_dump())
 
     @router.post("/credentials/revoke")
-    def revoke_credential(payload: CredentialRevokeRequest, claims: JWTClaims = Depends(enterprise)) -> dict[str, Any]:
+    def revoke_credential(
+        payload: CredentialRevokeRequest, claims: JWTClaims = Depends(enterprise)
+    ) -> dict[str, Any]:
         return ecosystem.revoke_credential(**payload.model_dump())
 
     @router.post("/consent")
@@ -279,7 +299,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         )
 
     @router.post("/consent/revoke")
-    def consent_revoke(payload: ConsentRevokeRequest, claims: JWTClaims = Depends(personal)) -> dict[str, Any]:
+    def consent_revoke(
+        payload: ConsentRevokeRequest, claims: JWTClaims = Depends(personal)
+    ) -> dict[str, Any]:
         return ecosystem.revoke_consent(
             consent_id=payload.consent_id,
             organization_id=payload.organization_id,
@@ -319,12 +341,14 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
             evidence_refs=tuple(payload.evidence_refs),
         )
 
-    @router.get("/sessions")
+    @router.get("/legacy/sessions", deprecated=True)
     def sessions(claims: JWTClaims = Depends(command_center)) -> dict[str, Any]:
         return ecosystem.monitor_sessions(organization_id=claims.organization_id)
 
-    @router.post("/sessions")
-    def create_session(payload: SessionRequest, claims: JWTClaims = Depends(personal)) -> dict[str, Any]:
+    @router.post("/legacy/sessions", deprecated=True)
+    def create_session(
+        payload: SessionRequest, claims: JWTClaims = Depends(personal)
+    ) -> dict[str, Any]:
         return ecosystem.create_session(**payload.model_dump())
 
     @router.get("/risk")
@@ -332,12 +356,21 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return {
             "view": "novaid_risk",
             "organization_id": claims.organization_id,
-            "risk_events": [record.payload for record in ecosystem.repository.list("novaid_risk_events", organization_id=claims.organization_id)],
+            "risk_events": [
+                record.payload
+                for record in ecosystem.repository.list(
+                    "novaid_risk_events", organization_id=claims.organization_id
+                )
+            ],
         }
 
     @router.post("/risk")
-    def risk_explanation(payload: RiskRequest, claims: JWTClaims = Depends(command_center)) -> dict[str, Any]:
-        return ecosystem.risk_explanation(identity_id=payload.identity_id, organization_id=payload.organization_id)
+    def risk_explanation(
+        payload: RiskRequest, claims: JWTClaims = Depends(command_center)
+    ) -> dict[str, Any]:
+        return ecosystem.risk_explanation(
+            identity_id=payload.identity_id, organization_id=payload.organization_id
+        )
 
     @router.get("/federation")
     def federation(claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
@@ -352,11 +385,18 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return {
             "view": "novaid_directory",
             "organization_id": claims.organization_id,
-            "entries": [record.payload for record in ecosystem.repository.list("novaid_directory_entries", organization_id=claims.organization_id)],
+            "entries": [
+                record.payload
+                for record in ecosystem.repository.list(
+                    "novaid_directory_entries", organization_id=claims.organization_id
+                )
+            ],
         }
 
     @router.post("/directory")
-    def directory_create(payload: dict[str, Any], claims: JWTClaims = Depends(enterprise)) -> dict[str, Any]:
+    def directory_create(
+        payload: dict[str, Any], claims: JWTClaims = Depends(enterprise)
+    ) -> dict[str, Any]:
         record_id = str(payload.get("record_id", f"entry-{claims.sub}"))
         return ecosystem.repository.upsert(
             "novaid_directory_entries",
@@ -371,7 +411,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return ecosystem.developer_portal(organization_id=claims.organization_id)
 
     @router.post("/developer")
-    def developer_register(payload: OAuthClientRequest, claims: JWTClaims = Depends(developer)) -> dict[str, Any]:
+    def developer_register(
+        payload: OAuthClientRequest, claims: JWTClaims = Depends(developer)
+    ) -> dict[str, Any]:
         return ecosystem.register_oauth_client(
             organization_id=payload.organization_id,
             client_name=payload.client_name,
@@ -403,7 +445,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return ecosystem.inspector_portal(organization_id=claims.organization_id)
 
     @router.post("/inspector")
-    def inspector_offline(payload: dict[str, Any], claims: JWTClaims = Depends(inspector)) -> dict[str, Any]:
+    def inspector_offline(
+        payload: dict[str, Any], claims: JWTClaims = Depends(inspector)
+    ) -> dict[str, Any]:
         try:
             return ecosystem.verify_inspector_offline(
                 inspector_id=str(payload["inspector_id"]),
@@ -432,11 +476,18 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return {
             "view": "novaid_trust",
             "organization_id": claims.organization_id,
-            "trust_receipts": [record.payload for record in ecosystem.repository.list("novaid_trust_events", organization_id=claims.organization_id)],
+            "trust_receipts": [
+                record.payload
+                for record in ecosystem.repository.list(
+                    "novaid_trust_events", organization_id=claims.organization_id
+                )
+            ],
         }
 
     @router.post("/trust")
-    def trust_record(payload: TrustRequest, claims: JWTClaims = Depends(command_center)) -> dict[str, Any]:
+    def trust_record(
+        payload: TrustRequest, claims: JWTClaims = Depends(command_center)
+    ) -> dict[str, Any]:
         return ecosystem.trust_receipt(
             subject_id=payload.subject_id,
             organization_id=payload.organization_id,
@@ -449,7 +500,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         return {"view": "novaid_surfaces", "surfaces": ecosystem.surfaces()}
 
     @router.post("/authorize")
-    def authorize(payload: AuthorizeRequest, claims: JWTClaims = Depends(command_center)) -> dict[str, Any]:
+    def authorize(
+        payload: AuthorizeRequest, claims: JWTClaims = Depends(command_center)
+    ) -> dict[str, Any]:
         return ecosystem.authorize_action(
             identity_id=payload.identity_id,
             organization_id=payload.organization_id,
@@ -461,7 +514,9 @@ def build_novaid_router(service: NovaIDEcosystem | None = None) -> APIRouter:
         )
 
     @router.post("/ai/advice")
-    def ai_advice(payload: dict[str, Any], claims: JWTClaims = Depends(command_center)) -> dict[str, Any]:
+    def ai_advice(
+        payload: dict[str, Any], claims: JWTClaims = Depends(command_center)
+    ) -> dict[str, Any]:
         return ecosystem.ai_advice(
             subject_id=str(payload["subject_id"]),
             topic=str(payload.get("topic", "risk")),

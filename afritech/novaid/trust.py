@@ -25,7 +25,9 @@ def build_identity_receipt(
     return {"receipt": receipt.canonical(), "verified": service.replay(receipt)}
 
 
-def verify_identity_receipt(receipt: dict[str, Any], trust_service: NovaTrustService | None = None) -> bool:
+def verify_identity_receipt(
+    receipt: dict[str, Any], trust_service: NovaTrustService | None = None
+) -> bool:
     service = trust_service or NovaTrustService()
     from afritech.core_platform.models import TrustReceipt
 

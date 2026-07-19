@@ -74,7 +74,12 @@ from afritech.api.core_platform_api import (
 )
 from afritech.api.novapay_ecosystem_api import build_novapay_ecosystem_router
 from afritech.api.novaid_api import build_novaid_router
+from afritech.api.novaid_audit_replay_api import build_novaid_audit_replay_router
+from afritech.novaid.runtime import build_default_durable_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
+from afritech.novacodepro.platform import get_novacodepro_platform
+from afritech.api.novacodepro_ncp007_api import build_novacodepro_ncp007_router
+from afritech.api.novacodepro_ncp008_api import build_novacodepro_ncp008_router
 from afritech.api.novacodepro_workflow_fabric_api import build_novacodepro_workflow_fabric_router
 from afritech.api.executable_runtime_api import build_executable_runtime_router
 from afritech.api.runtime_activation_api import build_runtime_activation_router
@@ -461,7 +466,11 @@ app.include_router(
 )
 app.include_router(build_novapay_ecosystem_router())
 app.include_router(build_novaid_router())
+app.include_router(build_default_durable_router())
+app.include_router(build_novaid_audit_replay_router())
 app.include_router(build_novacodepro_platform_router())
+app.include_router(build_novacodepro_ncp007_router(get_novacodepro_platform()))
+app.include_router(build_novacodepro_ncp008_router(get_novacodepro_platform()))
 app.include_router(build_novacodepro_workflow_fabric_router())
 app.include_router(build_solution_engineering_router())
 app.include_router(build_novacodepro_operational_verification_router())
