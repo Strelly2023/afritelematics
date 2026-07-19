@@ -1,0 +1,78 @@
+{
+  "capabilities": [
+    {
+      "id": "ride_lifecycle",
+      "notes": "Server-authoritative lifecycle exists in repo; live GA still requires runtime proof.",
+      "status": "LOCALLY_VERIFIED"
+    },
+    {
+      "id": "identity_and_eligibility",
+      "notes": "NovaID integration and eligibility controls exist, but launch-market approval remains external.",
+      "status": "LOCALLY_VERIFIED"
+    },
+    {
+      "id": "payments_and_payouts",
+      "notes": "Sandbox/cash and provider-neutral adapters exist; live provider certification not evidenced in this turn.",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "safety",
+      "notes": "Safety workflows and evidence paths exist; external responder and live operational proof remain blocked.",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "mobile_readiness",
+      "notes": "Release tooling and app builds exist, but physical-device certification remains external.",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "observability",
+      "notes": "Metrics/trace scaffolding and evidence artifacts exist; live collector/backend not revalidated in this turn.",
+      "status": "LOCALLY_VERIFIED"
+    },
+    {
+      "id": "infrastructure",
+      "notes": "Host root filesystem has only 224MiB free; live runtime verification remains risky.",
+      "status": "BLOCKED_INFRASTRUCTURE"
+    },
+    {
+      "id": "controlled_pilot",
+      "notes": "Real pilot participants and approvals are not present in this turn.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "public_pilot",
+      "notes": "Public pilot depends on controlled pilot and external approvals.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "security_compliance",
+      "notes": "Internal security artifacts exist; external assessment remains blocked.",
+      "status": "PARTIAL"
+    }
+  ],
+  "program": "NovaRide narrow GA readiness",
+  "scope": {
+    "fallback_mapping_strategy": "OS-native map intent fallback with browser URL handoff",
+    "launch_city": "Melbourne",
+    "launch_jurisdiction": "Australia",
+    "launch_region": "Victoria",
+    "operating_policies": [
+      "restricted pilot cohort only",
+      "approved devices only",
+      "staffed support coverage",
+      "sandbox or cash-only launch methods"
+    ],
+    "payment_methods": [
+      "cash",
+      "sandbox card"
+    ],
+    "payment_mode": "sandbox",
+    "primary_mapping_provider": "Google Maps navigation handoff",
+    "ride_category": "standard point-to-point",
+    "scope_notes": [
+      "Selected from repository pilot/strategy documents; no new jurisdiction or provider assumption added.",
+      "Real payment provider certification remains external unless separate evidence exists."
+    ]
+  }
+}

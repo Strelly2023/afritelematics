@@ -1,0 +1,61 @@
+{
+  "packages": [
+    {
+      "build_script": "vite build",
+      "lockfile": true,
+      "package": "apps/novaride-fraud-center",
+      "package_json": true,
+      "test_script": "node --import tsx --test tests/*.test.js",
+      "typecheck_script": "tsc --noEmit"
+    },
+    {
+      "build_script": "vite build",
+      "lockfile": true,
+      "package": "apps/novaride-corporate",
+      "package_json": true,
+      "test_script": "node --import tsx --test tests/*.test.js",
+      "typecheck_script": "tsc --noEmit"
+    },
+    {
+      "build_script": "vite build",
+      "lockfile": true,
+      "package": "apps/novaride-admin",
+      "package_json": true,
+      "test_script": "node --import tsx --test tests/*.test.js",
+      "typecheck_script": "tsc --noEmit"
+    },
+    {
+      "build_script": "vite build",
+      "lockfile": true,
+      "package": "apps/novaride-operations",
+      "package_json": true,
+      "test_script": "node --test tests/*.test.js",
+      "typecheck_script": "tsc --noEmit"
+    },
+    {
+      "build_script": "vite build",
+      "lockfile": true,
+      "package": "novacodepro_portal",
+      "package_json": true,
+      "test_script": "node --test tests/*.test.js",
+      "typecheck_script": null
+    },
+    {
+      "build_script": null,
+      "lockfile": true,
+      "package": "rider_app",
+      "package_json": true,
+      "test_script": null,
+      "typecheck_script": "tsc --noEmit"
+    },
+    {
+      "build_script": null,
+      "lockfile": true,
+      "package": "driver_app",
+      "package_json": true,
+      "test_script": null,
+      "typecheck_script": "tsc --noEmit"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:24:00.239974Z"
+}

@@ -1,0 +1,895 @@
+{
+  "protected_user_work": [
+    "gitignore",
+    "afriride_system/django_app/apps/afripay/middleware.py",
+    "afritech/api/app.py",
+    "afritech/api/novaid_api.py",
+    "afritech/ci/afripay_concurrency_validator.py",
+    "afritech/novaid/__init__.py",
+    "afritech/novaid/ai.py",
+    "afritech/novaid/repository.py",
+    "afritech/novaid/service.py",
+    "afritech/novaid/surfaces.py",
+    "afritech/novaid/trust.py",
+    "afritech/novaride_runtime/common/idempotency.py",
+    "afritech/novaride_runtime/config.py",
+    "afritech/novaride_runtime/events/hashing.py",
+    "afritech/novaride_runtime/events/outbox.py",
+    "afritech/novaride_runtime/events/outbox_worker.py",
+    "afritech/novaride_runtime/events/replay.py",
+    "afritech/novaride_runtime/events/replay_planner.py",
+    "afritech/novaride_runtime/events/replay_verifier.py",
+    "afritech/novaride_runtime/events/schema_registry.py",
+    "afritech/novaride_runtime/incidents.py",
+    "afritech/novaride_runtime/kafka.py",
+    "afritech/novaride_runtime/operations.py",
+    "afritech/novaride_runtime/outbox.py",
+    "afritech/novaride_runtime/persistence/memory.py",
+    "afritech/novaride_runtime/persistence/postgres/resilience_repository.py",
+    "afritech/novaride_runtime/persistence/protocols.py",
+    "afritech/novaride_runtime/read_models/projections.py",
+    "afritech/novaride_runtime/readiness.py",
+    "afritech/novaride_runtime/redis_coordination.py",
+    "afritech/novaride_runtime/replay/dependencies.py",
+    "afritech/novaride_runtime/replay/memory_repository.py",
+    "afritech/novaride_runtime/replay/postgres_repository.py",
+    "afritech/novaride_runtime/replay/repository.py",
+    "afritech/novaride_runtime/replay/service.py",
+    "afritech/novaride_runtime/resilience.py",
+    "afritech/novaride_runtime/security.py",
+    "afritech/novaride_runtime/services.py",
+    "afritech/novaride_runtime/slo.py",
+    "afritech/novaride_runtime/state_machines.py",
+    "afritech/novaride_runtime/sync_security.py",
+    "apps/novaride-operations/package.json",
+    "apps/public-web/src/main.jsx",
+    "apps/public-web/src/novadashdoor.jsx",
+    "apps/public-web/src/novahousereach.jsx",
+    "apps/public-web/src/novaid.jsx",
+    "apps/public-web/src/novalogistics.jsx",
+    "apps/public-web/src/novapay.jsx",
+    "apps/public-web/src/styles.css",
+    "driver_app/app.json",
+    "driver_app/core/services/mobility.service.ts",
+    "driver_app/core/services/offlineQueue.service.ts",
+    "driver_app/package-lock.json",
+    "driver_app/package.json",
+    "driver_app/ui/screens/IncomingRideModal.tsx",
+    "novacodepro_portal/src/novacodepro/NovaCodeProWorkspaceHub.jsx",
+    "novacodepro_portal/src/styles.css",
+    "pyproject.toml",
+    "rider_app/App.tsx",
+    "rider_app/app.json",
+    "rider_app/core/services/mobility.service.ts",
+    "rider_app/core/services/offlineQueue.service.ts",
+    "rider_app/package-lock.json",
+    "rider_app/package.json",
+    "scripts/novaride/run_dr_exercise.py",
+    "scripts/novaride/verify_api_sdk_current.py",
+    "scripts/novaride/verify_event_schema_compatibility.py",
+    "scripts/novaride/verify_live_runtime.py",
+    "scripts/novaride/verify_runtime_migrations.py",
+    "tests/novaride_runtime/certification/test_sdk_and_certificate.py",
+    "tests/novaride_runtime/contracts/test_runtime_api.py",
+    "tests/novaride_runtime/deployment/test_resilience_production_configs.py",
+    "tests/novaride_runtime/deployment/test_verification_scripts.py",
+    "tests/novaride_runtime/e2e/test_runtime_super_platform.py",
+    "tests/novaride_runtime/persistence/test_migrations.py",
+    "tests/novaride_runtime/replay/test_replay_api.py",
+    "tests/novaride_runtime/replay/test_verified_replay.py",
+    "tests/novaride_runtime/security/test_boundaries.py",
+    "tests/novaride_runtime/unit/test_production_operated_runtime.py",
+    "tests/novaride_runtime/unit/test_resilience_hardening.py",
+    "tests/novaride_runtime/unit/test_resilience_layer.py",
+    "tests/novaride_runtime/unit/test_state_machines.py",
+    "NOVAID_KNOWN_LIMITATIONS.md",
+    "NOVAID_NEXT_ACTIONS.md",
+    "NOVAID_OPERATIONAL_BLOCKERS.md",
+    "afritech/api/novaid_audit_replay_api.py",
+    "afritech/novaid/api.py",
+    "afritech/novaid/application/",
+    "afritech/novaid/audit_replay.py",
+    "afritech/novaid/config.py",
+    "afritech/novaid/domain/",
+    "afritech/novaid/observability.py",
+    "afritech/novaid/outbox.py",
+    "afritech/novaid/persistence/",
+    "afritech/novaid/revocation.py",
+    "afritech/novaid/revocation_delivery.py",
+    "afritech/novaid/runtime.py",
+    "afritech/novaid/security.py",
+    "afritech/novaid/server.py",
+    "afritech/novaid/tokens.py",
+    "afritech/novaid/webauthn_delivery.py",
+    "apps/novaride-operations/index.html",
+    "apps/novaride-operations/package-lock.json",
+    "apps/novaride-operations/src/main.tsx",
+    "apps/novaride-operations/tests/",
+    "apps/novaride-operations/vite.config.ts",
+    "apps/public-web/public/brand/",
+    "csv.py",
+    "deploy/novaride/.env.example",
+    "deploy/novaride/compose.operational.yml",
+    "docker-compose.novaid-integration.yml",
+    "docs/novaid/",
+    "docs/novaride/",
+    "driver_app/assets/",
+    "novacodepro_portal/public/brand/",
+    "rider_app/assets/",
+    "ruff.novaride.toml",
+    "scripts/novaid/",
+    "scripts/novaride/build_driver_release.sh",
+    "scripts/novaride/build_rider_release.sh",
+    "scripts/novaride/check_operational_environment.sh",
+    "scripts/novaride/check_signing_readiness.sh",
+    "scripts/novaride/generate_operational_certification.py",
+    "scripts/novaride/start_operational_environment.sh",
+    "scripts/novaride/stop_operational_environment.sh",
+    "scripts/novaride/verify_mobile_release.sh",
+    "tests/novaid/"
+  ],
+  "summary": {
+    "GENERATED_ARTIFACT": 24,
+    "PRE_EXISTING_UNRELATED": 3,
+    "SHARED_PLATFORM_DEPENDENCY": 102,
+    "UNKNOWN": 22
+  },
+  "timestamp_utc": "2026-07-19T22:24:00.239974Z",
+  "worktree": [
+    {
+      "classification": "UNKNOWN",
+      "path": "gitignore",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "afriride_system/django_app/apps/afripay/middleware.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "afritech/api/app.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/api/novaid_api.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/ci/afripay_concurrency_validator.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/__init__.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/ai.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/repository.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/service.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/surfaces.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/trust.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/common/idempotency.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/config.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/hashing.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/outbox.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/outbox_worker.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/replay.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/replay_planner.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/replay_verifier.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/events/schema_registry.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/incidents.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/kafka.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/operations.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/outbox.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/persistence/memory.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/persistence/postgres/resilience_repository.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/persistence/protocols.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/read_models/projections.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/readiness.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/redis_coordination.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/replay/dependencies.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/replay/memory_repository.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/replay/postgres_repository.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/replay/repository.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/replay/service.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/resilience.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/security.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/services.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/slo.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/state_machines.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaride_runtime/sync_security.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/package.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/main.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/novadashdoor.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/novahousereach.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/novaid.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/novalogistics.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/novapay.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/src/styles.css",
+      "state": "modified"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "db.sqlite3",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/app.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/core/services/mobility.service.ts",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/core/services/offlineQueue.service.ts",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/package-lock.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/package.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/ui/screens/IncomingRideModal.tsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "novacodepro_portal/src/novacodepro/NovaCodeProWorkspaceHub.jsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "novacodepro_portal/src/styles.css",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "pyproject.toml",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/App.tsx",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/app.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/core/services/mobility.service.ts",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/core/services/offlineQueue.service.ts",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/package-lock.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/package.json",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/run_dr_exercise.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/verify_api_sdk_current.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/verify_event_schema_compatibility.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/verify_live_runtime.py",
+      "state": "modified"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/verify_runtime_migrations.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/certification/test_sdk_and_certificate.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/contracts/test_runtime_api.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/deployment/test_resilience_production_configs.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/deployment/test_verification_scripts.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/e2e/test_runtime_super_platform.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/persistence/test_migrations.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/replay/test_replay_api.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/replay/test_verified_replay.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/security/test_boundaries.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/unit/test_production_operated_runtime.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/unit/test_resilience_hardening.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/unit/test_resilience_layer.py",
+      "state": "modified"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaride_runtime/unit/test_state_machines.py",
+      "state": "modified"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "NOVAID_KNOWN_LIMITATIONS.md",
+      "state": "untracked"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "NOVAID_NEXT_ACTIONS.md",
+      "state": "untracked"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "NOVAID_OPERATIONAL_BLOCKERS.md",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/api/novaid_audit_replay_api.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/api.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/application/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/audit_replay.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/config.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/domain/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/observability.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/outbox.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/persistence/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/revocation.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/revocation_delivery.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/runtime.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/security.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/server.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/tokens.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/novaid/webauthn_delivery.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "apk/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "apk/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/index.html",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/package-lock.json",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/src/main.tsx",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/tests/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/novaride-operations/vite.config.ts",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "apps/public-web/public/brand/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaid/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/database/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/docker-recovery/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/e2e/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/final/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/ga/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/mobile/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/observability/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/operational/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/performance/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/pilot/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/prr/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/public-pilot/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/quality/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/runtime/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/security/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "artifacts/novaride/storage-recovery/",
+      "state": "untracked"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "csv.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "deploy/novaride/.env.example",
+      "state": "untracked"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "deploy/novaride/compose.operational.yml",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "deployment-evidence/",
+      "state": "untracked"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "docker-compose.novaid-integration.yml",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "docs/novaid/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "docs/novaride/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "driver_app/assets/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "novacodepro_portal/public/brand/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "rider_app/assets/",
+      "state": "untracked"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "ruff.novaride.toml",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaid/",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/build_driver_release.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/build_rider_release.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/check_operational_environment.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/check_signing_readiness.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/generate_operational_certification.py",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/start_operational_environment.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/stop_operational_environment.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "scripts/novaride/verify_mobile_release.sh",
+      "state": "untracked"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "tests/novaid/",
+      "state": "untracked"
+    },
+    {
+      "classification": "GENERATED_ARTIFACT",
+      "path": "var/",
+      "state": "untracked"
+    }
+  ]
+}

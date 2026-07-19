@@ -1,0 +1,23 @@
+{
+  "fallback_mapping_strategy": "OS-native map intent fallback with browser URL handoff",
+  "launch_city": "Melbourne",
+  "launch_jurisdiction": "Australia",
+  "launch_region": "Victoria",
+  "operating_policies": [
+    "restricted pilot cohort only",
+    "approved devices only",
+    "staffed support coverage",
+    "sandbox or cash-only launch methods"
+  ],
+  "payment_methods": [
+    "cash",
+    "sandbox card"
+  ],
+  "payment_mode": "sandbox",
+  "primary_mapping_provider": "Google Maps navigation handoff",
+  "ride_category": "standard point-to-point",
+  "scope_notes": [
+    "Selected from repository pilot/strategy documents; no new jurisdiction or provider assumption added.",
+    "Real payment provider certification remains external unless separate evidence exists."
+  ]
+}

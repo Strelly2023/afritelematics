@@ -1,0 +1,52 @@
+{
+  "disk_usage_root": {
+    "cmd": [
+      "df",
+      "-h",
+      "/"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Filesystem        Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s1s1   460Gi    12Gi   6.3Gi    66%    459k   66M    1%   /"
+  },
+  "docker_compose_version": {
+    "cmd": [
+      "docker",
+      "compose",
+      "version"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Docker Compose version v5.1.4"
+  },
+  "docker_context": {
+    "cmd": [
+      "docker",
+      "context",
+      "ls"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "NAME              DESCRIPTION                               DOCKER ENDPOINT                                  ERROR\ndefault           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock                      \ndesktop-linux *   Docker Desktop                            unix:///Users/ostrinov/.docker/run/docker.sock"
+  },
+  "docker_info": {
+    "cmd": [
+      "docker",
+      "info"
+    ],
+    "returncode": 1,
+    "stderr": "permission denied while trying to connect to the docker API at unix:///Users/ostrinov/.docker/run/docker.sock",
+    "stdout": "Client:\n Version:    29.5.3\n Context:    desktop-linux\n Debug Mode: false\n Plugins:\n  agent: Docker AI Agent Runner (Docker Inc.)\n    Version:  v1.70.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-agent\n  ai: Docker AI Agent - Ask Gordon (Docker Inc.)\n    Version:  v1.24.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-ai\n  buildx: Docker Buildx (Docker Inc.)\n    Version:  v0.34.1-desktop.1\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-buildx\n  compose: Docker Compose (Docker Inc.)\n    Version:  v5.1.4\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-compose\n  debug: Get a shell into any image or container (Docker Inc.)\n    Version:  0.0.47\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-debug\n  desktop: Docker Desktop commands (Docker Inc.)\n    Version:  v0.3.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-desktop\n  dhi: CLI for managing Docker Hardened Images (Docker Inc.)\n    Version:  v0.0.4\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-dhi\n  extension: Manages Docker extensions (Docker Inc.)\n    Version:  v0.2.31\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-extension\n  init: Creates Docker-related starter files for your project (Docker Inc.)\n    Version:  v1.4.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-init\n  mcp: Docker MCP Plugin (Docker Inc.)\n    Version:  v0.42.2\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-mcp\n  model: Docker Model Runner (Docker Inc.)\n    Version:  v1.2.1\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-model\n  offload: Docker Offload (Docker Inc.)\n    Version:  v0.6.3\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-offload\n  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)\n    Version:  v0.1.3\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-pass\n  sandbox: Docker Sandbox (Docker Inc.)\n    Version:  v0.12.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-sandbox\n  scout: Docker Scout (Docker Inc.)\n    Version:  v1.21.0\n    Path:     /Users/ostrinov/.docker/cli-plugins/docker-scout\n\nServer:"
+  },
+  "docker_version": {
+    "cmd": [
+      "docker",
+      "version"
+    ],
+    "returncode": 1,
+    "stderr": "permission denied while trying to connect to the docker API at unix:///Users/ostrinov/.docker/run/docker.sock",
+    "stdout": "Client:\n Version:           29.5.3\n API version:       1.54\n Go version:        go1.26.4\n Git commit:        d1c06ef\n Built:             Wed Jun  3 17:59:08 2026\n OS/Arch:           darwin/arm64\n Context:           desktop-linux"
+  },
+  "storage_warning": "root filesystem has very limited free space; reuse small evidence writes only",
+  "timestamp_utc": "2026-07-19T22:24:00.239974Z"
+}

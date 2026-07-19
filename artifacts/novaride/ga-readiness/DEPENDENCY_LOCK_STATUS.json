@@ -1,0 +1,40 @@
+{
+  "packages": [
+    {
+      "package": "apps/novaride-fraud-center",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "apps/novaride-corporate",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "apps/novaride-admin",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "apps/novaride-operations",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "novacodepro_portal",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "rider_app",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    },
+    {
+      "package": "driver_app",
+      "package_lock_present": true,
+      "package_manager": "npm"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:24:00.239974Z"
+}

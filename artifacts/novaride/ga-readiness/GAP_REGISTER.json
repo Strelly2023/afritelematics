@@ -1,0 +1,61 @@
+{
+  "gaps": [
+    {
+      "description": "Root filesystem free space is critically low for additional container / build work.",
+      "id": "GA-INFRA-001",
+      "impact": "limits live runtime verification and build reproducibility",
+      "owner": "platform",
+      "required_action": "Perform safe cleanup or move artifacts off the root volume.",
+      "status": "BLOCKED_INFRASTRUCTURE"
+    },
+    {
+      "description": "Physical-device evidence not supplied in this turn.",
+      "id": "GA-EXT-001",
+      "impact": "physical-device gate remains blocked",
+      "owner": "mobile/release",
+      "required_action": "Supply real Rider/Driver device evidence.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "description": "Controlled-pilot real participant evidence not supplied in this turn.",
+      "id": "GA-EXT-002",
+      "impact": "controlled pilot gate remains blocked",
+      "owner": "pilot owner",
+      "required_action": "Provide approved participants and journey evidence.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "description": "Public pilot evidence not supplied in this turn.",
+      "id": "GA-EXT-003",
+      "impact": "public pilot gate remains blocked",
+      "owner": "pilot owner",
+      "required_action": "Provide public pilot authorization and evidence.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "description": "Independent external security assessment not supplied in this turn.",
+      "id": "GA-EXT-004",
+      "impact": "security gate remains blocked",
+      "owner": "security",
+      "required_action": "Obtain authorized external assessment.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "description": "Human approval set not supplied in this turn.",
+      "id": "GA-EXT-005",
+      "impact": "PRR/GA approval gates remain blocked",
+      "owner": "release manager",
+      "required_action": "Collect authenticated approvals for release.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "description": "Live real-payment provider certification not evidenced in this turn.",
+      "id": "GA-PAY-001",
+      "impact": "live payment gate remains blocked",
+      "owner": "payments",
+      "required_action": "Provide provider approval and live transaction evidence.",
+      "status": "BLOCKED_EXTERNAL"
+    }
+  ],
+  "timestamp_utc": "2026-07-19T22:24:00.239974Z"
+}
