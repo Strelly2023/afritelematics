@@ -1,0 +1,17 @@
+{
+  "postgres": "healthy",
+  "redis": "healthy",
+  "kafka": "healthy",
+  "afritech_api": "healthy",
+  "novacodepro_portal": "healthy",
+  "public_web": "healthy",
+  "dashboard": "healthy",
+  "nginx": "healthy",
+  "nginx_exporter": "running",
+  "otel_collector": "running",
+  "docker_compose_ps": "pass",
+  "pg_isready": "pass",
+  "redis_ping": "pass",
+  "rpk_cluster_health": "pass",
+  "service_dns": "pass"
+}

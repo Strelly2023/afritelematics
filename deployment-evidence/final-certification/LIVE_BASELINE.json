@@ -1,0 +1,525 @@
+{
+  "branch": "afriride-live-pilot-001",
+  "compose_exit_code": 0,
+  "compose_stderr": "",
+  "compose_stdout": "{\"Command\":\"\\\"uvicorn afritech.ap\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"1644887cc040\",\"Image\":\"production-afritech-api\",\"Labels\":\"com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.config-hash=ceed866311f756bf1f5606a85a7530e108ab786d2c2089f4639b7758d01a6099,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:7d875c85a0187894f3be4d1e6bc3c9e55396bebd987587b09e94e122c29294dc,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=afritech-api-1,desktop.docker.io/binds/0/SourceKind=hostFile,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,desktop.docker.io/binds/0/Target=/run/secrets/eth_private_key,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/run/secrets/afritech_private_key.pem,desktop.docker.io/binds/2/Target=/run/secrets/afritech_public_key.pem,desktop.docker.io/ports.scheme=v2,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_private_key.pem,desktop.docker.io/ports/8000/tcp=127.0.0.1:8001,com.docker.compose.service=afritech-api,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/eth_private_key,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_public_key.pem,desktop.docker.io/binds/2/SourceKind=hostFile\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_afr\u2026\",\"Name\":\"production-afritech-api-1\",\"Names\":\"production-afritech-api-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:8001-\\u003e8000/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":8000,\"PublishedPort\":8001,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"afritech-api\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"ba7ca5f9d890\",\"Image\":\"production-afritech-dashboard\",\"Labels\":\"com.docker.compose.config-hash=7c25ba1e0ed45e744c4b0d2ae31d24c0139f19dfd395c57674234bafeac0957d,com.docker.compose.container-number=1,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=afritech-dashboard-1,com.docker.compose.service=afritech-dashboard,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:8335407b7a4916def831c66369b8d258fb6fb5a0f0da31aed622e77be55912b5,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.version=5.1.4\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-afritech-dashboard-1\",\"Names\":\"production-afritech-dashboard-1\",\"Networks\":\"production_infra\",\"Ports\":\"4173/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4173,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"afritech-dashboard\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/bin/alertmanager -\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"a68cc5f19e35\",\"Image\":\"prom/alertmanager:v0.27.0\",\"Labels\":\"com.docker.compose.image=sha256:e13b6ed5cb929eeaee733479dce55e10eb3bc2e9c4586c705a4e8da41e5eacf5,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/1/Target=/etc/alertmanager/alertmanager.yml,desktop.docker.io/ports.scheme=v2,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=alertmanager-1,com.docker.compose.version=5.1.4,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=alertmanager,desktop.docker.io/ports/9093/tcp=127.0.0.1:9093,com.docker.compose.config-hash=d1647d09962f39ec7bd4f475e67181a794a9d378bb57fcb52483b948187abfa2,com.docker.compose.oneoff=False,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/alertmanager/alertmanager.yml,desktop.docker.io/binds/1/SourceKind=hostFile\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_ale\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-alertmanager-1\",\"Names\":\"production-alertmanager-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:9093-\\u003e9093/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":9093,\"PublishedPort\":9093,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"alertmanager\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"/usr/bin/cadvisor -\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"b3e8f8cc076e\",\"Image\":\"gcr.io/cadvisor/cadvisor:v0.49.1\",\"Labels\":\"com.docker.compose.depends_on=,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.version=5.1.4,desktop.docker.io/binds/1/Source=/var/run,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.replace=cadvisor-1,desktop.docker.io/binds/1/Target=/var/run,com.docker.compose.config-hash=c533b61c09d16a7c40ffcee9b37514a102b98cf5fe03e73378a3237bb7538060,com.docker.compose.image=sha256:3cde6faf0791ebf7b41d6f8ae7145466fed712ea6f252c935294d2608b1af388,com.docker.compose.oneoff=False,com.docker.compose.service=cadvisor,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"0\",\"Mounts\":\"/,/sys,/var/lib/docker,/host_mnt/priv\u2026\",\"Name\":\"production-cadvisor-1\",\"Names\":\"production-cadvisor-1\",\"Networks\":\"production_infra\",\"Ports\":\"8080/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8080,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"cadvisor\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/run.sh\\\"\",\"CreatedAt\":\"2026-07-19 16:03:05 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"30c2710d6116\",\"Image\":\"grafana/grafana:11.2.2\",\"Labels\":\"com.docker.compose.depends_on=prometheus:service_started:false,com.docker.compose.image=sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89,desktop.docker.io/binds/1/Target=/var/lib/grafana/dashboards,desktop.docker.io/ports/3000/tcp=127.0.0.1:3000,maintainer=Grafana Labs \\u003chello@grafana.com\\u003e,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.config-hash=6abe24721296901265bdaffb335fbb01273a8a9c436651e6ad63c4addc614709,com.docker.compose.container-number=1,com.docker.compose.replace=grafana-1,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/provisioning,desktop.docker.io/ports.scheme=v2,com.docker.compose.service=grafana,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/etc/grafana/provisioning,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/dashboards\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,production_gra\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-grafana-1\",\"Names\":\"production-grafana-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:3000-\\u003e3000/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":3000,\"PublishedPort\":3000,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"grafana\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"/entrypoint.sh redp\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:02 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"397e60dcf0f1\",\"Image\":\"redpandadata/redpanda:v24.1.5\",\"Labels\":\"com.docker.compose.image=sha256:9ecdd11989c9dc3f43c74782e541144e4231f31bf26ce280f73587b2d32ed1f3,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=kafka,com.docker.compose.version=5.1.4,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=kafka-1,desktop.docker.io/ports.scheme=v2,org.opencontainers.image.authors=Redpanda Data \\u003chi@redpanda.com\\u003e,com.docker.compose.config-hash=a0d86f42aada6ec1236d49b543dd75835eef53814c866b82b6f0df5bb8507f28\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_kaf\u2026\",\"Name\":\"production-kafka-1\",\"Names\":\"production-kafka-1\",\"Networks\":\"production_infra\",\"Ports\":\"8081-8082/tcp, 9092/tcp, 9644/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8081,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":8082,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":9092,\"PublishedPort\":0,\"Protocol\":\"tcp\"},{\"URL\":\"\",\"TargetPort\":9644,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"kafka\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/docker-entrypoint.\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:07:29 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"e97ca46e5f55\",\"Image\":\"nginx:1.27-alpine\",\"Labels\":\"desktop.docker.io/ports/80/tcp=:80,com.docker.compose.container-number=1,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.service=nginx,desktop.docker.io/binds/3/Target=/var/www/afritechnology-downloads,com.docker.compose.config-hash=fb9d059cd6565b3502f8ee76f9397a4f4f9497e2caa7c37d7456377aba36537e,com.docker.compose.depends_on=afritech-dashboard:service_started:false,novacodepro-portal:service_started:false,afritech-api:service_healthy:false,public-web:service_started:false,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/Target=/docker-entrypoint.d/15-novacodepro-cert.envsh,desktop.docker.io/binds/2/Target=/var/www/afritech-apk,desktop.docker.io/binds/3/SourceKind=hostFile,maintainer=NGINX Docker Maintainers \\u003cdocker-maint@nginx.com\\u003e,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/etc/nginx/templates/default.conf.template,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk-public,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10,com.docker.compose.replace=nginx-1,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/15-novacodepro-cert.envsh,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/afritechnology-platform.conf.template,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/ports/443/tcp=:443\",\"LocalVolumes\":\"2\",\"Mounts\":\"production_cer\u2026,/host_mnt/priv\u2026,production_cer\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-nginx-1\",\"Names\":\"production-nginx-1\",\"Networks\":\"production_infra\",\"Ports\":\"0.0.0.0:80-\\u003e80/tcp, [::]:80-\\u003e80/tcp, 0.0.0.0:443-\\u003e443/tcp, [::]:443-\\u003e443/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"0.0.0.0\",\"TargetPort\":80,\"PublishedPort\":80,\"Protocol\":\"tcp\"},{\"URL\":\"::\",\"TargetPort\":80,\"PublishedPort\":80,\"Protocol\":\"tcp\"},{\"URL\":\"0.0.0.0\",\"TargetPort\":443,\"PublishedPort\":443,\"Protocol\":\"tcp\"},{\"URL\":\"::\",\"TargetPort\":443,\"PublishedPort\":443,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"nginx\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/usr/bin/nginx-prom\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:07:30 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"9a5c73bd5676\",\"Image\":\"nginx/nginx-prometheus-exporter:1.1.0\",\"Labels\":\"org.opencontainers.image.version=1.1.0,com.docker.compose.project=production,org.nginx.exporter.image.build.target=linux/arm64,org.nginx.exporter.image.build.version=goreleaser,org.opencontainers.image.description=NGINX Prometheus Exporter for NGINX and NGINX Plus,org.opencontainers.image.title=nginx-prometheus-exporter,com.docker.compose.version=5.1.4,org.opencontainers.image.created=2024-01-09T18:47:19.859Z,org.opencontainers.image.source=https://github.com/nginxinc/nginx-prometheus-exporter,com.docker.compose.config-hash=65bf69f5069c530a3acdd2a566fa642d7e5dcbcc6fe940407a16a7c0122d2a32,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=nginx-exporter,desktop.docker.io/ports.scheme=v2,org.opencontainers.image.revision=85fa58b9f8979eeed776a1df58495ef5baa4d9d7,com.docker.compose.container-number=1,com.docker.compose.depends_on=nginx:service_started:false,com.docker.compose.image=sha256:d710e0ff2505a7037dd21e47eae07025010c0de08a6247d1a704824823becfd0,com.docker.compose.replace=nginx-exporter-1,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.url=https://github.com/nginxinc/nginx-prometheus-exporter,org.opencontainers.image.vendor=NGINX Inc \\u003cintegrations@nginx.com\\u003e\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-nginx-exporter-1\",\"Names\":\"production-nginx-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"\",\"Project\":\"production\",\"Publishers\":[],\"RunningFor\":\"3 hours ago\",\"Service\":\"nginx-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"/bin/node_exporter \u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:02 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"d21dc733cbd3\",\"Image\":\"prom/node-exporter:v1.8.2\",\"Labels\":\"com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=node-exporter-1,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.config-hash=f6dbd95ac213de616ce4be4a907ab5389403440cce4206c14d6103a3f409826d,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:4032c6d5bfd752342c3e631c2f1de93ba6b86c41db6b167b9a35372c139e7706,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.service=node-exporter\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-node-exporter-1\",\"Names\":\"production-node-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"9100/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":9100,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"node-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"895be0a86497\",\"Image\":\"production-novacodepro-portal\",\"Labels\":\"com.docker.compose.config-hash=7ffc183b93f526727e3e3dc8e35e8ba25613232c548a078fc29aa13eae173016,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=novacodepro-portal,com.docker.compose.version=5.1.4,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.image=sha256:767bc380312f30a250a885244ad081c790c86c5f52f5cf5b907696fb073db528,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=novacodepro-portal-1,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-novacodepro-portal-1\",\"Names\":\"production-novacodepro-portal-1\",\"Networks\":\"production_infra\",\"Ports\":\"4174/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4174,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"novacodepro-portal\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/otelcol-contrib --\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"485299148f25\",\"Image\":\"otel/opentelemetry-collector-contrib:0.109.0\",\"Labels\":\"com.docker.compose.container-number=1,com.docker.compose.oneoff=False,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/2/Target=/etc/otelcol-contrib/exporters.yaml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/13133/tcp=127.0.0.1:13133,org.opencontainers.image.created=2024-09-10T20:10:03Z,com.docker.compose.depends_on=,com.docker.compose.image=sha256:af0f72b2d2493fc17f06cf3bc136548240cd7ebb2c8b1c8a7be6f3eb03068389,com.docker.compose.project=production,desktop.docker.io/binds/1/Target=/etc/otelcol-contrib/pipelines.yaml,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/exporters.yaml,org.opencontainers.image.revision=b07bcb3f966e134245b9879f8e8b5948a44bfc9f,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/otel-collector.yml,desktop.docker.io/binds/3/Target=/etc/otelcol-contrib/otel-collector.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=otel-collector-1,com.docker.compose.service=otel-collector,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/config.yaml,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/pipelines.yaml,org.opencontainers.image.source=https://github.com/open-telemetry/opentelemetry-collector-releases,com.docker.compose.config-hash=d02bacb0990baf99f4d88f59ba1944b79aa23743c1773486ce21e213ab817f64,desktop.docker.io/binds/0/Target=/etc/otelcol-contrib/config.yaml,desktop.docker.io/binds/3/SourceKind=hostFile,org.opencontainers.image.version=0.109.0,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/ports/4317/tcp=127.0.0.1:4317,desktop.docker.io/ports/4318/tcp=127.0.0.1:4318,org.opencontainers.image.licenses=Apache-2.0,com.docker.compose.version=5.1.4,org.opencontainers.image.name=opentelemetry-collector-releases\",\"LocalVolumes\":\"0\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-otel-collector-1\",\"Names\":\"production-otel-collector-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:4317-4318-\\u003e4317-4318/tcp, 127.0.0.1:13133-\\u003e13133/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":4317,\"PublishedPort\":4317,\"Protocol\":\"tcp\"},{\"URL\":\"127.0.0.1\",\"TargetPort\":4318,\"PublishedPort\":4318,\"Protocol\":\"tcp\"},{\"URL\":\"127.0.0.1\",\"TargetPort\":13133,\"PublishedPort\":13133,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"otel-collector\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"6b8393ee3e53\",\"Image\":\"postgres:16-alpine\",\"Labels\":\"com.docker.compose.replace=postgres-1,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=d621924fda367fadf77355ef3c001d559500cbad2ab71706ca1fca34dd4cf61d,com.docker.compose.image=sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=postgres,com.docker.compose.version=5.1.4,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.oneoff=False\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_pos\u2026\",\"Name\":\"production-postgres-1\",\"Names\":\"production-postgres-1\",\"Networks\":\"production_infra\",\"Ports\":\"5432/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":5432,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"postgres\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"/bin/postgres_expor\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"fea58f3f5ace\",\"Image\":\"prometheuscommunity/postgres-exporter:v0.15.0\",\"Labels\":\"com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=postgres-exporter-1,com.docker.compose.service=postgres-exporter,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.container-number=1,com.docker.compose.depends_on=postgres:service_started:false,com.docker.compose.image=sha256:386b12d19eab2a37d7cd8ca8b4c7491cc7a830d9581f49af6c98a393da9605e6,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=b8e5bd86eb5ffdf35b807e54e5d460ff7fbe7ca0c71a2100ae441a76275979c1\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-postgres-exporter-1\",\"Names\":\"production-postgres-exporter-1\",\"Networks\":\"production_infra\",\"Ports\":\"9187/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":9187,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"postgres-exporter\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"/bin/prometheus --c\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"\",\"ID\":\"241513e8f9e0\",\"Image\":\"prom/prometheus:v2.54.1\",\"Labels\":\"desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/prometheus.yml,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/etc/prometheus/recording_rules.yml,com.docker.compose.container-number=1,com.docker.compose.replace=prometheus-1,com.docker.compose.service=prometheus,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/alerts.yml,desktop.docker.io/binds/3/SourceKind=hostFile,maintainer=The Prometheus Authors \\u003cprometheus-developers@googlegroups.com\\u003e,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/4/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus,desktop.docker.io/binds/4/SourceKind=hostFile,desktop.docker.io/binds/4/Target=/etc/prometheus,com.docker.compose.config-hash=5822a6bf1346657b48544756afadf23a9bbe4fb4e15f7d263a84ad82fbb75fcd,com.docker.compose.depends_on=redis:service_started:false,kafka:service_started:false,postgres:service_started:false,com.docker.compose.image=sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94,desktop.docker.io/binds/1/Target=/etc/prometheus/prometheus.yml,desktop.docker.io/binds/2/Target=/etc/prometheus/alerts.yml,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/recording_rules.yml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/9090/tcp=127.0.0.1:9090,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.version=5.1.4\",\"LocalVolumes\":\"1\",\"Mounts\":\"/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_pro\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026\",\"Name\":\"production-prometheus-1\",\"Names\":\"production-prometheus-1\",\"Networks\":\"production_infra\",\"Ports\":\"127.0.0.1:9090-\\u003e9090/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":9090,\"PublishedPort\":9090,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"prometheus\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:04 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"e122ae835cc9\",\"Image\":\"production-public-web\",\"Labels\":\"com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.image=sha256:a681b854c3fc7f3c382c07615bb42638ba95f63783b10fb28ffb38b2189e082c,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=public-web-1,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.service=public-web,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=c40929dfcc9b35036bbcead5f027838c2c8167e723797f4521cb4eb987e33641\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"production-public-web-1\",\"Names\":\"production-public-web-1\",\"Networks\":\"production_infra\",\"Ports\":\"4175/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":4175,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"public-web\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n{\"Command\":\"\\\"docker-entrypoint.s\u2026\\\"\",\"CreatedAt\":\"2026-07-19 16:03:03 +1000 AEST\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"0d2451a2f681\",\"Image\":\"redis:7.4-alpine\",\"Labels\":\"com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=redis-1,com.docker.compose.version=5.1.4,com.docker.compose.config-hash=22be69bd8f9840076c38c411782a9cdd4c6003463f8ee639ece3e797e81c844b,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.service=redis,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node\",\"LocalVolumes\":\"1\",\"Mounts\":\"production_red\u2026\",\"Name\":\"production-redis-1\",\"Names\":\"production-redis-1\",\"Networks\":\"production_infra\",\"Ports\":\"6379/tcp\",\"Project\":\"production\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":6379,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"3 hours ago\",\"Service\":\"redis\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 3 hours (healthy)\"}\n",
+  "containers": [
+    {
+      "Command": "\"uvicorn afritech.ap\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "1644887cc040",
+      "Image": "production-afritech-api",
+      "Labels": "com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.config-hash=ceed866311f756bf1f5606a85a7530e108ab786d2c2089f4639b7758d01a6099,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:7d875c85a0187894f3be4d1e6bc3c9e55396bebd987587b09e94e122c29294dc,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=afritech-api-1,desktop.docker.io/binds/0/SourceKind=hostFile,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,desktop.docker.io/binds/0/Target=/run/secrets/eth_private_key,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/run/secrets/afritech_private_key.pem,desktop.docker.io/binds/2/Target=/run/secrets/afritech_public_key.pem,desktop.docker.io/ports.scheme=v2,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_private_key.pem,desktop.docker.io/ports/8000/tcp=127.0.0.1:8001,com.docker.compose.service=afritech-api,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/eth_private_key,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/secrets/afritech_public_key.pem,desktop.docker.io/binds/2/SourceKind=hostFile",
+      "LocalVolumes": "1",
+      "Mounts": "/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_afr\u2026",
+      "Name": "production-afritech-api-1",
+      "Names": "production-afritech-api-1",
+      "Networks": "production_infra",
+      "Ports": "127.0.0.1:8001->8000/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 8001,
+          "TargetPort": 8000,
+          "URL": "127.0.0.1"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "afritech-api",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"docker-entrypoint.s\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:04 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "ba7ca5f9d890",
+      "Image": "production-afritech-dashboard",
+      "Labels": "com.docker.compose.config-hash=7c25ba1e0ed45e744c4b0d2ae31d24c0139f19dfd395c57674234bafeac0957d,com.docker.compose.container-number=1,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=afritech-dashboard-1,com.docker.compose.service=afritech-dashboard,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:8335407b7a4916def831c66369b8d258fb6fb5a0f0da31aed622e77be55912b5,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.version=5.1.4",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-afritech-dashboard-1",
+      "Names": "production-afritech-dashboard-1",
+      "Networks": "production_infra",
+      "Ports": "4173/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 4173,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "afritech-dashboard",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/bin/alertmanager -\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "a68cc5f19e35",
+      "Image": "prom/alertmanager:v0.27.0",
+      "Labels": "com.docker.compose.image=sha256:e13b6ed5cb929eeaee733479dce55e10eb3bc2e9c4586c705a4e8da41e5eacf5,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/1/Target=/etc/alertmanager/alertmanager.yml,desktop.docker.io/ports.scheme=v2,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=alertmanager-1,com.docker.compose.version=5.1.4,maintainer=The Prometheus Authors <prometheus-developers@googlegroups.com>,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=alertmanager,desktop.docker.io/ports/9093/tcp=127.0.0.1:9093,com.docker.compose.config-hash=d1647d09962f39ec7bd4f475e67181a794a9d378bb57fcb52483b948187abfa2,com.docker.compose.oneoff=False,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/alertmanager/alertmanager.yml,desktop.docker.io/binds/1/SourceKind=hostFile",
+      "LocalVolumes": "1",
+      "Mounts": "production_ale\u2026,/host_mnt/priv\u2026",
+      "Name": "production-alertmanager-1",
+      "Names": "production-alertmanager-1",
+      "Networks": "production_infra",
+      "Ports": "127.0.0.1:9093->9093/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 9093,
+          "TargetPort": 9093,
+          "URL": "127.0.0.1"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "alertmanager",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"/usr/bin/cadvisor -\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "b3e8f8cc076e",
+      "Image": "gcr.io/cadvisor/cadvisor:v0.49.1",
+      "Labels": "com.docker.compose.depends_on=,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.version=5.1.4,desktop.docker.io/binds/1/Source=/var/run,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.replace=cadvisor-1,desktop.docker.io/binds/1/Target=/var/run,com.docker.compose.config-hash=c533b61c09d16a7c40ffcee9b37514a102b98cf5fe03e73378a3237bb7538060,com.docker.compose.image=sha256:3cde6faf0791ebf7b41d6f8ae7145466fed712ea6f252c935294d2608b1af388,com.docker.compose.oneoff=False,com.docker.compose.service=cadvisor,desktop.docker.io/ports.scheme=v2",
+      "LocalVolumes": "0",
+      "Mounts": "/,/sys,/var/lib/docker,/host_mnt/priv\u2026",
+      "Name": "production-cadvisor-1",
+      "Names": "production-cadvisor-1",
+      "Networks": "production_infra",
+      "Ports": "8080/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 8080,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "cadvisor",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/run.sh\"",
+      "CreatedAt": "2026-07-19 16:03:05 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "30c2710d6116",
+      "Image": "grafana/grafana:11.2.2",
+      "Labels": "com.docker.compose.depends_on=prometheus:service_started:false,com.docker.compose.image=sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89,desktop.docker.io/binds/1/Target=/var/lib/grafana/dashboards,desktop.docker.io/ports/3000/tcp=127.0.0.1:3000,maintainer=Grafana Labs <hello@grafana.com>,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/binds/1/SourceKind=hostFile,com.docker.compose.config-hash=6abe24721296901265bdaffb335fbb01273a8a9c436651e6ad63c4addc614709,com.docker.compose.container-number=1,com.docker.compose.replace=grafana-1,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/provisioning,desktop.docker.io/ports.scheme=v2,com.docker.compose.service=grafana,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/etc/grafana/provisioning,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/grafana/dashboards",
+      "LocalVolumes": "1",
+      "Mounts": "/host_mnt/priv\u2026,production_gra\u2026,/host_mnt/priv\u2026",
+      "Name": "production-grafana-1",
+      "Names": "production-grafana-1",
+      "Networks": "production_infra",
+      "Ports": "127.0.0.1:3000->3000/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 3000,
+          "TargetPort": 3000,
+          "URL": "127.0.0.1"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "grafana",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"/entrypoint.sh redp\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:02 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "397e60dcf0f1",
+      "Image": "redpandadata/redpanda:v24.1.5",
+      "Labels": "com.docker.compose.image=sha256:9ecdd11989c9dc3f43c74782e541144e4231f31bf26ce280f73587b2d32ed1f3,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=kafka,com.docker.compose.version=5.1.4,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.replace=kafka-1,desktop.docker.io/ports.scheme=v2,org.opencontainers.image.authors=Redpanda Data <hi@redpanda.com>,com.docker.compose.config-hash=a0d86f42aada6ec1236d49b543dd75835eef53814c866b82b6f0df5bb8507f28",
+      "LocalVolumes": "1",
+      "Mounts": "production_kaf\u2026",
+      "Name": "production-kafka-1",
+      "Names": "production-kafka-1",
+      "Networks": "production_infra",
+      "Ports": "8081-8082/tcp, 9092/tcp, 9644/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 8081,
+          "URL": ""
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 8082,
+          "URL": ""
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 9092,
+          "URL": ""
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 9644,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "kafka",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/docker-entrypoint.\u2026\"",
+      "CreatedAt": "2026-07-19 16:07:29 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "e97ca46e5f55",
+      "Image": "nginx:1.27-alpine",
+      "Labels": "desktop.docker.io/ports/80/tcp=:80,com.docker.compose.container-number=1,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.service=nginx,desktop.docker.io/binds/3/Target=/var/www/afritechnology-downloads,com.docker.compose.config-hash=fb9d059cd6565b3502f8ee76f9397a4f4f9497e2caa7c37d7456377aba36537e,com.docker.compose.depends_on=afritech-dashboard:service_started:false,novacodepro-portal:service_started:false,afritech-api:service_healthy:false,public-web:service_started:false,com.docker.compose.version=5.1.4,desktop.docker.io/binds/0/Target=/docker-entrypoint.d/15-novacodepro-cert.envsh,desktop.docker.io/binds/2/Target=/var/www/afritech-apk,desktop.docker.io/binds/3/SourceKind=hostFile,maintainer=NGINX Docker Maintainers <docker-maint@nginx.com>,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/etc/nginx/templates/default.conf.template,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/apk-public,desktop.docker.io/ports.scheme=v2,com.docker.compose.image=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10,com.docker.compose.replace=nginx-1,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/15-novacodepro-cert.envsh,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/nginx/afritechnology-platform.conf.template,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/ports/443/tcp=:443",
+      "LocalVolumes": "2",
+      "Mounts": "production_cer\u2026,/host_mnt/priv\u2026,production_cer\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026",
+      "Name": "production-nginx-1",
+      "Names": "production-nginx-1",
+      "Networks": "production_infra",
+      "Ports": "0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 80,
+          "TargetPort": 80,
+          "URL": "0.0.0.0"
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 80,
+          "TargetPort": 80,
+          "URL": "::"
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 443,
+          "TargetPort": 443,
+          "URL": "0.0.0.0"
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 443,
+          "TargetPort": 443,
+          "URL": "::"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "nginx",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/usr/bin/nginx-prom\u2026\"",
+      "CreatedAt": "2026-07-19 16:07:30 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "9a5c73bd5676",
+      "Image": "nginx/nginx-prometheus-exporter:1.1.0",
+      "Labels": "org.opencontainers.image.version=1.1.0,com.docker.compose.project=production,org.nginx.exporter.image.build.target=linux/arm64,org.nginx.exporter.image.build.version=goreleaser,org.opencontainers.image.description=NGINX Prometheus Exporter for NGINX and NGINX Plus,org.opencontainers.image.title=nginx-prometheus-exporter,com.docker.compose.version=5.1.4,org.opencontainers.image.created=2024-01-09T18:47:19.859Z,org.opencontainers.image.source=https://github.com/nginxinc/nginx-prometheus-exporter,com.docker.compose.config-hash=65bf69f5069c530a3acdd2a566fa642d7e5dcbcc6fe940407a16a7c0122d2a32,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=nginx-exporter,desktop.docker.io/ports.scheme=v2,org.opencontainers.image.revision=85fa58b9f8979eeed776a1df58495ef5baa4d9d7,com.docker.compose.container-number=1,com.docker.compose.depends_on=nginx:service_started:false,com.docker.compose.image=sha256:d710e0ff2505a7037dd21e47eae07025010c0de08a6247d1a704824823becfd0,com.docker.compose.replace=nginx-exporter-1,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.url=https://github.com/nginxinc/nginx-prometheus-exporter,org.opencontainers.image.vendor=NGINX Inc <integrations@nginx.com>",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-nginx-exporter-1",
+      "Names": "production-nginx-exporter-1",
+      "Networks": "production_infra",
+      "Ports": "",
+      "Project": "production",
+      "Publishers": [],
+      "RunningFor": "3 hours ago",
+      "Service": "nginx-exporter",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"/bin/node_exporter \u2026\"",
+      "CreatedAt": "2026-07-19 16:03:02 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "d21dc733cbd3",
+      "Image": "prom/node-exporter:v1.8.2",
+      "Labels": "com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=node-exporter-1,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,maintainer=The Prometheus Authors <prometheus-developers@googlegroups.com>,com.docker.compose.config-hash=f6dbd95ac213de616ce4be4a907ab5389403440cce4206c14d6103a3f409826d,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:4032c6d5bfd752342c3e631c2f1de93ba6b86c41db6b167b9a35372c139e7706,com.docker.compose.oneoff=False,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.service=node-exporter",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-node-exporter-1",
+      "Names": "production-node-exporter-1",
+      "Networks": "production_infra",
+      "Ports": "9100/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 9100,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "node-exporter",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"docker-entrypoint.s\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:04 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "895be0a86497",
+      "Image": "production-novacodepro-portal",
+      "Labels": "com.docker.compose.config-hash=7ffc183b93f526727e3e3dc8e35e8ba25613232c548a078fc29aa13eae173016,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=novacodepro-portal,com.docker.compose.version=5.1.4,com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.image=sha256:767bc380312f30a250a885244ad081c790c86c5f52f5cf5b907696fb073db528,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=novacodepro-portal-1,desktop.docker.io/ports.scheme=v2",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-novacodepro-portal-1",
+      "Names": "production-novacodepro-portal-1",
+      "Networks": "production_infra",
+      "Ports": "4174/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 4174,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "novacodepro-portal",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/otelcol-contrib --\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "485299148f25",
+      "Image": "otel/opentelemetry-collector-contrib:0.109.0",
+      "Labels": "com.docker.compose.container-number=1,com.docker.compose.oneoff=False,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/2/Target=/etc/otelcol-contrib/exporters.yaml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/13133/tcp=127.0.0.1:13133,org.opencontainers.image.created=2024-09-10T20:10:03Z,com.docker.compose.depends_on=,com.docker.compose.image=sha256:af0f72b2d2493fc17f06cf3bc136548240cd7ebb2c8b1c8a7be6f3eb03068389,com.docker.compose.project=production,desktop.docker.io/binds/1/Target=/etc/otelcol-contrib/pipelines.yaml,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/exporters.yaml,org.opencontainers.image.revision=b07bcb3f966e134245b9879f8e8b5948a44bfc9f,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/otel-collector.yml,desktop.docker.io/binds/3/Target=/etc/otelcol-contrib/otel-collector.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=otel-collector-1,com.docker.compose.service=otel-collector,desktop.docker.io/binds/0/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/config.yaml,desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/opentelemetry/pipelines.yaml,org.opencontainers.image.source=https://github.com/open-telemetry/opentelemetry-collector-releases,com.docker.compose.config-hash=d02bacb0990baf99f4d88f59ba1944b79aa23743c1773486ce21e213ab817f64,desktop.docker.io/binds/0/Target=/etc/otelcol-contrib/config.yaml,desktop.docker.io/binds/3/SourceKind=hostFile,org.opencontainers.image.version=0.109.0,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,desktop.docker.io/ports/4317/tcp=127.0.0.1:4317,desktop.docker.io/ports/4318/tcp=127.0.0.1:4318,org.opencontainers.image.licenses=Apache-2.0,com.docker.compose.version=5.1.4,org.opencontainers.image.name=opentelemetry-collector-releases",
+      "LocalVolumes": "0",
+      "Mounts": "/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026",
+      "Name": "production-otel-collector-1",
+      "Names": "production-otel-collector-1",
+      "Networks": "production_infra",
+      "Ports": "127.0.0.1:4317-4318->4317-4318/tcp, 127.0.0.1:13133->13133/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 4317,
+          "TargetPort": 4317,
+          "URL": "127.0.0.1"
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 4318,
+          "TargetPort": 4318,
+          "URL": "127.0.0.1"
+        },
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 13133,
+          "TargetPort": 13133,
+          "URL": "127.0.0.1"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "otel-collector",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"docker-entrypoint.s\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "6b8393ee3e53",
+      "Image": "postgres:16-alpine",
+      "Labels": "com.docker.compose.replace=postgres-1,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=d621924fda367fadf77355ef3c001d559500cbad2ab71706ca1fca34dd4cf61d,com.docker.compose.image=sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.service=postgres,com.docker.compose.version=5.1.4,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.oneoff=False",
+      "LocalVolumes": "1",
+      "Mounts": "production_pos\u2026",
+      "Name": "production-postgres-1",
+      "Names": "production-postgres-1",
+      "Networks": "production_infra",
+      "Ports": "5432/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 5432,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "postgres",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"/bin/postgres_expor\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:04 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "fea58f3f5ace",
+      "Image": "prometheuscommunity/postgres-exporter:v0.15.0",
+      "Labels": "com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.replace=postgres-exporter-1,com.docker.compose.service=postgres-exporter,maintainer=The Prometheus Authors <prometheus-developers@googlegroups.com>,com.docker.compose.container-number=1,com.docker.compose.depends_on=postgres:service_started:false,com.docker.compose.image=sha256:386b12d19eab2a37d7cd8ca8b4c7491cc7a830d9581f49af6c98a393da9605e6,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=b8e5bd86eb5ffdf35b807e54e5d460ff7fbe7ca0c71a2100ae441a76275979c1",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-postgres-exporter-1",
+      "Names": "production-postgres-exporter-1",
+      "Networks": "production_infra",
+      "Ports": "9187/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 9187,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "postgres-exporter",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"/bin/prometheus --c\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:04 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "",
+      "ID": "241513e8f9e0",
+      "Image": "prom/prometheus:v2.54.1",
+      "Labels": "desktop.docker.io/binds/1/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/prometheus.yml,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/etc/prometheus/recording_rules.yml,com.docker.compose.container-number=1,com.docker.compose.replace=prometheus-1,com.docker.compose.service=prometheus,desktop.docker.io/binds/2/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/alerts.yml,desktop.docker.io/binds/3/SourceKind=hostFile,maintainer=The Prometheus Authors <prometheus-developers@googlegroups.com>,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,desktop.docker.io/binds/2/SourceKind=hostFile,desktop.docker.io/binds/4/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus,desktop.docker.io/binds/4/SourceKind=hostFile,desktop.docker.io/binds/4/Target=/etc/prometheus,com.docker.compose.config-hash=5822a6bf1346657b48544756afadf23a9bbe4fb4e15f7d263a84ad82fbb75fcd,com.docker.compose.depends_on=redis:service_started:false,kafka:service_started:false,postgres:service_started:false,com.docker.compose.image=sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94,desktop.docker.io/binds/1/Target=/etc/prometheus/prometheus.yml,desktop.docker.io/binds/2/Target=/etc/prometheus/alerts.yml,desktop.docker.io/binds/3/Source=/private/tmp/afritelematics-live-pilot-001/deploy/production/monitoring/prometheus/recording_rules.yml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/9090/tcp=127.0.0.1:9090,com.docker.compose.project=production,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.version=5.1.4",
+      "LocalVolumes": "1",
+      "Mounts": "/host_mnt/priv\u2026,/host_mnt/priv\u2026,production_pro\u2026,/host_mnt/priv\u2026,/host_mnt/priv\u2026",
+      "Name": "production-prometheus-1",
+      "Names": "production-prometheus-1",
+      "Networks": "production_infra",
+      "Ports": "127.0.0.1:9090->9090/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 9090,
+          "TargetPort": 9090,
+          "URL": "127.0.0.1"
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "prometheus",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours"
+    },
+    {
+      "Command": "\"docker-entrypoint.s\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:04 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "e122ae835cc9",
+      "Image": "production-public-web",
+      "Labels": "com.docker.compose.depends_on=afritech-api:service_healthy:false,com.docker.compose.image=sha256:a681b854c3fc7f3c382c07615bb42638ba95f63783b10fb28ffb38b2189e082c,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node,com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=public-web-1,com.docker.compose.container-number=1,com.docker.compose.project=production,com.docker.compose.service=public-web,com.docker.compose.version=5.1.4,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=c40929dfcc9b35036bbcead5f027838c2c8167e723797f4521cb4eb987e33641",
+      "LocalVolumes": "0",
+      "Mounts": "",
+      "Name": "production-public-web-1",
+      "Names": "production-public-web-1",
+      "Networks": "production_infra",
+      "Ports": "4175/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 4175,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "public-web",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    },
+    {
+      "Command": "\"docker-entrypoint.s\u2026\"",
+      "CreatedAt": "2026-07-19 16:03:03 +1000 AEST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "0d2451a2f681",
+      "Image": "redis:7.4-alpine",
+      "Labels": "com.docker.compose.project.working_dir=/private/tmp/afritelematics-live-pilot-001/deploy/production,com.docker.compose.replace=redis-1,com.docker.compose.version=5.1.4,com.docker.compose.config-hash=22be69bd8f9840076c38c411782a9cdd4c6003463f8ee639ece3e797e81c844b,com.docker.compose.project=production,com.docker.compose.project.config_files=/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.infrastructure.yml,/private/tmp/afritelematics-live-pilot-001/deploy/production/docker-compose.trust-node.yml,com.docker.compose.service=redis,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99,com.docker.compose.oneoff=False,com.docker.compose.project.environment_file=/private/tmp/afritelematics-live-pilot-001/deploy/production/.env.production.trust-node",
+      "LocalVolumes": "1",
+      "Mounts": "production_red\u2026",
+      "Name": "production-redis-1",
+      "Names": "production-redis-1",
+      "Networks": "production_infra",
+      "Ports": "6379/tcp",
+      "Project": "production",
+      "Publishers": [
+        {
+          "Protocol": "tcp",
+          "PublishedPort": 0,
+          "TargetPort": 6379,
+          "URL": ""
+        }
+      ],
+      "RunningFor": "3 hours ago",
+      "Service": "redis",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 hours (healthy)"
+    }
+  ],
+  "dirty_files": [
+    " M deploy/production/docker-compose.trust-node.yml",
+    " M deploy/staging/Dockerfile.novacodepro_portal",
+    " M docs/architecture/AFRITECH_FULL_ARCHITECTURE_GRAPH.md",
+    " M novacodepro_portal/src/platform/appRegistry.js",
+    "?? deploy/production/docker-compose.infrastructure.yml",
+    "?? novacodepro_portal/contracts/",
+    "?? novacodepro_portal/tests/appRegistryContract.test.js",
+    "?? scripts/deployment/"
+  ],
+  "head": "11942d953c5a34ce71e6360b1da3ffdab315f7f3",
+  "timestamp_utc": "2026-07-19T08:53:09.360145Z"
+}

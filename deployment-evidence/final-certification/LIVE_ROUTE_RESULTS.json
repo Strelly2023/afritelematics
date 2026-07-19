@@ -1,0 +1,16 @@
+{
+  "direct_api_health": "pass",
+  "direct_metrics": "captured",
+  "nginx_https_health": "pass",
+  "nginx_root_route": "pass",
+  "api_routes": {
+    "novaid": "not_executed",
+    "novaride": "not_executed",
+    "ncp008": "not_executed"
+  },
+  "status_checks": {
+    "api_html_leak": "not_observed",
+    "unexpected_redirects": "not_observed",
+    "internal_endpoint_exposure": "not_observed"
+  }
+}
