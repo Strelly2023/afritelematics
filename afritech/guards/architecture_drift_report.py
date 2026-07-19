@@ -85,6 +85,8 @@ TRACKED_MODULES = {
     "afritech/api/novacodepro_platform_api.py",
     "afritech/api/novacodepro_workflow_fabric_api.py",
     "afritech/api/novacodepro_workspace_api.py",
+    "afritech/api/novacodepro_ncp007_api.py",
+    "afritech/api/novacodepro_ncp008_api.py",
     "afritech/api/novaride_runtime_api.py",
     "afritech/api/novaportal_suite_api.py",
     "afritech/api/novatech_intranet_api.py",
@@ -107,6 +109,7 @@ TRACKED_MODULES = {
     "afritech/api/phase13_api.py",
     "afritech/api/novascript_api.py",
     "afritech/api/novascript_views.py",
+    "afritech/api/novaid_audit_replay_api.py",
     "afritech/api/ops_governance_api.py",
     "afritech/api/orchestration_views.py",
     "afritech/api/partner_registry_api.py",
@@ -240,7 +243,14 @@ ARCHITECTURE_COMPONENTS = {
 
 REQUIRED_FLOWS = {
     "Execution to proof": {
-        "terms": ("REAL-WORLD ACTION", "-> EXECUTION", "-> TRACE", "-> REPLAY", "-> EVIDENCE", "-> RECEIPT"),
+        "terms": (
+            "REAL-WORLD ACTION",
+            "-> EXECUTION",
+            "-> TRACE",
+            "-> REPLAY",
+            "-> EVIDENCE",
+            "-> RECEIPT",
+        ),
         "evidence": (
             "afriride_system/api/main.py",
             "afriride_system/backend/replay_engine.py",

@@ -10,7 +10,15 @@ from pydantic import BaseModel, Field
 from afritech.novaride_runtime.config import create_runtime_from_environment
 from afritech.novaride_runtime.common.geography import AddressRef, GeoPoint
 from afritech.novaride_runtime.common.money import Money
-from afritech.novaride_runtime.models import ActorType, BookingIntent, CircuitBreakerState, RuntimeContext, TripState
+from afritech.novaride_runtime.models import (
+    ActorType,
+    BookingIntent,
+    CircuitBreakerState,
+    ProviderHealth,
+    ProviderState,
+    RuntimeContext,
+    TripState,
+)
 from afritech.novaride_runtime.operations import ConflictResolution, OperationsLayerService
 from afritech.novaride_runtime.readiness import ReadinessEvidence, generate_readiness_certificate
 from afritech.novaride_runtime.resilience import prometheus_resilience_metrics
@@ -477,11 +485,7 @@ def build_novaride_runtime_router() -> APIRouter:
         runtime_context = _context_from_verified(context)
         health = _RUNTIME.resilience.record_provider_health(
             runtime_context,
-            __import__("afritech.novaride_runtime.models", fromlist=["ProviderHealth", "ProviderState"]).ProviderHealth(
-                provider,
-                "synthetic_probe",
-                __import__("afritech.novaride_runtime.models", fromlist=["ProviderState"]).ProviderState.HEALTHY,
-            ),
+            ProviderHealth(provider, "synthetic_probe", ProviderState.HEALTHY),
         )
         return _json(health)
 

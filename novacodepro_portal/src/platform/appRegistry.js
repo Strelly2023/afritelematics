@@ -1,4 +1,4 @@
-import registry from "../../../contracts/app-registry.json" with { type: "json" };
+import registry from "../../contracts/app-registry.json" with { type: "json" };
 
 import { ROUTES, appPath } from "./routes.js";
 

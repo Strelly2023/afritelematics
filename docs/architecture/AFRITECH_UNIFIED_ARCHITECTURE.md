@@ -81,6 +81,15 @@ AfriRide API
 
 This layer admits requests into governed execution.
 
+The current API surface also includes governed product-specific routers for:
+
+- NovaCodePro NCP-007 development and workspace operations
+- NovaCodePro NCP-008 operations studio and governed runtime operations
+- NovaID audit replay and governed recovery inspection
+
+These routers are runtime-adjacent execution surfaces. They remain subject to the
+same trust boundary, replay discipline, and evidence requirements as the core API.
+
 ## Truth Core
 
 The truth core is:

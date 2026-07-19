@@ -6,6 +6,7 @@ COPY novacodepro_portal/package*.json /app/
 RUN npm ci
 
 COPY novacodepro_portal /app
+COPY contracts /app/contracts
 
 RUN npm run build
 

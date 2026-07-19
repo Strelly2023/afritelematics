@@ -41,6 +41,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - infra
 
   afritech-dashboard:
     build:
@@ -63,6 +65,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - infra
 
   public-web:
     build:
@@ -84,6 +88,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - infra
 
   novacodepro-portal:
     build:
@@ -103,6 +109,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - infra
 
   nginx:
     image: nginx:1.27-alpine
@@ -115,8 +123,8 @@ services:
     volumes:
       - ./nginx/15-novacodepro-cert.envsh:/docker-entrypoint.d/15-novacodepro-cert.envsh:ro
       - ./nginx/afritechnology-platform.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ${PWD}/apk:/var/www/afritech-apk:ro
-      - ${PWD}/apk-public:/var/www/afritechnology-downloads:ro
+      - ./apk:/var/www/afritech-apk:ro
+      - ./apk-public:/var/www/afritechnology-downloads:ro
       - certbot_www:/var/www/certbot
       - certbot_certs:/etc/letsencrypt
     depends_on:
@@ -134,6 +142,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - infra
 
   certbot:
     image: certbot/certbot:v2.11.0
@@ -144,6 +154,8 @@ services:
       - certbot_www:/var/www/certbot
       - certbot_certs:/etc/letsencrypt
     entrypoint: ["certbot"]
+    networks:
+      - infra
 
   prometheus:
     image: prom/prometheus:v2.54.1
@@ -152,6 +164,8 @@ services:
       - ./monitoring/prometheus:/etc/prometheus:ro
     command:
       - --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - infra
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -160,6 +174,8 @@ services:
       - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
+    networks:
+      - infra
 
   grafana:
     image: grafana/grafana:11.2.2
@@ -170,24 +186,32 @@ services:
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - infra
 
   node-exporter:
     image: prom/node-exporter:v1.8.2
     profiles: ["monitoring"]
     command:
       - --path.rootfs=/
+    networks:
+      - infra
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
     profiles: ["monitoring"]
     environment:
       DATA_SOURCE_NAME: ${POSTGRES_EXPORTER_DATA_SOURCE_NAME:-postgresql://afritech:afritech@postgres:5432/afritech?sslmode=disable}
+    networks:
+      - infra
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
     profiles: ["monitoring"]
     command:
       - --nginx.scrape-uri=http://nginx/stub_status
+    networks:
+      - infra
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
@@ -198,6 +222,8 @@ services:
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - infra
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.109.0
@@ -213,6 +239,12 @@ services:
     expose:
       - "9464"
     restart: unless-stopped
+    networks:
+      - infra
+
+networks:
+  infra:
+    external: false
 
 volumes:
   afritech_anchor_index:
