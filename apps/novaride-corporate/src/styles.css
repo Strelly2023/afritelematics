@@ -1,0 +1,18 @@
+.corporate-portal {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.corporate-portal table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.corporate-portal th,
+.corporate-portal td {
+  text-align: left;
+  border-bottom: 1px solid #d1d5db;
+  padding: 10px 0;
+}
