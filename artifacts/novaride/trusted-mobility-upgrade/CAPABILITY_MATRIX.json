@@ -1,0 +1,856 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "capabilities": [
+    {
+      "api": "Marketplace/admin APIs in afritech/api and runtime services",
+      "authorization": "Role/tenant checks in API/runtime",
+      "background_worker": "Marketplace worker/reconciliation jobs",
+      "blockers": [
+        "External provider and pilot certification still required"
+      ],
+      "capability_id": "W1",
+      "contract_tests": [
+        "afritech/tests/api/test_novaride_phase*"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Regions, queues, no-show, cancellation, peak controls",
+      "e2e_tests": [
+        "artifacts/novaride/e2e/LIVE_SYNTHETIC_E2E_RESULTS.json"
+      ],
+      "event": "Market events and outbox/replay artifacts",
+      "evidence": "artifacts/novaride/operational/* and artifacts/novaride/performance/*",
+      "external_dependencies": [
+        "Live partner/provider systems",
+        "physical-device pilot"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase*"
+      ],
+      "migration": "Runtime migration set present",
+      "observability": "Runtime telemetry/evidence artifacts",
+      "persistence": "PostgreSQL-backed runtime stores and evidence artifacts",
+      "policy": "Market-health and operator policy gates in runtime",
+      "source_files": [
+        "afritech/novaride_runtime/operations.py",
+        "afritech/novaride_runtime/state_machines.py",
+        "afritech/novaride_runtime/services.py"
+      ],
+      "state_machine": "Implemented in runtime services and state-machine layer",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Portal and operations surfaces",
+      "workstream": "Marketplace operations"
+    },
+    {
+      "api": "Safety incident APIs and portals",
+      "authorization": "Role-checked APIs",
+      "background_worker": "Review and moderation workflows",
+      "blockers": [
+        "External safety operations remain blocked"
+      ],
+      "capability_id": "W2",
+      "contract_tests": [
+        "afritech/tests/api/test_novaride_phase5_trust_safety.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Safety report/case models",
+      "e2e_tests": [
+        "afritech/tests/api/test_phase5_adversarial_integration.py"
+      ],
+      "event": "Safety/incident/audit events",
+      "evidence": "artifacts/novaride/operational/SAFETY_RESULTS.json",
+      "external_dependencies": [
+        "Staffed incident drill",
+        "external safety verification"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase5_trust_safety.py"
+      ],
+      "migration": "Existing runtime migrations",
+      "observability": "Telemetry and evidence artifacts",
+      "persistence": "Persistent runtime/evidence stores",
+      "policy": "Safety/moderation policy gates",
+      "source_files": [
+        "afritech/novaride_runtime/incidents.py",
+        "afritech/novaride_runtime/services.py",
+        "afritech/api/app.py"
+      ],
+      "state_machine": "Lifecycle and moderation workflows present",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Safety/support surfaces",
+      "workstream": "Trust, safety and moderation"
+    },
+    {
+      "api": "Rider APIs and mobile clients",
+      "authorization": "Rider/driver access checks",
+      "background_worker": "Ride processing jobs",
+      "blockers": [
+        "Physical-device evidence still required"
+      ],
+      "capability_id": "W3",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "current_status": "LOCALLY_OPERATIONAL",
+      "domain_model": "Saved places, multi-stop, scheduled, guest, family, loyalty",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "event": "Ride/booking/payment events",
+      "evidence": "artifacts/novaride/e2e/LIVE_SYNTHETIC_E2E_RESULTS.json",
+      "external_dependencies": [
+        "Mobile signing and physical-device execution"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase*"
+      ],
+      "migration": "Runtime migrations present",
+      "observability": "Runtime telemetry",
+      "persistence": "Persistent ride/trip state",
+      "policy": "Tenant/region and fare policy",
+      "source_files": [
+        "rider_app/App.tsx",
+        "afritech/novaride_runtime/state_machines.py",
+        "afritech/api/afriride_next_gen_mobile_api.py"
+      ],
+      "state_machine": "Ride lifecycle state machine",
+      "unit_tests": [
+        "tests/novaride_runtime",
+        "afritech/tests/api/test_novaride_phase1_api.py"
+      ],
+      "user_interface": "Rider app and public web",
+      "workstream": "Rider experience"
+    },
+    {
+      "api": "Accessibility-related API surfaces",
+      "authorization": "Role checks on accessibility surfaces",
+      "background_worker": "Matching/support workflows",
+      "blockers": [
+        "Physical-device validation blocked"
+      ],
+      "capability_id": "W4",
+      "contract_tests": [
+        "afritech/tests/field_validation/test_android_pilot_tester_app.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Accessibility profiles and certification",
+      "e2e_tests": [
+        "afritech/tests/field_validation/test_android_pilot_tester_app.py"
+      ],
+      "event": "Accessibility/matching events",
+      "evidence": "artifacts/novaride/mobile/ANDROID_BUILD_READINESS.md",
+      "external_dependencies": [
+        "Physical devices and human accessibility validation"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "migration": "No isolated migration boundary",
+      "observability": "Accessibility telemetry artifacts",
+      "persistence": "Profiles in ride/user stores",
+      "policy": "Accessibility policy/consent controls",
+      "source_files": [
+        "rider_app/App.tsx",
+        "driver_app/ui/screens/IncomingRideModal.tsx",
+        "afritech/api/afriride_next_gen_mobile_api.py"
+      ],
+      "state_machine": "Preference and incident lifecycle",
+      "unit_tests": [
+        "afritech/tests/field_validation/test_android_pilot_tester_app.py"
+      ],
+      "user_interface": "Accessible rider/driver UI surfaces",
+      "workstream": "Accessibility"
+    },
+    {
+      "api": "Driver APIs and portal surfaces",
+      "authorization": "Driver/admin access controls",
+      "background_worker": "Status and diagnostics jobs",
+      "blockers": [
+        "Physical-device and controlled-pilot blockers"
+      ],
+      "capability_id": "W5",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "current_status": "LOCALLY_OPERATIONAL",
+      "domain_model": "Onboarding, quality, coaching, incentives",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "event": "Driver status/compliance/revenue events",
+      "evidence": "artifacts/novaride/operational/DRIVER_BUILD_CERTIFICATE.md",
+      "external_dependencies": [
+        "Physical devices and operational pilot"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase*"
+      ],
+      "migration": "Runtime migrations present",
+      "observability": "Telemetry in runtime evidence",
+      "persistence": "Persistent driver/compliance state",
+      "policy": "Compliance policy and checks",
+      "source_files": [
+        "driver_app/core/services/mobility.service.ts",
+        "driver_app/ui/screens/IncomingRideModal.tsx",
+        "afritech/novaride_runtime/services.py"
+      ],
+      "state_machine": "Driver lifecycle and compliance state machine",
+      "unit_tests": [
+        "tests/novaride_runtime",
+        "afritech/tests/api/test_novaride_phase3_api.py"
+      ],
+      "user_interface": "Driver app and operations surfaces",
+      "workstream": "Driver operations"
+    },
+    {
+      "api": "Vehicle APIs and admin surfaces",
+      "authorization": "Role-gated vehicle APIs",
+      "background_worker": "Telemetry sync jobs",
+      "blockers": [
+        "External device evidence blocked"
+      ],
+      "capability_id": "W6",
+      "contract_tests": [
+        "afritech/tests/api/test_novaride_phase11_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Vehicle, inspection, telematics, compliance",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "event": "Vehicle compliance and telematics events",
+      "evidence": "artifacts/novaride/operational/DRIVER_BUILD_CERTIFICATE.md",
+      "external_dependencies": [
+        "Telematics devices and physical inspection evidence"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase11_api.py"
+      ],
+      "migration": "Runtime migrations",
+      "observability": "Fleet telemetry artifacts",
+      "persistence": "Vehicle/compliance stores",
+      "policy": "Vehicle and compliance policy",
+      "source_files": [
+        "afritech/novaride_runtime/services.py",
+        "afritech/novaride_runtime/read_models/projections.py"
+      ],
+      "state_machine": "Vehicle compliance and expiry lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Vehicle/admin UI",
+      "workstream": "Vehicle lifecycle"
+    },
+    {
+      "api": "Fraud alert/case APIs",
+      "authorization": "Role-gated fraud APIs",
+      "background_worker": "Analyst queue and review jobs",
+      "blockers": [
+        "Production fraud source feeds blocked"
+      ],
+      "capability_id": "W7",
+      "contract_tests": [
+        "afritech/tests/api/test_phase5_adversarial_integration.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Risk decisions, cases, related-account graph",
+      "e2e_tests": [
+        "afritech/tests/api/test_phase5_adversarial_integration.py"
+      ],
+      "event": "Fraud alert/case events",
+      "evidence": "artifacts/novaride/operational/SECURITY_FINDINGS.md",
+      "external_dependencies": [
+        "Identity graph and device graph data sources"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_phase5_adversarial_integration.py"
+      ],
+      "migration": "Shared runtime migrations",
+      "observability": "Security/fraud evidence",
+      "persistence": "Persistent fraud/risk evidence",
+      "policy": "Risk policy and human-review thresholds",
+      "source_files": [
+        "afritech/novaride_runtime/security.py",
+        "afritech/novaride_runtime/sync_security.py"
+      ],
+      "state_machine": "Fraud decision workflow",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Fraud portal/reporting surfaces",
+      "workstream": "Fraud operations"
+    },
+    {
+      "api": "Route APIs",
+      "authorization": "Route APIs and provider abstraction",
+      "background_worker": "Route recompute jobs",
+      "blockers": [
+        "External provider certification blocked"
+      ],
+      "capability_id": "W8",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "current_status": "LOCALLY_OPERATIONAL",
+      "domain_model": "Route candidates, scoring, explanations",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "event": "Route candidate and decision events",
+      "evidence": "artifacts/novaride/operational/REALTIME_CERTIFICATE.md",
+      "external_dependencies": [
+        "Live provider traffic and mapping service"
+      ],
+      "integration_tests": [
+        "afritech/tests/governance/test_route*"
+      ],
+      "migration": "No dedicated route migration boundary",
+      "observability": "Telemetry evidence available",
+      "persistence": "Runtime state and analysis artifacts",
+      "policy": "Policy-aware route scoring",
+      "source_files": [
+        "afritech/novaride_runtime/services.py",
+        "afritech/novaride_runtime/resilience.py"
+      ],
+      "state_machine": "Route selection and recalculation runtime",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Driver/rider UI route surfaces",
+      "workstream": "Route intelligence"
+    },
+    {
+      "api": "Messaging/call APIs",
+      "authorization": "Role/tenant checks",
+      "background_worker": "Delivery/relay jobs",
+      "blockers": [
+        "External messaging provider blocked"
+      ],
+      "capability_id": "W9",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Trip-scoped messages/calls/translations",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "event": "Message/call events with retention markers",
+      "evidence": "artifacts/novaride/operational/LOGGING_CERTIFICATE.md",
+      "external_dependencies": [
+        "SMS/voice relay providers"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "migration": "No dedicated migration boundary",
+      "observability": "Communication telemetry",
+      "persistence": "Persistent communication artifacts",
+      "policy": "Privacy and retention controls",
+      "source_files": [
+        "afritech/api/afriride_next_gen_mobile_api.py",
+        "afritech/novaride_runtime/services.py"
+      ],
+      "state_machine": "Conversation/message lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Mobile messaging UI",
+      "workstream": "Real-time communications"
+    },
+    {
+      "api": "Incident/switch/evidence APIs",
+      "authorization": "Ops/admin APIs",
+      "background_worker": "Monitoring workers",
+      "blockers": [
+        "Production telemetry validation not re-run in this continuation"
+      ],
+      "capability_id": "W10",
+      "contract_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "current_status": "LOCALLY_OPERATIONAL",
+      "domain_model": "Incidents, switches, marketplace health",
+      "e2e_tests": [
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "event": "Incident and switch events",
+      "evidence": "artifacts/novaride/operational/ALERT_VERIFICATION_RESULTS.json",
+      "external_dependencies": [
+        "Live telemetry backends for production validation"
+      ],
+      "integration_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "migration": "Artifacts and runtime migrations present",
+      "observability": "Metrics/traces/alerts evidence",
+      "persistence": "Operational evidence and control state",
+      "policy": "Dual-approval and role controls",
+      "source_files": [
+        "afritech/api/app.py",
+        "apps/novaride-operations/src/ResilienceAvailabilityWindow.tsx"
+      ],
+      "state_machine": "Incident/override lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Operations portal and admin surfaces",
+      "workstream": "Operations control centre"
+    },
+    {
+      "api": "Compliance APIs",
+      "authorization": "Role-gated compliance APIs",
+      "background_worker": "Export/review jobs",
+      "blockers": [
+        "External regulatory approval blocked"
+      ],
+      "capability_id": "W11",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_rbac_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Jurisdiction profiles, retention, legal holds",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_operational_fastapi.py"
+      ],
+      "event": "Compliance/audit events",
+      "evidence": "artifacts/novaride/operational/EXTERNAL_SECURITY_STATUS.json",
+      "external_dependencies": [
+        "Legal/regulatory authority and evidence export"
+      ],
+      "integration_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "migration": "Runtime/retention artifacts",
+      "observability": "Audit/compliance artifacts",
+      "persistence": "Compliance state in runtime stores",
+      "policy": "Privacy policy controls",
+      "source_files": [
+        "afritech/novaride_runtime/services.py",
+        "afritech/api/app.py"
+      ],
+      "state_machine": "Compliance lifecycle and retention controls",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Government/admin surfaces",
+      "workstream": "Regulatory/privacy/compliance"
+    },
+    {
+      "api": "NovaID runtime and audit replay APIs",
+      "authorization": "NovaID API and audit replay routes",
+      "background_worker": "Publisher/consumer/recovery jobs",
+      "blockers": [
+        "Physical-device and external partner evidence blocked"
+      ],
+      "capability_id": "W12",
+      "contract_tests": [
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "current_status": "INTEGRATION_VERIFIED",
+      "domain_model": "Identity, credentials, WebAuthn, revocation",
+      "e2e_tests": [
+        "tests/novaid"
+      ],
+      "event": "Identity/session/revocation/replay events",
+      "evidence": "artifacts/novaid/final/NOVAID_RELEASE_GATE_RESULTS.json",
+      "external_dependencies": [
+        "Real physical devices and live external partners"
+      ],
+      "integration_tests": [
+        "tests/novaid",
+        "afritech/tests/api/test_novaid*"
+      ],
+      "migration": "0001-0008 NovaID migrations present",
+      "observability": "Telemetry and evidence artifacts",
+      "persistence": "PostgreSQL-backed durable identity runtime",
+      "policy": "Adaptive auth/role policy",
+      "source_files": [
+        "afritech/novaid/*",
+        "afritech/api/novaid_api.py",
+        "afritech/api/novaid_audit_replay_api.py"
+      ],
+      "state_machine": "Identity/session lifecycle",
+      "unit_tests": [
+        "tests/novaid"
+      ],
+      "user_interface": "NovaID views and API surfaces",
+      "workstream": "NovaID mobility identity"
+    },
+    {
+      "api": "AfriPay/NovaPay APIs",
+      "authorization": "AfriPay/NovaPay middleware and API checks",
+      "background_worker": "Async tasks and webhook workers",
+      "blockers": [
+        "Live payment provider blocked; sandbox only"
+      ],
+      "capability_id": "W13",
+      "contract_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Wallets, routes, settlement, reconciliation",
+      "e2e_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "event": "Payment, route, webhook, reconciliation events",
+      "evidence": "artifacts/novaride/operational/PAYMENT_E2E_RESULTS.json",
+      "external_dependencies": [
+        "External provider credentialing and live payment mode"
+      ],
+      "integration_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "migration": "Payment schemas and evidence artifacts",
+      "observability": "Payment/security evidence",
+      "persistence": "Persistent payment/ledger stores",
+      "policy": "Payment policy and subject-bound checks",
+      "source_files": [
+        "afritech/afripay/*",
+        "afriride_system/django_app/apps/afripay/middleware.py",
+        "afritech/ci/afripay_concurrency_validator.py"
+      ],
+      "state_machine": "Payment route and ledger lifecycle",
+      "unit_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py",
+        "afritech/tests/afripay/test_afripay_concurrency.py"
+      ],
+      "user_interface": "Payment/portal surfaces",
+      "workstream": "NovaPay payment integration"
+    },
+    {
+      "api": "Corporate booking/billing APIs",
+      "authorization": "Corporate API role checks",
+      "background_worker": "Billing/reconciliation jobs",
+      "blockers": [
+        "External ERP integration blocked"
+      ],
+      "capability_id": "W14",
+      "contract_tests": [
+        "afritech/tests/api/test_novaride_phase12_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Businesses, employees, policies, invoices",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "event": "Corporate booking/billing events",
+      "evidence": "artifacts/novaride/operational/DEPENDENCY_INVENTORY.json",
+      "external_dependencies": [
+        "ERP and finance system integration"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase12_api.py"
+      ],
+      "migration": "Shared shared migrations",
+      "observability": "Telemetry artifacts",
+      "persistence": "Persistent corporate state in runtime stores",
+      "policy": "Corporate policy and travel controls",
+      "source_files": [
+        "afritech/novaride_runtime/services.py",
+        "apps/public-web/src/novalogistics.jsx"
+      ],
+      "state_machine": "Approval and billing workflows",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Corporate portal and public web surfaces",
+      "workstream": "Corporate mobility"
+    },
+    {
+      "api": "Fleet APIs",
+      "authorization": "Fleet APIs and portal roles",
+      "background_worker": "Maintenance sync jobs",
+      "blockers": [
+        "External fleet integrations blocked"
+      ],
+      "capability_id": "W15",
+      "contract_tests": [
+        "afritech/tests/api/test_novaride_phase11_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Fleet, assignment, maintenance, compliance",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+      ],
+      "event": "Fleet and maintenance events",
+      "evidence": "artifacts/novaride/operational/DRIVER_BUILD_CERTIFICATE.md",
+      "external_dependencies": [
+        "Fleet system integrations / telematics feeds"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_novaride_phase11_api.py"
+      ],
+      "migration": "Shared runtime migrations",
+      "observability": "Fleet telemetry artifacts",
+      "persistence": "Persistent fleet/compliance stores",
+      "policy": "Fleet policy controls",
+      "source_files": [
+        "afritech/novaride_runtime/services.py",
+        "afritech/novaride_runtime/read_models/projections.py"
+      ],
+      "state_machine": "Fleet maintenance and scheduling lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Fleet portal/admin UI",
+      "workstream": "Fleet operations"
+    },
+    {
+      "api": "Government/regulator APIs",
+      "authorization": "Government/regulator role checks",
+      "background_worker": "Export/review jobs",
+      "blockers": [
+        "External regulator execution blocked"
+      ],
+      "capability_id": "W16",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_rbac_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Inspector credentials, permits, findings",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_operational_fastapi.py"
+      ],
+      "event": "Inspection and evidence export events",
+      "evidence": "artifacts/novaride/operational/EXTERNAL_SECURITY_ASSESSMENT_PACKAGE.md",
+      "external_dependencies": [
+        "Actual regulator authority and approvals"
+      ],
+      "integration_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "migration": "Shared runtime migrations",
+      "observability": "Audit/export telemetry",
+      "persistence": "Persistent regulatory state and evidence export",
+      "policy": "Purpose/jurisdiction checks",
+      "source_files": [
+        "afritech/api/app.py",
+        "afritech/novaride_runtime/services.py"
+      ],
+      "state_machine": "Permit/inspection lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime"
+      ],
+      "user_interface": "Government portal/internal admin UI",
+      "workstream": "Government and regulator"
+    },
+    {
+      "api": "Telemetry/health APIs",
+      "authorization": "Telemetry/health endpoints",
+      "background_worker": "Synthetic monitoring jobs",
+      "blockers": [
+        "Live telemetry backends not revalidated in this continuation"
+      ],
+      "capability_id": "W17",
+      "contract_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "current_status": "INTEGRATION_VERIFIED",
+      "domain_model": "SLOs, alerts, traces, incident evidence",
+      "e2e_tests": [
+        "afritech/tests/governance/test_public_pilot_health_visibility.py"
+      ],
+      "event": "Metric/trace/alert events",
+      "evidence": "artifacts/novaride/observability/PROMETHEUS_RESULTS.json",
+      "external_dependencies": [
+        "Live collector/Prometheus/Grafana verification"
+      ],
+      "integration_tests": [
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "migration": "Operational evidence generated",
+      "observability": "Prometheus/trace evidence artifacts",
+      "persistence": "Artifacts and runtime observability stores",
+      "policy": "Alert and burn-rate logic",
+      "source_files": [
+        "afritech/api/trace_middleware.py",
+        "afritech/api/app.py",
+        "afriride_system/backend/trace_enforcement.py"
+      ],
+      "state_machine": "Telemetry and incident lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime",
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "user_interface": "Operations/public health surfaces",
+      "workstream": "Observability and SRE"
+    },
+    {
+      "api": "Security/replay APIs",
+      "authorization": "Auth middleware and security routes",
+      "background_worker": "Security automation and scanners",
+      "blockers": [
+        "External security assessment still blocked"
+      ],
+      "capability_id": "W18",
+      "contract_tests": [
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Threat model, scans, authz, supply chain",
+      "e2e_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "event": "Security findings and alert events",
+      "evidence": "artifacts/novaride/quality/NOVARIDE_RUFF_RESULTS.json",
+      "external_dependencies": [
+        "External penetration tester and authoritative scanner access"
+      ],
+      "integration_tests": [
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "migration": "SBOM/provenance artifacts present",
+      "observability": "Security evidence artifacts",
+      "persistence": "Security results and audit artifacts",
+      "policy": "Security policy and replay controls",
+      "source_files": [
+        "afritech/ci/afripay_concurrency_validator.py",
+        "afriride_system/django_app/apps/afripay/middleware.py"
+      ],
+      "state_machine": "Security findings lifecycle",
+      "unit_tests": [
+        "tests/novaride_runtime/security/test_boundaries.py",
+        "afritech/tests/afripay/test_afripay_api_security.py"
+      ],
+      "user_interface": "Security/admin surfaces",
+      "workstream": "Security hardening"
+    },
+    {
+      "api": "Mobile app APIs and client auth",
+      "authorization": "Mobile app API/client auth",
+      "background_worker": "Build/release scripts",
+      "blockers": [
+        "Physical-device and release-signing validation blocked"
+      ],
+      "capability_id": "W19",
+      "contract_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "current_status": "PARTIAL",
+      "domain_model": "Rider/driver mobile apps and signing manifests",
+      "e2e_tests": [
+        "afritech/tests/api/test_afriride_shared_js_mobile_flow.py"
+      ],
+      "event": "Mobile release metadata and verification events",
+      "evidence": "artifacts/novaride/mobile/SIGNING_READINESS.json",
+      "external_dependencies": [
+        "Physical devices, stores, signing authority"
+      ],
+      "integration_tests": [
+        "tests/novaid",
+        "tests/novaride_runtime"
+      ],
+      "migration": "Build/release scripts and manifests",
+      "observability": "Build and release evidence",
+      "persistence": "APK artifacts and SHA evidence",
+      "policy": "Release policy and signing controls",
+      "source_files": [
+        "rider_app/App.tsx",
+        "driver_app/app.json",
+        "scripts/novaride/build_rider_release.sh",
+        "scripts/novaride/build_driver_release.sh"
+      ],
+      "state_machine": "Release build/version lifecycle",
+      "unit_tests": [
+        "rider_app/tests",
+        "driver_app/tests",
+        "tests/novaid"
+      ],
+      "user_interface": "Rider/driver mobile UIs",
+      "workstream": "Mobile production readiness"
+    },
+    {
+      "api": "Runtime APIs",
+      "authorization": "Runtime APIs and workers",
+      "background_worker": "Concurrent workers and recovery tasks",
+      "blockers": [
+        "No live infra in this continuation"
+      ],
+      "capability_id": "W20",
+      "contract_tests": [
+        "afritech/tests/api/test_trace_api.py"
+      ],
+      "current_status": "INTEGRATION_VERIFIED",
+      "domain_model": "Idempotency, concurrency, retry, failover",
+      "e2e_tests": [
+        "afritech/tests/afripay/test_afripay_concurrency.py"
+      ],
+      "event": "Outbox/replay/checkpoint events",
+      "evidence": "artifacts/novaride/performance/LOAD_RESULTS.json",
+      "external_dependencies": [
+        "Live infrastructure failure drills"
+      ],
+      "integration_tests": [
+        "afritech/tests/afripay/test_afripay_concurrency.py"
+      ],
+      "migration": "Replay/backfill migrations present",
+      "observability": "Load/resilience evidence artifacts",
+      "persistence": "Persistent runtime stores and evidence",
+      "policy": "Retry/backpressure policy",
+      "source_files": [
+        "afritech/ci/afripay_concurrency_validator.py",
+        "afritech/novaride_runtime/resilience.py",
+        "afritech/novaride_runtime/replay/service.py"
+      ],
+      "state_machine": "Retry/recovery state machines",
+      "unit_tests": [
+        "tests/novaride_runtime",
+        "afritech/tests/afripay/test_afripay_concurrency.py"
+      ],
+      "user_interface": "Runtime admin/ops surfaces",
+      "workstream": "Load, concurrency and resilience"
+    },
+    {
+      "api": "Pilot APIs and portals",
+      "authorization": "Pilot approval APIs and portals",
+      "background_worker": "Pilot support/monitoring jobs",
+      "blockers": [
+        "Controlled/public pilot execution still external-only"
+      ],
+      "capability_id": "W21",
+      "contract_tests": [
+        "artifacts/novaride/pilot",
+        "artifacts/novaride/public-pilot"
+      ],
+      "current_status": "BLOCKED_EXTERNAL",
+      "domain_model": "Pilot participant registry and journey evidence",
+      "e2e_tests": [
+        "artifacts/novaride/pilot",
+        "artifacts/novaride/public-pilot"
+      ],
+      "event": "Pilot evidence events",
+      "evidence": "artifacts/novaride/pilot/CONTROLLED_PILOT_DECISION.json",
+      "external_dependencies": [
+        "Real approved participants, devices, support and external pilot window"
+      ],
+      "integration_tests": [
+        "artifacts/novaride/pilot",
+        "artifacts/novaride/public-pilot"
+      ],
+      "migration": "Pilot plan and exit artifacts",
+      "observability": "Pilot evidence and decision artifacts",
+      "persistence": "Pilot evidence artifacts",
+      "policy": "Pilot policy controls",
+      "source_files": [
+        "artifacts/novaride/pilot/CONTROLLED_PILOT_PLAN.md",
+        "artifacts/novaride/public-pilot/PUBLIC_PILOT_PLAN.md"
+      ],
+      "state_machine": "Pilot execution lifecycle",
+      "unit_tests": [
+        "artifacts/novaride/pilot",
+        "artifacts/novaride/public-pilot"
+      ],
+      "user_interface": "Pilot activation package and portals",
+      "workstream": "Controlled/public pilot operations"
+    }
+  ],
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "remote_head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics",
+  "worktree_dirty_count": 137
+}

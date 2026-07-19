@@ -1,0 +1,108 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "executed_tests": [
+    {
+      "command": "pytest -q tests/novaride_runtime tests/novaid",
+      "status": "PASS",
+      "summary": "115 passed, 13 skipped, 12 warnings"
+    },
+    {
+      "command": "pytest -q afritech/tests/afripay/test_afripay_api_security.py afritech/tests/afripay/test_afripay_concurrency.py afritech/tests/api/test_trace_api.py afritech/tests/governance/test_public_pilot_health_visibility.py afriride_system/tests/test_trace_enforcement.py",
+      "status": "PASS",
+      "summary": "59 passed, 12 warnings"
+    },
+    {
+      "command": "npm test --prefix apps/novaride-operations",
+      "status": "PASS",
+      "summary": "3 passed"
+    },
+    {
+      "command": "npm run typecheck --prefix apps/novaride-operations",
+      "status": "PASS",
+      "summary": "tsc --noEmit"
+    },
+    {
+      "command": "npm run build --prefix apps/novaride-operations",
+      "status": "PASS",
+      "summary": "vite build"
+    },
+    {
+      "command": "npm test --prefix apps/novaride-fraud-center",
+      "status": "PASS",
+      "summary": "3 React interaction tests passed"
+    },
+    {
+      "command": "npm run typecheck --prefix apps/novaride-fraud-center",
+      "status": "PASS",
+      "summary": "tsc --noEmit passed"
+    },
+    {
+      "command": "npm run build --prefix apps/novaride-fraud-center",
+      "status": "PASS",
+      "summary": "vite build produced dist/assets bundle and manifest"
+    },
+    {
+      "command": "npm test --prefix apps/novaride-corporate",
+      "status": "PASS",
+      "summary": "3 React interaction tests passed"
+    },
+    {
+      "command": "npm run typecheck --prefix apps/novaride-corporate",
+      "status": "PASS",
+      "summary": "tsc --noEmit passed"
+    },
+    {
+      "command": "npm run build --prefix apps/novaride-corporate",
+      "status": "PASS",
+      "summary": "vite build produced dist/assets bundle and manifest"
+    },
+    {
+      "command": "npm test --prefix apps/novaride-admin",
+      "status": "PASS",
+      "summary": "3 React interaction tests passed"
+    },
+    {
+      "command": "npm run typecheck --prefix apps/novaride-admin",
+      "status": "PASS",
+      "summary": "tsc --noEmit passed"
+    },
+    {
+      "command": "npm run build --prefix apps/novaride-admin",
+      "status": "PASS",
+      "summary": "vite build produced dist/assets bundle and manifest"
+    },
+    {
+      "command": "npm test --prefix novacodepro_portal",
+      "status": "PASS",
+      "summary": "74 passed, 3 skipped"
+    },
+    {
+      "command": "npm run build --prefix novacodepro_portal",
+      "status": "PASS",
+      "summary": "vite build"
+    },
+    {
+      "command": "npm test --prefix apps/public-web",
+      "status": "PASS",
+      "summary": "34 passed"
+    },
+    {
+      "command": "npm run build --prefix apps/public-web",
+      "status": "PASS",
+      "summary": "vite build"
+    }
+  ],
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "previously_accepted": [
+    {
+      "command": "npm run typecheck --prefix rider_app",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run typecheck --prefix driver_app",
+      "status": "PASS"
+    }
+  ],
+  "repository": "/Users/ostrinov/afritelematics"
+}

@@ -1,0 +1,38 @@
+{
+  "blockers": [
+    {
+      "id": "NR-MOB-001",
+      "reason": "Physical-device evidence not available in this execution.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "NR-CP-001",
+      "reason": "Controlled pilot participants/devices/evidence not available.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "NR-PP-001",
+      "reason": "Public pilot cannot start until controlled pilot passes and real public users execute journeys.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "NR-SEC-001.external",
+      "reason": "Independent external penetration/security assessment not supplied.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "NR-PAY-001.live_provider",
+      "reason": "Real payment provider activation and legal authority are not supplied.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "id": "NR-PRR-001.human_approvals",
+      "reason": "Required human approvals are not authenticated in this environment.",
+      "status": "BLOCKED_EXTERNAL"
+    }
+  ],
+  "branch": "feature/novacodepro-unified-platform",
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics"
+}

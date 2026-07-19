@@ -1,0 +1,3211 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "entries": [
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": ".gitignore",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afriride_system/django_app/apps/afripay/middleware.py",
+      "status": " M"
+    },
+    {
+      "classification": "SHARED_PLATFORM_DEPENDENCY",
+      "path": "afritech/api/app.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/api/novaid_api.py",
+      "status": " M"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "afritech/ci/afripay_concurrency_validator.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/__init__.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/ai.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/repository.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/service.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/surfaces.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/trust.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/common/idempotency.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/config.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/hashing.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/outbox.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/outbox_worker.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/replay.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/replay_planner.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/replay_verifier.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/events/schema_registry.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/incidents.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/kafka.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/operations.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/outbox.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/persistence/memory.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/persistence/postgres/resilience_repository.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/persistence/protocols.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/read_models/projections.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/readiness.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/redis_coordination.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/replay/dependencies.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/replay/memory_repository.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/replay/postgres_repository.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/replay/repository.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/replay/service.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/resilience.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/security.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/services.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/slo.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/state_machines.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaride_runtime/sync_security.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/novaride-operations/package.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/main.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/novadashdoor.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/novahousereach.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/novaid.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/novalogistics.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/novapay.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/src/styles.css",
+      "status": " M"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "db.sqlite3",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/app.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/core/services/mobility.service.ts",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/core/services/offlineQueue.service.ts",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/package-lock.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/package.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/ui/screens/IncomingRideModal.tsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "novacodepro_portal/src/novacodepro/NovaCodeProWorkspaceHub.jsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "novacodepro_portal/src/styles.css",
+      "status": " M"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "pyproject.toml",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/App.tsx",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/app.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/core/services/mobility.service.ts",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/core/services/offlineQueue.service.ts",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/package-lock.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/package.json",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/run_dr_exercise.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_api_sdk_current.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_event_schema_compatibility.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_live_runtime.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_runtime_migrations.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/certification/test_sdk_and_certificate.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/contracts/test_runtime_api.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/deployment/test_resilience_production_configs.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/deployment/test_verification_scripts.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/e2e/test_runtime_super_platform.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/persistence/test_migrations.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/replay/test_replay_api.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/replay/test_verified_replay.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/security/test_boundaries.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/unit/test_production_operated_runtime.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/unit/test_resilience_hardening.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/unit/test_resilience_layer.py",
+      "status": " M"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaride_runtime/unit/test_state_machines.py",
+      "status": " M"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_KNOWN_LIMITATIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_NEXT_ACTIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_OPERATIONAL_BLOCKERS.md",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/api/novaid_audit_replay_api.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/api.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/audit_replay.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/config.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/domain/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/observability.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/outbox.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/revocation.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/revocation_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/runtime.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/security.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/server.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/tokens.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/webauthn_coordination.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/webauthn_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/novaride-operations/package-lock.json",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/",
+      "status": "??"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "csv.py",
+      "status": "??"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "deploy/novaride/.env.example",
+      "status": "??"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "deploy/novaride/compose.operational.yml",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "deployment-evidence/",
+      "status": "??"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "docker-compose.novaid-integration.yml",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaid/",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/assets/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "novacodepro_portal/public/brand/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/assets/",
+      "status": "??"
+    },
+    {
+      "classification": "PRE_EXISTING_UNRELATED",
+      "path": "ruff.novaride.toml",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaid/",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/build_driver_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/build_rider_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/check_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/check_signing_readiness.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/generate_operational_certification.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/start_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/stop_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_mobile_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "tests/novaid/",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "var/",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_KNOWN_LIMITATIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_NEXT_ACTIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "NOVAID_OPERATIONAL_BLOCKERS.md",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/api/novaid_audit_replay_api.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/api.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/__init__.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/authentication.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/lockout.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/passwords.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/recovery.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/sessions.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/application/webauthn.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/audit_replay.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/config.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/domain/__init__.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/domain/models.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/domain/webauthn.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/observability.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/outbox.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/__init__.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0001_identity_core.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0002_novaid_runtime.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0003_novaid_session_lifecycle.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0004_novaid_webauthn.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0005_novaid_webauthn_sessions_recovery.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0006_novaid_webauthn_recovery_policy_distribution.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0007_novaid_webauthn_distributed_runtime.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/migrations/0008_novaid_governed_audit_replay.sql",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/pool.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/postgres.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/protocols.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/persistence/sqlite.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/revocation.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/revocation_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/runtime.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/security.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/server.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/tokens.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/webauthn_coordination.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "afritech/novaid/webauthn_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk-public/novaride/releases/2026.1.4/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk/novaride-driver-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "apk/novaride-rider-v2026.1.4-public-pilot.apk.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/novaride-operations/package-lock.json",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVACODEPRO.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVADASHDOOR.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVAHEALTH.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVAHOUSEREACH.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVAID.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVALOGISTICS.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVAPAY.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVARIDE.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "apps/public-web/public/brand/NOVATECH.webp",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ACCESS_TOKEN_AUDIT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ACCESS_TOKEN_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_WORKFLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_API_CONTRACT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_API_END_TO_END_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ATTESTATION_POLICY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUDIT_AUTHORIZATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUDIT_EVENT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUDIT_EVENT_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHENTICATION_ATTEMPT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHENTICATION_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHENTICATION_LOCKOUT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHENTICATOR_AUTHORIZATION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHENTICATOR_LIFECYCLE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_AUTHORITATIVE_ROUTE_MAP.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_CONCURRENCY_TEST_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_CORE_AUTHENTICATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_CORE_AUTHENTICATION_LOCAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_COUNTER_POLICY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DATA_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DEPENDENCY_WIRING.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_COMPROMISE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_REVOCATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_AUTHENTICATOR_SUSPENSION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_CHALLENGE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_EVENT_CONTRACT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_RECOVERY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_DISTRIBUTED_SECURITY_VERSION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_FIDO2_CREDENTIAL_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_INFRASTRUCTURE_ACTIVATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_KNOWN_LIMITATIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_LIVE_SERVER_E2E_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_LIVE_SERVER_E2E_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_LOCAL_MULTI_INSTANCE_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_LOCKOUT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_LOGOUT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_MULTI_INSTANCE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_MULTI_INSTANCE_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_NEGATIVE_API_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_NEGATIVE_LIVE_SERVER_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_NEXT_ACTIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_OBSERVABILITY_IMPLEMENTATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_OBSERVABILITY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_OPENTELEMETRY_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_OPENTELEMETRY_EXPORT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_OPERATIONAL_BLOCKERS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSKEY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORDLESS_AUTHENTICATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORDLESS_SESSION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORD_CHANGE_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORD_LIFECYCLE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORD_POLICY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PASSWORD_RESET_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PERSISTENCE_PROTOCOLS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_2_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_2_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_2_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_2_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_3_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_3_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_3_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_3_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_4_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_4_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_4_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_4_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5A_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5A_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5A_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5A_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5B_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5B_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5B_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5B_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5C_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5C_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5C_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5C_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5D_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5D_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5D_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5D_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_CONCURRENCY_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_REDIS_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5E_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5F_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5F_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5F_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_5F_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6B_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6B_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6B_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6B_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_AUDIT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_CONCURRENCY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_METRICS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_RESOURCE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_TRACING_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6C_TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_API_E2E_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_AUDIT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_CONCURRENCY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_METRICS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_NEGATIVE_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_POSTGRESQL_MIGRATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_RESOURCE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_TRACING_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6D_TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_AUDIT_AUTHORIZATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_AUDIT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_CONCURRENCY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_LIVE_API_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_METRICS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_NEGATIVE_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_OUTBOX_DELIVERY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_REDIS_FAILURE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_RESOURCE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_TRACING_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6E_TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHASE_6_TEST_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PHISHING_RESISTANT_MFA.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_APPLICATION_RUNTIME.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_CONCURRENCY_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_FULL_RACE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_IMPLEMENTATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_MIGRATION_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_RACE_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_REPOSITORY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_RUNTIME_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_POSTGRESQL_VERIFICATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PROMETHEUS_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_PROMETHEUS_EXPORT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_APPROVAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_CODE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_CODE_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_CONTAINMENT_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_METHOD_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_RATE_LIMIT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RECOVERY_TERMINAL_STATE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_CONSUMER_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_EXECUTION_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_FAILURE_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_FAILURE_POLICY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_FAILURE_RECOVERY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_OUTAGE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REDIS_REVOCATION_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REGISTRATION_AND_VERIFICATION_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RELEASE_GATE_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RESOURCE_LEAK_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_RESOURCE_LIFECYCLE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REVOCATION_OUTBOX_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_REVOCATION_OUTBOX_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_ROUTER_CONSOLIDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SECURITY_EVENT_CATALOG.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SECURITY_VERSION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_ADMINISTRATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_ADMINISTRATION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_AND_TOKEN_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_AUDIT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_COMPROMISE_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_EXPIRY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_LIFECYCLE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SESSION_LIFECYCLE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SHARED_REVOCATION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_SQLITE_ASSUMPTION_AUDIT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TEMPORARY_LOCKOUT_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_ISOLATION_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_POLICY_DISTRIBUTION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_POLICY_ENFORCEMENT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TENANT_WEBAUTHN_POLICY_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TEST_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TOKEN_ROTATION_AND_REPLAY_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_TWO_PROCESS_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_ARCHITECTURE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_AUTHORIZATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_AUDIT_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_AUTHENTICATION_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_AUTHENTICATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_E2E_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_BROWSER_REGISTRATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_CHALLENGE_COORDINATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_CONCURRENCY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_CONSUMER_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_CONSUMER_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_DEAD_LETTER_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_METRICS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_METRICS_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_NEGATIVE_SECURITY_EVIDENCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_OUTBOX_PUBLISHER_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_PUBLISHER_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_REDIS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_REDIS_COORDINATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_REGISTRATION_FLOW.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_RESOURCE_LIFECYCLE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_STEP_UP_MODEL.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_TRACING_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_TRACING_FINAL_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaid/final/NOVAID_WEBAUTHN_TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/database/POSTGRES_CONCURRENCY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/database/POSTGRES_MIGRATION_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/database/POSTGRES_SCHEMA_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/docker-recovery/DOCKER_DATA_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/docker-recovery/DOCKER_RAW_BACKUP_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/docker-recovery/DOCKER_RECOVERY_RISK_REGISTER.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/docker-recovery/DOCKER_RESET_READINESS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/docker-recovery/DOCKER_SHUTDOWN_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/e2e/LIVE_NEGATIVE_API_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/e2e/LIVE_SYNTHETIC_E2E_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/e2e/LIVE_TRIP_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_BUILD_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_CHANGE_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_EVIDENCE_HASHES.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_FINAL_BLOCKERS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_FINAL_DECISION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_FINAL_RELEASE_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_IMPLEMENTATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_KNOWN_LIMITATIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_NEXT_ACTIONS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_OPERATIONAL_BLOCKERS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_OPERATIONAL_RELEASE_MANIFEST.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_RELEASE_GATE_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_RELEASE_RECOMMENDATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_REQUIREMENT_TRACEABILITY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_SECURITY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/final/NOVARIDE_TEST_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/ga/NOVARIDE_GA_DECISION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/ga/NOVARIDE_GA_EVIDENCE_INDEX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/ga/NOVARIDE_GA_GATE_MATRIX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/ga/NOVARIDE_GA_RELEASE_MANIFEST.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/ga/NOVARIDE_GA_ROLLBACK_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/mobile/ANDROID_BUILD_READINESS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/mobile/ANDROID_TOOLCHAIN_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/mobile/SIGNING_CERTIFICATE_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/mobile/SIGNING_READINESS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/observability/LOG_REDACTION_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/observability/PROMETHEUS_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/observability/TRACE_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/ALERT_VERIFICATION_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/API_COLLECTION_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/APK_PUBLICATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/AUTHORIZATION_MATRIX_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/AUTHORIZATION_PENETRATION_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/BACKUP_RESTORE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/CAPACITY_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/CONFIGURATION_DIFF_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DATABASE_CONSTRAINT_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DATABASE_MIGRATION_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DATABASE_SCHEMA_SNAPSHOT.sql",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DATA_LOSS_ASSESSMENT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DEMO_ACCOUNT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DEPENDENCY_INSTALLATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DEPENDENCY_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DEPENDENCY_SECURITY_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DEPLOYMENT_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DISASTER_RECOVERY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DISPATCH_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DRIVER_BUILD_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/DRIVER_DEVICE_ACCEPTANCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/E2E_SCENARIO_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/E2E_TRACE_INDEX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/ENVIRONMENT_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/EXTERNAL_FINDINGS_REGISTER.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/EXTERNAL_SECURITY_ASSESSMENT_PACKAGE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/EXTERNAL_SECURITY_STATUS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/FAILOVER_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/FULL_TEST_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/INTERNAL_SECURITY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/LEDGER_RECONCILIATION_REPORT.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/LOAD_TEST_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/LOGGING_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/METRICS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/MOBILE_BUILD_MANIFEST.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/MOBILE_SBOM/README.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/MOBILE_SECURITY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/PAYMENT_E2E_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/PAYMENT_SECURITY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/PERFORMANCE_BASELINE.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/PHYSICAL_DEVICE_MATRIX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/READINESS_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/REALTIME_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/RECOVERY_TIME_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/REFUND_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/RESILIENCE_MATRIX_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/RIDER_BUILD_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/RIDER_DEVICE_ACCEPTANCE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/SECRETS_VALIDATION_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/SECURITY_FINDINGS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/SOAK_TEST_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/STATIC_ANALYSIS_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/TEST_COVERAGE_REPORT.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/TEST_FAILURE_ANALYSIS.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/TRACE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/TRIP_LIFECYCLE_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/TYPECHECK_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/raw/npm-audit-driver.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/raw/npm-audit-operations.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/operational/raw/npm-audit-rider.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/performance/CAPACITY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/performance/LOAD_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/performance/RESILIENCE_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_DAILY_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_DECISION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_EXIT_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_INCIDENT_REGISTER.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_PARTICIPANTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/pilot/CONTROLLED_PILOT_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/prr/NOVARIDE_PRR_APPROVALS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/prr/NOVARIDE_PRR_CHECKLIST.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/prr/NOVARIDE_PRR_DECISION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/prr/NOVARIDE_PRR_EVIDENCE_INDEX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/prr/NOVARIDE_PRR_RISK_REGISTER.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/public-pilot/PUBLIC_PILOT_DECISION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/public-pilot/PUBLIC_PILOT_EXIT_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/public-pilot/PUBLIC_PILOT_INCIDENT_REGISTER.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/public-pilot/PUBLIC_PILOT_METRICS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/public-pilot/PUBLIC_PILOT_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/quality/LINT_SCOPE_JUSTIFICATION.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/quality/NOVARIDE_RUFF_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/quality/REPOSITORY_RUFF_BASELINE.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/quality/raw/repository-ruff.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/runtime/CROSS_PROCESS_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/runtime/EVENT_TRANSPORT_CERTIFICATION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/runtime/OUTBOX_REPLAY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/runtime/REDIS_CERTIFICATION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/runtime/TWO_PROCESS_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/security/DRIVER_DEPENDENCY_REMEDIATION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/security/MOBILE_DEPENDENCY_RISK_REGISTER.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/security/RIDER_DEPENDENCY_REMEDIATION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/security/raw/driver-npm-audit.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/security/raw/rider-npm-audit.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/AVD_REMOVAL_BEFORE.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/AVD_REMOVAL_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/CLEANUP_CANDIDATES.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_DATA_PROTECTION_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_DIAGNOSTIC_REPORT.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_METADATA_BACKUP_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_POST_REPAIR_STARTUP.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_PRE_REPAIR_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_PROTECTED_RESOURCES.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_REPAIR_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_RESOURCE_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_RESTART_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_VERSION_BEFORE.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/DOCKER_VOLUME_BACKUP_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/FILESYSTEM_AFTER.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/FILESYSTEM_AFTER_AVD_REMOVAL.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/FILESYSTEM_BEFORE.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/LARGE_FILE_INVENTORY.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/NOVARIDE_EVIDENCE_HASHES.sha256",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/NOVARIDE_FINAL_DECISION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/NOVARIDE_GA_GATE_MATRIX.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/NOVARIDE_OPERATIONAL_RELEASE_MANIFEST.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/PROTECTED_RESOURCE_REGISTER.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/SAFE_CACHE_CLEANUP_RESULTS.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/STORAGE_INVENTORY.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "artifacts/novaride/storage-recovery/STORAGE_RECOVERY_CERTIFICATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "csv.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "deploy/novaride/.env.example",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "deploy/novaride/compose.operational.yml",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "deployment-evidence/final-certification/DEPLOYMENT_HOST_CHANGE_INVENTORY.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "deployment-evidence/final-certification/DEPLOYMENT_HOST_PRECHECK.txt",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "deployment-evidence/final-certification/PRODUCTION_ENVIRONMENT_VALIDATION.json",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "deployment-evidence/security-distributed-runtime/phase6f_live_summary.json",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "docker-compose.novaid-integration.yml",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaid/implementation/NOVAID_CURRENT_STATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaid/implementation/NOVAID_EXECUTION_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaid/implementation/NOVAID_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/design/NOVARIDE_DESIGN_SYSTEM.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/design/NOVARIDE_SCREEN_CATALOG.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/implementation/NOVARIDE_CURRENT_STATE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/implementation/NOVARIDE_EXECUTION_PLAN.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/implementation/NOVARIDE_GAP_MATRIX.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/requirements/NOVARIDE_REQUIREMENTS.yaml",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/strategy/NOVARIDE_MVP_SCOPE.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md",
+      "status": "??"
+    },
+    {
+      "classification": "EVIDENCE",
+      "path": "docs/novaride/strategy/NOVARIDE_PRODUCT_STRATEGY.md",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "driver_app/assets/novaride-brand.png",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "novacodepro_portal/public/brand/NOVACODEPRO.webp",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "rider_app/assets/novaride-brand.png",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "ruff.novaride.toml",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaid/phase6f_operational_verify.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/build_driver_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/build_rider_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/check_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/check_signing_readiness.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/generate_operational_certification.py",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/start_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/stop_operational_environment.sh",
+      "status": "??"
+    },
+    {
+      "classification": "NOVARIDE_UPGRADE",
+      "path": "scripts/novaride/verify_mobile_release.sh",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/live_phase5e_probe.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/redis_phase5f_probe.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase2_identity_core.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase3_api.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase3_authentication_flow.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase3_revocation_config.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase4_access_tokens.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5a_postgres_integration.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5a_redis_integration.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5a_session_administration.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5b_lockout.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5b_password_lifecycle.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5c_authoritative_router.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5c_startup.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5d_postgres_runtime.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5e_postgres_races.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5e_sessions_and_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase5f_telemetry_lifecycle.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6_webauthn.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6_webauthn_postgres.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6c_recovery_policy.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6d_postgres_recovery_races.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6d_redis_coordination.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6e_distributed_delivery.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6f_audit_replay.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_phase6f_checkpoints_and_replay.py",
+      "status": "??"
+    },
+    {
+      "classification": "UNKNOWN",
+      "path": "tests/novaid/test_security_invariants.py",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "var/novacodepro-development-worker-repo-debug/",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "var/novacodepro-development-worker-repo/",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "var/novaid-phase6f/novaid-a.pid",
+      "status": "??"
+    },
+    {
+      "classification": "DEPENDENCY_OUTPUT",
+      "path": "var/novaid-phase6f/novaid-b.pid",
+      "status": "??"
+    }
+  ],
+  "generated_utc": "2026-07-19T19:18:33Z",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics",
+  "summary": {
+    "DEPENDENCY_OUTPUT": 15,
+    "EVIDENCE": 414,
+    "NOVARIDE_UPGRADE": 170,
+    "PRE_EXISTING_UNRELATED": 8,
+    "SHARED_PLATFORM_DEPENDENCY": 1,
+    "UNKNOWN": 31
+  }
+}

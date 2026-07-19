@@ -1,0 +1,208 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "gaps": [
+    {
+      "blockers": [
+        "External provider and pilot certification still required"
+      ],
+      "capability_id": "W1",
+      "external_dependencies": [
+        "Live partner/provider systems",
+        "physical-device pilot"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Marketplace operations"
+    },
+    {
+      "blockers": [
+        "External safety operations remain blocked"
+      ],
+      "capability_id": "W2",
+      "external_dependencies": [
+        "Staffed incident drill",
+        "external safety verification"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Trust, safety and moderation"
+    },
+    {
+      "blockers": [
+        "Physical-device evidence still required"
+      ],
+      "capability_id": "W3",
+      "external_dependencies": [
+        "Mobile signing and physical-device execution"
+      ],
+      "status": "LOCALLY_OPERATIONAL",
+      "workstream": "Rider experience"
+    },
+    {
+      "blockers": [
+        "Physical-device validation blocked"
+      ],
+      "capability_id": "W4",
+      "external_dependencies": [
+        "Physical devices and human accessibility validation"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Accessibility"
+    },
+    {
+      "blockers": [
+        "Physical-device and controlled-pilot blockers"
+      ],
+      "capability_id": "W5",
+      "external_dependencies": [
+        "Physical devices and operational pilot"
+      ],
+      "status": "LOCALLY_OPERATIONAL",
+      "workstream": "Driver operations"
+    },
+    {
+      "blockers": [
+        "External device evidence blocked"
+      ],
+      "capability_id": "W6",
+      "external_dependencies": [
+        "Telematics devices and physical inspection evidence"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Vehicle lifecycle"
+    },
+    {
+      "blockers": [
+        "Production fraud source feeds blocked"
+      ],
+      "capability_id": "W7",
+      "external_dependencies": [
+        "Identity graph and device graph data sources"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Fraud operations"
+    },
+    {
+      "blockers": [
+        "External provider certification blocked"
+      ],
+      "capability_id": "W8",
+      "external_dependencies": [
+        "Live provider traffic and mapping service"
+      ],
+      "status": "LOCALLY_OPERATIONAL",
+      "workstream": "Route intelligence"
+    },
+    {
+      "blockers": [
+        "External messaging provider blocked"
+      ],
+      "capability_id": "W9",
+      "external_dependencies": [
+        "SMS/voice relay providers"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Real-time communications"
+    },
+    {
+      "blockers": [
+        "Production telemetry validation not re-run in this continuation"
+      ],
+      "capability_id": "W10",
+      "external_dependencies": [
+        "Live telemetry backends for production validation"
+      ],
+      "status": "LOCALLY_OPERATIONAL",
+      "workstream": "Operations control centre"
+    },
+    {
+      "blockers": [
+        "External regulatory approval blocked"
+      ],
+      "capability_id": "W11",
+      "external_dependencies": [
+        "Legal/regulatory authority and evidence export"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Regulatory/privacy/compliance"
+    },
+    {
+      "blockers": [
+        "Live payment provider blocked; sandbox only"
+      ],
+      "capability_id": "W13",
+      "external_dependencies": [
+        "External provider credentialing and live payment mode"
+      ],
+      "status": "PARTIAL",
+      "workstream": "NovaPay payment integration"
+    },
+    {
+      "blockers": [
+        "External ERP integration blocked"
+      ],
+      "capability_id": "W14",
+      "external_dependencies": [
+        "ERP and finance system integration"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Corporate mobility"
+    },
+    {
+      "blockers": [
+        "External fleet integrations blocked"
+      ],
+      "capability_id": "W15",
+      "external_dependencies": [
+        "Fleet system integrations / telematics feeds"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Fleet operations"
+    },
+    {
+      "blockers": [
+        "External regulator execution blocked"
+      ],
+      "capability_id": "W16",
+      "external_dependencies": [
+        "Actual regulator authority and approvals"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Government and regulator"
+    },
+    {
+      "blockers": [
+        "External security assessment still blocked"
+      ],
+      "capability_id": "W18",
+      "external_dependencies": [
+        "External penetration tester and authoritative scanner access"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Security hardening"
+    },
+    {
+      "blockers": [
+        "Physical-device and release-signing validation blocked"
+      ],
+      "capability_id": "W19",
+      "external_dependencies": [
+        "Physical devices, stores, signing authority"
+      ],
+      "status": "PARTIAL",
+      "workstream": "Mobile production readiness"
+    },
+    {
+      "blockers": [
+        "Controlled/public pilot execution still external-only"
+      ],
+      "capability_id": "W21",
+      "external_dependencies": [
+        "Real approved participants, devices, support and external pilot window"
+      ],
+      "status": "BLOCKED_EXTERNAL",
+      "workstream": "Controlled/public pilot operations"
+    }
+  ],
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics"
+}

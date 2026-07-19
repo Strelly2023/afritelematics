@@ -1,0 +1,101 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "edges": [
+    {
+      "from": "W12",
+      "reason": "identity gates trusted marketplace entry",
+      "to": "W1"
+    },
+    {
+      "from": "W12",
+      "reason": "identity and trust gate payment operations",
+      "to": "W13"
+    },
+    {
+      "from": "W12",
+      "reason": "business identities drive corporate mobility",
+      "to": "W14"
+    },
+    {
+      "from": "W12",
+      "reason": "fleet and vehicle identities drive fleet ops",
+      "to": "W15"
+    },
+    {
+      "from": "W12",
+      "reason": "regulator identities are a first-class identity type",
+      "to": "W16"
+    },
+    {
+      "from": "W13",
+      "reason": "payment and refund lifecycle depend on ride lifecycle",
+      "to": "W1"
+    },
+    {
+      "from": "W20",
+      "reason": "load/resilience evidence feeds observability certification",
+      "to": "W17"
+    },
+    {
+      "from": "W1",
+      "reason": "marketplace incidents feed safety/moderation",
+      "to": "W2"
+    },
+    {
+      "from": "W1",
+      "reason": "ride lifecycle is the rider experience backbone",
+      "to": "W3"
+    },
+    {
+      "from": "W5",
+      "reason": "driver lifecycle depends on vehicle compliance",
+      "to": "W6"
+    },
+    {
+      "from": "W7",
+      "reason": "fraud signals influence marketplace controls",
+      "to": "W1"
+    },
+    {
+      "from": "W8",
+      "reason": "routing informs rider/driver trip execution",
+      "to": "W3"
+    },
+    {
+      "from": "W9",
+      "reason": "communications feed safety and moderation cases",
+      "to": "W2"
+    },
+    {
+      "from": "W17",
+      "reason": "pilot activation depends on monitoring and evidence",
+      "to": "W21"
+    }
+  ],
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "nodes": [
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6",
+    "W7",
+    "W8",
+    "W9",
+    "W10",
+    "W11",
+    "W12",
+    "W13",
+    "W14",
+    "W15",
+    "W16",
+    "W17",
+    "W18",
+    "W19",
+    "W20",
+    "W21"
+  ],
+  "repository": "/Users/ostrinov/afritelematics"
+}

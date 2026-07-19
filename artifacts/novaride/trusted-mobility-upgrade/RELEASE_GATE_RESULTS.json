@@ -1,0 +1,21 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "gates": {
+    "NR-CP-001": "BLOCKED_EXTERNAL",
+    "NR-CPL-001": "PARTIAL",
+    "NR-DEV-000": "PARTIAL",
+    "NR-GA-001": "BLOCKED_EXTERNAL",
+    "NR-IQA-001": "PASS",
+    "NR-MOB-001": "BLOCKED_EXTERNAL",
+    "NR-OBS-001": "PARTIAL",
+    "NR-PAY-001": "PARTIAL",
+    "NR-PERF-001": "PARTIAL",
+    "NR-PP-001": "BLOCKED_EXTERNAL",
+    "NR-PRR-001": "BLOCKED_EXTERNAL",
+    "NR-SAF-001": "PARTIAL",
+    "NR-SEC-001": "PARTIAL"
+  },
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics"
+}

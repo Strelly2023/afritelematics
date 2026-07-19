@@ -1,0 +1,28 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "generated_utc": "2026-07-19T19:30:39+00:00",
+  "head": "63ef5e0c94333d5482ede1c19b13db908ad76e7d",
+  "repository": "/Users/ostrinov/afritelematics",
+  "risks": [
+    {
+      "impact": "GA cannot be approved.",
+      "risk": "External pilot gates remain incomplete",
+      "severity": "HIGH"
+    },
+    {
+      "impact": "Payment gate remains blocked.",
+      "risk": "Live payment provider activation is not evidence-backed",
+      "severity": "HIGH"
+    },
+    {
+      "impact": "Mobile certification remains blocked.",
+      "risk": "No physical-device evidence supplied",
+      "severity": "HIGH"
+    },
+    {
+      "impact": "Security gate remains blocked.",
+      "risk": "No independent security assessment supplied",
+      "severity": "HIGH"
+    }
+  ]
+}
