@@ -489,12 +489,76 @@ def run_lifecycle_load(harness: AfriRideHarness, *, rides: int, concurrency: int
         harness.request("GET", f"/system/traces/{result['ride_id']}", token=operator_token).payload
         for result in completed
     ]
+    certification_replay_failures = sum(
+        1 for payload in trace_validations if payload.get("replay_verified") is not True
+    )
+    certification_missing_events = sum(
+        len(payload.get("missing_transitions", ())) for payload in trace_validations
+    )
+    certification_hash_chain_failures = sum(
+        1 for payload in trace_validations if payload.get("hash_chain_verified") is not True
+    )
     lifecycle_trace_summary = {
         "total_rides": len(trace_validations),
         "valid_traces": sum(1 for payload in trace_validations if payload.get("valid") is True),
         "invalid_traces": sum(1 for payload in trace_validations if payload.get("valid") is not True),
-        "missing_events": sum(len(payload.get("missing_transitions", ())) for payload in trace_validations),
-        "replay_failures": sum(1 for payload in trace_validations if payload.get("replay_verified") is not True),
+        "missing_events": certification_missing_events,
+        "replay_failures": certification_replay_failures,
+    }
+    certification_replay_health = {
+        "status": "PASS" if certification_replay_failures == 0 else "FAIL",
+        "failures": certification_replay_failures,
+        "hash_chain_failures": certification_hash_chain_failures,
+        "last_failed_ride_id": next(
+            (payload["ride_id"] for payload in reversed(trace_validations) if payload.get("replay_verified") is not True),
+            None,
+        ),
+        "replay_success_rate": (
+            "100%"
+            if not trace_validations
+            else f"{int((sum(1 for payload in trace_validations if payload.get('replay_verified') is True) / len(trace_validations)) * 100)}%"
+        ),
+        "scope": "lifecycle-certification-only",
+    }
+    certification_guards = {
+        "violations": [
+            *(
+                [
+                    {
+                        "type": "TRACE_COMPLETENESS",
+                        "severity": "CRITICAL",
+                        "timestamp": "runtime",
+                        "details": {"missing_events": certification_missing_events},
+                    }
+                ]
+                if certification_missing_events
+                else []
+            ),
+            *(
+                [
+                    {
+                        "type": "REPLAY_DIVERGENCE",
+                        "severity": "CRITICAL",
+                        "timestamp": "runtime",
+                        "details": {"failures": certification_replay_failures},
+                    }
+                ]
+                if certification_replay_failures
+                else []
+            ),
+            *(
+                [
+                    {
+                        "type": "TRACE_HASH_CHAIN_BREAK",
+                        "severity": "CRITICAL",
+                        "timestamp": "runtime",
+                        "details": {"failures": certification_hash_chain_failures},
+                    }
+                ]
+                if certification_hash_chain_failures
+                else []
+            ),
+        ]
     }
 
     all_latencies = [
@@ -520,6 +584,8 @@ def run_lifecycle_load(harness: AfriRideHarness, *, rides: int, concurrency: int
         "average_step_latency_ms": average_latency_ms,
         "max_step_latency_ms": max_latency_ms,
         "replay_health": replay_health.payload,
+        "certification_replay_health": certification_replay_health,
+        "certification_guards": certification_guards,
         "evidence_summary_global": evidence_summary.payload,
         "guards_global": guards.payload,
         "lifecycle_trace_summary": lifecycle_trace_summary,

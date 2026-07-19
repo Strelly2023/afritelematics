@@ -1,0 +1,29 @@
+{
+  "checks": {
+    "accept_assigned_driver": "two-process-driver-1",
+    "accept_status": "DRIVER_ASSIGNED",
+    "evidence_status": "VERIFIED",
+    "ledger_recorded": false,
+    "primary_health": "healthy",
+    "receipt_hash_len": 26,
+    "replay_verified_a": true,
+    "replay_verified_b": true,
+    "requested_assigned_driver": null,
+    "requested_status": "success",
+    "secondary_health": "healthy",
+    "system_evidence_missing_traces": 22,
+    "system_evidence_valid_traces": 201
+  },
+  "ok": true,
+  "processes": [
+    {
+      "base_url": "http://127.0.0.1:8001",
+      "label": "primary"
+    },
+    {
+      "base_url": "http://127.0.0.1:18101",
+      "label": "secondary"
+    }
+  ],
+  "ride_id": "ride-two-process-1"
+}

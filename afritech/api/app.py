@@ -97,6 +97,7 @@ from afritech.api.novaportal_suite_api import build_novaportal_suite_router
 from afritech.api.novapay_runtime_api import build_novapay_runtime_router
 from afritech.api.contracts.schema_registry_api import build_schema_registry_router
 from afritech.api.contracts.schema_registry_middleware import SchemaRegistryMiddleware
+from afritech.api.trace_middleware import trace_enforcement_middleware
 from afritech.api.afriprogramming_control_api import (
     build_afriprogramming_control_router,
 )
@@ -167,6 +168,7 @@ app.add_middleware(
 )
 app.add_middleware(JsonRequestLoggingMiddleware)
 app.add_middleware(SchemaRegistryMiddleware)
+app.middleware("http")(trace_enforcement_middleware)
 configure_fastapi_observability(app)
 
 # ============================================================

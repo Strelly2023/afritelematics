@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `772`
+- Startup-safe closure size: `773`
 - Django-bound modules declared in repo: `253`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `104`
+- Direct startup imports from `afritech.api.app`: `105`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (772 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (773 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (104)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (105)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (108 files)"]
+    Core --> Api["api (109 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (18 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `108` files
+- `api`: `109` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `18` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (117)
+### Api (118)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -183,6 +183,7 @@ flowchart TD
 - `afritech.api.solution_engineering_api`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
+- `afritech.api.trace_middleware`
 - `afritech.api.trust_network_api`
 - `afritech.api_catalog`
 - `afritech.api_catalog.approval`
@@ -966,6 +967,7 @@ flowchart TD
 - `afritech.api.solution_engineering_api`
 - `afritech.api.system_status`
 - `afritech.api.trace_api`
+- `afritech.api.trace_middleware`
 - `afritech.api.trust_network_api`
 - `afritech.api_platform`
 - `afritech.architecture.anchor_indexer`

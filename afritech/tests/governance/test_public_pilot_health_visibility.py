@@ -58,6 +58,29 @@ def test_fastapi_ready_endpoint_returns_503_when_configuration_invalid(monkeypat
     assert ready.json()["ready"] is False
 
 
+def test_fastapi_health_endpoint_emits_trace_headers_when_instrumented(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("AFRITECH_RUNTIME_ENVIRONMENT", "PUBLIC_PILOT")
+    monkeypatch.setenv("AFRIRIDE_DB_PATH", str(tmp_path / "health.sqlite3"))
+
+    client = TestClient(app)
+    response = client.get(
+        "/health",
+        headers={
+            "X-NovaRide-Event-Id": "health-trace-1",
+            "X-NovaRide-Device-Id": "device-health-1",
+            "X-NovaRide-Client-Timestamp": "2026-07-19T15:16:32Z",
+            "X-NovaRide-App-Version": "0.1",
+            "X-NovaRide-Test-Mode": "true",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["X-NovaRide-Trace-Sequence"]
+    assert response.headers["X-NovaRide-Trace-Hash"]
+    assert response.headers["X-AfriRide-Trace-Sequence"]
+    assert response.headers["X-AfriRide-Trace-Hash"]
+
+
 def test_nginx_template_contains_healthz_probe() -> None:
     text = NGINX.read_text(encoding="utf-8")
     assert "location /healthz" in text

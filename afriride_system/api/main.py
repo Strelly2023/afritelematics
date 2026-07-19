@@ -10,7 +10,8 @@ from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from afriride_system.api.auth import JWT, auth_middleware, build_auth_router
+from afriride_system.api import auth as auth_module
+from afriride_system.api.auth import auth_middleware, build_auth_router
 from afriride_system.api.compliance_middleware import compliance_metadata_middleware
 from afriride_system.api.driver_routes import router as driver_router
 from afriride_system.api.passenger_routes import router as passenger_router
@@ -98,7 +99,7 @@ async def ride_tracking_socket(websocket: WebSocket, ride_id: str) -> None:
         await websocket.close(code=1008)
         return
     try:
-        claims = JWT.verify_token(token)
+        claims = auth_module.JWT.verify_token(token)
     except ValueError:
         await websocket.close(code=1008)
         return
@@ -125,7 +126,7 @@ async def mobility_socket(websocket: WebSocket, actor_id: str) -> None:
     """Authenticated replayable mobility stream with application heartbeats."""
     token = websocket.query_params.get("token", "")
     try:
-        claims = JWT.verify_token(token)
+        claims = auth_module.JWT.verify_token(token)
     except ValueError:
         await websocket.close(code=1008)
         return

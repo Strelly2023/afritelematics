@@ -172,7 +172,7 @@ def _duplicate_webhook_storm() -> tuple[str, ...]:
         try:
             # Execute the task body directly: the validator owns its worker
             # threads and must not depend on Celery's thread-local request stack.
-            return str(process_provider_webhook_task.run("flutterwave", payload)["event_id"])
+            return str(process_provider_webhook_task("flutterwave", payload)["event_id"])
         finally:
             close_old_connections()
 

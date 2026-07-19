@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from importlib import import_module
+
 from fastapi.testclient import TestClient
 
-from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
 from afriride_system.backend.trace_enforcement import (
@@ -36,9 +37,13 @@ def envelope(
     }
 
 
+def _jwt():
+    return import_module("afriride_system.api.auth").JWT
+
+
 def headers(event_id: str = "operator-event-1") -> dict[str, str]:
     return {
-        "Authorization": f"Bearer {JWT.create_token('operator-1', 'OPERATOR')}",
+        "Authorization": f"Bearer {_jwt().create_token('operator-1', 'OPERATOR')}",
         "X-AfriRide-Device-Id": "operator-device",
         "X-AfriRide-App-Version": "0.1",
         "X-AfriRide-Event-Id": event_id,
@@ -49,14 +54,14 @@ def headers(event_id: str = "operator-event-1") -> dict[str, str]:
 
 def rider_headers(event_id: str, rider_id: str = "rider-1") -> dict[str, str]:
     return {
-        "Authorization": f"Bearer {JWT.create_token(rider_id, 'RIDER')}",
+        "Authorization": f"Bearer {_jwt().create_token(rider_id, 'RIDER')}",
         "Idempotency-Key": event_id,
     }
 
 
 def driver_headers(event_id: str, driver_id: str = "driver-1") -> dict[str, str]:
     return {
-        "Authorization": f"Bearer {JWT.create_token(driver_id, 'DRIVER')}",
+        "Authorization": f"Bearer {_jwt().create_token(driver_id, 'DRIVER')}",
         "Idempotency-Key": event_id,
     }
 
@@ -73,7 +78,7 @@ def test_instrumented_request_without_envelope_is_rejected() -> None:
         "/ride/ride-missing-envelope/accept",
         json={"driver_id": "driver-1"},
         headers={
-            "Authorization": f"Bearer {JWT.create_token('driver-1', 'DRIVER')}",
+            "Authorization": f"Bearer {_jwt().create_token('driver-1', 'DRIVER')}",
             "X-AfriRide-Device-Id": "driver-device",
             "X-AfriRide-App-Version": "0.1",
             "X-AfriRide-Event-Id": "missing-envelope",
@@ -105,7 +110,7 @@ def test_invalid_trace_envelope_is_rejected_before_execution() -> None:
                 "app_version": "0.1",
             },
         },
-        headers={"Authorization": f"Bearer {JWT.create_token('driver-1', 'DRIVER')}"},
+        headers={"Authorization": f"Bearer {_jwt().create_token('driver-1', 'DRIVER')}"},
     )
 
     assert response.status_code == 422

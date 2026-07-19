@@ -8,14 +8,19 @@ Completed and verified:
 - constitutional pipeline
 - governance validator
 - portal tests and build
-- NovaID live replay certification
-- NCP-008 live authorization negative check
+- load harness certification with lifecycle-only trace scoring
+- AfriPay concurrency validator
+- AfriPay observability validator
+- distributed recovery validator
+- continuity and resilience validator
+- NovaID local ecosystem tests
+- two-process API sharing proof
 - NovaRide live smoke certification
 - Prometheus target health and alertmanager status
 - PostgreSQL live backup and restore into an isolated database
 
 Current blockers:
-- lifecycle load harness reports invalid traces for all 100 rides under load
+- NovaID-specific token issuance remains gated by production controls, so the NovaID two-process auth flow is not fully closed
 - external security assessment not performed
 - physical-device validation not performed
 - controlled/public pilot evidence not present

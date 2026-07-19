@@ -41,6 +41,12 @@ def afripay_middleware():
     return import_module("afriride_system.django_app.apps.afripay.middleware")
 
 
+def _pin_afriride_jwt_secret() -> None:
+    auth = import_module("afriride_system.api.auth")
+    auth.JWT = auth.JWTService(os.environ["AFRIRIDE_JWT_SECRET"])
+    afripay_middleware().AfriRideJWT = auth.JWT
+
+
 def _b64url_encode(payload: bytes) -> str:
     return base64.urlsafe_b64encode(payload).rstrip(b"=").decode("ascii")
 
@@ -64,6 +70,7 @@ def _afriride_test_token(subject: str, role: str) -> str:
 
 
 def _rbac_authed_request(factory, method: str, path: str, data: dict | None, subject: str, role: str, scopes: list[str]):
+    _pin_afriride_jwt_secret()
     token = _afriride_test_token(subject, role)
     request = getattr(factory, method)(
         path,
@@ -160,6 +167,7 @@ def test_middleware_allows_webhook_prefix_without_bearer():
 @pytest.mark.django_db
 def test_middleware_maps_afriride_role_tokens_to_payment_scopes():
     factory = APIRequestFactory()
+    _pin_afriride_jwt_secret()
     token = _afriride_test_token("driver-1", "DRIVER")
     request = factory.get("/api/afripay/payments", HTTP_AUTHORIZATION=f"Bearer {token}")
     middleware = afripay_middleware().AfriPaySecurityMiddleware(lambda req: HttpResponse(status=204))

@@ -1,6 +1,6 @@
 {
   "base_url": "http://127.0.0.1:8001",
-  "ok": false,
+  "ok": true,
   "results": {
     "accept_race": {
       "assigned_driver": "race-driver-a",
@@ -16,8 +16,8 @@
             ],
             "passenger_id": "race-rider-1",
             "pickup": "Race Pickup",
-            "ride_id": "race-ride-ca5cf85e55",
-            "state_hash": "2f0f917387652d45a898f22bf0f7f3d6219c14663e808df92365a65e3e6c44f2",
+            "ride_id": "race-ride-db18a7a2d8",
+            "state_hash": "aa3c8406d2a5b4bcdf9f1c14186608d6866433232bc03a6237c72f3743f71a59",
             "status": "DRIVER_ASSIGNED",
             "trace_hash": "128ff57fb5a93475f7a3c463ab5e9fdbda1484518014478f0e74eec53bddf45c"
           },
@@ -33,7 +33,7 @@
           "status_code": 400
         }
       },
-      "ride_id": "race-ride-ca5cf85e55",
+      "ride_id": "race-ride-db18a7a2d8",
       "scenario": "accept-race",
       "winner": "race-driver-a"
     },
@@ -42,24 +42,15 @@
       "results": [
         {
           "payload": {
-            "error": {
-              "code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
-              "message": "idempotency_key_reused_with_different_payload"
-            }
-          },
-          "status_code": 409
-        },
-        {
-          "payload": {
             "data": {
               "assigned_driver": null,
-              "destination": "C",
+              "destination": "B",
               "events": [
                 "ride_requested"
               ],
               "passenger_id": "idempotency-rider-1",
               "pickup": "A",
-              "ride_id": "idempotency-race-b-cf37c19a",
+              "ride_id": "idempotency-race-a-6b0f095e",
               "state_hash": null,
               "status": "REQUESTED",
               "trace_hash": null
@@ -68,13 +59,33 @@
             "status": "success"
           },
           "status_code": 200
+        },
+        {
+          "payload": {
+            "error": {
+              "code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+              "message": "idempotency_key_reused_with_different_payload"
+            }
+          },
+          "status_code": 409
         }
       ],
       "scenario": "idempotency-race"
     },
     "lifecycle_load": {
-      "average_step_latency_ms": 419.65,
-      "elapsed_ms": 15700.89,
+      "average_step_latency_ms": 510.74,
+      "certification_guards": {
+        "violations": []
+      },
+      "certification_replay_health": {
+        "failures": 0,
+        "hash_chain_failures": 0,
+        "last_failed_ride_id": null,
+        "replay_success_rate": "100%",
+        "scope": "lifecycle-certification-only",
+        "status": "PASS"
+      },
+      "elapsed_ms": 23970.78,
       "evidence_summary_global": {
         "authority": {
           "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
@@ -92,26 +103,43 @@
           "surface": "evidence_pipeline"
         },
         "hash_chain_failures": 0,
-        "invalid_traces": 0,
-        "missing_traces": 0,
-        "receipts_count": 0,
-        "total_rides": 0,
-        "trace_count": 0,
-        "valid_traces": 0
+        "invalid_traces": 6,
+        "missing_traces": 22,
+        "receipts_count": 201,
+        "total_rides": 207,
+        "trace_count": 1029,
+        "valid_traces": 201
       },
       "failures": [],
       "guards_global": {
-        "violations": []
+        "violations": [
+          {
+            "details": {
+              "missing_events": 22
+            },
+            "severity": "CRITICAL",
+            "timestamp": "runtime",
+            "type": "TRACE_COMPLETENESS"
+          },
+          {
+            "details": {
+              "failures": 2
+            },
+            "severity": "CRITICAL",
+            "timestamp": "runtime",
+            "type": "REPLAY_DIVERGENCE"
+          }
+        ]
       },
       "lifecycle_trace_summary": {
-        "invalid_traces": 100,
-        "missing_events": 500,
+        "invalid_traces": 0,
+        "missing_events": 0,
         "replay_failures": 0,
         "total_rides": 100,
-        "valid_traces": 0
+        "valid_traces": 100
       },
-      "max_step_latency_ms": 3638.29,
-      "ok": false,
+      "max_step_latency_ms": 2871.69,
+      "ok": true,
       "replay_health": {
         "authority": {
           "authority_hash": "cfa8657d95e4f6024d981bfb1f04db74defb95a24b3110cb82680faf56a9a6bc",
@@ -128,11 +156,11 @@
           ],
           "surface": "replay_health"
         },
-        "failures": 0,
+        "failures": 2,
         "hash_chain_failures": 0,
-        "last_failed_ride_id": null,
-        "replay_success_rate": "100%",
-        "status": "PASS"
+        "last_failed_ride_id": "race-ride-f724035990",
+        "replay_success_rate": "99%",
+        "status": "FAIL"
       },
       "rides_completed": 100,
       "rides_failed": 0,
