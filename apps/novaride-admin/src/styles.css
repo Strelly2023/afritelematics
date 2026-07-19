@@ -1,0 +1,22 @@
+.admin-console {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.control-grid button {
+  padding: 14px 16px;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #111827;
+  color: #e5e7eb;
+  font: inherit;
+  text-align: left;
+}
