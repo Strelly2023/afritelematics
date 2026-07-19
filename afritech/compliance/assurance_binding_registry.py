@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hashlib import sha256
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Mapping
@@ -239,7 +239,7 @@ def _coerce_mapping(value: Mapping[str, Any] | dict[str, Any]) -> dict[str, Any]
 
 
 def _canonical_hash(value: Any) -> str:
-    return sha256(
+    return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
     ).hexdigest()
 
