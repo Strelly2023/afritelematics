@@ -161,6 +161,13 @@ def test_product_factory_api_supports_governed_lifecycle(tmp_path: Path) -> None
     assert client.get("/v1/product-factory/cross-product/graph", headers=headers).status_code == 200
     assert client.post("/v1/product-factory/migrations", headers=headers, json={"product_id": "product-factory", "source_system": "legacy", "target_system": "factory"}).status_code == 200
     assert client.get(f"/v1/product-factory/prr/{release_id}", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/search", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/reports/catalog", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/traceability/coverage", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/cross-product/graph", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/migrations", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/lifecycle-templates", headers=headers).status_code == 200
+    assert client.get("/v1/product-factory/workflows/definitions", headers=headers).status_code == 200
 
     demo = client.post("/v1/product-factory/demo", headers=headers)
     assert demo.status_code == 200

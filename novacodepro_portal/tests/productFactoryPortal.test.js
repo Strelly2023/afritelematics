@@ -35,6 +35,24 @@ test("Product Factory portal source includes governed lifecycle controls", () =>
   }
 });
 
+test("Product Factory portal source includes enterprise workspace controls", () => {
+  const source = readFileSync(new URL("../src/novacodepro/ProductFactoryPortal.jsx", import.meta.url), "utf8");
+  for (const token of [
+    "createRequirement",
+    "createLifecycle",
+    "createWorkflow",
+    "createReleaseRecord",
+    "searchFactory",
+    "createMigrationRecord",
+    "createPrr",
+    "traceabilityCoverage",
+    "workflowDefinitions",
+    "lifecycleTemplates",
+  ]) {
+    assert.ok(source.includes(token), `expected portal source to include ${token}`);
+  }
+});
+
 test("NovaCodePro registry keeps the Product Factory surface reachable for workspace users", () => {
   assert.equal(isNovaCodeProRouteAccessible("/novacodepro/product-factory", ["workspace.read"]), true);
   assert.equal(isNovaCodeProRouteAccessible("/novacodepro/product-factory", ["request.create"]), false);
@@ -52,7 +70,27 @@ test("Product Factory API client targets governed product-factory routes", async
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init) => {
     calls.push({ input: String(input), init });
-    return new Response(JSON.stringify({ summary: { requests: 1 }, blueprints: [], archetypes: [], phases: [], gates: [], improvements: [], audit: [], evidence: [] }), {
+    return new Response(JSON.stringify({
+      summary: { requests: 1 },
+      blueprints: [],
+      archetypes: [],
+      phases: [],
+      gates: [],
+      improvements: [],
+      audit: [],
+      evidence: [],
+      requirements: [],
+      templates: [],
+      definitions: [],
+      releases: [],
+      links: [],
+      migrations: [],
+      reports: [],
+      count: 0,
+      coverage: {},
+      gaps: [],
+      relationships: [],
+    }), {
       status: 200,
       headers: { "content-type": "application/json" },
     });
@@ -64,6 +102,14 @@ test("Product Factory API client targets governed product-factory routes", async
       timeoutMs: 1000,
     });
     await client.getOverview();
+    await client.listRequirements();
+    await client.listLifecycleTemplates();
+    await client.listWorkflowDefinitions();
+    await client.listReleases();
+    await client.getTraceabilityCoverage();
+    await client.getCrossProductGraph();
+    await client.listMigrations();
+    await client.reportCatalog();
     await client.createRequest({ product_name: "NovaFactory", status: "Draft" }, "idempotency-key");
     await client.createDemoProduct();
   } finally {
