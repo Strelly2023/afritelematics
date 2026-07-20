@@ -75,6 +75,8 @@ ci_artifacts/
 # Screenshots / images (optional – keep only if intentional)
 *.jpg
 *.png
+!rider_app/assets/novaride-brand.png
+!driver_app/assets/novaride-brand.png
 
 # Explicit allowlist
 !requirements.txt
@@ -104,6 +106,10 @@ novascript-site/node_modules/
 
 # Expo static prototype exports
 */dist-web-prototype/
+
+# Playwright outputs
+apps/novaride-operations/playwright-report/
+apps/novaride-operations/test-results/
 
 # Dependencies
 **/node_modules/
