@@ -1,0 +1,108 @@
+{
+  "classification": "CONTROLLED_PILOT_READY",
+  "decision": "BLOCKED",
+  "entry_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/candidates/NOVAID_RC.json"
+      ],
+      "id": "NI-ENTRY-001",
+      "mandatory": true,
+      "reason": "candidate manifest missing or invalid",
+      "result": "FAIL",
+      "statement": "Selected immutable release candidate exists."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "git status --porcelain=v1"
+      ],
+      "id": "NI-ENTRY-002",
+      "mandatory": true,
+      "reason": "worktree dirty",
+      "result": "FAIL",
+      "statement": "Worktree is clean."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/scopes/INITIAL_GA_SCOPE.yaml"
+      ],
+      "id": "NI-ENTRY-003",
+      "mandatory": true,
+      "reason": "",
+      "result": "PASS",
+      "statement": "Initial scope is defined."
+    }
+  ],
+  "exit_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "contracts/api/baselines/novaid/latest.openapi.json"
+      ],
+      "id": "NI-EXIT-001",
+      "mandatory": true,
+      "reason": "external approvals not present",
+      "result": "BLOCKED",
+      "statement": "Tenant isolation passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "docs/novaid/implementation/NOVAID_CURRENT_STATE.md"
+      ],
+      "id": "NI-EXIT-002",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Account recovery passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "id": "NI-EXIT-003",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Session revocation passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "afritech/tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "id": "NI-EXIT-004",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Credential rotation passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "afritech/api/novaid_audit_replay_api.py"
+      ],
+      "id": "NI-EXIT-005",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Audit event durability passed."
+    }
+  ],
+  "generated_at_utc": "2026-07-20T19:43:44.964671Z",
+  "product": "novaid",
+  "release_candidate_id": "NOVAID-RC-001",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,71 @@
+schema_version: "1.0"
+product: "novaid"
+release_candidate_id: "NOVAID-RC-001"
+
+entry_criteria:
+  - id: "NI-ENTRY-001"
+    statement: "Selected immutable release candidate exists."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/candidates/NOVAID_RC.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-ENTRY-002"
+    statement: "Worktree is clean."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["git status --porcelain=v1"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-ENTRY-003"
+    statement: "Initial scope is defined."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/scopes/INITIAL_GA_SCOPE.yaml"]
+    result: "NOT_RUN"
+    reason: ""
+
+exit_criteria:
+  - id: "NI-EXIT-001"
+    statement: "Tenant isolation passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["contracts/api/baselines/novaid/latest.openapi.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-EXIT-002"
+    statement: "Account recovery passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["docs/novaid/implementation/NOVAID_CURRENT_STATE.md"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-EXIT-003"
+    statement: "Session revocation passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["docs/novaid/implementation/NOVAID_GAP_MATRIX.md"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-EXIT-004"
+    statement: "Credential rotation passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["afritech/tests/novaid/test_novaid_ecosystem.py"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NI-EXIT-005"
+    statement: "Audit event durability passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["afritech/api/novaid_audit_replay_api.py"]
+    result: "NOT_RUN"
+    reason: ""

@@ -1,0 +1,106 @@
+{
+  "branch": "release/initial-ga-baseline-2026",
+  "dirty": true,
+  "generated_at": "2026-07-20T00:00:00Z",
+  "head": "fbca1e0d47dc05b121dd796bc884ce4f8e1711e8",
+  "paths": [
+    {
+      "action": "preserve",
+      "classification": "configuration",
+      "path": ".github/workflows/release-baseline-integrity.yml",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "release evidence",
+      "path": "artifacts/release-baseline/",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "source code",
+      "path": "release/",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "source code",
+      "path": "release_tools/",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "source code",
+      "path": "scripts/release/",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_certificate_generation.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_certificate_rejection.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_evidence_manifest_repair.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_evidence_manifest_validation.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_ga_gate_evaluation.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_product_boundaries.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_release_candidate_selection.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_release_candidate_validation.py",
+      "reason": "",
+      "status": "??"
+    },
+    {
+      "action": "preserve",
+      "classification": "tests",
+      "path": "tests/release/test_traceability_validation.py",
+      "reason": "",
+      "status": "??"
+    }
+  ]
+}

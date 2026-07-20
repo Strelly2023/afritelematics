@@ -1,0 +1,119 @@
+schema_version: "1.0"
+scope_id: "INITIAL-GA-AU-VIC-001"
+status: "PROPOSED"
+
+products:
+  novaid:
+    geography:
+      country: "Australia"
+      region: "Melbourne, Victoria"
+    included_capabilities:
+      - workforce identity
+      - rider identity
+      - driver identity
+      - agent identity
+      - merchant identity
+      - registration
+      - password authentication
+      - MFA where fully implemented
+      - session lifecycle
+      - account recovery
+      - tenant-aware authorization
+      - audit events
+      - revocation
+    excluded_capabilities:
+      - unsupported federation
+      - unverified KYC providers
+      - uncertified biometric identity
+      - unsupported external enterprise directories
+      - unverified cross-region identity replication
+      - uncertified WebAuthn claims
+    dependencies:
+      - NovaTech release approvals
+      - committed identity product evidence
+      - repository-controlled release candidate selection
+    assumptions:
+      - only approved NovaTech-controlled production tenants are in scope
+      - external provider certification remains separate from code availability
+    hard_blockers:
+      - unsupported federation
+      - unverified external provider approval
+
+  novapay:
+    geography:
+      country: "Australia"
+      region: "Melbourne, Victoria"
+      corridor: "Domestic AUD only"
+    included_capabilities:
+      - account balance visibility
+      - controlled funding
+      - controlled merchant payment
+      - refund
+      - reversal
+      - immutable receipt
+      - reconciliation
+      - configuration-driven transaction limits
+    excluded_capabilities:
+      - unsupported international corridors
+      - unsupported currencies
+      - credit products
+      - lending
+      - insurance
+      - unapproved card processing
+      - unlicensed remittance
+      - unverified mobile-money rails
+    dependencies:
+      - licensed arrangement
+      - production provider approval
+      - live credentials
+      - settlement and reconciliation certification
+    assumptions:
+      - live money movement remains disabled unless all provider and regulatory conditions are satisfied
+    hard_blockers:
+      - no approved live payment rail
+
+  novaride:
+    geography:
+      country: "Australia"
+      state: "Victoria"
+      launch_geography:
+        - Werribee
+        - Wyndham Vale
+        - Tarneit
+        - Melton
+    included_capabilities:
+      - rider registration
+      - driver registration
+      - identity verification through approved NovaID flows
+      - ride request
+      - dispatch
+      - driver acceptance
+      - trip lifecycle
+      - cancellation
+      - safety event reporting
+      - support workflow
+      - receipt generation
+      - controlled cash or approved NovaPay payment
+    excluded_capabilities:
+      - airports unless separately authorized
+      - autonomous dispatch claims
+      - unsupported cities
+      - unsupported vehicle categories
+      - unapproved payment providers
+      - unverified insurance integrations
+      - unsupported accessibility transport categories
+      - unsupported regulatory jurisdictions
+    dependencies:
+      - pre-approved riders
+      - pre-approved drivers
+      - bounded operating hours
+      - bounded service zones
+      - approved NovaID flows
+      - approved NovaPay payment paths
+    assumptions:
+      - standard point-to-point trips only
+      - launch is restricted to NovaTech-controlled operating policies
+    hard_blockers:
+      - unsupported payment providers
+      - unverified insurance integrations
+      - unsupported jurisdictions

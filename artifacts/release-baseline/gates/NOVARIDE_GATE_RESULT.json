@@ -1,0 +1,108 @@
+{
+  "classification": "CONTROLLED_PILOT_READY",
+  "decision": "BLOCKED",
+  "entry_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/candidates/NOVARIDE_RC.json"
+      ],
+      "id": "NR-ENTRY-001",
+      "mandatory": true,
+      "reason": "candidate manifest missing or invalid",
+      "result": "FAIL",
+      "statement": "Selected immutable release candidate exists."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "git status --porcelain=v1"
+      ],
+      "id": "NR-ENTRY-002",
+      "mandatory": true,
+      "reason": "worktree dirty",
+      "result": "FAIL",
+      "statement": "Worktree is clean."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/scopes/INITIAL_GA_SCOPE.yaml"
+      ],
+      "id": "NR-ENTRY-003",
+      "mandatory": true,
+      "reason": "",
+      "result": "PASS",
+      "statement": "Initial scope is defined."
+    }
+  ],
+  "exit_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json"
+      ],
+      "id": "NR-EXIT-001",
+      "mandatory": true,
+      "reason": "traceability missing",
+      "result": "FAIL",
+      "statement": "Rider registration passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json"
+      ],
+      "id": "NR-EXIT-002",
+      "mandatory": true,
+      "reason": "external approval not present",
+      "result": "BLOCKED",
+      "statement": "Driver registration passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "artifacts/novaride/operations-integration/IMPLEMENTATION_RESULTS.json"
+      ],
+      "id": "NR-EXIT-003",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Dispatch lifecycle passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "artifacts/novaride/operations-browser-certification/TEST_RESULTS.json"
+      ],
+      "id": "NR-EXIT-004",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Safety workflows passed."
+    },
+    {
+      "evaluation_type": "manual",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "artifacts/novaride/operational/PHYSICAL_DEVICE_MATRIX.json"
+      ],
+      "id": "NR-EXIT-005",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Physical-device matrix passed."
+    }
+  ],
+  "generated_at_utc": "2026-07-20T19:43:45.059567Z",
+  "product": "novaride",
+  "release_candidate_id": "NOVARIDE-RC-001",
+  "schema_version": "1.0"
+}

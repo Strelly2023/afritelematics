@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nova release evidence manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "product",
+    "release_candidate_id",
+    "commit_sha",
+    "repository_tree_sha256",
+    "scope_id",
+    "environment",
+    "generated_at_utc",
+    "generated_by",
+    "worktree_clean",
+    "command",
+    "result",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "manifest_id": {"type": "string"},
+    "product": {"type": "string"},
+    "release_candidate_id": {"type": "string"},
+    "commit_sha": {"type": "string", "minLength": 40, "maxLength": 40},
+    "repository_tree_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
+    "scope_id": {"type": "string"},
+    "environment": {
+      "type": "object",
+      "required": ["environment_id", "classification", "operating_system", "architecture", "runtime_versions", "container_images"],
+      "properties": {
+        "environment_id": {"type": "string"},
+        "classification": {"type": "string"},
+        "operating_system": {"type": "string"},
+        "architecture": {"type": "string"},
+        "runtime_versions": {"type": "object"},
+        "container_images": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "generated_at_utc": {"type": "string"},
+    "generated_by": {"type": "string"},
+    "worktree_clean": {"type": "boolean"},
+    "command": {"type": "string"},
+    "result": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"]},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "size_bytes", "sha256", "media_type", "immutable"],
+        "properties": {
+          "path": {"type": "string"},
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string"},
+          "media_type": {"type": "string"},
+          "immutable": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

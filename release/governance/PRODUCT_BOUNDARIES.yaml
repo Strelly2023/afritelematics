@@ -1,0 +1,125 @@
+schema_version: "1.0"
+
+products:
+  novaid:
+    source_roots:
+      - afritech/novaid
+      - afritech/api/novaid_api.py
+      - afritech/api/novaid_audit_replay_api.py
+    test_roots:
+      - afritech/tests/novaid
+      - tests/novaid
+    migration_roots:
+      - afritech/novaid/persistence/migrations
+    deployment_roots:
+      - docker-compose.novaid-integration.yml
+      - contracts/api/baselines/novaid
+    mobile_roots:
+      - novaid_business_app
+      - novaid_employee_app
+      - novaid_inspector_app
+      - novaid_partner_app
+      - novaid_personal_app
+    evidence_roots:
+      - contracts/api/baselines/novaid
+      - docs/novaid
+      - artifacts/release-baseline/evidence/novaid
+    certificate_roots:
+      - contracts/api/baselines/novaid
+      - artifacts/release-baseline/certificates/novaid
+    authoritative_readiness_documents:
+      - docs/novaid/implementation/NOVAID_CURRENT_STATE.md
+      - docs/novaid/implementation/NOVAID_EXECUTION_PLAN.md
+      - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+
+  novaride:
+    source_roots:
+      - afritech/novaride_runtime
+      - afritech/api/novaride_operations_api.py
+      - afritech/api/novaride_runtime_api.py
+      - apps/novaride-operations
+      - rider_app
+      - driver_app
+    test_roots:
+      - tests/novaride_runtime
+      - apps/novaride-operations/tests
+      - afritech/tests/api/test_novaride_operations_api.py
+    migration_roots:
+      - afritech/novaride_runtime/persistence/migrations
+    deployment_roots:
+      - deploy/novaride
+      - apps/novaride-operations
+      - apps/novaride-corporate
+      - apps/novaride-fraud-center
+      - apps/novaride-admin
+    mobile_roots:
+      - rider_app
+      - driver_app
+      - apk-public/novaride
+      - apk
+    evidence_roots:
+      - artifacts/novaride/ga-readiness
+      - artifacts/novaride/operations-browser-certification
+      - artifacts/novaride/operations-integration
+      - artifacts/novaride/operations-live-certification
+      - artifacts/novaride/trusted-mobility-upgrade
+      - contracts/api/baselines/operations
+      - docs/novaride
+      - docs/operations/novaride
+      - artifacts/release-baseline/evidence/novaride
+    certificate_roots:
+      - artifacts/novaride/trusted-mobility-upgrade
+      - contracts/api/baselines/operations
+      - artifacts/release-baseline/certificates/novaride
+    authoritative_readiness_documents:
+      - docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md
+      - docs/novaride/design/NOVARIDE_DESIGN_SYSTEM.md
+      - docs/novaride/implementation/NOVARIDE_CURRENT_STATE.md
+      - docs/novaride/implementation/NOVARIDE_EXECUTION_PLAN.md
+      - docs/novaride/implementation/NOVARIDE_GAP_MATRIX.md
+      - docs/novaride/strategy/NOVARIDE_MVP_SCOPE.md
+      - docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md
+
+  novapay:
+    source_roots:
+      - afritech/novapay
+      - afritech/api/novapay_ecosystem_api.py
+      - afritech/api/novapay_runtime_api.py
+      - afritech/core_platform/novapay_external_verifier.py
+      - afritech/core_platform/novapay_runtime.py
+    test_roots:
+      - afritech/tests/novapay
+      - afritech/tests/core_platform
+      - afritech/tests/afripay
+    migration_roots: []
+    deployment_roots:
+      - novapay_consumer_app
+      - novapay_merchant_app
+      - novapay_business_app
+      - novapay_agent_app
+      - novapay_support_console
+      - novapay_finance_portal
+      - novapay_operations_portal
+      - novapay_compliance_portal
+      - novapay_developer_portal
+      - docs/operations
+    mobile_roots:
+      - novapay_consumer_app
+      - novapay_merchant_app
+      - novapay_business_app
+      - novapay_agent_app
+    evidence_roots:
+      - contracts/api/baselines/novapay
+      - docs/operations
+      - docs/releases/NOVAPAY_AGENT_PILOT_002_RELEASE_NOTES.md
+      - artifacts/release-baseline/evidence/novapay
+    certificate_roots:
+      - contracts/api/baselines/novapay
+      - artifacts/release-baseline/certificates/novapay
+    authoritative_readiness_documents:
+      - docs/architecture/NOVAPAY_MULTI_COUNTRY_MOBILE_MONEY.md
+      - docs/architecture/NOVAPAY_GLOBAL_ARCHITECTURE_PHASE_5.md
+      - docs/architecture/NOVAPAY_AGENT_OPERATIONS_FRAMEWORK_2026.md
+      - docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md
+      - docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md
+      - docs/technical/NOVAPAY_CERTIFICATION_FRAUD_DETECTION_LAYER.md

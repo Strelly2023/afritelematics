@@ -1,0 +1,71 @@
+schema_version: "1.0"
+product: "novapay"
+release_candidate_id: "NOVAPAY-RC-001"
+
+entry_criteria:
+  - id: "NP-ENTRY-001"
+    statement: "Selected immutable release candidate exists."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/candidates/NOVAPAY_RC.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-ENTRY-002"
+    statement: "Worktree is clean."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["git status --porcelain=v1"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-ENTRY-003"
+    statement: "Initial scope is defined."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/scopes/INITIAL_GA_SCOPE.yaml"]
+    result: "NOT_RUN"
+    reason: ""
+
+exit_criteria:
+  - id: "NP-EXIT-001"
+    statement: "Authoritative ledger invariants passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["afritech/tests/core_platform/test_novapay_transfer_flow.py"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-EXIT-002"
+    statement: "Idempotency and duplicate callback tests passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["afritech/tests/afripay/test_novapay_certification_fraud.py"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-EXIT-003"
+    statement: "Refund and reversal workflow passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-EXIT-004"
+    statement: "Reconciliation evidence exists."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NP-EXIT-005"
+    statement: "Live rail authorization exists before activation."
+    mandatory: true
+    evaluation_type: "manual"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["contracts/api/baselines/novapay/latest.openapi.json"]
+    result: "NOT_RUN"
+    reason: ""

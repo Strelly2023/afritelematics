@@ -1,0 +1,853 @@
+{
+  "entries": [
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novaid_api.py",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novaid_audit_replay_api.py",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/tests/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "tests/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/novaid/persistence/migrations",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "migration_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docker-compose.novaid-integration.yml",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novaid_business_app",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novaid_employee_app",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novaid_inspector_app",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novaid_partner_app",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novaid_personal_app",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/evidence/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/certificates/novaid",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaid/implementation/NOVAID_CURRENT_STATE.md",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaid/implementation/NOVAID_EXECUTION_PLAN.md",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaid/implementation/NOVAID_GAP_MATRIX.md",
+      "product": "novaid",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/novaride_runtime",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novaride_operations_api.py",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novaride_runtime_api.py",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-operations",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "rider_app",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "driver_app",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "tests/novaride_runtime",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-operations/tests",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/tests/api/test_novaride_operations_api.py",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/novaride_runtime/persistence/migrations",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "migration_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "deploy/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-operations",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-corporate",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-fraud-center",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apps/novaride-admin",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "rider_app",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "driver_app",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apk-public/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "apk",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/ga-readiness",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/operations-browser-certification",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/operations-integration",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/operations-live-certification",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/trusted-mobility-upgrade",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/operations",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/operations/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/evidence/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/novaride/trusted-mobility-upgrade",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/operations",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/certificates/novaride",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/design/NOVARIDE_DESIGN_SYSTEM.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/implementation/NOVARIDE_CURRENT_STATE.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/implementation/NOVARIDE_EXECUTION_PLAN.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/implementation/NOVARIDE_GAP_MATRIX.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/strategy/NOVARIDE_MVP_SCOPE.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md",
+      "product": "novaride",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novapay_ecosystem_api.py",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/api/novapay_runtime_api.py",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/core_platform/novapay_external_verifier.py",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/core_platform/novapay_runtime.py",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "source_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/tests/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/tests/core_platform",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "afritech/tests/afripay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "test_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_consumer_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_merchant_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_business_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_agent_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_support_console",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_finance_portal",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_operations_portal",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_compliance_portal",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_developer_portal",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/operations",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "deployment_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_consumer_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_merchant_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_business_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "novapay_agent_app",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "mobile_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/operations",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/releases/NOVAPAY_AGENT_PILOT_002_RELEASE_NOTES.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/evidence/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "evidence_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "contracts/api/baselines/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "artifacts/release-baseline/certificates/novapay",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "certificate_roots",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/architecture/NOVAPAY_MULTI_COUNTRY_MOBILE_MONEY.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/architecture/NOVAPAY_GLOBAL_ARCHITECTURE_PHASE_5.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/architecture/NOVAPAY_AGENT_OPERATIONS_FRAMEWORK_2026.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    },
+    {
+      "action": "preserve",
+      "exists": true,
+      "path": "docs/technical/NOVAPAY_CERTIFICATION_FRAUD_DETECTION_LAYER.md",
+      "product": "novapay",
+      "reason": "",
+      "root_kind": "authoritative_readiness_documents",
+      "symlink_safe": true
+    }
+  ],
+  "generated_at_utc": "2026-07-20T19:43:44.671429Z",
+  "repository": "/private/tmp/afritelematics-release-baseline",
+  "status": "PASS",
+  "summary": {
+    "entries": 93,
+    "failures": 0,
+    "products": [
+      "novaid",
+      "novapay",
+      "novaride"
+    ]
+  }
+}

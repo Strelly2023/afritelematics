@@ -1,0 +1,18 @@
+{
+  "generated_at_utc": "2026-07-20T19:43:45.292544+00:00",
+  "quarantined": [
+    {
+      "manifest": "artifacts/release-baseline/evidence/MANIFEST_VALIDATION_RESULT.json",
+      "reasons": [
+        "missing schema_version",
+        "missing manifest_id",
+        "missing product",
+        "missing release_candidate_id",
+        "missing commit_sha",
+        "missing artifacts"
+      ]
+    }
+  ],
+  "repairs": [],
+  "repository": "/private/tmp/afritelematics-release-baseline"
+}

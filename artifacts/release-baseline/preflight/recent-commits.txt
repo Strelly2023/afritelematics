@@ -1,0 +1,10 @@
+fbca1e0d4 (HEAD -> release/initial-ga-baseline-2026, origin/feature/novacodepro-unified-platform, feature/novacodepro-unified-platform, backup-release-baseline-20260720T184242Z) docs(novaride-operations): publish functional browser certification
+0b9e4ad73 fix(novaride-operations): complete positive browser workflow certification
+c706d3889 fix(novaride-operations): restore payment investigations browser flow
+0d0d15b35 feat(platform): harden NovaID and NovaRide operations
+6d5996ee0 chore(repo): ignore browser test run outputs
+faa846b10 docs(novaride-operations): publish browser certification evidence
+796cc5483 test(novaride-operations): add authenticated browser certification harness
+5969f6dbb feat(novaride-operations): connect authoritative operations APIs
+da30a0a68 docs(novaride-ui): publish UI UX evidence and prototype spec
+0ebce8bc5 feat(novaride-ui): expand operations portal and design system

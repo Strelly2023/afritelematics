@@ -1,0 +1,33 @@
+name: release-baseline-integrity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - release/**
+      - feature/novacodepro-unified-platform
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python dependencies
+        run: python3 -m pip install --upgrade pip pyyaml pytest
+      - name: Validate product boundaries
+        run: python3 scripts/release/validate_product_boundaries.py
+      - name: Validate release candidates
+        run: python3 scripts/release/validate_release_candidates.py
+      - name: Validate traceability
+        run: python3 scripts/release/validate_traceability.py
+      - name: Validate evidence manifests
+        run: python3 scripts/release/validate_evidence_manifests.py
+      - name: Audit certificates
+        run: python3 scripts/release/audit_existing_certificates.py
+      - name: Evaluate GA gates
+        run: python3 scripts/release/evaluate_ga_gates.py
+      - name: Diff check
+        run: git diff --check

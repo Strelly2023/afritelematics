@@ -1,0 +1,71 @@
+schema_version: "1.0"
+product: "novaride"
+release_candidate_id: "NOVARIDE-RC-001"
+
+entry_criteria:
+  - id: "NR-ENTRY-001"
+    statement: "Selected immutable release candidate exists."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/candidates/NOVARIDE_RC.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-ENTRY-002"
+    statement: "Worktree is clean."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["git status --porcelain=v1"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-ENTRY-003"
+    statement: "Initial scope is defined."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["release/scopes/INITIAL_GA_SCOPE.yaml"]
+    result: "NOT_RUN"
+    reason: ""
+
+exit_criteria:
+  - id: "NR-EXIT-001"
+    statement: "Rider registration passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-EXIT-002"
+    statement: "Driver registration passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-EXIT-003"
+    statement: "Dispatch lifecycle passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["artifacts/novaride/operations-integration/IMPLEMENTATION_RESULTS.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-EXIT-004"
+    statement: "Safety workflows passed."
+    mandatory: true
+    evaluation_type: "automated"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["artifacts/novaride/operations-browser-certification/TEST_RESULTS.json"]
+    result: "NOT_RUN"
+    reason: ""
+  - id: "NR-EXIT-005"
+    statement: "Physical-device matrix passed."
+    mandatory: true
+    evaluation_type: "manual"
+    evaluator: "scripts/release/evaluate_ga_gates.py"
+    evidence_required: ["artifacts/novaride/operational/PHYSICAL_DEVICE_MATRIX.json"]
+    result: "NOT_RUN"
+    reason: ""

@@ -1,0 +1,108 @@
+{
+  "classification": "CONTROLLED_PILOT_READY",
+  "decision": "BLOCKED",
+  "entry_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/candidates/NOVAPAY_RC.json"
+      ],
+      "id": "NP-ENTRY-001",
+      "mandatory": true,
+      "reason": "candidate manifest missing or invalid",
+      "result": "FAIL",
+      "statement": "Selected immutable release candidate exists."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "git status --porcelain=v1"
+      ],
+      "id": "NP-ENTRY-002",
+      "mandatory": true,
+      "reason": "worktree dirty",
+      "result": "FAIL",
+      "statement": "Worktree is clean."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "release/scopes/INITIAL_GA_SCOPE.yaml"
+      ],
+      "id": "NP-ENTRY-003",
+      "mandatory": true,
+      "reason": "",
+      "result": "PASS",
+      "statement": "Initial scope is defined."
+    }
+  ],
+  "exit_criteria": [
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "afritech/tests/core_platform/test_novapay_transfer_flow.py"
+      ],
+      "id": "NP-EXIT-001",
+      "mandatory": true,
+      "reason": "external approvals not present",
+      "result": "BLOCKED",
+      "statement": "Authoritative ledger invariants passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "afritech/tests/afripay/test_novapay_certification_fraud.py"
+      ],
+      "id": "NP-EXIT-002",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Idempotency and duplicate callback tests passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md"
+      ],
+      "id": "NP-EXIT-003",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Refund and reversal workflow passed."
+    },
+    {
+      "evaluation_type": "automated",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md"
+      ],
+      "id": "NP-EXIT-004",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Reconciliation evidence exists."
+    },
+    {
+      "evaluation_type": "manual",
+      "evaluator": "scripts/release/evaluate_ga_gates.py",
+      "evidence_required": [
+        "contracts/api/baselines/novapay/latest.openapi.json"
+      ],
+      "id": "NP-EXIT-005",
+      "mandatory": true,
+      "reason": "commit-bound evidence incomplete",
+      "result": "BLOCKED",
+      "statement": "Live rail authorization exists before activation."
+    }
+  ],
+  "generated_at_utc": "2026-07-20T19:43:45.179874Z",
+  "product": "novapay",
+  "release_candidate_id": "NOVAPAY-RC-001",
+  "schema_version": "1.0"
+}
