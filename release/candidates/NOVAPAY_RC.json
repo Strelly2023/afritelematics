@@ -1,0 +1,42 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "dirty_tree": false,
+  "lockfiles": [
+    {
+      "path": "novapay_business_app/package-lock.json",
+      "sha256": "ef6908b1f5b21070ce49e17eb1165cdcaf58b8ed8f8c7868598476637249ea0b"
+    },
+    {
+      "path": "novapay_consumer_app/package-lock.json",
+      "sha256": "89bf582fbbf3883aa86268a5b69a45cc6d675d8184387e9aa388665001d76369"
+    },
+    {
+      "path": "novapay_merchant_app/package-lock.json",
+      "sha256": "257245169f409255f9767a15f27cf9aa4885706a09ba46f2778bcb8929c6e975"
+    }
+  ],
+  "migration_paths": [],
+  "migrations": [],
+  "product": "novapay",
+  "product_tree_sha256": "dc578f2878107f4f7bd5c8586728a0068f3914ee1eba31c25793bbe7942e1e4c",
+  "release_candidate_id": "NOVAPAY-RC-001",
+  "repository_tree_sha256": "53d75b072c49592248d3b0720fb1f4a19acceaf9520d7a04cb306ccd700e0dbb",
+  "schema_version": "1.0",
+  "scope_id": "INITIAL-GA-AU-VIC-001",
+  "selected_at_utc": "2026-07-20T20:21:00.426443Z",
+  "selected_from_branch": "release/initial-ga-baseline-2026",
+  "selection_blockers": [],
+  "selection_status": "SELECTED",
+  "source_paths": [
+    "afritech/novapay",
+    "afritech/api/novapay_ecosystem_api.py",
+    "afritech/api/novapay_runtime_api.py",
+    "afritech/core_platform/novapay_external_verifier.py",
+    "afritech/core_platform/novapay_runtime.py"
+  ],
+  "test_paths": [
+    "afritech/tests/novapay",
+    "afritech/tests/core_platform",
+    "afritech/tests/afripay"
+  ]
+}

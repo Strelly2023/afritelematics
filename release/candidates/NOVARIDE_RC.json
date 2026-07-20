@@ -1,0 +1,90 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "dirty_tree": false,
+  "lockfiles": [
+    {
+      "path": "apps/novaride-admin/package-lock.json",
+      "sha256": "f12a51527e6fa6b168c6bfd36f399e4adfcfff42e136951d3141bed4a3f130e7"
+    },
+    {
+      "path": "apps/novaride-corporate/package-lock.json",
+      "sha256": "dcce319e5c7f7bc700a34bd7573aeb48c554a1841e56bcca02ee3df366a98aea"
+    },
+    {
+      "path": "apps/novaride-fraud-center/package-lock.json",
+      "sha256": "dc81a18e75ccc870ae6d2368746eaa73c9a57aba41179911b592cb72247b0c15"
+    },
+    {
+      "path": "apps/novaride-operations/package-lock.json",
+      "sha256": "11b598702787ba3f00bedf1bead58a322db8fa933c12753c41a1cd013b21300a"
+    },
+    {
+      "path": "driver_app/package-lock.json",
+      "sha256": "26786dba72cd54edbccf41f7d8e28854e94dee36e20252e117ade64b6cad9c42"
+    },
+    {
+      "path": "rider_app/package-lock.json",
+      "sha256": "2653204cf2f3d7d6524b051cd0380f15dc3b0ce6041f311102d5fff856c7ac31"
+    }
+  ],
+  "migration_paths": [
+    "afritech/novaride_runtime/persistence/migrations"
+  ],
+  "migrations": [
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0001_novaride_runtime.sql",
+      "sha256": "608abf880a741aa9c747667558aa3db07162db6cb8f844ae1b370126ef8c3494"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0002_novaride_runtime_rls.sql",
+      "sha256": "b15157974bae1355084fcc8e483afac8cb4b1bc33479e8eb2df91783a8eaf04b"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0003_novaride_outbox.sql",
+      "sha256": "ded85b853d54ddaa0e7b34267cef11ea448164b46f024fae5a98348981a52c88"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0004_novaride_read_models.sql",
+      "sha256": "d21656726ee85fc71ff8bb8d0f76b6d0b07834c2256e32f2a08e168a00686c94"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0005_novaride_replay_indexes.sql",
+      "sha256": "a650a919902e770973edb9b4c1fc982c4f7fc2e20f1600fb4b3c451cca203fb4"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0006_novaride_runtime_constraints.sql",
+      "sha256": "c135829acbb1e8dbbafc631b5b0f5c54a6b5a727bf160ea6000a02ae904be81d"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0007_novaride_replay_control_plane.sql",
+      "sha256": "4465740ea6aa8546a4806f29b54ed134f20200f3c73bca35d2b989547176e547"
+    },
+    {
+      "path": "afritech/novaride_runtime/persistence/migrations/0008_novaride_resilience_hardening.sql",
+      "sha256": "2ff510393a60aa974778197cd14f25df4828bfbc242b3777be4e7f788fc8abdc"
+    }
+  ],
+  "product": "novaride",
+  "product_tree_sha256": "04b7278c23a4be49d3468f7e3699283372a952a3ed34c6d331f726695cbad102",
+  "release_candidate_id": "NOVARIDE-RC-001",
+  "repository_tree_sha256": "53d75b072c49592248d3b0720fb1f4a19acceaf9520d7a04cb306ccd700e0dbb",
+  "schema_version": "1.0",
+  "scope_id": "INITIAL-GA-AU-VIC-001",
+  "selected_at_utc": "2026-07-20T20:20:59.881520Z",
+  "selected_from_branch": "release/initial-ga-baseline-2026",
+  "selection_blockers": [],
+  "selection_status": "SELECTED",
+  "source_paths": [
+    "afritech/novaride_runtime",
+    "afritech/api/novaride_operations_api.py",
+    "afritech/api/novaride_runtime_api.py",
+    "apps/novaride-operations",
+    "rider_app",
+    "driver_app"
+  ],
+  "test_paths": [
+    "tests/novaride_runtime",
+    "apps/novaride-operations/tests",
+    "afritech/tests/api/test_novaride_operations_api.py"
+  ]
+}

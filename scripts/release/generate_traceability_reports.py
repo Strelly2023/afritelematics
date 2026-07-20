@@ -350,7 +350,7 @@ PRODUCT_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
             "category": "operations",
             "mandatory_for_ga": True,
             "in_scope": True,
-            "source_paths": ["afritech/novaride_runtime/readiness", "afritech/novaride_runtime/observability", "afritech/novaride_runtime/events"],
+            "source_paths": ["afritech/novaride_runtime/readiness.py", "afritech/novaride_runtime/observability", "afritech/novaride_runtime/events"],
             "configuration_paths": ["artifacts/novaride/ga-readiness/INFRASTRUCTURE_RESULTS.json"],
             "migration_paths": ["afritech/novaride_runtime/persistence/migrations/0005_novaride_replay_indexes.sql"],
             "symbols": ["readiness", "evidence", "observability"],
@@ -396,11 +396,20 @@ def ensure_manifest(root: Path) -> dict[str, Any]:
 
 
 def summary_status(requirement: dict[str, Any]) -> str:
-    if requirement["acceptance_status"] == "PASS":
+    if "acceptance_status" in requirement:
+        if requirement["acceptance_status"] == "PASS":
+            return "PASS"
+        if requirement["acceptance_status"] == "BLOCKED":
+            return "BLOCKED"
+        return requirement.get("verification_status", "NOT_RUN")
+    acceptance = requirement.get("acceptance", {})
+    evidence = requirement.get("evidence", {})
+    verification = requirement.get("verification", {})
+    if acceptance.get("status") == "PASS" and evidence.get("status") == "PASS":
         return "PASS"
-    if requirement["acceptance_status"] == "BLOCKED":
+    if acceptance.get("status") == "BLOCKED" or evidence.get("status") == "BLOCKED":
         return "BLOCKED"
-    return requirement["verification_status"]
+    return verification.get("status", "NOT_RUN")
 
 
 def render_markdown(product: str, matrix: dict[str, Any]) -> str:

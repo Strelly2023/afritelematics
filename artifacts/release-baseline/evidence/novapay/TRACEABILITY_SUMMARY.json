@@ -1,0 +1,64 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "generated_at_utc": "2026-07-20T20:25:06.746514Z",
+  "product": "novapay",
+  "release_candidate_id": "NOVAPAY-RC-001",
+  "requirements": [
+    {
+      "evidence": [
+        "docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md"
+      ],
+      "requirement_id": "NP-BALANCE-001",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/core_platform/test_novapay_transfer_flow.py"
+      ],
+      "title": "Balance visibility and controlled funding"
+    },
+    {
+      "evidence": [
+        "docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md"
+      ],
+      "requirement_id": "NP-PAY-002",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/core_platform/test_novapay_external_verifier.py"
+      ],
+      "title": "Controlled merchant payment and receipts"
+    },
+    {
+      "evidence": [
+        "docs/operations/NOVAPAY_TREASURY_AI_SYSTEM.md"
+      ],
+      "requirement_id": "NP-REFUND-003",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/afripay/test_novapay_certification_fraud.py"
+      ],
+      "title": "Refund and reconciliation workflow"
+    },
+    {
+      "evidence": [
+        "docs/technical/NOVAPAY_CERTIFICATION_FRAUD_DETECTION_LAYER.md"
+      ],
+      "requirement_id": "NP-RECON-004",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/ci/test_novapay_mobile_money_validator.py"
+      ],
+      "title": "Transaction limits and reconciliation"
+    },
+    {
+      "evidence": [
+        "docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md"
+      ],
+      "requirement_id": "NP-LIVE-005",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/core_platform/test_novapay_external_verifier.py"
+      ],
+      "title": "Live money movement activation"
+    }
+  ],
+  "scope_id": "INITIAL-GA-AU-VIC-001"
+}

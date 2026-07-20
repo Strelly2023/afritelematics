@@ -1,0 +1,68 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "generated_at_utc": "2026-07-20T20:25:06.746514Z",
+  "product": "novaride",
+  "release_candidate_id": "NOVARIDE-RC-001",
+  "requirements": [
+    {
+      "evidence": [
+        "artifacts/novaride/ga-readiness/TEST_RESULTS.json"
+      ],
+      "requirement_id": "NR-RIDER-001",
+      "status": "BLOCKED",
+      "tests": [
+        "tests/novaride_runtime/contracts/test_runtime_api.py",
+        "apps/novaride-operations/tests/browser/overview.spec.ts"
+      ],
+      "title": "Rider registration and booking"
+    },
+    {
+      "evidence": [
+        "artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json"
+      ],
+      "requirement_id": "NR-DRIVER-002",
+      "status": "BLOCKED",
+      "tests": [
+        "tests/novaride_runtime/unit/test_state_machines.py",
+        "apps/novaride-operations/tests/browser/navigation.spec.ts"
+      ],
+      "title": "Driver registration and acceptance"
+    },
+    {
+      "evidence": [
+        "artifacts/novaride/operations-browser-certification/RELEASE_DECISION.md"
+      ],
+      "requirement_id": "NR-SAFETY-003",
+      "status": "BLOCKED",
+      "tests": [
+        "apps/novaride-operations/tests/browser/safety.spec.ts",
+        "apps/novaride-operations/tests/browser/support.spec.ts"
+      ],
+      "title": "Safety event reporting and support workflow"
+    },
+    {
+      "evidence": [
+        "artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json"
+      ],
+      "requirement_id": "NR-PAY-004",
+      "status": "BLOCKED",
+      "tests": [
+        "tests/novaride_runtime/deployment/test_production_operated_assets.py"
+      ],
+      "title": "Controlled cash or approved NovaPay payment handling"
+    },
+    {
+      "evidence": [
+        "artifacts/novaride/trusted-mobility-upgrade/NOVARIDE_RELEASE_CERTIFICATE.md"
+      ],
+      "requirement_id": "NR-RUNTIME-005",
+      "status": "BLOCKED",
+      "tests": [
+        "tests/novaride_runtime/replay/test_verified_replay.py",
+        "tests/novaride_runtime/security/test_boundaries.py"
+      ],
+      "title": "Operational runtime, readiness, and evidence integration"
+    }
+  ],
+  "scope_id": "INITIAL-GA-AU-VIC-001"
+}

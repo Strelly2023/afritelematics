@@ -1,0 +1,82 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "dirty_tree": false,
+  "lockfiles": [
+    {
+      "path": "novaid_business_app/package-lock.json",
+      "sha256": "dbc358c20b361cb9edc9e88f711bda5cf12f8033dbd1df84c122c2872c44761d"
+    },
+    {
+      "path": "novaid_employee_app/package-lock.json",
+      "sha256": "c40fe5f4c6a124cdf4af0daade0c37012af9e27897d1299b4bb3bf4a3af52813"
+    },
+    {
+      "path": "novaid_inspector_app/package-lock.json",
+      "sha256": "acfdecba27d79cfb0d8ed5b0114e668b2b307181c0144f7fedf1a88a49a8f9f5"
+    },
+    {
+      "path": "novaid_partner_app/package-lock.json",
+      "sha256": "ff09fa07697b2eb40495412272b1a0e7dfe758ebc55f037516dd3f9b8e296ada"
+    },
+    {
+      "path": "novaid_personal_app/package-lock.json",
+      "sha256": "163fdfba9fd4b52ba17e03e36b140fc0a6bdfa62c87f432bcd0e940e5eb7a44e"
+    }
+  ],
+  "migration_paths": [
+    "afritech/novaid/persistence/migrations"
+  ],
+  "migrations": [
+    {
+      "path": "afritech/novaid/persistence/migrations/0001_identity_core.sql",
+      "sha256": "e47c10ed306485607e1fdd32f2dead3a87c956a7e3da051edec9ed6460a3b634"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0002_novaid_runtime.sql",
+      "sha256": "be3b922c86e1d8c10d33dba7969f9155ae8bb655c22c769bfe23f891b6169f03"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0003_novaid_session_lifecycle.sql",
+      "sha256": "51f2133f6af47245510955e137511925842bb8fdb68f859307ab7232d6f10848"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0004_novaid_webauthn.sql",
+      "sha256": "b4cff8a660f54cd0dc84345dc7d03897f801795349035a36421ef2bcb76a74ef"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0005_novaid_webauthn_sessions_recovery.sql",
+      "sha256": "53a5f207bccee50a73c02897f0ee2cae0b12bf45c867c9be410758ae6893d382"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0006_novaid_webauthn_recovery_policy_distribution.sql",
+      "sha256": "48abff994c68985fd3b2f4e6a033b52632599be292fb37037b2fe87258b327a0"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0007_novaid_webauthn_distributed_runtime.sql",
+      "sha256": "6d63861231c28aadbd011b137e14d49cc4bd883eb34f721409d48702ebaf3bf2"
+    },
+    {
+      "path": "afritech/novaid/persistence/migrations/0008_novaid_governed_audit_replay.sql",
+      "sha256": "3c0e055908606f8f39cd50f64c83889f8ec009d2769a4ab25d5eed4b0984003f"
+    }
+  ],
+  "product": "novaid",
+  "product_tree_sha256": "a6f31dedf0727f1459453643b38d820c38a7bcbeccbe3e7185541d5b2a694ee1",
+  "release_candidate_id": "NOVAID-RC-001",
+  "repository_tree_sha256": "53d75b072c49592248d3b0720fb1f4a19acceaf9520d7a04cb306ccd700e0dbb",
+  "schema_version": "1.0",
+  "scope_id": "INITIAL-GA-AU-VIC-001",
+  "selected_at_utc": "2026-07-20T20:20:59.347223Z",
+  "selected_from_branch": "release/initial-ga-baseline-2026",
+  "selection_blockers": [],
+  "selection_status": "SELECTED",
+  "source_paths": [
+    "afritech/novaid",
+    "afritech/api/novaid_api.py",
+    "afritech/api/novaid_audit_replay_api.py"
+  ],
+  "test_paths": [
+    "afritech/tests/novaid",
+    "tests/novaid"
+  ]
+}

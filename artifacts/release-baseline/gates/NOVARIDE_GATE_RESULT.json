@@ -10,8 +10,8 @@
       ],
       "id": "NR-ENTRY-001",
       "mandatory": true,
-      "reason": "candidate manifest missing or invalid",
-      "result": "FAIL",
+      "reason": "",
+      "result": "PASS",
       "statement": "Selected immutable release candidate exists."
     },
     {
@@ -48,8 +48,8 @@
       ],
       "id": "NR-EXIT-001",
       "mandatory": true,
-      "reason": "traceability missing",
-      "result": "FAIL",
+      "reason": "",
+      "result": "PASS",
       "statement": "Rider registration passed."
     },
     {
@@ -101,7 +101,7 @@
       "statement": "Physical-device matrix passed."
     }
   ],
-  "generated_at_utc": "2026-07-20T19:43:45.059567Z",
+  "generated_at_utc": "2026-07-20T20:25:08.272318Z",
   "product": "novaride",
   "release_candidate_id": "NOVARIDE-RC-001",
   "schema_version": "1.0"

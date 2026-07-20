@@ -1,0 +1,234 @@
+schema_version: '1.0'
+product: novapay
+release_candidate_id: NOVAPAY-RC-001
+commit_sha: a1b818d5513d50d9a62a1f47d14367d36aef681f
+scope_id: INITIAL-GA-AU-VIC-001
+generated_at_utc: '2026-07-20T20:25:06.746514Z'
+requirements:
+- requirement_id: NP-BALANCE-001
+  title: Balance visibility and controlled funding
+  statement: NovaPay must expose account balance visibility and controlled funding
+    for approved domestic AUD flows.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novapay
+    - afritech/core_platform/novapay_runtime.py
+    - afritech/api/novapay_runtime_api.py
+    configuration_paths:
+    - contracts/api/baselines/novapay/latest.openapi.json
+    migration_paths: []
+    symbols:
+    - balance
+    - funding
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/core_platform/test_novapay_transfer_flow.py
+    commands:
+    - pytest -q afritech/tests/core_platform/test_novapay_transfer_flow.py
+    result_artifacts:
+    - reports/api-contracts/novapay.openapi.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/operations/NOVAPAY_MFS_FIRST_TRANSACTION_RUNBOOK.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novapay/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAPAY-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAPAY-ENTRY-001
+    exit_criteria_ids:
+    - NOVAPAY-EXIT-001
+    blockers:
+    - live money movement disabled until licensed arrangement exists
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NP-PAY-002
+  title: Controlled merchant payment and receipts
+  statement: NovaPay must support controlled merchant payment, reversal, and immutable
+    receipt generation.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/api/novapay_ecosystem_api.py
+    - afritech/api/novapay_runtime_api.py
+    - afritech/core_platform/novapay_external_verifier.py
+    configuration_paths:
+    - contracts/api/baselines/novapay/latest.openapi.json
+    migration_paths: []
+    symbols:
+    - receipt
+    - merchant payment
+    - reversal
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/core_platform/test_novapay_external_verifier.py
+    commands:
+    - pytest -q afritech/tests/core_platform/test_novapay_external_verifier.py
+    result_artifacts:
+    - reports/api-contracts/novapay.openapi.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novapay/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAPAY-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAPAY-ENTRY-001
+    exit_criteria_ids:
+    - NOVAPAY-EXIT-001
+    blockers:
+    - production payment activation not approved
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NP-REFUND-003
+  title: Refund and reconciliation workflow
+  statement: NovaPay must support refunds, reversals, and reconciliation with immutable
+    receipts.
+  category: operations
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/tests/afripay/test_novapay_certification_fraud.py
+    - afritech/tests/core_platform/test_novapay_transfer_flow.py
+    configuration_paths:
+    - contracts/api/baselines/novapay/latest.openapi.json
+    migration_paths: []
+    symbols:
+    - refund
+    - reconciliation
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/afripay/test_novapay_certification_fraud.py
+    commands:
+    - pytest -q afritech/tests/afripay/test_novapay_certification_fraud.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/operations/NOVAPAY_TREASURY_AI_SYSTEM.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novapay/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAPAY-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAPAY-ENTRY-001
+    exit_criteria_ids:
+    - NOVAPAY-EXIT-001
+    blockers:
+    - live refund rail approval absent
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NP-RECON-004
+  title: Transaction limits and reconciliation
+  statement: NovaPay must enforce configuration-driven transaction limits and maintain
+    reconciliation evidence.
+  category: data
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/ci/novapay_mobile_money_validator.py
+    - afritech/core_platform/novapay_runtime.py
+    configuration_paths:
+    - afritech/governance/adr/ADR-0048-novapay-multi-country-mobile-money.yaml
+    migration_paths: []
+    symbols:
+    - transaction limit
+    - reconciliation
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/ci/test_novapay_mobile_money_validator.py
+    commands:
+    - pytest -q afritech/tests/ci/test_novapay_mobile_money_validator.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/DEPENDENCY_LOCK_STATUS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/technical/NOVAPAY_CERTIFICATION_FRAUD_DETECTION_LAYER.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novapay/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAPAY-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAPAY-ENTRY-001
+    exit_criteria_ids:
+    - NOVAPAY-EXIT-001
+    blockers:
+    - licensed settlement and reconciliation evidence absent
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NP-LIVE-005
+  title: Live money movement activation
+  statement: NovaPay may only enable live money movement after approved licensing,
+    provider approval, live credentials, and settlement certification.
+  category: compliance
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: BLOCKED
+    source_paths:
+    - docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md
+    - afritech/governance/rules/RULE-068-novapay-multi-country-mobile-money.yaml
+    configuration_paths:
+    - contracts/api/baselines/novapay/latest.openapi.json
+    migration_paths: []
+    symbols:
+    - live money movement
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/core_platform/test_novapay_external_verifier.py
+    commands:
+    - pytest -q afritech/tests/core_platform/test_novapay_external_verifier.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json
+  evidence:
+    status: BLOCKED
+    artifact_paths:
+    - docs/operations/NOVAPAY_PRODUCTION_ROLLOUT_PLAN.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novapay/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAPAY-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAPAY-ENTRY-001
+    exit_criteria_ids:
+    - NOVAPAY-EXIT-001
+    blockers:
+    - licensed arrangement and live rail approval absent
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator

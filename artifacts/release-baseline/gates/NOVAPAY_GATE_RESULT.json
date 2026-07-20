@@ -10,8 +10,8 @@
       ],
       "id": "NP-ENTRY-001",
       "mandatory": true,
-      "reason": "candidate manifest missing or invalid",
-      "result": "FAIL",
+      "reason": "",
+      "result": "PASS",
       "statement": "Selected immutable release candidate exists."
     },
     {
@@ -101,7 +101,7 @@
       "statement": "Live rail authorization exists before activation."
     }
   ],
-  "generated_at_utc": "2026-07-20T19:43:45.179874Z",
+  "generated_at_utc": "2026-07-20T20:25:08.363973Z",
   "product": "novapay",
   "release_candidate_id": "NOVAPAY-RC-001",
   "schema_version": "1.0"

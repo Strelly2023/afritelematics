@@ -1,0 +1,64 @@
+{
+  "commit_sha": "a1b818d5513d50d9a62a1f47d14367d36aef681f",
+  "generated_at_utc": "2026-07-20T20:25:06.746514Z",
+  "product": "novaid",
+  "release_candidate_id": "NOVAID-RC-001",
+  "requirements": [
+    {
+      "evidence": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "requirement_id": "NI-AUTH-001",
+      "status": "BLOCKED",
+      "tests": [
+        "tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "title": "Registration, password authentication, and session lifecycle"
+    },
+    {
+      "evidence": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "requirement_id": "NI-RECOVERY-002",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "title": "Account recovery and revocation"
+    },
+    {
+      "evidence": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "requirement_id": "NI-AUTHZ-003",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "title": "Tenant-aware authorization and audit events"
+    },
+    {
+      "evidence": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "requirement_id": "NI-MFA-004",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "title": "MFA and step-up authentication"
+    },
+    {
+      "evidence": [
+        "docs/novaid/implementation/NOVAID_GAP_MATRIX.md"
+      ],
+      "requirement_id": "NI-IDP-005",
+      "status": "BLOCKED",
+      "tests": [
+        "afritech/tests/novaid/test_novaid_ecosystem.py"
+      ],
+      "title": "Supported identity provider integrations certified"
+    }
+  ],
+  "scope_id": "INITIAL-GA-AU-VIC-001"
+}

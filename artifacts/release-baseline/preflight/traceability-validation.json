@@ -1,0 +1,10 @@
+{
+  "blockers": {
+    "novaid": [],
+    "novapay": [],
+    "novaride": []
+  },
+  "repository": "/private/tmp/afritelematics-release-baseline",
+  "status": "PASS",
+  "validated_at_utc": "2026-07-20T20:25:07.845878Z"
+}

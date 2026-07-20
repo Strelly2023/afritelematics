@@ -1,0 +1,238 @@
+schema_version: '1.0'
+product: novaid
+release_candidate_id: NOVAID-RC-001
+commit_sha: a1b818d5513d50d9a62a1f47d14367d36aef681f
+scope_id: INITIAL-GA-AU-VIC-001
+generated_at_utc: '2026-07-20T20:25:06.746514Z'
+requirements:
+- requirement_id: NI-AUTH-001
+  title: Registration, password authentication, and session lifecycle
+  statement: NovaID must support workforce, rider, driver, agent, and merchant registration
+    and password authentication with a governed session lifecycle.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaid
+    - afritech/api/novaid_api.py
+    - afritech/novaid/persistence/migrations
+    configuration_paths:
+    - contracts/api/baselines/novaid/latest.openapi.json
+    migration_paths:
+    - afritech/novaid/persistence/migrations/0002_novaid_runtime.sql
+    symbols:
+    - NovaIDService
+    - NovaIDSessionStore
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - tests/novaid/test_novaid_ecosystem.py
+    commands:
+    - pytest -q tests/novaid/test_novaid_ecosystem.py
+    result_artifacts:
+    - docs/novaid/implementation/NOVAID_CURRENT_STATE.md
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaid/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAID-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAID-ENTRY-001
+    exit_criteria_ids:
+    - NOVAID-EXIT-001
+    blockers:
+    - release candidate selection not yet frozen
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NI-RECOVERY-002
+  title: Account recovery and revocation
+  statement: NovaID must provide account recovery, revocation, and recovery controls
+    for governed identities.
+  category: security
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaid/revocation.py
+    - afritech/novaid/revocation_delivery.py
+    - afritech/novaid/security.py
+    configuration_paths:
+    - docs/novaid/implementation/NOVAID_EXECUTION_PLAN.md
+    migration_paths:
+    - afritech/novaid/persistence/migrations/0007_novaid_webauthn_distributed_runtime.sql
+    symbols:
+    - revocation
+    - recovery
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/novaid/test_novaid_ecosystem.py
+    commands:
+    - pytest -q afritech/tests/novaid/test_novaid_ecosystem.py
+    result_artifacts:
+    - docs/novaid/implementation/NOVAID_CURRENT_STATE.md
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaid/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAID-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAID-ENTRY-001
+    exit_criteria_ids:
+    - NOVAID-EXIT-001
+    blockers:
+    - external approval for release candidate not yet issued
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NI-AUTHZ-003
+  title: Tenant-aware authorization and audit events
+  statement: NovaID must enforce tenant-aware authorization and emit durable audit
+    events.
+  category: security
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaid/service.py
+    - afritech/novaid/trust.py
+    - afritech/api/novaid_audit_replay_api.py
+    configuration_paths:
+    - contracts/api/baselines/novaid/latest.openapi.json
+    migration_paths:
+    - afritech/novaid/persistence/migrations/0008_novaid_governed_audit_replay.sql
+    symbols:
+    - audit
+    - authorization
+    - tenant
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/novaid/test_novaid_ecosystem.py
+    commands:
+    - pytest -q afritech/tests/novaid/test_novaid_ecosystem.py
+    result_artifacts:
+    - contracts/api/baselines/novaid/latest.openapi.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaid/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAID-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAID-ENTRY-001
+    exit_criteria_ids:
+    - NOVAID-EXIT-001
+    blockers:
+    - no certified GA approval
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NI-MFA-004
+  title: MFA and step-up authentication
+  statement: NovaID should support MFA where fully implemented and record step-up
+    authentication events.
+  category: security
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaid/ai.py
+    - afritech/novaid/runtime.py
+    - afritech/novaid/tokens.py
+    configuration_paths:
+    - docs/novaid/implementation/NOVAID_EXECUTION_PLAN.md
+    migration_paths: []
+    symbols:
+    - MFA
+    - step-up
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/novaid/test_novaid_ecosystem.py
+    commands:
+    - pytest -q afritech/tests/novaid/test_novaid_ecosystem.py
+    result_artifacts:
+    - docs/novaid/implementation/NOVAID_CURRENT_STATE.md
+  evidence:
+    status: PASS
+    artifact_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaid/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAID-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAID-ENTRY-001
+    exit_criteria_ids:
+    - NOVAID-EXIT-001
+    blockers:
+    - certified MFA provider evidence not present
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NI-IDP-005
+  title: Supported identity provider integrations certified
+  statement: NovaID must only rely on approved and certified external identity provider
+    integrations for GA.
+  category: compliance
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: BLOCKED
+    source_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    configuration_paths:
+    - contracts/api/baselines/novaid/latest.openapi.json
+    migration_paths: []
+    symbols:
+    - identity provider
+  verification:
+    status: NOT_RUN
+    test_ids:
+    - afritech/tests/novaid/test_novaid_ecosystem.py
+    commands:
+    - pytest -q afritech/tests/novaid/test_novaid_ecosystem.py
+    result_artifacts:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+  evidence:
+    status: BLOCKED
+    artifact_paths:
+    - docs/novaid/implementation/NOVAID_GAP_MATRIX.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaid/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVAID-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVAID-ENTRY-001
+    exit_criteria_ids:
+    - NOVAID-EXIT-001
+    blockers:
+    - certified external identity provider evidence absent
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator

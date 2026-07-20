@@ -1,0 +1,248 @@
+schema_version: '1.0'
+product: novaride
+release_candidate_id: NOVARIDE-RC-001
+commit_sha: a1b818d5513d50d9a62a1f47d14367d36aef681f
+scope_id: INITIAL-GA-AU-VIC-001
+generated_at_utc: '2026-07-20T20:25:06.746514Z'
+requirements:
+- requirement_id: NR-RIDER-001
+  title: Rider registration and booking
+  statement: NovaRide must support rider registration, identity verification, and
+    ride request creation within the defined Australian launch geography.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaride_runtime
+    - apps/novaride-operations
+    - rider_app
+    configuration_paths:
+    - docs/novaride/requirements/NOVARIDE_REQUIREMENTS.yaml
+    migration_paths:
+    - afritech/novaride_runtime/persistence/migrations/0001_novaride_runtime.sql
+    symbols:
+    - booking
+    - ride request
+  verification:
+    status: PASS
+    test_ids:
+    - tests/novaride_runtime/contracts/test_runtime_api.py
+    - apps/novaride-operations/tests/browser/overview.spec.ts
+    commands:
+    - pytest -q tests/novaride_runtime/contracts/test_runtime_api.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - artifacts/novaride/ga-readiness/TEST_RESULTS.json
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaride/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVARIDE-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVARIDE-ENTRY-001
+    exit_criteria_ids:
+    - NOVARIDE-EXIT-001
+    blockers:
+    - live deployment approval not present
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NR-DRIVER-002
+  title: Driver registration and acceptance
+  statement: NovaRide must support driver registration, assignment, acceptance, and
+    trip lifecycle management.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaride_runtime
+    - driver_app
+    - apps/novaride-operations
+    configuration_paths:
+    - docs/novaride/implementation/NOVARIDE_CURRENT_STATE.md
+    migration_paths:
+    - afritech/novaride_runtime/persistence/migrations/0004_novaride_read_models.sql
+    symbols:
+    - driver acceptance
+    - trip lifecycle
+  verification:
+    status: PASS
+    test_ids:
+    - tests/novaride_runtime/unit/test_state_machines.py
+    - apps/novaride-operations/tests/browser/navigation.spec.ts
+    commands:
+    - pytest -q tests/novaride_runtime/unit/test_state_machines.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/RIDE_LIFECYCLE_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaride/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVARIDE-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVARIDE-ENTRY-001
+    exit_criteria_ids:
+    - NOVARIDE-EXIT-001
+    blockers:
+    - physical-device certification remains external
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NR-SAFETY-003
+  title: Safety event reporting and support workflow
+  statement: NovaRide must support safety event reporting, support workflows, and
+    receipt generation for launch geography.
+  category: operations
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaride_runtime/safety
+    - apps/novaride-operations
+    - docs/novaride
+    configuration_paths:
+    - docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md
+    migration_paths:
+    - afritech/novaride_runtime/persistence/migrations/0008_novaride_resilience_hardening.sql
+    symbols:
+    - safety
+    - support
+    - receipt
+  verification:
+    status: PASS
+    test_ids:
+    - apps/novaride-operations/tests/browser/safety.spec.ts
+    - apps/novaride-operations/tests/browser/support.spec.ts
+    commands:
+    - PLAYWRIGHT_USE_EXISTING_SERVERS=1 PLAYWRIGHT_SKIP_BACKEND=1 npx playwright test
+      tests/browser/safety.spec.ts tests/browser/support.spec.ts
+    result_artifacts:
+    - artifacts/novaride/operations-browser-certification/TEST_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - artifacts/novaride/operations-browser-certification/RELEASE_DECISION.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaride/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVARIDE-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVARIDE-ENTRY-001
+    exit_criteria_ids:
+    - NOVARIDE-EXIT-001
+    blockers:
+    - external pilot and live deployment evidence absent
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NR-PAY-004
+  title: Controlled cash or approved NovaPay payment handling
+  statement: NovaRide must accept only controlled cash or approved NovaPay payment
+    handling in the launch geography.
+  category: functional
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaride_runtime/wallet_adapter
+    - afritech/novaride_runtime/pricing
+    configuration_paths:
+    - artifacts/novaride/ga-readiness/GA_SCOPE.json
+    migration_paths:
+    - afritech/novaride_runtime/persistence/migrations/0006_novaride_runtime_constraints.sql
+    symbols:
+    - cash
+    - NovaPay
+  verification:
+    status: PASS
+    test_ids:
+    - tests/novaride_runtime/deployment/test_production_operated_assets.py
+    commands:
+    - pytest -q tests/novaride_runtime/deployment/test_production_operated_assets.py
+    result_artifacts:
+    - artifacts/novaride/ga-readiness/LOAD_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - artifacts/novaride/ga-readiness/RELEASE_GATE_RESULTS.json
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaride/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVARIDE-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVARIDE-ENTRY-001
+    exit_criteria_ids:
+    - NOVARIDE-EXIT-001
+    blockers:
+    - approved NovaPay payment activation not yet certified
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator
+- requirement_id: NR-RUNTIME-005
+  title: Operational runtime, readiness, and evidence integration
+  statement: NovaRide must maintain the runtime, readiness, and evidence paths needed
+    for governed operations.
+  category: operations
+  mandatory_for_ga: true
+  in_scope: true
+  implementation:
+    status: PASS
+    source_paths:
+    - afritech/novaride_runtime/readiness.py
+    - afritech/novaride_runtime/observability
+    - afritech/novaride_runtime/events
+    configuration_paths:
+    - artifacts/novaride/ga-readiness/INFRASTRUCTURE_RESULTS.json
+    migration_paths:
+    - afritech/novaride_runtime/persistence/migrations/0005_novaride_replay_indexes.sql
+    symbols:
+    - readiness
+    - evidence
+    - observability
+  verification:
+    status: PASS
+    test_ids:
+    - tests/novaride_runtime/replay/test_verified_replay.py
+    - tests/novaride_runtime/security/test_boundaries.py
+    commands:
+    - pytest -q tests/novaride_runtime/replay/test_verified_replay.py tests/novaride_runtime/security/test_boundaries.py
+    result_artifacts:
+    - artifacts/novaride/trusted-mobility-upgrade/TEST_RESULTS.json
+  evidence:
+    status: PASS
+    artifact_paths:
+    - artifacts/novaride/trusted-mobility-upgrade/NOVARIDE_RELEASE_CERTIFICATE.md
+    manifest_paths:
+    - artifacts/release-baseline/evidence/novaride/TRACEABILITY_SUMMARY.json
+    certificate_ids:
+    - NOVARIDE-RC-001
+  acceptance:
+    status: BLOCKED
+    entry_criteria_ids:
+    - NOVARIDE-ENTRY-001
+    exit_criteria_ids:
+    - NOVARIDE-EXIT-001
+    blockers:
+    - live PostgreSQL/Redis/Kafka proof and physical-device matrix remain external
+  current_status: BLOCKED
+  last_validated_commit: a1b818d5513d50d9a62a1f47d14367d36aef681f
+  reviewer: release-baseline-generator

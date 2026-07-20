@@ -14,12 +14,42 @@
     },
     {
       "classification": "informational only",
+      "path": "afritech/certification/__pycache__/afriride_phase5_readiness_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/certification/__pycache__/production_readiness_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
       "path": "afritech/certification/afriride_phase5_readiness_certificate.py",
       "result": "UNVERIFIABLE"
     },
     {
       "classification": "informational only",
       "path": "afritech/certification/production_readiness_certificate.py",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/ci/__pycache__/afriride_phase5_readiness_certificate_validator.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/ci/__pycache__/certificate_validator.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/ci/__pycache__/production_readiness_certificate_validator.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/ci/__pycache__/runtime_certificate_validator.cpython-311.pyc",
       "result": "UNVERIFIABLE"
     },
     {
@@ -44,12 +74,37 @@
     },
     {
       "classification": "informational only",
+      "path": "afritech/novascript/v2/__pycache__/certificates.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
       "path": "afritech/novascript/v2/certificates.py",
       "result": "UNVERIFIABLE"
     },
     {
       "classification": "informational only",
+      "path": "afritech/platform_runtime/operational/__pycache__/activation_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
       "path": "afritech/platform_runtime/operational/activation_certificate.py",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/proof/__pycache__/build_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/proof/__pycache__/generate_runtime_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/proof/__pycache__/runtime_certificate.cpython-311.pyc",
       "result": "UNVERIFIABLE"
     },
     {
@@ -84,12 +139,27 @@
     },
     {
       "classification": "informational only",
+      "path": "afritech/tests/certification/__pycache__/test_afriride_phase5_readiness_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/tests/certification/__pycache__/test_production_readiness_certificate.cpython-311.pyc",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
       "path": "afritech/tests/certification/test_afriride_phase5_readiness_certificate.py",
       "result": "UNVERIFIABLE"
     },
     {
       "classification": "informational only",
       "path": "afritech/tests/certification/test_production_readiness_certificate.py",
+      "result": "UNVERIFIABLE"
+    },
+    {
+      "classification": "informational only",
+      "path": "afritech/tests/ci/__pycache__/test_certificate_validator.cpython-311.pyc",
       "result": "UNVERIFIABLE"
     },
     {
@@ -223,6 +293,6 @@
       "result": "UNVERIFIABLE"
     }
   ],
-  "generated_at_utc": "2026-07-20T19:43:45.465219+00:00",
+  "generated_at_utc": "2026-07-20T20:25:08.645156+00:00",
   "repository": "/private/tmp/afritelematics-release-baseline"
 }

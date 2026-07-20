@@ -1,10 +1,28 @@
 # Manifest validation
 
 {
-  "blockers": {},
-  "generated_at_utc": "2026-07-20T19:43:45.240337+00:00",
-  "manifest_count": 0,
+  "blockers": {
+    "artifacts/release-baseline/evidence/MANIFEST_REPAIR_LOG.json": [
+      "missing schema_version",
+      "missing manifest_id",
+      "missing product",
+      "missing release_candidate_id",
+      "missing commit_sha",
+      "missing result",
+      "missing artifacts"
+    ],
+    "artifacts/release-baseline/evidence/MANIFEST_VALIDATION_RESULT.json": [
+      "missing schema_version",
+      "missing manifest_id",
+      "missing product",
+      "missing release_candidate_id",
+      "missing commit_sha",
+      "missing artifacts"
+    ]
+  },
+  "generated_at_utc": "2026-07-20T20:25:08.416485+00:00",
+  "manifest_count": 2,
   "repository": "/private/tmp/afritelematics-release-baseline",
-  "result": "PASS",
-  "validated_count": 0
+  "result": "FAIL",
+  "validated_count": 2
 }
