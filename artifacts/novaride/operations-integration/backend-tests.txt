@@ -1,0 +1,4 @@
+Command: pytest -q afritech/tests/api/test_novaride_operations_api.py
+Result: PASS
+Summary: 3 passed, 1 warning
+Coverage: operations API authorization, overview, live views, incident workflow, safety workflow, support workflow, refund governance, payment investigations, disputes, governed actions, evidence

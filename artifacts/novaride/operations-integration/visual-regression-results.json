@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-07-20",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "command": "not run",
+  "result": "BLOCKED_EXTERNAL",
+  "details": "Deterministic browser screenshot comparison tooling is not configured in this repo slice."
+}

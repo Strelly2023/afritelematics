@@ -1,0 +1,2 @@
+Status: BLOCKED_EXTERNAL
+Reason: no browser automation harness is available in this repo slice/runtime, and the operations package does not include a Playwright or equivalent browser E2E setup

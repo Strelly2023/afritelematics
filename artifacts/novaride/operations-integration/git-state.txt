@@ -1,0 +1,5 @@
+Repository: /Users/ostrinov/afritelematics
+Branch: feature/novacodepro-unified-platform
+Commit: da30a0a689faab3a843dbb204e018d5f78c03ec1
+Worktree: dirty with many pre-existing modified and untracked files outside the operations scope
+Scope note: this evidence bundle only covers the operations API/UI integration slice and its tests

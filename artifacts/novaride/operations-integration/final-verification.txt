@@ -1,0 +1,9 @@
+Repository: /Users/ostrinov/afritelematics
+Branch: feature/novacodepro-unified-platform
+Backend tests: PASS
+Frontend tests: PASS
+Typecheck: PASS
+Build: PASS
+Browser E2E: BLOCKED_EXTERNAL
+Accessibility automation: BLOCKED_EXTERNAL
+Visual regression: BLOCKED_EXTERNAL

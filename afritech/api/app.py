@@ -45,6 +45,7 @@ from afritech.api.architecture_proof_api import build_architecture_proof_router
 from afritech.api.afriride_mobile_release_api import build_afriride_mobile_release_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
 from afritech.api.novaride_runtime_api import build_novaride_runtime_router
+from afritech.api.novaride_operations_api import build_novaride_operations_router
 from afritech.api.phase0_api import build_phase0_router
 from afritech.api.phase1_api import build_phase1_router
 from afritech.api.phase2_api import build_phase2_router
@@ -74,6 +75,7 @@ from afritech.api.core_platform_api import (
 )
 from afritech.api.novapay_ecosystem_api import build_novapay_ecosystem_router
 from afritech.api.novaid_api import build_novaid_router
+from afritech.api.novaid_audit_replay_api import build_novaid_audit_replay_router
 from afritech.novaid.runtime import build_default_durable_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
 from afritech.novacodepro.platform import get_novacodepro_platform
@@ -436,6 +438,7 @@ app.include_router(build_architecture_proof_router())
 app.include_router(build_afriride_mobile_release_router())
 app.include_router(build_afriride_next_gen_mobile_router())
 app.include_router(build_novaride_runtime_router())
+app.include_router(build_novaride_operations_router())
 
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())
@@ -466,6 +469,7 @@ app.include_router(
 app.include_router(build_novapay_ecosystem_router())
 app.include_router(build_novaid_router())
 app.include_router(build_default_durable_router())
+app.include_router(build_novaid_audit_replay_router())
 app.include_router(build_novacodepro_platform_router())
 app.include_router(build_novacodepro_ncp007_router(get_novacodepro_platform()))
 app.include_router(build_novacodepro_ncp008_router(get_novacodepro_platform()))

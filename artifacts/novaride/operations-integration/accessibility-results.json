@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-07-20",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "command": "not run",
+  "result": "BLOCKED_EXTERNAL",
+  "details": "Automated browser accessibility validation was not available in this repo slice/runtime."
+}

@@ -1,0 +1,3 @@
+Command: npm run build --prefix apps/novaride-operations
+Result: PASS
+Summary: vite build completed successfully

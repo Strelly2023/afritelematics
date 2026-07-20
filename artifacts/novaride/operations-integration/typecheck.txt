@@ -1,0 +1,3 @@
+Command: npm run typecheck --prefix apps/novaride-operations
+Result: PASS
+Summary: tsc --noEmit completed successfully

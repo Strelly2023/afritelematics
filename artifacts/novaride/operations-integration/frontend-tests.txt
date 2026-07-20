@@ -1,0 +1,4 @@
+Command: npm test --prefix apps/novaride-operations
+Result: PASS
+Summary: 3 passed
+Scope: operations portal shell, live backend-backed workspace rendering, loading and restricted states
