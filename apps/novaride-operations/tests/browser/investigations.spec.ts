@@ -2,12 +2,13 @@ import { expect, test } from "@playwright/test";
 import { backendBaseUrl, signInAndSeed } from "./helpers";
 
 test("payment investigations can be opened and reviewed", async ({ page }) => {
-  const { token } = await signInAndSeed(page);
+  const runId = test.info().testId.replace(/[^a-zA-Z0-9]/g, "-");
+  const { token, seed } = await signInAndSeed(page);
   await page.getByRole("button", { name: "Payment investigations" }).click();
   await expect(page.getByRole("heading", { name: "Payment investigations", exact: true })).toBeVisible();
   const createResponse = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/payments/investigations`, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": "browser-investigation-certification" },
-    data: { payment_id: "payment_browser_1", reason: "Repeated payment capture review" },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": `browser-investigation-certification-${runId}` },
+    data: { payment_id: `payment_browser_${runId}`, reason: `Repeated payment capture review ${runId}` },
   });
   expect(createResponse.ok()).toBeTruthy();
   const created = await createResponse.json();
@@ -27,5 +28,5 @@ test("payment investigations can be opened and reviewed", async ({ page }) => {
   });
   expect(response.ok()).toBeTruthy();
   const payload = await response.json();
-  expect(payload.items.some((item: { payment_id?: string }) => item.payment_id === "payment_browser_1")).toBeTruthy();
+  expect(payload.items.some((item: { payment_id?: string }) => item.payment_id === `payment_browser_${runId}`)).toBeTruthy();
 });

@@ -142,9 +142,17 @@ export async function signInAndSeed(
 ) {
   const { canonicalRole, token } = await signInWithSession(page, semanticRole, userId);
   const seed = await seedBrowserFixture(page, token);
+  const overviewResponse = waitForOverview
+    ? page.waitForResponse((response) =>
+        response.url().includes("/api/v1/novaride/operations/overview") &&
+        response.request().method() === "GET" &&
+        response.status() === 200,
+      )
+    : null;
   await page.reload();
-  if (waitForOverview) {
-    await expect(page.getByText("Active trips", { exact: true })).toBeVisible({ timeout: 30_000 });
+  if (overviewResponse) {
+    await overviewResponse;
+    await expect(page.getByTestId("operations-loaded")).toBeVisible({ timeout: 30_000 });
   }
   return { canonicalRole, token, seed };
 }

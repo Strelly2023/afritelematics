@@ -1885,11 +1885,14 @@ class OperationsWorkspaceService:
             return {
                 "status": "already_seeded",
                 "incident_ids": list(self.incidents),
+                "safety_case_ids": list(self.safety_cases),
                 "support_case_ids": list(self.support_cases),
                 "refund_ids": list(self.refunds),
                 "investigation_ids": list(self.investigations),
                 "dispute_ids": list(self.disputes),
                 "action_ids": list(self.actions),
+                "trip_ids": ["trip_browser_1"],
+                "driver_ids": ["driver_browser_1"],
             }
 
         tenant_id = context.tenant_id
@@ -2105,6 +2108,7 @@ class OperationsWorkspaceService:
         return {
             "status": "seeded",
             "incident_ids": list(self.incidents),
+            "safety_case_ids": list(self.safety_cases),
             "support_case_ids": list(self.support_cases),
             "refund_ids": list(self.refunds),
             "investigation_ids": list(self.investigations),

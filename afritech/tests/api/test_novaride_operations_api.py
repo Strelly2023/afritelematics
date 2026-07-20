@@ -5,6 +5,7 @@ from decimal import Decimal
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from afritech.api.app import app as fastapi_app
 from afritech.api.auth.jwt_device_auth import JWT, build_auth_router
 from afritech.api.novaride_operations_api import build_novaride_operations_router
 from afritech.novaride_runtime.common.clocks import utc_now
@@ -173,6 +174,30 @@ def _client() -> TestClient:
     app.include_router(build_auth_router())
     app.include_router(build_novaride_operations_router(workspace))
     return TestClient(app)
+
+
+def test_operations_cors_allows_approved_browser_origin_and_rejects_unapproved_origin() -> None:
+    client = TestClient(fastapi_app)
+
+    approved = client.options(
+        "/api/v1/novaride/operations/overview",
+        headers={
+            "Origin": "http://127.0.0.1:14173",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert approved.status_code == 200
+    assert approved.headers["access-control-allow-origin"] == "http://127.0.0.1:14173"
+
+    unapproved = client.options(
+        "/api/v1/novaride/operations/overview",
+        headers={
+            "Origin": "http://evil.example",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert unapproved.status_code == 400
+    assert "access-control-allow-origin" not in unapproved.headers
 
 
 def test_operations_routes_require_authentication() -> None:

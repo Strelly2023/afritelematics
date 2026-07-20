@@ -2,12 +2,13 @@ import { expect, test } from "@playwright/test";
 import { backendBaseUrl, signInAndSeed } from "./helpers";
 
 test("disputes support assignment evidence decisions and appeals", async ({ page }) => {
-  const { token } = await signInAndSeed(page);
+  const runId = test.info().testId.replace(/[^a-zA-Z0-9]/g, "-");
+  const { token, seed } = await signInAndSeed(page);
   await page.getByRole("button", { name: "Disputes" }).click();
   await expect(page.getByRole("heading", { name: "Disputes" })).toBeVisible();
   const createResponse = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/disputes`, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": "browser-dispute-certification" },
-    data: { trip_id: "trip_browser_1", payment_id: "payment_browser_1", support_case_id: "support_83d52fcd4ee54ca4a914e765f893ecef" },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": `browser-dispute-certification-${runId}` },
+    data: { trip_id: seed.trip_ids[0], payment_id: `payment_browser_${runId}`, support_case_id: seed.support_case_ids[0] },
   });
   expect(createResponse.ok()).toBeTruthy();
   const dispute = await createResponse.json();

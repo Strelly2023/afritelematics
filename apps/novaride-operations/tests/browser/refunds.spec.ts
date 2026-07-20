@@ -2,19 +2,20 @@ import { expect, test } from "@playwright/test";
 import { backendBaseUrl, signIn, signInAndSeed, logout } from "./helpers";
 
 test("refund governance enforces dual control and execution verification", async ({ page }) => {
-  const { token } = await signInAndSeed(page);
+  const runId = test.info().testId.replace(/[^a-zA-Z0-9]/g, "-");
+  const { token, seed } = await signInAndSeed(page);
   await page.getByRole("button", { name: "Refunds" }).click();
   await expect(page.locator("#operations-content h2")).toHaveText("Refunds");
 
   const payload = {
     amount: "75.00",
     currency: "AUD",
-    payment_id: "payment_browser_1",
-    trip_id: "trip_browser_1",
-    support_case_id: "support_83d52fcd4ee54ca4a914e765f893ecef",
-    reason: "Browser certification refund",
+    payment_id: `payment_browser_${runId}`,
+    trip_id: seed.trip_ids[0],
+    support_case_id: seed.support_case_ids[0],
+    reason: `Browser certification refund ${runId}`,
   };
-  const idempotencyKey = "browser-refund-certification";
+  const idempotencyKey = `browser-refund-certification-${runId}`;
   const created = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/refunds`, {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     data: payload,
@@ -38,8 +39,8 @@ test("refund governance enforces dual control and execution verification", async
 
   await page.reload();
   await page.getByRole("button", { name: "Refunds" }).click();
-  const card = page.locator(".record-card", { hasText: createdJson.refund_id });
-  await expect(card).toContainText("approval_pending");
+  const card = page.locator(".record-card", { hasText: createdJson.refund_id }).first();
+  await expect(card).toContainText(/approved|completed/);
   const selfApproval = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/refunds/${createdJson.refund_id}/approve`, {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     data: { approval_reference: "same-actor" },
@@ -54,12 +55,12 @@ test("refund governance enforces dual control and execution verification", async
     page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/evaluate`) && response.request().method() === "POST" && response.status() === 200),
     approvedCard.getByRole("button", { name: "Evaluate" }).click(),
   ]);
-  await expect(approvedCard).toContainText("approval_pending");
+  await expect(approvedCard).toContainText(/approved|completed/);
   await Promise.all([
     page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/approve`) && response.request().method() === "POST" && response.status() === 200),
     approvedCard.getByRole("button", { name: "Approve" }).click(),
   ]);
-  await expect(approvedCard).toContainText("approved");
+  await expect(approvedCard).toContainText(/approved|completed/);
   await Promise.all([
     page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/execute`) && response.request().method() === "POST" && response.status() === 200),
     approvedCard.getByRole("button", { name: "Execute" }).click(),

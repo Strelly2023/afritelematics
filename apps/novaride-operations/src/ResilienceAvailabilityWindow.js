@@ -33,12 +33,16 @@ function toDisplayError(error) {
   return "The section could not be loaded.";
 }
 
-function MetricCard({ label, value, tone = "default" }) {
+function MetricCard({ label, value, tone = "default", testId }) {
   return h(
     "article",
-    { className: `metric-card metric-card-${tone}`, "aria-label": label },
+    {
+      className: `metric-card metric-card-${tone}`,
+      "aria-label": label,
+      ...(testId ? { "data-testid": `${testId}-card` } : {}),
+    },
     h("p", { className: "metric-label" }, label),
-    h("p", { className: "metric-value" }, value),
+    h("p", { className: "metric-value", ...(testId ? { "data-testid": testId } : {}) }, value),
   );
 }
 
@@ -53,7 +57,7 @@ function StatusChip({ status, message }) {
 function DependencyCard({ dependency }) {
   return h(
     "article",
-    { className: "dependency-card", "aria-label": dependency.name },
+    { className: "dependency-card", "aria-label": dependency.name, "data-testid": "dependency-card" },
     h("div", { className: "dependency-head" }, h("strong", null, dependency.name), h(StatusChip, { status: dependency.status, message: dependency.status })),
     h("p", { className: "muted" }, dependency.message || dependency.degraded_reason || "No live probe available."),
     h(
@@ -123,7 +127,7 @@ function StaleDataNotice({ updatedAt }) {
   );
 }
 
-function DataSection({ title, summary, state, children, footer, updatedAt }) {
+function DataSection({ title, summary, state, children, footer, updatedAt, testId }) {
   if (!state || state.status === "loading") {
     return h(LoadingState, { label: title });
   }
@@ -141,7 +145,7 @@ function DataSection({ title, summary, state, children, footer, updatedAt }) {
   }
   return h(
     "section",
-    { className: "section-body", "aria-label": title },
+    { className: "section-body", "aria-label": title, ...(testId ? { "data-testid": testId } : {}) },
     h("div", { className: "section-copy" }, h("p", { className: "eyebrow" }, title), h("p", { className: "section-summary" }, summary)),
     h(StaleDataNotice, { updatedAt }),
     children,
@@ -369,23 +373,24 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
         summary: "Live operational counts and dependency posture from the backend.",
         state: workspace.overview,
         updatedAt: workspace.overview?.updatedAt || overview.generated_at,
+        testId: workspace.overview?.status === "success" ? "operations-loaded" : "operations-loading",
       },
       h(
         "div",
         { className: "metric-grid" },
-        h(MetricCard, { label: "Active trips", value: summary.active_trips ?? "0" }),
-        h(MetricCard, { label: "Online drivers", value: summary.drivers_online ?? "0" }),
-        h(MetricCard, { label: "Available drivers", value: summary.drivers_available ?? "0" }),
-        h(MetricCard, { label: "Open incidents", value: summary.open_incidents ?? "0" }),
-        h(MetricCard, { label: "Safety cases", value: summary.open_safety_cases ?? "0" }),
-        h(MetricCard, { label: "Support cases", value: summary.open_support_cases ?? "0" }),
+        h(MetricCard, { label: "Active trips", value: summary.active_trips ?? "0", testId: "active-trips-value" }),
+        h(MetricCard, { label: "Online drivers", value: summary.drivers_online ?? "0", testId: "online-drivers-value" }),
+        h(MetricCard, { label: "Available drivers", value: summary.drivers_available ?? "0", testId: "available-drivers-value" }),
+        h(MetricCard, { label: "Open incidents", value: summary.open_incidents ?? "0", testId: "open-incidents-value" }),
+        h(MetricCard, { label: "Safety cases", value: summary.open_safety_cases ?? "0", testId: "safety-cases-value" }),
+        h(MetricCard, { label: "Support cases", value: summary.open_support_cases ?? "0", testId: "support-cases-value" }),
       ),
       h(
         "div",
         { className: "panel-subgrid" },
         h(
           "section",
-          { className: "subpanel" },
+          { className: "subpanel dependency-health-section", "data-testid": "dependency-health-section" },
           h("h3", null, "Dependency health"),
           h(
             "div",
