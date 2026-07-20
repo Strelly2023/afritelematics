@@ -8,13 +8,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 GENERATED = ROOT / "packages" / "novaride-api-sdk" / "src" / "generated"
 REPORT = ROOT / "reports" / "novaride" / "deployment" / "api-sdk-verification.json"
-MODULES = {"rider", "driver", "operator", "fleet", "logistics", "corporate", "transit", "safety", "diagnostics", "replay", "models"}
+MODULES = {
+    "rider",
+    "driver",
+    "operator",
+    "fleet",
+    "logistics",
+    "corporate",
+    "transit",
+    "safety",
+    "diagnostics",
+    "replay",
+    "models",
+}
 
 
 def main() -> int:
     present = {path.stem for path in GENERATED.glob("*.ts")}
     missing = sorted(MODULES - present)
-    stale = [path.name for path in GENERATED.glob("*.ts") if "source_spec_hash:" not in path.read_text()]
+    stale = [
+        path.name for path in GENERATED.glob("*.ts") if "source_spec_hash:" not in path.read_text()
+    ]
     report = {
         "status": "PASS" if not missing and not stale else "FAIL",
         "generated_modules": sorted(present),

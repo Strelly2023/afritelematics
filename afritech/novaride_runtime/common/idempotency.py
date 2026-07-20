@@ -9,7 +9,9 @@ from typing import Any
 
 
 def payload_hash(payload: dict[str, Any]) -> str:
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode(
+        "utf-8"
+    )
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 

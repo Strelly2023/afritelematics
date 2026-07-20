@@ -198,6 +198,7 @@ export function NovaLogisticsDetail({ navigate }) {
           </div>
         </div>
         <div className="housing-hero-panel">
+          <img className="product-hero-logo" src="/brand/NOVALOGISTICS.webp" alt="NovaLogistics logo" />
           <h2>Platform scope</h2>
           <div className="metric-grid">
             <article>
@@ -359,4 +360,3 @@ export function NovaLogisticsDetail({ navigate }) {
     </section>
   );
 }
-

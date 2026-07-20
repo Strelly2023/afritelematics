@@ -30,10 +30,14 @@ class OutboxWorker:
         for record in claimed:
             try:
                 self.publisher.publish(record.event)
-                self.outbox.mark_published(record.event.event_id, broker_ack=f"ack:{record.event.event_id}")
+                self.outbox.mark_published(
+                    record.event.event_id, broker_ack=f"ack:{record.event.event_id}"
+                )
                 published += 1
             except Exception as exc:  # pragma: no cover - defensive worker boundary
-                self.outbox.mark_failed(record.event.event_id, error=str(exc), max_attempts=self.max_attempts)
+                self.outbox.mark_failed(
+                    record.event.event_id, error=str(exc), max_attempts=self.max_attempts
+                )
                 failed += 1
         counts = self.outbox.counts()
         return OutboxWorkerResult(

@@ -30,7 +30,12 @@ def _event(version: int = 1) -> MobilityEvent:
 
 def test_deterministic_replay_matches_and_projection_rebuilds() -> None:
     events = [_event(1)]
-    plan = plan_replay(mode=ReplayMode.AGGREGATE, scope={"aggregate_id": "booking_1"}, operator_id="operator", reason="verify")
+    plan = plan_replay(
+        mode=ReplayMode.AGGREGATE,
+        scope={"aggregate_id": "booking_1"},
+        operator_id="operator",
+        reason="verify",
+    )
     result = verify_replay(replay_id=plan.replay_id, events=events)
     projection = rebuild_projection(events)
 

@@ -7,5 +7,5 @@ test("application shell exposes governed navigation and current state", async ({
   await expect(page.getByRole("button", { name: "Overview" })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Incidents" }).click();
   await expect(page.getByRole("button", { name: "Incidents" })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("heading", { name: "Incidents" })).toBeVisible();
+  await expect(page.locator("#operations-content h2")).toHaveText("Incidents");
 });

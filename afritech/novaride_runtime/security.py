@@ -83,7 +83,9 @@ def require_runtime_context(
 def get_runtime_context(request: Request) -> NovaRideRuntimeContext:
     context = getattr(request.state, "novaride_runtime_context", None)
     if context is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="bearer token required")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="bearer token required"
+        )
     return context
 
 
@@ -92,15 +94,19 @@ def require_permissions(
     allowed_roles: set[str] | None = None,
 ) -> Callable:
     allowed_roles = {normalize_role(role) for role in (allowed_roles or set())}
-    required_permissions = tuple(permission.strip() for permission in required_permissions if permission.strip())
+    required_permissions = tuple(
+        permission.strip() for permission in required_permissions if permission.strip()
+    )
 
     def dependency(
         context: Annotated[NovaRideRuntimeContext, Depends(get_runtime_context)],
     ) -> NovaRideRuntimeContext:
         role_allowed = bool(context.roles.intersection(allowed_roles)) if allowed_roles else False
-        permissions_allowed = all(
-            permission in context.permissions for permission in required_permissions
-        ) if required_permissions else False
+        permissions_allowed = (
+            all(permission in context.permissions for permission in required_permissions)
+            if required_permissions
+            else False
+        )
 
         if allowed_roles or required_permissions:
             if not role_allowed and not permissions_allowed:

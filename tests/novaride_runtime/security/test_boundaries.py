@@ -35,7 +35,13 @@ def test_novaai_cannot_apply_operational_effect_and_operator_high_risk_needs_app
     with pytest.raises(BoundaryViolation):
         runtime.intelligence.apply_price(ai_ctx)
     with pytest.raises(AuthorityDenied):
-        runtime.operator.command(operator_ctx, command_type="region_shutdown", target_id="AU", reason="test", high_risk=True)
+        runtime.operator.command(
+            operator_ctx,
+            command_type="region_shutdown",
+            target_id="AU",
+            reason="test",
+            high_risk=True,
+        )
 
     command = runtime.operator.command(
         operator_ctx,

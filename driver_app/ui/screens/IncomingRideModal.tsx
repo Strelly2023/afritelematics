@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     backgroundColor: "rgba(15, 23, 42, 0.62)",
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   badge: {
     backgroundColor: "#e8f6ef",
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: spacing.lg,
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   fare: {
     color: colors.success,

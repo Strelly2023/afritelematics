@@ -242,7 +242,10 @@ class NovaIDEcosystem:
             record_id=identity_id,
             organization_id=organization_id,
             status=identity.status,
-            payload={**identity.payload, "identity": {**identity.payload["identity"], "devices": sorted(devices)}},
+            payload={
+                **identity.payload,
+                "identity": {**identity.payload["identity"], "devices": sorted(devices)},
+            },
         )
         return _record(
             self.repository.upsert(
@@ -605,7 +608,15 @@ class NovaIDEcosystem:
             "response_types_supported": ["code", "id_token", "code id_token"],
             "subject_types_supported": ["public"],
             "scopes_supported": ["openid", "profile", "email", "phone", "offline_access"],
-            "claims_supported": ["sub", "email", "name", "given_name", "family_name", "phone_number", "updated_at"],
+            "claims_supported": [
+                "sub",
+                "email",
+                "name",
+                "given_name",
+                "family_name",
+                "phone_number",
+                "updated_at",
+            ],
             "pkce_required": True,
         }
 
@@ -657,10 +668,14 @@ class NovaIDEcosystem:
             )
         )
 
-    def monitor_sessions(self, *, organization_id: str, subject_id: str | None = None) -> dict[str, Any]:
+    def monitor_sessions(
+        self, *, organization_id: str, subject_id: str | None = None
+    ) -> dict[str, Any]:
         sessions = self.repository.list("novaid_sessions", organization_id=organization_id)
         if subject_id is not None:
-            sessions = [session for session in sessions if session.payload.get("identity_id") == subject_id]
+            sessions = [
+                session for session in sessions if session.payload.get("identity_id") == subject_id
+            ]
         return {
             "view": "novaid_session_monitoring",
             "organization_id": organization_id,
@@ -756,7 +771,9 @@ class NovaIDEcosystem:
         return {
             "view": "novaid_command_center",
             "organization_id": organization_id,
-            "verified_identities": sum(1 for identity in identities if identity.status == "verified"),
+            "verified_identities": sum(
+                1 for identity in identities if identity.status == "verified"
+            ),
             "devices": len(devices),
             "passkeys": len(passkeys),
             "active_sessions": sum(1 for session in sessions if session.status == "active"),
@@ -784,8 +801,18 @@ class NovaIDEcosystem:
         return {
             "view": "novaid_enterprise_portal",
             "organization_id": organization_id,
-            "directory": [entry.payload for entry in self.repository.list("novaid_directory_entries", organization_id=organization_id)],
-            "sessions": [session.payload for session in self.repository.list("novaid_sessions", organization_id=organization_id)],
+            "directory": [
+                entry.payload
+                for entry in self.repository.list(
+                    "novaid_directory_entries", organization_id=organization_id
+                )
+            ],
+            "sessions": [
+                session.payload
+                for session in self.repository.list(
+                    "novaid_sessions", organization_id=organization_id
+                )
+            ],
         }
 
     def inspector_portal(self, *, organization_id: str) -> dict[str, Any]:
@@ -794,10 +821,17 @@ class NovaIDEcosystem:
             "organization_id": organization_id,
             "offline_verification": True,
             "certificate_validation": True,
-            "inspection_records": [record.payload for record in self.repository.list("novaid_credentials", organization_id=organization_id)],
+            "inspection_records": [
+                record.payload
+                for record in self.repository.list(
+                    "novaid_credentials", organization_id=organization_id
+                )
+            ],
         }
 
-    def trust_receipt(self, *, subject_id: str, organization_id: str, event_type: str, packet: dict[str, Any]) -> dict[str, Any]:
+    def trust_receipt(
+        self, *, subject_id: str, organization_id: str, event_type: str, packet: dict[str, Any]
+    ) -> dict[str, Any]:
         receipt = self.novatrust.record(
             subject_id=subject_id,
             organization_id=organization_id,

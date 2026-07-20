@@ -10,7 +10,9 @@ from afritech.novaride_runtime.state_machines import transition_rule
 def test_booking_trip_and_emergency_transitions_are_explicit() -> None:
     booking = transition_rule(BookingState.QUOTED, BookingState.CONFIRMED, ActorType.RIDER)
     trip = transition_rule(TripState.DRIVER_ARRIVED, TripState.PICKUP_VERIFIED, ActorType.DRIVER)
-    emergency = transition_rule(EmergencyState.TRIGGERED, EmergencyState.ACKNOWLEDGED, ActorType.OPERATOR)
+    emergency = transition_rule(
+        EmergencyState.TRIGGERED, EmergencyState.ACKNOWLEDGED, ActorType.OPERATOR
+    )
 
     assert booking.emitted_events == ("BookingConfirmed",)
     assert "pickup_pin_or_qr" in trip.required_evidence

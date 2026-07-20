@@ -25,12 +25,20 @@ SLO_DEFINITIONS: tuple[SLODefinition, ...] = (
 )
 
 
-def calculate_slo(service: str, *, successful: int, total: int, latency_compliant: int) -> dict[str, str | bool]:
+def calculate_slo(
+    service: str, *, successful: int, total: int, latency_compliant: int
+) -> dict[str, str | bool]:
     definition = next((item for item in SLO_DEFINITIONS if item.service == service), None)
     if definition is None:
         raise ValueError("unknown_slo_service")
-    availability = Decimal("100") if total == 0 else (Decimal(successful) / Decimal(total)) * Decimal("100")
-    latency = Decimal("100") if total == 0 else (Decimal(latency_compliant) / Decimal(total)) * Decimal("100")
+    availability = (
+        Decimal("100") if total == 0 else (Decimal(successful) / Decimal(total)) * Decimal("100")
+    )
+    latency = (
+        Decimal("100")
+        if total == 0
+        else (Decimal(latency_compliant) / Decimal(total)) * Decimal("100")
+    )
     error_budget = Decimal("100") - definition.availability_target
     consumed = max(Decimal("0"), definition.availability_target - availability)
     burn_rate = Decimal("0") if error_budget == 0 else consumed / error_budget
@@ -46,4 +54,7 @@ def calculate_slo(service: str, *, successful: int, total: int, latency_complian
 
 
 def all_slos() -> list[dict[str, str | bool]]:
-    return [calculate_slo(definition.service, successful=1000, total=1000, latency_compliant=995) for definition in SLO_DEFINITIONS]
+    return [
+        calculate_slo(definition.service, successful=1000, total=1000, latency_compliant=995)
+        for definition in SLO_DEFINITIONS
+    ]

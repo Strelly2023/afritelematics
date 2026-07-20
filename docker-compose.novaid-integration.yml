@@ -1,0 +1,28 @@
+services:
+  novaid-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: novaid_test
+      POSTGRES_USER: novaid_test
+      POSTGRES_PASSWORD: novaid_test_only
+      TZ: UTC
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novaid_test -d novaid_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  novaid-redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "volatile-lru"]
+    ports:
+      - "56379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 20

@@ -3,8 +3,8 @@ import { fileURLToPath } from "node:url";
 
 import { defineConfig, devices } from "@playwright/test";
 
-const frontendBaseUrl = process.env.PW_FRONTEND_BASE_URL || "http://127.0.0.1:4173";
-const backendBaseUrl = process.env.PW_BACKEND_BASE_URL || "http://127.0.0.1:8001";
+const frontendBaseUrl = process.env.PW_FRONTEND_BASE_URL || "http://127.0.0.1:14173";
+const backendBaseUrl = process.env.PW_BACKEND_BASE_URL || "http://127.0.0.1:18001";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const skipBackendWebServer = process.env.PLAYWRIGHT_SKIP_BACKEND === "1";
 
@@ -42,7 +42,7 @@ export default defineConfig({
       : [
           {
             command:
-              "bash -lc 'mkdir -p /private/tmp/novaride-browser-certification/evidence && python -m uvicorn afritech.api.app:app --host 127.0.0.1 --port 8001'",
+              "bash -lc 'mkdir -p /private/tmp/novaride-browser-certification/evidence && python -m uvicorn afritech.api.app:app --host 127.0.0.1 --port 18001'",
             cwd: "../..",
             url: `${backendBaseUrl}/health`,
             reuseExistingServer: !process.env.CI,
@@ -64,14 +64,14 @@ export default defineConfig({
           },
         ]),
     {
-      command: "npm run build && npx vite preview --host 127.0.0.1 --port 4173 --strictPort",
+      command: "npm run build && npx vite preview --host 127.0.0.1 --port 14173 --strictPort",
       cwd: ".",
       url: frontendBaseUrl,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
       env: {
-        VITE_NOVARIDE_OPERATIONS_BASE_URL: `${backendBaseUrl}/v1/novaride/operations`,
-        VITE_NOVARIDE_AUTH_BASE_URL: backendBaseUrl,
+        VITE_NOVARIDE_OPERATIONS_BASE_URL: `${backendBaseUrl}/api/v1/novaride/operations`,
+        VITE_NOVARIDE_AUTH_BASE_URL: `${backendBaseUrl}/v1`,
         VITE_NOVARIDE_OPERATIONS_LIVE_MAP_ENABLED: "true",
         VITE_NOVARIDE_OPERATIONS_REFUND_EXECUTION_ENABLED: "true",
         VITE_NOVARIDE_OPERATIONS_PRODUCTION_ACTIONS_ENABLED: "true",

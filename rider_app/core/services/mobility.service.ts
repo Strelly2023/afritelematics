@@ -33,7 +33,8 @@ type QueuedOperation = {
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
   }),
@@ -98,7 +99,7 @@ export async function clearRiderMobilityState() {
 export async function registerRiderPush(riderId: string) {
   if (!Device.isDevice) return null;
   const permission = await Notifications.requestPermissionsAsync();
-  if (!permission.granted) return null;
+  if (permission.status !== "granted") return null;
   const projectId = Constants.expoConfig?.extra?.eas?.projectId;
   const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
   if (token !== (await AsyncStorage.getItem(PUSH_KEY))) {
@@ -137,7 +138,7 @@ export async function getRiderMobilityHealth(): Promise<MobilityHealth> {
       Device.isDevice &&
       !Application.applicationId?.toLowerCase().includes("expo"),
     locationGranted: location.granted,
-    pushGranted: push.granted,
+    pushGranted: push.status === "granted",
     pendingSync: pending.length,
   };
 }

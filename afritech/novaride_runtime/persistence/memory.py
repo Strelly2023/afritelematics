@@ -37,13 +37,17 @@ class MemoryRepository(Generic[T]):
 
 @dataclass(slots=True)
 class MemoryOfflineOperationRepository(MemoryRepository[OfflineOperation]):
-    def get_by_idempotency_key(self, tenant_id: str, idempotency_key: str) -> OfflineOperation | None:
+    def get_by_idempotency_key(
+        self, tenant_id: str, idempotency_key: str
+    ) -> OfflineOperation | None:
         for item in self.records.values():
             if item.tenant_id == tenant_id and item.idempotency_key == idempotency_key:
                 return deepcopy(item)
         return None
 
-    def claim_pending(self, *, region_code: str, limit: int, now: datetime | None = None) -> list[OfflineOperation]:
+    def claim_pending(
+        self, *, region_code: str, limit: int, now: datetime | None = None
+    ) -> list[OfflineOperation]:
         current_time = now or utc_now()
         pending: list[OfflineOperation] = []
         for item in self.records.values():
@@ -78,7 +82,9 @@ class MemoryOfflineOperationRepository(MemoryRepository[OfflineOperation]):
 
 @dataclass(slots=True)
 class MemoryProviderHealthRepository(MemoryRepository[ProviderHealthRecord]):
-    def latest(self, *, provider: str, capability: str, tenant_id: str | None = None) -> ProviderHealthRecord | None:
+    def latest(
+        self, *, provider: str, capability: str, tenant_id: str | None = None
+    ) -> ProviderHealthRecord | None:
         matches = [
             item
             for item in self.records.values()
@@ -148,9 +154,13 @@ class RuntimeRepositories:
     corporate_bookings: MemoryRepository = field(default_factory=MemoryRepository)
     transit_journeys: MemoryRepository = field(default_factory=MemoryRepository)
     operator_commands: MemoryRepository = field(default_factory=MemoryRepository)
-    offline_operations: MemoryOfflineOperationRepository = field(default_factory=MemoryOfflineOperationRepository)
+    offline_operations: MemoryOfflineOperationRepository = field(
+        default_factory=MemoryOfflineOperationRepository
+    )
     resilience_evidence: MemoryRepository = field(default_factory=MemoryRepository)
-    provider_health: MemoryProviderHealthRepository = field(default_factory=MemoryProviderHealthRepository)
+    provider_health: MemoryProviderHealthRepository = field(
+        default_factory=MemoryProviderHealthRepository
+    )
     provider_routes: MemoryRepository = field(default_factory=MemoryRepository)
     sync_sessions: MemoryRepository = field(default_factory=MemoryRepository)
     conflict_records: MemoryRepository = field(default_factory=MemoryRepository)

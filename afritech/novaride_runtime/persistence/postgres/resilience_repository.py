@@ -69,7 +69,9 @@ class PostgresOfflineOperationRepository:
             operation.updated_at,
         )
 
-    async def get_by_idempotency_key(self, tenant_id: str, idempotency_key: str) -> dict[str, Any] | None:
+    async def get_by_idempotency_key(
+        self, tenant_id: str, idempotency_key: str
+    ) -> dict[str, Any] | None:
         row = await self.connection.fetchrow(
             """
             SELECT * FROM novaride_offline_operations
@@ -117,7 +119,9 @@ class PostgresOfflineOperationRepository:
             operation_id,
         )
 
-    async def mark_failed(self, operation_id: str, *, error_code: str, next_attempt_at: datetime) -> None:
+    async def mark_failed(
+        self, operation_id: str, *, error_code: str, next_attempt_at: datetime
+    ) -> None:
         await self.connection.execute(
             """
             UPDATE novaride_offline_operations
@@ -230,7 +234,9 @@ class PostgresProviderHealthRepository:
             record.updated_at,
         )
 
-    async def latest(self, *, tenant_id: str, region_code: str, provider: str, capability: str) -> dict[str, Any] | None:
+    async def latest(
+        self, *, tenant_id: str, region_code: str, provider: str, capability: str
+    ) -> dict[str, Any] | None:
         row = await self.connection.fetchrow(
             """
             SELECT * FROM novaride_provider_health
@@ -321,7 +327,11 @@ class PostgresSyncSessionRepository:
         )
 
     async def get(self, *, tenant_id: str, sync_id: str) -> dict[str, Any] | None:
-        row = await self.connection.fetchrow("SELECT * FROM novaride_sync_sessions WHERE tenant_id = $1 AND id = $2", tenant_id, sync_id)
+        row = await self.connection.fetchrow(
+            "SELECT * FROM novaride_sync_sessions WHERE tenant_id = $1 AND id = $2",
+            tenant_id,
+            sync_id,
+        )
         return dict(row) if row else None
 
 

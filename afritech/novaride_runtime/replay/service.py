@@ -5,7 +5,7 @@ from typing import Any
 
 from afritech.novaride_runtime.common.clocks import utc_now
 from afritech.novaride_runtime.common.identifiers import new_id
-from afritech.novaride_runtime.events.replay import canonical_state_hash, rebuild_projection
+from afritech.novaride_runtime.events.replay import canonical_state_hash
 from afritech.novaride_runtime.events.replay_verifier import verify_replay
 from afritech.novaride_runtime.replay.hashing import replay_plan_hash
 from afritech.novaride_runtime.replay.lifecycle import ensure_replay_transition
@@ -17,7 +17,7 @@ from afritech.novaride_runtime.replay.models import (
     RuntimeAuditRecord,
 )
 from afritech.novaride_runtime.replay.repository import ReplayPlanRepository
-from afritech.novaride_runtime.security import NovaRideRuntimeContext, normalize_role
+from afritech.novaride_runtime.security import NovaRideRuntimeContext
 
 
 class InvalidReplayTransition(RuntimeError):
@@ -43,7 +43,11 @@ class ReplayService:
             workspace_id=actor.workspace_id,
             name=getattr(payload, "name", "NovaRide replay plan"),
             description=getattr(payload, "description", None),
-            scenario_type=getattr(payload, "scenario_type", payload.mode.value if hasattr(payload, "mode") else "runtime"),
+            scenario_type=getattr(
+                payload,
+                "scenario_type",
+                payload.mode.value if hasattr(payload, "mode") else "runtime",
+            ),
             source_reference=getattr(payload, "source_reference", None),
             target_environment=getattr(payload, "target_environment", "production"),
             status="READY_FOR_EXECUTION",
@@ -65,10 +69,14 @@ class ReplayService:
     async def get_plan(self, *, tenant_id: str, plan_id: str) -> ReplayPlanRecord | None:
         return await self.repository.get(tenant_id=tenant_id, plan_id=plan_id)
 
-    async def list_plans(self, *, tenant_id: str, limit: int = 100, offset: int = 0) -> list[ReplayPlanRecord]:
+    async def list_plans(
+        self, *, tenant_id: str, limit: int = 100, offset: int = 0
+    ) -> list[ReplayPlanRecord]:
         return await self.repository.list(tenant_id=tenant_id, limit=limit, offset=offset)
 
-    async def execute_plan(self, *, plan: ReplayPlanRecord, actor: NovaRideRuntimeContext, validate_only: bool = False) -> ReplayResultRecord:
+    async def execute_plan(
+        self, *, plan: ReplayPlanRecord, actor: NovaRideRuntimeContext, validate_only: bool = False
+    ) -> ReplayResultRecord:
         if not validate_only:
             ensure_replay_transition(plan.status, "EXECUTING")
         events: list[Any] = []
@@ -115,11 +123,18 @@ class ReplayService:
             )
         return result
 
-    async def validate_plan(self, *, plan: ReplayPlanRecord, result: ReplayResultRecord, actor: NovaRideRuntimeContext) -> ReplayResultRecord:
+    async def validate_plan(
+        self, *, plan: ReplayPlanRecord, result: ReplayResultRecord, actor: NovaRideRuntimeContext
+    ) -> ReplayResultRecord:
         if result.executed_by == actor.subject_id:
             raise InvalidReplayTransition("executor_cannot_validate_own_result")
         updated = ReplayResultRecord(
-            **{**asdict(result), "validation_status": "VALIDATED", "validated_by": actor.subject_id, "validated_at": utc_now().isoformat()}
+            **{
+                **asdict(result),
+                "validation_status": "VALIDATED",
+                "validated_by": actor.subject_id,
+                "validated_at": utc_now().isoformat(),
+            }
         )
         await self.repository.save_result(updated)
         await self.repository.update_status(
@@ -145,7 +160,9 @@ class ReplayService:
             raise InvalidReplayTransition("invalid_approval_decision")
         if decision != "APPROVE":
             raise InvalidReplayTransition("approval_vote_not_accepted")
-        current_votes = await self.repository.get_approvals(tenant_id=plan.tenant_id, plan_id=plan.id)
+        current_votes = await self.repository.get_approvals(
+            tenant_id=plan.tenant_id, plan_id=plan.id
+        )
         if any(v.approver_id == actor.subject_id for v in current_votes):
             raise InvalidReplayTransition("duplicate_approval_vote")
         vote = ReplayApprovalRecord(
@@ -181,11 +198,20 @@ class ReplayService:
         result = await self.repository.get_result(tenant_id=plan.tenant_id, plan_id=plan.id)
         if result is None or result.validation_status not in {"VALIDATED", "VALIDATION_REQUIRED"}:
             raise InvalidReplayTransition("promotion_requires_validated_result")
-        votes = [approval for approval in approvals if approval.plan_version == plan.version and approval.plan_hash == plan.plan_hash and approval.status == "APPROVED"]
+        votes = [
+            approval
+            for approval in approvals
+            if approval.plan_version == plan.version
+            and approval.plan_hash == plan.plan_hash
+            and approval.status == "APPROVED"
+        ]
         roles = {approval.approver_role for approval in votes}
         if len(votes) < 2:
             raise InvalidReplayTransition("approval_quorum_required")
-        if not (roles.intersection({"OPERATIONS_TEAM", "PROJECT_MANAGER"}) and roles.intersection({"QA_ENGINEER", "SECURITY_ENGINEER"})):
+        if not (
+            roles.intersection({"OPERATIONS_TEAM", "PROJECT_MANAGER"})
+            and roles.intersection({"QA_ENGINEER", "SECURITY_ENGINEER"})
+        ):
             raise InvalidReplayTransition("approval_role_quorum_required")
         consumed = await self.repository.consume_approval(
             tenant_id=plan.tenant_id,

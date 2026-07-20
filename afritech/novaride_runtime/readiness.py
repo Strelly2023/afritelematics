@@ -38,17 +38,20 @@ class ReadinessEvidence:
 
 
 def generate_readiness_certificate(evidence: ReadinessEvidence) -> dict[str, Any]:
-    ready_for_ga = all(
-        [
-            evidence.live_postgresql_verified,
-            evidence.live_kafka_verified,
-            evidence.live_kubernetes_failover_verified,
-            evidence.emergency_path_verified,
-            evidence.security_verified,
-            evidence.accessibility_verified,
-            evidence.dr_exercise_verified,
-        ]
-    ) and not evidence.unresolved_risks
+    ready_for_ga = (
+        all(
+            [
+                evidence.live_postgresql_verified,
+                evidence.live_kafka_verified,
+                evidence.live_kubernetes_failover_verified,
+                evidence.emergency_path_verified,
+                evidence.security_verified,
+                evidence.accessibility_verified,
+                evidence.dr_exercise_verified,
+            ]
+        )
+        and not evidence.unresolved_risks
+    )
     if ready_for_ga:
         status = ReadinessStatus.READY_FOR_GA
     elif evidence.test_results and evidence.emergency_path_verified:

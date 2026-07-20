@@ -1,0 +1,43 @@
+version: 1
+source_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+release_target: CONTROLLED_PILOT_CANDIDATE
+requirements:
+  - id: NR-MVP-001
+    statement: A verified rider and approved driver can complete the governed release-boundary journey with operations evidence.
+    evidence: docs/novaride/strategy/NOVARIDE_MVP_SCOPE.md
+  - id: NR-IDENTITY-001
+    statement: Rider and driver identity, consent, approval, suspension, role and tenant boundaries are enforced.
+    evidence: tests/controlled_pilot/test_controlled_pilot_access_control.py
+  - id: NR-DISPATCH-001
+    statement: Dispatch assigns at most one eligible driver and safely handles decline, timeout and reassignment.
+    evidence: afritech/novaride_runtime/dispatch
+  - id: NR-TRIP-001
+    statement: Trip transitions follow the declared lifecycle and reject invalid or duplicate mutations.
+    evidence: afritech/novaride_runtime/state_machines.py
+  - id: NR-PAYMENT-001
+    statement: MVP payment recording is idempotent, trip-linked and limited to approved operating modes.
+    evidence: tests/controlled_pilot/test_controlled_pilot_payment_safety.py
+  - id: NR-SAFETY-001
+    statement: SOS, sharing, incident alerting and auditable operations response work in controlled tests.
+    evidence: afritech/novaride_runtime/incidents.py
+  - id: NR-METRICS-001
+    statement: Pilot promotion uses measurable field outcomes and zero-tolerance trust and critical-defect gates.
+    evidence: docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md
+  - id: NR-RIDER-001
+    statement: Rider can request and complete a priced trip through authoritative APIs.
+    evidence: tests/mobile_release/test_novaride_rider_primary_journey.py
+  - id: NR-DRIVER-001
+    statement: Driver can operate with location, offline diagnostics and controlled trip transitions.
+    evidence: tests/mobile_release/test_novaride_driver_offline_state.py
+  - id: NR-RUNTIME-001
+    statement: Runtime supports durable events, replay, resilience and regional operation.
+    evidence: tests/novaride_runtime
+  - id: NR-OPS-001
+    statement: Operations users can monitor and intervene through role-controlled surfaces.
+    evidence: apps/novaride-operations
+  - id: NR-SEC-001
+    statement: Clients and APIs enforce secure transport, access control and server authority.
+    evidence: tests/controlled_pilot/test_controlled_pilot_novaride_e2e.py
+  - id: NR-REL-001
+    statement: Release artifacts are versioned, checksummed and governed by explicit gates.
+    evidence: apk-public/novaride/releases/2026.1.4

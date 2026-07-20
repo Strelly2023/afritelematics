@@ -17,7 +17,9 @@ def replay_by_correlation(events: list[MobilityEvent], correlation_id: str) -> l
     return [event for event in events if event.correlation_id == correlation_id]
 
 
-def replay_range(events: list[MobilityEvent], start: int = 0, end: int | None = None) -> list[MobilityEvent]:
+def replay_range(
+    events: list[MobilityEvent], start: int = 0, end: int | None = None
+) -> list[MobilityEvent]:
     return events[start:end]
 
 
@@ -29,7 +31,9 @@ def replay_by_region(events: list[MobilityEvent], region: str) -> list[MobilityE
     return [event for event in events if event.region == region]
 
 
-def replay_by_event_type_range(events: list[MobilityEvent], event_types: set[str]) -> list[MobilityEvent]:
+def replay_by_event_type_range(
+    events: list[MobilityEvent], event_types: set[str]
+) -> list[MobilityEvent]:
     return [event for event in events if event.event_type in event_types]
 
 
@@ -67,7 +71,9 @@ def canonical_state_hash(state: dict[str, Any], *, domain: str = "NOVARIDE_REPLA
     return canonical_hash({"domain": domain, "state": state})
 
 
-def rebuild_projection(events: list[MobilityEvent], *, projection_name: str = "shadow") -> ProjectionState:
+def rebuild_projection(
+    events: list[MobilityEvent], *, projection_name: str = "shadow"
+) -> ProjectionState:
     ordered = sorted(events, key=lambda event: (event.occurred_at, event.event_id))
     state: dict[str, Any] = {}
     for event in ordered:
@@ -82,7 +88,9 @@ def rebuild_projection(events: list[MobilityEvent], *, projection_name: str = "s
                 "aggregate_version": 0,
             },
         )
-        aggregate["aggregate_version"] = max(int(aggregate["aggregate_version"]), int(event.aggregate_version))
+        aggregate["aggregate_version"] = max(
+            int(aggregate["aggregate_version"]), int(event.aggregate_version)
+        )
         aggregate["events"].append(event.event_type)
         aggregate["last_event_id"] = event.event_id
     return ProjectionState(

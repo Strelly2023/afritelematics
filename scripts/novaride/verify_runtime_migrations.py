@@ -57,7 +57,9 @@ REQUIRED_TABLES = {
 
 def main() -> int:
     sql = "\n".join(path.read_text() for path in sorted(MIGRATIONS.glob("*.sql")))
-    missing_tables = sorted(table for table in REQUIRED_TABLES if f"CREATE TABLE IF NOT EXISTS {table}" not in sql)
+    missing_tables = sorted(
+        table for table in REQUIRED_TABLES if f"CREATE TABLE IF NOT EXISTS {table}" not in sql
+    )
     report = {
         "status": "PASS" if not missing_tables else "FAIL",
         "mode": "static_contract_verification",

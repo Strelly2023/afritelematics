@@ -16,7 +16,16 @@ class DeviceRegistry:
     used_nonces: set[str] = field(default_factory=set)
     max_clock_skew_seconds: int = 300
 
-    def validate(self, *, device_id: str, tenant_id: str, timestamp: str, nonce: str, signature: str, payload: dict[str, Any]) -> None:
+    def validate(
+        self,
+        *,
+        device_id: str,
+        tenant_id: str,
+        timestamp: str,
+        nonce: str,
+        signature: str,
+        payload: dict[str, Any],
+    ) -> None:
         secret = self.device_secrets.get(device_id)
         if secret is None:
             raise ValueError("unknown_device")
@@ -29,7 +38,9 @@ class DeviceRegistry:
         nonce_key = f"{tenant_id}:{device_id}:{nonce}"
         if nonce_key in self.used_nonces:
             raise ValueError("reused_nonce")
-        expected = sign_sync_payload(secret=secret, timestamp=timestamp, nonce=nonce, payload=payload)
+        expected = sign_sync_payload(
+            secret=secret, timestamp=timestamp, nonce=nonce, payload=payload
+        )
         if not hmac.compare_digest(expected, signature):
             raise ValueError("invalid_signature")
         self.used_nonces.add(nonce_key)

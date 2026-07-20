@@ -27,8 +27,12 @@ class ProjectionRecord:
 class ProjectionStore:
     records: dict[tuple[str, str, str], ProjectionRecord] = field(default_factory=dict)
 
-    def rebuild(self, projection_name: str, tenant_id: str, region: str, events: list[MobilityEvent]) -> ProjectionRecord:
-        selected = [event for event in events if event.tenant_id == tenant_id and event.region == region]
+    def rebuild(
+        self, projection_name: str, tenant_id: str, region: str, events: list[MobilityEvent]
+    ) -> ProjectionRecord:
+        selected = [
+            event for event in events if event.tenant_id == tenant_id and event.region == region
+        ]
         state = rebuild_projection(selected, projection_name=projection_name)
         record = ProjectionRecord(
             projection_name=projection_name,
@@ -39,10 +43,14 @@ class ProjectionStore:
             last_event_timestamp=selected[-1].occurred_at.isoformat() if selected else None,
             state_hash=state.state_hash,
             rebuild_status="COMPLETE",
-            lag_seconds=0.0 if not selected else max(0.0, (utc_now() - selected[-1].occurred_at).total_seconds()),
+            lag_seconds=0.0
+            if not selected
+            else max(0.0, (utc_now() - selected[-1].occurred_at).total_seconds()),
         )
         self.records[(projection_name, tenant_id, region)] = record
         return record
 
-    def shadow_rebuild(self, projection_name: str, tenant_id: str, region: str, events: list[MobilityEvent]) -> ProjectionRecord:
+    def shadow_rebuild(
+        self, projection_name: str, tenant_id: str, region: str, events: list[MobilityEvent]
+    ) -> ProjectionRecord:
         return self.rebuild(f"shadow:{projection_name}", tenant_id, region, events)

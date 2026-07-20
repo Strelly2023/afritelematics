@@ -7,6 +7,6 @@ test("unauthorized and degraded states render honestly", async ({ page }) => {
   }, runtimeConfig);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Sign in to the operations workspace" })).toBeVisible();
-  const denied = await page.request.get(`${backendBaseUrl}/v1/novaride/operations/overview`);
-  expect([401, 403, 404]).toContain(denied.status());
+  const denied = await page.request.get(`${backendBaseUrl}/api/v1/novaride/operations/overview`);
+  expect([401, 403]).toContain(denied.status());
 });

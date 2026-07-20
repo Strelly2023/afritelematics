@@ -1,11 +1,11 @@
 import { expect, type Page } from "@playwright/test";
 
-export const backendBaseUrl = process.env.PW_BACKEND_BASE_URL || "http://127.0.0.1:8001";
-export const frontendBaseUrl = process.env.PW_FRONTEND_BASE_URL || "http://127.0.0.1:4173";
+export const backendBaseUrl = process.env.PW_BACKEND_BASE_URL || "http://127.0.0.1:18001";
+export const frontendBaseUrl = process.env.PW_FRONTEND_BASE_URL || "http://127.0.0.1:14173";
 export const authStorageKey = "novaride.operations.auth_token";
 export const runtimeConfig = {
-  baseUrl: `${backendBaseUrl}/v1/novaride/operations`,
-  authBaseUrl: backendBaseUrl,
+  baseUrl: `${backendBaseUrl}/api/v1/novaride/operations`,
+  authBaseUrl: `${backendBaseUrl}/v1`,
   liveMapEnabled: true,
   refundExecutionEnabled: true,
   productionActionsEnabled: true,
@@ -26,7 +26,7 @@ export async function signIn(page: Page, semanticRole = "OPERATIONS_TEAM", userI
   await page.addInitScript((config) => {
     window.__NOVARIDE_OPERATION_CONFIG__ = config;
   }, runtimeConfig);
-  const response = await page.request.post(`${backendBaseUrl}/auth/token`, {
+  const response = await page.request.post(`${backendBaseUrl}/v1/auth/token`, {
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     data: {
       user_id: userId,
@@ -121,7 +121,7 @@ export function buildBrowserSessionToken({
 }
 
 export async function seedBrowserFixture(page: Page, token: string) {
-  const response = await page.request.post(`${backendBaseUrl}/v1/novaride/operations/bootstrap`, {
+  const response = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/bootstrap`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok()) {
@@ -137,6 +137,8 @@ export async function seedBrowserFixture(page: Page, token: string) {
 export async function signInAndSeed(page: Page, semanticRole = "OPERATIONS_TEAM", userId = "ops_browser") {
   const { canonicalRole, token } = await signInWithSession(page, semanticRole, userId);
   const seed = await seedBrowserFixture(page, token);
+  await page.reload();
+  await expect(page.getByText("Active trips", { exact: true })).toBeVisible({ timeout: 30_000 });
   return { canonicalRole, token, seed };
 }
 

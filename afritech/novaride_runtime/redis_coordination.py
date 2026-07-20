@@ -44,10 +44,16 @@ class RedisCoordinationService:
         return ":".join((self.namespace, *parts))
 
     def acquire_sync_lock(self, device_id: str, nonce: str, ttl_seconds: int = 300) -> bool:
-        return self.client.set(self._key("sync-lock", device_id, nonce), "1", ex=ttl_seconds, nx=True)
+        return self.client.set(
+            self._key("sync-lock", device_id, nonce), "1", ex=ttl_seconds, nx=True
+        )
 
-    def suppress_duplicate(self, tenant_id: str, idempotency_key: str, ttl_seconds: int = 900) -> bool:
-        return self.client.set(self._key("duplicate", tenant_id, idempotency_key), "1", ex=ttl_seconds, nx=True)
+    def suppress_duplicate(
+        self, tenant_id: str, idempotency_key: str, ttl_seconds: int = 900
+    ) -> bool:
+        return self.client.set(
+            self._key("duplicate", tenant_id, idempotency_key), "1", ex=ttl_seconds, nx=True
+        )
 
     def set_circuit_state(self, circuit: str, state: str, ttl_seconds: int = 3600) -> None:
         self.client.set(self._key("circuit", circuit), state, ex=ttl_seconds)

@@ -220,6 +220,7 @@ export function NovaDashDoorDetail({ navigate }) {
           </div>
         </div>
         <div className="housing-hero-panel">
+          <img className="product-hero-logo" src="/brand/NOVADASHDOOR.webp" alt="NovaDashDoor logo" />
           <h2>Platform scope</h2>
           <div className="metric-grid">
             <article>
@@ -369,4 +370,3 @@ export function NovaDashDoorDetail({ navigate }) {
     </section>
   );
 }
-

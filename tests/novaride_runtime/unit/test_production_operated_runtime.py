@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from afritech.novaride_runtime.config import NovaRideRuntimeSettings, RuntimeEnvironment
+from afritech.novaride_runtime.config import NovaRideRuntimeSettings
 from afritech.novaride_runtime.events.envelope import MobilityEvent
 from afritech.novaride_runtime.events.outbox import InMemoryOutboxStore, OutboxState
 from afritech.novaride_runtime.kafka import InMemoryKafkaProducer, KafkaEventPublisher
 from afritech.novaride_runtime.outbox import ProductionOutboxPublisher
 from afritech.novaride_runtime.readiness import ReadinessEvidence, generate_readiness_certificate
-from afritech.novaride_runtime.redis_coordination import InMemoryKeyValueClient, RedisCoordinationService
+from afritech.novaride_runtime.redis_coordination import (
+    InMemoryKeyValueClient,
+    RedisCoordinationService,
+)
 from afritech.novaride_runtime.sync_security import DeviceRegistry, sign_sync_payload
 
 
@@ -24,7 +27,9 @@ def test_device_signature_rejects_replay_nonce() -> None:
     registry = DeviceRegistry({"device_123": "secret"}, max_clock_skew_seconds=999999999)
     payload = {"device_id": "device_123", "operations": []}
     timestamp = "2000000000"
-    signature = sign_sync_payload(secret="secret", timestamp=timestamp, nonce="nonce-1", payload=payload)
+    signature = sign_sync_payload(
+        secret="secret", timestamp=timestamp, nonce="nonce-1", payload=payload
+    )
 
     registry.validate(
         device_id="device_123",
@@ -66,7 +71,10 @@ def test_production_outbox_publishes_once_and_marks_ack() -> None:
     )
     outbox.append(event)
     producer = InMemoryKafkaProducer([])
-    publisher = KafkaEventPublisher(__import__("afritech.novaride_runtime.config", fromlist=["KafkaSettings"]).KafkaSettings(), producer)
+    publisher = KafkaEventPublisher(
+        __import__("afritech.novaride_runtime.config", fromlist=["KafkaSettings"]).KafkaSettings(),
+        producer,
+    )
 
     result = ProductionOutboxPublisher(outbox, publisher, "worker_1").run_once()
 

@@ -168,7 +168,8 @@ TaskManager.defineTask(DRIVER_SYNC_TASK, async () => {
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
   }),
@@ -185,7 +186,7 @@ export async function registerDriverPush(driverId: string) {
     });
   }
   const permission = await Notifications.requestPermissionsAsync();
-  if (!permission.granted) return null;
+  if (permission.status !== "granted") return null;
   const projectId = Constants.expoConfig?.extra?.eas?.projectId;
   const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
   if (token !== (await AsyncStorage.getItem(PUSH_KEY))) {
@@ -270,7 +271,7 @@ export async function getDriverMobilityHealth(): Promise<DriverMobilityHealth> {
     networkConnected: Boolean(network.isConnected),
     deviceTrusted: Device.isDevice && !Application.applicationId?.toLowerCase().includes("expo"),
     backgroundLocation: background.granted,
-    pushGranted: push.granted,
+    pushGranted: push.status === "granted",
     pendingSync: queue.length,
   };
 }

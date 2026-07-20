@@ -46,7 +46,9 @@ class HttpProviderProbe:
     async def probe(self) -> ProviderHealth:
         started = monotonic()
         try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport) as client:
+            async with httpx.AsyncClient(
+                timeout=self.timeout_seconds, transport=self.transport
+            ) as client:
                 response = await client.get(self.health_url)
             latency_ms = int((monotonic() - started) * 1000)
             state = ProviderState.HEALTHY if response.status_code < 500 else ProviderState.DEGRADED
@@ -74,7 +76,12 @@ class HealthAggregator:
     recover_to_degraded_successes: int = 3
     recover_to_healthy_successes: int = 5
 
-    def apply(self, previous: ProviderHealthRecord | None, measurement: ProviderHealth, context: RuntimeContext) -> ProviderHealthRecord:
+    def apply(
+        self,
+        previous: ProviderHealthRecord | None,
+        measurement: ProviderHealth,
+        context: RuntimeContext,
+    ) -> ProviderHealthRecord:
         now = utc_now()
         old_state = previous.state if previous else ProviderState.HEALTHY
         failures = previous.consecutive_failures if previous else 0
@@ -91,7 +98,10 @@ class HealthAggregator:
             state = ProviderState.DEGRADED
         if old_state == ProviderState.DEGRADED and failures >= self.unavailable_after_failures:
             state = ProviderState.UNAVAILABLE
-        if old_state == ProviderState.UNAVAILABLE and successes >= self.recover_to_degraded_successes:
+        if (
+            old_state == ProviderState.UNAVAILABLE
+            and successes >= self.recover_to_degraded_successes
+        ):
             state = ProviderState.DEGRADED
         if old_state == ProviderState.DEGRADED and successes >= self.recover_to_healthy_successes:
             state = ProviderState.HEALTHY
@@ -106,12 +116,20 @@ class HealthAggregator:
             state=state,
             latency_ms=measurement.latency_ms,
             error_rate=measurement.error_rate,
-            timeout_rate=Decimal("1") if measurement.state == ProviderState.UNAVAILABLE else Decimal("0"),
-            success_rate=Decimal("1") if measurement.state == ProviderState.HEALTHY else Decimal("0"),
+            timeout_rate=Decimal("1")
+            if measurement.state == ProviderState.UNAVAILABLE
+            else Decimal("0"),
+            success_rate=Decimal("1")
+            if measurement.state == ProviderState.HEALTHY
+            else Decimal("0"),
             consecutive_failures=failures,
             consecutive_successes=successes,
-            last_successful_probe_at=now if measurement.state == ProviderState.HEALTHY else (previous.last_successful_probe_at if previous else None),
-            last_state_transition_at=now if state != old_state else (previous.last_state_transition_at if previous else now),
+            last_successful_probe_at=now
+            if measurement.state == ProviderState.HEALTHY
+            else (previous.last_successful_probe_at if previous else None),
+            last_state_transition_at=now
+            if state != old_state
+            else (previous.last_state_transition_at if previous else now),
         )
 
 
@@ -135,7 +153,9 @@ def retry_delay_seconds(policy_name: str, attempt: int, *, jitter: float | None 
     policy = RETRY_POLICIES[policy_name]
     base = float(policy["base_delay_seconds"])
     max_delay = float(policy["max_delay_seconds"])
-    return min(max_delay, base * (2**attempt)) + (random.uniform(0, base) if jitter is None else jitter)
+    return min(max_delay, base * (2**attempt)) + (
+        random.uniform(0, base) if jitter is None else jitter
+    )
 
 
 @dataclass(slots=True)
@@ -154,7 +174,10 @@ class CircuitBreaker:
         if self.state == CircuitBreakerState.CLOSED:
             return True
         if self.state == CircuitBreakerState.OPEN:
-            if self.opened_at_monotonic is not None and monotonic() - self.opened_at_monotonic >= self.open_duration_seconds:
+            if (
+                self.opened_at_monotonic is not None
+                and monotonic() - self.opened_at_monotonic >= self.open_duration_seconds
+            ):
                 self.state = CircuitBreakerState.HALF_OPEN
                 self.half_open_calls = 0
             else:
@@ -213,16 +236,31 @@ class PolicyProviderRouter:
             and (currency is None or not candidate.currencies or currency in candidate.currencies)
             and candidate.circuit_state != CircuitBreakerState.OPEN
         ]
-        eligible.sort(key=lambda item: (item.health != ProviderState.HEALTHY, item.error_rate, item.latency_ms, item.cost_rank))
+        eligible.sort(
+            key=lambda item: (
+                item.health != ProviderState.HEALTHY,
+                item.error_rate,
+                item.latency_ms,
+                item.cost_rank,
+            )
+        )
         selected = eligible[0] if eligible else None
-        degraded = DegradedMode.NORMAL if selected and selected.health == ProviderState.HEALTHY else DegradedMode.DEGRADED if selected else DegradedMode.OFFLINE
+        degraded = (
+            DegradedMode.NORMAL
+            if selected and selected.health == ProviderState.HEALTHY
+            else DegradedMode.DEGRADED
+            if selected
+            else DegradedMode.OFFLINE
+        )
         reason = "healthy_lowest_latency_supported_corridor" if selected else "no_eligible_provider"
         route = ProviderRoute(
             capability=capability,
             selected_provider=selected.provider if selected else None,
             attempted_providers=attempted,
             degraded_mode=degraded,
-            fallback_reason=None if selected and candidates and selected.provider == candidates[0].provider else "policy_fallback_selected",
+            fallback_reason=None
+            if selected and candidates and selected.provider == candidates[0].provider
+            else "policy_fallback_selected",
         )
         evidence_payload = {
             "capability": capability,
@@ -303,7 +341,10 @@ class FailoverController:
 
         if target == self.current_state:
             return None
-        if target in {FailoverState.REGION_DEGRADED, FailoverState.REGION_ISOLATED} and not approval_reference:
+        if (
+            target in {FailoverState.REGION_DEGRADED, FailoverState.REGION_ISOLATED}
+            and not approval_reference
+        ):
             raise AuthorityDenied("failover_policy_approval_required")
         event_payload = {
             "previous_state": self.current_state.value,
@@ -335,7 +376,9 @@ async def run_with_retry(policy_name: str, operation: Callable[[], Awaitable[Any
     for attempt in range(max_attempts):
         try:
             return await operation()
-        except Exception as exc:  # pragma: no cover - exercised by focused tests through final exception
+        except (
+            Exception
+        ) as exc:  # pragma: no cover - exercised by focused tests through final exception
             last_error = exc
             if attempt == max_attempts - 1:
                 break

@@ -7,7 +7,11 @@ from decimal import Decimal
 from typing import Any
 
 from afritech.novaride_runtime.common.clocks import utc_now
-from afritech.novaride_runtime.common.errors import AuthorityDenied, BoundaryViolation, DuplicateCommand
+from afritech.novaride_runtime.common.errors import (
+    AuthorityDenied,
+    BoundaryViolation,
+    DuplicateCommand,
+)
 from afritech.novaride_runtime.common.geography import AddressRef, GeoPoint
 from afritech.novaride_runtime.common.identifiers import new_id
 from afritech.novaride_runtime.common.idempotency import IdempotencyRecord, payload_hash
@@ -24,7 +28,6 @@ from afritech.novaride_runtime.models import (
     ConflictRecord,
     DeliveryOrder,
     DegradedMode,
-    DispatchOffer,
     DriverAvailability,
     DriverAvailabilityState,
     DriverEligibility,
@@ -50,7 +53,6 @@ from afritech.novaride_runtime.models import (
     ProviderRouteDecision,
     ProviderState,
     ResilienceEvidence,
-    RiderProfile,
     RuntimeContext,
     SyncSession,
     SyncResult,
@@ -116,7 +118,24 @@ class EventFabric:
 class PolicyService:
     ga_allowed: bool = False
     real_payments_enabled: bool = False
-    enabled_regions: tuple[str, ...] = ("AU", "US", "CA", "UK", "EU", "IN", "KE", "TZ", "UG", "RW", "BI", "DRC", "NG", "GH", "ZM", "ZA")
+    enabled_regions: tuple[str, ...] = (
+        "AU",
+        "US",
+        "CA",
+        "UK",
+        "EU",
+        "IN",
+        "KE",
+        "TZ",
+        "UG",
+        "RW",
+        "BI",
+        "DRC",
+        "NG",
+        "GH",
+        "ZM",
+        "ZA",
+    )
     fair_bid_regions: tuple[str, ...] = ("KE", "TZ", "UG", "RW", "NG", "GH", "IN")
 
     def require_region_enabled(self, region_code: str) -> None:
@@ -144,7 +163,9 @@ class PolicyService:
 class NovaPayAdapter:
     policy: PolicyService
 
-    def create_payment_intent_reference(self, amount: Money, context: RuntimeContext) -> PaymentIntentReference:
+    def create_payment_intent_reference(
+        self, amount: Money, context: RuntimeContext
+    ) -> PaymentIntentReference:
         return PaymentIntentReference(
             payment_intent_id=new_id("payintent_sandbox"),
             provider="NovaPay",
@@ -166,7 +187,9 @@ class BookingService:
     events: EventFabric
     policy: PolicyService
 
-    def create_quote(self, context: RuntimeContext, *, service_type: str = "economy", currency: str = "AUD") -> FareQuote:
+    def create_quote(
+        self, context: RuntimeContext, *, service_type: str = "economy", currency: str = "AUD"
+    ) -> FareQuote:
         self.policy.require_region_enabled(context.region_code)
         quote = FareQuote(
             id=new_id("quote"),
@@ -181,10 +204,24 @@ class BookingService:
             estimated_total=Money.of("19.80", currency),
         )
         self.repositories.fare_quotes.save(quote)
-        self.events.emit(context, event_type="FareQuoted", aggregate_id=quote.id, aggregate_type="FareQuote", aggregate_version=quote.aggregate_version, payload={"quote": quote})
+        self.events.emit(
+            context,
+            event_type="FareQuoted",
+            aggregate_id=quote.id,
+            aggregate_type="FareQuote",
+            aggregate_version=quote.aggregate_version,
+            payload={"quote": quote},
+        )
         return quote
 
-    def create_booking(self, context: RuntimeContext, intent: BookingIntent, *, quote_id: str | None, idempotency_key: str) -> Booking:
+    def create_booking(
+        self,
+        context: RuntimeContext,
+        intent: BookingIntent,
+        *,
+        quote_id: str | None,
+        idempotency_key: str,
+    ) -> Booking:
         command_hash = payload_hash({"intent": _json(intent), "quote_id": quote_id})
         existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
         if existing:
@@ -207,10 +244,26 @@ class BookingService:
         )
         self.repositories.bookings.save(booking)
         self.repositories.idempotency.put(
-            IdempotencyRecord(context.tenant_id, idempotency_key, command_hash, {"booking_id": booking.id})
+            IdempotencyRecord(
+                context.tenant_id, idempotency_key, command_hash, {"booking_id": booking.id}
+            )
         )
-        self.events.emit(context, event_type="BookingCreated", aggregate_id=booking.id, aggregate_type="Booking", aggregate_version=booking.aggregate_version, payload={"booking": booking})
-        self.events.emit(context, event_type="BookingConfirmed", aggregate_id=booking.id, aggregate_type="Booking", aggregate_version=booking.aggregate_version, payload={"booking_id": booking.id})
+        self.events.emit(
+            context,
+            event_type="BookingCreated",
+            aggregate_id=booking.id,
+            aggregate_type="Booking",
+            aggregate_version=booking.aggregate_version,
+            payload={"booking": booking},
+        )
+        self.events.emit(
+            context,
+            event_type="BookingConfirmed",
+            aggregate_id=booking.id,
+            aggregate_type="Booking",
+            aggregate_version=booking.aggregate_version,
+            payload={"booking_id": booking.id},
+        )
         return booking
 
 
@@ -220,7 +273,14 @@ class DriverService:
     events: EventFabric
     policy: PolicyService
 
-    def onboard(self, context: RuntimeContext, *, identity_id: str, display_name: str, vehicle_id: str | None = None) -> DriverProfile:
+    def onboard(
+        self,
+        context: RuntimeContext,
+        *,
+        identity_id: str,
+        display_name: str,
+        vehicle_id: str | None = None,
+    ) -> DriverProfile:
         profile = DriverProfile(
             id=context.actor_id if context.actor_type == ActorType.DRIVER else new_id("driver"),
             tenant_id=context.tenant_id,
@@ -272,9 +332,15 @@ class DriverService:
             self.repositories.availability.save(availability)
         return shift
 
-    def set_available(self, context: RuntimeContext, driver_id: str, *, location_fresh: bool = True) -> DriverAvailability:
+    def set_available(
+        self, context: RuntimeContext, driver_id: str, *, location_fresh: bool = True
+    ) -> DriverAvailability:
         availability = self.repositories.availability.get(driver_id)
-        eligibility_items = [item for item in self.repositories.eligibility.list(tenant_id=context.tenant_id) if item.driver_id == driver_id]
+        eligibility_items = [
+            item
+            for item in self.repositories.eligibility.list(tenant_id=context.tenant_id)
+            if item.driver_id == driver_id
+        ]
         eligibility = eligibility_items[-1] if eligibility_items else None
         if availability is None:
             raise ValueError("driver_availability_not_found")
@@ -292,14 +358,25 @@ class DriverService:
             and context.region_code in self.policy.enabled_regions
         )
         availability.requested_state = DriverAvailabilityState.AVAILABLE
-        availability.authoritative_state = DriverAvailabilityState.AVAILABLE if dispatchable else DriverAvailabilityState.ONLINE_NOT_CONFIRMED
+        availability.authoritative_state = (
+            DriverAvailabilityState.AVAILABLE
+            if dispatchable
+            else DriverAvailabilityState.ONLINE_NOT_CONFIRMED
+        )
         availability.dispatchable = dispatchable
         availability.location_fresh = location_fresh
         availability.server_confirmed_at = utc_now()
         availability.touch()
         self.repositories.availability.save(availability)
         if dispatchable:
-            self.events.emit(context, event_type="DriverAvailable", aggregate_id=driver_id, aggregate_type="DriverAvailability", aggregate_version=availability.aggregate_version, payload={"driver_id": driver_id})
+            self.events.emit(
+                context,
+                event_type="DriverAvailable",
+                aggregate_id=driver_id,
+                aggregate_type="DriverAvailability",
+                aggregate_version=availability.aggregate_version,
+                payload={"driver_id": driver_id},
+            )
         return availability
 
 
@@ -312,7 +389,11 @@ class DispatchService:
         booking = self.repositories.bookings.get(booking_id)
         if booking is None:
             raise ValueError("booking_not_found")
-        candidates = [item for item in self.repositories.availability.list(tenant_id=context.tenant_id) if item.dispatchable]
+        candidates = [
+            item
+            for item in self.repositories.availability.list(tenant_id=context.tenant_id)
+            if item.dispatchable
+        ]
         if not candidates:
             raise ValueError("no_dispatchable_driver")
         driver_id = candidates[0].driver_id
@@ -346,9 +427,30 @@ class DispatchService:
             estimated_earnings=Money.of("14.50", "AUD"),
         )
         self.repositories.offers.save(offer)
-        self.events.emit(context, event_type="DriverSearchStarted", aggregate_id=booking.id, aggregate_type="Booking", aggregate_version=booking.aggregate_version, payload={"booking_id": booking.id})
-        self.events.emit(context, event_type="DriverOfferCreated", aggregate_id=offer.id, aggregate_type="DriverOffer", aggregate_version=offer.aggregate_version, payload={"offer": offer})
-        self.events.emit(context, event_type="DriverAssigned", aggregate_id=trip.id, aggregate_type="Trip", aggregate_version=trip.aggregate_version, payload={"trip_id": trip.id, "driver_id": driver_id})
+        self.events.emit(
+            context,
+            event_type="DriverSearchStarted",
+            aggregate_id=booking.id,
+            aggregate_type="Booking",
+            aggregate_version=booking.aggregate_version,
+            payload={"booking_id": booking.id},
+        )
+        self.events.emit(
+            context,
+            event_type="DriverOfferCreated",
+            aggregate_id=offer.id,
+            aggregate_type="DriverOffer",
+            aggregate_version=offer.aggregate_version,
+            payload={"offer": offer},
+        )
+        self.events.emit(
+            context,
+            event_type="DriverAssigned",
+            aggregate_id=trip.id,
+            aggregate_type="Trip",
+            aggregate_version=trip.aggregate_version,
+            payload={"trip_id": trip.id, "driver_id": driver_id},
+        )
         return offer
 
     def accept_offer(self, context: RuntimeContext, offer_id: str) -> Trip:
@@ -371,7 +473,14 @@ class DispatchService:
         trip.touch()
         self.repositories.offers.save(offer)
         self.repositories.trips.save(trip)
-        self.events.emit(context, event_type="DriverOfferAccepted", aggregate_id=offer.id, aggregate_type="DriverOffer", aggregate_version=offer.aggregate_version, payload={"offer_id": offer.id, "trip_id": trip.id})
+        self.events.emit(
+            context,
+            event_type="DriverOfferAccepted",
+            aggregate_id=offer.id,
+            aggregate_type="DriverOffer",
+            aggregate_version=offer.aggregate_version,
+            payload={"offer_id": offer.id, "trip_id": trip.id},
+        )
         return trip
 
 
@@ -381,7 +490,14 @@ class TripService:
     events: EventFabric
     novapay: NovaPayAdapter
 
-    def transition(self, context: RuntimeContext, trip_id: str, target: TripState, *, evidence_reference: str | None = None) -> Trip:
+    def transition(
+        self,
+        context: RuntimeContext,
+        trip_id: str,
+        target: TripState,
+        *,
+        evidence_reference: str | None = None,
+    ) -> Trip:
         trip = self.repositories.trips.get(trip_id)
         if trip is None:
             raise ValueError("trip_not_found")
@@ -397,22 +513,52 @@ class TripService:
             raise ValueError("invalid_trip_transition")
         trip.lifecycle_state = target
         if target == TripState.COMPLETED:
-            payment = self.novapay.create_payment_intent_reference(Money.of("19.80", "AUD"), context)
+            payment = self.novapay.create_payment_intent_reference(
+                Money.of("19.80", "AUD"), context
+            )
             trip.payment_reference = payment.payment_intent_id
             trip.evidence_reference = evidence_reference or new_id("trust_evidence")
         trip.touch()
         self.repositories.trips.save(trip)
-        self.events.emit(context, event_type=event_type, aggregate_id=trip.id, aggregate_type="Trip", aggregate_version=trip.aggregate_version, payload={"trip": trip})
+        self.events.emit(
+            context,
+            event_type=event_type,
+            aggregate_id=trip.id,
+            aggregate_type="Trip",
+            aggregate_version=trip.aggregate_version,
+            payload={"trip": trip},
+        )
         if target == TripState.COMPLETED:
-            self.events.emit(context, event_type="PaymentRequested", aggregate_id=trip.id, aggregate_type="Trip", aggregate_version=trip.aggregate_version, payload={"payment_reference": trip.payment_reference, "provider": "NovaPay"})
-            self.events.emit(context, event_type="TripEvidenceFinalized", aggregate_id=trip.id, aggregate_type="Trip", aggregate_version=trip.aggregate_version, payload={"evidence_reference": trip.evidence_reference, "provider": "NovaTrust"})
+            self.events.emit(
+                context,
+                event_type="PaymentRequested",
+                aggregate_id=trip.id,
+                aggregate_type="Trip",
+                aggregate_version=trip.aggregate_version,
+                payload={"payment_reference": trip.payment_reference, "provider": "NovaPay"},
+            )
+            self.events.emit(
+                context,
+                event_type="TripEvidenceFinalized",
+                aggregate_id=trip.id,
+                aggregate_type="Trip",
+                aggregate_version=trip.aggregate_version,
+                payload={"evidence_reference": trip.evidence_reference, "provider": "NovaTrust"},
+            )
         return trip
 
     def location(self, context: RuntimeContext, trip_id: str, point: GeoPoint) -> None:
         trip = self.repositories.trips.get(trip_id)
         if trip is None:
             raise ValueError("trip_not_found")
-        self.events.emit(context, event_type="TripLocationUpdated", aggregate_id=trip.id, aggregate_type="Trip", aggregate_version=trip.aggregate_version, payload={"point": point.as_dict()})
+        self.events.emit(
+            context,
+            event_type="TripLocationUpdated",
+            aggregate_id=trip.id,
+            aggregate_type="Trip",
+            aggregate_version=trip.aggregate_version,
+            payload={"point": point.as_dict()},
+        )
 
 
 @dataclass(slots=True)
@@ -421,8 +567,12 @@ class SafetyService:
     events: EventFabric
     policy: PolicyService
 
-    def activate_emergency(self, context: RuntimeContext, *, source_id: str, trip_id: str | None, idempotency_key: str) -> EmergencyCase:
-        command_hash = payload_hash({"source_id": source_id, "trip_id": trip_id, "source": context.actor_type.value})
+    def activate_emergency(
+        self, context: RuntimeContext, *, source_id: str, trip_id: str | None, idempotency_key: str
+    ) -> EmergencyCase:
+        command_hash = payload_hash(
+            {"source_id": source_id, "trip_id": trip_id, "source": context.actor_type.value}
+        )
         existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
         if existing:
             emergency = self.repositories.emergencies.get(existing.result["emergency_id"])
@@ -442,8 +592,19 @@ class SafetyService:
             visible_reference=new_id("safe_ref"),
         )
         self.repositories.emergencies.save(emergency)
-        self.repositories.idempotency.put(IdempotencyRecord(context.tenant_id, idempotency_key, command_hash, {"emergency_id": emergency.id}))
-        self.events.emit(context, event_type="EmergencyActivated", aggregate_id=emergency.id, aggregate_type="EmergencyCase", aggregate_version=emergency.aggregate_version, payload={"emergency": emergency, "emergency_services_contacted": False})
+        self.repositories.idempotency.put(
+            IdempotencyRecord(
+                context.tenant_id, idempotency_key, command_hash, {"emergency_id": emergency.id}
+            )
+        )
+        self.events.emit(
+            context,
+            event_type="EmergencyActivated",
+            aggregate_id=emergency.id,
+            aggregate_type="EmergencyCase",
+            aggregate_version=emergency.aggregate_version,
+            payload={"emergency": emergency, "emergency_services_contacted": False},
+        )
         return emergency
 
     def acknowledge(self, context: RuntimeContext, emergency_id: str) -> EmergencyCase:
@@ -454,7 +615,14 @@ class SafetyService:
         emergency.state = EmergencyState.ACKNOWLEDGED
         emergency.touch()
         self.repositories.emergencies.save(emergency)
-        self.events.emit(context, event_type="EmergencyAcknowledged", aggregate_id=emergency.id, aggregate_type="EmergencyCase", aggregate_version=emergency.aggregate_version, payload={"emergency_id": emergency.id})
+        self.events.emit(
+            context,
+            event_type="EmergencyAcknowledged",
+            aggregate_id=emergency.id,
+            aggregate_type="EmergencyCase",
+            aggregate_version=emergency.aggregate_version,
+            payload={"emergency_id": emergency.id},
+        )
         return emergency
 
 
@@ -464,7 +632,16 @@ class OperatorService:
     events: EventFabric
     policy: PolicyService
 
-    def command(self, context: RuntimeContext, *, command_type: str, target_id: str, reason: str, high_risk: bool = False, approval_reference: str | None = None) -> OperatorCommand:
+    def command(
+        self,
+        context: RuntimeContext,
+        *,
+        command_type: str,
+        target_id: str,
+        reason: str,
+        high_risk: bool = False,
+        approval_reference: str | None = None,
+    ) -> OperatorCommand:
         self.policy.require_operator(context)
         if high_risk and not approval_reference:
             raise AuthorityDenied("four_eyes_approval_required")
@@ -480,7 +657,14 @@ class OperatorService:
             evidence_reference=new_id("trust_evidence"),
         )
         self.repositories.operator_commands.save(command)
-        self.events.emit(context, event_type="OperatorInterventionRecorded", aggregate_id=command.id, aggregate_type="OperatorCommand", aggregate_version=command.aggregate_version, payload={"command": command})
+        self.events.emit(
+            context,
+            event_type="OperatorInterventionRecorded",
+            aggregate_id=command.id,
+            aggregate_type="OperatorCommand",
+            aggregate_version=command.aggregate_version,
+            payload={"command": command},
+        )
         return command
 
 
@@ -490,18 +674,50 @@ class FleetService:
     events: EventFabric
 
     def create_fleet(self, context: RuntimeContext, name: str) -> Fleet:
-        fleet = Fleet(id=new_id("fleet"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, name=name)
+        fleet = Fleet(
+            id=new_id("fleet"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            name=name,
+        )
         self.repositories.fleets.save(fleet)
         return fleet
 
-    def assign_vehicle(self, context: RuntimeContext, fleet_id: str, vehicle_id: str) -> FleetVehicle:
-        vehicle = FleetVehicle(id=new_id("fleet_vehicle"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, fleet_id=fleet_id, vehicle_id=vehicle_id)
+    def assign_vehicle(
+        self, context: RuntimeContext, fleet_id: str, vehicle_id: str
+    ) -> FleetVehicle:
+        vehicle = FleetVehicle(
+            id=new_id("fleet_vehicle"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            fleet_id=fleet_id,
+            vehicle_id=vehicle_id,
+        )
         self.repositories.fleet_vehicles.save(vehicle)
-        self.events.emit(context, event_type="FleetVehicleAssigned", aggregate_id=vehicle.id, aggregate_type="FleetVehicle", aggregate_version=vehicle.aggregate_version, payload={"fleet_id": fleet_id, "vehicle_id": vehicle_id})
+        self.events.emit(
+            context,
+            event_type="FleetVehicleAssigned",
+            aggregate_id=vehicle.id,
+            aggregate_type="FleetVehicle",
+            aggregate_version=vehicle.aggregate_version,
+            payload={"fleet_id": fleet_id, "vehicle_id": vehicle_id},
+        )
         return vehicle
 
-    def compliance_hold(self, context: RuntimeContext, fleet_id: str, reason: str) -> FleetComplianceState:
-        state = FleetComplianceState(id=new_id("fleet_compliance"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, fleet_id=fleet_id, compliance_hold=True, reasons=(reason,))
+    def compliance_hold(
+        self, context: RuntimeContext, fleet_id: str, reason: str
+    ) -> FleetComplianceState:
+        state = FleetComplianceState(
+            id=new_id("fleet_compliance"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            fleet_id=fleet_id,
+            compliance_hold=True,
+            reasons=(reason,),
+        )
         self.repositories.fleet_compliance.save(state)
         return state
 
@@ -511,10 +727,36 @@ class LogisticsService:
     repositories: RuntimeRepositories
     events: EventFabric
 
-    def create_order(self, context: RuntimeContext, sender_id: str, recipient_name: str, pickup: AddressRef, dropoff: AddressRef, metadata: dict[str, Any] | None = None) -> DeliveryOrder:
-        order = DeliveryOrder(id=new_id("delivery"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, sender_id=sender_id, recipient_name=recipient_name, pickup=pickup, dropoff=dropoff, package_metadata=metadata or {}, state=LogisticsState.CONFIRMED)
+    def create_order(
+        self,
+        context: RuntimeContext,
+        sender_id: str,
+        recipient_name: str,
+        pickup: AddressRef,
+        dropoff: AddressRef,
+        metadata: dict[str, Any] | None = None,
+    ) -> DeliveryOrder:
+        order = DeliveryOrder(
+            id=new_id("delivery"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            sender_id=sender_id,
+            recipient_name=recipient_name,
+            pickup=pickup,
+            dropoff=dropoff,
+            package_metadata=metadata or {},
+            state=LogisticsState.CONFIRMED,
+        )
         self.repositories.deliveries.save(order)
-        self.events.emit(context, event_type="DeliveryCreated", aggregate_id=order.id, aggregate_type="DeliveryOrder", aggregate_version=order.aggregate_version, payload={"order": order})
+        self.events.emit(
+            context,
+            event_type="DeliveryCreated",
+            aggregate_id=order.id,
+            aggregate_type="DeliveryOrder",
+            aggregate_version=order.aggregate_version,
+            payload={"order": order},
+        )
         return order
 
     def pickup(self, context: RuntimeContext, order_id: str) -> DeliveryOrder:
@@ -528,17 +770,33 @@ class LogisticsService:
         order.state = LogisticsState.RETURNED
         order.touch()
         self.repositories.deliveries.save(order)
-        self.events.emit(context, event_type="DeliveryReturned", aggregate_id=order.id, aggregate_type="DeliveryOrder", aggregate_version=order.aggregate_version, payload={"order_id": order.id})
+        self.events.emit(
+            context,
+            event_type="DeliveryReturned",
+            aggregate_id=order.id,
+            aggregate_type="DeliveryOrder",
+            aggregate_version=order.aggregate_version,
+            payload={"order_id": order.id},
+        )
         return order
 
-    def _transition(self, context: RuntimeContext, order_id: str, state: LogisticsState, event_type: str) -> DeliveryOrder:
+    def _transition(
+        self, context: RuntimeContext, order_id: str, state: LogisticsState, event_type: str
+    ) -> DeliveryOrder:
         order = self.repositories.deliveries.get(order_id)
         if order is None:
             raise ValueError("delivery_not_found")
         order.state = state
         order.touch()
         self.repositories.deliveries.save(order)
-        self.events.emit(context, event_type=event_type, aggregate_id=order.id, aggregate_type="DeliveryOrder", aggregate_version=order.aggregate_version, payload={"order_id": order.id})
+        self.events.emit(
+            context,
+            event_type=event_type,
+            aggregate_id=order.id,
+            aggregate_type="DeliveryOrder",
+            aggregate_version=order.aggregate_version,
+            payload={"order_id": order.id},
+        )
         return order
 
 
@@ -548,14 +806,44 @@ class CorporateMobilityService:
     events: EventFabric
 
     def create_account(self, context: RuntimeContext, name: str) -> CorporateAccount:
-        account = CorporateAccount(id=new_id("corp"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, name=name, wallet_reference=new_id("novapay_wallet_ref"))
+        account = CorporateAccount(
+            id=new_id("corp"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            name=name,
+            wallet_reference=new_id("novapay_wallet_ref"),
+        )
         self.repositories.corporate_accounts.save(account)
         return account
 
-    def create_booking(self, context: RuntimeContext, account_id: str, employee_id: str, booking_id: str, cost_center_id: str | None = None) -> CorporateBooking:
-        booking = CorporateBooking(id=new_id("corp_booking"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, account_id=account_id, employee_id=employee_id, booking_id=booking_id, cost_center_id=cost_center_id)
+    def create_booking(
+        self,
+        context: RuntimeContext,
+        account_id: str,
+        employee_id: str,
+        booking_id: str,
+        cost_center_id: str | None = None,
+    ) -> CorporateBooking:
+        booking = CorporateBooking(
+            id=new_id("corp_booking"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            account_id=account_id,
+            employee_id=employee_id,
+            booking_id=booking_id,
+            cost_center_id=cost_center_id,
+        )
         self.repositories.corporate_bookings.save(booking)
-        self.events.emit(context, event_type="CorporateBookingCreated", aggregate_id=booking.id, aggregate_type="CorporateBooking", aggregate_version=booking.aggregate_version, payload={"booking": booking})
+        self.events.emit(
+            context,
+            event_type="CorporateBookingCreated",
+            aggregate_id=booking.id,
+            aggregate_type="CorporateBooking",
+            aggregate_version=booking.aggregate_version,
+            payload={"booking": booking},
+        )
         return booking
 
 
@@ -564,16 +852,36 @@ class TransitJourneyService:
     repositories: RuntimeRepositories
     events: EventFabric
 
-    def plan(self, context: RuntimeContext, rider_id: str, *, include_first_last_mile: bool = True) -> TransitJourney:
+    def plan(
+        self, context: RuntimeContext, rider_id: str, *, include_first_last_mile: bool = True
+    ) -> TransitJourney:
         legs = (
             TransitLeg("WALK", "origin", "bus_stop"),
             TransitLeg("BUS", "bus_stop", "train_station", "GTFS-compatible where integrated"),
-            TransitLeg("TRAIN", "train_station", "novaride_pickup", "GTFS-compatible where integrated"),
-            TransitLeg("NOVARIDE", "novaride_pickup", "destination") if include_first_last_mile else TransitLeg("WALK", "station", "destination"),
+            TransitLeg(
+                "TRAIN", "train_station", "novaride_pickup", "GTFS-compatible where integrated"
+            ),
+            TransitLeg("NOVARIDE", "novaride_pickup", "destination")
+            if include_first_last_mile
+            else TransitLeg("WALK", "station", "destination"),
         )
-        journey = TransitJourney(id=new_id("transit_journey"), tenant_id=context.tenant_id, organization_id=context.organization_id, region_code=context.region_code, rider_id=rider_id, legs=legs)
+        journey = TransitJourney(
+            id=new_id("transit_journey"),
+            tenant_id=context.tenant_id,
+            organization_id=context.organization_id,
+            region_code=context.region_code,
+            rider_id=rider_id,
+            legs=legs,
+        )
         self.repositories.transit_journeys.save(journey)
-        self.events.emit(context, event_type="TransitJourneyPlanned", aggregate_id=journey.id, aggregate_type="TransitJourney", aggregate_version=journey.aggregate_version, payload={"journey": journey, "real_time_provider_claimed": False})
+        self.events.emit(
+            context,
+            event_type="TransitJourneyPlanned",
+            aggregate_id=journey.id,
+            aggregate_type="TransitJourney",
+            aggregate_version=journey.aggregate_version,
+            payload={"journey": journey, "real_time_provider_claimed": False},
+        )
         return journey
 
 
@@ -583,8 +891,19 @@ class DispatchIntelligenceService:
     policy: PolicyService
 
     def recommend_rebalance(self, context: RuntimeContext, zone: str) -> dict[str, Any]:
-        recommendation = {"type": "DriverRebalanceRecommended", "zone": zone, "effect": "advisory_only"}
-        self.events.emit(context, event_type="DriverRebalanceRecommended", aggregate_id=zone, aggregate_type="DispatchZone", aggregate_version=1, payload=recommendation)
+        recommendation = {
+            "type": "DriverRebalanceRecommended",
+            "zone": zone,
+            "effect": "advisory_only",
+        }
+        self.events.emit(
+            context,
+            event_type="DriverRebalanceRecommended",
+            aggregate_id=zone,
+            aggregate_type="DispatchZone",
+            aggregate_version=1,
+            payload=recommendation,
+        )
         return recommendation
 
     def apply_price(self, context: RuntimeContext) -> None:
@@ -607,12 +926,16 @@ class ResilienceService:
         priority: str = "NORMAL",
     ) -> OfflineOperation:
         command_hash = payload_hash({"operation_type": operation_type, "payload": payload})
-        existing_operation = self.repositories.offline_operations.get_by_idempotency_key(context.tenant_id, idempotency_key)
+        existing_operation = self.repositories.offline_operations.get_by_idempotency_key(
+            context.tenant_id, idempotency_key
+        )
         if existing_operation:
             return existing_operation
         existing = self.repositories.idempotency.get(context.tenant_id, idempotency_key)
         if existing:
-            queued = self.repositories.offline_operations.get(existing.result["offline_operation_id"])
+            queued = self.repositories.offline_operations.get(
+                existing.result["offline_operation_id"]
+            )
             if queued is None:
                 raise DuplicateCommand("idempotent_offline_operation_missing")
             return queued
@@ -623,7 +946,10 @@ class ResilienceService:
             region_code=context.region_code,
             actor_id=context.actor_id,
             operation_type=operation_type,
-            encrypted_payload={"ciphertext_ref": canonical_hash(payload), "payload_minimized": True},
+            encrypted_payload={
+                "ciphertext_ref": canonical_hash(payload),
+                "payload_minimized": True,
+            },
             payload_hash=command_hash,
             idempotency_key=idempotency_key,
             authority_required=authority_required,
@@ -632,7 +958,12 @@ class ResilienceService:
         )
         self.repositories.offline_operations.save(operation)
         self.repositories.idempotency.put(
-            IdempotencyRecord(context.tenant_id, idempotency_key, command_hash, {"offline_operation_id": operation.id})
+            IdempotencyRecord(
+                context.tenant_id,
+                idempotency_key,
+                command_hash,
+                {"offline_operation_id": operation.id},
+            )
         )
         self.events.emit(
             context,
@@ -653,7 +984,9 @@ class ResilienceService:
         synced = 0
         awaiting_authority = 0
         for operation in queued:
-            operation.status = "AWAITING_AUTHORITATIVE_ACK" if operation.authority_required else "SYNCED"
+            operation.status = (
+                "AWAITING_AUTHORITATIVE_ACK" if operation.authority_required else "SYNCED"
+            )
             operation.touch()
             self.repositories.offline_operations.save(operation)
             if operation.authority_required:
@@ -707,11 +1040,15 @@ class ResilienceService:
                 authority_required=bool(operation.get("authority_required", False)),
                 priority=str(operation.get("priority", "NORMAL")),
             )
-            if operation.get("aggregate_version") and int(operation["aggregate_version"]) < int(operation.get("server_version", operation["aggregate_version"])):
+            if operation.get("aggregate_version") and int(operation["aggregate_version"]) < int(
+                operation.get("server_version", operation["aggregate_version"])
+            ):
                 decision = self.resolve_conflict(
                     domain=str(operation["operation_type"]).split("_")[0],
                     local_version=int(operation["aggregate_version"]),
-                    server_version=int(operation.get("server_version", operation["aggregate_version"])),
+                    server_version=int(
+                        operation.get("server_version", operation["aggregate_version"])
+                    ),
                 )
                 conflict = ConflictRecord(
                     id=new_id("sync_conflict"),
@@ -729,10 +1066,23 @@ class ResilienceService:
                     correlation_id=context.correlation_id,
                 )
                 self.repositories.conflict_records.save(conflict)
-                conflicts.append({"conflict_id": conflict.id, "operation_id": conflict.operation_id, "winner": conflict.winner})
+                conflicts.append(
+                    {
+                        "conflict_id": conflict.id,
+                        "operation_id": conflict.operation_id,
+                        "winner": conflict.winner,
+                    }
+                )
                 results.append({"operation_id": str(operation["id"]), "status": "CONFLICT"})
                 continue
-            results.append({"operation_id": str(operation["id"]), "status": queued.status.replace("QUEUED_AUTHORITY_REQUIRED", "AWAITING_AUTHORITATIVE_ACK")})
+            results.append(
+                {
+                    "operation_id": str(operation["id"]),
+                    "status": queued.status.replace(
+                        "QUEUED_AUTHORITY_REQUIRED", "AWAITING_AUTHORITATIVE_ACK"
+                    ),
+                }
+            )
         sync.status = "CONFLICTS_RECORDED" if conflicts else "ACCEPTED"
         sync.touch()
         self.repositories.sync_sessions.save(sync)
@@ -742,7 +1092,11 @@ class ResilienceService:
             aggregate_id=sync.id,
             aggregate_type="SyncSession",
             aggregate_version=sync.aggregate_version,
-            payload={"sync_id": sync.id, "operation_count": len(operations), "conflict_count": len(conflicts)},
+            payload={
+                "sync_id": sync.id,
+                "operation_count": len(operations),
+                "conflict_count": len(conflicts),
+            },
         )
         return {
             "sync_id": sync.id,
@@ -758,7 +1112,9 @@ class ResilienceService:
             raise ValueError("sync_session_not_found")
         return _json(sync)
 
-    def resolve_sync_conflict(self, context: RuntimeContext, conflict_id: str, *, resolution: str) -> dict[str, Any]:
+    def resolve_sync_conflict(
+        self, context: RuntimeContext, conflict_id: str, *, resolution: str
+    ) -> dict[str, Any]:
         conflict = self.repositories.conflict_records.get(conflict_id)
         if conflict is None:
             raise ValueError("sync_conflict_not_found")
@@ -775,7 +1131,9 @@ class ResilienceService:
         )
         return _json(conflict)
 
-    def resolve_conflict(self, *, domain: str, local_version: int, server_version: int) -> dict[str, Any]:
+    def resolve_conflict(
+        self, *, domain: str, local_version: int, server_version: int
+    ) -> dict[str, Any]:
         core_domains = {"booking", "trip", "payment", "dispatch", "safety"}
         if domain in core_domains:
             return {
@@ -805,7 +1163,13 @@ class ResilienceService:
         degraded = [provider for provider in providers if provider.state == ProviderState.DEGRADED]
         selected = healthy[0] if healthy else degraded[0] if degraded else None
         primary_healthy = bool(providers and providers[0].state == ProviderState.HEALTHY)
-        mode = DegradedMode.NORMAL if selected and primary_healthy else DegradedMode.DEGRADED if selected else DegradedMode.OFFLINE
+        mode = (
+            DegradedMode.NORMAL
+            if selected and primary_healthy
+            else DegradedMode.DEGRADED
+            if selected
+            else DegradedMode.OFFLINE
+        )
         route = ProviderRoute(
             capability=capability,
             selected_provider=selected.provider if selected else None,
@@ -839,19 +1203,31 @@ class ResilienceService:
             attempted_providers=attempted,
             degraded_mode=mode,
             reason=route.fallback_reason or "primary_provider_selected",
-            evidence_hash=canonical_hash({"capability": capability, "attempted": attempted, "selected": route.selected_provider}),
+            evidence_hash=canonical_hash(
+                {
+                    "capability": capability,
+                    "attempted": attempted,
+                    "selected": route.selected_provider,
+                }
+            ),
         )
         self.repositories.provider_routes.save(decision)
         return route
 
-    def record_provider_health(self, context: RuntimeContext, health: ProviderHealth) -> ProviderHealthRecord:
+    def record_provider_health(
+        self, context: RuntimeContext, health: ProviderHealth
+    ) -> ProviderHealthRecord:
         existing = self.repositories.provider_health.latest(
             provider=health.provider,
             capability=health.capability,
             tenant_id=context.tenant_id,
         )
-        failures = (existing.consecutive_failures if existing else 0) + (0 if health.state == ProviderState.HEALTHY else 1)
-        successes = (existing.consecutive_successes if existing else 0) + (1 if health.state == ProviderState.HEALTHY else 0)
+        failures = (existing.consecutive_failures if existing else 0) + (
+            0 if health.state == ProviderState.HEALTHY else 1
+        )
+        successes = (existing.consecutive_successes if existing else 0) + (
+            1 if health.state == ProviderState.HEALTHY else 0
+        )
         record = ProviderHealthRecord(
             id=new_id("provider_health"),
             tenant_id=context.tenant_id,
@@ -864,8 +1240,12 @@ class ResilienceService:
             error_rate=health.error_rate,
             consecutive_failures=0 if health.state == ProviderState.HEALTHY else failures,
             consecutive_successes=successes if health.state == ProviderState.HEALTHY else 0,
-            last_successful_probe_at=utc_now() if health.state == ProviderState.HEALTHY else (existing.last_successful_probe_at if existing else None),
-            last_state_transition_at=utc_now() if existing is None or existing.state != health.state else existing.last_state_transition_at,
+            last_successful_probe_at=utc_now()
+            if health.state == ProviderState.HEALTHY
+            else (existing.last_successful_probe_at if existing else None),
+            last_state_transition_at=utc_now()
+            if existing is None or existing.state != health.state
+            else existing.last_state_transition_at,
         )
         self.repositories.provider_health.save(record)
         self.events.emit(
@@ -888,7 +1268,10 @@ class ResilienceService:
             "knowledge_service": "use_cached_runbooks",
             "emergency": "keep_sos_available_and_record_evidence",
         }
-        return {"capability": capability, "fallback": rules.get(capability, "preserve_core_journey_and_raise_operator_alert")}
+        return {
+            "capability": capability,
+            "fallback": rules.get(capability, "preserve_core_journey_and_raise_operator_alert"),
+        }
 
     def record_evidence(
         self,
@@ -910,7 +1293,14 @@ class ResilienceService:
             decision=decision,
             fallback_used=fallback_used,
             evidence=evidence or {},
-            evidence_hash=canonical_hash({"capability": capability, "decision": decision, "fallback_used": fallback_used, "evidence": evidence or {}}),
+            evidence_hash=canonical_hash(
+                {
+                    "capability": capability,
+                    "decision": decision,
+                    "fallback_used": fallback_used,
+                    "evidence": evidence or {},
+                }
+            ),
         )
         self.repositories.resilience_evidence.save(record)
         self.events.emit(
@@ -984,10 +1374,16 @@ class ResilienceService:
                 "Health Monitor",
                 "Evidence Recorder",
             ),
-            "offline_queue_size": len([item for item in queued if item.status.startswith("QUEUED")]),
-            "awaiting_authority": len([item for item in queued if item.status == "AWAITING_AUTHORITATIVE_ACK"]),
+            "offline_queue_size": len(
+                [item for item in queued if item.status.startswith("QUEUED")]
+            ),
+            "awaiting_authority": len(
+                [item for item in queued if item.status == "AWAITING_AUTHORITATIVE_ACK"]
+            ),
             "evidence_records": len(evidence),
-            "provider_fallback_total": len([item for item in routes if item.degraded_mode != DegradedMode.NORMAL]),
+            "provider_fallback_total": len(
+                [item for item in routes if item.degraded_mode != DegradedMode.NORMAL]
+            ),
             "failover_events_total": len(failovers),
             "emergency_path_available": True,
             "core_journey_preserved_under_degradation": True,
@@ -1003,18 +1399,38 @@ class ReadModelService:
         emergencies = self.repositories.emergencies.list(tenant_id=tenant_id)
         return {
             "status": "READY",
-            "active_trips": len([trip for trip in trips if trip.lifecycle_state not in {TripState.COMPLETED, TripState.CANCELLED}]),
-            "active_emergencies": len([case for case in emergencies if case.state not in {EmergencyState.RESOLVED, EmergencyState.CLOSED}]),
+            "active_trips": len(
+                [
+                    trip
+                    for trip in trips
+                    if trip.lifecycle_state not in {TripState.COMPLETED, TripState.CANCELLED}
+                ]
+            ),
+            "active_emergencies": len(
+                [
+                    case
+                    for case in emergencies
+                    if case.state not in {EmergencyState.RESOLVED, EmergencyState.CLOSED}
+                ]
+            ),
             "event_count": len(self.repositories.events.all()),
             "built_from_events": True,
             "resilience": {
-                "offline_user_operations": len(self.repositories.offline_operations.list(tenant_id=tenant_id)),
-                "resilience_evidence_records": len(self.repositories.resilience_evidence.list(tenant_id=tenant_id)),
+                "offline_user_operations": len(
+                    self.repositories.offline_operations.list(tenant_id=tenant_id)
+                ),
+                "resilience_evidence_records": len(
+                    self.repositories.resilience_evidence.list(tenant_id=tenant_id)
+                ),
             },
         }
 
     def driver_queue(self, tenant_id: str, driver_id: str) -> list[dict[str, Any]]:
-        return [_json(offer) for offer in self.repositories.offers.list(tenant_id=tenant_id) if offer.driver_id == driver_id and offer.state == OfferState.CREATED]
+        return [
+            _json(offer)
+            for offer in self.repositories.offers.list(tenant_id=tenant_id)
+            if offer.driver_id == driver_id and offer.state == OfferState.CREATED
+        ]
 
 
 @dataclass(slots=True)
@@ -1077,4 +1493,11 @@ def create_runtime() -> NovaRideRuntime:
     )
 
 
-__all__ = ["NovaRideRuntime", "create_runtime", "RuntimeContext", "ActorType", "AddressRef", "GeoPoint"]
+__all__ = [
+    "NovaRideRuntime",
+    "create_runtime",
+    "RuntimeContext",
+    "ActorType",
+    "AddressRef",
+    "GeoPoint",
+]

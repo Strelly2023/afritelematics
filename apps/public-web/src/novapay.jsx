@@ -203,6 +203,7 @@ export function NovaPayDetail({ navigate }) {
           </div>
         </div>
         <div className="housing-hero-panel">
+          <img className="product-hero-logo" src="/brand/NOVAPAY.webp" alt="NovaPay logo" />
           <h2>Payments scope</h2>
           <div className="metric-grid">
             <article>
@@ -322,4 +323,3 @@ export function NovaPayDetail({ navigate }) {
     </section>
   );
 }
-

@@ -3,8 +3,11 @@
     "name": "NovaRide Rider",
     "slug": "novaride-rider",
     "version": "2026.1.4",
+    "icon": "./assets/novaride-brand.png",
     "orientation": "portrait",
     "splash": {
+      "image": "./assets/novaride-brand.png",
+      "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
     "platforms": [

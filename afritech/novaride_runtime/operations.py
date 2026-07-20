@@ -51,7 +51,9 @@ class OperationsLayerService:
             {
                 "provider": name,
                 "drained": name in self.drained_providers,
-                "latest_health": _json(next((record for record in reversed(health) if record.provider == name), None)),
+                "latest_health": _json(
+                    next((record for record in reversed(health) if record.provider == name), None)
+                ),
             }
             for name in sorted(names)
         ]
@@ -72,7 +74,9 @@ class OperationsLayerService:
         operations = self.runtime.repositories.offline_operations.list()
         return {
             "depth": len([item for item in operations if item.status.startswith("QUEUED")]),
-            "awaiting_authority": len([item for item in operations if item.status == "AWAITING_AUTHORITATIVE_ACK"]),
+            "awaiting_authority": len(
+                [item for item in operations if item.status == "AWAITING_AUTHORITATIVE_ACK"]
+            ),
             "operations": [_json(item) for item in operations],
         }
 
@@ -86,7 +90,10 @@ class OperationsLayerService:
         approval_reference: str | None = None,
         high_risk: bool = False,
     ) -> OperationsEvidenceReceipt:
-        if "OPERATOR" not in {role.upper() for role in context.roles} and context.actor_type.value != "OPERATOR":
+        if (
+            "OPERATOR" not in {role.upper() for role in context.roles}
+            and context.actor_type.value != "OPERATOR"
+        ):
             raise AuthorityDenied("operations_command_requires_operator")
         if high_risk and not approval_reference:
             raise AuthorityDenied("approval_reference_required")
@@ -97,19 +104,46 @@ class OperationsLayerService:
             "approval_reference": approval_reference,
             "correlation_id": context.correlation_id,
         }
-        return OperationsEvidenceReceipt(command, subject, reason, approval_reference, canonical_hash(payload))
+        return OperationsEvidenceReceipt(
+            command, subject, reason, approval_reference, canonical_hash(payload)
+        )
 
-    def drain_provider(self, context: RuntimeContext, provider: str, *, reason: str, approval_reference: str | None = None) -> OperationsEvidenceReceipt:
-        receipt = self.governed_command(context, command="drain_provider", subject=provider, reason=reason, approval_reference=approval_reference)
+    def drain_provider(
+        self,
+        context: RuntimeContext,
+        provider: str,
+        *,
+        reason: str,
+        approval_reference: str | None = None,
+    ) -> OperationsEvidenceReceipt:
+        receipt = self.governed_command(
+            context,
+            command="drain_provider",
+            subject=provider,
+            reason=reason,
+            approval_reference=approval_reference,
+        )
         self.drained_providers.add(provider)
         return receipt
 
-    def restore_provider(self, context: RuntimeContext, provider: str, *, reason: str) -> OperationsEvidenceReceipt:
-        receipt = self.governed_command(context, command="restore_provider", subject=provider, reason=reason)
+    def restore_provider(
+        self, context: RuntimeContext, provider: str, *, reason: str
+    ) -> OperationsEvidenceReceipt:
+        receipt = self.governed_command(
+            context, command="restore_provider", subject=provider, reason=reason
+        )
         self.drained_providers.discard(provider)
         return receipt
 
-    def set_circuit(self, context: RuntimeContext, circuit: str, state: CircuitBreakerState, *, reason: str, approval_reference: str | None = None) -> OperationsEvidenceReceipt:
+    def set_circuit(
+        self,
+        context: RuntimeContext,
+        circuit: str,
+        state: CircuitBreakerState,
+        *,
+        reason: str,
+        approval_reference: str | None = None,
+    ) -> OperationsEvidenceReceipt:
         receipt = self.governed_command(
             context,
             command=f"circuit_{state.value.lower()}",

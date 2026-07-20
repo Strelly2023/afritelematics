@@ -16,7 +16,9 @@ REPORT = ROOT / "reports" / "novaride" / "deployment" / "event-schema-compatibil
 
 def main() -> int:
     registry = default_event_schema_registry()
-    missing = [event_type for event_type in REQUIRED_EVENTS if registry.get(event_type, "2026.2") is None]
+    missing = [
+        event_type for event_type in REQUIRED_EVENTS if registry.get(event_type, "2026.2") is None
+    ]
     report = {
         "status": "PASS" if not missing else "FAIL",
         "schema_version": "2026.2",

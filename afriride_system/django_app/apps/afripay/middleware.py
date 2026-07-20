@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from typing import Callable
 
 from django.http import JsonResponse
 
-from afritech.monitoring.alerts import send_integrity_alert
 from afritech.afriprogramming.rbac import role_payment_scopes
-from afriride_system.api.auth import JWT as AfriRideJWT
+from afriride_system.api.auth import JWTService
 from afriride_system.django_app.apps.afripay.security import (
     AfriPayRateLimiter,
     APIKeyService,
@@ -54,7 +54,9 @@ class AfriPaySecurityMiddleware:
             send_auth_alert("AFRIPAY_RATE_LIMIT_EXCEEDED", {"identity": identity_key, "path": path})
             return JsonResponse({"detail": "rate limit exceeded"}, status=429)
 
-        if path in self.EXEMPT_PATHS or any(path.startswith(prefix) for prefix in self.EXEMPT_PREFIXES):
+        if path in self.EXEMPT_PATHS or any(
+            path.startswith(prefix) for prefix in self.EXEMPT_PREFIXES
+        ):
             return self.get_response(request)
 
         auth = parse_authorization_header(request.headers.get("Authorization", ""))
@@ -77,8 +79,15 @@ class AfriPaySecurityMiddleware:
             else:
                 principal = self.api_keys.authenticate(token)
         except ValueError as exc:
-            send_auth_alert("AFRIPAY_AUTH_FAILURE", {"path": path, "reason": str(exc), "scheme": scheme})
-            status = 401 if "invalid" in str(exc) or "expired" in str(exc) or "suspended" in str(exc) else 403
+            send_auth_alert(
+                "AFRIPAY_AUTH_FAILURE",
+                {"path": path, "reason": str(exc), "scheme": scheme},
+            )
+            status = (
+                401
+                if "invalid" in str(exc) or "expired" in str(exc) or "suspended" in str(exc)
+                else 403
+            )
             return JsonResponse({"detail": str(exc)}, status=status)
 
         request.afripay_principal = principal
@@ -90,7 +99,9 @@ class AfriPaySecurityMiddleware:
     @staticmethod
     def _principal_from_role_token(token: str, original_error: ValueError):
         try:
-            claims = AfriRideJWT.verify_token(token)
+            claims = JWTService(
+                os.environ.get("AFRIRIDE_JWT_SECRET", "")
+            ).verify_token(token)
         except ValueError as exc:
             raise original_error from exc
         scopes = role_payment_scopes(claims.role)

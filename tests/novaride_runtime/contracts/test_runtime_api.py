@@ -27,7 +27,14 @@ RUNTIME_PERMISSIONS = (
 )
 
 
-def _headers(*, subject_id: str, role: str, permissions: tuple[str, ...] = RUNTIME_PERMISSIONS, tenant_id: str = "tenant-novaride", organization_id: str = "org-novaride") -> dict[str, str]:
+def _headers(
+    *,
+    subject_id: str,
+    role: str,
+    permissions: tuple[str, ...] = RUNTIME_PERMISSIONS,
+    tenant_id: str = "tenant-novaride",
+    organization_id: str = "org-novaride",
+) -> dict[str, str]:
     token = JWT.create_token(
         subject_id,
         role=role,
@@ -67,17 +74,27 @@ def test_runtime_api_executes_booking_and_event_replay_with_verified_context() -
     driver = client.post(
         "/v1/drivers/onboarding",
         headers=headers,
-        json={"display_name": "Driver", "identity_id": "novaid_driver", "vehicle_id": "vehicle_api"},
+        json={
+            "display_name": "Driver",
+            "identity_id": "novaid_driver",
+            "vehicle_id": "vehicle_api",
+        },
     )
     assert driver.status_code == 200
 
     start_shift = client.post("/v1/novaride/runtime/driver/shifts/start", headers=headers)
     assert start_shift.status_code == 200
 
-    availability = client.put("/v1/novaride/runtime/driver/admin-runtime/availability", headers=headers)
+    availability = client.put(
+        "/v1/novaride/runtime/driver/admin-runtime/availability", headers=headers
+    )
     assert availability.status_code == 200
 
-    quote = client.post("/v1/rider/fares/quote", headers=headers, json={"service_type": "economy", "currency": "AUD"}).json()
+    quote = client.post(
+        "/v1/rider/fares/quote",
+        headers=headers,
+        json={"service_type": "economy", "currency": "AUD"},
+    ).json()
     booking = client.post(
         "/v1/rider/bookings",
         headers={**headers, "Idempotency-Key": "api-booking-1"},
@@ -87,7 +104,9 @@ def test_runtime_api_executes_booking_and_event_replay_with_verified_context() -
     trip = client.post(f"/v1/driver/offers/{offer['id']}/accept", headers=headers).json()
 
     assert trip["lifecycle_state"] == "DRIVER_ACCEPTED"
-    events = client.get(f"/v1/novaride/runtime/events/aggregate/{trip['id']}", headers=headers).json()["events"]
+    events = client.get(
+        f"/v1/novaride/runtime/events/aggregate/{trip['id']}", headers=headers
+    ).json()["events"]
     assert any(event["event_type"] == "DriverAssigned" for event in events)
 
 
@@ -116,7 +135,9 @@ def test_mobile_sync_batch_status_and_conflict_resolution_are_exposed() -> None:
         "X-NovaRide-Device-Id": "device_123",
         "X-NovaRide-Nonce": nonce,
         "X-NovaRide-Timestamp": timestamp,
-        "X-NovaRide-Signature": sign_sync_payload(secret="test-device-secret", timestamp=timestamp, nonce=nonce, payload=body),
+        "X-NovaRide-Signature": sign_sync_payload(
+            secret="test-device-secret", timestamp=timestamp, nonce=nonce, payload=body
+        ),
     }
 
     response = client.post(
@@ -157,10 +178,15 @@ def test_signed_mobile_sync_rejects_replay_nonce() -> None:
         "X-NovaRide-Device-Id": "device_123",
         "X-NovaRide-Nonce": nonce,
         "X-NovaRide-Timestamp": timestamp,
-        "X-NovaRide-Signature": sign_sync_payload(secret="test-device-secret", timestamp=timestamp, nonce=nonce, payload=signature_body),
+        "X-NovaRide-Signature": sign_sync_payload(
+            secret="test-device-secret", timestamp=timestamp, nonce=nonce, payload=signature_body
+        ),
     }
 
-    assert client.post("/v1/novaride/mobile/sync/batch", headers=signed_headers, json=body).status_code == 200
+    assert (
+        client.post("/v1/novaride/mobile/sync/batch", headers=signed_headers, json=body).status_code
+        == 200
+    )
     replay = client.post("/v1/novaride/mobile/sync/batch", headers=signed_headers, json=body)
     assert replay.status_code == 403
     assert replay.json()["error"]["message"] == "reused_nonce"
@@ -170,7 +196,9 @@ def test_operations_status_commands_metrics_and_readiness_are_exposed() -> None:
     client = TestClient(app)
     headers = _headers(subject_id="ops-admin", role="PLATFORM_ADMIN")
 
-    assert client.get("/v1/novaride/operations/resilience/status", headers=headers).status_code == 200
+    assert (
+        client.get("/v1/novaride/operations/resilience/status", headers=headers).status_code == 200
+    )
     assert client.get("/v1/novaride/operations/regions", headers=headers).json()["regions"]
     circuit = client.post(
         "/v1/novaride/operations/circuits/payment:primary/open",
@@ -182,6 +210,8 @@ def test_operations_status_commands_metrics_and_readiness_are_exposed() -> None:
     metrics = client.get("/v1/novaride/metrics", headers=headers)
     assert metrics.status_code == 200
     assert "novaride_offline_queue_depth" in metrics.text
-    certificate = client.get("/v1/novaride/operations/readiness-certificate", headers=headers).json()
+    certificate = client.get(
+        "/v1/novaride/operations/readiness-certificate", headers=headers
+    ).json()
     assert certificate["final_status"] != "READY_FOR_GA"
     assert "live_kafka_not_verified" in certificate["unresolved_risks"]

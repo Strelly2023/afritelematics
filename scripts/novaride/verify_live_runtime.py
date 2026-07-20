@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -21,10 +20,32 @@ REPORT = ROOT / "reports" / "novaride" / "deployment" / "live-runtime-verificati
 
 def main() -> int:
     runtime = create_runtime()
-    ctx = RuntimeContext("tenant_verify", "org_verify", "AU", ActorType.SYSTEM, "verify", correlation_id="corr_verify_live")
-    runtime.events.emit(ctx, event_type="BookingCreated", aggregate_id="booking_verify", aggregate_type="Booking", aggregate_version=1, payload={"source": "verification"})
-    plan = plan_replay(mode=ReplayMode.CORRELATION_ID, scope={"correlation_id": "corr_verify_live"}, operator_id="verify", reason="live verification dry run")
-    result = verify_replay(replay_id=plan.replay_id, events=runtime.repositories.events.by_correlation("corr_verify_live"))
+    ctx = RuntimeContext(
+        "tenant_verify",
+        "org_verify",
+        "AU",
+        ActorType.SYSTEM,
+        "verify",
+        correlation_id="corr_verify_live",
+    )
+    runtime.events.emit(
+        ctx,
+        event_type="BookingCreated",
+        aggregate_id="booking_verify",
+        aggregate_type="Booking",
+        aggregate_version=1,
+        payload={"source": "verification"},
+    )
+    plan = plan_replay(
+        mode=ReplayMode.CORRELATION_ID,
+        scope={"correlation_id": "corr_verify_live"},
+        operator_id="verify",
+        reason="live verification dry run",
+    )
+    result = verify_replay(
+        replay_id=plan.replay_id,
+        events=runtime.repositories.events.by_correlation("corr_verify_live"),
+    )
     report = {
         "status": "CERTIFICATION_INCOMPLETE",
         "api_reachable": "local_runtime_constructed",

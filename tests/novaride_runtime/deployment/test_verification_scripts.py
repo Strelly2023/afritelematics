@@ -11,8 +11,12 @@ def test_migration_schema_and_live_verification_scripts_emit_reports() -> None:
     subprocess.run(["python3", "scripts/novaride/verify_live_runtime.py"], check=True)
     subprocess.run(["python3", "scripts/novaride/verify_backup_restore.py"], check=True)
 
-    migration = json.loads(Path("reports/novaride/deployment/runtime-migration-verification.json").read_text())
-    schema = json.loads(Path("reports/novaride/deployment/event-schema-compatibility.json").read_text())
+    migration = json.loads(
+        Path("reports/novaride/deployment/runtime-migration-verification.json").read_text()
+    )
+    schema = json.loads(
+        Path("reports/novaride/deployment/event-schema-compatibility.json").read_text()
+    )
     live = Path("reports/novaride/deployment/live-runtime-verification.yaml").read_text()
 
     assert migration["status"] == "PASS"

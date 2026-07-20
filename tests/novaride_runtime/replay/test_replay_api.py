@@ -6,7 +6,13 @@ from afritech.api.app import app
 from afritech.api.auth.jwt_device_auth import JWT
 
 
-def _headers(*, subject_id: str, role: str, tenant_id: str = "tenant-novaride", organization_id: str = "org-novaride") -> dict[str, str]:
+def _headers(
+    *,
+    subject_id: str,
+    role: str,
+    tenant_id: str = "tenant-novaride",
+    organization_id: str = "org-novaride",
+) -> dict[str, str]:
     token = JWT.create_token(
         subject_id,
         role=role,
@@ -30,7 +36,17 @@ def _headers(*, subject_id: str, role: str, tenant_id: str = "tenant-novaride", 
 
 def test_operator_replay_api_requires_authentication() -> None:
     client = TestClient(app)
-    assert client.post("/v1/operator/replay/plans", json={"mode": "correlation_id", "scope": {"correlation_id": "corr_api"}, "reason": "test"}).status_code == 401
+    assert (
+        client.post(
+            "/v1/operator/replay/plans",
+            json={
+                "mode": "correlation_id",
+                "scope": {"correlation_id": "corr_api"},
+                "reason": "test",
+            },
+        ).status_code
+        == 401
+    )
 
 
 def test_operator_replay_api_promotes_only_after_quorum_approval() -> None:
@@ -41,11 +57,19 @@ def test_operator_replay_api_promotes_only_after_quorum_approval() -> None:
     qa_headers = _headers(subject_id="qa-1", role="QA_ENGINEER")
     promoter_headers = _headers(subject_id="promoter-1", role="PLATFORM_ADMIN")
 
-    client.post("/v1/rider/fares/quote", headers=creator_headers, json={"service_type": "economy", "currency": "AUD"})
+    client.post(
+        "/v1/rider/fares/quote",
+        headers=creator_headers,
+        json={"service_type": "economy", "currency": "AUD"},
+    )
     plan = client.post(
         "/v1/operator/replay/plans",
         headers={**creator_headers, "Idempotency-Key": "replay-plan-1"},
-        json={"mode": "correlation_id", "scope": {"correlation_id": "corr_api"}, "reason": "test replay"},
+        json={
+            "mode": "correlation_id",
+            "scope": {"correlation_id": "corr_api"},
+            "reason": "test replay",
+        },
     )
     assert plan.status_code == 201
     replay_id = plan.json()["replay_id"]

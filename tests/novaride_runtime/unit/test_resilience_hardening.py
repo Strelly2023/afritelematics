@@ -7,7 +7,14 @@ import httpx
 from decimal import Decimal
 
 from afritech.novaride_runtime.common.errors import AuthorityDenied
-from afritech.novaride_runtime.models import ActorType, CircuitBreakerState, FailoverState, ProviderHealth, ProviderState, RuntimeContext
+from afritech.novaride_runtime.models import (
+    ActorType,
+    CircuitBreakerState,
+    FailoverState,
+    ProviderHealth,
+    ProviderState,
+    RuntimeContext,
+)
 from afritech.novaride_runtime.resilience import (
     CircuitBreaker,
     FailoverController,
@@ -33,11 +40,21 @@ def _ctx() -> RuntimeContext:
 
 def test_http_provider_probe_maps_status_and_failures() -> None:
     transport = httpx.MockTransport(lambda request: httpx.Response(503))
-    degraded = asyncio.run(HttpProviderProbe("maps_primary", "maps", "https://maps.example/health", transport=transport).probe())
+    degraded = asyncio.run(
+        HttpProviderProbe(
+            "maps_primary", "maps", "https://maps.example/health", transport=transport
+        ).probe()
+    )
     assert degraded.state == ProviderState.DEGRADED
 
-    failing_transport = httpx.MockTransport(lambda request: (_ for _ in ()).throw(httpx.ConnectError("down", request=request)))
-    unavailable = asyncio.run(HttpProviderProbe("sms", "sms", "https://sms.example/health", transport=failing_transport).probe())
+    failing_transport = httpx.MockTransport(
+        lambda request: (_ for _ in ()).throw(httpx.ConnectError("down", request=request))
+    )
+    unavailable = asyncio.run(
+        HttpProviderProbe(
+            "sms", "sms", "https://sms.example/health", transport=failing_transport
+        ).probe()
+    )
     assert unavailable.state == ProviderState.UNAVAILABLE
     assert unavailable.error_rate == Decimal("1")
 
@@ -48,7 +65,9 @@ def test_health_aggregation_uses_hysteresis() -> None:
     record = None
 
     for _ in range(2):
-        record = aggregator.apply(record, ProviderHealth("p", "maps", ProviderState.UNAVAILABLE), ctx)
+        record = aggregator.apply(
+            record, ProviderHealth("p", "maps", ProviderState.UNAVAILABLE), ctx
+        )
         assert record.state == ProviderState.HEALTHY
 
     record = aggregator.apply(record, ProviderHealth("p", "maps", ProviderState.UNAVAILABLE), ctx)
@@ -58,7 +77,9 @@ def test_health_aggregation_uses_hysteresis() -> None:
 def test_retry_delay_and_circuit_breaker_state_machine() -> None:
     assert retry_delay_seconds("offline_sync", 3, jitter=0) == 8
 
-    breaker = CircuitBreaker("payment:primary", failure_threshold=2, open_duration_seconds=60, half_open_max_calls=1)
+    breaker = CircuitBreaker(
+        "payment:primary", failure_threshold=2, open_duration_seconds=60, half_open_max_calls=1
+    )
     assert breaker.allow_request() is True
     breaker.record_failure()
     assert breaker.state == CircuitBreakerState.CLOSED
@@ -74,9 +95,36 @@ def test_policy_provider_router_prefers_eligible_low_latency_healthy_provider() 
         capability="mobile_money",
         currency="KES",
         candidates=(
-            ProviderCandidate("M-Pesa", "mobile_money", ProviderState.HEALTHY, 210, Decimal("0"), ("KE",), ("KES",), 2),
-            ProviderCandidate("Airtel Money", "mobile_money", ProviderState.HEALTHY, 165, Decimal("0"), ("KE",), ("KES",), 1),
-            ProviderCandidate("Onafriq", "mobile_money", ProviderState.DEGRADED, 690, Decimal("0.2"), ("KE",), ("KES",), 3),
+            ProviderCandidate(
+                "M-Pesa",
+                "mobile_money",
+                ProviderState.HEALTHY,
+                210,
+                Decimal("0"),
+                ("KE",),
+                ("KES",),
+                2,
+            ),
+            ProviderCandidate(
+                "Airtel Money",
+                "mobile_money",
+                ProviderState.HEALTHY,
+                165,
+                Decimal("0"),
+                ("KE",),
+                ("KES",),
+                1,
+            ),
+            ProviderCandidate(
+                "Onafriq",
+                "mobile_money",
+                ProviderState.DEGRADED,
+                690,
+                Decimal("0.2"),
+                ("KE",),
+                ("KES",),
+                3,
+            ),
         ),
     )
 

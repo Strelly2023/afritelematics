@@ -370,6 +370,7 @@ export function NovaHouseReachDetail({ navigate }) {
           </div>
         </div>
         <div className="housing-hero-panel">
+          <img className="product-hero-logo" src="/brand/NOVAHOUSEREACH.webp" alt="NovaHouseReach logo" />
           <h2>Operating model</h2>
           <div className="metric-grid">
             <article>

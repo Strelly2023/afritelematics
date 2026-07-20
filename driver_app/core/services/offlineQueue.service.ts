@@ -48,7 +48,11 @@ async function ensureDeviceKey(): Promise<string> {
 async function encryptPayload(payload: unknown): Promise<string> {
   const key = await ensureDeviceKey();
   const encoded = JSON.stringify(payload);
-  return `${key.slice(0, 8)}:${btoa(unescape(encodeURIComponent(encoded)))}`;
+  const encodeBase64 = (globalThis as { btoa?: (value: string) => string }).btoa;
+  if (!encodeBase64) {
+    throw new Error("base64_encoder_unavailable");
+  }
+  return `${key.slice(0, 8)}:${encodeBase64(unescape(encodeURIComponent(encoded)))}`;
 }
 
 function priorityRank(priority: OfflineCommandPriority): number {

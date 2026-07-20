@@ -8,7 +8,6 @@ from threading import Lock
 from typing import Any
 
 from afritech.novaride_runtime.common.clocks import utc_now
-from afritech.novaride_runtime.replay.hashing import replay_plan_hash
 from afritech.novaride_runtime.replay.models import (
     ReplayApprovalRecord,
     ReplayPlanRecord,
@@ -195,7 +194,9 @@ class PostgresReplayRepository(ReplayPlanRepository):
             return None
         return self._row_to_plan(row)
 
-    async def list(self, *, tenant_id: str, limit: int = 100, offset: int = 0) -> list[ReplayPlanRecord]:
+    async def list(
+        self, *, tenant_id: str, limit: int = 100, offset: int = 0
+    ) -> list[ReplayPlanRecord]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM novaride_replay_plans WHERE tenant_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
@@ -289,7 +290,9 @@ class PostgresReplayRepository(ReplayPlanRepository):
             ).fetchall()
         return [self._row_to_approval(row) for row in rows]
 
-    async def get_approval(self, *, tenant_id: str, approval_id: str) -> ReplayApprovalRecord | None:
+    async def get_approval(
+        self, *, tenant_id: str, approval_id: str
+    ) -> ReplayApprovalRecord | None:
         with self._connect() as conn:
             row = conn.execute(
                 "SELECT * FROM novaride_replay_approvals WHERE tenant_id = ? AND id = ?",
@@ -394,7 +397,9 @@ class PostgresReplayRepository(ReplayPlanRepository):
             )
         return transition
 
-    async def list_transitions(self, *, tenant_id: str, plan_id: str) -> list[ReplayTransitionRecord]:
+    async def list_transitions(
+        self, *, tenant_id: str, plan_id: str
+    ) -> list[ReplayTransitionRecord]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM novaride_replay_transitions WHERE tenant_id = ? AND replay_plan_id = ? ORDER BY occurred_at ASC",
@@ -427,7 +432,9 @@ class PostgresReplayRepository(ReplayPlanRepository):
             )
         return record
 
-    async def list_audit(self, *, tenant_id: str, limit: int = 100, offset: int = 0) -> list[RuntimeAuditRecord]:
+    async def list_audit(
+        self, *, tenant_id: str, limit: int = 100, offset: int = 0
+    ) -> list[RuntimeAuditRecord]:
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT * FROM novaride_runtime_audit WHERE tenant_id = ? ORDER BY occurred_at DESC LIMIT ? OFFSET ?",
@@ -464,23 +471,23 @@ class PostgresReplayRepository(ReplayPlanRepository):
         )
 
     def _row_to_approval(self, row: sqlite3.Row) -> ReplayApprovalRecord:
-            return ReplayApprovalRecord(
-                id=row["id"],
-                tenant_id=row["tenant_id"],
-                replay_plan_id=row["replay_plan_id"],
-                plan_version=int(row["plan_version"]),
-                plan_hash=row["plan_hash"],
-                required_quorum=int(row["required_quorum"]),
-                status=row["status"],
-                approver_id=row["approver_id"],
-                approver_role=row["approver_role"],
-                decision=row["decision"],
-                reason=row["reason"],
-                expires_at=row["expires_at"],
-                consumed_at=row["consumed_at"],
-                consumed_by_execution_id=row["consumed_by_execution_id"],
-                created_at=row["created_at"],
-            )
+        return ReplayApprovalRecord(
+            id=row["id"],
+            tenant_id=row["tenant_id"],
+            replay_plan_id=row["replay_plan_id"],
+            plan_version=int(row["plan_version"]),
+            plan_hash=row["plan_hash"],
+            required_quorum=int(row["required_quorum"]),
+            status=row["status"],
+            approver_id=row["approver_id"],
+            approver_role=row["approver_role"],
+            decision=row["decision"],
+            reason=row["reason"],
+            expires_at=row["expires_at"],
+            consumed_at=row["consumed_at"],
+            consumed_by_execution_id=row["consumed_by_execution_id"],
+            created_at=row["created_at"],
+        )
 
     def _row_to_result(self, row: sqlite3.Row) -> ReplayResultRecord:
         return ReplayResultRecord(

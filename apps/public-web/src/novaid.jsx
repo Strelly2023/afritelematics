@@ -192,6 +192,7 @@ export function NovaIDDetail({ navigate }) {
           </div>
         </div>
         <div className="housing-hero-panel">
+          <img className="product-hero-logo" src="/brand/NOVAID.webp" alt="NovaID logo" />
           <h2>Identity scope</h2>
           <div className="metric-grid">
             <article>
@@ -309,4 +310,3 @@ export function NovaIDDetail({ navigate }) {
     </section>
   );
 }
-

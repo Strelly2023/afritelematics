@@ -24,7 +24,17 @@ class IncidentRecord:
 class IncidentManager:
     incidents: dict[str, IncidentRecord] = field(default_factory=dict)
 
-    def upsert(self, *, severity: str, region: str, capability: str, condition: str, correlation_id: str, degraded_mode: str, runbook: str) -> IncidentRecord:
+    def upsert(
+        self,
+        *,
+        severity: str,
+        region: str,
+        capability: str,
+        condition: str,
+        correlation_id: str,
+        degraded_mode: str,
+        runbook: str,
+    ) -> IncidentRecord:
         key = f"{region}:{capability}:{condition}"
         incident = self.incidents.get(key)
         timestamp = utc_now().isoformat()

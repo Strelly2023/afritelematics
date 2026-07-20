@@ -10,7 +10,12 @@ function remoteState(status = "loading", data = null, error = null, updatedAt = 
 
 function sectionFromPayload(payload) {
   const items = Array.isArray(payload?.items) ? payload.items : Array.isArray(payload) ? payload : [];
-  const status = items.length ? "success" : "empty";
+  const hasStructuredSummary =
+    payload &&
+    typeof payload === "object" &&
+    !Array.isArray(payload) &&
+    Object.keys(payload).some((key) => ["summary", "dependencies", "recent_activity", "alerts", "health", "generated_at", "observed_at"].includes(key));
+  const status = items.length || hasStructuredSummary ? "success" : "empty";
   return remoteState(status, payload, null, payload?.generated_at || payload?.observed_at || null);
 }
 

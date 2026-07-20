@@ -7,7 +7,6 @@ from uuid import uuid4
 
 from fastapi import Request
 
-from afritech.novaride_runtime.replay.memory_repository import MemoryReplayRepository
 from afritech.novaride_runtime.replay.postgres_repository import PostgresReplayRepository
 from afritech.novaride_runtime.replay.repository import ReplayPlanRepository
 from afritech.novaride_runtime.replay.service import ReplayService

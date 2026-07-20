@@ -359,3 +359,131 @@ def test_incident_support_refund_and_action_governance() -> None:
     other_tenant = _headers("OPERATIONS_TEAM", "ops_2", tenant_id="other-tenant", organization_id="other-org")
     cross_tenant = client.get(f"/api/v1/novaride/operations/incidents/{incident_id}", headers=other_tenant)
     assert cross_tenant.status_code == 404
+
+
+def test_idempotency_conflicts_reject_payload_drift_across_governed_creates() -> None:
+    client = _client()
+    ops_headers = _headers("OPERATIONS_TEAM", "ops_1")
+    admin_headers = _headers("PLATFORM_ADMIN", "admin_1")
+
+    incident_one = client.post(
+        "/api/v1/novaride/operations/incidents",
+        headers={**ops_headers, "Idempotency-Key": "idem-incident"},
+        json={"title": "Dispatch delay", "severity": "SEV2", "description": "first"},
+    )
+    assert incident_one.status_code == 201
+    incident_again = client.post(
+        "/api/v1/novaride/operations/incidents",
+        headers={**ops_headers, "Idempotency-Key": "idem-incident"},
+        json={"title": "Dispatch delay", "severity": "SEV2", "description": "first"},
+    )
+    assert incident_again.status_code == 201
+    assert incident_again.json()["incident_id"] == incident_one.json()["incident_id"]
+    incident_conflict = client.post(
+        "/api/v1/novaride/operations/incidents",
+        headers={**ops_headers, "Idempotency-Key": "idem-incident"},
+        json={"title": "Dispatch delay", "severity": "SEV1", "description": "changed"},
+    )
+    assert incident_conflict.status_code == 409
+    assert incident_conflict.json()["detail"] == "idempotency_conflict"
+
+    refund_one = client.post(
+        "/api/v1/novaride/operations/refunds",
+        headers={**ops_headers, "Idempotency-Key": "idem-refund"},
+        json={"amount": "75", "currency": "AUD", "payment_id": "payment_1", "trip_id": "trip_1"},
+    )
+    assert refund_one.status_code == 201
+    refund_again = client.post(
+        "/api/v1/novaride/operations/refunds",
+        headers={**ops_headers, "Idempotency-Key": "idem-refund"},
+        json={"amount": "75.0", "currency": "aud", "payment_id": "payment_1", "trip_id": "trip_1"},
+    )
+    assert refund_again.status_code == 201
+    assert refund_again.json()["refund_id"] == refund_one.json()["refund_id"]
+    refund_conflict = client.post(
+        "/api/v1/novaride/operations/refunds",
+        headers={**ops_headers, "Idempotency-Key": "idem-refund"},
+        json={"amount": "80", "currency": "AUD", "payment_id": "payment_1", "trip_id": "trip_1"},
+    )
+    assert refund_conflict.status_code == 409
+    assert refund_conflict.json()["detail"] == "idempotency_conflict"
+
+    support_one = client.post(
+        "/api/v1/novaride/operations/support/cases",
+        headers={**ops_headers, "Idempotency-Key": "idem-support"},
+        json={"case_type": "booking_problem", "trip_id": "trip_1"},
+    )
+    assert support_one.status_code == 201
+    support_again = client.post(
+        "/api/v1/novaride/operations/support/cases",
+        headers={**ops_headers, "Idempotency-Key": "idem-support"},
+        json={"case_type": "booking_problem", "trip_id": "trip_1"},
+    )
+    assert support_again.status_code == 201
+    assert support_again.json()["case_id"] == support_one.json()["case_id"]
+    support_conflict = client.post(
+        "/api/v1/novaride/operations/support/cases",
+        headers={**ops_headers, "Idempotency-Key": "idem-support"},
+        json={"case_type": "booking_problem", "trip_id": "trip_2"},
+    )
+    assert support_conflict.status_code == 409
+
+    investigation_one = client.post(
+        "/api/v1/novaride/operations/payments/investigations",
+        headers={**ops_headers, "Idempotency-Key": "idem-investigation"},
+        json={"payment_id": "payment_1", "reason": "suspected mismatch"},
+    )
+    assert investigation_one.status_code == 201
+    investigation_again = client.post(
+        "/api/v1/novaride/operations/payments/investigations",
+        headers={**ops_headers, "Idempotency-Key": "idem-investigation"},
+        json={"payment_id": "payment_1", "reason": "suspected mismatch"},
+    )
+    assert investigation_again.status_code == 201
+    assert investigation_again.json()["investigation_id"] == investigation_one.json()["investigation_id"]
+    investigation_conflict = client.post(
+        "/api/v1/novaride/operations/payments/investigations",
+        headers={**ops_headers, "Idempotency-Key": "idem-investigation"},
+        json={"payment_id": "payment_2", "reason": "suspected mismatch"},
+    )
+    assert investigation_conflict.status_code == 409
+
+    dispute_one = client.post(
+        "/api/v1/novaride/operations/disputes",
+        headers={**ops_headers, "Idempotency-Key": "idem-dispute"},
+        json={"trip_id": "trip_1", "payment_id": "payment_1"},
+    )
+    assert dispute_one.status_code == 201
+    dispute_again = client.post(
+        "/api/v1/novaride/operations/disputes",
+        headers={**ops_headers, "Idempotency-Key": "idem-dispute"},
+        json={"trip_id": "trip_1", "payment_id": "payment_1"},
+    )
+    assert dispute_again.status_code == 201
+    assert dispute_again.json()["dispute_id"] == dispute_one.json()["dispute_id"]
+    dispute_conflict = client.post(
+        "/api/v1/novaride/operations/disputes",
+        headers={**ops_headers, "Idempotency-Key": "idem-dispute"},
+        json={"trip_id": "trip_2", "payment_id": "payment_1"},
+    )
+    assert dispute_conflict.status_code == 409
+
+    action_one = client.post(
+        "/api/v1/novaride/operations/actions",
+        headers={**ops_headers, "Idempotency-Key": "idem-action"},
+        json={"action_type": "manual_dispatch", "target_id": "trip_1", "reason": "ops review"},
+    )
+    assert action_one.status_code == 201
+    action_again = client.post(
+        "/api/v1/novaride/operations/actions",
+        headers={**ops_headers, "Idempotency-Key": "idem-action"},
+        json={"action_type": "manual_dispatch", "target_id": "trip_1", "reason": "ops review"},
+    )
+    assert action_again.status_code == 201
+    assert action_again.json()["action_id"] == action_one.json()["action_id"]
+    action_conflict = client.post(
+        "/api/v1/novaride/operations/actions",
+        headers={**ops_headers, "Idempotency-Key": "idem-action"},
+        json={"action_type": "manual_dispatch", "target_id": "trip_2", "reason": "ops review"},
+    )
+    assert action_conflict.status_code == 409

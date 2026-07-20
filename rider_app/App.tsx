@@ -619,7 +619,8 @@ function Action({
         accessibilityRole="button"
         accessibilityLabel={helperText ? `${label}. ${helperText}` : label}
         accessibilityState={{ disabled: Boolean(disabled) }}
-        onPress={disabled ? undefined : onPress}
+        disabled={disabled}
+        onPress={onPress}
         style={[
           styles.button,
           primary && styles.primary,

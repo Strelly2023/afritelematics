@@ -1,0 +1,16 @@
+line-length = 100
+target-version = "py311"
+extend-exclude = ["artifacts"]
+
+[lint]
+select = ["E", "F"]
+# Ruff's formatter intentionally does not break long strings, URLs, SQL, or
+# other constructs that cannot be safely split. E501 is therefore delegated
+# to the formatter for this product-scoped gate.
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+# These executable verification scripts establish the repository root on
+# sys.path before importing the application under test.
+"scripts/novaride/verify_event_schema_compatibility.py" = ["E402"]
+"scripts/novaride/verify_live_runtime.py" = ["E402"]

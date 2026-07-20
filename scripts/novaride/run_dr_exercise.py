@@ -37,7 +37,11 @@ def main() -> int:
     parser.add_argument("--authorize-production-destructive", action="store_true")
     args = parser.parse_args()
 
-    if args.environment == "production" and args.destructive and not args.authorize_production_destructive:
+    if (
+        args.environment == "production"
+        and args.destructive
+        and not args.authorize_production_destructive
+    ):
         raise SystemExit("refusing_destructive_production_dr_exercise_without_authorization")
 
     now = datetime.now(UTC).isoformat()

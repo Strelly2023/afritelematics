@@ -209,7 +209,7 @@ export function NovaCodeProWorkspaceHub({ session, pathname, navigate, baseUrl =
     <div className="app-shell">
       <header className="topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaCodePro internal development platform</p>
             <strong>Workspace Hub</strong>

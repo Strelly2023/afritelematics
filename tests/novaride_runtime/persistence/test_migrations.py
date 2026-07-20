@@ -4,9 +4,15 @@ from pathlib import Path
 
 
 def test_runtime_migrations_include_required_tables_and_rls() -> None:
-    migration = Path("afritech/novaride_runtime/persistence/migrations/0001_novaride_runtime.sql").read_text()
-    rls = Path("afritech/novaride_runtime/persistence/migrations/0002_novaride_runtime_rls.sql").read_text()
-    replay = Path("afritech/novaride_runtime/persistence/migrations/0007_novaride_replay_control_plane.sql").read_text()
+    migration = Path(
+        "afritech/novaride_runtime/persistence/migrations/0001_novaride_runtime.sql"
+    ).read_text()
+    rls = Path(
+        "afritech/novaride_runtime/persistence/migrations/0002_novaride_runtime_rls.sql"
+    ).read_text()
+    replay = Path(
+        "afritech/novaride_runtime/persistence/migrations/0007_novaride_replay_control_plane.sql"
+    ).read_text()
 
     for table in [
         "rider_profiles",
@@ -58,7 +64,9 @@ def test_runtime_migrations_include_required_tables_and_rls() -> None:
 
 
 def test_resilience_hardening_migration_includes_durable_tables_indexes_and_outbox() -> None:
-    migration = Path("afritech/novaride_runtime/persistence/migrations/0008_novaride_resilience_hardening.sql").read_text()
+    migration = Path(
+        "afritech/novaride_runtime/persistence/migrations/0008_novaride_resilience_hardening.sql"
+    ).read_text()
 
     for table in [
         "novaride_offline_operations",

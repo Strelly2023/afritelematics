@@ -28,7 +28,9 @@ class EventSchemaRegistry:
     def get(self, event_type: str, schema_version: str) -> EventSchema | None:
         return self.schemas.get((event_type, schema_version))
 
-    def validate_payload(self, event_type: str, schema_version: str, payload: dict[str, Any]) -> tuple[bool, tuple[str, ...]]:
+    def validate_payload(
+        self, event_type: str, schema_version: str, payload: dict[str, Any]
+    ) -> tuple[bool, tuple[str, ...]]:
         schema = self.get(event_type, schema_version)
         if schema is None:
             return False, ("unsupported_schema_version",)
@@ -56,7 +58,14 @@ def default_event_schema_registry() -> EventSchemaRegistry:
         "CorporateBookingCreated": "CorporateBooking",
         "TransitJourneyPlanned": "TransitJourney",
     }
-    for event_type in REQUIRED_EVENTS + ("DriverAvailable", "DriverEnRoute", "TripCompleting", "DeliveryFailed", "DeliveryReturned", "DriverRebalanceRecommended"):
+    for event_type in REQUIRED_EVENTS + (
+        "DriverAvailable",
+        "DriverEnRoute",
+        "TripCompleting",
+        "DeliveryFailed",
+        "DeliveryReturned",
+        "DriverRebalanceRecommended",
+    ):
         registry.register(
             EventSchema(
                 event_type=event_type,

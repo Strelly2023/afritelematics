@@ -27,6 +27,10 @@ def _raise_bad_request(exc: Exception) -> HTTPException:
     return HTTPException(status_code=400, detail=str(exc))
 
 
+def _raise_conflict(exc: Exception) -> HTTPException:
+    return HTTPException(status_code=409, detail=str(exc))
+
+
 def _request_meta(context: NovaRideRuntimeContext, request: Request) -> dict[str, str]:
     return {
         "actor_id": context.subject_id,
@@ -211,10 +215,12 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
         try:
             return workspace.create_incident(
                 context,
-                payload.model_dump(exclude_none=True),
-                _request_meta(context, request) | {"idempotency_key": idempotency_key},
+                payload.model_dump(exclude_none=True) | {"idempotency_key": idempotency_key},
+                _request_meta(context, request),
             )
         except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
             raise _raise_bad_request(exc) from exc
 
     @router.get("/incidents")
@@ -377,10 +383,12 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
         try:
             return workspace.create_support_case(
                 context,
-                payload.model_dump(exclude_none=True),
-                _request_meta(context, request) | {"idempotency_key": idempotency_key},
+                payload.model_dump(exclude_none=True) | {"idempotency_key": idempotency_key},
+                _request_meta(context, request),
             )
         except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
             raise _raise_bad_request(exc) from exc
 
     @router.get("/support/cases/{case_id}")
@@ -445,6 +453,8 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
                 _request_meta(context, request),
             )
         except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
             raise _raise_bad_request(exc) from exc
 
     @router.get("/refunds/{refund_id}")
@@ -514,10 +524,21 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
             raise _raise_not_found(exc) from exc
 
     @router.post("/payments/investigations", status_code=201)
-    def create_payment_investigation(payload: InvestigationPayload, request: Request, context: ManageContext) -> dict[str, Any]:
+    def create_payment_investigation(
+        payload: InvestigationPayload,
+        request: Request,
+        context: ManageContext,
+        idempotency_key: str = Header(default="", alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
         try:
-            return workspace.create_payment_investigation(context, payload.model_dump(exclude_none=True), _request_meta(context, request))
+            return workspace.create_payment_investigation(
+                context,
+                payload.model_dump(exclude_none=True) | {"idempotency_key": idempotency_key},
+                _request_meta(context, request),
+            )
         except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
             raise _raise_bad_request(exc) from exc
 
     @router.get("/disputes")
@@ -530,6 +551,24 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
             return workspace.get_dispute(context, dispute_id)
         except KeyError as exc:
             raise _raise_not_found(exc) from exc
+
+    @router.post("/disputes", status_code=201)
+    def create_dispute(
+        payload: DisputePayload,
+        request: Request,
+        context: ManageContext,
+        idempotency_key: str = Header(default="", alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        try:
+            return workspace.create_dispute(
+                context,
+                payload.model_dump(exclude_none=True) | {"idempotency_key": idempotency_key},
+                _request_meta(context, request),
+            )
+        except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
+            raise _raise_bad_request(exc) from exc
 
     @router.post("/disputes/{dispute_id}/assign")
     def assign_dispute(dispute_id: str, payload: dict[str, Any], request: Request, context: ManageContext) -> dict[str, Any]:
@@ -572,6 +611,8 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
                 _request_meta(context, request),
             )
         except ValueError as exc:
+            if str(exc) == "idempotency_conflict":
+                raise _raise_conflict(exc) from exc
             raise _raise_bad_request(exc) from exc
 
     @router.get("/actions/{action_id}")
@@ -665,8 +706,8 @@ def build_novaride_operations_router(workspace: OperationsWorkspaceService | Non
         }
 
     @router.post("/bootstrap")
-    def bootstrap_fixture(_: ManageContext) -> dict[str, Any]:
-        return {"status": "not_required", "source": "operations_workspace"}
+    def bootstrap_fixture(context: ManageContext) -> dict[str, Any]:
+        return workspace.seed_browser_fixture(context)
 
     return router
 

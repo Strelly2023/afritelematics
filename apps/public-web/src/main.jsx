@@ -66,6 +66,17 @@ const PRODUCT_LANDING_ROUTES = [
   "/products/novagov",
 ];
 
+const BRAND_ASSETS = {
+  novacodepro: "/brand/NOVACODEPRO.webp",
+  novaride: "/brand/NOVARIDE.webp",
+  novapay: "/brand/NOVAPAY.webp",
+  novaid: "/brand/NOVAID.webp",
+  novahealth: "/brand/NOVAHEALTH.webp",
+  novahousereach: "/brand/NOVAHOUSEREACH.webp",
+  novadashdoor: "/brand/NOVADASHDOOR.webp",
+  novalogistics: "/brand/NOVALOGISTICS.webp",
+};
+
 function navigate(path) {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -513,7 +524,9 @@ function Hero({ site, status }) {
           <span>No invented uptime</span>
         </div>
       </div>
-      <EcosystemVisual />
+      <div className="hero-brand-art">
+        <img src="/brand/NOVATECH.webp" alt="NovaTech by AfriTechnology" />
+      </div>
     </section>
   );
 }
@@ -951,6 +964,11 @@ function ProductDetail({ products, slug }) {
   ];
   return (
     <section className="detail">
+      {BRAND_ASSETS[slug] ? (
+        <div className="product-brand-banner">
+          <img src={BRAND_ASSETS[slug]} alt={`${product.name} logo`} />
+        </div>
+      ) : null}
       <Badge tone={toneForAvailability(product.availability)}>{product.availability}</Badge>
       <h1>{product.name}</h1>
       <p>{product.summary}</p>

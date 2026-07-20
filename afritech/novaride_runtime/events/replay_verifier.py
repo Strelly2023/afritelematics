@@ -6,7 +6,10 @@ from dataclasses import dataclass
 
 from afritech.novaride_runtime.events.envelope import MobilityEvent
 from afritech.novaride_runtime.events.replay import rebuild_projection, verify_event_hash
-from afritech.novaride_runtime.events.schema_registry import EventSchemaRegistry, default_event_schema_registry
+from afritech.novaride_runtime.events.schema_registry import (
+    EventSchemaRegistry,
+    default_event_schema_registry,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,11 +59,17 @@ def verify_replay(
         if not verify_event_hash(event):
             quarantined.append(event.event_id)
             continue
-        valid, missing = schema_registry.validate_payload(event.event_type, event.schema_version, event.payload)
+        valid, missing = schema_registry.validate_payload(
+            event.event_type, event.schema_version, event.payload
+        )
         if not valid:
             unsupported.append(f"{event.event_id}:{','.join(missing)}")
-    source = rebuild_projection([event for event in events if event.event_id not in quarantined], projection_name="source")
-    shadow = rebuild_projection([event for event in events if event.event_id not in quarantined], projection_name="shadow")
+    source = rebuild_projection(
+        [event for event in events if event.event_id not in quarantined], projection_name="source"
+    )
+    shadow = rebuild_projection(
+        [event for event in events if event.event_id not in quarantined], projection_name="shadow"
+    )
     matched = source.state_hash == shadow.state_hash and not unsupported and not quarantined
     return ReplayVerificationResult(
         replay_id=replay_id,

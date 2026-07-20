@@ -47,13 +47,18 @@ class InMemoryOutboxStore:
         self.records[event.event_id] = record
         return record
 
-    def claim_batch(self, *, worker_id: str, limit: int = 100, now: datetime | None = None) -> list[OutboxRecord]:
+    def claim_batch(
+        self, *, worker_id: str, limit: int = 100, now: datetime | None = None
+    ) -> list[OutboxRecord]:
         current_time = now or utc_now()
         claimed: list[OutboxRecord] = []
         for record in self.records.values():
             if len(claimed) >= limit:
                 break
-            if record.state in {OutboxState.PENDING, OutboxState.FAILED} and record.next_attempt_at <= current_time:
+            if (
+                record.state in {OutboxState.PENDING, OutboxState.FAILED}
+                and record.next_attempt_at <= current_time
+            ):
                 record.state = OutboxState.CLAIMED
                 record.worker_id = worker_id
                 record.claimed_at = current_time
@@ -79,4 +84,7 @@ class InMemoryOutboxStore:
         record.next_attempt_at = utc_now() + timedelta(seconds=2 ** min(record.attempts, 8))
 
     def counts(self) -> dict[str, int]:
-        return {state.value: sum(1 for record in self.records.values() if record.state == state) for state in OutboxState}
+        return {
+            state.value: sum(1 for record in self.records.values() if record.state == state)
+            for state in OutboxState
+        }

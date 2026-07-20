@@ -10,7 +10,9 @@ from afritech.novaride_runtime.events.envelope import MobilityEvent
 
 
 class KafkaProducerClient(Protocol):
-    def send(self, *, topic: str, key: bytes, value: bytes, headers: list[tuple[str, bytes]]) -> str: ...
+    def send(
+        self, *, topic: str, key: bytes, value: bytes, headers: list[tuple[str, bytes]]
+    ) -> str: ...
 
 
 @dataclass(slots=True)
@@ -26,7 +28,15 @@ class KafkaEventPublisher:
     producer: KafkaProducerClient
 
     def validate_topics(self) -> None:
-        required = {"runtime", "resilience", "mobile_sync", "provider_health", "failover", "evidence", "deadletter"}
+        required = {
+            "runtime",
+            "resilience",
+            "mobile_sync",
+            "provider_health",
+            "failover",
+            "evidence",
+            "deadletter",
+        }
         missing = required.difference(self.settings.topics)
         if missing:
             raise ValueError("missing_kafka_topics:" + ",".join(sorted(missing)))
@@ -59,6 +69,8 @@ class KafkaEventPublisher:
 class InMemoryKafkaProducer:
     sent: list[dict[str, Any]]
 
-    def send(self, *, topic: str, key: bytes, value: bytes, headers: list[tuple[str, bytes]]) -> str:
+    def send(
+        self, *, topic: str, key: bytes, value: bytes, headers: list[tuple[str, bytes]]
+    ) -> str:
         self.sent.append({"topic": topic, "key": key.decode(), "value": value, "headers": headers})
         return f"ack:{topic}:{key.decode()}"

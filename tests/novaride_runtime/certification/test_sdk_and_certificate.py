@@ -12,5 +12,17 @@ def test_generated_sdk_modules_and_release_certificate_remain_honest() -> None:
     report = json.loads(Path("reports/novaride/deployment/api-sdk-verification.json").read_text())
     assert report["status"] == "PASS"
     assert report["live_openapi_export_verified"] is False
-    for module in ["rider", "driver", "operator", "fleet", "logistics", "corporate", "transit", "safety", "diagnostics", "replay", "models"]:
+    for module in [
+        "rider",
+        "driver",
+        "operator",
+        "fleet",
+        "logistics",
+        "corporate",
+        "transit",
+        "safety",
+        "diagnostics",
+        "replay",
+        "models",
+    ]:
         assert Path(f"packages/novaride-api-sdk/src/generated/{module}.ts").exists()

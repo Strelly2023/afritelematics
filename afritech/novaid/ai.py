@@ -6,7 +6,11 @@ from typing import Any
 
 
 def identity_assistant(*, subject_id: str, topic: str, context: dict[str, Any]) -> dict[str, Any]:
-    recommendation = "Verify evidence before any approval" if topic == "risk" else "Review with an authorized operator"
+    recommendation = (
+        "Verify evidence before any approval"
+        if topic == "risk"
+        else "Review with an authorized operator"
+    )
     return {
         "view": "novaid_identity_assistant",
         "subject_id": subject_id,
@@ -30,7 +34,9 @@ def renewal_recommendations(*, subject_id: str, expiry_days: int) -> dict[str, A
     return {
         "view": "novaid_renewal_recommendation",
         "subject_id": subject_id,
-        "recommendation": "Renew identity before expiration" if expiry_days <= 30 else "Monitor renewal window",
+        "recommendation": "Renew identity before expiration"
+        if expiry_days <= 30
+        else "Monitor renewal window",
         "advisory_only": True,
     }
 

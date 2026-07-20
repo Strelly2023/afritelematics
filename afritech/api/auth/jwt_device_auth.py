@@ -75,8 +75,10 @@ class JWTService:
         session_id: str | None = None,
         token_kind: str = "access",
         issued_at: int | None = None,
+        ttl_seconds: int | None = None,
     ) -> str:
         now = int(time.time()) if issued_at is None else issued_at
+        ttl = self.ttl_seconds if ttl_seconds is None else ttl_seconds
         role = canonical_role_name(role)
         if role not in AUTH_ROLES:
             raise ValueError("invalid_role")
@@ -84,7 +86,7 @@ class JWTService:
         payload = {
             "sub": user_id,
             "role": role,
-            "exp": now + self.ttl_seconds,
+            "exp": now + ttl,
             "token_kind": token_kind,
         }
         if organization_id:
@@ -229,6 +231,7 @@ def build_auth_router(
         user_id = str(payload.get("user_id", ""))
         role = str(payload.get("role", "OPERATOR")).upper()
         organization_id = payload.get("organization_id", payload.get("tenant_id"))
+        ttl_seconds = payload.get("ttl_seconds")
         if not user_id:
             raise HTTPException(status_code=400, detail="user_id required")
         if role not in AUTH_ROLES:
@@ -238,6 +241,9 @@ def build_auth_router(
                 user_id,
                 role=role,
                 organization_id=str(organization_id) if organization_id else None,
+                tenant_id=str(payload.get("tenant_id")) if payload.get("tenant_id") else None,
+                region=str(payload.get("region")) if payload.get("region") else None,
+                ttl_seconds=int(ttl_seconds) if ttl_seconds is not None else None,
             )
         }
 

@@ -172,7 +172,7 @@ def _duplicate_webhook_storm() -> tuple[str, ...]:
         try:
             # Execute the task body directly: the validator owns its worker
             # threads and must not depend on Celery's thread-local request stack.
-            return str(process_provider_webhook_task.run("flutterwave", payload)["event_id"])
+            return str(process_provider_webhook_task("flutterwave", payload)["event_id"])
         finally:
             close_old_connections()
 
@@ -287,7 +287,10 @@ def _afripay_models():
             sys.path.insert(0, str(base_dir))
         if str(django_app_dir) not in sys.path:
             sys.path.insert(0, str(django_app_dir))
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "afriride_system.django_app.config.settings")
+        os.environ.setdefault(
+            "DJANGO_SETTINGS_MODULE",
+            "afriride_system.django_app.config.settings",
+        )
         django.setup()
     return import_module("afriride_system.django_app.apps.afripay.models")
 

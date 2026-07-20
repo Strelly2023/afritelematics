@@ -56,5 +56,11 @@ def test_dr_exercises_require_recovery_evidence_package() -> None:
     ]:
         assert exercise in exercises
 
-    for evidence in ["detection_time", "failover_time", "rto_result", "rpo_result", "evidence_package"]:
+    for evidence in [
+        "detection_time",
+        "failover_time",
+        "rto_result",
+        "rpo_result",
+        "evidence_package",
+    ]:
         assert evidence in exercises

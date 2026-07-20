@@ -65,7 +65,8 @@ class NovaIDRepository:
                 """
             )
             self._conn.execute(
-                f"CREATE INDEX IF NOT EXISTS idx_{TABLE_NAME}_organization_status ON {TABLE_NAME}(organization_id, status)"
+                f"CREATE INDEX IF NOT EXISTS idx_{TABLE_NAME}_organization_status "
+                f"ON {TABLE_NAME}(organization_id, status)"
             )
 
     def upsert(
@@ -163,4 +164,17 @@ class NovaIDRepository:
         ]
 
     def record_types(self) -> tuple[str, ...]:
-        return ("novaid_identities", "novaid_credentials", "novaid_consents", "novaid_devices", "novaid_passkeys", "novaid_sessions", "novaid_oauth_clients", "novaid_risk_events", "novaid_directory_entries", "novaid_trust_events", "novaid_biometric_events", "novaid_recovery_events")
+        return (
+            "novaid_identities",
+            "novaid_credentials",
+            "novaid_consents",
+            "novaid_devices",
+            "novaid_passkeys",
+            "novaid_sessions",
+            "novaid_oauth_clients",
+            "novaid_risk_events",
+            "novaid_directory_entries",
+            "novaid_trust_events",
+            "novaid_biometric_events",
+            "novaid_recovery_events",
+        )

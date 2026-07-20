@@ -27,6 +27,7 @@ dependencies = [
     "redis",
     "stripe",
     "cryptography",
+    "webauthn>=3.0.0,<4",
     "PyNaCl",
     "web3",
     "hexbytes",

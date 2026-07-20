@@ -10,13 +10,24 @@ from typing import Any
 
 from afritech.novaride_runtime.common.clocks import utc_now
 from afritech.novaride_runtime.common.errors import AuthorityDenied
+from afritech.novaride_runtime.common.geography import AddressRef, GeoPoint
 from afritech.novaride_runtime.common.identifiers import new_id
+from afritech.novaride_runtime.common.money import Money
+from afritech.novaride_runtime.events.envelope import MobilityEvent
 from afritech.novaride_runtime.events.hashing import canonical_hash
 from afritech.novaride_runtime.models import (
+    ActorType,
     BookingState,
+    DriverAvailability,
     DriverAvailabilityState,
+    DriverOffer,
+    DriverProfile,
+    EmergencyCase,
     EmergencyState,
+    Incident,
+    IncidentState as RuntimeIncidentState,
     OfferState,
+    Trip,
     TripState,
 )
 from afritech.novaride_runtime.services import NovaRideRuntime, _json
@@ -350,13 +361,34 @@ class OperationsWorkspaceService:
         self.disputes: dict[str, DisputeRecord] = {}
         self.actions: dict[str, OperationalAction] = {}
         self.evidence: dict[str, EvidenceRecord] = {}
-        self._idempotency_index: dict[tuple[str, str, str], str] = {}
+        self._idempotency_index: dict[tuple[str, str, str], dict[str, str]] = {}
+        self._browser_fixture_seeded = False
 
     def _tenant_scope(self, context) -> tuple[str, str, str]:
         return context.tenant_id, self._region_code(context), context.subject_id
 
     def _region_code(self, context) -> str:
         return str(getattr(context, "region_code", getattr(context, "region", "AU")))
+
+    def _idempotency_record(self, operation: str, tenant_id: str, key: str) -> dict[str, str] | None:
+        if not key:
+            return None
+        return self._idempotency_index.get((operation, tenant_id, key))
+
+    def _register_idempotency(self, operation: str, tenant_id: str, key: str, *, record_id: str, payload_hash: str) -> None:
+        if key:
+            self._idempotency_index[(operation, tenant_id, key)] = {
+                "record_id": record_id,
+                "payload_hash": payload_hash,
+            }
+
+    def _idempotency_record_id(self, operation: str, tenant_id: str, key: str, payload_hash: str) -> str | None:
+        record = self._idempotency_record(operation, tenant_id, key)
+        if record is None:
+            return None
+        if record.get("payload_hash") != payload_hash:
+            raise ValueError("idempotency_conflict")
+        return record.get("record_id")
 
     def _request_meta(self, context, request) -> dict[str, str]:
         return {
@@ -620,7 +652,7 @@ class OperationsWorkspaceService:
     def create_incident(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         idempotency_key = str(payload.pop("idempotency_key", "")).strip()
         payload_hash = canonical_hash(payload)
-        existing = self._idempotency_index.get(("incident", context.tenant_id, idempotency_key))
+        existing = self._idempotency_record_id("incident", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             incident = self._require_incident(context.tenant_id, existing)
             if incident:
@@ -652,8 +684,7 @@ class OperationsWorkspaceService:
             payload={"severity": incident.severity},
         )
         self.incidents[incident.incident_id] = incident
-        if idempotency_key:
-            self._idempotency_index[("incident", context.tenant_id, idempotency_key)] = incident.incident_id
+        self._register_idempotency("incident", context.tenant_id, idempotency_key, record_id=incident.incident_id, payload_hash=payload_hash)
         self._create_evidence(incident=incident, request_meta=request_meta)
         return self._incident_payload(incident)
 
@@ -831,7 +862,7 @@ class OperationsWorkspaceService:
     def create_support_case(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         idempotency_key = str(payload.pop("idempotency_key", "")).strip()
         payload_hash = canonical_hash(payload)
-        existing = self._idempotency_index.get(("support_case", context.tenant_id, idempotency_key))
+        existing = self._idempotency_record_id("support_case", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             case = self._require_support_case(context.tenant_id, existing)
             if case:
@@ -866,8 +897,7 @@ class OperationsWorkspaceService:
             payload={"case_type": case.case_type},
         )
         self.support_cases[case.case_id] = case
-        if idempotency_key:
-            self._idempotency_index[("support_case", context.tenant_id, idempotency_key)] = case.case_id
+        self._register_idempotency("support_case", context.tenant_id, idempotency_key, record_id=case.case_id, payload_hash=payload_hash)
         self._create_evidence(support_case=case, request_meta=request_meta)
         return self._support_payload(case)
 
@@ -960,8 +990,11 @@ class OperationsWorkspaceService:
         if amount <= 0:
             raise ValueError("refund_amount_invalid")
         idempotency_key = str(payload.get("idempotency_key", "")).strip()
-        payload_hash = canonical_hash({key: value for key, value in payload.items() if key != "idempotency_key"})
-        existing = self._idempotency_index.get(("refund", context.tenant_id, idempotency_key))
+        canonical_payload = {key: value for key, value in payload.items() if key != "idempotency_key"}
+        canonical_payload["amount"] = format(amount.normalize(), "f")
+        canonical_payload["currency"] = currency
+        payload_hash = canonical_hash(canonical_payload)
+        existing = self._idempotency_record_id("refund", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             refund = self._require_refund(context.tenant_id, existing)
             if refund:
@@ -993,8 +1026,7 @@ class OperationsWorkspaceService:
             payload={"amount": format(amount, "f"), "currency": currency},
         )
         self.refunds[refund.refund_id] = refund
-        if idempotency_key:
-            self._idempotency_index[("refund", context.tenant_id, idempotency_key)] = refund.refund_id
+        self._register_idempotency("refund", context.tenant_id, idempotency_key, record_id=refund.refund_id, payload_hash=payload_hash)
         self._create_evidence(refund=refund, request_meta=request_meta)
         return self._refund_payload(refund)
 
@@ -1117,7 +1149,7 @@ class OperationsWorkspaceService:
     def create_payment_investigation(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         idempotency_key = str(payload.pop("idempotency_key", "")).strip()
         payload_hash = canonical_hash(payload)
-        existing = self._idempotency_index.get(("investigation", context.tenant_id, idempotency_key))
+        existing = self._idempotency_record_id("investigation", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             investigation = self._require_investigation(context.tenant_id, existing)
             if investigation:
@@ -1142,8 +1174,7 @@ class OperationsWorkspaceService:
             )
         )
         self.investigations[investigation.investigation_id] = investigation
-        if idempotency_key:
-            self._idempotency_index[("investigation", context.tenant_id, idempotency_key)] = investigation.investigation_id
+        self._register_idempotency("investigation", context.tenant_id, idempotency_key, record_id=investigation.investigation_id, payload_hash=payload_hash)
         self._create_evidence(investigation=investigation, request_meta=request_meta)
         return self._investigation_payload(investigation)
 
@@ -1237,6 +1268,13 @@ class OperationsWorkspaceService:
         return self._action_payload(action)
 
     def create_action(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
+        idempotency_key = str(payload.pop("idempotency_key", "")).strip()
+        payload_hash = canonical_hash(payload)
+        existing = self._idempotency_record_id("action", context.tenant_id, idempotency_key, payload_hash)
+        if existing:
+            action = self._require_action(context.tenant_id, existing)
+            if action:
+                return self._action_payload(action)
         action_type = str(payload.get("action_type", "manual_dispatch"))
         target_id = str(payload.get("target_id", ""))
         if action_type not in {
@@ -1279,6 +1317,7 @@ class OperationsWorkspaceService:
             payload={"action_type": action.action_type, "target_id": target_id},
         )
         self.actions[action.action_id] = action
+        self._register_idempotency("action", context.tenant_id, idempotency_key, record_id=action.action_id, payload_hash=payload_hash)
         self._create_evidence(action=action, request_meta=request_meta)
         return self._action_payload(action)
 
@@ -1809,7 +1848,7 @@ class OperationsWorkspaceService:
     def create_dispute(self, context, payload: dict[str, Any], request_meta: dict[str, str]) -> dict[str, Any]:
         idempotency_key = str(payload.pop("idempotency_key", "")).strip()
         payload_hash = canonical_hash(payload)
-        existing = self._idempotency_index.get(("dispute", context.tenant_id, idempotency_key))
+        existing = self._idempotency_record_id("dispute", context.tenant_id, idempotency_key, payload_hash)
         if existing:
             dispute = self._require_dispute(context.tenant_id, existing)
             if dispute:
@@ -1836,7 +1875,240 @@ class OperationsWorkspaceService:
             )
         )
         self.disputes[dispute.dispute_id] = dispute
-        if idempotency_key:
-            self._idempotency_index[("dispute", context.tenant_id, idempotency_key)] = dispute.dispute_id
+        self._register_idempotency("dispute", context.tenant_id, idempotency_key, record_id=dispute.dispute_id, payload_hash=payload_hash)
         self._create_evidence(dispute=dispute, request_meta=request_meta)
         return self._dispute_payload(dispute)
+
+    def seed_browser_fixture(self, context) -> dict[str, Any]:
+        if self._browser_fixture_seeded:
+            return {
+                "status": "already_seeded",
+                "incident_ids": list(self.incidents),
+                "support_case_ids": list(self.support_cases),
+                "refund_ids": list(self.refunds),
+                "investigation_ids": list(self.investigations),
+                "dispute_ids": list(self.disputes),
+                "action_ids": list(self.actions),
+            }
+
+        tenant_id = context.tenant_id
+        organization_id = context.organization_id
+        region_id = self._region_code(context)
+
+        self.runtime.repositories.drivers.save(
+            DriverProfile(
+                id="driver_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                identity_id="identity_driver_browser_1",
+                display_name="Amina Browser Driver",
+                vehicle_id="vehicle_browser_1",
+            )
+        )
+        self.runtime.repositories.availability.save(
+            DriverAvailability(
+                id="availability_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                driver_id="driver_browser_1",
+                requested_state=DriverAvailabilityState.AVAILABLE,
+                authoritative_state=DriverAvailabilityState.AVAILABLE,
+                dispatchable=True,
+                vehicle_id="vehicle_browser_1",
+                location_fresh=True,
+                server_confirmed_at=utc_now(),
+            )
+        )
+        self.runtime.repositories.trips.save(
+            Trip(
+                id="trip_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                booking_id="booking_browser_1",
+                rider_id="rider_browser_1",
+                driver_id="driver_browser_1",
+                vehicle_id="vehicle_browser_1",
+                service_type="economy",
+                pickup=AddressRef("Browser Pickup", GeoPoint(-37.8136, 144.9631)),
+                destination=AddressRef("Browser Destination", GeoPoint(-37.816, 144.97)),
+                lifecycle_state=TripState.IN_PROGRESS,
+                safety_state="NORMAL",
+            )
+        )
+        self.runtime.repositories.offers.save(
+            DriverOffer(
+                id="offer_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                driver_id="driver_browser_1",
+                trip_id="trip_browser_1",
+                estimated_earnings=Money.of("12.50", "AUD"),
+                state=OfferState.CREATED,
+            )
+        )
+        self.runtime.repositories.events.append(
+            MobilityEvent(
+                event_type="TripLocationUpdated",
+                aggregate_id="trip_browser_1",
+                aggregate_type="Trip",
+                aggregate_version=1,
+                tenant_id=tenant_id,
+                region=region_id,
+                actor_type=ActorType.SYSTEM.value,
+                actor_id="system",
+                correlation_id="browser-seed-corr",
+                causation_id=None,
+                payload={
+                    "point": {
+                        "lat": -37.8135,
+                        "lng": 144.965,
+                        "heading": 90,
+                        "speed": 32,
+                        "label": "Browser live route",
+                    }
+                },
+            )
+        )
+        self.runtime.repositories.emergencies.save(
+            EmergencyCase(
+                id="emergency_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                source=ActorType.RIDER,
+                source_id="rider_browser_1",
+                trip_id="trip_browser_1",
+                state=EmergencyState.TRIGGERED,
+                evidence_locked=True,
+                visible_reference="safety-browser-1",
+            )
+        )
+        self.runtime.repositories.incidents.save(
+            Incident(
+                id="runtime_incident_browser_1",
+                tenant_id=tenant_id,
+                organization_id=organization_id,
+                region_code=region_id,
+                category="Dispatch delay",
+                state=RuntimeIncidentState.REPORTED,
+                severity="SEV2",
+                owner_id="ops_browser",
+            )
+        )
+        request_meta = {
+            "actor_id": context.subject_id,
+            "request_id": "browser-seed-req",
+            "trace_id": "browser-seed-trace",
+            "correlation_id": "browser-seed-corr",
+        }
+        self.create_incident(
+            context,
+            {
+                "title": "Browser dispatch delay",
+                "severity": "SEV2",
+                "description": "Seeded operations incident for browser certification",
+                "affected_trips": ["trip_browser_1"],
+                "idempotency_key": "browser-incident",
+            },
+            request_meta,
+        )
+        self.incidents["ops_browser_1"] = OperationalIncident(
+            incident_id="ops_browser_1",
+            tenant_id=tenant_id,
+            region_id=region_id,
+            title="Browser dispatch delay",
+            severity="SEV2",
+            status=IncidentState.DETECTED,
+            description="Trip linked incident for browser testing",
+            affected_trips=("trip_browser_1",),
+            created_by=context.subject_id,
+            updated_by=context.subject_id,
+        )
+        self.safety_cases["safety_browser_1"] = SafetyCase(
+            case_id="safety_browser_1",
+            tenant_id=tenant_id,
+            region_id=region_id,
+            linked_trip_id="trip_browser_1",
+            linked_driver_id="driver_browser_1",
+            linked_rider_id="rider_browser_1",
+            severity="high",
+            status=SafetyCaseState.TRIAGED,
+            incident_id="runtime_incident_browser_1",
+            created_by=context.subject_id,
+            updated_by=context.subject_id,
+        )
+        self.create_support_case(
+            context,
+            {
+                "case_type": "booking_problem",
+                "trip_id": "trip_browser_1",
+                "rider_id": "rider_browser_1",
+                "driver_id": "driver_browser_1",
+                "payment_id": "payment_browser_1",
+                "receipt_id": "receipt_browser_1",
+                "phone": "+61 400 000 001",
+                "email": "rider@example.com",
+                "idempotency_key": "browser-support",
+            },
+            request_meta,
+        )
+        self.create_refund(
+            context,
+            {
+                "amount": "75",
+                "currency": "AUD",
+                "payment_id": "payment_browser_1",
+                "trip_id": "trip_browser_1",
+                "support_case_id": next(iter(self.support_cases)),
+                "reason": "Seeded browser refund",
+                "idempotency_key": "browser-refund",
+            },
+            request_meta,
+        )
+        self.create_payment_investigation(
+            context,
+            {
+                "payment_id": "payment_browser_1",
+                "reason": "Seeded browser investigation",
+                "idempotency_key": "browser-investigation",
+            },
+            request_meta,
+        )
+        self.create_dispute(
+            context,
+            {
+                "trip_id": "trip_browser_1",
+                "payment_id": "payment_browser_1",
+                "support_case_id": next(iter(self.support_cases)),
+                "idempotency_key": "browser-dispute",
+            },
+            request_meta,
+        )
+        self.create_action(
+            context,
+            {
+                "action_type": "manual_dispatch",
+                "target_id": "trip_browser_1",
+                "reason": "Seeded browser action",
+                "risk_level": "medium",
+                "approval_required": True,
+                "idempotency_key": "browser-action",
+            },
+            request_meta,
+        )
+        self._browser_fixture_seeded = True
+        return {
+            "status": "seeded",
+            "incident_ids": list(self.incidents),
+            "support_case_ids": list(self.support_cases),
+            "refund_ids": list(self.refunds),
+            "investigation_ids": list(self.investigations),
+            "dispute_ids": list(self.disputes),
+            "action_ids": list(self.actions),
+            "trip_ids": ["trip_browser_1"],
+            "driver_ids": ["driver_browser_1"],
+        }

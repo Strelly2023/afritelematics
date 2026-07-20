@@ -62,4 +62,10 @@ def plan_replay(
         raise ValueError("replay_reason_required")
     if not scope:
         raise ValueError("replay_scope_required")
-    return ReplayPlan(mode=mode, scope=scope, operator_id=operator_id, reason=reason, approval_reference=approval_reference)
+    return ReplayPlan(
+        mode=mode,
+        scope=scope,
+        operator_id=operator_id,
+        reason=reason,
+        approval_reference=approval_reference,
+    )

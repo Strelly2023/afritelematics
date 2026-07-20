@@ -29,12 +29,16 @@ class ProductionOutboxPublisher:
         failed = 0
         for record in claimed:
             try:
-                topic_key = "resilience" if "Resilience" in record.event.aggregate_type else "runtime"
+                topic_key = (
+                    "resilience" if "Resilience" in record.event.aggregate_type else "runtime"
+                )
                 result = self.publisher.publish(record.event, topic_key=topic_key)
                 self.outbox.mark_published(record.event.event_id, broker_ack=result.ack)
                 published += 1
             except Exception as exc:
-                self.outbox.mark_failed(record.event.event_id, error=str(exc), max_attempts=self.max_attempts)
+                self.outbox.mark_failed(
+                    record.event.event_id, error=str(exc), max_attempts=self.max_attempts
+                )
                 failed += 1
         counts = self.outbox.counts()
         return OutboxPublishSummary(
