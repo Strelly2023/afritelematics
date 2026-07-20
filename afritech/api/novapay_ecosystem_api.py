@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 from decimal import Decimal
-import os
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field, model_validator
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
-from afritech.novapay import NovaPayEcosystem, NovaPayRepository, novapay_ecosystem_contract
+from afritech.novapay import NovaPayEcosystem, novapay_ecosystem_contract
 from afritech.novapay.ecosystem_contract import (
     novapay_authority_boundaries,
     novapay_backend_contract,
@@ -21,8 +19,7 @@ from afritech.novapay.ecosystem_contract import (
 
 
 def _service() -> NovaPayEcosystem:
-    db_path = Path(os.environ.get("NOVAPAY_DB_PATH", ":memory:"))
-    return NovaPayEcosystem(NovaPayRepository(db_path))
+    return NovaPayEcosystem.default()
 
 
 class StrictPayload(BaseModel):

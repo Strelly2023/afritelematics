@@ -2,20 +2,17 @@
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends
 
 from afritech.api.auth.jwt_device_auth import JWTClaims, require_roles
-from afritech.novapay import NovaPayEcosystem, NovaPayRepository
+from afritech.novapay import NovaPayEcosystem
 from afritech.novapay.portal_suite import NovaPortalSuite
 
 
 def _suite() -> NovaPortalSuite:
-    db_path = Path(os.environ.get("NOVAPAY_DB_PATH", ":memory:"))
-    return NovaPortalSuite(NovaPayEcosystem(NovaPayRepository(db_path)))
+    return NovaPortalSuite(NovaPayEcosystem.default())
 
 
 def build_novaportal_suite_router(suite: NovaPortalSuite | None = None) -> APIRouter:

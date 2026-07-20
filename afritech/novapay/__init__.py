@@ -1,6 +1,12 @@
 """Governed NovaPay platform domains."""
 
-from .repository import NovaPayRecord, NovaPayRepository
+from .repository import (
+    NovaPayRecord,
+    NovaPayRepository,
+    PostgresNovaPayRepository,
+    build_repository_from_environment,
+    validate_database_runtime,
+)
 from .portal_suite import NovaPortalSuite
 from .service import NovaPayEcosystem
 from .surfaces import build_app_surfaces, build_trust_surfaces
@@ -10,8 +16,11 @@ __all__ = [
     "NovaPayEcosystem",
     "NovaPayRecord",
     "NovaPayRepository",
+    "PostgresNovaPayRepository",
     "NovaPortalSuite",
+    "build_repository_from_environment",
     "build_app_surfaces",
     "build_trust_surfaces",
     "novapay_ecosystem_contract",
+    "validate_database_runtime",
 ]

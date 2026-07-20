@@ -6,16 +6,18 @@ from datetime import UTC, datetime
 from decimal import Decimal
 import hashlib
 import json
-import os
 import sqlite3
-from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from afritech.core_platform.models import AuthorityRequest, Identity
 from afritech.core_platform.services import NovaIDService, NovaPowerEngine, NovaTrustService
 
-from .repository import NovaPayRecord, NovaPayRepository
+from .repository import (
+    NovaPayRecord,
+    NovaPayRepository,
+    build_repository_from_environment,
+)
 from .surfaces import build_app_surfaces, build_trust_surfaces
 
 
@@ -71,9 +73,7 @@ class NovaPayEcosystem:
         novapower: NovaPowerEngine | None = None,
         novatrust: NovaTrustService | None = None,
     ) -> None:
-        self.repository = repository or NovaPayRepository(
-            Path(os.environ.get("NOVAPAY_DB_PATH", ":memory:"))
-        )
+        self.repository = repository or build_repository_from_environment()
         self.novaid = novaid or NovaIDService()
         self.novapower = novapower or NovaPowerEngine()
         self.novatrust = novatrust or NovaTrustService()
