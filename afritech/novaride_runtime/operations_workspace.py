@@ -243,6 +243,7 @@ class RefundRequest:
     requester_id: str = ""
     approver_id: str | None = None
     verified_by: str | None = None
+    updated_by: str = ""
     idempotency_key: str = ""
     reason: str = ""
     created_at: datetime = field(default_factory=utc_now)

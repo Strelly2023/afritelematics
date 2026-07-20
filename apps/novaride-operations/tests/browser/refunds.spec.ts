@@ -37,6 +37,7 @@ test("refund governance enforces dual control and execution verification", async
   expect(conflicting.status()).toBe(409);
 
   await page.reload();
+  await page.getByRole("button", { name: "Refunds" }).click();
   const card = page.locator(".record-card", { hasText: createdJson.refund_id });
   await expect(card).toContainText("approval_pending");
   const selfApproval = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/refunds/${createdJson.refund_id}/approve`, {
@@ -49,9 +50,20 @@ test("refund governance enforces dual control and execution verification", async
   await signIn(page, "PLATFORM_ADMIN", "admin_browser");
   await page.getByRole("button", { name: "Refunds" }).click();
   const approvedCard = page.locator(".record-card", { hasText: createdJson.refund_id });
-  await approvedCard.getByRole("button", { name: "Evaluate" }).click();
-  await approvedCard.getByRole("button", { name: "Approve" }).click();
-  await approvedCard.getByRole("button", { name: "Execute" }).click();
+  await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/evaluate`) && response.request().method() === "POST" && response.status() === 200),
+    approvedCard.getByRole("button", { name: "Evaluate" }).click(),
+  ]);
+  await expect(approvedCard).toContainText("approval_pending");
+  await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/approve`) && response.request().method() === "POST" && response.status() === 200),
+    approvedCard.getByRole("button", { name: "Approve" }).click(),
+  ]);
+  await expect(approvedCard).toContainText("approved");
+  await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith(`/api/v1/novaride/operations/refunds/${createdJson.refund_id}/execute`) && response.request().method() === "POST" && response.status() === 200),
+    approvedCard.getByRole("button", { name: "Execute" }).click(),
+  ]);
   await expect(approvedCard).toContainText("completed");
 
   const evidence = await page.request.get(`${backendBaseUrl}/api/v1/novaride/operations/refunds/${createdJson.refund_id}/evidence`, {

@@ -193,7 +193,7 @@ function createInitialWorkspace(initialWorkspace) {
     safety: remoteState("loading"),
     support: remoteState("loading"),
     refunds: remoteState("loading"),
-    investigations: remoteState("loading"),
+    payments: remoteState("loading"),
     disputes: remoteState("loading"),
     actions: remoteState("loading"),
     evidence: remoteState("loading"),
@@ -253,7 +253,7 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
       safety: entries[8],
       support: entries[9],
       refunds: entries[10],
-      investigations: entries[11],
+      payments: entries[11],
       disputes: entries[12],
       actions: entries[13],
       evidence: entries[14],
@@ -420,7 +420,6 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
 
   const renderListSection = (state, items, kind) => {
     const disabled = !api || busy;
-    const actionable = disabled || !config?.productionActionsEnabled;
     const dataItems = Array.isArray(items) ? items : [];
     const summaryText =
       kind === "map"
@@ -495,6 +494,7 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
   };
 
   function renderRecord(kind, item, disabled) {
+    const controlsDisabled = disabled || !config?.productionActionsEnabled;
     if (kind === "trips") {
       return h(
         RecordCard,
@@ -570,9 +570,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Assign",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.assignIncident(item.incident_id, { assigned_to: item.assigned_to || "incident-commander" });
               await refresh();
             },
@@ -582,9 +582,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
                 {
                   label: `Move to ${nextTransition}`,
                   className: "action-button",
-                  disabled: actionable,
+                  disabled: controlsDisabled,
                   onClick: async () => {
-                    if (!api || actionable) return;
+                    if (!api || controlsDisabled) return;
                     await api.transitionIncident(item.incident_id, { status: nextTransition });
                     await refresh();
                   },
@@ -610,9 +610,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Assign",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.assignSafetyCase(item.case_id, { assigned_to: item.assigned_to || "safety-reviewer" });
               await refresh();
             },
@@ -620,9 +620,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Escalate",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.escalateSafetyCase(item.case_id, { reason: "operator review" });
               await refresh();
             },
@@ -646,9 +646,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Assign",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.assignSupportCase(item.case_id, { assigned_to: item.assigned_to || "support-agent" });
               await refresh();
             },
@@ -656,9 +656,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Resolve",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.resolveSupportCase(item.case_id, { resolution: "reviewed" });
               await refresh();
             },
@@ -682,9 +682,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Evaluate",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.evaluateRefund(item.refund_id, { approval_required: item.approval_required });
               await refresh();
             },
@@ -692,9 +692,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Approve",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.approveRefund(item.refund_id, { approval_reference: "ops-review" });
               await refresh();
             },
@@ -702,9 +702,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Execute",
             className: "action-button",
-            disabled: actionable || !config?.refundExecutionEnabled,
+            disabled: controlsDisabled || !config?.refundExecutionEnabled,
             onClick: async () => {
-              if (!api || actionable || !config?.refundExecutionEnabled) return;
+              if (!api || controlsDisabled || !config?.refundExecutionEnabled) return;
               await api.executeRefund(item.refund_id, { provider_reference: "sandbox-confirmed" });
               await refresh();
             },
@@ -746,6 +746,7 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
         details: h(
           React.Fragment,
           null,
+          h("div", null, h("dt", null, "Action"), h("dd", null, item.action_id || "unknown")),
           h("div", null, h("dt", null, "Requester"), h("dd", null, item.requested_by || "unknown")),
           h("div", null, h("dt", null, "Approver"), h("dd", null, item.approved_by || "unassigned")),
           h("div", null, h("dt", null, "Risk"), h("dd", null, item.risk_level || "medium")),
@@ -754,9 +755,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Evaluate",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.evaluateAction(item.action_id, { risk_level: item.risk_level });
               await refresh();
             },
@@ -764,9 +765,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Approve",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.approveAction(item.action_id, { approval_reference: "ops-review" });
               await refresh();
             },
@@ -774,9 +775,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Execute",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.executeAction(item.action_id, { adapter: "allowlisted_adapter" });
               await refresh();
             },
@@ -784,9 +785,9 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
           {
             label: "Verify",
             className: "action-button",
-            disabled: actionable,
+            disabled: controlsDisabled,
             onClick: async () => {
-              if (!api || actionable) return;
+              if (!api || controlsDisabled) return;
               await api.verifyAction(item.action_id, { result: "verified" });
               await refresh();
             },
@@ -802,6 +803,7 @@ export function ResilienceAvailabilityWindow({ api, config, initialWorkspace }) 
         details: h(
           React.Fragment,
           null,
+          h("div", null, h("dt", null, "Correlation"), h("dd", null, item.correlation_id || "unknown")),
           h("div", null, h("dt", null, "Integrity"), h("dd", null, item.integrity_status || "unknown")),
           h("div", null, h("dt", null, "Verification"), h("dd", null, item.verification_status || "unknown")),
         ),

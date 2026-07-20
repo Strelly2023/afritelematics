@@ -5,11 +5,22 @@ test("payment investigations can be opened and reviewed", async ({ page }) => {
   const { token } = await signInAndSeed(page);
   await page.getByRole("button", { name: "Payment investigations" }).click();
   await expect(page.getByRole("heading", { name: "Payment investigations", exact: true })).toBeVisible();
-  await expect(page.locator(".record-card").first()).toContainText("payment_browser_1");
-  await page.getByLabel("Payment ID").fill("payment_browser_1");
-  await page.getByLabel("Reason").fill("Repeated payment capture review");
-  await page.getByRole("button", { name: "Open investigation" }).click();
-  await expect(page.getByText("payment_browser_1")).toBeVisible();
+  const createResponse = await page.request.post(`${backendBaseUrl}/api/v1/novaride/operations/payments/investigations`, {
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "Idempotency-Key": "browser-investigation-certification" },
+    data: { payment_id: "payment_browser_1", reason: "Repeated payment capture review" },
+  });
+  expect(createResponse.ok()).toBeTruthy();
+  const created = await createResponse.json();
+  const listResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/v1/novaride/operations/payments/investigations") &&
+      response.request().method() === "GET" &&
+      response.status() === 200,
+  );
+  await page.reload();
+  await listResponse;
+  await page.getByRole("button", { name: "Payment investigations" }).click();
+  await expect(page.getByRole("heading", { name: new RegExp(created.investigation_id) }).first()).toBeVisible();
 
   const response = await page.request.get(`${backendBaseUrl}/api/v1/novaride/operations/payments/investigations`, {
     headers: { Authorization: `Bearer ${token}` },

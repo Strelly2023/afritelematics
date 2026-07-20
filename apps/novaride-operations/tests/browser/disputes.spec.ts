@@ -40,5 +40,7 @@ test("disputes support assignment evidence decisions and appeals", async ({ page
   expect(appealResponse.ok()).toBeTruthy();
 
   await page.reload();
-  await expect(page.getByText(dispute.dispute_id)).toBeVisible();
+  await page.getByRole("button", { name: "Disputes" }).click();
+  await expect(page.getByRole("heading", { name: "Disputes" })).toBeVisible();
+  await expect(page.locator(".record-card", { hasText: dispute.dispute_id }).first()).toBeVisible();
 });

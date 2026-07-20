@@ -26,7 +26,7 @@ test("visual degraded baseline captures backend failure honestly", async ({ page
       body: JSON.stringify({ detail: "forced overview failure" }),
     });
   });
-  await signInAndSeed(page);
+  await signInAndSeed(page, "OPERATIONS_TEAM", "ops_browser", { waitForOverview: false });
   await expect(page.getByRole("alert")).toContainText("Unable to load data");
   await expect(page).toHaveScreenshot("overview-degraded.png", {
     animations: "disabled",

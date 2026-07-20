@@ -134,11 +134,18 @@ export async function seedBrowserFixture(page: Page, token: string) {
   return response.json();
 }
 
-export async function signInAndSeed(page: Page, semanticRole = "OPERATIONS_TEAM", userId = "ops_browser") {
+export async function signInAndSeed(
+  page: Page,
+  semanticRole = "OPERATIONS_TEAM",
+  userId = "ops_browser",
+  { waitForOverview = true }: { waitForOverview?: boolean } = {},
+) {
   const { canonicalRole, token } = await signInWithSession(page, semanticRole, userId);
   const seed = await seedBrowserFixture(page, token);
   await page.reload();
-  await expect(page.getByText("Active trips", { exact: true })).toBeVisible({ timeout: 30_000 });
+  if (waitForOverview) {
+    await expect(page.getByText("Active trips", { exact: true })).toBeVisible({ timeout: 30_000 });
+  }
   return { canonicalRole, token, seed };
 }
 

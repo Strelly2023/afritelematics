@@ -8,7 +8,7 @@ test("operations overview is live backend-backed data", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Overview" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText("Active trips", { exact: true })).toBeVisible();
   await expect(page.getByText("Online drivers", { exact: true })).toBeVisible();
-  await expect(page.getByText("Dependency health")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Dependency health", exact: true })).toBeVisible();
   await expect(page.getByText("Evidence-preserving workflows")).toBeVisible();
 
   const response = await page.request.get(`${backendBaseUrl}/api/v1/novaride/operations/overview`, {
@@ -16,7 +16,7 @@ test("operations overview is live backend-backed data", async ({ page }) => {
   });
   expect(response.ok()).toBeTruthy();
   const api = await response.json();
-  await expect(page.getByText(String(api.summary.active_trips), { exact: true })).toBeVisible();
-  await expect(page.getByText(String(api.summary.drivers_online), { exact: true })).toBeVisible();
-  await expect(page.getByText(String(api.summary.open_support_cases), { exact: true })).toBeVisible();
+  await expect(page.locator(".metric-card", { hasText: "Active trips" }).getByText(String(api.summary.active_trips), { exact: true })).toBeVisible();
+  await expect(page.locator(".metric-card", { hasText: "Online drivers" }).getByText(String(api.summary.drivers_online), { exact: true })).toBeVisible();
+  await expect(page.locator(".metric-card", { hasText: "Support cases" }).getByText(String(api.summary.open_support_cases), { exact: true })).toBeVisible();
 });
