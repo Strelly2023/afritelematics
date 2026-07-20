@@ -24,6 +24,7 @@ export type OperationsApiOptions = {
   fetchImpl?: typeof fetch;
   credentials?: RequestCredentials;
   csrfToken?: string | null;
+  authTokenProvider?: () => string | null;
   timeoutMs?: number;
   requestId?: () => string;
   traceId?: () => string;
@@ -136,6 +137,10 @@ export function createOperationsApi(options: OperationsApiOptions) {
     headers.set("Accept", "application/json");
     if (requestOptions.csrfToken ?? options.csrfToken) {
       headers.set("X-CSRF-Token", String(requestOptions.csrfToken ?? options.csrfToken));
+    }
+    const authToken = options.authTokenProvider?.();
+    if (authToken) {
+      headers.set("Authorization", `Bearer ${authToken}`);
     }
     const requestId = requestOptions.requestId || options.requestId?.() || buildId("req");
     const traceId = requestOptions.traceId || options.traceId?.() || buildId("trace");
@@ -268,11 +273,21 @@ export function createOperationsApi(options: OperationsApiOptions) {
     getPaymentInvestigations: (signal?: AbortSignal) => request<JsonRecord>("/payments/investigations", { method: "GET" }, { signal }),
     getPaymentInvestigation: (investigationId: string, signal?: AbortSignal) =>
       request<JsonRecord>(`/payments/investigations/${investigationId}`, { method: "GET" }, { signal }),
-    createPaymentInvestigation: (body: JsonRecord, signal?: AbortSignal) =>
-      request<JsonRecord>("/payments/investigations", { method: "POST", body: JSON.stringify(body) }, { signal }),
+    createPaymentInvestigation: (body: JsonRecord, idempotencyKey?: string, signal?: AbortSignal) =>
+      request<JsonRecord>(
+        "/payments/investigations",
+        { method: "POST", body: JSON.stringify(body) },
+        { signal, idempotencyKey: idempotencyKey || buildId("investigation") },
+      ),
     getDisputes: (signal?: AbortSignal) => request<JsonRecord>("/disputes", { method: "GET" }, { signal }),
     getDispute: (disputeId: string, signal?: AbortSignal) =>
       request<JsonRecord>(`/disputes/${disputeId}`, { method: "GET" }, { signal }),
+    createDispute: (body: JsonRecord, idempotencyKey?: string, signal?: AbortSignal) =>
+      request<JsonRecord>(
+        "/disputes",
+        { method: "POST", body: JSON.stringify(body) },
+        { signal, idempotencyKey: idempotencyKey || buildId("dispute") },
+      ),
     assignDispute: (disputeId: string, body: JsonRecord, signal?: AbortSignal) =>
       request<JsonRecord>(`/disputes/${disputeId}/assign`, { method: "POST", body: JSON.stringify(body) }, { signal }),
     requestDisputeEvidence: (disputeId: string, body: JsonRecord, signal?: AbortSignal) =>

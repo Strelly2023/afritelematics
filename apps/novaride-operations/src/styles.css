@@ -31,6 +31,37 @@ select {
   margin: 0 auto;
 }
 
+.operations-app-root {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  align-items: center;
+}
+
+.auth-panel,
+.session-banner {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+.auth-form {
+  margin-top: 16px;
+}
+
+.auth-form input {
+  width: 100%;
+}
+
+.session-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;

@@ -12,10 +12,10 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `782`
+- Startup-safe closure size: `784`
 - Django-bound modules declared in repo: `253`
 - Runtime-boundary violations: `0`
-- Direct startup imports from `afritech.api.app`: `104`
+- Direct startup imports from `afritech.api.app`: `105`
 
 ## Runtime Architecture Graph
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (782 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (784 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -56,7 +56,7 @@ flowchart LR
         Validator --> Review["Generated Scan Report"]
     end
 
-    App -. startup imports .-> Imports["Direct startup imports from app.py (104)"]
+    App -. startup imports .-> Imports["Direct startup imports from app.py (105)"]
 ```
 
 ## Repository Architecture Inventory
@@ -68,7 +68,7 @@ flowchart TD
     Root --> Ui["dashboard/"]
     Root --> Deploy["deploy/production/"]
 
-    Core --> Api["api (113 files)"]
+    Core --> Api["api (114 files)"]
     Core --> Edge["edge (11 files)"]
     Core --> Execution["execution (16 files)"]
     Core --> Security["security (18 files)"]
@@ -87,7 +87,7 @@ flowchart TD
 
 ## Repo Area Counts
 
-- `api`: `113` files
+- `api`: `114` files
 - `edge`: `11` files
 - `execution`: `16` files
 - `security`: `18` files
@@ -104,7 +104,7 @@ flowchart TD
 
 ## Startup Inventory
 
-### Api (122)
+### Api (123)
 
 - `afritech.api.afriprogramming_control_api`
 - `afritech.api.afriride_mobile_release_api`
@@ -151,6 +151,7 @@ flowchart TD
 - `afritech.api.novapay_ecosystem_api`
 - `afritech.api.novapay_runtime_api`
 - `afritech.api.novaportal_suite_api`
+- `afritech.api.novaride_operations_api`
 - `afritech.api.novaride_runtime_api`
 - `afritech.api.novascript_api`
 - `afritech.api.novatech_intranet_api`
@@ -258,7 +259,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (620)
+### Other (621)
 
 - `afritech`
 - `afritech.afripay`
@@ -719,6 +720,7 @@ flowchart TD
 - `afritech.novaride_runtime.events.schema_registry`
 - `afritech.novaride_runtime.models`
 - `afritech.novaride_runtime.operations`
+- `afritech.novaride_runtime.operations_workspace`
 - `afritech.novaride_runtime.persistence`
 - `afritech.novaride_runtime.persistence.memory`
 - `afritech.novaride_runtime.readiness`
@@ -941,6 +943,7 @@ flowchart TD
 - `afritech.api.novapay_ecosystem_api`
 - `afritech.api.novapay_runtime_api`
 - `afritech.api.novaportal_suite_api`
+- `afritech.api.novaride_operations_api`
 - `afritech.api.novaride_runtime_api`
 - `afritech.api.novascript_api`
 - `afritech.api.novatech_intranet_api`
