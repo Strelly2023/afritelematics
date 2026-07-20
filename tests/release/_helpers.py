@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+from typing import Callable, TypeVar
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config/release.json"
@@ -18,6 +22,8 @@ READINESS_SOURCE = ROOT / "packages/novatech-platform-sdk/src/readiness/readines
 PRR_VALIDATOR_SOURCE = ROOT / "packages/novatech-platform-sdk/src/prr/prrValidator.ts"
 GA_GUARD_SOURCE = ROOT / "afritech/guards/guard_ga_enablement.py"
 
+T = TypeVar("T")
+
 
 def read_json(path: Path | str):
     return json.loads((ROOT / path if isinstance(path, str) else path).read_text(encoding="utf-8"))
@@ -25,3 +31,14 @@ def read_json(path: Path | str):
 
 def read_text(path: Path | str) -> str:
     return (ROOT / path if isinstance(path, str) else path).read_text(encoding="utf-8")
+
+
+def run_in_detached_worktree(callback: Callable[[Path], T]) -> T:
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
+    worktree_dir = Path(tempfile.mkdtemp(prefix="release-tests-", dir="/private/tmp"))
+    try:
+        subprocess.run(["git", "worktree", "add", "--detach", str(worktree_dir), commit], cwd=ROOT, check=True, capture_output=True, text=True)
+        return callback(worktree_dir)
+    finally:
+        subprocess.run(["git", "worktree", "remove", "--force", str(worktree_dir)], cwd=ROOT, check=False, capture_output=True, text=True)
+        shutil.rmtree(worktree_dir, ignore_errors=True)
