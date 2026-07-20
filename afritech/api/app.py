@@ -65,6 +65,7 @@ from afritech.api.trust_network_api import build_trust_network_router
 from afritech.api.dashboard_gateway_api import build_dashboard_gateway_router
 from afritech.api.afroprog_workspace_api import build_afroprog_workspace_router
 from afritech.api.novacodepro_workspace_api import build_novacodepro_workspace_router
+from afritech.api.novacodepro_product_factory_api import build_novacodepro_product_factory_router
 from afritech.api.novascript_api import build_novascript_public_router, build_novascript_router
 from afritech.api.novatech_intranet_api import build_novatech_intranet_router
 from afritech.api.documentation_compliance_api import build_documentation_compliance_router
@@ -447,6 +448,7 @@ app.include_router(build_novaride_operations_router())
 # ✅ Dashboard gateway API
 app.include_router(build_dashboard_gateway_router())
 app.include_router(build_novacodepro_workspace_router())
+app.include_router(build_novacodepro_product_factory_router())
 app.include_router(build_novatech_intranet_router())
 app.include_router(build_data_governance_router())
 app.include_router(build_documentation_compliance_router())

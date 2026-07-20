@@ -25,6 +25,7 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
+import { ProductFactoryPortal } from "./novacodepro/ProductFactoryPortal.jsx";
 import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
 import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
 import { NCP006APortal } from "./novacodepro/NCP006APortal.jsx";
@@ -3721,6 +3722,17 @@ function App() {
     if (["workspace", "projects", "requests"].includes(parsedRoute.appId)) {
       return (
         <NCP003Portal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      );
+    }
+    if (parsedRoute.appId === "product-factory") {
+      return (
+        <ProductFactoryPortal
           session={session}
           pathname={currentPathname}
           navigate={(path, options) => navigateTo(path, options)}

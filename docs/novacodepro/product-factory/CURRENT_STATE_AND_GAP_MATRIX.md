@@ -1,0 +1,43 @@
+# NovaCodePro Product Factory Current State Inventory and Gap Matrix
+
+This document records the current NovaCodePro capability surface before the Product Factory upgrade was wired into the shell.
+
+## Current-state inventory
+
+| Capability area | Existing implementation | Key source paths | Database entities | APIs / routes | Tests | Maturity | Missing functionality | Upgrade strategy | Migration impact | Compatibility risk |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Workspace management | Unified workspace and role dashboards | `afritech/novacodepro/workspace.py`, `afritech/api/novacodepro_workspace_api.py`, `novacodepro_portal/src/platform/workspaceRoutes.js` | `workspace`, `solution`, `project` | `/novacodepro/workspace`, `/v1/novacodepro/workspace` | workspace and route tests | Usable | Product Factory home and phase composition | Extend existing shell and reuse shared layouts | Low | Low |
+| Product request intake | Solution engineering request and project flow | `afritech/novacodepro/solution_engineering.py`, `afritech/api/solution_engineering_api.py` | `customer_project`, `business_idea`, `discovery_session` | `/v1/solution-engineering/projects` | NCP003 tests | Partial | Governed request states, decision log, approval trail | Add a request record layer with approval evidence | Medium | Medium |
+| Product blueprint | Blueprint generation through solution engineering | `afritech/novacodepro/solution_engineering.py`, `afritech/api/solution_engineering_api.py` | `solution_blueprint`, `requirement`, `architecture_decision` | `/v1/solution-engineering/projects/{id}/blueprint` | NCP003 portal tests | Partial | Immutable approved blueprint versions | Version blueprints with controlled amendments | Medium | Medium |
+| Archetype engine | Seeded archetype catalog in Product Factory service | `afritech/novacodepro/product_factory.py` | `product_archetype` | `/v1/product-factory/archetypes` | Product Factory tests | Emerging | Cloning, publishing, deprecation, enterprise locks | Add governed archetype lifecycle | Low | Low |
+| SDLC lifecycle | Existing Solution Engineering and Workflow Fabric phases | `afritech/novacodepro/solution_engineering.py`, `afritech/novacodepro/workflow_fabric.py` | workflow, release, approval records | `/v1/solution-engineering/*`, `/v1/workflow-fabric/*` | solution engineering tests | Usable | Unified Product Factory phase orchestration | Bridge into Product Factory phase model | Medium | Medium |
+| Planning and analysis | Discovery and requirements flows | `afritech/novacodepro/solution_engineering.py`, `novacodepro_portal/src/solutions/SolutionEngineeringPortal.jsx` | project and requirement records | solution engineering routes | portal tests | Partial | Product blueprints, BRD/PRD traceability | Extend request-to-requirements path | Medium | Medium |
+| Design Studio | Design screens and rendering manifests | `novacodepro_portal/src/platform/productFrontendManifests.js`, `novacodepro_portal/src/novacodepro/NCP006BPortal.jsx` | design artifacts | `/novacodepro/design` | NCP006B tests | Partial | Implementation-ready UI spec explorer | Reuse the design workflow and add Product Factory view | Low | Low |
+| Architecture Studio | Architecture exploration and approvals | `novacodepro_portal/src/novacodepro/NCP006APortal.jsx`, `afritech/novacodepro/solution_engineering.py` | architecture records | `/novacodepro/architecture` | NCP006A tests | Partial | Product-bound architecture graphs | Link architecture outputs to factory traceability | Low | Low |
+| Development Studio | Governed repository-aware generation | `afritech/novacodepro/ncp007.py`, `novacodepro_portal/src/novacodepro/NCP007Portal.jsx` | generation records | `/novacodepro/development` | NCP007 tests | Usable | Factory-level generated artefact lineage | Reuse the governed generation model | Low | Low |
+| Quality Engineering | Test and evidence flows across NCP007/NCP008 | `afritech/novacodepro/workflow_fabric.py`, `afritech/novacodepro/product_factory.py` | test, evidence, gate records | workflow and operations routes | quality and browser tests | Usable | Product Factory quality dashboards | Surface quality results through factory views | Low | Low |
+| Release management | Solution releases and operational gates | `afritech/novacodepro/solution_engineering.py`, `afritech/novacodepro/product_factory.py` | release, gate, approval records | release-oriented routes | release tests | Partial | Immutable release candidate lineage per product | Bind release evidence to frozen candidates | Medium | Medium |
+| Operations Studio | NCP008 governed operations control surface | `afritech/novacodepro/ncp008.py`, `afritech/api/novacodepro_ncp008_api.py`, `novacodepro_portal/src/novacodepro/NCP008Portal.jsx` | incident, action, SLO, recovery records | `/v1/operations/*` | NCP008 tests | Usable | Product-specific operational dashboards | Link ops signals back into product lifecycle | Low | Low |
+| Evidence management | Repository audit and evidence records | `afritech/novacodepro/platform.py`, `afritech/novacodepro/product_factory.py` | audit, event, evidence records | product-factory and operations routes | evidence tests | Usable | Unified evidence explorer | Reuse existing evidence store and filters | Low | Low |
+| Governance | Approvals, roles, and auditable transitions | `afritech/api/auth/jwt_device_auth.py`, `afritech/novacodepro/product_factory.py` | approval, audit records | all governed routes | auth and access tests | Usable | Product Factory-specific gate review | Use existing role model and add workflow-specific rules | Low | Low |
+| Identity and access control | JWT-based role and tenant checks | `afritech/api/auth/jwt_device_auth.py`, `afritech/api/app.py` | token claims | all APIs | auth tests | Usable | Product Factory-specific permissions UX | Reuse canonical roles; avoid parallel auth | Low | Low |
+| Multi-tenancy | Tenant-aware repository records | `afritech/novacodepro/platform.py`, `afritech/novacodepro/product_factory.py` | tenant-scoped records | repository-backed APIs | tenant-isolation tests | Usable | Cross-surface tenant-aware summaries | Preserve tenant filters across the new surface | Low | Low |
+| Audit logging | Structured repository audit trail | `afritech/novacodepro/platform.py`, `afritech/novacodepro/product_factory.py` | audit entries | audit endpoints | audit tests | Usable | Product Factory audit timeline | Filter by tenant and subject | Low | Low |
+| Workflow engine | Workflow fabric and phase transitions | `afritech/novacodepro/workflow_fabric.py` | workflow and step records | workflow routes | workflow tests | Partial | Product Factory lifecycle templates | Use existing state machines where valid | Medium | Medium |
+| Integrations | Provider and service integration surfaces | `afritech/api/integration_platform_api.py`, `afritech/novacodepro/platform.py` | integration records | integration routes | integration tests | Partial | Product archetype-aware integration registry | Surface registry data in the factory | Medium | Medium |
+| Deployment and monitoring | Release, ops, and runtime controls | `afritech/api/novaride_operations_api.py`, `afritech/novacodepro/product_factory.py` | deployment, evidence, gate records | operations and release routes | deployment tests | Partial | Product Factory readiness centre | Link readiness and ops evidence into the new workspace | Medium | Medium |
+| Search / reporting / docs | Portal catalog, route registry, and generated docs | `contracts/app-registry.json`, `novacodepro_portal/src/platform/productFrontendManifests.js` | catalog and registry artifacts | portal routes | registry tests | Partial | Product Factory search and export views | Add dedicated Product Factory reporting surfaces | Medium | Low |
+
+## Gap matrix summary
+
+High-value gaps remaining after the current baseline:
+
+1. A dedicated Product Factory workspace UI with persistent subroutes.
+2. Product-specific requirement and blueprint versioning with immutability controls.
+3. Unified traceability across request, blueprint, phase, evidence, gate, and release records.
+4. Product Factory-specific search, export, and reporting views.
+5. Deeper migration and approval workflows for existing NovaCodePro projects.
+
+## Upgrade strategy
+
+The implementation should extend the existing NovaCodePro workspace, Solution Engineering, Workflow Fabric, and Operations surfaces rather than introduce parallel product silos. The Product Factory service already bridges those layers and should remain the canonical orchestration layer for new product lifecycle data.

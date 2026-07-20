@@ -15,6 +15,18 @@
       "order": 10
     },
     {
+      "id": "product-factory",
+      "name": "Product Factory",
+      "route": "/novacodepro/product-factory",
+      "icon": "factory",
+      "requiredPermissions": ["workspace.read"],
+      "featureFlag": "novacodepro.product-factory.enabled",
+      "status": "active",
+      "domain": "delivery",
+      "description": "Governed intake, blueprinting, SDLC orchestration, traceability, gates, and evidence.",
+      "order": 15
+    },
+    {
       "id": "requests",
       "name": "Request Composer",
       "route": "/novacodepro/requests",

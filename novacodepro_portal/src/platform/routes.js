@@ -28,6 +28,7 @@ export const ROUTES = {
   dashboard: appPath("/dashboard"),
   logout: appPath("/logout"),
   workspaceRoot: appPath("/workspace"),
+  productFactoryRoot: appPath("/product-factory"),
   projectsRoot: appPath("/projects"),
   requestsRoot: appPath("/requests"),
   aiRoot: appPath("/ai"),
