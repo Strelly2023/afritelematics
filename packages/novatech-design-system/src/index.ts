@@ -128,6 +128,117 @@ export const accessibility = {
   },
 };
 
+export const semanticColors = {
+  light: {
+    surface: designTokens.color.light.surface,
+    surfaceElevated: designTokens.color.light.surfaceAlt,
+    textPrimary: designTokens.color.light.text,
+    textSecondary: designTokens.color.light.muted,
+    border: designTokens.color.light.border,
+    actionPrimary: designTokens.color.light.primary,
+    actionSecondary: designTokens.color.light.mobility,
+    success: designTokens.color.light.success,
+    warning: designTokens.color.light.warning,
+    critical: designTokens.color.light.danger,
+    information: designTokens.color.light.identity,
+    disabled: "#B4C0CE",
+    focus: "#005FCC",
+  },
+  dark: {
+    surface: designTokens.color.dark.surface,
+    surfaceElevated: designTokens.color.dark.surfaceAlt,
+    textPrimary: designTokens.color.dark.text,
+    textSecondary: designTokens.color.dark.muted,
+    border: designTokens.color.dark.border,
+    actionPrimary: designTokens.color.dark.primary,
+    actionSecondary: designTokens.color.dark.mobility,
+    success: designTokens.color.dark.success,
+    warning: designTokens.color.dark.warning,
+    critical: designTokens.color.dark.danger,
+    information: designTokens.color.dark.identity,
+    disabled: "#56657A",
+    focus: "#9EC2FF",
+  },
+} as const;
+
+export const interactionStates = {
+  default: "Default",
+  pressed: "Pressed",
+  focused: "Focused",
+  hovered: "Hovered",
+  disabled: "Disabled",
+  loading: "Loading",
+  success: "Success",
+  warning: "Warning",
+  error: "Error",
+  selected: "Selected",
+} as const;
+
+export const componentCatalog = {
+  primaryButton: {
+    role: "button",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Default", "Pressed", "Focused", "Disabled", "Loading"],
+  },
+  statusChip: {
+    role: "status",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Default", "Selected", "Warning", "Error", "Success"],
+  },
+  emptyState: {
+    role: "region",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Empty", "Loading", "Error", "Offline", "Restricted"],
+  },
+  safetyAction: {
+    role: "button",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Default", "Loading", "Warning", "Error"],
+  },
+  receiptCard: {
+    role: "summary",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Default", "Success", "Warning", "Error"],
+  },
+  evidenceViewer: {
+    role: "region",
+    minimumTouchTarget: accessibility.minTouchTarget,
+    states: ["Default", "Loading", "Restricted", "Error"],
+  },
+} as const;
+
+export const roleNavigation = {
+  rider: ["Home", "Trips", "Payments", "Safety", "Messages", "Account", "Support"],
+  driver: ["Home", "Ride Requests", "Current Trip", "Earnings", "Safety", "Vehicle", "Documents", "Support"],
+  operations: [
+    "Overview",
+    "Live Map",
+    "Trips",
+    "Drivers",
+    "Riders",
+    "Dispatch",
+    "Incidents",
+    "Safety",
+    "Payments",
+    "Refunds",
+    "Disputes",
+    "Service Areas",
+    "Pricing",
+    "Compliance",
+    "Evidence",
+    "Reports",
+    "Configuration",
+  ],
+  support: ["Search", "Timeline", "Cases", "Refunds", "Appeals", "Evidence"],
+} as const;
+
+export const contentGuidance = {
+  emergency: "Use for SOS, emergency response, or severe safety risk.",
+  failure: "Explain what happened, what is saved, and what the user can do next.",
+  payment: "State whether money was charged, pending, or refunded.",
+  offline: "Show what will sync automatically when connectivity returns.",
+} as const;
+
 export const receiptCard = cardPrimitives.receiptCard;
 export const identityCard = cardPrimitives.identityCard;
 export const rideCard = cardPrimitives.rideCard;
