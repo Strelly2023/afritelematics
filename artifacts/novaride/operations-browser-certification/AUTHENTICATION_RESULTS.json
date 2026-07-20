@@ -1,0 +1,28 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "command_reference": "apps/novaride-operations/tests/browser/authentication.spec.ts",
+  "commit": "796cc5483eefb00f175e51eaba6e6171b75e0341",
+  "environment": {
+    "browser_framework": "Playwright",
+    "kernel": "25.5.0",
+    "node": "v20.19.5",
+    "os": "Darwin",
+    "python": "3.11.8"
+  },
+  "evidence_reference": "/Users/ostrinov/afritelematics/apps/novaride-operations/test-results/browser-junit.xml",
+  "repository": "/Users/ostrinov/afritelematics",
+  "scenarios": {
+    "expired_token": "pass",
+    "invalid_token": "pass",
+    "logout": "pass",
+    "missing_authentication": "pass",
+    "re_authentication": "pass",
+    "session_expiration": "pass",
+    "valid_authentication": "pass",
+    "wrong_region": "pass",
+    "wrong_role": "pass",
+    "wrong_tenant": "pass"
+  },
+  "status": "PASS",
+  "timestamp": "2026-07-20T07:33:48.916638Z"
+}

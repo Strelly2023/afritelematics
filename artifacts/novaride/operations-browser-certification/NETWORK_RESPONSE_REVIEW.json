@@ -1,0 +1,25 @@
+{
+  "assertions": [
+    "JSON responses only for API routes used by the browser harness",
+    "HTML fallback not accepted for API reads"
+  ],
+  "branch": "feature/novacodepro-unified-platform",
+  "checked_responses": [
+    "overview",
+    "incidents",
+    "actions",
+    "evidence",
+    "authentication"
+  ],
+  "commit": "796cc5483eefb00f175e51eaba6e6171b75e0341",
+  "environment": {
+    "browser_framework": "Playwright",
+    "kernel": "25.5.0",
+    "node": "v20.19.5",
+    "os": "Darwin",
+    "python": "3.11.8"
+  },
+  "repository": "/Users/ostrinov/afritelematics",
+  "status": "PASS",
+  "timestamp": "2026-07-20T07:33:48.916638Z"
+}

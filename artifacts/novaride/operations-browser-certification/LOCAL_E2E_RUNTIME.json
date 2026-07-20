@@ -1,0 +1,21 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "796cc5483eefb00f175e51eaba6e6171b75e0341",
+  "environment": {
+    "browser_framework": "Playwright",
+    "kernel": "25.5.0",
+    "node": "v20.19.5",
+    "os": "Darwin",
+    "python": "3.11.8"
+  },
+  "limitation": "A rerun in the current sandbox hit preview-server bind EPERM on 127.0.0.1:4173; authoritative results come from the passed JUnit/browser report.",
+  "repository": "/Users/ostrinov/afritelematics",
+  "runtime": {
+    "backend": "local NovaRide API on 127.0.0.1:8001 reused from existing harness process",
+    "database": "local test database backing the harness runtime",
+    "event_transport": "local runtime transport as configured by the repository harness",
+    "frontend": "Playwright-controlled preview application during browser runs"
+  },
+  "status": "PASS",
+  "timestamp": "2026-07-20T07:33:48.916638Z"
+}

@@ -1,0 +1,35 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "796cc5483eefb00f175e51eaba6e6171b75e0341",
+  "environment": {
+    "browser_framework": "Playwright",
+    "kernel": "25.5.0",
+    "node": "v20.19.5",
+    "os": "Darwin",
+    "python": "3.11.8"
+  },
+  "failed": [
+    "rerun attempts in current sandbox hit EPERM binding 127.0.0.1:4173 for Playwright preview server"
+  ],
+  "passed": [
+    "npm run typecheck --prefix apps/novaride-operations",
+    "npm test --prefix apps/novaride-operations",
+    "npm run build --prefix apps/novaride-operations",
+    "PLAYWRIGHT_SKIP_BACKEND=1 npm run test:browser --prefix apps/novaride-operations",
+    "PLAYWRIGHT_SKIP_BACKEND=1 npm run test:accessibility --prefix apps/novaride-operations",
+    "PLAYWRIGHT_SKIP_BACKEND=1 npm run test:visual --prefix apps/novaride-operations",
+    "python -m afritech.guards.guard_runtime_boundary_governance --write-artifacts"
+  ],
+  "reports": [
+    "/Users/ostrinov/afritelematics/apps/novaride-operations/test-results/browser-junit.xml",
+    "/Users/ostrinov/afritelematics/apps/novaride-operations/playwright-report/index.html"
+  ],
+  "repository": "/Users/ostrinov/afritelematics",
+  "skipped": [
+    "live deployment verification",
+    "manual accessibility",
+    "physical device validation"
+  ],
+  "status": "PASS",
+  "timestamp": "2026-07-20T07:33:48.916638Z"
+}

@@ -1,0 +1,37 @@
+{
+  "blockers": [
+    {
+      "affected_gates": [
+        "NR-OPS-LIVE-001"
+      ],
+      "blocker": "live deployment URL and credentials unavailable",
+      "impact": "live route verification, authenticated live E2E, TLS verification, live evidence generation"
+    },
+    {
+      "affected_gates": [
+        "NR-OPS-A11Y-001"
+      ],
+      "blocker": "manual screen-reader / human accessibility validation unavailable",
+      "impact": "manual accessibility sub-gate remains external"
+    },
+    {
+      "affected_gates": [
+        "OPERATIONS_CERTIFIED_LOCAL_ONLY reproducibility check"
+      ],
+      "blocker": "current sandbox preview-server bind EPERM on 127.0.0.1:4173 during rerun",
+      "impact": "authoritative evidence relies on the previously passed JUnit/browser report"
+    }
+  ],
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "796cc5483eefb00f175e51eaba6e6171b75e0341",
+  "environment": {
+    "browser_framework": "Playwright",
+    "kernel": "25.5.0",
+    "node": "v20.19.5",
+    "os": "Darwin",
+    "python": "3.11.8"
+  },
+  "repository": "/Users/ostrinov/afritelematics",
+  "status": "BLOCKED_EXTERNAL",
+  "timestamp": "2026-07-20T07:33:48.916638Z"
+}
