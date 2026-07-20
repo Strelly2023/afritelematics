@@ -1,0 +1,17 @@
+{
+  "coverage": [
+    "case search",
+    "refund request",
+    "support resolution",
+    "audit trail"
+  ],
+  "notes": [
+    "support actions exist in rider/driver flows and operations surfaces",
+    "separate support backend surfacing remains to be wired"
+  ],
+  "status": "PARTIALLY_CONNECTED",
+  "validation": [
+    "rider and driver app surface tests",
+    "operations portal render tests"
+  ]
+}

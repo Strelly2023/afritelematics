@@ -1,0 +1,37 @@
+[
+  {
+    "blocker": "Physical device validation",
+    "id": "EXT-UI-001",
+    "impact": "Cannot claim real device UI readiness.",
+    "required_action": "Run rider and driver journeys on separate real devices.",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  {
+    "blocker": "Usability sessions",
+    "id": "EXT-UI-002",
+    "impact": "Cannot claim user-tested UI flows.",
+    "required_action": "Schedule participant sessions and collect findings.",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  {
+    "blocker": "Manual accessibility review",
+    "id": "EXT-UI-003",
+    "impact": "Cannot claim manual accessibility validation.",
+    "required_action": "Perform screen-reader and keyboard validation.",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  {
+    "blocker": "Operations backend wiring",
+    "id": "EXT-UI-004",
+    "impact": "Operations portal still uses local prototype data for queue items.",
+    "required_action": "Connect ops sections to governed backend APIs.",
+    "status": "PARTIAL"
+  },
+  {
+    "blocker": "Visual regression harness",
+    "id": "EXT-UI-005",
+    "impact": "No automated screenshot diff evidence yet.",
+    "required_action": "Add and run a deterministic visual regression suite.",
+    "status": "PARTIAL"
+  }
+]

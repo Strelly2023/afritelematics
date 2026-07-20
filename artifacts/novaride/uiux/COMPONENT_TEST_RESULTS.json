@@ -1,0 +1,11 @@
+{
+  "details": {
+    "failed": 0,
+    "passed": 3,
+    "rendered_component": "ResilienceAvailabilityWindow"
+  },
+  "status": "PASS",
+  "validation": [
+    "node --test apps/novaride-operations/tests/operations.test.js"
+  ]
+}

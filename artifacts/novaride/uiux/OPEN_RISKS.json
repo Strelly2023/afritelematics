@@ -1,0 +1,6 @@
+[
+  "The rider and driver apps remain test-mode aware in development; production builds must keep mock providers disabled.",
+  "The operations portal now renders as a real React component, but its queue data is still local prototype data.",
+  "Dedicated browser automation, accessibility automation, and visual regression are not yet part of this repo slice.",
+  "Physical-device validation and participant usability evidence remain external gates."
+]

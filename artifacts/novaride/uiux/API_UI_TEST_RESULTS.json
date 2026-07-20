@@ -1,0 +1,8 @@
+{
+  "details": "API-connected rider and driver flows passed local validation; browser-level integration tests are still pending",
+  "status": "PARTIAL",
+  "validation": [
+    "pytest -q rider_app/tests driver_app/tests",
+    "node --test apps/novaride-operations/tests/operations.test.js"
+  ]
+}

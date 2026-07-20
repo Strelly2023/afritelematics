@@ -1,0 +1,136 @@
+[
+  {
+    "flow": "Rider onboarding",
+    "status": "API_CONNECTED",
+    "steps": [
+      "Launch",
+      "Language",
+      "Phone/email",
+      "OTP",
+      "Terms/privacy",
+      "Profile",
+      "Emergency contact",
+      "Accessibility prefs",
+      "Payment method or cash",
+      "Location permission",
+      "Home"
+    ]
+  },
+  {
+    "flow": "Rider booking to receipt",
+    "status": "API_CONNECTED",
+    "steps": [
+      "Confirm pickup",
+      "Enter destination",
+      "Ride category",
+      "Fare and ETA",
+      "Payment method",
+      "Trip preferences",
+      "Confirm booking",
+      "Searching",
+      "Driver assigned",
+      "Pickup",
+      "Trip",
+      "Payment",
+      "Receipt"
+    ]
+  },
+  {
+    "flow": "Rider cancellation and no-show",
+    "status": "PARTIALLY_CONNECTED",
+    "steps": [
+      "Cancel",
+      "Reason",
+      "Fee explanation",
+      "Confirm",
+      "Refund or charge status",
+      "Rebook or support"
+    ]
+  },
+  {
+    "flow": "Rider safety",
+    "status": "PARTIALLY_CONNECTED",
+    "steps": [
+      "Safety center",
+      "SOS",
+      "Trip share",
+      "Trusted contacts",
+      "Incident report",
+      "Operator acknowledgement"
+    ]
+  },
+  {
+    "flow": "Driver onboarding",
+    "status": "API_CONNECTED",
+    "steps": [
+      "Contact verification",
+      "Identity",
+      "Licence",
+      "Background check",
+      "Vehicle",
+      "Insurance",
+      "Inspection",
+      "Payout",
+      "Training",
+      "Agreements",
+      "Review",
+      "Decision"
+    ]
+  },
+  {
+    "flow": "Driver readiness and dispatch",
+    "status": "API_CONNECTED",
+    "steps": [
+      "Readiness check",
+      "Vehicle selection",
+      "Document validation",
+      "Device integrity",
+      "GPS",
+      "Network",
+      "Battery",
+      "Service area",
+      "Compliance",
+      "Go online",
+      "Ride request",
+      "Accept/reject",
+      "Navigate",
+      "Arrive",
+      "PIN",
+      "Start trip",
+      "Complete trip"
+    ]
+  },
+  {
+    "flow": "Driver earnings and payout",
+    "status": "API_CONNECTED",
+    "steps": [
+      "Earnings summary",
+      "Trip earnings",
+      "Fees",
+      "Incentives",
+      "Tips",
+      "Adjustments",
+      "Cash reconciliation",
+      "Available balance",
+      "Payout",
+      "Settlement tracking",
+      "Dispute"
+    ]
+  },
+  {
+    "flow": "Operations incident/support/evidence",
+    "status": "PARTIALLY_CONNECTED",
+    "steps": [
+      "Alert",
+      "Assess",
+      "Assign commander",
+      "Mitigate",
+      "Communicate",
+      "Recover",
+      "Verify",
+      "Support resolution",
+      "Refund or adjustment",
+      "Evidence preservation"
+    ]
+  }
+]

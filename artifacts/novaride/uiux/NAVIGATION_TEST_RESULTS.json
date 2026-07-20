@@ -1,0 +1,8 @@
+{
+  "details": "navigation surfaces are validated by app-surface tests and rendered ops tabs; dedicated full navigation automation is still pending",
+  "status": "PARTIAL",
+  "validation": [
+    "pytest -q rider_app/tests driver_app/tests",
+    "node --test apps/novaride-operations/tests/operations.test.js"
+  ]
+}

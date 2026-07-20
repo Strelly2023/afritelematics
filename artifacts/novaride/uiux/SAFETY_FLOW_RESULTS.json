@@ -1,0 +1,18 @@
+{
+  "coverage": [
+    "SOS",
+    "trip share",
+    "trusted contacts",
+    "incident queue",
+    "evidence preservation"
+  ],
+  "notes": [
+    "safety UX is present across rider, driver, and ops surfaces",
+    "human emergency response remains external"
+  ],
+  "status": "PARTIALLY_CONNECTED",
+  "validation": [
+    "rider and driver app surface tests",
+    "operations portal render tests"
+  ]
+}

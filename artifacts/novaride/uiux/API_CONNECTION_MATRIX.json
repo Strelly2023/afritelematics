@@ -1,0 +1,285 @@
+[
+  {
+    "api_endpoint": "/v1/auth/login",
+    "audit_event": "auth.login.succeeded",
+    "authorization": "public sign-in",
+    "empty_state": "Enter credentials",
+    "error_state": "Sign in failed",
+    "loading_state": "Signing in",
+    "offline_behavior": "block sign-in",
+    "request": {
+      "email": "string",
+      "password": "string"
+    },
+    "response": {
+      "identity": "rider",
+      "token": "string"
+    },
+    "retry": "Continue",
+    "role": "rider",
+    "screen": "RiderLoginScreen",
+    "telemetry": "auth.login"
+  },
+  {
+    "api_endpoint": "/v1/rider/home",
+    "audit_event": "rider.home.viewed",
+    "authorization": "bearer token",
+    "empty_state": "No active ride yet",
+    "error_state": "Home unavailable",
+    "loading_state": "Loading home",
+    "offline_behavior": "show cached ride summary",
+    "request": {
+      "rider_id": "string"
+    },
+    "response": {
+      "active_ride": "object",
+      "saved_places": "array"
+    },
+    "retry": "Refresh",
+    "role": "rider",
+    "screen": "RiderHomeScreen",
+    "telemetry": "rider.home.loaded"
+  },
+  {
+    "api_endpoint": "/v1/rider/rides",
+    "audit_event": "ride.request.created",
+    "authorization": "bearer token",
+    "empty_state": "Choose pickup and destination",
+    "error_state": "Request failed",
+    "loading_state": "Requesting",
+    "offline_behavior": "queue request for sync",
+    "request": {
+      "dropoff": "string",
+      "pickup": "string",
+      "ride_type": "string"
+    },
+    "response": {
+      "quoted_total": "string",
+      "ride_id": "string",
+      "status": "requested"
+    },
+    "retry": "Request ride again",
+    "role": "rider",
+    "screen": "BookingScreen",
+    "telemetry": "ride.requested"
+  },
+  {
+    "api_endpoint": "/v1/rider/rides/{ride_id}",
+    "audit_event": "ride.status.viewed",
+    "authorization": "bearer token",
+    "empty_state": "Waiting for assignment",
+    "error_state": "Status unavailable",
+    "loading_state": "Refreshing ride",
+    "offline_behavior": "show last known state",
+    "request": {
+      "ride_id": "string"
+    },
+    "response": {
+      "driver_name": "string",
+      "eta_text": "string",
+      "status": "string"
+    },
+    "retry": "Reload",
+    "role": "rider",
+    "screen": "LiveTrackingScreen",
+    "telemetry": "ride.status.poll"
+  },
+  {
+    "api_endpoint": "/v1/rider/rides/{ride_id}/price-explanation",
+    "audit_event": "fare.explanation.viewed",
+    "authorization": "bearer token",
+    "empty_state": "No fare yet",
+    "error_state": "Explanation unavailable",
+    "loading_state": "Loading fare explanation",
+    "offline_behavior": "use last quote",
+    "request": {
+      "ride_id": "string"
+    },
+    "response": {
+      "line_items": "array",
+      "price_explanation": "string"
+    },
+    "retry": "Retry explanation",
+    "role": "rider",
+    "screen": "PriceExplanationScreen",
+    "telemetry": "fare.explained"
+  },
+  {
+    "api_endpoint": "/v1/rider/rides/{ride_id}/receipt",
+    "audit_event": "receipt.opened",
+    "authorization": "bearer token",
+    "empty_state": "Receipt not ready",
+    "error_state": "Receipt unavailable",
+    "loading_state": "Loading receipt",
+    "offline_behavior": "show cached receipt",
+    "request": {
+      "ride_id": "string"
+    },
+    "response": {
+      "receipt_id": "string",
+      "total_text": "string",
+      "verification_status": "string"
+    },
+    "retry": "Reload receipt",
+    "role": "rider",
+    "screen": "ReceiptScreen",
+    "telemetry": "receipt.viewed"
+  },
+  {
+    "api_endpoint": "/v1/rider/rides/{ride_id}/replay",
+    "audit_event": "replay.opened",
+    "authorization": "bearer token",
+    "empty_state": "Replay not yet available",
+    "error_state": "Replay unavailable",
+    "loading_state": "Loading replay",
+    "offline_behavior": "show stored replay package",
+    "request": {
+      "ride_id": "string"
+    },
+    "response": {
+      "replay_id": "string",
+      "replay_verified": "boolean"
+    },
+    "retry": "Reload replay",
+    "role": "rider",
+    "screen": "ReplayScreen",
+    "telemetry": "replay.viewed"
+  },
+  {
+    "api_endpoint": "/v1/auth/login",
+    "audit_event": "auth.login.succeeded",
+    "authorization": "public sign-in",
+    "empty_state": "Enter credentials",
+    "error_state": "Sign in failed",
+    "loading_state": "Signing in",
+    "offline_behavior": "block sign-in",
+    "request": {
+      "email": "string",
+      "password": "string"
+    },
+    "response": {
+      "identity": "driver",
+      "token": "string"
+    },
+    "retry": "Continue",
+    "role": "driver",
+    "screen": "DriverLoginScreen",
+    "telemetry": "auth.login"
+  },
+  {
+    "api_endpoint": "/v1/driver/{driver_id}/availability",
+    "audit_event": "driver.availability.viewed",
+    "authorization": "bearer token",
+    "empty_state": "Start shift first",
+    "error_state": "Availability unavailable",
+    "loading_state": "Loading availability",
+    "offline_behavior": "show offline until sync",
+    "request": {
+      "driver_id": "string"
+    },
+    "response": {
+      "status": "available|offline"
+    },
+    "retry": "Retry availability",
+    "role": "driver",
+    "screen": "DriverHomeScreen",
+    "telemetry": "driver.availability.loaded"
+  },
+  {
+    "api_endpoint": "/v1/driver/{driver_id}/ride-queue",
+    "audit_event": "ride.queue.viewed",
+    "authorization": "bearer token",
+    "empty_state": "No requests",
+    "error_state": "Queue unavailable",
+    "loading_state": "Loading requests",
+    "offline_behavior": "cache last queue",
+    "request": {
+      "driver_id": "string"
+    },
+    "response": {
+      "items": "array"
+    },
+    "retry": "Refresh queue",
+    "role": "driver",
+    "screen": "RideRequestsScreen",
+    "telemetry": "ride.queue.loaded"
+  },
+  {
+    "api_endpoint": "/v1/driver/rides/{ride_id}/arrive|start|complete",
+    "audit_event": "driver.trip.updated",
+    "authorization": "bearer token",
+    "empty_state": "No active trip",
+    "error_state": "Trip update failed",
+    "loading_state": "Updating trip",
+    "offline_behavior": "queue command for sync",
+    "request": {
+      "driver_id": "string",
+      "ride_id": "string"
+    },
+    "response": {
+      "status": "trip state"
+    },
+    "retry": "Retry update",
+    "role": "driver",
+    "screen": "TripLifecycleScreen",
+    "telemetry": "driver.trip.transition"
+  },
+  {
+    "api_endpoint": "/v1/driver/{driver_id}/earnings",
+    "audit_event": "earnings.opened",
+    "authorization": "bearer token",
+    "empty_state": "No earnings yet",
+    "error_state": "Earnings unavailable",
+    "loading_state": "Loading earnings",
+    "offline_behavior": "show cached balance",
+    "request": {
+      "driver_id": "string"
+    },
+    "response": {
+      "ride_count": "number",
+      "total_text": "string"
+    },
+    "retry": "Refresh earnings",
+    "role": "driver",
+    "screen": "EarningsScreen",
+    "telemetry": "earnings.viewed"
+  },
+  {
+    "api_endpoint": "/v1/driver/{driver_id}/replay-history",
+    "audit_event": "driver.replay.history.opened",
+    "authorization": "bearer token",
+    "empty_state": "No replays yet",
+    "error_state": "Replay history unavailable",
+    "loading_state": "Loading replay history",
+    "offline_behavior": "show cached replay history",
+    "request": {
+      "driver_id": "string"
+    },
+    "response": {
+      "items": "array"
+    },
+    "retry": "Reload history",
+    "role": "driver",
+    "screen": "ReplayHistoryScreen",
+    "telemetry": "driver.replay.viewed"
+  },
+  {
+    "api_endpoint": "prototype-local-state",
+    "audit_event": "operations.viewed",
+    "authorization": "desktop operator",
+    "empty_state": "No queue selected",
+    "error_state": "Prototype unavailable",
+    "loading_state": "Rendering prototype",
+    "offline_behavior": "local prototype only; no backend dependency yet",
+    "request": {
+      "section": "overview|incidents|safety|support|payments|evidence"
+    },
+    "response": {
+      "status_cards": "array"
+    },
+    "retry": "Switch section",
+    "role": "operations",
+    "screen": "ResilienceAvailabilityWindow",
+    "telemetry": "operations.section.viewed"
+  }
+]

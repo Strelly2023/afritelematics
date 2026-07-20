@@ -1,0 +1,38 @@
+[
+  {
+    "navigation": [
+      "Home",
+      "Trips",
+      "Wallet",
+      "Safety",
+      "Receipts",
+      "Profile"
+    ],
+    "note": "bottom tabs in rider app, plus booking stages and support entry points",
+    "role": "rider"
+  },
+  {
+    "navigation": [
+      "Dashboard",
+      "Requests",
+      "Active Trip",
+      "Earnings",
+      "Profile",
+      "More"
+    ],
+    "note": "driver tabs keep dispatch and earnings visible",
+    "role": "driver"
+  },
+  {
+    "navigation": [
+      "Overview",
+      "Incidents",
+      "Safety",
+      "Support",
+      "Payments",
+      "Evidence"
+    ],
+    "note": "section tabs in operations portal",
+    "role": "operations"
+  }
+]

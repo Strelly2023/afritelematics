@@ -1,0 +1,22 @@
+{
+  "coverage": [
+    "onboarding",
+    "readiness",
+    "dispatch",
+    "pickup",
+    "trip lifecycle",
+    "earnings",
+    "payout",
+    "support",
+    "safety"
+  ],
+  "notes": [
+    "real API clients and pilot evidence hooks present",
+    "offline queueing is coded for availability and trip commands"
+  ],
+  "status": "API_CONNECTED",
+  "validation": [
+    "pytest -q driver_app/tests",
+    "npm run typecheck --prefix driver_app"
+  ]
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "action": "Run rider and driver journeys on real devices and record device IDs, OS versions, and evidence.",
+    "gap": "physical_device_validation",
+    "owner": "mobile release / pilot operations",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  {
+    "action": "Run rider, driver, support, operations, and safety usability sessions.",
+    "gap": "usability_sessions",
+    "owner": "product / research",
+    "status": "BLOCKED_EXTERNAL"
+  },
+  {
+    "action": "Perform keyboard, screen-reader, and low-vision review for the rider, driver, and ops surfaces.",
+    "gap": "manual_accessibility_review",
+    "owner": "design / accessibility",
+    "status": "PARTIAL"
+  },
+  {
+    "action": "Add deterministic screenshot testing for stable non-map states.",
+    "gap": "visual_regression_harness",
+    "owner": "frontend engineering",
+    "status": "PARTIAL"
+  },
+  {
+    "action": "Connect the operations portal prototype to a governed backend API instead of local queue data.",
+    "gap": "operations_backend_wiring",
+    "owner": "operations engineering",
+    "status": "PARTIAL"
+  },
+  {
+    "action": "Keep mock fallbacks out of production builds and hard-fail on release-channel mock configuration.",
+    "gap": "production_mock_guard",
+    "owner": "mobile platform",
+    "status": "PARTIAL"
+  }
+]

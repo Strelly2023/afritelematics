@@ -1,0 +1,117 @@
+[
+  {
+    "component": "packages/novatech-design-system/src/index.ts",
+    "note": "semantic colors, interaction states, navigation groups, and content guidance",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/PrimaryButton.tsx",
+    "note": "touch-safe primary CTA",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/Field.tsx",
+    "note": "form field with accessible labeling",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/SurfacePanel.tsx",
+    "note": "surface container used throughout rider app",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/BottomTabs.tsx",
+    "note": "role-specific tab navigation",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/ProductTabs.tsx",
+    "note": "product category switching",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/TrustScoreCard.tsx",
+    "note": "trust and verification summary",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/MapPreviewCard.tsx",
+    "note": "map alternative and trip preview",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/LifecycleTimeline.tsx",
+    "note": "state progression display",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/HumanReceiptCard.tsx",
+    "note": "receipt summary card",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/EvidenceSummaryCard.tsx",
+    "note": "evidence summary and replay references",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/VerificationStatusCard.tsx",
+    "note": "verification and trust status",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/PaymentVerificationCard.tsx",
+    "note": "payment verification state",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "rider_app/ui/widgets/TrustBadge.tsx",
+    "note": "compact trust indicator",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/PrimaryButton.tsx",
+    "note": "shared action button",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/BottomTabs.tsx",
+    "note": "driver role navigation",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/DriverNavigationMap.tsx",
+    "note": "pickup navigation aid",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/DriverReputationCard.tsx",
+    "note": "driver rating and reputation",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/TrustScoreCard.tsx",
+    "note": "trust summary",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/LifecycleTimeline.tsx",
+    "note": "trip progression and replay view",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "driver_app/ui/widgets/HumanReceiptCard.tsx",
+    "note": "earnings and receipt summary",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "apps/novaride-operations/src/ResilienceAvailabilityWindow.js",
+    "note": "interactive operations prototype with local state",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "component": "apps/novaride-operations/src/operationsModel.js",
+    "note": "section and queue data model",
+    "status": "STATE_COMPLETE"
+  }
+]

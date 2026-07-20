@@ -1,0 +1,21 @@
+{
+  "coverage": [
+    "onboarding",
+    "booking",
+    "pickup",
+    "active trip",
+    "payment",
+    "receipt",
+    "support",
+    "safety"
+  ],
+  "notes": [
+    "real API clients present",
+    "offline recovery is coded for rider requests and ride state"
+  ],
+  "status": "API_CONNECTED",
+  "validation": [
+    "pytest -q rider_app/tests",
+    "npm run typecheck --prefix rider_app"
+  ]
+}

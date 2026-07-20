@@ -1,0 +1,8 @@
+{
+  "artifact": "apps/novaride-operations/dist",
+  "status": "PASS",
+  "validation": [
+    "npm run typecheck --prefix apps/novaride-operations",
+    "npm run build --prefix apps/novaride-operations"
+  ]
+}

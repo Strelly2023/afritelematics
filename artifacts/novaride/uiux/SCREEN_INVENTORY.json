@@ -1,0 +1,226 @@
+[
+  {
+    "app": "rider_app",
+    "note": "real auth + session recovery",
+    "screen": "RiderLoginScreen",
+    "source": "rider_app/ui/screens/RiderLoginScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "booking actions, trust indicators, sync banner",
+    "screen": "RiderHomeScreen",
+    "source": "rider_app/ui/screens/RiderHomeScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "booking, fare, and destination flow",
+    "screen": "BookingScreen",
+    "source": "rider_app/ui/screens/BookingScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "trip state and driver location tracking",
+    "screen": "LiveTrackingScreen",
+    "source": "rider_app/ui/screens/LiveTrackingScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "pickup wait and no-show handling",
+    "screen": "WaitingForDriverScreen",
+    "source": "rider_app/ui/screens/WaitingForDriverScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "fare breakdown and explanation",
+    "screen": "PriceExplanationScreen",
+    "source": "rider_app/ui/screens/PriceExplanationScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "driver identity, vehicle, ETA, and PIN",
+    "screen": "DriverAssignedScreen",
+    "source": "rider_app/ui/screens/DriverAssignedScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "receipt and evidence reference",
+    "screen": "ReceiptScreen",
+    "source": "rider_app/ui/screens/ReceiptScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "wallet presentation present; payment backends vary by environment",
+    "screen": "WalletScreen",
+    "source": "rider_app/ui/screens/WalletScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "trip history and status",
+    "screen": "ActivityScreen",
+    "source": "rider_app/ui/screens/ActivityScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "ride evidence and replay references",
+    "screen": "EvidenceScreen",
+    "source": "rider_app/ui/screens/EvidenceScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "trip replay flow",
+    "screen": "ReplayScreen",
+    "source": "rider_app/ui/screens/ReplayScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "booking confirmation",
+    "screen": "RideConfirmationScreen",
+    "source": "rider_app/ui/screens/RideConfirmationScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "profile and identity settings present; not all backend actions validated here",
+    "screen": "RiderProfileScreen",
+    "source": "rider_app/ui/screens/RiderProfileScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "trust score and verification surfaces",
+    "screen": "RiderTrustPanelScreen",
+    "source": "rider_app/ui/screens/RiderTrustPanelScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "historical trips and support entry points",
+    "screen": "RideHistoryScreen",
+    "source": "rider_app/ui/screens/RideHistoryScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "rider_app",
+    "note": "notification surfacing present; push validation pending",
+    "screen": "RiderNotificationsScreen",
+    "source": "rider_app/ui/screens/RiderNotificationsScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "auth + session recovery",
+    "screen": "DriverLoginScreen",
+    "source": "driver_app/ui/screens/DriverLoginScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "readiness, availability, and shift gating",
+    "screen": "DriverHomeScreen",
+    "source": "driver_app/ui/screens/DriverHomeScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "go online/offline state transitions",
+    "screen": "AvailabilityScreen",
+    "source": "driver_app/ui/screens/AvailabilityScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "accept/reject request actions",
+    "screen": "RideRequestsScreen",
+    "source": "driver_app/ui/screens/RideRequestsScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "arrive/start/complete trip state machine",
+    "screen": "TripLifecycleScreen",
+    "source": "driver_app/ui/screens/TripLifecycleScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "earnings, payout, and reconciliation surfaces",
+    "screen": "EarningsScreen",
+    "source": "driver_app/ui/screens/EarningsScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "vehicle status UI present; backend verification varies",
+    "screen": "VehicleManagementScreen",
+    "source": "driver_app/ui/screens/VehicleManagementScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "trust, evidence, and reputation surfaces",
+    "screen": "DriverTrustProfileScreen",
+    "source": "driver_app/ui/screens/DriverTrustProfileScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "replay history and proof traces",
+    "screen": "ReplayHistoryScreen",
+    "source": "driver_app/ui/screens/ReplayHistoryScreen.tsx",
+    "status": "API_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "device, API, and network diagnostics; some checks are environment-bound",
+    "screen": "DiagnosticsScreen",
+    "source": "driver_app/ui/screens/DiagnosticsScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "profile and account flows present",
+    "screen": "DriverProfileScreen",
+    "source": "driver_app/ui/screens/DriverProfileScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "notifications shown; device push validation pending",
+    "screen": "DriverNotificationsScreen",
+    "source": "driver_app/ui/screens/DriverNotificationsScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "fleet trust, pilot evidence, and replay exception dashboard",
+    "screen": "OperatorDashboardScreen",
+    "source": "driver_app/ui/screens/OperatorDashboardScreen.tsx",
+    "status": "PARTIALLY_CONNECTED"
+  },
+  {
+    "app": "driver_app",
+    "note": "request card and acceptance surface",
+    "screen": "IncomingRideModal",
+    "source": "driver_app/ui/screens/IncomingRideModal.tsx",
+    "status": "STATE_COMPLETE"
+  },
+  {
+    "app": "apps/novaride-operations",
+    "note": "interactive prototype with local state; backend API wiring remains pending",
+    "screen": "ResilienceAvailabilityWindow",
+    "source": "apps/novaride-operations/src/ResilienceAvailabilityWindow.js",
+    "status": "PARTIALLY_CONNECTED"
+  }
+]

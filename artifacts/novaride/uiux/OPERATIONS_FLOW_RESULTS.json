@@ -1,0 +1,20 @@
+{
+  "coverage": [
+    "overview",
+    "incidents",
+    "safety",
+    "support",
+    "payments",
+    "evidence"
+  ],
+  "notes": [
+    "interactive local prototype now renders and tests as a real React component",
+    "backend API wiring is still pending"
+  ],
+  "status": "PARTIALLY_CONNECTED",
+  "validation": [
+    "node --test apps/novaride-operations/tests/operations.test.js",
+    "npm run typecheck --prefix apps/novaride-operations",
+    "npm run build --prefix apps/novaride-operations"
+  ]
+}

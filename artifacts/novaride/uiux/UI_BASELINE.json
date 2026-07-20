@@ -1,0 +1,90 @@
+{
+  "branch": "feature/novacodepro-unified-platform",
+  "current_api_clients": [
+    "rider_app/core/api",
+    "driver_app/core/api"
+  ],
+  "current_driver_app_location": "driver_app",
+  "current_mobile_navigation_structure": {
+    "driver": [
+      "Dashboard",
+      "Requests",
+      "Active Trip",
+      "Earnings",
+      "Profile",
+      "More"
+    ],
+    "operations": [
+      "Overview",
+      "Incidents",
+      "Safety",
+      "Support",
+      "Payments",
+      "Evidence"
+    ],
+    "rider": [
+      "Home",
+      "Trips",
+      "Wallet",
+      "Safety",
+      "Receipts",
+      "Profile"
+    ]
+  },
+  "current_operations_portal_location": "apps/novaride-operations",
+  "current_rider_app_location": "rider_app",
+  "current_shared_component_libraries": [
+    "packages/novatech-design-system",
+    "rider_app/ui/widgets",
+    "driver_app/ui/widgets"
+  ],
+  "local_sha": "0ebce8bc57f568033f48035ac16a74562dff17e4",
+  "modified_files_sample": [
+    ".gitignore",
+    "afriride_system/django_app/apps/afripay/middleware.py",
+    "afritech/api/app.py",
+    "afritech/api/novaid_api.py",
+    "afritech/ci/afripay_concurrency_validator.py",
+    "afritech/novaid/__init__.py",
+    "afritech/novaid/ai.py",
+    "afritech/novaid/repository.py",
+    "afritech/novaid/service.py",
+    "afritech/novaid/surfaces.py",
+    "afritech/novaid/trust.py",
+    "afritech/novaride_runtime/common/idempotency.py",
+    "afritech/novaride_runtime/config.py",
+    "afritech/novaride_runtime/events/hashing.py",
+    "afritech/novaride_runtime/events/outbox.py",
+    "afritech/novaride_runtime/events/outbox_worker.py",
+    "afritech/novaride_runtime/events/replay.py",
+    "afritech/novaride_runtime/events/replay_planner.py",
+    "afritech/novaride_runtime/events/replay_verifier.py",
+    "afritech/novaride_runtime/events/schema_registry.py"
+  ],
+  "remote_sha": "0ebce8bc57f568033f48035ac16a74562dff17e4",
+  "repository": "/Users/ostrinov/afritelematics",
+  "timestamp_utc": "2026-07-20T00:50:09.269547+00:00",
+  "untracked_files_sample": [
+    "NOVAID_KNOWN_LIMITATIONS.md",
+    "NOVAID_NEXT_ACTIONS.md",
+    "NOVAID_OPERATIONAL_BLOCKERS.md",
+    "afritech/api/novaid_audit_replay_api.py",
+    "afritech/novaid/api.py",
+    "afritech/novaid/application/",
+    "afritech/novaid/audit_replay.py",
+    "afritech/novaid/config.py",
+    "afritech/novaid/domain/",
+    "afritech/novaid/observability.py",
+    "afritech/novaid/outbox.py",
+    "afritech/novaid/persistence/",
+    "afritech/novaid/revocation.py",
+    "afritech/novaid/revocation_delivery.py",
+    "afritech/novaid/runtime.py",
+    "afritech/novaid/security.py",
+    "afritech/novaid/server.py",
+    "afritech/novaid/tokens.py",
+    "afritech/novaid/webauthn_delivery.py",
+    "apk-public/novaride/releases/2026.1.4/novaride-driver-v2026.1.4-public-pilot.apk.sha256"
+  ],
+  "worktree_state": "dirty-with-pre-existing-changes"
+}
