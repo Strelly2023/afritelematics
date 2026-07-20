@@ -7,10 +7,19 @@ const NAV_ITEMS = [
   { id: "overview", label: "Overview" },
   { id: "requests", label: "Requests" },
   { id: "blueprints", label: "Blueprints" },
+  { id: "requirements", label: "Requirements" },
+  { id: "lifecycle", label: "Lifecycle" },
+  { id: "workflows", label: "Workflows" },
+  { id: "releases", label: "Releases" },
   { id: "archetypes", label: "Archetypes" },
   { id: "phases", label: "Phases" },
   { id: "traceability", label: "Traceability" },
+  { id: "reports", label: "Reports" },
+  { id: "search", label: "Search" },
+  { id: "cross-product", label: "Cross-Product" },
+  { id: "migrations", label: "Migrations" },
   { id: "evidence", label: "Evidence" },
+  { id: "prr", label: "PRR" },
   { id: "gates", label: "Gates" },
   { id: "improvements", label: "Improvements" },
   { id: "demo", label: "Demo Product" },
@@ -141,15 +150,32 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
   const [gaps, setGaps] = useState(null);
   const [requests, setRequests] = useState([]);
   const [blueprints, setBlueprints] = useState([]);
+  const [requirements, setRequirements] = useState([]);
+  const [lifecycleTemplates, setLifecycleTemplates] = useState([]);
+  const [lifecycles, setLifecycles] = useState([]);
+  const [workflowDefinitions, setWorkflowDefinitions] = useState([]);
+  const [releases, setReleases] = useState([]);
   const [archetypes, setArchetypes] = useState([]);
   const [phases, setPhases] = useState([]);
   const [traceability, setTraceability] = useState(null);
+  const [traceabilityLinks, setTraceabilityLinks] = useState([]);
+  const [traceabilityCoverage, setTraceabilityCoverage] = useState(null);
+  const [traceabilityGaps, setTraceabilityGaps] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [searchResult, setSearchResult] = useState(null);
+  const [crossProductGraph, setCrossProductGraph] = useState(null);
+  const [migrations, setMigrations] = useState([]);
+  const [prr, setPrr] = useState(null);
   const [evidence, setEvidence] = useState([]);
   const [gates, setGates] = useState([]);
   const [improvements, setImprovements] = useState([]);
   const [audit, setAudit] = useState([]);
   const [selectedRequestId, setSelectedRequestId] = useState("");
   const [selectedBlueprintId, setSelectedBlueprintId] = useState("");
+  const [selectedRequirementId, setSelectedRequirementId] = useState("");
+  const [selectedLifecycleId, setSelectedLifecycleId] = useState("");
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState("");
+  const [selectedReleaseId, setSelectedReleaseId] = useState("");
   const [selectedArchetypeId, setSelectedArchetypeId] = useState("");
   const [selectedPhaseId, setSelectedPhaseId] = useState("");
   const [selectedGateId, setSelectedGateId] = useState("");
@@ -172,6 +198,28 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
     technology_profile: "React, FastAPI, SQLite/Postgres-ready",
     delivery_strategy: "Iterative delivery with approval gates",
     status: "Draft",
+  });
+  const [requirementDraft, setRequirementDraft] = useState({
+    class: "Functional",
+    title: "Trace requirement",
+    statement: "The factory shall maintain governed traceability.",
+    mandatory_for_ga: true,
+  });
+  const [lifecycleDraft, setLifecycleDraft] = useState({
+    name: "Standard Product Lifecycle",
+    description: "Governed end-to-end product lifecycle.",
+  });
+  const [workflowDraft, setWorkflowDraft] = useState({
+    name: "Approval workflow",
+    description: "Separated-duties approval workflow.",
+  });
+  const [releaseDraft, setReleaseDraft] = useState({
+    name: "Product release",
+  });
+  const [migrationDraft, setMigrationDraft] = useState({
+    source_system: "legacy-products",
+    target_system: "product-factory",
+    mode: "dry-run",
   });
   const [evidenceDraft, setEvidenceDraft] = useState({ title: "Evidence record", type: "artifact", result: "PASS" });
   const [gateDraft, setGateDraft] = useState({ name: "Product Gate", decision: "Deferred", role: "PRODUCT_MANAGER" });
@@ -207,20 +255,47 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
           client.listImprovements(),
           client.listAudit(),
         ]);
+      const [requirementsBody, lifecycleTemplatesBody, releasesBody, workflowDefinitionsBody, traceabilityLinksBody, coverageBody, gapsBody2, reportsBody, crossProductBody, migrationBody] =
+        await Promise.all([
+          client.listRequirements(),
+          client.listLifecycleTemplates(),
+          client.listReleases(),
+          client.listWorkflowDefinitions(),
+          client.listTraceabilityLinks(),
+          client.getTraceabilityCoverage(),
+          client.getTraceabilityGaps(),
+          client.reportCatalog(),
+          client.getCrossProductGraph(),
+          client.listMigrations(),
+        ]);
       setOverview(overviewBody);
       setInventory(inventoryBody);
       setGaps(gapsBody);
       setRequests(requestBody?.requests || []);
       setBlueprints(blueprintBody?.blueprints || []);
+      setRequirements(requirementsBody?.requirements || []);
+      setLifecycleTemplates(lifecycleTemplatesBody?.templates || []);
+      setReleases(releasesBody?.releases || []);
+      setWorkflowDefinitions(workflowDefinitionsBody?.definitions || []);
       setArchetypes(archetypeBody?.archetypes || []);
       setPhases(phaseBody?.phases || []);
       setTraceability(traceBody);
+      setTraceabilityLinks(traceabilityLinksBody?.links || []);
+      setTraceabilityCoverage(coverageBody);
+      setTraceabilityGaps(gapsBody2);
+      setReports(reportsBody?.reports || []);
+      setCrossProductGraph(crossProductBody);
+      setMigrations(migrationBody?.migrations || []);
       setEvidence(evidenceBody?.evidence || []);
       setGates(gateBody?.gates || []);
       setImprovements(improvementBody?.improvements || []);
       setAudit(auditBody?.audit || []);
       setSelectedRequestId((requestBody?.requests || [])[0]?.id || "");
       setSelectedBlueprintId((blueprintBody?.blueprints || [])[0]?.id || "");
+      setSelectedRequirementId((requirementsBody?.requirements || [])[0]?.id || "");
+      setSelectedLifecycleId((lifecycleTemplatesBody?.templates || [])[0]?.id || "");
+      setSelectedWorkflowId((workflowDefinitionsBody?.definitions || [])[0]?.id || "");
+      setSelectedReleaseId((releasesBody?.releases || [])[0]?.id || "");
       setSelectedArchetypeId((archetypeBody?.archetypes || [])[0]?.id || "");
       setSelectedPhaseId((phaseBody?.phases || [])[0]?.id || "");
       setSelectedGateId((gateBody?.gates || [])[0]?.id || "");
@@ -266,6 +341,62 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
     await reload();
   }
 
+  async function createRequirement() {
+    if (!selectedBlueprintId) return;
+    await client.createRequirement({
+      ...requirementDraft,
+      product_id: overview?.summary?.requests ? "product-factory" : "product-factory",
+      blueprint_id: selectedBlueprintId,
+      status: "Draft",
+      implementation_links: [],
+      test_links: [],
+      evidence_links: [],
+      release_links: [],
+    });
+    await reload();
+  }
+
+  async function createLifecycle() {
+    if (!selectedRequestId) return;
+    await client.createLifecycle(selectedRequestId, {
+      ...lifecycleDraft,
+      phases: phases.map((phase) => phase.name),
+    });
+    await reload();
+  }
+
+  async function createWorkflow() {
+    await client.createWorkflowDefinition({
+      ...workflowDraft,
+      steps: ["review", "approve", "execute", "verify"],
+      roles: ["PRODUCT_MANAGER", "ARCHITECT", "QA_ENGINEER"],
+      approvals: ["independent approval"],
+      quorum: 1,
+    });
+    await reload();
+  }
+
+  async function createReleaseRecord() {
+    await client.createRelease({
+      ...releaseDraft,
+      product_id: "product-factory",
+      candidate_id: selectedBlueprintId || undefined,
+      blueprint_version_id: selectedBlueprintId || undefined,
+      status: "Draft",
+    });
+    await reload();
+  }
+
+  async function createMigrationRecord() {
+    await client.createMigration({
+      ...migrationDraft,
+      product_id: "product-factory",
+      counts: { source: 1, target: 1 },
+      evidence: [],
+    });
+    await reload();
+  }
+
   async function approveBlueprint() {
     if (!selectedBlueprintId) return;
     await client.approveBlueprint(selectedBlueprintId, { evidence: [selectedBlueprintId] });
@@ -293,6 +424,45 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
       manifest: { product: "novacodepro", scope: "product-factory" },
     });
     await reload();
+  }
+
+  async function createRequirementTraceLink() {
+    if (!selectedRequirementId || !selectedBlueprintId) return;
+    await client.createTraceabilityLink({
+      source_entity_type: "requirement",
+      source_entity_id: selectedRequirementId,
+      target_entity_type: "blueprint",
+      target_entity_id: selectedBlueprintId,
+      relationship_type: "supports",
+      product_id: "product-factory",
+      product_version: "1",
+      status: "DRAFT",
+      provenance: "portal",
+      confidence: "1.0",
+      evidence: [selectedBlueprintId],
+    });
+    await reload();
+  }
+
+  async function runTraceabilityValidation() {
+    await client.validateTraceability();
+    await reload();
+  }
+
+  async function runReleaseEvaluation() {
+    if (!selectedReleaseId) return;
+    await client.evaluateRelease(selectedReleaseId);
+    await reload();
+  }
+
+  async function createPrr() {
+    if (!selectedReleaseId) return;
+    await client.exportPrr(selectedReleaseId);
+    await reload();
+  }
+
+  async function searchFactory() {
+    setSearchResult(await client.searchPost({ query: requestDraft.product_name || "factory", product: "product-factory" }));
   }
 
   async function createGate() {
@@ -450,6 +620,81 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
         </div>
       ) : null}
 
+      {activeTab === "requirements" ? (
+        <div className="solution-grid">
+          <Panel title="Create requirement" aside={<button type="button" className="toolbar-chip" onClick={createRequirement}>Create</button>}>
+            <div className="form-grid">
+              <TextField label="Class" value={requirementDraft.class} onChange={(event) => setRequirementDraft((current) => ({ ...current, class: event.target.value }))} />
+              <TextField label="Title" value={requirementDraft.title} onChange={(event) => setRequirementDraft((current) => ({ ...current, title: event.target.value }))} />
+              <TextArea label="Statement" value={requirementDraft.statement} onChange={(event) => setRequirementDraft((current) => ({ ...current, statement: event.target.value }))} />
+            </div>
+          </Panel>
+          <Panel title="Requirements" aside={<Badge label="Count" value={String(requirements.length)} />}>
+            <Select label="Selected requirement" value={selectedRequirementId} onChange={(event) => setSelectedRequirementId(event.target.value)} options={requirements.map((item) => ({ value: item.id, label: item.title }))} />
+            {selectedRequirement ? <Table rows={kvRows(selectedRequirement, [["Title", "title"], ["Class", "class"], ["Status", "status"], ["Statement", "statement"], ["Implementation", "implementation_links"], ["Tests", "test_links"], ["Evidence", "evidence_links"]])} /> : null}
+            <Toolbar>
+              <button type="button" className="toolbar-chip" onClick={createRequirementTraceLink}>Link to blueprint</button>
+            </Toolbar>
+          </Panel>
+        </div>
+      ) : null}
+
+      {activeTab === "lifecycle" ? (
+        <div className="solution-grid">
+          <Panel title="Lifecycle template" aside={<button type="button" className="toolbar-chip" onClick={createLifecycle}>Create lifecycle</button>}>
+            <div className="form-grid">
+              <TextField label="Name" value={lifecycleDraft.name} onChange={(event) => setLifecycleDraft((current) => ({ ...current, name: event.target.value }))} />
+              <TextArea label="Description" value={lifecycleDraft.description} onChange={(event) => setLifecycleDraft((current) => ({ ...current, description: event.target.value }))} />
+            </div>
+          </Panel>
+          <Panel title="Lifecycle templates" aside={<Badge label="Count" value={String(lifecycleTemplates.length)} />}>
+            <div className="stack">
+              {lifecycleTemplates.map((item) => (
+                <article key={item.id} className="card">
+                  <strong>{item.name}</strong>
+                  <p>{item.status} · {item.phases?.length || 0} phases</p>
+                </article>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+
+      {activeTab === "workflows" ? (
+        <div className="solution-grid">
+          <Panel title="Workflow definition" aside={<button type="button" className="toolbar-chip" onClick={createWorkflow}>Create</button>}>
+            <div className="form-grid">
+              <TextField label="Name" value={workflowDraft.name} onChange={(event) => setWorkflowDraft((current) => ({ ...current, name: event.target.value }))} />
+              <TextArea label="Description" value={workflowDraft.description} onChange={(event) => setWorkflowDraft((current) => ({ ...current, description: event.target.value }))} />
+            </div>
+          </Panel>
+          <Panel title="Workflow definitions" aside={<Badge label="Count" value={String(workflowDefinitions.length)} />}>
+            <div className="stack">
+              {workflowDefinitions.map((item) => (
+                <article key={item.id} className="card">
+                  <strong>{item.name}</strong>
+                  <p>{item.status} · quorum {item.quorum}</p>
+                </article>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+
+      {activeTab === "releases" ? (
+        <div className="solution-grid">
+          <Panel title="Release" aside={<Toolbar><button type="button" className="toolbar-chip" onClick={createReleaseRecord}>Create</button><button type="button" className="toolbar-chip" onClick={runReleaseEvaluation}>Evaluate</button></Toolbar>}>
+            <div className="form-grid">
+              <TextField label="Name" value={releaseDraft.name} onChange={(event) => setReleaseDraft((current) => ({ ...current, name: event.target.value }))} />
+            </div>
+          </Panel>
+          <Panel title="Releases" aside={<Badge label="Count" value={String(releases.length)} />}>
+            <Select label="Selected release" value={selectedReleaseId} onChange={(event) => setSelectedReleaseId(event.target.value)} options={releases.map((item) => ({ value: item.id, label: item.name }))} />
+            {selectedRelease ? <Table rows={kvRows(selectedRelease, [["Name", "name"], ["Status", "status"], ["Candidate", "candidate_id"], ["Commit", "commit_sha"], ["Decision", "decision"]])} /> : null}
+          </Panel>
+        </div>
+      ) : null}
+
       {activeTab === "archetypes" ? (
         <div className="solution-grid">
           <Panel title="Archetypes" aside={<Badge label="Count" value={String(archetypes.length)} />}>
@@ -482,31 +727,98 @@ export function ProductFactoryPortal({ session, pathname, navigate, baseUrl = ""
       ) : null}
 
       {activeTab === "traceability" ? (
-        <Panel title="Traceability matrix">
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Requirement</th>
-                  <th>Status</th>
-                  <th>Linked phase</th>
-                  <th>Tests</th>
-                  <th>Evidence</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(traceability?.matrix || []).map((row) => (
-                  <tr key={row.requirement_id}>
-                    <th>{row.requirement}</th>
-                    <td>{row.status}</td>
-                    <td>{row.linked_phase || "—"}</td>
-                    <td>{(row.test_ids || []).length}</td>
-                    <td>{(row.evidence_ids || []).length}</td>
+        <div className="solution-grid">
+          <Panel title="Traceability matrix" aside={<Toolbar><button type="button" className="toolbar-chip" onClick={runTraceabilityValidation}>Validate</button></Toolbar>}>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Requirement</th>
+                    <th>Status</th>
+                    <th>Linked phase</th>
+                    <th>Tests</th>
+                    <th>Evidence</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {(traceability?.matrix || []).map((row) => (
+                    <tr key={row.requirement_id}>
+                      <th>{row.requirement}</th>
+                      <td>{row.status}</td>
+                      <td>{row.linked_phase || "—"}</td>
+                      <td>{(row.test_ids || []).length}</td>
+                      <td>{(row.evidence_ids || []).length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
+          <Panel title="Coverage">
+            <Table rows={kvRows(traceabilityCoverage || {}, [["Requirements", "requirements"], ["Implementation", "implementation"], ["Tests", "tests"], ["Evidence", "evidence"], ["Releases", "release"], ["Links", "links"]])} />
+            <div className="stack">
+              {(traceabilityGaps?.gaps || []).slice(0, 6).map((gap) => (
+                <article key={gap.requirement_id} className="card">
+                  <strong>{gap.requirement_id}</strong>
+                  <p>{(gap.missing || []).join(", ")}</p>
+                </article>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+
+      {activeTab === "reports" ? (
+        <Panel title="Reports catalog">
+          <div className="stack">
+            {reports.map((report) => (
+              <article key={report.id} className="card">
+                <strong>{report.name}</strong>
+                <p>{report.id}</p>
+              </article>
+            ))}
           </div>
+        </Panel>
+      ) : null}
+
+      {activeTab === "search" ? (
+        <Panel title="Search factory" aside={<button type="button" className="toolbar-chip" onClick={searchFactory}>Search</button>}>
+          <p className="studio-note">Search scans the current tenant scoped Product Factory records.</p>
+          <Table rows={kvRows(searchResult || {}, [["Count", "count"], ["Query", "query"]])} />
+        </Panel>
+      ) : null}
+
+      {activeTab === "cross-product" ? (
+        <Panel title="Cross-product graph">
+          <Table rows={kvRows(crossProductGraph || {}, [["Relationships", "relationships"]])} />
+        </Panel>
+      ) : null}
+
+      {activeTab === "migrations" ? (
+        <div className="solution-grid">
+          <Panel title="Migration" aside={<button type="button" className="toolbar-chip" onClick={createMigrationRecord}>Create</button>}>
+            <div className="form-grid">
+              <TextField label="Source system" value={migrationDraft.source_system} onChange={(event) => setMigrationDraft((current) => ({ ...current, source_system: event.target.value }))} />
+              <TextField label="Target system" value={migrationDraft.target_system} onChange={(event) => setMigrationDraft((current) => ({ ...current, target_system: event.target.value }))} />
+              <TextField label="Mode" value={migrationDraft.mode} onChange={(event) => setMigrationDraft((current) => ({ ...current, mode: event.target.value }))} />
+            </div>
+          </Panel>
+          <Panel title="Migrations" aside={<Badge label="Count" value={String(migrations.length)} />}>
+            <div className="stack">
+              {migrations.map((item) => (
+                <article key={item.id} className="card">
+                  <strong>{item.source_system} → {item.target_system}</strong>
+                  <p>{item.status} · {item.mode}</p>
+                </article>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+
+      {activeTab === "prr" ? (
+        <Panel title="Production readiness review" aside={<button type="button" className="toolbar-chip" onClick={createPrr}>Generate PRR</button>}>
+          <Table rows={kvRows(prr || {}, [["Decision", "decision"], ["Release", "release_id"], ["Generated", "generated_at"]])} />
         </Panel>
       ) : null}
 

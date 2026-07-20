@@ -399,6 +399,12 @@ class ProductFactoryService:
     def __init__(self, platform: NovaCodeProPlatform) -> None:
         self.platform = platform
         self.solution_engineering = SolutionEngineeringService(platform, WorkflowFabricService(platform))
+        self.enterprise = ProductFactoryEnterpriseService(platform)
+
+    def __getattr__(self, name: str) -> Any:
+        if hasattr(self.enterprise, name):
+            return getattr(self.enterprise, name)
+        raise AttributeError(name)
 
     # ------------------------------------------------------------------
     # Current-state inventory / gaps
@@ -1107,3 +1113,5 @@ __all__ = [
     "BLUEPRINT_STATES",
     "build_product_factory_context",
 ]
+
+from .product_factory_enterprise import ProductFactoryEnterpriseService  # noqa: E402

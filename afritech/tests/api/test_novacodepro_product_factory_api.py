@@ -107,6 +107,61 @@ def test_product_factory_api_supports_governed_lifecycle(tmp_path: Path) -> None
     )
     assert improvement.status_code == 200
 
+    requirement = client.post(
+        "/v1/product-factory/requirements",
+        headers=headers,
+        json={
+            "product_id": "product-factory",
+            "blueprint_id": blueprint_id,
+            "title": "Traceability requirement",
+            "statement": "Maintain governed traceability",
+            "class": "Functional",
+            "mandatory_for_ga": True,
+        },
+    )
+    assert requirement.status_code == 200
+    requirement_id = requirement.json()["id"]
+
+    trace_link = client.post(
+        "/v1/product-factory/traceability/links",
+        headers=headers,
+        json={
+            "source_entity_type": "requirement",
+            "source_entity_id": requirement_id,
+            "target_entity_type": "blueprint",
+            "target_entity_id": blueprint_id,
+            "relationship_type": "supports",
+            "status": "DRAFT",
+        },
+    )
+    assert trace_link.status_code == 200
+
+    lifecycle_template = client.post("/v1/product-factory/lifecycle-templates", headers=headers, json={"name": "Factory lifecycle"})
+    assert lifecycle_template.status_code == 200
+    lifecycle = client.post(f"/v1/product-factory/products/{request_id}/lifecycles", headers=headers, json={"template_id": lifecycle_template.json()["id"]})
+    assert lifecycle.status_code == 200
+    lifecycle_id = lifecycle.json()["id"]
+    assert client.post(f"/v1/product-factory/lifecycles/{lifecycle_id}/start", headers=headers).status_code == 200
+    assert client.get(f"/v1/product-factory/lifecycles/{lifecycle_id}/readiness", headers=headers).status_code == 200
+
+    workflow_definition = client.post("/v1/product-factory/workflows/definitions", headers=headers, json={"name": "Release workflow", "steps": ["review", "approve"]})
+    assert workflow_definition.status_code == 200
+    workflow_instance = client.post("/v1/product-factory/workflows/instances", headers=headers, json={"definition_id": workflow_definition.json()["id"], "product_id": "product-factory"})
+    assert workflow_instance.status_code == 200
+    assert client.post(f"/v1/product-factory/workflows/instances/{workflow_instance.json()['id']}/approve", headers=headers).status_code == 200
+
+    release = client.post("/v1/product-factory/releases", headers=headers, json={"product_id": "product-factory", "name": "Factory release"})
+    assert release.status_code == 200
+    release_id = release.json()["id"]
+    assert client.post(f"/v1/product-factory/releases/{release_id}/candidates", headers=headers, json={"candidate_id": blueprint_id, "commit_sha": "commit-1"}).status_code == 200
+    assert client.post(f"/v1/product-factory/releases/{release_id}/evaluate", headers=headers).status_code == 200
+    assert client.get(f"/v1/product-factory/releases/{release_id}/readiness", headers=headers).status_code == 200
+    assert client.get(f"/v1/product-factory/reports/catalog", headers=headers).status_code == 200
+    assert client.post("/v1/product-factory/search", headers=headers, json={"query": "factory"}).status_code == 200
+    assert client.get("/v1/product-factory/cross-product/graph", headers=headers).status_code == 200
+    assert client.post("/v1/product-factory/migrations", headers=headers, json={"product_id": "product-factory", "source_system": "legacy", "target_system": "factory"}).status_code == 200
+    assert client.get(f"/v1/product-factory/prr/{release_id}", headers=headers).status_code == 200
+
     demo = client.post("/v1/product-factory/demo", headers=headers)
     assert demo.status_code == 200
     assert demo.json()["name"] in {"NovaFactory Demo", "NovaFactory One"}

@@ -55,8 +55,55 @@ def test_product_factory_service_lifecycle(tmp_path) -> None:
     improvement = service.create_improvement({"title": "Improve traceability", "priority": "high"}, ctx)
     assert improvement["title"] == "Improve traceability"
 
+    requirement = service.create_requirement(
+        {
+            "product_id": "product-factory",
+            "blueprint_id": blueprint["id"],
+            "title": "Traceability requirement",
+            "statement": "Maintain governed traceability",
+            "mandatory_for_ga": True,
+            "class": "Functional",
+        },
+        ctx,
+    )
+    link = service.create_traceability_link(
+        {
+            "source_entity_type": "requirement",
+            "source_entity_id": requirement["id"],
+            "target_entity_type": "blueprint",
+            "target_entity_id": blueprint["id"],
+            "relationship_type": "supports",
+            "status": "DRAFT",
+            "provenance": "test",
+            "evidence": [blueprint["id"]],
+        },
+        ctx,
+    )
+    assert link["source_entity_id"] == requirement["id"]
+
+    lifecycle_template = service.create_lifecycle_template({"name": "Factory lifecycle"}, ctx)
+    lifecycle = service.create_lifecycle(request["id"], {"template_id": lifecycle_template["id"]}, ctx)
+    started = service.start_lifecycle(lifecycle["id"], ctx)
+    assert started["status"] == "Ready"
+    transitioned_lifecycle = service.transition_lifecycle(lifecycle["id"], {"status": "In Progress", "phase": "Planning and Analysis"}, ctx)
+    assert transitioned_lifecycle["status"] == "In Progress"
+
+    workflow_definition = service.create_workflow_definition({"name": "Release workflow", "steps": ["review", "approve"], "roles": ["ADMIN"], "approvals": ["manager"]}, ctx)
+    workflow_instance = service.create_workflow_instance({"definition_id": workflow_definition["id"], "product_id": "product-factory"}, ctx)
+    approved_instance = service.approve_workflow_instance(workflow_instance["id"], ctx)
+    assert approved_instance["state"] == "Completed"
+
+    release = service.create_release({"product_id": "product-factory", "name": "Factory release", "candidate_id": blueprint["id"], "blueprint_version_id": blueprint["id"]}, ctx)
+    evaluated = service.evaluate_release(release["id"], ctx)
+    assert evaluated["status"] in {"Ready", "Blocked"}
+    prr = service.prr(ctx, release["id"])
+    assert prr["release_id"] == release["id"]
+
     traceability = service.traceability_matrix(ctx)
     assert traceability["coverage"]["requirements"] >= 1
+    assert service.traceability_coverage(ctx)["requirements"] >= 1
+    assert service.traceability_gaps(ctx)["count"] >= 0
+    assert service.reports_catalog()["reports"]
     assert service.overview(ctx)["summary"]["requests"] >= 1
     assert service.demo_product(ctx)["name"] in {"NovaFactory Demo", "NovaFactory"}
 
