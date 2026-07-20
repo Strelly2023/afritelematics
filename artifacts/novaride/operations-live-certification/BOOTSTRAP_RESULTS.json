@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "command": "PLAYWRIGHT_USE_EXISTING_SERVERS=1 PLAYWRIGHT_SKIP_BACKEND=1 npx playwright test",
+  "result": {
+    "status": "PASS",
+    "bootstrap_route": "/api/v1/novaride/operations/bootstrap",
+    "bootstrap_mode": "test_only",
+    "fixture_namespace": "browser-seeded-test-run",
+    "seeded_ids_returned": true
+  },
+  "evidence": [
+    "19 passed (20.7s)"
+  ],
+  "scope_limitations": [
+    "Bootstrap is only admissible in the test runtime.",
+    "This record summarizes the successful browser bootstrap path exercised by the passing Playwright suite."
+  ]
+}

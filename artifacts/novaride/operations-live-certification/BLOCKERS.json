@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "blockers": [
+    {
+      "id": "LIVE_DEPLOYMENT_BLOCKED_EXTERNAL",
+      "description": "External staging or pilot verification was not executed in this turn.",
+      "status": "BLOCKED_EXTERNAL",
+      "impact": "Local functional certification is complete, but live deployed verification remains unproven."
+    }
+  ]
+}

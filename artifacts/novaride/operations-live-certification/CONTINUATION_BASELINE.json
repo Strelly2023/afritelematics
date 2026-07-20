@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "worktree_state": {
+    "tracked_changes": [
+      "afritech/novaride_runtime/operations_workspace.py",
+      "afritech/tests/api/test_novaride_operations_api.py",
+      "apps/novaride-operations/playwright.config.ts",
+      "apps/novaride-operations/src/ResilienceAvailabilityWindow.js",
+      "apps/novaride-operations/tests/browser/actions.spec.ts",
+      "apps/novaride-operations/tests/browser/disputes.spec.ts",
+      "apps/novaride-operations/tests/browser/helpers.ts",
+      "apps/novaride-operations/tests/browser/incidents.spec.ts",
+      "apps/novaride-operations/tests/browser/investigations.spec.ts",
+      "apps/novaride-operations/tests/browser/live-map.spec.ts",
+      "apps/novaride-operations/tests/browser/navigation.spec.ts",
+      "apps/novaride-operations/tests/browser/overview.spec.ts",
+      "apps/novaride-operations/tests/browser/refunds.spec.ts",
+      "apps/novaride-operations/tests/browser/safety.spec.ts",
+      "apps/novaride-operations/tests/browser/support.spec.ts"
+    ],
+    "untracked_changes": [
+      "artifacts/novaid/",
+      "artifacts/novaride/database/",
+      "artifacts/novaride/docker-recovery/",
+      "artifacts/novaride/e2e/",
+      "artifacts/novaride/final/",
+      "artifacts/novaride/ga/",
+      "artifacts/novaride/mobile/",
+      "artifacts/novaride/observability/",
+      "artifacts/novaride/operational/",
+      "artifacts/novaride/performance/",
+      "artifacts/novaride/pilot/",
+      "artifacts/novaride/prr/",
+      "artifacts/novaride/public-pilot/",
+      "artifacts/novaride/quality/",
+      "artifacts/novaride/runtime/",
+      "artifacts/novaride/security/",
+      "artifacts/novaride/storage-recovery/",
+      "csv.py",
+      "deployment-evidence/",
+      "var/"
+    ]
+  }
+}

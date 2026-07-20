@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "summary": {
+    "typecheck": "PASS",
+    "unit_tests": "PASS",
+    "build": "PASS",
+    "browser_suite": "PASS",
+    "backend_tests": "PASS",
+    "runtime_tests": "PASS"
+  },
+  "commands": [
+    {
+      "command": "npm run typecheck --prefix apps/novaride-operations",
+      "result": "PASS"
+    },
+    {
+      "command": "npm test --prefix apps/novaride-operations",
+      "result": "PASS",
+      "details": "3/3 passed"
+    },
+    {
+      "command": "npm run build --prefix apps/novaride-operations",
+      "result": "PASS"
+    },
+    {
+      "command": "PLAYWRIGHT_USE_EXISTING_SERVERS=1 PLAYWRIGHT_SKIP_BACKEND=1 npx playwright test",
+      "result": "PASS",
+      "details": "19 passed (20.7s)"
+    },
+    {
+      "command": "pytest -q afritech/tests/api/test_novaride_operations_api.py",
+      "result": "PASS",
+      "details": "5 passed"
+    },
+    {
+      "command": "pytest -q tests/novaride_runtime",
+      "result": "PASS",
+      "details": "49 passed"
+    }
+  ],
+  "scope_limitations": [
+    "The evidence reflects the local repository-controlled runtime and the repo's Playwright harness.",
+    "Live external deployment certification remains outside this turn."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "command": "PYTHONPATH=. AFRITECH_ENV=test AFRITECH_JWT_SECRET=novaride-browser-test-secret AFRITECH_RUNTIME_ENVIRONMENT=TEST NOVATECH_RUNTIME_CONTROL_SQLITE_PATH=/private/tmp/novaride-browser-control-clean-2.sqlite3 NOVATECH_EVIDENCE_ROOT=/private/tmp/novaride-browser-certification-clean-2/evidence python -c 'from afritech.api.app import app; ...'",
+  "result": {
+    "status": "PASS",
+    "canonical_prefix": "/api/v1/novaride/operations",
+    "mounted_routes": 67,
+    "compatibility_aliases": []
+  },
+  "evidence": [
+    "ROUTE_TABLE_AFTER.txt"
+  ],
+  "scope_limitations": [
+    "Route table is for the repository application imported from afritech.api.app.",
+    "Live deployment route availability remains outside this local check."
+  ]
+}

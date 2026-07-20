@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "command": "PYTHONPATH=. AFRITECH_ENV=test AFRITECH_JWT_SECRET=novaride-browser-test-secret AFRITECH_RUNTIME_ENVIRONMENT=TEST NOVATECH_RUNTIME_CONTROL_SQLITE_PATH=/private/tmp/novaride-browser-control-clean-2.sqlite3 NOVATECH_EVIDENCE_ROOT=/private/tmp/novaride-browser-certification-clean-2/evidence python - <<'PY' ... PY",
+  "result": {
+    "status": "PASS",
+    "allowed_origin": "http://127.0.0.1:14173",
+    "allowed_origin_header": "http://127.0.0.1:14173",
+    "blocked_origin": "http://evil.example",
+    "blocked_origin_header": null,
+    "blocked_status": 401
+  },
+  "evidence": [
+    "allowed_status 401",
+    "blocked_status 401"
+  ],
+  "scope_limitations": [
+    "CORS behavior verified against the repository FastAPI app via TestClient.",
+    "The test used an unauthenticated request because the CORS header behavior is independent of authorization."
+  ]
+}

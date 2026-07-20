@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-07-20T18:02:31Z",
+  "repository": "/Users/ostrinov/afritelematics",
+  "branch": "feature/novacodepro-unified-platform",
+  "commit": "0b9e4ad73e0d00680cac5c8e442c27d7be72d5b3",
+  "open_risks": [
+    "Live deployed validation remains blocked externally.",
+    "The local runtime is authenticated and route-correct, but it is not a substitute for a verified external deployment."
+  ]
+}
