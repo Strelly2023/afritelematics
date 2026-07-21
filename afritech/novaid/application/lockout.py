@@ -29,11 +29,7 @@ class AuthenticationLockoutService:
         ).hexdigest()
 
     def is_locked(self, tenant_id: str, identifier: str) -> bool:
-        row = self.uow.connection.execute(
-            "SELECT locked_until FROM novaid_authentication_locks "
-            "WHERE tenant_id=? AND identifier_hash=?",
-            (tenant_id, self.reference(identifier)),
-        ).fetchone()
+        row = self.uow.authentication_locks.get(tenant_id, self.reference(identifier))
         return bool(
             row
             and row["locked_until"]
@@ -44,10 +40,7 @@ class AuthenticationLockoutService:
         reference, now = self.reference(identifier), datetime.now(UTC)
         transaction = nullcontext() if self.uow.connection.in_transaction else self.uow
         with transaction:
-            row = self.uow.connection.execute(
-                "SELECT * FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
-                (tenant_id, reference),
-            ).fetchone()
+            row = self.uow.authentication_locks.get(tenant_id, reference)
             reset = not row or datetime.fromisoformat(row["window_started_at"]) <= (
                 now - timedelta(seconds=self.policy.observation_seconds)
             )
@@ -57,23 +50,17 @@ class AuthenticationLockoutService:
                 if count >= self.policy.threshold
                 else None
             )
-            self.uow.connection.execute(
-                "INSERT OR REPLACE INTO novaid_authentication_locks VALUES(?,?,?,?,?,?)",
-                (
-                    tenant_id,
-                    reference,
-                    count,
-                    now.isoformat() if reset else row["window_started_at"],
-                    locked_until,
-                    now.isoformat(),
-                ),
+            self.uow.authentication_locks.upsert(
+                tenant_id,
+                reference,
+                count,
+                now.isoformat() if reset else row["window_started_at"],
+                locked_until,
+                now.isoformat(),
             )
         return locked_until is not None
 
     def reset(self, tenant_id: str, identifier: str) -> None:
         transaction = nullcontext() if self.uow.connection.in_transaction else self.uow
         with transaction:
-            self.uow.connection.execute(
-                "DELETE FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
-                (tenant_id, self.reference(identifier)),
-            )
+            self.uow.authentication_locks.delete(tenant_id, self.reference(identifier))

@@ -208,6 +208,7 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         self.connection = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.executescript(SCHEMA)
+        self.authentication_locks = self
         self.sessions = self
 
     def __enter__(self) -> "NovaIDUnitOfWork":
@@ -237,6 +238,32 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         )
         if result.rowcount != 1:
             raise RuntimeError("CONCURRENCY_CONFLICT")
+
+    def get(self, tenant_id: str, identifier_hash: str):
+        return self.connection.execute(
+            "SELECT * FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
+            (tenant_id, identifier_hash),
+        ).fetchone()
+
+    def upsert(
+        self,
+        tenant_id: str,
+        identifier_hash: str,
+        failure_count: int,
+        window_started_at: str,
+        locked_until: str | None,
+        updated_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT OR REPLACE INTO novaid_authentication_locks VALUES(?,?,?,?,?,?)",
+            (tenant_id, identifier_hash, failure_count, window_started_at, locked_until, updated_at),
+        )
+
+    def delete(self, tenant_id: str, identifier_hash: str) -> None:
+        self.connection.execute(
+            "DELETE FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
+            (tenant_id, identifier_hash),
+        )
 
     def _session_rows(self, query: str, parameters: tuple[Any, ...]) -> list[sqlite3.Row]:
         return list(self.connection.execute(query, parameters).fetchall())

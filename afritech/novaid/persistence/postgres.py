@@ -314,6 +314,38 @@ class PostgresIdempotencyRepository(PostgresRepository):
         ).fetchone()
 
 
+class PostgresAuthenticationLockRepository(PostgresRepository):
+    def get(self, tenant_id: str, identifier_hash: str):
+        return self.connection.execute(
+            "SELECT * FROM novaid_authentication_locks WHERE tenant_id=%s AND identifier_hash=%s",
+            (tenant_id, identifier_hash),
+        ).fetchone()
+
+    def upsert(
+        self,
+        tenant_id: str,
+        identifier_hash: str,
+        failure_count: int,
+        window_started_at: str,
+        locked_until: str | None,
+        updated_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_authentication_locks(tenant_id,identifier_hash,failure_count,"
+            "window_started_at,locked_until,updated_at) VALUES(%s,%s,%s,%s,%s,%s) "
+            "ON CONFLICT(tenant_id,identifier_hash) DO UPDATE SET failure_count=EXCLUDED.failure_count,"
+            "window_started_at=EXCLUDED.window_started_at,locked_until=EXCLUDED.locked_until,"
+            "updated_at=EXCLUDED.updated_at",
+            (tenant_id, identifier_hash, failure_count, window_started_at, locked_until, updated_at),
+        )
+
+    def delete(self, tenant_id: str, identifier_hash: str) -> None:
+        self.connection.execute(
+            "DELETE FROM novaid_authentication_locks WHERE tenant_id=%s AND identifier_hash=%s",
+            (tenant_id, identifier_hash),
+        )
+
+
 class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"]):
     def __init__(self, dsn: str | None = None, *, pool: NovaIDPostgresPool | None = None) -> None:
         if psycopg is None:
@@ -335,6 +367,7 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         self.risk_states = PostgresRiskStateRepository(self.connection)
         self.security_events = PostgresSecurityEventRepository(self.connection)
         self.idempotency = PostgresIdempotencyRepository(self.connection)
+        self.authentication_locks = PostgresAuthenticationLockRepository(self.connection)
 
     def __enter__(self) -> "PostgresNovaIdUnitOfWork":
         if self._connection is not None:

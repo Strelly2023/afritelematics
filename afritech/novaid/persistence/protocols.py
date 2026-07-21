@@ -77,6 +77,22 @@ class IdempotencyRepository(Protocol):
     def lock(self, tenant_id: str, key: str) -> Any | None: ...
 
 
+class AuthenticationLockRepository(Protocol):
+    def get(self, tenant_id: str, identifier_hash: str) -> Any | None: ...
+
+    def upsert(
+        self,
+        tenant_id: str,
+        identifier_hash: str,
+        failure_count: int,
+        window_started_at: str,
+        locked_until: str | None,
+        updated_at: str,
+    ) -> None: ...
+
+    def delete(self, tenant_id: str, identifier_hash: str) -> None: ...
+
+
 @runtime_checkable
 class NovaIdUnitOfWork(Protocol):
     connection: Connection
@@ -86,6 +102,7 @@ class NovaIdUnitOfWork(Protocol):
     sessions: SessionRepository
     refresh_tokens: RefreshTokenRepository
     idempotency: IdempotencyRepository
+    authentication_locks: AuthenticationLockRepository
 
     def __enter__(self) -> "NovaIdUnitOfWork": ...
 
