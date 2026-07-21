@@ -1,0 +1,312 @@
+schema_version: "1.0"
+generated_at: "2026-07-20T00:00:00+10:00"
+branch: "feature/product-factory-enterprise-sdlc"
+baseline_commit: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+products:
+  novaid:
+    requirements:
+      - requirement_id: "NID-PERSIST-001"
+        capability: "PostgreSQL repositories"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/novaid/persistence/postgres.py"
+          - "afritech/novaid/persistence/sqlite.py"
+          - "afritech/novaid/application/authentication.py"
+          - "afritech/novaid/application/passwords.py"
+          - "afritech/novaid/application/webauthn.py"
+        database_objects:
+          - "novaid_tenants"
+          - "novaid_identities"
+          - "novaid_tenant_memberships"
+          - "novaid_credentials"
+          - "novaid_authentication_sessions"
+          - "novaid_refresh_token_families"
+          - "novaid_refresh_tokens"
+          - "novaid_account_recovery_requests"
+          - "novaid_security_events"
+          - "novaid_security_outbox"
+        api_surfaces:
+          - "afritech/novaid/api.py"
+          - "afritech/api/novaid_api.py"
+        existing_tests:
+          - "afritech/tests/novaid/test_novaid_ecosystem.py"
+          - "afritech/tests/api/test_novaid_audit_replay_api.py"
+        missing_implementation: "Repository coverage remains split between direct connection use and adapter-backed methods."
+        planned_change: "Complete repository contracts and migrate application services away from raw SQL."
+        validation_command: "python3 -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py afritech/tests/api/test_novaid_audit_replay_api.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaid/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NID-SESSION-001"
+        capability: "Transactional sessions"
+        baseline_status: "Implemented"
+        source_paths:
+          - "afritech/novaid/application/authentication.py"
+          - "afritech/novaid/application/sessions.py"
+          - "afritech/novaid/tokens.py"
+          - "afritech/novaid/revocation.py"
+        database_objects:
+          - "novaid_authentication_sessions"
+          - "novaid_refresh_token_families"
+          - "novaid_refresh_tokens"
+        api_surfaces:
+          - "afritech/novaid/api.py"
+        existing_tests:
+          - "afritech/tests/novaid/test_novaid_ecosystem.py"
+        missing_implementation: "Concurrent refresh / multi-process propagation still needs explicit certification evidence."
+        planned_change: "Harden session rotation and verify revocation propagation under Redis and restart scenarios."
+        validation_command: "python3 -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaid/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NID-RECOVERY-001"
+        capability: "Account and credential recovery"
+        baseline_status: "Implemented"
+        source_paths:
+          - "afritech/novaid/application/recovery.py"
+          - "afritech/novaid/application/passwords.py"
+          - "afritech/novaid/webauthn_delivery.py"
+        database_objects:
+          - "novaid_account_recovery_requests"
+          - "novaid_account_recovery_approvals"
+          - "novaid_account_recovery_evidence"
+          - "novaid_recovery_codes"
+        api_surfaces:
+          - "afritech/novaid/api.py"
+        existing_tests:
+          - "afritech/tests/novaid/test_novaid_ecosystem.py"
+        missing_implementation: "Need explicit negative-path and multi-process recovery certification."
+        planned_change: "Add stricter recovery lifecycle coverage and evidence-backed authorization checks."
+        validation_command: "python3 -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaid/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NID-AUDIT-001"
+        capability: "Transactional audit outbox"
+        baseline_status: "Implemented"
+        source_paths:
+          - "afritech/novaid/outbox.py"
+          - "afritech/novaid/revocation_delivery.py"
+          - "afritech/novaid/webauthn_delivery.py"
+        database_objects:
+          - "novaid_security_outbox"
+          - "novaid_webauthn_outbox"
+          - "novaid_audit_replay_requests"
+        api_surfaces:
+          - "afritech/novaid/api.py"
+        existing_tests:
+          - "afritech/tests/novaid/test_novaid_ecosystem.py"
+        missing_implementation: "Publication / replay evidence still needs broader integration validation."
+        planned_change: "Add outbox publication, dead-letter, and replay authorization evidence."
+        validation_command: "python3 -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaid/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NID-WEBAUTHN-001"
+        capability: "Standards-based WebAuthn"
+        baseline_status: "Implemented"
+        source_paths:
+          - "afritech/novaid/application/webauthn.py"
+          - "afritech/novaid/webauthn_coordination.py"
+          - "afritech/novaid/webauthn_delivery.py"
+        database_objects:
+          - "novaid_webauthn_credentials"
+          - "novaid_webauthn_registration_challenges"
+          - "novaid_webauthn_authentication_challenges"
+        api_surfaces:
+          - "afritech/novaid/api.py"
+        existing_tests:
+          - "afritech/tests/novaid/test_novaid_ecosystem.py"
+        missing_implementation: "Need explicit PostgreSQL-backed repository certification and negative-origin/origin-RP coverage."
+        planned_change: "Audit the WebAuthn flow against repository contracts and strengthen rejection tests."
+        validation_command: "python3 -m pytest -q afritech/tests/novaid/test_novaid_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaid/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+  novaride:
+    requirements:
+      - requirement_id: "NRD-PY311-001"
+        capability: "Python 3.11+ execution"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "scripts/"
+          - "Makefile"
+          - "pyproject.toml"
+          - "deploy/"
+        database_objects: []
+        api_surfaces:
+          - "afritech/api/novaride_runtime_api.py"
+        existing_tests:
+          - "afritech/tests/api/test_novaride_runtime_api.py"
+        missing_implementation: "Interpreter selection remains ambiguous in some scripts and build paths."
+        planned_change: "Pin executable paths to python3.11+ and add runtime version evidence."
+        validation_command: "python3 -m pytest -q afritech/tests/api/test_novaride_runtime_api.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaride/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NRD-RUNTIME-001"
+        capability: "Runtime, API, browser, mobile suites"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/novaride_runtime/"
+          - "afritech/api/novaride_runtime_api.py"
+          - "apps/novaride-operations/"
+          - "driver_app/"
+          - "rider_app/"
+        database_objects: []
+        api_surfaces:
+          - "afritech/api/novaride_runtime_api.py"
+        existing_tests:
+          - "afritech/tests/api/test_novaride_phase1_api.py"
+          - "afritech/tests/api/test_novaride_phase2_api.py"
+        missing_implementation: "Full browser/mobile/runtime certification remains incomplete."
+        planned_change: "Run and repair runtime, API, browser, and mobile suites against real services."
+        validation_command: "python3 -m pytest -q afritech/tests/api/test_novaride_phase1_api.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaride/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: "External runtime services may be required for full certification."
+      - requirement_id: "NRD-INFRA-001"
+        capability: "PostgreSQL, Redis, Kafka, multi-process certification"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/novaride_runtime/persistence/"
+          - "afritech/novaride_runtime/events/"
+          - "deploy/production/"
+        database_objects: []
+        api_surfaces:
+          - "afritech/api/novaride_runtime_api.py"
+        existing_tests:
+          - "afritech/tests/governance/test_novaride_phase0_postgres_deployment.py"
+        missing_implementation: "Operational evidence for Redis/Kafka/multi-process certification is not yet complete in this execution."
+        planned_change: "Execute integration certification against real services where available."
+        validation_command: "python3 -m pytest -q afritech/tests/governance/test_novaride_phase0_postgres_deployment.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaride/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: "Real Redis/Kafka infrastructure not yet validated in this phase."
+      - requirement_id: "NRD-MOBILE-001"
+        capability: "Mobile dependency closure"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "driver_app/"
+          - "rider_app/"
+        database_objects: []
+        api_surfaces: []
+        existing_tests:
+          - "afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+        missing_implementation: "Dependency findings still need execution-time verification and closure evidence."
+        planned_change: "Run dependency audits and close or justify findings."
+        validation_command: "python3 -m pytest -q afritech/tests/api/test_afriride_next_gen_mobile_api.py"
+        evidence_path: "artifacts/phase1-core-engineering/novaride/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: "Physical-device validation unavailable in this environment."
+  novapay:
+    requirements:
+      - requirement_id: "NPY-PG-001"
+        capability: "Normalized PostgreSQL monetary persistence"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/novapay/repository.py"
+          - "afritech/novapay/service.py"
+          - "afritech/api/novapay_ecosystem_api.py"
+        database_objects:
+          - "novapay_wallets"
+          - "novapay_accounts"
+          - "novapay_transactions"
+          - "novapay_transfers"
+          - "novapay_ledger_entries"
+          - "novapay_refunds"
+          - "novapay_settlements"
+          - "novapay_reconciliation_batches"
+          - "novapay_provider_events"
+          - "novapay_audit_events"
+        api_surfaces:
+          - "afritech/api/novapay_ecosystem_api.py"
+          - "afritech/api/novaportal_suite_api.py"
+        existing_tests:
+          - "afritech/tests/novapay/test_ecosystem.py"
+          - "afritech/tests/novapay/test_runtime_backend.py"
+        missing_implementation: "Current repository is still record-oriented rather than normalized financial persistence."
+        planned_change: "Replace record blobs with normalized ledger, settlement, refund, and outbox tables."
+        validation_command: "python3 -m pytest -q afritech/tests/novapay/test_runtime_backend.py afritech/tests/novapay/test_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novapay/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NPY-LEDGER-001"
+        capability: "Transactional double-entry ledger"
+        baseline_status: "Missing"
+        source_paths:
+          - "afritech/core_platform/novapay_runtime.py"
+        database_objects: []
+        api_surfaces:
+          - "afritech/api/novapay_runtime_api.py"
+        existing_tests:
+          - "afritech/tests/core_platform/test_novapay_transfer_flow.py"
+        missing_implementation: "Ledger is not yet normalized with invariant-enforcing persistence."
+        planned_change: "Implement balanced journal/entry tables and application-level enforcement."
+        validation_command: "python3 -m pytest -q afritech/tests/core_platform/test_novapay_transfer_flow.py"
+        evidence_path: "artifacts/phase1-core-engineering/novapay/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NPY-OUTBOX-001"
+        capability: "Transactional financial outbox"
+        baseline_status: "Missing"
+        source_paths:
+          - "afritech/novapay/service.py"
+        database_objects: []
+        api_surfaces: []
+        existing_tests:
+          - "afritech/tests/novapay/test_ecosystem.py"
+        missing_implementation: "No durable financial outbox exists yet."
+        planned_change: "Add atomic outbox event persistence and publication tests."
+        validation_command: "python3 -m pytest -q afritech/tests/novapay/test_ecosystem.py"
+        evidence_path: "artifacts/phase1-core-engineering/novapay/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NPY-STATE-001"
+        capability: "Settlement, reversal, refund, chargeback, reconciliation state machines"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/novapay/service.py"
+          - "afritech/core_platform/novapay_runtime.py"
+        database_objects: []
+        api_surfaces:
+          - "afritech/api/novapay_ecosystem_api.py"
+        existing_tests:
+          - "afritech/tests/novapay/test_ecosystem.py"
+          - "afritech/tests/api/test_novapay_runtime_api.py"
+        missing_implementation: "State transitions need normalized persistence and stronger invariant coverage."
+        planned_change: "Add explicit state tables and transition validators."
+        validation_command: "python3 -m pytest -q afritech/tests/novapay/test_ecosystem.py afritech/tests/api/test_novapay_runtime_api.py"
+        evidence_path: "artifacts/phase1-core-engineering/novapay/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
+      - requirement_id: "NPY-RUNTIME-001"
+        capability: "Deterministic test shutdown"
+        baseline_status: "Partially implemented"
+        source_paths:
+          - "afritech/tests/novapay/"
+        database_objects: []
+        api_surfaces: []
+        existing_tests:
+          - "afritech/tests/novapay/test_ecosystem.py"
+          - "afritech/tests/novapay/test_runtime_backend.py"
+        missing_implementation: "No dedicated leak detection / repeat-execution certification yet."
+        planned_change: "Run repeatable shutdown checks and close resource leaks."
+        validation_command: "python3 -m pytest -q afritech/tests/novapay"
+        evidence_path: "artifacts/phase1-core-engineering/novapay/"
+        final_status: "In Progress"
+        commit_sha: "a41cbc84b3818cb41693f5f9f8888de2b5de1137"
+        blocker: ""
