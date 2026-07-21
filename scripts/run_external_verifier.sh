@@ -7,7 +7,7 @@ if [ $# -lt 2 ]; then
 fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PYTHON_BIN="${ROOT_DIR}/venv/bin/python"
+PYTHON_BIN="${ROOT_DIR}/venv/bin/python3"
 
 if [ -x "$PYTHON_BIN" ]; then
   "$PYTHON_BIN" -m afritech.tools.external_verifier_cli "$@"
