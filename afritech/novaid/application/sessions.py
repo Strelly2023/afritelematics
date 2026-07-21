@@ -36,7 +36,6 @@ class SessionAdministrationService:
                 return False
             now = datetime.now(UTC).isoformat()
             self.uow.sessions.revoke(tenant_id, identity_id, session_id, reason)
-            self.uow.sessions.revoke_all_for_identity(tenant_id, identity_id, reason)
             self.outbox.enqueue(
                 tenant_id=tenant_id,
                 event_type="SESSION_REVOKED",
@@ -55,10 +54,7 @@ class SessionAdministrationService:
             rows = self.uow.sessions.revoke_sessions_for_identity(
                 tenant_id, identity_id, "LOGOUT_ALL"
             )
-            now = datetime.now(UTC).isoformat()
-            identity = self.uow.sessions.get_for_identity(tenant_id, identity_id, session_id)
-            if identity is not None:
-                self.uow.bump_identity_security_version(tenant_id, identity_id)
+            self.uow.bump_identity_security_version(tenant_id, identity_id)
             self.outbox.enqueue(
                 tenant_id=tenant_id,
                 event_type="ALL_SESSIONS_REVOKED",
@@ -139,9 +135,7 @@ class SessionAdministrationService:
             )
             if not row:
                 raise LookupError("TENANT_ACCESS_DENIED")
-            identity = self.uow.sessions.get_for_identity(tenant_id, identity_id, session_id)
-            if identity is not None:
-                self.uow.bump_identity_security_version(tenant_id, identity_id)
+            self.uow.bump_identity_security_version(tenant_id, identity_id)
             self.outbox.enqueue(
                 tenant_id=tenant_id,
                 event_type="SESSION_COMPROMISED",
