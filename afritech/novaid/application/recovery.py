@@ -39,13 +39,7 @@ class RecoveryCodeService:
         return hmac.new(self.pepper, material, hashlib.sha256).hexdigest()
 
     def _authorize(self, tenant_id: str, identity_id: str, session_id: str) -> dict:
-        row = self.uow.connection.execute(
-            "SELECT s.status,s.authentication_strength,s.step_up_expires_at,m.status membership_status "
-            "FROM novaid_authentication_sessions s JOIN novaid_tenant_memberships m "
-            "ON m.membership_id=s.membership_id AND m.tenant_id=s.tenant_id "
-            "WHERE s.tenant_id=? AND s.identity_id=? AND s.session_id=?",
-            (tenant_id, identity_id, session_id),
-        ).fetchone()
+        row = self.uow.get_recovery_authorization_context(tenant_id, identity_id, session_id)
         if (
             not row
             or row["status"] != "ACTIVE"
@@ -55,10 +49,7 @@ class RecoveryCodeService:
             or datetime.fromisoformat(row["step_up_expires_at"]) <= _now()
         ):
             raise RecoveryError("RECOVERY_OPERATION_DENIED")
-        policy = self.uow.connection.execute(
-            "SELECT * FROM novaid_tenant_webauthn_policies WHERE tenant_id=?",
-            (tenant_id,),
-        ).fetchone()
+        policy = self.uow.get_recovery_policy(tenant_id)
         if policy and not bool(policy["recovery_codes_enabled"]):
             raise RecoveryError("RECOVERY_OPERATION_DENIED")
         return (
@@ -79,43 +70,23 @@ class RecoveryCodeService:
         ]
         with self.tracer.span("novaid.recovery_codes.generate", {"operation": "recovery.generate"}):
             with self.uow:
-                self.uow.connection.execute(
-                    "UPDATE novaid_recovery_code_batches SET status='SUPERSEDED',revoked_at=?,"
-                    "version=version+1 WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                    (now.isoformat(), tenant_id, identity_id),
+                self.uow.supersede_recovery_codes(tenant_id, identity_id, now=now.isoformat())
+                self.uow.insert_recovery_code_batch(
+                    batch_id,
+                    tenant_id,
+                    identity_id,
+                    created_at=now.isoformat(),
+                    expires_at=expires.isoformat(),
                 )
-                self.uow.connection.execute(
-                    "UPDATE novaid_recovery_codes SET status='SUPERSEDED',revoked_at=?,"
-                    "version=version+1 WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                    (now.isoformat(), tenant_id, identity_id),
-                )
-                self.uow.connection.execute(
-                    "INSERT INTO novaid_recovery_code_batches(batch_id,tenant_id,identity_id,status,"
-                    "created_at,expires_at,revoked_at,version) VALUES(?,?,?,?,?,?,?,1)",
-                    (
+                for code in codes:
+                    self.uow.insert_recovery_code(
+                        _id(),
                         batch_id,
                         tenant_id,
                         identity_id,
-                        "ACTIVE",
-                        now.isoformat(),
-                        expires.isoformat(),
-                        None,
-                    ),
-                )
-                for code in codes:
-                    self.uow.connection.execute(
-                        "INSERT INTO novaid_recovery_codes(recovery_code_id,batch_id,tenant_id,"
-                        "identity_id,code_hash,status,created_at,expires_at,used_at,revoked_at,"
-                        "attempt_count,version) VALUES(?,?,?,?,?,'ACTIVE',?,?,NULL,NULL,0,1)",
-                        (
-                            _id(),
-                            batch_id,
-                            tenant_id,
-                            identity_id,
-                            self._hash(tenant_id, identity_id, code),
-                            now.isoformat(),
-                            expires.isoformat(),
-                        ),
+                        self._hash(tenant_id, identity_id, code),
+                        created_at=now.isoformat(),
+                        expires_at=expires.isoformat(),
                     )
         self.metrics.increment("novaid_recovery_codes_generated_total", outcome="success")
         return {
@@ -128,23 +99,14 @@ class RecoveryCodeService:
     def consume_code(self, *, tenant_id: str, identity_id: str, code: str) -> str:
         digest, now = self._hash(tenant_id, identity_id, code), _now()
         with self.uow:
-            row = self.uow.connection.execute(
-                "SELECT recovery_code_id,status,expires_at FROM novaid_recovery_codes "
-                "WHERE tenant_id=? AND identity_id=? AND code_hash=?",
-                (tenant_id, identity_id, digest),
-            ).fetchone()
+            row = self.uow.get_recovery_code_by_hash(tenant_id, identity_id, digest)
             if (
                 not row
                 or row["status"] != "ACTIVE"
                 or datetime.fromisoformat(row["expires_at"]) <= now
             ):
                 raise RecoveryError("RECOVERY_CODE_INVALID")
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_recovery_codes SET status='USED',used_at=?,version=version+1 "
-                "WHERE recovery_code_id=? AND status='ACTIVE'",
-                (now.isoformat(), row["recovery_code_id"]),
-            )
-            if changed.rowcount != 1:
+            if self.uow.consume_recovery_code(row["recovery_code_id"], now=now.isoformat()) != 1:
                 raise RecoveryError("RECOVERY_CODE_INVALID")
         self.metrics.increment("novaid_recovery_codes_consumed_total", outcome="success")
         return str(row["recovery_code_id"])
@@ -153,26 +115,12 @@ class RecoveryCodeService:
         self._authorize(tenant_id, identity_id, session_id)
         now = _now().isoformat()
         with self.uow:
-            result = self.uow.connection.execute(
-                "UPDATE novaid_recovery_codes SET status='REVOKED',revoked_at=?,version=version+1 "
-                "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                (now, tenant_id, identity_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_recovery_code_batches SET status='REVOKED',revoked_at=?,version=version+1 "
-                "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                (now, tenant_id, identity_id),
-            )
-        return result.rowcount
+            result = self.uow.revoke_recovery_codes(tenant_id, identity_id, now=now)
+            self.uow.revoke_recovery_code_batches(tenant_id, identity_id, now=now)
+        return result
 
     def remaining(self, *, tenant_id: str, identity_id: str) -> int:
-        return int(
-            self.uow.connection.execute(
-                "SELECT COUNT(*) FROM novaid_recovery_codes WHERE tenant_id=? AND identity_id=? "
-                "AND status='ACTIVE' AND expires_at>?",
-                (tenant_id, identity_id, _now().isoformat()),
-            ).fetchone()[0]
-        )
+        return self.uow.count_active_recovery_codes(tenant_id, identity_id, now=_now().isoformat())
 
 
 class TenantWebAuthnPolicyService:

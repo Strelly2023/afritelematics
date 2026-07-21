@@ -353,6 +353,108 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         )
         return result.rowcount
 
+    def get_recovery_authorization_context(
+        self, tenant_id: str, identity_id: str, session_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT s.status,s.authentication_strength,s.step_up_expires_at,m.status membership_status "
+            "FROM novaid_authentication_sessions s JOIN novaid_tenant_memberships m "
+            "ON m.membership_id=s.membership_id AND m.tenant_id=s.tenant_id "
+            "WHERE s.tenant_id=? AND s.identity_id=? AND s.session_id=?",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+
+    def get_recovery_policy(self, tenant_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_tenant_webauthn_policies WHERE tenant_id=?",
+            (tenant_id,),
+        ).fetchone()
+
+    def supersede_recovery_codes(self, tenant_id: str, identity_id: str, *, now: str) -> None:
+        self.connection.execute(
+            "UPDATE novaid_recovery_code_batches SET status='SUPERSEDED',revoked_at=?,"
+            "version=version+1 WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+        self.connection.execute(
+            "UPDATE novaid_recovery_codes SET status='SUPERSEDED',revoked_at=?,"
+            "version=version+1 WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+
+    def insert_recovery_code_batch(
+        self,
+        batch_id: str,
+        tenant_id: str,
+        identity_id: str,
+        *,
+        created_at: str,
+        expires_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_recovery_code_batches(batch_id,tenant_id,identity_id,status,"
+            "created_at,expires_at,revoked_at,version) VALUES(?,?,?,?,?,?,?,1)",
+            (batch_id, tenant_id, identity_id, "ACTIVE", created_at, expires_at, None),
+        )
+
+    def insert_recovery_code(
+        self,
+        recovery_code_id: str,
+        batch_id: str,
+        tenant_id: str,
+        identity_id: str,
+        code_hash: str,
+        *,
+        created_at: str,
+        expires_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_recovery_codes(recovery_code_id,batch_id,tenant_id,identity_id,code_hash,"
+            "status,created_at,expires_at,used_at,revoked_at,attempt_count,version) "
+            "VALUES(?,?,?,?,?,'ACTIVE',?,?,NULL,NULL,0,1)",
+            (recovery_code_id, batch_id, tenant_id, identity_id, code_hash, created_at, expires_at),
+        )
+
+    def get_recovery_code_by_hash(
+        self, tenant_id: str, identity_id: str, code_hash: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT recovery_code_id,status,expires_at FROM novaid_recovery_codes "
+            "WHERE tenant_id=? AND identity_id=? AND code_hash=?",
+            (tenant_id, identity_id, code_hash),
+        ).fetchone()
+
+    def consume_recovery_code(self, recovery_code_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_recovery_codes SET status='USED',used_at=?,version=version+1 "
+            "WHERE recovery_code_id=? AND status='ACTIVE'",
+            (now, recovery_code_id),
+        )
+        return result.rowcount
+
+    def revoke_recovery_codes(self, tenant_id: str, identity_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_recovery_codes SET status='REVOKED',revoked_at=?,version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+        return result.rowcount
+
+    def revoke_recovery_code_batches(self, tenant_id: str, identity_id: str, *, now: str) -> None:
+        self.connection.execute(
+            "UPDATE novaid_recovery_code_batches SET status='REVOKED',revoked_at=?,version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+
+    def count_active_recovery_codes(self, tenant_id: str, identity_id: str, *, now: str) -> int:
+        row = self.connection.execute(
+            "SELECT COUNT(*) FROM novaid_recovery_codes WHERE tenant_id=? AND identity_id=? "
+            "AND status='ACTIVE' AND expires_at>?",
+            (tenant_id, identity_id, now),
+        ).fetchone()
+        return int(row[0] if row is not None else 0)
+
     def delete(self, tenant_id: str, identifier_hash: str) -> None:
         self.connection.execute(
             "DELETE FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
