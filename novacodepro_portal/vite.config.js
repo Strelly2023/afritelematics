@@ -26,6 +26,32 @@ const buildInfo = createBuildInfo({
 
 export default defineConfig({
   base: "/novacodepro/",
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("/src/platform/runtime.js")) {
+            return "novacodepro-runtime";
+          }
+          if (id.includes("/src/platform/aiWorkspace.jsx")) {
+            return "novacodepro-ai-workspace";
+          }
+          if (id.includes("/src/platform/productFrontendRegistry.js")) {
+            return "novacodepro-frontend-registry";
+          }
+          if (id.includes("/src/platform/productFrontendManifests.js")) {
+            return "novacodepro-frontend-manifests";
+          }
+          if (id.includes("/src/platform/rendering/")) {
+            return "novacodepro-rendering";
+          }
+          if (id.includes("/src/platform/interaction/")) {
+            return "novacodepro-interaction";
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     {

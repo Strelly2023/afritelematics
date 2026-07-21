@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   AGENT_MARKETPLACE,
@@ -22,19 +22,8 @@ import { ROUTES } from "./platform/routes.js";
 import { RoleWorkspaceWindows } from "./platform/roleWorkspaceView.jsx";
 import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
 import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoutes.js";
-import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
-import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
 import { StudioChrome } from "./novacodepro/StudioChrome.js";
-import { StudioExplorer } from "./novacodepro/explorer/StudioExplorer.js";
-import { ProductFactoryPortal } from "./novacodepro/ProductFactoryPortal.jsx";
-import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
-import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
-import { NCP006APortal } from "./novacodepro/NCP006APortal.jsx";
-import { NCP006BPortal } from "./novacodepro/NCP006BPortal.jsx";
-import { NCP005Portal } from "./novacodepro/NCP005Portal.jsx";
-import { NCP007Portal } from "./novacodepro/NCP007Portal.jsx";
-import { NCP008Portal } from "./novacodepro/NCP008Portal.jsx";
 import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
@@ -52,6 +41,32 @@ import { createDefaultRenderingRegistry } from "./platform/rendering/index.js";
 import { createDefaultInteractionRegistry } from "./platform/interaction/index.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
+
+function lazyNamed(loader, exportName) {
+  return lazy(() => loader().then((module) => ({ default: module[exportName] })));
+}
+
+const LazySolutionEngineeringPortal = lazyNamed(() => import("./solutions/SolutionEngineeringPortal.jsx"), "SolutionEngineeringPortal");
+const LazyNovaCodeProWorkspaceHub = lazyNamed(() => import("./novacodepro/NovaCodeProWorkspaceHub.jsx"), "NovaCodeProWorkspaceHub");
+const LazyStudioExplorer = lazyNamed(() => import("./novacodepro/explorer/StudioExplorer.js"), "StudioExplorer");
+const LazyProductFactoryPortal = lazyNamed(() => import("./novacodepro/ProductFactoryPortal.jsx"), "ProductFactoryPortal");
+const LazyNCP003Portal = lazyNamed(() => import("./novacodepro/NCP003Portal.jsx"), "NCP003Portal");
+const LazyNCP004Portal = lazyNamed(() => import("./novacodepro/NCP004Portal.jsx"), "NCP004Portal");
+const LazyNCP005Portal = lazyNamed(() => import("./novacodepro/NCP005Portal.jsx"), "NCP005Portal");
+const LazyNCP006APortal = lazyNamed(() => import("./novacodepro/NCP006APortal.jsx"), "NCP006APortal");
+const LazyNCP006BPortal = lazyNamed(() => import("./novacodepro/NCP006BPortal.jsx"), "NCP006BPortal");
+const LazyNCP007Portal = lazyNamed(() => import("./novacodepro/NCP007Portal.jsx"), "NCP007Portal");
+const LazyNCP008Portal = lazyNamed(() => import("./novacodepro/NCP008Portal.jsx"), "NCP008Portal");
+
+function StudioSurfaceFallback() {
+  return (
+    <div className="app-shell studio-shell">
+      <div className="studio-loading-state" role="status" aria-live="polite">
+        Loading studio surface…
+      </div>
+    </div>
+  );
+}
 
 const NAV_ITEMS = [
   "Dashboard",
@@ -3892,113 +3907,134 @@ function App() {
   }
   if (parseNovaCodeProRoute(currentPathname)) {
     const parsedRoute = parseNovaCodeProRoute(currentPathname);
+    const suspenseFallback = <StudioSurfaceFallback />;
     if (["workspace", "projects", "requests"].includes(parsedRoute.appId)) {
       return (
-        <NCP003Portal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP003Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "product-factory") {
       return (
-        <ProductFactoryPortal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyProductFactoryPortal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "ai") {
       return (
-        <NCP004Portal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP004Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (["requirements", "knowledge"].includes(parsedRoute.appId)) {
       return (
-        <NCP005Portal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP005Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "architecture") {
       return (
-        <NCP006APortal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP006APortal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "design") {
       return (
-        <NCP006BPortal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP006BPortal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "development") {
       return (
-        <NCP007Portal
-          session={session}
-          pathname={currentPathname}
-          navigate={(path, options) => navigateTo(path, options)}
-          baseUrl={AUTH_API_BASE}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP007Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       );
     }
     if (parsedRoute.appId === "operations") {
       return (
-        <NCP008Portal
+        <Suspense fallback={suspenseFallback}>
+          <LazyNCP008Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
+      );
+    }
+    return (
+      <Suspense fallback={suspenseFallback}>
+        <LazyNovaCodeProWorkspaceHub
           session={session}
           pathname={currentPathname}
           navigate={(path, options) => navigateTo(path, options)}
           baseUrl={AUTH_API_BASE}
           onLogout={handleLogout}
         />
-      );
-    }
-    return (
-      <NovaCodeProWorkspaceHub
-        session={session}
-        pathname={currentPathname}
-        navigate={(path, options) => navigateTo(path, options)}
-        baseUrl={AUTH_API_BASE}
-        onLogout={handleLogout}
-      />
+      </Suspense>
     );
   }
   if (isSolutionRoute(currentPathname)) {
     return (
-      <SolutionEngineeringPortal
-        session={session}
-        pathname={currentPathname}
-        navigate={(path, options) => navigateTo(path, options)}
-        baseUrl={AUTH_API_BASE}
-        onLogout={handleLogout}
-      />
+      <Suspense fallback={<StudioSurfaceFallback />}>
+        <LazySolutionEngineeringPortal
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      </Suspense>
     );
   }
 
@@ -4108,16 +4144,18 @@ function App() {
       activeActivityId={focusNav}
       >
       {focusNav === "Explorer" ? (
-        <StudioExplorer
-          session={session}
-          environment={environment}
-          activeRole={activeRole}
-          activeProject={activeProject}
-          baseUrl={AUTH_API_BASE}
-          navigate={(path, options) => navigateTo(path, options)}
-          onOpenPalette={() => setPaletteOpen(true)}
-          onFocusNav={(id) => setFocusNav(id)}
-        />
+        <Suspense fallback={<StudioSurfaceFallback />}>
+          <LazyStudioExplorer
+            session={session}
+            environment={environment}
+            activeRole={activeRole}
+            activeProject={activeProject}
+            baseUrl={AUTH_API_BASE}
+            navigate={(path, options) => navigateTo(path, options)}
+            onOpenPalette={() => setPaletteOpen(true)}
+            onFocusNav={(id) => setFocusNav(id)}
+          />
+        </Suspense>
       ) : (
         <>
       {sessionWarning ? (
