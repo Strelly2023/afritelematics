@@ -208,6 +208,7 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         self.connection = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.executescript(SCHEMA)
+        self.identities = self
         self.authentication_locks = self
         self.sessions = self
 
@@ -259,6 +260,99 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             (tenant_id, identifier_hash, failure_count, window_started_at, locked_until, updated_at),
         )
 
+    def list_password_credentials(self, tenant_id: str, identity_id: str) -> list[sqlite3.Row]:
+        return list(
+            self.connection.execute(
+                "SELECT c.credential_id,c.status,p.password_hash,c.created_at "
+                "FROM novaid_credentials c JOIN novaid_password_credentials p "
+                "ON p.credential_id=c.credential_id "
+                "WHERE c.tenant_id=? AND c.identity_id=? AND c.kind='PASSWORD' "
+                "ORDER BY c.created_at DESC",
+                (tenant_id, identity_id),
+            ).fetchall()
+        )
+
+    def supersede_active_password_credentials(self, tenant_id: str, identity_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_credentials SET status='SUPERSEDED',updated_at=?,version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND kind='PASSWORD' AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+        return result.rowcount
+
+    def insert_password_credential(
+        self,
+        credential_id: str,
+        tenant_id: str,
+        identity_id: str,
+        password_hash: str,
+        algorithm_version: str,
+        *,
+        now: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_credentials VALUES(?,?,?,?,?,?,?,?)",
+            (credential_id, tenant_id, identity_id, "PASSWORD", "ACTIVE", now, now, 1),
+        )
+        self.connection.execute(
+            "INSERT INTO novaid_password_credentials VALUES(?,?,?,?,?)",
+            (credential_id, password_hash, algorithm_version, None, None),
+        )
+
+    def create_otp_challenge(
+        self,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str,
+        purpose: str,
+        destination_reference: str,
+        secret_hash: str,
+        created_at: str,
+        expires_at: str,
+        maximum_attempts: int,
+        status: str,
+        correlation_id: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_otp_challenges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                challenge_id,
+                tenant_id,
+                identity_id,
+                purpose,
+                destination_reference,
+                secret_hash,
+                created_at,
+                expires_at,
+                None,
+                0,
+                maximum_attempts,
+                status,
+                correlation_id,
+            ),
+        )
+
+    def get_otp_challenge(self, tenant_id: str, challenge_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_otp_challenges WHERE tenant_id=? AND challenge_id=?",
+            (tenant_id, challenge_id),
+        ).fetchone()
+
+    def increment_otp_challenge_attempt(self, challenge_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET attempt_count=attempt_count+1 WHERE challenge_id=?",
+            (challenge_id,),
+        )
+        return result.rowcount
+
+    def consume_otp_challenge(self, challenge_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET status='CONSUMED',consumed_at=? "
+            "WHERE challenge_id=? AND status='PENDING'",
+            (now, challenge_id),
+        )
+        return result.rowcount
+
     def delete(self, tenant_id: str, identifier_hash: str) -> None:
         self.connection.execute(
             "DELETE FROM novaid_authentication_locks WHERE tenant_id=? AND identifier_hash=?",
@@ -287,6 +381,13 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         return self.connection.execute(
             "SELECT expires_at,status FROM novaid_authentication_sessions "
             "WHERE tenant_id=? AND identity_id=? AND session_id=?",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+
+    def get_active_strength(self, tenant_id: str, identity_id: str, session_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT authentication_strength FROM novaid_authentication_sessions "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=? AND status='ACTIVE'",
             (tenant_id, identity_id, session_id),
         ).fetchone()
 
@@ -443,6 +544,15 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
     ) -> sqlite3.Row | None:
         return self.mark_session_compromised(tenant_id, identity_id, session_id, now=now)
 
+    def revoke_refresh_families_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> int:
+        del reason
+        result = self.connection.execute(
+            "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=? "
+            "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (datetime.utcnow().isoformat(), tenant_id, identity_id),
+        )
+        return result.rowcount
+
     def add_identity(self, identity: Identity) -> None:
         self.connection.execute(
             "INSERT INTO novaid_identities VALUES(?,?,?,?,?,?,?,?)",
@@ -457,6 +567,106 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
                 1,
             ),
         )
+
+    def get_by_email(self, tenant_id: str, normalized_email: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT identity_id FROM novaid_identities "
+            "WHERE tenant_id=? AND normalized_email=? AND status='ACTIVE'",
+            (tenant_id, normalized_email.lower()),
+        ).fetchone()
+
+    def list_password_credentials(self, tenant_id: str, identity_id: str) -> list[sqlite3.Row]:
+        return list(
+            self.connection.execute(
+                "SELECT c.credential_id,c.status,p.password_hash,c.created_at "
+                "FROM novaid_credentials c JOIN novaid_password_credentials p "
+                "ON p.credential_id=c.credential_id "
+                "WHERE c.tenant_id=? AND c.identity_id=? AND c.kind='PASSWORD' "
+                "ORDER BY c.created_at DESC",
+                (tenant_id, identity_id),
+            ).fetchall()
+        )
+
+    def supersede_active_password_credentials(self, tenant_id: str, identity_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_credentials SET status='SUPERSEDED',updated_at=?,version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND kind='PASSWORD' AND status='ACTIVE'",
+            (now, tenant_id, identity_id),
+        )
+        return result.rowcount
+
+    def insert_password_credential(
+        self,
+        credential_id: str,
+        tenant_id: str,
+        identity_id: str,
+        password_hash: str,
+        algorithm_version: str,
+        *,
+        now: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_credentials VALUES(?,?,?,?,?,?,?,?)",
+            (credential_id, tenant_id, identity_id, "PASSWORD", "ACTIVE", now, now, 1),
+        )
+        self.connection.execute(
+            "INSERT INTO novaid_password_credentials VALUES(?,?,?,?,?)",
+            (credential_id, password_hash, algorithm_version, None, None),
+        )
+
+    def create_otp_challenge(
+        self,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str,
+        purpose: str,
+        destination_reference: str,
+        secret_hash: str,
+        created_at: str,
+        expires_at: str,
+        maximum_attempts: int,
+        status: str,
+        correlation_id: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_otp_challenges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                challenge_id,
+                tenant_id,
+                identity_id,
+                purpose,
+                destination_reference,
+                secret_hash,
+                created_at,
+                expires_at,
+                None,
+                0,
+                maximum_attempts,
+                status,
+                correlation_id,
+            ),
+        )
+
+    def get_otp_challenge(self, tenant_id: str, challenge_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_otp_challenges WHERE tenant_id=? AND challenge_id=?",
+            (tenant_id, challenge_id),
+        ).fetchone()
+
+    def increment_otp_challenge_attempt(self, challenge_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET attempt_count=attempt_count+1 WHERE challenge_id=?",
+            (challenge_id,),
+        )
+        return result.rowcount
+
+    def consume_otp_challenge(self, challenge_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET status='CONSUMED',consumed_at=? "
+            "WHERE challenge_id=? AND status='PENDING'",
+            (now, challenge_id),
+        )
+        return result.rowcount
 
     def get_identity(self, context: RequestContext, identity_id: str) -> Identity:
         row = self.connection.execute(

@@ -45,14 +45,7 @@ class PasswordLifecycleService:
         return hmac.new(self.pepper, f"password-reset:{value}".encode(), hashlib.sha256).hexdigest()
 
     def _credentials(self, tenant: str, identity: str):
-        return self.uow.connection.execute(
-            "SELECT c.credential_id,c.status,p.password_hash,c.created_at "
-            "FROM novaid_credentials c "
-            "JOIN novaid_password_credentials p ON p.credential_id=c.credential_id "
-            "WHERE c.tenant_id=? AND c.identity_id=? AND c.kind='PASSWORD' "
-            "ORDER BY c.created_at DESC",
-            (tenant, identity),
-        ).fetchall()
+        return self.uow.list_password_credentials(tenant, identity)
 
     def _reject_reuse(self, tenant: str, identity: str, password: str) -> None:
         for row in self._credentials(tenant, identity)[: self.policy.history_depth]:
@@ -61,24 +54,16 @@ class PasswordLifecycleService:
 
     def _replace(self, tenant: str, identity: str, password: str) -> None:
         now, credential = datetime.now(UTC).isoformat(), _id()
-        self.uow.connection.execute(
-            "UPDATE novaid_credentials SET status='SUPERSEDED',updated_at=?,version=version+1 "
-            "WHERE tenant_id=? AND identity_id=? AND kind='PASSWORD' AND status='ACTIVE'",
-            (now, tenant, identity),
+        self.uow.supersede_active_password_credentials(tenant, identity, now=now)
+        self.uow.insert_password_credential(
+            credential,
+            tenant,
+            identity,
+            self.hasher.hash(password),
+            "scrypt-v1",
+            now=now,
         )
-        self.uow.connection.execute(
-            "INSERT INTO novaid_credentials VALUES(?,?,?,?,?,?,?,?)",
-            (credential, tenant, identity, "PASSWORD", "ACTIVE", now, now, 1),
-        )
-        self.uow.connection.execute(
-            "INSERT INTO novaid_password_credentials VALUES(?,?,?,?,?)",
-            (credential, self.hasher.hash(password), "scrypt-v1", None, None),
-        )
-        self.uow.connection.execute(
-            "UPDATE novaid_identities SET security_version=security_version+1,version=version+1 "
-            "WHERE tenant_id=? AND identity_id=?",
-            (tenant, identity),
-        )
+        self.uow.bump_identity_security_version(tenant, identity)
 
     def change(
         self,
@@ -91,11 +76,7 @@ class PasswordLifecycleService:
     ) -> None:
         self.policy.validate(new_password)
         with self.uow:
-            session = self.uow.connection.execute(
-                "SELECT authentication_strength FROM novaid_authentication_sessions "
-                "WHERE tenant_id=? AND identity_id=? AND session_id=? AND status='ACTIVE'",
-                (tenant_id, identity_id, session_id),
-            ).fetchone()
+            session = self.uow.sessions.get_active_strength(tenant_id, identity_id, session_id)
             active = next(
                 (
                     row
@@ -115,32 +96,22 @@ class PasswordLifecycleService:
     def request_reset(self, *, tenant_id: str, email: str, correlation_id: str) -> dict[str, str]:
         response = {"status": "ACCEPTED"}
         with self.uow:
-            row = self.uow.connection.execute(
-                "SELECT identity_id FROM novaid_identities "
-                "WHERE tenant_id=? AND normalized_email=? "
-                "AND status='ACTIVE'",
-                (tenant_id, email.strip().lower()),
-            ).fetchone()
+            row = self.uow.identities.get_by_email(tenant_id, email.strip().lower())
             if not row:
                 return response
             code, challenge, now = f"{secrets.randbelow(1_000_000):06d}", _id(), datetime.now(UTC)
-            self.uow.connection.execute(
-                "INSERT INTO novaid_otp_challenges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    challenge,
-                    tenant_id,
-                    row["identity_id"],
-                    "PASSWORD_RESET",
-                    "reset-ref",
-                    self._otp_hash(code),
-                    now.isoformat(),
-                    (now + timedelta(minutes=5)).isoformat(),
-                    None,
-                    0,
-                    5,
-                    "PENDING",
-                    correlation_id,
-                ),
+            self.uow.create_otp_challenge(
+                challenge,
+                tenant_id,
+                row["identity_id"],
+                "PASSWORD_RESET",
+                "reset-ref",
+                self._otp_hash(code),
+                now.isoformat(),
+                (now + timedelta(minutes=5)).isoformat(),
+                5,
+                "PENDING",
+                correlation_id,
             )
             response.update({"challenge_id": challenge, "reset_code": code})
         return response
@@ -150,28 +121,16 @@ class PasswordLifecycleService:
     ) -> str:
         self.policy.validate(new_password)
         with self.uow:
-            row = self.uow.connection.execute(
-                "SELECT * FROM novaid_otp_challenges WHERE tenant_id=? AND challenge_id=?",
-                (tenant_id, challenge_id),
-            ).fetchone()
+            row = self.uow.get_otp_challenge(tenant_id, challenge_id)
             if not row or row["purpose"] != "PASSWORD_RESET" or row["status"] != "PENDING":
                 raise ValueError("PASSWORD_RESET_REJECTED")
             if datetime.fromisoformat(row["expires_at"]) <= datetime.now(UTC):
                 raise ValueError("PASSWORD_RESET_REJECTED")
             if not hmac.compare_digest(row["secret_hash"], self._otp_hash(code)):
-                self.uow.connection.execute(
-                    "UPDATE novaid_otp_challenges SET attempt_count=attempt_count+1 "
-                    "WHERE challenge_id=?",
-                    (challenge_id,),
-                )
+                self.uow.increment_otp_challenge_attempt(challenge_id)
                 raise ValueError("PASSWORD_RESET_REJECTED")
             self._reject_reuse(tenant_id, row["identity_id"], new_password)
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_otp_challenges SET status='CONSUMED',consumed_at=? "
-                "WHERE challenge_id=? AND status='PENDING'",
-                (datetime.now(UTC).isoformat(), challenge_id),
-            )
-            if changed.rowcount != 1:
+            if self.uow.consume_otp_challenge(challenge_id, now=datetime.now(UTC).isoformat()) != 1:
                 raise ValueError("PASSWORD_RESET_REJECTED")
             self._replace(tenant_id, row["identity_id"], new_password)
             self._revoke_all(tenant_id, row["identity_id"], "PASSWORD_RESET")
@@ -179,17 +138,8 @@ class PasswordLifecycleService:
 
     def _revoke_all(self, tenant: str, identity: str, reason: str) -> None:
         now = datetime.now(UTC).isoformat()
-        self.uow.connection.execute(
-            "UPDATE novaid_authentication_sessions SET status='REVOKED',"
-            "revoked_at=?,revocation_reason=? "
-            "WHERE tenant_id=? AND identity_id=? AND status NOT IN ('REVOKED','EXPIRED')",
-            (now, reason, tenant, identity),
-        )
-        self.uow.connection.execute(
-            "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=? "
-            "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-            (now, tenant, identity),
-        )
+        self.uow.sessions.revoke_sessions_for_identity(tenant, identity, reason)
+        self.uow.revoke_refresh_families_for_identity(tenant, identity, reason)
         if self.outbox:
             self.outbox.enqueue(
                 tenant_id=tenant,

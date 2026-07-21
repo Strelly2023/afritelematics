@@ -30,6 +30,8 @@ class IdentityRepository(Protocol):
         self, tenant_id: str, identity_id: str, expected: int
     ) -> int: ...
 
+    def get_by_email(self, tenant_id: str, normalized_email: str) -> Any | None: ...
+
 
 class MembershipRepository(Protocol):
     def get_active(self, tenant_id: str, membership_id: str) -> Any | None: ...
@@ -67,6 +69,10 @@ class SessionRepository(Protocol):
     def expire_stale(self, tenant_id: str, *, now: str) -> int: ...
 
     def mark_compromised(self, tenant_id: str, identity_id: str, session_id: str, *, now: str) -> Any | None: ...
+
+    def get_active_strength(
+        self, tenant_id: str, identity_id: str, session_id: str
+    ) -> Any | None: ...
 
 
 class RefreshTokenRepository(Protocol):
