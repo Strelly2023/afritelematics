@@ -211,6 +211,24 @@ class AccountRecoveryService:
         self.uow, self.codes = uow, codes
         self.outbox = outbox or RevocationOutbox(uow)
 
+    def _enqueue(
+        self,
+        *,
+        tenant_id: str,
+        event_type: str,
+        resource_type: str,
+        resource_id: str,
+        payload: dict[str, object],
+    ) -> None:
+        self.outbox.enqueue(
+            tenant_id=tenant_id,
+            event_type=event_type,
+            resource_type=resource_type,
+            resource_id=resource_id,
+            event_version=1,
+            payload=payload,
+        )
+
     def request_recovery(
         self,
         *,
@@ -246,6 +264,13 @@ class AccountRecoveryService:
                 device_reference=device_reference,
                 network_reference=network_reference,
             )
+            self._enqueue(
+                tenant_id=tenant_id,
+                event_type="ACCOUNT_RECOVERY_REQUESTED",
+                resource_type="IDENTITY",
+                resource_id=identity["identity_id"],
+                payload={"recovery_request_id": recovery_id, "method": recovery_method},
+            )
         return {"accepted": True, "recovery_request_id": recovery_id}
 
     def verify_recovery_code(
@@ -272,6 +297,13 @@ class AccountRecoveryService:
                 correlation_id=correlation_id,
                 request_id=request_id,
                 created_at=_now().isoformat(),
+            )
+            self._enqueue(
+                tenant_id=tenant_id,
+                event_type="ACCOUNT_RECOVERY_VERIFIED",
+                resource_type="RECOVERY_REQUEST",
+                resource_id=recovery_request_id,
+                payload={"identity_id": recovery["identity_id"]},
             )
 
     def approve(
@@ -312,6 +344,13 @@ class AccountRecoveryService:
                     approved_at=now.isoformat(),
                     approved_by=approver_identity_id,
                 )
+                self._enqueue(
+                    tenant_id=tenant_id,
+                    event_type="ACCOUNT_RECOVERY_APPROVED",
+                    resource_type="RECOVERY_REQUEST",
+                    resource_id=recovery_request_id,
+                    payload={"identity_id": recovery["identity_id"], "approver": approver_identity_id},
+                )
 
     def reject(
         self, *, tenant_id: str, recovery_request_id: str, approver_identity_id: str, reason: str
@@ -335,6 +374,13 @@ class AccountRecoveryService:
                 != 1
             ):
                 raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
+            self._enqueue(
+                tenant_id=tenant_id,
+                event_type="ACCOUNT_RECOVERY_REJECTED",
+                resource_type="RECOVERY_REQUEST",
+                resource_id=recovery_request_id,
+                payload={"reason": reason, "approver": approver_identity_id},
+            )
 
     def cancel(self, *, tenant_id: str, recovery_request_id: str, identity_id: str) -> None:
         with self.uow:
@@ -348,6 +394,13 @@ class AccountRecoveryService:
                 != 1
             ):
                 raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
+            self._enqueue(
+                tenant_id=tenant_id,
+                event_type="ACCOUNT_RECOVERY_CANCELLED",
+                resource_type="RECOVERY_REQUEST",
+                resource_id=recovery_request_id,
+                payload={"identity_id": identity_id},
+            )
 
     def expire_stale(self, *, tenant_id: str, now: datetime | None = None) -> int:
         instant = now or _now()
@@ -372,43 +425,38 @@ class AccountRecoveryService:
             self.uow.revoke_refresh_families_for_identity(tenant_id, identity_id, "ACCOUNT_RECOVERY")
             self.uow.revoke_webauthn_credentials_for_identity(tenant_id, identity_id)
             self.uow.revoke_recovery_codes(tenant_id, identity_id, now=now.isoformat())
-            self.outbox.enqueue(
+            self._enqueue(
                 tenant_id=tenant_id,
                 event_type="ACCOUNT_RECOVERY_COMPLETED",
                 resource_type="IDENTITY",
                 resource_id=identity_id,
-                event_version=1,
                 payload={"reason": "ACCOUNT_RECOVERY"},
             )
-            self.outbox.enqueue(
+            self._enqueue(
                 tenant_id=tenant_id,
                 event_type="IDENTITY_SECURITY_VERSION_INCREMENTED",
                 resource_type="IDENTITY",
                 resource_id=identity_id,
-                event_version=1,
                 payload={"reason": "ACCOUNT_RECOVERY"},
             )
-            self.outbox.enqueue(
+            self._enqueue(
                 tenant_id=tenant_id,
                 event_type="ALL_SESSIONS_REVOKED",
                 resource_type="IDENTITY",
                 resource_id=identity_id,
-                event_version=1,
                 payload={"reason": "ACCOUNT_RECOVERY"},
             )
-            self.outbox.enqueue(
+            self._enqueue(
                 tenant_id=tenant_id,
                 event_type="TOKEN_FAMILY_REVOKED",
                 resource_type="IDENTITY",
                 resource_id=identity_id,
-                event_version=1,
                 payload={"reason": "ACCOUNT_RECOVERY"},
             )
-            self.outbox.enqueue(
+            self._enqueue(
                 tenant_id=tenant_id,
                 event_type="RECOVERY_REENROLMENT_REQUIRED",
                 resource_type="IDENTITY",
                 resource_id=identity_id,
-                event_version=1,
                 payload={"reason": "ACCOUNT_RECOVERY"},
             )
