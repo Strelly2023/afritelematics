@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -9,6 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+
+import { loadConsumerSurface, resolveNovaPayApiUrl, type ConsumerSurfaceState } from "./novapayApi";
 
 export type NovaPayRoleConfig = Readonly<{
   appName: string;
@@ -35,6 +37,7 @@ export function NovaPayRoleApp({ config }: { config: NovaPayRoleConfig }) {
   const [recipient, setRecipient] = useState("");
   const [state, setState] = useState<FlowState>("idle");
   const [receipt, setReceipt] = useState("");
+  const [backend, setBackend] = useState<ConsumerSurfaceState>({ status: "loading", apiUrl: resolveNovaPayApiUrl() });
   const palette = dark ? darkTheme : lightTheme;
   const sendJourney = [
     "Continue with NovaID",
@@ -86,6 +89,26 @@ export function NovaPayRoleApp({ config }: { config: NovaPayRoleConfig }) {
     buttons: [],
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    loadConsumerSurface()
+      .then((surface) => {
+        if (!cancelled) setBackend(surface);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setBackend({
+            status: "error",
+            apiUrl: "",
+            message: error instanceof Error ? error.message : String(error),
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const submit = () => {
     if (!amount || !recipient) {
       setState("error");
@@ -123,6 +146,30 @@ export function NovaPayRoleApp({ config }: { config: NovaPayRoleConfig }) {
             <Text style={styles.balanceLabel}>{config.balanceLabel}</Text>
             <Text style={styles.balanceValue}>{config.balance}</Text>
             <Text style={styles.balanceMeta}>Ledger current · Risk low · Online</Text>
+          </View>
+          <View style={[styles.card, { backgroundColor: palette.surface }]}>
+            <Text style={[styles.heading, { color: palette.text }]}>Backend integration</Text>
+            <Text style={{ color: palette.muted }}>
+              {backend.status === "loading" && "Connecting to NovaPay backend surfaces…"}
+              {backend.status === "loaded" && `Connected to ${backend.apiUrl}`}
+              {backend.status === "unauthorized" && "Connected endpoint requires a NovaPay access token."}
+              {backend.status === "error" && `Backend unavailable: ${backend.message}`}
+            </Text>
+            {backend.apps?.apps?.length ? (
+              <View style={styles.trustRail}>
+                {backend.apps.apps.slice(0, 5).map((surface) => {
+                  const name = typeof surface === "object" && surface !== null && "name" in surface
+                    ? String((surface as Record<string, unknown>).name ?? (surface as Record<string, unknown>).view ?? "surface")
+                    : String(surface);
+                  return <Text key={name} style={styles.trustPill}>{name}</Text>;
+                })}
+              </View>
+            ) : null}
+            {backend.portals?.role_permissions?.length ? (
+              <Text style={{ color: palette.muted }}>
+                Role permissions: {backend.portals.role_permissions.slice(0, 4).join(" · ")}
+              </Text>
+            ) : null}
           </View>
           {config.role === "consumer" && (
             <View style={[styles.card, { backgroundColor: palette.surface }]}>

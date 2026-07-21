@@ -10,5 +10,5 @@
     "strict": true,
     "target": "ES2021"
   },
-  "include": ["App.tsx", "main.tsx", "src/appConfig.ts", "src/designSystem.ts", "src/roleApp.tsx", "src/react-shim.d.ts"]
+  "include": ["App.tsx", "main.tsx", "src/appConfig.ts", "src/designSystem.ts", "src/novapayApi.ts", "src/roleApp.tsx", "src/react-shim.d.ts"]
 }

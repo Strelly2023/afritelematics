@@ -243,6 +243,21 @@ def validate_database_runtime(database_url: str | None, environment: str | None 
         raise RuntimeError("sqlite_not_allowed_in_production")
 
 
+def _resolve_persistence_backend(
+    *,
+    backend: str | None = None,
+    database_url: str | None = None,
+    environment: str | None = None,
+) -> str:
+    runtime = str(environment or _runtime_environment()).strip().lower()
+    candidate = (backend or "").strip().lower()
+    if candidate in {"sqlite", "postgres"}:
+        return candidate
+    if runtime in {"production", "prod"}:
+        return "postgres" if database_url else "sqlite"
+    return "postgres" if database_url else "sqlite"
+
+
 class PostgresNovaPayRepository:
     """PostgreSQL-backed NovaPay repository with the same record model."""
 
@@ -598,13 +613,17 @@ class PostgresNovaPayRepository:
 
 def build_repository_from_environment() -> NovaPayRepository | PostgresNovaPayRepository:
     runtime = _runtime_environment()
-    backend = os.environ.get("NOVAPAY_PERSISTENCE_BACKEND", "sqlite").strip().lower()
+    database_url = os.environ.get("NOVAPAY_DATABASE_URL") or os.environ.get(
+        "NOVAPAY_POSTGRES_DSN"
+    )
+    backend = _resolve_persistence_backend(
+        backend=os.environ.get("NOVAPAY_PERSISTENCE_BACKEND"),
+        database_url=database_url,
+        environment=runtime,
+    )
     if backend not in {"sqlite", "postgres"}:
         raise RuntimeError("unsupported_novapay_persistence_backend")
     if backend == "postgres":
-        database_url = os.environ.get("NOVAPAY_DATABASE_URL") or os.environ.get(
-            "NOVAPAY_POSTGRES_DSN"
-        )
         if not database_url:
             raise RuntimeError("missing_novapay_postgres_url")
         validate_database_runtime(database_url, runtime)

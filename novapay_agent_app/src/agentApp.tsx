@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -9,6 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+
+import { loadAgentSurface, resolveNovaPayApiUrl, type AgentSurfaceState } from "./novapayApi";
 
 export const NOVAPAY_AGENT_API_CONTRACTS = [
   "/v1/novapay/agents/profile",
@@ -89,7 +91,28 @@ const complianceAlerts: AlertStatus[] = [
 export default function NovaPayAgentApp() {
   const [activeTab, setActiveTab] = useState<AgentTab>("dashboard");
   const [darkMode, setDarkMode] = useState(false);
+  const [backend, setBackend] = useState<AgentSurfaceState>({ status: "loading", apiUrl: resolveNovaPayApiUrl() });
   const palette = darkMode ? dark : light;
+
+  useEffect(() => {
+    let cancelled = false;
+    loadAgentSurface()
+      .then((surface) => {
+        if (!cancelled) setBackend(surface);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setBackend({
+            status: "error",
+            apiUrl: "",
+            message: error instanceof Error ? error.message : String(error),
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <View style={[styles.screen, { backgroundColor: palette.bg }]}>
@@ -115,6 +138,7 @@ export default function NovaPayAgentApp() {
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <PilotModeBanner />
+          <BackendSurfaceCard backend={backend} palette={palette} />
           {activeTab === "dashboard" && <AgentHomeDashboard onNavigate={setActiveTab} palette={palette} />}
           {activeTab === "cash-in" && <CashWorkspace palette={palette} mode="Cash In" />}
           {activeTab === "cash-out" && <CashWorkspace palette={palette} mode="Cash Out" />}
@@ -127,6 +151,41 @@ export default function NovaPayAgentApp() {
 
         <TabBar activeTab={activeTab} onChange={setActiveTab} palette={palette} />
       </SafeAreaView>
+    </View>
+  );
+}
+
+function BackendSurfaceCard({ backend, palette }: { backend: AgentSurfaceState; palette: Palette }) {
+  const summaries = [
+    backend.agent?.view,
+    backend.profile?.view,
+    backend.float?.view,
+    backend.history?.view,
+    backend.compliance?.view,
+    backend.receipts?.view,
+  ].filter((value): value is string => Boolean(value));
+
+  return (
+    <View style={[styles.card, { backgroundColor: palette.surface, marginBottom: 16 }]}>
+      <Text style={[styles.cardTitle, { color: palette.text }]}>Backend integration</Text>
+      <Text style={{ color: palette.muted }}>
+        {backend.status === "loading" && "Connecting to NovaPay agent surfaces…"}
+        {backend.status === "loaded" && `Connected to ${backend.apiUrl}`}
+        {backend.status === "unauthorized" && "Connected endpoint requires a NovaPay access token."}
+        {backend.status === "error" && `Backend unavailable: ${backend.message}`}
+      </Text>
+      {summaries.length ? (
+        <View style={styles.trustRail}>
+          {summaries.slice(0, 4).map((item) => (
+            <Text key={item} style={styles.trustPill}>{item}</Text>
+          ))}
+        </View>
+      ) : null}
+      {backend.profile?.agent_count !== undefined ? (
+        <Text style={{ color: palette.muted }}>
+          Agents: {backend.profile.agent_count} · Float wallets: {backend.profile.wallet_count ?? backend.float?.wallet_count ?? "Unavailable"} · Receipts: {backend.receipts?.receipts?.length ?? "Unavailable"}
+        </Text>
+      ) : null}
     </View>
   );
 }
