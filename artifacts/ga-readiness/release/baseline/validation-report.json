@@ -1,25 +1,8 @@
 {
-  "blockers": [
-    {
-      "detail": [
-        "artifacts/ga-readiness/release/checksums/SHA256SUMS",
-        "artifacts/ga-readiness/release/checksums/checksum-report.json",
-        "artifacts/ga-readiness/release/manifests/release-manifest.json",
-        "artifacts/ga-readiness/release/manifests/release-manifest.yaml",
-        "artifacts/ga-readiness/release/reproducibility/report.json",
-        "artifacts/ga-readiness/release/reproducibility/report.md",
-        "docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md",
-        "docs/release/release-artifact-inventory.json",
-        "scripts/release/generate_release_manifest.py",
-        "scripts/release/validate_release_baseline.py",
-        "tests/release/test_release_manifest.py"
-      ],
-      "id": "dirty_tracked_worktree"
-    }
-  ],
+  "blockers": [],
   "branch": "feature/product-factory-enterprise-sdlc",
-  "generated_at": "2026-07-21T12:27:30.404012+00:00",
-  "head": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
+  "generated_at": "2026-07-21T12:34:19.253529+00:00",
+  "head": "5f451f2d8b1363b977603d76509389c35b60cb2e",
   "paths": {
     "checksums": "artifacts/ga-readiness/release/checksums/SHA256SUMS",
     "classification": "docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md",
@@ -28,7 +11,7 @@
     "reproducibility": "artifacts/ga-readiness/release/reproducibility/report.json",
     "scope": "docs/release/release-scope.yaml"
   },
-  "remote": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
+  "remote": "5f451f2d8b1363b977603d76509389c35b60cb2e",
   "schema_version": 1,
-  "status": "RC_FREEZE_BLOCKED"
+  "status": "LOCAL_BASELINE_PASS"
 }
