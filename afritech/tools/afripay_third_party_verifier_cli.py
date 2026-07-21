@@ -24,7 +24,7 @@ def run(argv: list[str] | None = None) -> int:
 
 
 def _repo_venv_python() -> Path:
-    return Path(__file__).resolve().parents[2] / "venv/bin/python"
+    return Path(__file__).resolve().parents[2] / "venv/bin/python3"
 
 
 def _ensure_runtime_dependencies(exc: ModuleNotFoundError) -> None:
