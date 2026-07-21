@@ -221,6 +221,10 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             self.connection.execute("ROLLBACK" if exc_type else "COMMIT")
         return False
 
+    @property
+    def in_transaction(self) -> bool:
+        return self.connection.in_transaction
+
     def create_tenant(self, tenant_id: str, name: str, now: datetime) -> None:
         self.connection.execute(
             "INSERT INTO novaid_tenants VALUES(?,?,?,?,?,1)",
@@ -369,6 +373,289 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             "SELECT * FROM novaid_tenant_webauthn_policies WHERE tenant_id=?",
             (tenant_id,),
         ).fetchone()
+
+    def replace_tenant_webauthn_policy(
+        self,
+        tenant_id: str,
+        policy: dict[str, object],
+        *,
+        updated_by: str,
+        reason: str,
+        version: int,
+        updated_at: str,
+    ) -> None:
+        del reason
+        self.connection.execute(
+            "DELETE FROM novaid_tenant_webauthn_policies WHERE tenant_id=?",
+            (tenant_id,),
+        )
+        self.connection.execute(
+            "INSERT INTO novaid_tenant_webauthn_policies(tenant_id,require_webauthn,"
+            "passkeys_enabled,passwordless_enabled,require_phishing_resistant_step_up,"
+            "user_verification,attestation,maximum_credentials,recovery_codes_enabled,"
+            "recovery_code_count,recovery_code_expiry_days,recovery_approval_count,"
+            "recovery_requires_new_authenticator,step_up_seconds,updated_at,updated_by,version) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                tenant_id,
+                bool(policy["enabled"]),
+                bool(policy["passkeys_enabled"]),
+                bool(policy["passwordless_enabled"]),
+                bool(policy["phishing_resistant_step_up_required"]),
+                policy["user_verification"],
+                policy["attestation"],
+                int(policy["maximum_credentials"]),
+                bool(policy["recovery_codes_enabled"]),
+                int(policy["recovery_code_count"]),
+                int(policy["recovery_code_expiry_days"]),
+                int(policy["recovery_approval_count"]),
+                bool(policy["recovery_requires_new_authenticator"]),
+                int(policy["step_up_seconds"]),
+                updated_at,
+                updated_by,
+                version,
+            ),
+        )
+        self.connection.execute(
+            "UPDATE novaid_tenant_webauthn_policy_history SET status='SUPERSEDED' "
+            "WHERE tenant_id=? AND status='ACTIVE'",
+            (tenant_id,),
+        )
+        self.connection.execute(
+            "INSERT INTO novaid_tenant_webauthn_policy_history(policy_history_id,tenant_id,"
+            "policy_version,status,policy,reason,created_at,created_by) VALUES(?,?,?,?,?,?,?,?)",
+            (
+                _id(),
+                tenant_id,
+                version,
+                "ACTIVE",
+                json.dumps(policy, sort_keys=True, separators=(",", ":")),
+                reason,
+                updated_at,
+                updated_by,
+            ),
+        )
+
+    def get_actor_recovery_context(
+        self, tenant_id: str, actor_identity_id: str, session_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT m.role,s.authentication_strength,s.step_up_expires_at FROM novaid_tenant_memberships m "
+            "JOIN novaid_authentication_sessions s ON s.membership_id=m.membership_id "
+            "WHERE m.tenant_id=? AND m.identity_id=? AND m.status='ACTIVE' AND s.session_id=? AND s.status='ACTIVE'",
+            (tenant_id, actor_identity_id, session_id),
+        ).fetchone()
+
+    def get_active_identity_by_email(self, tenant_id: str, normalized_email: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT identity_id FROM novaid_identities WHERE tenant_id=? AND normalized_email=? AND status='ACTIVE'",
+            (tenant_id, normalized_email),
+        ).fetchone()
+
+    def get_recent_recovery_request(
+        self, tenant_id: str, identity_id: str, *, since: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT recovery_request_id FROM novaid_account_recovery_requests WHERE tenant_id=? "
+            "AND identity_id=? AND requested_at>? AND status NOT IN "
+            "('REJECTED','COMPLETED','CANCELLED','EXPIRED')",
+            (tenant_id, identity_id, since),
+        ).fetchone()
+
+    def insert_recovery_request(
+        self,
+        recovery_request_id: str,
+        tenant_id: str,
+        identity_id: str,
+        *,
+        status: str,
+        recovery_method: str,
+        requested_at: str,
+        expires_at: str,
+        reason: str,
+        correlation_id: str,
+        request_id: str,
+        device_reference: str | None,
+        network_reference: str | None,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_account_recovery_requests(recovery_request_id,tenant_id,identity_id,"
+            "status,recovery_method,requested_at,expires_at,approved_at,approved_by,completed_at,"
+            "rejected_at,cancelled_at,reason,correlation_id,request_id,device_reference,"
+            "network_reference,version) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                recovery_request_id,
+                tenant_id,
+                identity_id,
+                status,
+                recovery_method,
+                requested_at,
+                expires_at,
+                None,
+                None,
+                None,
+                None,
+                None,
+                reason,
+                correlation_id,
+                request_id,
+                device_reference,
+                network_reference,
+                1,
+            ),
+        )
+
+    def get_recovery_request(
+        self, tenant_id: str, recovery_request_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_account_recovery_requests WHERE tenant_id=? AND recovery_request_id=?",
+            (tenant_id, recovery_request_id),
+        ).fetchone()
+
+    def mark_recovery_verified(self, recovery_request_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='VERIFIED',version=version+1 "
+            "WHERE recovery_request_id=? AND status='REQUESTED'",
+            (recovery_request_id,),
+        )
+        return result.rowcount
+
+    def insert_recovery_evidence(
+        self,
+        evidence_id: str,
+        recovery_request_id: str,
+        tenant_id: str,
+        identity_id: str,
+        *,
+        method: str,
+        correlation_id: str,
+        request_id: str,
+        created_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_account_recovery_evidence(evidence_id,recovery_request_id,"
+            "tenant_id,identity_id,method,result,risk_indicators,actor_identity_id,"
+            "correlation_id,request_id,created_at) VALUES(?,?,?,?,?,'VERIFIED','[]',NULL,?,?,?)",
+            (
+                evidence_id,
+                recovery_request_id,
+                tenant_id,
+                identity_id,
+                method,
+                correlation_id,
+                request_id,
+                created_at,
+            ),
+        )
+
+    def get_membership_role_status(self, tenant_id: str, identity_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT role,status FROM novaid_tenant_memberships WHERE tenant_id=? AND identity_id=?",
+            (tenant_id, identity_id),
+        ).fetchone()
+
+    def insert_recovery_approval(
+        self,
+        approval_id: str,
+        recovery_request_id: str,
+        tenant_id: str,
+        approver_identity_id: str,
+        *,
+        decision: str,
+        reason: str,
+        created_at: str,
+        expires_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_account_recovery_approvals(approval_id,recovery_request_id,"
+            "tenant_id,approver_identity_id,decision,reason,created_at,expires_at) "
+            "VALUES(?,?,?,?,'APPROVED',?,?,?)",
+            (
+                approval_id,
+                recovery_request_id,
+                tenant_id,
+                approver_identity_id,
+                reason,
+                created_at,
+                expires_at,
+            ),
+        )
+
+    def bump_recovery_request_version(self, recovery_request_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET version=version+1 "
+            "WHERE recovery_request_id=?",
+            (recovery_request_id,),
+        )
+        return result.rowcount
+
+    def count_active_recovery_approvals(
+        self, tenant_id: str, recovery_request_id: str, *, now: str
+    ) -> int:
+        row = self.connection.execute(
+            "SELECT COUNT(*) FROM novaid_account_recovery_approvals WHERE tenant_id=? "
+            "AND recovery_request_id=? AND decision='APPROVED' AND expires_at>?",
+            (tenant_id, recovery_request_id, now),
+        ).fetchone()
+        return int(row[0] if row else 0)
+
+    def mark_recovery_approved(
+        self, recovery_request_id: str, *, approved_at: str, approved_by: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='APPROVED',approved_at=?,"
+            "approved_by=?,version=version+1 WHERE recovery_request_id=? AND status='VERIFIED'",
+            (approved_at, approved_by, recovery_request_id),
+        )
+        return result.rowcount
+
+    def mark_recovery_rejected(
+        self, tenant_id: str, recovery_request_id: str, *, rejected_at: str, reason: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='REJECTED',rejected_at=?,"
+            "reason=?,version=version+1 WHERE tenant_id=? AND recovery_request_id=? "
+            "AND status IN ('REQUESTED','VERIFIED')",
+            (rejected_at, reason, tenant_id, recovery_request_id),
+        )
+        return result.rowcount
+
+    def mark_recovery_cancelled(
+        self, tenant_id: str, identity_id: str, recovery_request_id: str, *, cancelled_at: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='CANCELLED',cancelled_at=?,"
+            "version=version+1 WHERE tenant_id=? AND identity_id=? AND recovery_request_id=? "
+            "AND status IN ('REQUESTED','VERIFIED')",
+            (cancelled_at, tenant_id, identity_id, recovery_request_id),
+        )
+        return result.rowcount
+
+    def expire_recovery_requests(self, tenant_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='EXPIRED',version=version+1 "
+            "WHERE tenant_id=? AND expires_at<=? AND status IN ('REQUESTED','VERIFIED','APPROVED')",
+            (tenant_id, now),
+        )
+        return result.rowcount
+
+    def mark_recovery_completed(self, tenant_id: str, recovery_request_id: str, *, completed_at: str) -> sqlite3.Row | None:
+        row = self.connection.execute(
+            "SELECT identity_id,status,expires_at FROM novaid_account_recovery_requests "
+            "WHERE tenant_id=? AND recovery_request_id=?",
+            (tenant_id, recovery_request_id),
+        ).fetchone()
+        if not row:
+            return None
+        changed = self.connection.execute(
+            "UPDATE novaid_account_recovery_requests SET status='COMPLETED',completed_at=?,version=version+1 "
+            "WHERE recovery_request_id=? AND status='APPROVED'",
+            (completed_at, recovery_request_id),
+        )
+        if changed.rowcount != 1:
+            return None
+        return row
 
     def supersede_recovery_codes(self, tenant_id: str, identity_id: str, *, now: str) -> None:
         self.connection.execute(
@@ -654,6 +941,285 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             (datetime.utcnow().isoformat(), tenant_id, identity_id),
         )
         return result.rowcount
+
+    def revoke_webauthn_credentials_for_identity(self, tenant_id: str, identity_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_webauthn_credentials SET status='SUSPENDED',version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
+            (tenant_id, identity_id),
+        )
+        return result.rowcount
+
+    def list_active_webauthn_credentials(
+        self, tenant_id: str, identity_id: str
+    ) -> list[sqlite3.Row]:
+        return list(
+            self.connection.execute(
+                "SELECT credential_id,transports FROM novaid_webauthn_credentials "
+                "WHERE tenant_id=? AND identity_id=? AND status IN ('ACTIVE','SUSPENDED')",
+                (tenant_id, identity_id),
+            ).fetchall()
+        )
+
+    def get_webauthn_credential(self, tenant_id: str, credential_id: str) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_webauthn_credentials WHERE tenant_id=? AND credential_id=?",
+            (tenant_id, credential_id),
+        ).fetchone()
+
+    def get_passwordless_session_context(
+        self, tenant_id: str, identity_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT m.membership_id,i.status,i.security_version FROM novaid_tenant_memberships m "
+            "JOIN novaid_identities i ON i.identity_id=m.identity_id AND i.tenant_id=m.tenant_id "
+            "WHERE m.tenant_id=? AND m.identity_id=? AND m.status='ACTIVE' AND i.status='ACTIVE'",
+            (tenant_id, identity_id),
+        ).fetchone()
+
+    def get_webauthn_session(
+        self, tenant_id: str, session_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT identity_id,status FROM novaid_authentication_sessions "
+            "WHERE tenant_id=? AND session_id=?",
+            (tenant_id, session_id),
+        ).fetchone()
+
+    def insert_webauthn_challenge(
+        self,
+        table: str,
+        *,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str | None,
+        session_id: str | None,
+        purpose: str,
+        challenge_hash: str,
+        rp_id: str,
+        origin: str,
+        created_at: str,
+        expires_at: str,
+        correlation_id: str,
+        request_id: str,
+        maximum_attempts: int,
+    ) -> None:
+        columns = "challenge_id,tenant_id,identity_id,"
+        values: tuple[object, ...]
+        if table == "novaid_webauthn_authentication_challenges":
+            columns += "session_id,"
+            values = (challenge_id, tenant_id, identity_id, session_id)
+            placeholders = "?,?,?,?"
+        else:
+            values = (challenge_id, tenant_id, identity_id)
+            placeholders = "?,?,?"
+        columns += (
+            "purpose,challenge_hash,rp_id,origin,created_at,expires_at,consumed_at,status,"
+            "attempt_count,maximum_attempts,correlation_id,request_id"
+        )
+        values += (
+            purpose,
+            challenge_hash,
+            rp_id,
+            origin,
+            created_at,
+            expires_at,
+            None,
+            "PENDING",
+            0,
+            maximum_attempts,
+            correlation_id,
+            request_id,
+        )
+        self.connection.execute(
+            f"INSERT INTO {table}({columns}) VALUES({placeholders},?,?,?,?,?,?,?,?,?,?,?,?)",
+            values,
+        )
+
+    def get_webauthn_challenge(
+        self, table: str, challenge_id: str, tenant_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            f"SELECT * FROM {table} WHERE challenge_id=? AND tenant_id=?",
+            (challenge_id, tenant_id),
+        ).fetchone()
+
+    def consume_webauthn_challenge(
+        self, table: str, challenge_id: str, tenant_id: str, *, now: str
+    ) -> int:
+        result = self.connection.execute(
+            f"UPDATE {table} SET status='CONSUMED',consumed_at=? "
+            "WHERE challenge_id=? AND tenant_id=? AND status='PENDING'",
+            (now, challenge_id, tenant_id),
+        )
+        return result.rowcount
+
+    def insert_webauthn_authenticator(
+        self,
+        authenticator_id: str,
+        tenant_id: str,
+        aaguid: str,
+        friendly_name: str | None,
+        *,
+        status: str,
+        created_at: str,
+        updated_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_authenticators VALUES(?,?,?,?,?,?,?,1)",
+            (
+                authenticator_id,
+                tenant_id,
+                aaguid,
+                friendly_name,
+                status,
+                created_at,
+                updated_at,
+            ),
+        )
+
+    def insert_webauthn_credential(
+        self,
+        *,
+        credential_id: str,
+        tenant_id: str,
+        identity_id: str,
+        membership_id: str,
+        authenticator_id: str,
+        user_handle: bytes,
+        public_key_cose: bytes,
+        public_key_algorithm: int,
+        sign_count: int,
+        aaguid: str,
+        attestation_format: str,
+        attestation_type: str,
+        transports: str,
+        backup_eligible: bool,
+        backup_state: bool,
+        discoverable: bool,
+        resident_key: bool,
+        user_verification: bool,
+        created_at: str,
+        status: str,
+        version: int,
+        friendly_name: str | None,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_webauthn_credentials(credential_id,tenant_id,identity_id,"
+            "membership_id,authenticator_id,user_handle,public_key_cose,public_key_algorithm,"
+            "sign_count,aaguid,attestation_format,attestation_type,transports,backup_eligible,"
+            "backup_state,discoverable,resident_key,user_verification,created_at,status,version,"
+            "friendly_name) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                credential_id,
+                tenant_id,
+                identity_id,
+                membership_id,
+                authenticator_id,
+                user_handle,
+                public_key_cose,
+                public_key_algorithm,
+                sign_count,
+                aaguid,
+                attestation_format,
+                attestation_type,
+                transports,
+                backup_eligible,
+                backup_state,
+                discoverable,
+                resident_key,
+                user_verification,
+                created_at,
+                status,
+                version,
+                friendly_name,
+            ),
+        )
+
+    def mark_webauthn_credential_compromised(self, tenant_id: str, credential_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_webauthn_credentials SET status='COMPROMISED',version=version+1 "
+            "WHERE tenant_id=? AND credential_id=? AND status='ACTIVE'",
+            (tenant_id, credential_id),
+        )
+        return result.rowcount
+
+    def update_webauthn_credential_sign_count(
+        self,
+        tenant_id: str,
+        credential_id: str,
+        *,
+        new_sign_count: int,
+        last_used_at: str,
+        last_verified_at: str,
+        backup_state: bool,
+        expected_sign_count: int,
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_webauthn_credentials SET sign_count=?,last_used_at=?,"
+            "last_verified_at=?,backup_state=?,version=version+1 WHERE tenant_id=? "
+            "AND credential_id=? AND status='ACTIVE' AND sign_count=?",
+            (
+                new_sign_count,
+                last_used_at,
+                last_verified_at,
+                backup_state,
+                tenant_id,
+                credential_id,
+                expected_sign_count,
+            ),
+        )
+        return result.rowcount
+
+    def update_webauthn_credential_status(
+        self,
+        tenant_id: str,
+        identity_id: str,
+        credential_id: str,
+        *,
+        target: str,
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_webauthn_credentials SET status=?,version=version+1 "
+            "WHERE tenant_id=? AND identity_id=? AND credential_id=?",
+            (target, tenant_id, identity_id, credential_id),
+        )
+        return result.rowcount
+
+    def complete_webauthn_step_up(self, tenant_id: str, session_id: str, *, now: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
+            "authentication_strength='PHISHING_RESISTANT',authenticated_at=?,"
+            "step_up_expires_at=?,authentication_methods='[\"WEBAUTHN\"]' "
+            "WHERE tenant_id=? AND session_id=? AND status='STEP_UP_REQUIRED'",
+            (now, (datetime.fromisoformat(now) + timedelta(minutes=5)).isoformat(), tenant_id, session_id),
+        )
+        return result.rowcount
+
+    def insert_webauthn_status_history(
+        self,
+        history_id: str,
+        tenant_id: str,
+        credential_id: str,
+        previous_status: str,
+        target_status: str,
+        reason: str,
+        created_at: str,
+        actor_identity_id: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_authenticator_status_history VALUES(?,?,?,?,?,?,?,?)",
+            (
+                history_id,
+                tenant_id,
+                credential_id,
+                previous_status,
+                target_status,
+                reason,
+                created_at,
+                actor_identity_id,
+            ),
+        )
 
     def add_identity(self, identity: Identity) -> None:
         self.connection.execute(

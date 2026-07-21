@@ -141,37 +141,22 @@ class WebAuthnService:
         request_id: str,
     ) -> str:
         challenge_id, now = _id(), datetime.now(UTC)
-        columns = "challenge_id,tenant_id,identity_id,"
-        values: tuple[object, ...]
-        if table == "novaid_webauthn_authentication_challenges":
-            columns += "session_id,"
-            values = (challenge_id, tenant_id, identity_id, session_id)
-            placeholders = "?,?,?,?"
-        else:
-            values = (challenge_id, tenant_id, identity_id)
-            placeholders = "?,?,?"
-        columns += (
-            "purpose,challenge_hash,rp_id,origin,created_at,expires_at,consumed_at,status,"
-            "attempt_count,maximum_attempts,correlation_id,request_id"
-        )
-        values += (
-            purpose,
-            hashlib.sha256(challenge).hexdigest(),
-            self.policy.rp_id,
-            self.policy.origins[0],
-            now.isoformat(),
-            (now + timedelta(seconds=self.policy.challenge_seconds)).isoformat(),
-            None,
-            "PENDING",
-            0,
-            self.policy.maximum_attempts,
-            correlation_id,
-            request_id,
-        )
         with self.uow:
-            self.uow.connection.execute(
-                f"INSERT INTO {table}({columns}) VALUES({placeholders},?,?,?,?,?,?,?,?,?,?,?,?)",
-                values,
+            self.uow.insert_webauthn_challenge(
+                table,
+                challenge_id=challenge_id,
+                tenant_id=tenant_id,
+                identity_id=identity_id,
+                session_id=session_id,
+                purpose=purpose,
+                challenge_hash=hashlib.sha256(challenge).hexdigest(),
+                rp_id=self.policy.rp_id,
+                origin=self.policy.origins[0],
+                created_at=now.isoformat(),
+                expires_at=(now + timedelta(seconds=self.policy.challenge_seconds)).isoformat(),
+                correlation_id=correlation_id,
+                request_id=request_id,
+                maximum_attempts=self.policy.maximum_attempts,
             )
         if self.coordinator:
             self.coordinator.create(
@@ -197,11 +182,7 @@ class WebAuthnService:
         if not WEBAUTHN_AVAILABLE:
             raise WebAuthnError("WEBAUTHN_UNAVAILABLE")
         challenge = secrets.token_bytes(32)
-        rows = self.uow.connection.execute(
-            "SELECT credential_id,transports FROM novaid_webauthn_credentials "
-            "WHERE tenant_id=? AND identity_id=? AND status IN ('ACTIVE','SUSPENDED')",
-            (tenant_id, identity_id),
-        ).fetchall()
+        rows = self.uow.list_active_webauthn_credentials(tenant_id, identity_id)
         exclude = [
             PublicKeyCredentialDescriptor(id=_decode(str(row["credential_id"]))) for row in rows
         ]
@@ -259,10 +240,7 @@ class WebAuthnService:
     ) -> bytes:
         challenge = _challenge_from_response(credential)
         with self.uow:
-            row = self.uow.connection.execute(
-                f"SELECT * FROM {table} WHERE challenge_id=? AND tenant_id=?",
-                (challenge_id, tenant_id),
-            ).fetchone()
+            row = self.uow.get_webauthn_challenge(table, challenge_id, tenant_id)
             now = datetime.now(UTC)
             if (
                 not row
@@ -278,12 +256,9 @@ class WebAuthnService:
                 )
             ):
                 raise WebAuthnError("INVALID_WEBAUTHN_CHALLENGE")
-            changed = self.uow.connection.execute(
-                f"UPDATE {table} SET status='CONSUMED',consumed_at=? "
-                "WHERE challenge_id=? AND tenant_id=? AND status='PENDING'",
-                (now.isoformat(), challenge_id, tenant_id),
-            )
-            if changed.rowcount != 1:
+            if self.uow.consume_webauthn_challenge(
+                table, challenge_id, tenant_id, now=now.isoformat()
+            ) != 1:
                 raise WebAuthnError("INVALID_WEBAUTHN_CHALLENGE")
         if self.coordinator:
             redis_purpose = "REGISTRATION" if table == "novaid_webauthn_registration_challenges" else "AUTHENTICATION"
@@ -357,48 +332,38 @@ class WebAuthnService:
         else:
             algorithm = -7
         with self.uow:
-            self.uow.connection.execute(
-                "INSERT INTO novaid_authenticators VALUES(?,?,?,?,?,?,?,1)",
-                (
-                    authenticator_id,
-                    tenant_id,
-                    verified.aaguid,
-                    friendly_name,
-                    "ACTIVE",
-                    now.isoformat(),
-                    now.isoformat(),
-                ),
+            self.uow.insert_webauthn_authenticator(
+                authenticator_id,
+                tenant_id,
+                verified.aaguid,
+                friendly_name,
+                status="ACTIVE",
+                created_at=now.isoformat(),
+                updated_at=now.isoformat(),
             )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_webauthn_credentials(credential_id,tenant_id,identity_id,"
-                "membership_id,authenticator_id,user_handle,public_key_cose,public_key_algorithm,"
-                "sign_count,aaguid,attestation_format,attestation_type,transports,backup_eligible,"
-                "backup_state,discoverable,resident_key,user_verification,created_at,status,version,"
-                "friendly_name) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    credential_id,
-                    tenant_id,
-                    identity_id,
-                    membership_id,
-                    authenticator_id,
-                    UUID(identity_id).bytes,
-                    verified.credential_public_key,
-                    algorithm,
-                    verified.sign_count,
-                    verified.aaguid,
-                    str(getattr(verified.fmt, "value", verified.fmt)),
-                    "NONE",
-                    "[]",
-                    verified.credential_device_type.value == "multi_device",
-                    verified.credential_backed_up,
-                    True,
-                    True,
-                    verified.user_verified,
-                    now.isoformat(),
-                    "ACTIVE",
-                    1,
-                    friendly_name,
-                ),
+            self.uow.insert_webauthn_credential(
+                credential_id=credential_id,
+                tenant_id=tenant_id,
+                identity_id=identity_id,
+                membership_id=membership_id,
+                authenticator_id=authenticator_id,
+                user_handle=UUID(identity_id).bytes,
+                public_key_cose=verified.credential_public_key,
+                public_key_algorithm=algorithm,
+                sign_count=verified.sign_count,
+                aaguid=verified.aaguid,
+                attestation_format=str(getattr(verified.fmt, "value", verified.fmt)),
+                attestation_type="NONE",
+                transports="[]",
+                backup_eligible=verified.credential_device_type.value == "multi_device",
+                backup_state=verified.credential_backed_up,
+                discoverable=True,
+                resident_key=True,
+                user_verification=verified.user_verified,
+                created_at=now.isoformat(),
+                status="ACTIVE",
+                version=1,
+                friendly_name=friendly_name,
             )
         self._emit_distributed_event(
             tenant_id=tenant_id,
@@ -432,11 +397,7 @@ class WebAuthnService:
         challenge = secrets.token_bytes(32)
         allow = None
         if identity_id:
-            rows = self.uow.connection.execute(
-                "SELECT credential_id FROM novaid_webauthn_credentials WHERE tenant_id=? "
-                "AND identity_id=? AND status='ACTIVE'",
-                (tenant_id, identity_id),
-            ).fetchall()
+            rows = self.uow.list_active_webauthn_credentials(tenant_id, identity_id)
             allow = [
                 PublicKeyCredentialDescriptor(id=_decode(str(row["credential_id"]))) for row in rows
             ]
@@ -472,10 +433,7 @@ class WebAuthnService:
         if not WEBAUTHN_AVAILABLE:
             raise WebAuthnError("WEBAUTHN_UNAVAILABLE")
         credential_id = str(credential.get("id") or "")
-        row = self.uow.connection.execute(
-            "SELECT * FROM novaid_webauthn_credentials WHERE tenant_id=? AND credential_id=?",
-            (tenant_id, credential_id),
-        ).fetchone()
+        row = self.uow.get_webauthn_credential(tenant_id, credential_id)
         if not row or row["status"] != "ACTIVE":
             raise WebAuthnError("WEBAUTHN_AUTHENTICATION_REJECTED")
         challenge = self._consume_challenge(
@@ -500,12 +458,7 @@ class WebAuthnService:
         except Exception as exc:
             if "sign count" in str(exc).lower() or "counter" in str(exc).lower():
                 with self.uow:
-                    self.uow.connection.execute(
-                        "UPDATE novaid_webauthn_credentials SET status='COMPROMISED',"
-                        "version=version+1 WHERE tenant_id=? AND credential_id=? "
-                        "AND status='ACTIVE'",
-                        (tenant_id, credential_id),
-                    )
+                    self.uow.mark_webauthn_credential_compromised(tenant_id, credential_id)
                 self._emit_distributed_event(
                     tenant_id=tenant_id,
                     event_type="WEBAUTHN_CREDENTIAL_COMPROMISED",
@@ -521,28 +474,18 @@ class WebAuthnService:
         old, new = int(row["sign_count"]), int(verified.new_sign_count)
         if old > 0 and new <= old:
             with self.uow:
-                self.uow.connection.execute(
-                    "UPDATE novaid_webauthn_credentials SET status='COMPROMISED',version=version+1 "
-                    "WHERE tenant_id=? AND credential_id=? AND status='ACTIVE'",
-                    (tenant_id, credential_id),
-                )
+                self.uow.mark_webauthn_credential_compromised(tenant_id, credential_id)
             raise WebAuthnError("WEBAUTHN_CLONE_DETECTED")
         now = datetime.now(UTC)
         with self.uow:
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_webauthn_credentials SET sign_count=?,last_used_at=?,"
-                "last_verified_at=?,"
-                "backup_state=?,version=version+1 WHERE tenant_id=? AND credential_id=? "
-                "AND status='ACTIVE' AND sign_count=?",
-                (
-                    new,
-                    now.isoformat(),
-                    now.isoformat(),
-                    verified.credential_backed_up,
-                    tenant_id,
-                    credential_id,
-                    old,
-                ),
+            changed = self.uow.update_webauthn_credential_sign_count(
+                tenant_id,
+                credential_id,
+                new_sign_count=new,
+                last_used_at=now.isoformat(),
+                last_verified_at=now.isoformat(),
+                backup_state=verified.credential_backed_up,
+                expected_sign_count=old,
             )
             if changed.rowcount != 1:
                 raise WebAuthnError("WEBAUTHN_COUNTER_CONFLICT")
@@ -584,88 +527,50 @@ class WebAuthnService:
             request_id=request_id,
         )
         identity_id = str(evidence["identity_id"])
-        membership = self.uow.connection.execute(
-            "SELECT membership_id FROM novaid_tenant_memberships WHERE tenant_id=? "
-            "AND identity_id=? AND status='ACTIVE'",
-            (tenant_id, identity_id),
-        ).fetchone()
-        identity = self.uow.connection.execute(
-            "SELECT status,security_version FROM novaid_identities WHERE tenant_id=? "
-            "AND identity_id=?",
-            (tenant_id, identity_id),
-        ).fetchone()
-        if not membership or not identity or identity["status"] != "ACTIVE":
+        context = self.uow.get_passwordless_session_context(tenant_id, identity_id)
+        if not context:
             raise WebAuthnError("WEBAUTHN_AUTHENTICATION_REJECTED")
         now, session_id, family_id, token_id = datetime.now(UTC), _id(), _id(), _id()
         raw_refresh = secrets.token_urlsafe(48)
         with self.uow:
-            self.uow.connection.execute(
-                "INSERT INTO novaid_authentication_sessions(session_id,tenant_id,identity_id,"
-                "authentication_time,authentication_strength,credential_id,device_reference,"
-                "client_reference,risk_score,status,created_at,last_seen_at,expires_at,version,"
-                "membership_id,authenticated_at,idle_expires_at,absolute_expires_at,"
-                "authentication_methods,security_version) "
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    session_id,
-                    tenant_id,
-                    identity_id,
-                    now.isoformat(),
-                    "PHISHING_RESISTANT",
-                    None,
-                    None,
-                    None,
-                    0.0,
-                    "ACTIVE",
-                    now.isoformat(),
-                    now.isoformat(),
-                    (now + timedelta(hours=12)).isoformat(),
-                    1,
-                    membership["membership_id"],
-                    now.isoformat(),
-                    (now + timedelta(minutes=30)).isoformat(),
-                    (now + timedelta(hours=12)).isoformat(),
-                    '["WEBAUTHN","PASSKEY"]',
-                    identity["security_version"],
-                ),
+            self.uow.create_authentication_session(
+                session_id,
+                tenant_id,
+                identity_id,
+                now.isoformat(),
+                "PHISHING_RESISTANT",
+                None,
+                0.0,
+                str(context["membership_id"]),
+                created_at=now.isoformat(),
+                expires_at=(now + timedelta(hours=12)).isoformat(),
+                pending_mfa_expires_at=(now + timedelta(minutes=30)).isoformat(),
+                authentication_methods='["WEBAUTHN","PASSKEY"]',
             )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_refresh_token_families VALUES(?,?,?,?,?,?,?,?,?)",
-                (
-                    family_id,
-                    session_id,
-                    identity_id,
-                    tenant_id,
-                    "ACTIVE",
-                    now.isoformat(),
-                    (now + timedelta(days=30)).isoformat(),
-                    None,
-                    1,
-                ),
+            self.uow.create_refresh_family(
+                family_id,
+                session_id,
+                identity_id,
+                tenant_id,
+                created_at=now.isoformat(),
+                expires_at=(now + timedelta(days=30)).isoformat(),
             )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_refresh_tokens VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    token_id,
-                    family_id,
-                    session_id,
-                    identity_id,
-                    tenant_id,
-                    self._token_hash("refresh", raw_refresh),
-                    None,
-                    now.isoformat(),
-                    (now + timedelta(days=7)).isoformat(),
-                    None,
-                    None,
-                    None,
-                    "ACTIVE",
-                ),
+            self.uow.create_refresh_token(
+                token_id,
+                family_id,
+                session_id,
+                identity_id,
+                tenant_id,
+                self._token_hash("refresh", raw_refresh),
+                None,
+                issued_at=now.isoformat(),
+                expires_at=(now + timedelta(days=7)).isoformat(),
             )
         self.metrics.increment("novaid_webauthn_passwordless_sessions_total", outcome="success")
         return {
             **evidence,
             "session_id": session_id,
-            "membership_id": str(membership["membership_id"]),
+            "membership_id": str(context["membership_id"]),
             "refresh_token": f"{token_id}.{raw_refresh}",
         }
 
@@ -679,11 +584,7 @@ class WebAuthnService:
         correlation_id: str = "",
         request_id: str = "",
     ) -> dict[str, object]:
-        session = self.uow.connection.execute(
-            "SELECT identity_id,status FROM novaid_authentication_sessions "
-            "WHERE tenant_id=? AND session_id=?",
-            (tenant_id, session_id),
-        ).fetchone()
+        session = self.uow.get_webauthn_session(tenant_id, session_id)
         if not session or session["status"] != "STEP_UP_REQUIRED":
             raise WebAuthnError("WEBAUTHN_STEP_UP_REJECTED")
         evidence = self.verify_authentication(
@@ -697,14 +598,9 @@ class WebAuthnService:
             raise WebAuthnError("WEBAUTHN_STEP_UP_REJECTED")
         now = datetime.now(UTC)
         with self.uow:
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
-                "authentication_strength='PHISHING_RESISTANT',authenticated_at=?,"
-                "step_up_expires_at=?,authentication_methods='[\"WEBAUTHN\"]' "
-                "WHERE tenant_id=? AND session_id=? AND status='STEP_UP_REQUIRED'",
-                (now.isoformat(), (now + timedelta(minutes=5)).isoformat(), tenant_id, session_id),
-            )
-            if changed.rowcount != 1:
+            if self.uow.complete_webauthn_step_up(
+                tenant_id, session_id, now=now.isoformat()
+            ) != 1:
                 raise WebAuthnError("WEBAUTHN_STEP_UP_REJECTED")
         self.metrics.increment("novaid_webauthn_step_up_total", outcome="success")
         return {**evidence, "session_id": session_id, "step_up_completed_at": now.isoformat()}
@@ -723,35 +619,29 @@ class WebAuthnService:
         if target not in allowed:
             raise WebAuthnError("INVALID_AUTHENTICATOR_STATUS")
         with self.uow:
-            row = self.uow.connection.execute(
-                "SELECT status,version FROM novaid_webauthn_credentials WHERE tenant_id=? "
-                "AND identity_id=? "
-                "AND credential_id=?",
-                (tenant_id, identity_id, credential_id),
-            ).fetchone()
+            row = self.uow.get_webauthn_credential(tenant_id, credential_id)
             if (
                 not row
                 or row["status"] in {"REVOKED", "COMPROMISED", "DELETED"}
                 and target == "ACTIVE"
             ):
                 raise WebAuthnError("INVALID_AUTHENTICATOR_TRANSITION")
-            self.uow.connection.execute(
-                "UPDATE novaid_webauthn_credentials SET status=?,version=version+1 "
-                "WHERE tenant_id=? AND identity_id=? AND credential_id=?",
-                (target, tenant_id, identity_id, credential_id),
-            )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_authenticator_status_history VALUES(?,?,?,?,?,?,?,?)",
-                (
-                    _id(),
-                    tenant_id,
-                    credential_id,
-                    row["status"],
-                    target,
-                    reason,
-                    datetime.now(UTC).isoformat(),
-                    actor_identity_id,
-                ),
+            if (
+                self.uow.update_webauthn_credential_status(
+                    tenant_id, str(row["identity_id"]), credential_id, target=target
+                )
+                != 1
+            ):
+                raise WebAuthnError("INVALID_AUTHENTICATOR_TRANSITION")
+            self.uow.insert_webauthn_status_history(
+                _id(),
+                tenant_id,
+                credential_id,
+                row["status"],
+                target,
+                reason,
+                datetime.now(UTC).isoformat(),
+                actor_identity_id,
             )
         event_type = {
             "SUSPENDED": "WEBAUTHN_CREDENTIAL_SUSPENDED",

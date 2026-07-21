@@ -156,12 +156,7 @@ class TenantWebAuthnPolicyService:
     ) -> dict:
         if not reason.strip():
             raise RecoveryError("POLICY_CHANGE_DENIED")
-        actor = self.uow.connection.execute(
-            "SELECT m.role,s.authentication_strength,s.step_up_expires_at FROM novaid_tenant_memberships m "
-            "JOIN novaid_authentication_sessions s ON s.membership_id=m.membership_id "
-            "WHERE m.tenant_id=? AND m.identity_id=? AND m.status='ACTIVE' AND s.session_id=? AND s.status='ACTIVE'",
-            (tenant_id, actor_identity_id, session_id),
-        ).fetchone()
+        actor = self.uow.get_actor_recovery_context(tenant_id, actor_identity_id, session_id)
         if (
             not actor
             or actor["role"] not in {"ADMIN", "SECURITY_ADMIN"}
@@ -178,63 +173,18 @@ class TenantWebAuthnPolicyService:
             or not 1 <= int(merged["recovery_code_count"]) <= 20
         ):
             raise RecoveryError("INVALID_WEBAUTHN_POLICY")
-        prior = self.uow.connection.execute(
-            "SELECT version FROM novaid_tenant_webauthn_policies WHERE tenant_id=?", (tenant_id,)
-        ).fetchone()
+        prior = self.uow.get_recovery_policy(tenant_id)
         if prior and int(prior["version"]) != expected_version:
             raise RecoveryError("POLICY_VERSION_CONFLICT")
         version, now = (int(prior["version"]) + 1 if prior else 1), _now().isoformat()
-        values = (
-            tenant_id,
-            bool(merged["enabled"]),
-            bool(merged["passkeys_enabled"]),
-            bool(merged["passwordless_enabled"]),
-            bool(merged["phishing_resistant_step_up_required"]),
-            merged["user_verification"],
-            merged["attestation"],
-            int(merged["maximum_credentials"]),
-            bool(merged["recovery_codes_enabled"]),
-            int(merged["recovery_code_count"]),
-            int(merged["recovery_code_expiry_days"]),
-            int(merged["recovery_approval_count"]),
-            bool(merged["recovery_requires_new_authenticator"]),
-            int(merged["step_up_seconds"]),
-            now,
-            actor_identity_id,
-            version,
-        )
         with self.uow:
-            if prior:
-                self.uow.connection.execute(
-                    "DELETE FROM novaid_tenant_webauthn_policies WHERE tenant_id=?", (tenant_id,)
-                )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_tenant_webauthn_policies(tenant_id,require_webauthn,"
-                "passkeys_enabled,passwordless_enabled,require_phishing_resistant_step_up,"
-                "user_verification,attestation,maximum_credentials,recovery_codes_enabled,"
-                "recovery_code_count,recovery_code_expiry_days,recovery_approval_count,"
-                "recovery_requires_new_authenticator,step_up_seconds,updated_at,updated_by,version) "
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                values,
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_tenant_webauthn_policy_history SET status='SUPERSEDED' "
-                "WHERE tenant_id=? AND status='ACTIVE'",
-                (tenant_id,),
-            )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_tenant_webauthn_policy_history(policy_history_id,tenant_id,"
-                "policy_version,status,policy,reason,created_at,created_by) VALUES(?,?,?,?,?,?,?,?)",
-                (
-                    _id(),
-                    tenant_id,
-                    version,
-                    "ACTIVE",
-                    json.dumps(merged),
-                    reason,
-                    now,
-                    actor_identity_id,
-                ),
+            self.uow.replace_tenant_webauthn_policy(
+                tenant_id,
+                merged,
+                updated_by=actor_identity_id,
+                reason=reason,
+                version=version,
+                updated_at=now,
             )
             if self.distributed_outbox:
                 self.distributed_outbox.create_event(
@@ -252,9 +202,7 @@ class TenantWebAuthnPolicyService:
         return {**merged, "version": version}
 
     def get_policy(self, tenant_id: str) -> dict[str, object]:
-        row = self.uow.connection.execute(
-            "SELECT * FROM novaid_tenant_webauthn_policies WHERE tenant_id=?", (tenant_id,)
-        ).fetchone()
+        row = self.uow.get_recovery_policy(tenant_id)
         return dict(row) if row else {**self.DEFAULT, "version": 0}
 
 
@@ -274,47 +222,29 @@ class AccountRecoveryService:
         device_reference: str | None = None,
         network_reference: str | None = None,
     ) -> dict[str, object]:
-        identity = self.uow.connection.execute(
-            "SELECT identity_id FROM novaid_identities WHERE tenant_id=? AND normalized_email=? AND status='ACTIVE'",
-            (tenant_id, identifier.strip().lower()),
-        ).fetchone()
+        identity = self.uow.get_active_identity_by_email(tenant_id, identifier.strip().lower())
         if not identity:
             return {"accepted": True}
         now, recovery_id = _now(), _id()
-        recent = self.uow.connection.execute(
-            "SELECT recovery_request_id FROM novaid_account_recovery_requests WHERE tenant_id=? "
-            "AND identity_id=? AND requested_at>? AND status NOT IN "
-            "('REJECTED','COMPLETED','CANCELLED','EXPIRED')",
-            (tenant_id, identity["identity_id"], (now - timedelta(minutes=1)).isoformat()),
-        ).fetchone()
+        recent = self.uow.get_recent_recovery_request(
+            tenant_id, identity["identity_id"], since=(now - timedelta(minutes=1)).isoformat()
+        )
         if recent:
             return {"accepted": True}
         with self.uow:
-            self.uow.connection.execute(
-                "INSERT INTO novaid_account_recovery_requests(recovery_request_id,tenant_id,identity_id,"
-                "status,recovery_method,requested_at,expires_at,approved_at,approved_by,completed_at,"
-                "rejected_at,cancelled_at,reason,correlation_id,request_id,device_reference,"
-                "network_reference,version) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    recovery_id,
-                    tenant_id,
-                    identity["identity_id"],
-                    "REQUESTED",
-                    recovery_method,
-                    now.isoformat(),
-                    (now + timedelta(minutes=30)).isoformat(),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    "USER_REQUEST",
-                    correlation_id,
-                    request_id,
-                    device_reference,
-                    network_reference,
-                    1,
-                ),
+            self.uow.insert_recovery_request(
+                recovery_id,
+                tenant_id,
+                identity["identity_id"],
+                status="REQUESTED",
+                recovery_method=recovery_method,
+                requested_at=now.isoformat(),
+                expires_at=(now + timedelta(minutes=30)).isoformat(),
+                reason="USER_REQUEST",
+                correlation_id=correlation_id,
+                request_id=request_id,
+                device_reference=device_reference,
+                network_reference=network_reference,
             )
         return {"accepted": True, "recovery_request_id": recovery_id}
 
@@ -327,47 +257,28 @@ class AccountRecoveryService:
         correlation_id: str,
         request_id: str,
     ) -> None:
-        recovery = self.uow.connection.execute(
-            "SELECT * FROM novaid_account_recovery_requests WHERE tenant_id=? AND recovery_request_id=?",
-            (tenant_id, recovery_request_id),
-        ).fetchone()
+        recovery = self.uow.get_recovery_request(tenant_id, recovery_request_id)
         if not recovery or recovery["status"] != "REQUESTED":
             raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
         self.codes.consume_code(tenant_id=tenant_id, identity_id=recovery["identity_id"], code=code)
         with self.uow:
-            self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET status='VERIFIED',version=version+1 "
-                "WHERE recovery_request_id=? AND status='REQUESTED'",
-                (recovery_request_id,),
-            )
-            self.uow.connection.execute(
-                "INSERT INTO novaid_account_recovery_evidence(evidence_id,recovery_request_id,"
-                "tenant_id,identity_id,method,result,risk_indicators,actor_identity_id,"
-                "correlation_id,request_id,created_at) VALUES(?,?,?,?,?,'VERIFIED','[]',NULL,?,?,?)",
-                (
-                    _id(),
-                    recovery_request_id,
-                    tenant_id,
-                    recovery["identity_id"],
-                    "RECOVERY_CODE",
-                    correlation_id,
-                    request_id,
-                    _now().isoformat(),
-                ),
+            self.uow.mark_recovery_verified(recovery_request_id)
+            self.uow.insert_recovery_evidence(
+                _id(),
+                recovery_request_id,
+                tenant_id,
+                recovery["identity_id"],
+                method="RECOVERY_CODE",
+                correlation_id=correlation_id,
+                request_id=request_id,
+                created_at=_now().isoformat(),
             )
 
     def approve(
         self, *, tenant_id: str, recovery_request_id: str, approver_identity_id: str, reason: str
     ) -> None:
-        recovery = self.uow.connection.execute(
-            "SELECT identity_id,status,expires_at FROM novaid_account_recovery_requests "
-            "WHERE tenant_id=? AND recovery_request_id=?",
-            (tenant_id, recovery_request_id),
-        ).fetchone()
-        member = self.uow.connection.execute(
-            "SELECT role,status FROM novaid_tenant_memberships WHERE tenant_id=? AND identity_id=?",
-            (tenant_id, approver_identity_id),
-        ).fetchone()
+        recovery = self.uow.get_recovery_request(tenant_id, recovery_request_id)
+        member = self.uow.get_membership_role_status(tenant_id, approver_identity_id)
         if (
             not recovery
             or recovery["status"] != "VERIFIED"
@@ -379,50 +290,33 @@ class AccountRecoveryService:
             raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
         now = _now()
         with self.uow:
-            self.uow.connection.execute(
-                "INSERT INTO novaid_account_recovery_approvals(approval_id,recovery_request_id,"
-                "tenant_id,approver_identity_id,decision,reason,created_at,expires_at) "
-                "VALUES(?,?,?,?,'APPROVED',?,?,?)",
-                (
-                    _id(),
-                    recovery_request_id,
-                    tenant_id,
-                    approver_identity_id,
-                    reason,
-                    now.isoformat(),
-                    (now + timedelta(minutes=15)).isoformat(),
-                ),
+            self.uow.insert_recovery_approval(
+                _id(),
+                recovery_request_id,
+                tenant_id,
+                approver_identity_id,
+                decision="APPROVED",
+                reason=reason,
+                created_at=now.isoformat(),
+                expires_at=(now + timedelta(minutes=15)).isoformat(),
             )
-            self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET version=version+1 "
-                "WHERE recovery_request_id=? AND status='VERIFIED'",
-                (recovery_request_id,),
-            )
-            policy = self.uow.connection.execute(
-                "SELECT recovery_approval_count FROM novaid_tenant_webauthn_policies "
-                "WHERE tenant_id=?",
-                (tenant_id,),
-            ).fetchone()
+            self.uow.bump_recovery_request_version(recovery_request_id)
+            policy = self.uow.get_recovery_policy(tenant_id)
             required = int(policy["recovery_approval_count"]) if policy else 1
-            approved = self.uow.connection.execute(
-                "SELECT COUNT(*) FROM novaid_account_recovery_approvals WHERE tenant_id=? "
-                "AND recovery_request_id=? AND decision='APPROVED' AND expires_at>?",
-                (tenant_id, recovery_request_id, now.isoformat()),
-            ).fetchone()[0]
+            approved = self.uow.count_active_recovery_approvals(
+                tenant_id, recovery_request_id, now=now.isoformat()
+            )
             if int(approved) >= required:
-                self.uow.connection.execute(
-                    "UPDATE novaid_account_recovery_requests SET status='APPROVED',approved_at=?,"
-                    "approved_by=?,version=version+1 WHERE recovery_request_id=? AND status='VERIFIED'",
-                    (now.isoformat(), approver_identity_id, recovery_request_id),
+                self.uow.mark_recovery_approved(
+                    recovery_request_id,
+                    approved_at=now.isoformat(),
+                    approved_by=approver_identity_id,
                 )
 
     def reject(
         self, *, tenant_id: str, recovery_request_id: str, approver_identity_id: str, reason: str
     ) -> None:
-        member = self.uow.connection.execute(
-            "SELECT role,status FROM novaid_tenant_memberships WHERE tenant_id=? AND identity_id=?",
-            (tenant_id, approver_identity_id),
-        ).fetchone()
+        member = self.uow.get_membership_role_status(tenant_id, approver_identity_id)
         if (
             not member
             or member["status"] != "ACTIVE"
@@ -431,45 +325,41 @@ class AccountRecoveryService:
             raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
         now = _now()
         with self.uow:
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET status='REJECTED',rejected_at=?,"
-                "reason=?,version=version+1 WHERE tenant_id=? AND recovery_request_id=? "
-                "AND status IN ('REQUESTED','VERIFIED')",
-                (now.isoformat(), reason, tenant_id, recovery_request_id),
-            )
-            if changed.rowcount != 1:
+            if (
+                self.uow.mark_recovery_rejected(
+                    tenant_id,
+                    recovery_request_id,
+                    rejected_at=now.isoformat(),
+                    reason=reason,
+                )
+                != 1
+            ):
                 raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
 
     def cancel(self, *, tenant_id: str, recovery_request_id: str, identity_id: str) -> None:
         with self.uow:
-            changed = self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET status='CANCELLED',cancelled_at=?,"
-                "version=version+1 WHERE tenant_id=? AND identity_id=? AND recovery_request_id=? "
-                "AND status IN ('REQUESTED','VERIFIED')",
-                (_now().isoformat(), tenant_id, identity_id, recovery_request_id),
-            )
-            if changed.rowcount != 1:
+            if (
+                self.uow.mark_recovery_cancelled(
+                    tenant_id,
+                    identity_id,
+                    recovery_request_id,
+                    cancelled_at=_now().isoformat(),
+                )
+                != 1
+            ):
                 raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
 
     def expire_stale(self, *, tenant_id: str, now: datetime | None = None) -> int:
         instant = now or _now()
         with self.uow:
-            result = self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET status='EXPIRED',version=version+1 "
-                "WHERE tenant_id=? AND expires_at<=? AND status IN "
-                "('REQUESTED','VERIFIED','APPROVED')",
-                (tenant_id, instant.isoformat()),
-            )
-        return result.rowcount
+            return self.uow.expire_recovery_requests(tenant_id, now=instant.isoformat())
 
     def complete(self, *, tenant_id: str, recovery_request_id: str) -> None:
         now = _now()
         with self.uow:
-            row = self.uow.connection.execute(
-                "SELECT identity_id,status,expires_at FROM novaid_account_recovery_requests "
-                "WHERE tenant_id=? AND recovery_request_id=?",
-                (tenant_id, recovery_request_id),
-            ).fetchone()
+            row = self.uow.mark_recovery_completed(
+                tenant_id, recovery_request_id, completed_at=now.isoformat()
+            )
             if (
                 not row
                 or row["status"] != "APPROVED"
@@ -477,37 +367,11 @@ class AccountRecoveryService:
             ):
                 raise RecoveryError("ACCOUNT_RECOVERY_DENIED")
             identity_id = row["identity_id"]
-            self.uow.connection.execute(
-                "UPDATE novaid_account_recovery_requests SET status='COMPLETED',completed_at=?,version=version+1 "
-                "WHERE recovery_request_id=? AND status='APPROVED'",
-                (now.isoformat(), recovery_request_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_identities SET security_version=security_version+1,version=version+1 "
-                "WHERE tenant_id=? AND identity_id=?",
-                (tenant_id, identity_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_authentication_sessions SET status='REVOKED',revoked_at=?,"
-                "revocation_reason='ACCOUNT_RECOVERY' WHERE tenant_id=? AND identity_id=? "
-                "AND status NOT IN ('REVOKED','EXPIRED')",
-                (now.isoformat(), tenant_id, identity_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=? "
-                "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                (now.isoformat(), tenant_id, identity_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_webauthn_credentials SET status='SUSPENDED',version=version+1 "
-                "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                (tenant_id, identity_id),
-            )
-            self.uow.connection.execute(
-                "UPDATE novaid_recovery_codes SET status='REVOKED',revoked_at=?,version=version+1 "
-                "WHERE tenant_id=? AND identity_id=? AND status='ACTIVE'",
-                (now.isoformat(), tenant_id, identity_id),
-            )
+            self.uow.bump_identity_security_version(tenant_id, identity_id)
+            self.uow.revoke_sessions_for_identity(tenant_id, identity_id, "ACCOUNT_RECOVERY")
+            self.uow.revoke_refresh_families_for_identity(tenant_id, identity_id, "ACCOUNT_RECOVERY")
+            self.uow.revoke_webauthn_credentials_for_identity(tenant_id, identity_id)
+            self.uow.revoke_recovery_codes(tenant_id, identity_id, now=now.isoformat())
             self.outbox.enqueue(
                 tenant_id=tenant_id,
                 event_type="ACCOUNT_RECOVERY_COMPLETED",

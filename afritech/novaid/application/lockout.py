@@ -38,7 +38,7 @@ class AuthenticationLockoutService:
 
     def record_failure(self, tenant_id: str, identifier: str) -> bool:
         reference, now = self.reference(identifier), datetime.now(UTC)
-        transaction = nullcontext() if self.uow.connection.in_transaction else self.uow
+        transaction = nullcontext() if self.uow.in_transaction else self.uow
         with transaction:
             row = self.uow.authentication_locks.get(tenant_id, reference)
             reset = not row or datetime.fromisoformat(row["window_started_at"]) <= (
@@ -61,6 +61,6 @@ class AuthenticationLockoutService:
         return locked_until is not None
 
     def reset(self, tenant_id: str, identifier: str) -> None:
-        transaction = nullcontext() if self.uow.connection.in_transaction else self.uow
+        transaction = nullcontext() if self.uow.in_transaction else self.uow
         with transaction:
             self.uow.authentication_locks.delete(tenant_id, self.reference(identifier))
