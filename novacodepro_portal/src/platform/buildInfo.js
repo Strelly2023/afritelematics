@@ -1,6 +1,10 @@
 import { execSync } from "node:child_process";
 
 function resolveGitCommit(rootDir) {
+  const override = process.env.NOVACODEPRO_BUILD_COMMIT;
+  if (override && override.trim()) {
+    return override.trim();
+  }
   try {
     return execSync("git rev-parse --short HEAD", { cwd: rootDir, stdio: ["ignore", "pipe", "ignore"] })
       .toString()
@@ -11,6 +15,10 @@ function resolveGitCommit(rootDir) {
 }
 
 function resolveBuildTimestamp(rootDir) {
+  const override = process.env.NOVACODEPRO_BUILD_TIMESTAMP;
+  if (override && override.trim()) {
+    return override.trim();
+  }
   const sourceDateEpoch = Number(process.env.SOURCE_DATE_EPOCH);
   if (Number.isFinite(sourceDateEpoch) && sourceDateEpoch > 0) {
     return new Date(sourceDateEpoch * 1000).toISOString();

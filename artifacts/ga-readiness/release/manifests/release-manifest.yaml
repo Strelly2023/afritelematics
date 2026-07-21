@@ -1,0 +1,110 @@
+schema_version: 1
+release_id: novatech-2026.1.0
+release_candidate: novatech-2026.1.0-rc.1
+status: BASELINE_IN_PROGRESS
+branch: feature/product-factory-enterprise-sdlc
+commit_sha: d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4
+remote_commit_sha: d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4
+tag: null
+created_at: "2026-07-21T11:25:11.000Z"
+source_date_epoch: 1784633111
+repository: afritelematics
+products:
+    - NovaID
+    - NovaPay
+    - NovaRide
+    - NovaCodePro
+components:
+    -     component_id: novacodepro_portal
+          product: NovaCodePro
+          source_path: novacodepro_portal
+          artifact_type: web_portal
+          build_command: npm run build --prefix novacodepro_portal
+          test_command: npm test --prefix novacodepro_portal
+          version: 0.1.0
+          runtime: Node.js 20.19.5
+          expected_output: dist/
+          release_criticality: high
+          current_inclusion_status: VERIFIED
+          external_blocker: null
+    -     component_id: novaid_backend
+          product: NovaID
+          source_path: afritech/novaid
+          artifact_type: backend_service
+          build_command: python3 -m compileall afritech/novaid
+          test_command: python3 -m pytest -q afritech/tests/novaid
+          version: current-baseline
+          runtime: Python 3.11.8
+          expected_output: service validation artifacts
+          release_criticality: high
+          current_inclusion_status: IN_PROGRESS
+          external_blocker: current baseline not rerun in this pass
+    -     component_id: novapay_backend
+          product: NovaPay
+          source_path: afritech/novapay
+          artifact_type: backend_service
+          build_command: python3 -m compileall afritech/novapay
+          test_command: python3 -m pytest -q afritech/tests/novapay
+          version: current-baseline
+          runtime: Python 3.11.8
+          expected_output: ledger and outbox validation artifacts
+          release_criticality: high
+          current_inclusion_status: IN_PROGRESS
+          external_blocker: current financial certification not rerun in this pass
+    -     component_id: novaride_runtime
+          product: NovaRide
+          source_path: afritech/novaride_runtime
+          artifact_type: runtime_service
+          build_command: python3 -m compileall afritech/novaride_runtime
+          test_command: python3 -m pytest -q afritech/tests/novaride_runtime
+          version: current-baseline
+          runtime: Python 3.11.8
+          expected_output: runtime validation artifacts
+          release_criticality: high
+          current_inclusion_status: IN_PROGRESS
+          external_blocker: real runtime certification not rerun in this pass
+runtime_versions:
+    python: 3.11.8
+    node: 20.19.5
+    npm: 10.8.2
+    java: 17.0.9
+build_commands:
+    - npm run build --prefix novacodepro_portal
+test_commands:
+    - npm test --prefix novacodepro_portal
+artifacts:
+    - novacodepro_portal/dist
+    - docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md
+    - docs/release/release-artifact-inventory.json
+    - docs/release/release-scope.yaml
+    - artifacts/ga-readiness/release/reproducibility/report.json
+    - artifacts/ga-readiness/release/reproducibility/report.md
+artifact_hashes:
+    checksum_manifest: artifacts/ga-readiness/release/checksums/SHA256SUMS
+    reproducibility_report: artifacts/ga-readiness/release/reproducibility/report.json
+container_digests:
+  []
+database_migrations:
+  []
+sbom_references:
+  []
+checksum_manifest: artifacts/ga-readiness/release/checksums/SHA256SUMS
+reproducibility_report: artifacts/ga-readiness/release/reproducibility/report.json
+security_evidence:
+    - docs/release/GA_READINESS_BLOCKER_MATRIX.md
+infrastructure_evidence:
+  []
+mobile_evidence:
+  []
+pilot_evidence:
+  []
+prr_evidence:
+  []
+known_blockers:
+    - production signing material unavailable
+    - NovaID/NovaPay/NovaRide certification not rerun in this pass
+    - mobile and infrastructure certification not rerun in this pass
+external_blockers:
+    - production signing material unavailable
+approval_status: UNSIGNED
+signature_status: EXTERNALLY_BLOCKED

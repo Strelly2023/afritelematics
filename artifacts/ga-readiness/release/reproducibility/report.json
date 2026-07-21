@@ -1,0 +1,89 @@
+{
+  "build_command": "npm run build",
+  "builds": [
+    {
+      "artifacts": [
+        {
+          "path": "assets/index-C3Di1wkK.css",
+          "sha256": "3946a0e40ffedd51acf8d07b2595142cd37b00259ac58bfc10c28771729fff08",
+          "size_bytes": 44235
+        },
+        {
+          "path": "assets/index-yTinjjK7.js",
+          "sha256": "7123637a5a51b17c049b29bf607d82be1b6a70999b20c94cb51d1d0349a023ba",
+          "size_bytes": 832466
+        },
+        {
+          "path": "brand/NOVACODEPRO.webp",
+          "sha256": "dc9f1241db3536ab8d9efc567042778c8d7f0514f889ca67aba56b1db7a784d9",
+          "size_bytes": 46380
+        },
+        {
+          "path": "config/runtime.json",
+          "sha256": "118d05f39ae261d1287095dca751b86388538b2bf3cc4a01cb23873f86c7f8b6",
+          "size_bytes": 764
+        },
+        {
+          "path": "index.html",
+          "sha256": "0abdd010ddde38382c142952533adc20b6101feea66e5e7b83bb6e168b2e7200",
+          "size_bytes": 692
+        },
+        {
+          "path": "version.json",
+          "sha256": "de3ce0cb7b9a1024708ecb1a61b22dfbc5aba381f1b629ca086eee8e3779a0c5",
+          "size_bytes": 202
+        }
+      ],
+      "dist": "/private/tmp/ncp-repro-a-fjg9xf_m/novacodepro_portal/dist",
+      "label": "a"
+    },
+    {
+      "artifacts": [
+        {
+          "path": "assets/index-C3Di1wkK.css",
+          "sha256": "3946a0e40ffedd51acf8d07b2595142cd37b00259ac58bfc10c28771729fff08",
+          "size_bytes": 44235
+        },
+        {
+          "path": "assets/index-yTinjjK7.js",
+          "sha256": "7123637a5a51b17c049b29bf607d82be1b6a70999b20c94cb51d1d0349a023ba",
+          "size_bytes": 832466
+        },
+        {
+          "path": "brand/NOVACODEPRO.webp",
+          "sha256": "dc9f1241db3536ab8d9efc567042778c8d7f0514f889ca67aba56b1db7a784d9",
+          "size_bytes": 46380
+        },
+        {
+          "path": "config/runtime.json",
+          "sha256": "118d05f39ae261d1287095dca751b86388538b2bf3cc4a01cb23873f86c7f8b6",
+          "size_bytes": 764
+        },
+        {
+          "path": "index.html",
+          "sha256": "0abdd010ddde38382c142952533adc20b6101feea66e5e7b83bb6e168b2e7200",
+          "size_bytes": 692
+        },
+        {
+          "path": "version.json",
+          "sha256": "de3ce0cb7b9a1024708ecb1a61b22dfbc5aba381f1b629ca086eee8e3779a0c5",
+          "size_bytes": 202
+        }
+      ],
+      "dist": "/private/tmp/ncp-repro-b-ea8yv868/novacodepro_portal/dist",
+      "label": "b"
+    }
+  ],
+  "commit_sha": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
+  "commit_timestamp": "2026-07-21T11:25:11.000Z",
+  "comparison": {
+    "differing_files": [],
+    "extra_files": [],
+    "identical_files": 6,
+    "missing_files": [],
+    "status": "IDENTICAL"
+  },
+  "schema_version": 1,
+  "status": "IDENTICAL",
+  "target": "novacodepro_portal"
+}

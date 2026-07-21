@@ -1,0 +1,103 @@
+schema_version: 1
+branch: feature/product-factory-enterprise-sdlc
+commit_sha: d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4
+release_candidate: novatech-2026.1.0-rc.1
+status: BASELINE_IN_PROGRESS
+generated_from: current synchronized baseline
+components:
+  - component_id: novacodepro_portal
+    product: NovaCodePro
+    source_path: novacodepro_portal
+    artifact_type: web_portal
+    build_command: npm run build --prefix novacodepro_portal
+    test_command: npm test --prefix novacodepro_portal
+    version: 0.1.0
+    runtime: Node.js 20.19.5
+    expected_output: dist/
+    release_criticality: high
+    current_inclusion_status: VERIFIED
+    external_blocker: null
+  - component_id: novaid_backend
+    product: NovaID
+    source_path: afritech/novaid
+    artifact_type: backend_service
+    build_command: python3 -m compileall afritech/novaid
+    test_command: python3 -m pytest -q afritech/tests/novaid
+    version: current-baseline
+    runtime: Python 3.11.8
+    expected_output: service validation artifacts
+    release_criticality: high
+    current_inclusion_status: IN_PROGRESS
+    external_blocker: current baseline not rerun in this pass
+  - component_id: novapay_backend
+    product: NovaPay
+    source_path: afritech/novapay
+    artifact_type: backend_service
+    build_command: python3 -m compileall afritech/novapay
+    test_command: python3 -m pytest -q afritech/tests/novapay
+    version: current-baseline
+    runtime: Python 3.11.8
+    expected_output: ledger and outbox validation artifacts
+    release_criticality: high
+    current_inclusion_status: IN_PROGRESS
+    external_blocker: current financial certification not rerun in this pass
+  - component_id: novaride_runtime
+    product: NovaRide
+    source_path: afritech/novaride_runtime
+    artifact_type: runtime_service
+    build_command: python3 -m compileall afritech/novaride_runtime
+    test_command: python3 -m pytest -q afritech/tests/novaride_runtime
+    version: current-baseline
+    runtime: Python 3.11.8
+    expected_output: runtime validation artifacts
+    release_criticality: high
+    current_inclusion_status: IN_PROGRESS
+    external_blocker: real runtime certification not rerun in this pass
+  - component_id: novaride_mobile
+    product: NovaRide
+    source_path: app/mobile
+    artifact_type: mobile_application
+    build_command: scripts/novaride/build_rider_release.sh
+    test_command: scripts/novaride/verify_mobile_release.sh
+    version: current-baseline
+    runtime: Android toolchain
+    expected_output: APK/AAB release evidence
+    release_criticality: high
+    current_inclusion_status: BLOCKED
+    external_blocker: signing material and device/toolchain validation unavailable in this environment
+  - component_id: shared_platform_services
+    product: shared
+    source_path: afritech/api
+    artifact_type: platform_services
+    build_command: python3 -m compileall afritech/api
+    test_command: python3 -m pytest -q afritech/tests/api
+    version: current-baseline
+    runtime: Python 3.11.8
+    expected_output: API validation artifacts
+    release_criticality: high
+    current_inclusion_status: IN_PROGRESS
+    external_blocker: certification not rerun in this pass
+  - component_id: infrastructure_definitions
+    product: shared
+    source_path: deploy
+    artifact_type: infrastructure_definitions
+    build_command: python3 scripts/novatech_core_apply_migrations.py --help
+    test_command: python3 -m pytest -q tests/governance
+    version: current-baseline
+    runtime: shell / docker / python
+    expected_output: deployment definitions and operational evidence
+    release_criticality: medium
+    current_inclusion_status: IN_PROGRESS
+    external_blocker: production-equivalent infrastructure certification not rerun in this pass
+  - component_id: operational_documentation
+    product: shared
+    source_path: docs
+    artifact_type: documentation
+    build_command: n/a
+    test_command: n/a
+    version: current-baseline
+    runtime: n/a
+    expected_output: release and governance documentation
+    release_criticality: medium
+    current_inclusion_status: VERIFIED
+    external_blocker: null

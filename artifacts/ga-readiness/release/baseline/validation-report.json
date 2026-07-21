@@ -1,0 +1,53 @@
+{
+  "blockers": [
+    {
+      "detail": [
+        ".gitignore",
+        "novacodepro_portal/src/platform/buildInfo.js",
+        "novacodepro_portal/tests/buildInfo.test.js"
+      ],
+      "id": "dirty_tracked_worktree"
+    },
+    {
+      "detail": [
+        "artifacts/ga-readiness/release/checksums/SHA256SUMS",
+        "artifacts/ga-readiness/release/checksums/checksum-report.json",
+        "artifacts/ga-readiness/release/manifests/release-manifest.json",
+        "artifacts/ga-readiness/release/manifests/release-manifest.yaml",
+        "artifacts/ga-readiness/release/reproducibility/report.json",
+        "artifacts/ga-readiness/release/reproducibility/report.md",
+        "docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md",
+        "docs/release/release-artifact-inventory.json",
+        "docs/release/release-scope.yaml",
+        "scripts/release/generate_checksum_manifest.py",
+        "scripts/release/generate_release_manifest.py",
+        "scripts/release/validate_release_baseline.py",
+        "scripts/release/verify_checksum_manifest.py",
+        "scripts/release/verify_reproducible_builds.py",
+        "tests/release/test_checksum_manifest.py",
+        "tests/release/test_release_artifact_inventory.py",
+        "tests/release/test_release_manifest.py",
+        "tests/release/test_reproducible_builds.py"
+      ],
+      "id": "unknown_untracked_paths"
+    },
+    {
+      "detail": "artifacts/ga-readiness/release/sbom",
+      "id": "sbom_missing"
+    }
+  ],
+  "branch": "feature/product-factory-enterprise-sdlc",
+  "generated_at": "2026-07-21T12:13:21.895483+00:00",
+  "head": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
+  "paths": {
+    "checksums": "artifacts/ga-readiness/release/checksums/SHA256SUMS",
+    "classification": "docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md",
+    "inventory": "docs/release/release-artifact-inventory.json",
+    "manifest": "artifacts/ga-readiness/release/manifests/release-manifest.json",
+    "reproducibility": "artifacts/ga-readiness/release/reproducibility/report.json",
+    "scope": "docs/release/release-scope.yaml"
+  },
+  "remote": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
+  "schema_version": 1,
+  "status": "RC_FREEZE_BLOCKED"
+}

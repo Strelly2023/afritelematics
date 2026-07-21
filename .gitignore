@@ -39,6 +39,7 @@ build/
 dist/
 tmp/
 out/
+var/
 
 # Mobile / frontend generated artifacts
 node_modules/

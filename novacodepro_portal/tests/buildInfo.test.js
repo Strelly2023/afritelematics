@@ -31,4 +31,34 @@ describe("build info", () => {
       }
     }
   });
+
+  it("honors explicit commit and timestamp overrides", () => {
+    const originalCommit = process.env.NOVACODEPRO_BUILD_COMMIT;
+    const originalTimestamp = process.env.NOVACODEPRO_BUILD_TIMESTAMP;
+    process.env.NOVACODEPRO_BUILD_COMMIT = "abc1234";
+    process.env.NOVACODEPRO_BUILD_TIMESTAMP = "2026-07-21T00:00:00.000Z";
+    try {
+      const buildInfo = createBuildInfo({
+        application: "NovaCodePro Experience Platform",
+        version: "0.1.0",
+        apiBaseUrl: "/v1",
+        rootDir,
+      });
+
+      assert.equal(buildInfo.commit, "abc1234");
+      assert.equal(buildInfo.build_id, "0.1.0-abc1234");
+      assert.equal(buildInfo.built_at, "2026-07-21T00:00:00.000Z");
+    } finally {
+      if (originalCommit === undefined) {
+        delete process.env.NOVACODEPRO_BUILD_COMMIT;
+      } else {
+        process.env.NOVACODEPRO_BUILD_COMMIT = originalCommit;
+      }
+      if (originalTimestamp === undefined) {
+        delete process.env.NOVACODEPRO_BUILD_TIMESTAMP;
+      } else {
+        process.env.NOVACODEPRO_BUILD_TIMESTAMP = originalTimestamp;
+      }
+    }
+  });
 });
