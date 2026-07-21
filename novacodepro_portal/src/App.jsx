@@ -25,6 +25,7 @@ import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoute
 import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal.jsx";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
+import { StudioChrome } from "./novacodepro/StudioChrome.js";
 import { ProductFactoryPortal } from "./novacodepro/ProductFactoryPortal.jsx";
 import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
 import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
@@ -3161,6 +3162,177 @@ function App() {
 
   const selectedMode = COMPOSER_MODES.find((mode) => mode.id === composerMode) ?? COMPOSER_MODES[0];
 
+  const studioMenus = useMemo(
+    () => [
+      {
+        id: "file",
+        label: "File",
+        shortcut: "Alt+F",
+        items: [
+          { id: "open-workspace", label: "Open workspace", description: "Go to the governed workspace hub", action: () => navigateTo(ROUTES.workspaceRoot) },
+          { id: "open-solution", label: "Open solution engineering", description: "Switch to the solution engineering studio", action: () => navigateTo(ROUTES.solutionRoot) },
+          { id: "save-draft", label: "Save draft", description: "Persist the current workspace draft", action: () => platformRuntime.runCommand("Save draft") },
+          { id: "command-palette", label: "Command palette", description: "Search commands, requirements, tests, and files", action: () => setPaletteOpen(true) },
+        ],
+      },
+      {
+        id: "edit",
+        label: "Edit",
+        shortcut: "Alt+E",
+        items: [
+          { id: "undo", label: "Undo", description: "Undo the last local change", action: () => platformRuntime.runCommand("Undo") },
+          { id: "redo", label: "Redo", description: "Redo the last local change", action: () => platformRuntime.runCommand("Redo") },
+          { id: "search", label: "Search", description: "Search files, APIs, tests, and evidence", action: () => setFocusNav("Search") },
+          { id: "format", label: "Format", description: "Format the current file or selection", action: () => platformRuntime.runCommand("Format selection") },
+        ],
+      },
+      {
+        id: "view",
+        label: "View",
+        shortcut: "Alt+V",
+        items: [
+          { id: "dashboard", label: "Dashboard", description: "Return to the main workspace overview", action: () => setFocusNav("Dashboard") },
+          { id: "workspace", label: "Workspace", description: "Focus the workspace explorer", action: () => setFocusNav("Workspace") },
+          { id: "ai", label: "AI workspace", description: "Focus NovaAI context and agents", action: () => setToolView("ai") },
+          { id: "operations", label: "Operations", description: "Review live operations and signals", action: () => setFocusNav("Operations") },
+        ],
+      },
+      {
+        id: "build",
+        label: "Build",
+        shortcut: "Alt+B",
+        items: [
+          { id: "build", label: "Build", description: "Run the current governed build workflow", action: () => platformRuntime.runCommand("Build") },
+          { id: "rebuild", label: "Rebuild", description: "Clean and rebuild the current target", action: () => platformRuntime.runCommand("Rebuild") },
+          { id: "clean", label: "Clean", description: "Clean generated workspace artifacts", action: () => platformRuntime.runCommand("Clean") },
+          { id: "validate", label: "Validate", description: "Run architecture and governance validation", action: () => platformRuntime.runCommand("Validate") },
+        ],
+      },
+      {
+        id: "run",
+        label: "Run",
+        shortcut: "Alt+R",
+        items: [
+          { id: "run", label: "Run", description: "Launch the selected target", action: () => platformRuntime.runCommand("Run") },
+          { id: "stop", label: "Stop", description: "Stop the active session or process", action: () => platformRuntime.runCommand("Stop") },
+          { id: "debug", label: "Debug", description: "Open debug controls", action: () => setFocusNav("Inspector") },
+          { id: "restart", label: "Restart", description: "Restart the active workspace target", action: () => platformRuntime.runCommand("Restart") },
+        ],
+      },
+      {
+        id: "test",
+        label: "Test",
+        shortcut: "Alt+T",
+        items: [
+          { id: "test-all", label: "Run tests", description: "Execute the current validation suite", action: () => platformRuntime.runCommand("Run tests") },
+          { id: "failed", label: "Run failed tests", description: "Re-run failed tests only", action: () => platformRuntime.runCommand("Run failed tests") },
+          { id: "coverage", label: "Coverage", description: "Open coverage and quality findings", action: () => setSelectedOutputTab("Tests") },
+          { id: "accessibility", label: "Accessibility", description: "Open accessibility validation", action: () => setFocusNav("Governance") },
+        ],
+      },
+      {
+        id: "git",
+        label: "Git",
+        shortcut: "Alt+G",
+        items: [
+          { id: "pull", label: "Pull", description: "Fetch and merge the latest remote changes", action: () => platformRuntime.runCommand("Pull") },
+          { id: "push", label: "Push", description: "Push the current branch", action: () => platformRuntime.runCommand("Push") },
+          { id: "sync", label: "Sync", description: "Synchronize the workspace branch", action: () => platformRuntime.runCommand("Sync") },
+          { id: "commit", label: "Commit", description: "Open the commit flow", action: () => platformRuntime.runCommand("Commit") },
+        ],
+      },
+      {
+        id: "ai",
+        label: "AI",
+        shortcut: "Alt+I",
+        items: [
+          { id: "ask", label: "Ask NovaAI", description: "Open the governed AI workspace", action: () => setToolView("ai") },
+          { id: "generate-tests", label: "Generate tests", description: "Ask NovaAI to generate test coverage", action: () => setComposerPrompt("Generate tests for the currently selected workspace context.") },
+          { id: "refactor", label: "Refactor safely", description: "Request an impact-aware refactor plan", action: () => setComposerPrompt("Refactor safely with impact analysis, rollback steps, and test coverage.") },
+          { id: "explain", label: "Explain selection", description: "Ask NovaAI to explain the current selection", action: () => setComposerPrompt("Explain the current selection with architecture, security, and performance context.") },
+        ],
+      },
+      {
+        id: "governance",
+        label: "Governance",
+        shortcut: "Alt+Shift+G",
+        items: [
+          { id: "review-security", label: "Security review", description: "Inspect governance and security findings", action: () => setFocusNav("Security") },
+          { id: "traceability", label: "Traceability", description: "Open traceability and evidence links", action: () => setFocusNav("Traceability") },
+          { id: "deploy", label: "Deploy", description: "Review deployment controls", action: () => setFocusNav("Deploy") },
+          { id: "settings", label: "Settings", description: "Open workspace and policy settings", action: () => setFocusNav("Settings") },
+        ],
+      },
+    ],
+    [navigateTo, platformRuntime, setComposerPrompt, setFocusNav, setPaletteOpen, setSelectedOutputTab, setToolView],
+  );
+
+  const studioActivityItems = useMemo(
+    () => [
+      { id: "Dashboard", label: "Home", icon: "⌂", description: "Workspace overview and status" },
+      { id: "Workspace", label: "Workspace", icon: "▣", description: "Current organization and workspace context" },
+      { id: "Explorer", label: "Explorer", icon: "⟂", description: "Browse repositories, files, and artifacts" },
+      { id: "Search", label: "Search", icon: "⌕", description: "Search files, APIs, requirements, and evidence" },
+      { id: "Git", label: "Git", icon: "⎇", description: "Source control and branches" },
+      { id: "Debug", label: "Debug", icon: "▶", description: "Run and debug workspace targets" },
+      { id: "Testing", label: "Testing", icon: "🧪", description: "Test discovery and execution" },
+      { id: "AI", label: "NovaAI", icon: "🤖", description: "Context-aware AI workspace" },
+      { id: "Architecture", label: "Architecture", icon: "⌘", description: "Architecture and traceability views" },
+      { id: "Design", label: "Design", icon: "◫", description: "Design studio and UI layout" },
+      { id: "Database", label: "Database", icon: "▤", description: "Database and schema tooling" },
+      { id: "API", label: "API", icon: "⇄", description: "API design and validation" },
+      { id: "Security", label: "Security", icon: "🛡", description: "Security findings and controls" },
+      { id: "Deploy", label: "Deploy", icon: "☁", description: "Deployment workflows and approvals" },
+      { id: "Operate", label: "Operate", icon: "📈", description: "Operational dashboards and signals" },
+      { id: "Governance", label: "Governance", icon: "⟡", description: "Governance, policy, and release gates" },
+      { id: "Traceability", label: "Traceability", icon: "⟐", description: "Requirements-to-code-to-evidence links" },
+      { id: "Settings", label: "Settings", icon: "⚙", description: "Workspace and policy preferences" },
+    ],
+    [],
+  );
+
+  const studioContextItems = useMemo(
+    () => [
+      { label: "Organisation", value: activeRole.organization || session?.organization?.name || "NovaTech" },
+      { label: "Workspace", value: activeTenant?.name || session?.workspace?.name || "Workspace" },
+      { label: "Project", value: activeProject?.name || selectedRequest?.title || "NovaCodePro" },
+      { label: "Repository", value: activeProject?.repository || "Not connected" },
+      { label: "Branch", value: activeProject?.branch || "Not connected" },
+      { label: "Environment", value: environment },
+      { label: "Trust", value: sessionWarning ? "Session expiring soon" : "Trusted workspace" },
+      { label: "AI", value: toolView === "ai" ? "NovaAI active" : "NovaAI available" },
+      { label: "Build", value: platformSummary?.platform_health || "healthy" },
+      { label: "Git", value: selectedOutputTab || "Overview" },
+    ],
+    [
+      activeProject?.branch,
+      activeProject?.name,
+      activeProject?.repository,
+      activeRole.organization,
+      activeTenant?.name,
+      environment,
+      platformSummary?.platform_health,
+      selectedOutputTab,
+      selectedRequest?.title,
+      session?.organization?.name,
+      session?.workspace?.name,
+      sessionWarning,
+      toolView,
+    ],
+  );
+
+  const studioStatusItems = useMemo(
+    () => [
+      { label: "Auth", value: authStatus === "signed-in" ? "Signed in" : authStatus, tone: authStatus === "signed-in" ? "success" : "warning" },
+      { label: "Session", value: sessionWarning ? "Refreshing" : "Healthy", tone: sessionWarning ? "warning" : "success" },
+      { label: "Connection", value: frontendRuntimeState === "READY" ? "Connected" : frontendRuntimeState.toLowerCase(), tone: frontendRuntimeState === "READY" ? "success" : "warning" },
+      { label: "Environment", value: environment, tone: "info" },
+      { label: "Role", value: authDisplayRoleLabel, tone: "info" },
+      { label: "AI", value: toolView === "ai" ? "Active" : "Idle", tone: toolView === "ai" ? "success" : "info" },
+    ],
+    [authDisplayRoleLabel, authStatus, environment, frontendRuntimeState, sessionWarning, toolView],
+  );
+
   const roleWorkspaceModel = useMemo(
     () =>
       buildRoleWorkspaceModel({
@@ -3830,13 +4002,21 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell studio-shell">
       <header className="topbar">
         <div className="brand-block">
           <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
           <div>
             <p className="eyebrow">NovaTech enterprise workspace</p>
             <strong>NovaCodePro</strong>
+            <div className="topbar-context">
+              <span>{activeRole.organization || session?.organization?.name || "NovaTech"}</span>
+              <span>{activeTenant?.name || session?.workspace?.name || "Workspace"}</span>
+              <span>{activeProject?.name || selectedRequest?.title || "Workspace"}</span>
+              <span>{activeProject?.repository || "Repository not connected"}</span>
+              <span>{activeProject?.branch || "main"}</span>
+              <span>{environment}</span>
+            </div>
           </div>
         </div>
 
@@ -3913,6 +4093,19 @@ function App() {
         </div>
       </header>
 
+      <StudioChrome
+        title="NovaCodePro Studio"
+        subtitle={`${activeRole.label} · ${activeProject?.name || selectedRequest?.title || "Workspace"} · ${environment}`}
+        menus={studioMenus}
+        activityItems={studioActivityItems}
+        contextItems={studioContextItems}
+        statusItems={studioStatusItems}
+        primaryAction={() => setFocusNav("Dashboard")}
+        primaryActionLabel="Workspace overview"
+        onOpenPalette={() => setPaletteOpen(true)}
+        onActivityChange={(item) => setFocusNav(item.id)}
+        activeActivityId={focusNav}
+      >
       {sessionWarning ? (
         <div className="session-warning">
           <span>Your session will expire in 2 minutes.</span>
@@ -6721,6 +6914,77 @@ function App() {
 
         <aside className="context-rail">
           <section className="rail-card">
+            <p className="section-label">Workspace context</p>
+            <strong>{activeProject?.name || selectedRequest?.title || "NovaCodePro Studio"}</strong>
+            <div className="signal-list">
+              {[
+                ["Organisation", activeRole.organization || session?.organization?.name || "NovaTech"],
+                ["Workspace", activeTenant?.name || session?.workspace?.name || "Workspace"],
+                ["Repository", activeProject?.repository || "Not connected"],
+                ["Branch", activeProject?.branch || "main"],
+                ["Environment", environment],
+              ].map(([label, value]) => (
+                <div className="signal-row" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rail-card">
+            <p className="section-label">Traceability</p>
+            <strong>Requirements → code → tests → evidence</strong>
+            <div className="chip-cloud compact">
+              {[
+                `Requirement ${selectedRequest?.id || "n/a"}`,
+                `Commit ${NOVACODEPRO_BUILD_INFO.commit.slice(0, 8)}`,
+                `Tests ${runtime.auditTrail.length}`,
+                `Evidence ${runtime.evidenceBundles.length}`,
+              ].map((item) => (
+                <span className="context-chip" key={item}>
+                  {item}
+                </span>
+              ))}
+            </div>
+            <p className="rail-note">
+              The workspace keeps the active request, selected files, backend evidence, and audit trail visible together.
+            </p>
+          </section>
+
+          <section className="rail-card">
+            <p className="section-label">Security posture</p>
+            <strong>{sessionWarning ? "Action required" : "Current workspace secured"}</strong>
+            <div className="signal-list">
+              {[
+                ["Trust", sessionWarning ? "Session expiring" : "Trusted"],
+                ["Auth", authStatus === "signed-in" ? "Signed in" : authStatus],
+                ["Role", authDisplayRoleLabel],
+                ["AI", toolView === "ai" ? "Active" : "Idle"],
+              ].map(([label, value]) => (
+                <div className="signal-row" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rail-card">
+            <p className="section-label">AI recommendations</p>
+            <strong>Next governed actions</strong>
+            <ul className="feed-list">
+              {[
+                "Review the current workspace summary and open files.",
+                "Run the command palette for build, test, or deploy actions.",
+                "Use NovaAI to generate tests, explain code, or propose a safe refactor.",
+              ].map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="rail-card">
             <p className="section-label">Command palette</p>
             <strong>Universal search and command center</strong>
             <div className="command-list">
@@ -6799,6 +7063,7 @@ function App() {
         <span>Separate from the current NovaTech dashboard surface.</span>
         <span>Role-aware workspace, governed access, synchronized state, and NovaID login.</span>
       </footer>
+      </StudioChrome>
 
       {paletteOpen ? (
         <div
