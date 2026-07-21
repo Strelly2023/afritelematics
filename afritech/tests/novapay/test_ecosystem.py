@@ -3,6 +3,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -439,3 +441,70 @@ def test_signed_receipt_and_runtime_boundary_validation() -> None:
         if isinstance(node, ast.ImportFrom) and node.module
     }
     assert all(not module.startswith("afriride_system") for module in imports)
+
+
+def test_transfer_money_rolls_back_atomic_state_on_failure(tmp_path: Path) -> None:
+    service = NovaPayEcosystem(NovaPayRepository(tmp_path / "novapay.sqlite3"))
+    service.create_wallet(
+        owner_id="customer-1",
+        organization_id="org-pay",
+        owner_type="consumer",
+        currency="AUD",
+        initial_balance="100.00",
+        kyc_status="verified",
+    )
+
+    with pytest.raises(ValueError, match="wallet_not_found"):
+        service.transfer_money(
+            organization_id="org-pay",
+            actor_id="customer-1",
+            actor_role="CUSTOMER",
+            sender_wallet_id="wallet-customer-1-AUD",
+            receiver_wallet_id="wallet-missing-AUD",
+            amount="25.00",
+            currency="AUD",
+            transfer_type="send_money",
+            idempotency_key="idem-rollback",
+        )
+
+    assert service.wallet("wallet-customer-1-AUD")["balance"] == "100.00"
+    assert service.repository.list("novapay_transactions") == []
+    assert service.repository.list("novapay_financial_outbox") == []
+
+
+def test_transfer_money_emits_financial_outbox_event(tmp_path: Path) -> None:
+    service = NovaPayEcosystem(NovaPayRepository(tmp_path / "novapay.sqlite3"))
+    service.create_wallet(
+        owner_id="customer-1",
+        organization_id="org-pay",
+        owner_type="consumer",
+        currency="AUD",
+        initial_balance="100.00",
+        kyc_status="verified",
+    )
+    service.create_wallet(
+        owner_id="merchant-1",
+        organization_id="org-pay",
+        owner_type="merchant",
+        currency="AUD",
+        initial_balance="0.00",
+        kyc_status="verified",
+    )
+
+    result = service.transfer_money(
+        organization_id="org-pay",
+        actor_id="customer-1",
+        actor_role="CUSTOMER",
+        sender_wallet_id="wallet-customer-1-AUD",
+        receiver_wallet_id="wallet-merchant-1-AUD",
+        amount="25.00",
+        currency="AUD",
+        transfer_type="send_money",
+        idempotency_key="idem-outbox",
+    )
+
+    outbox = service.repository.list("novapay_financial_outbox")
+    assert result["transaction"]["idempotency_key"] == "idem-outbox"
+    assert len(outbox) == 1
+    assert outbox[0].payload["event_type"] == "TRANSFER_POSTED"
+    assert outbox[0].payload["resource_type"] == "TRANSFER"

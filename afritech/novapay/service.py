@@ -64,6 +64,10 @@ def _record(record: NovaPayRecord) -> dict[str, Any]:
     }
 
 
+def _outbox_event_id(prefix: str) -> str:
+    return f"{prefix}-{uuid4().hex[:12]}"
+
+
 class NovaPayEcosystem:
     def __init__(
         self,
@@ -235,6 +239,56 @@ class NovaPayEcosystem:
                 return _record(record)
         return None
 
+    def _enqueue_financial_event(
+        self,
+        *,
+        organization_id: str,
+        event_type: str,
+        resource_type: str,
+        resource_id: str,
+        payload: dict[str, Any],
+        actor_id: str,
+        correlation_id: str | None = None,
+        causation_id: str | None = None,
+        idempotency_key: str | None = None,
+        event_version: int = 1,
+    ) -> None:
+        enqueue = getattr(self.repository, "enqueue_outbox", None)
+        if callable(enqueue):
+            enqueue(
+                outbox_event_id=_outbox_event_id("outbox"),
+                organization_id=organization_id,
+                event_type=event_type,
+                resource_type=resource_type,
+                resource_id=resource_id,
+                payload=payload,
+                idempotency_key=idempotency_key,
+                tenant_id=organization_id,
+                actor_id=actor_id,
+                causation_id=causation_id or "",
+                correlation_id=correlation_id or "",
+                event_version=event_version,
+                status="pending",
+            )
+            return
+        self.repository.upsert(
+            "novapay_audit_events",
+            record_id=_outbox_event_id("outbox"),
+            organization_id=organization_id,
+            status="recorded",
+            payload={
+                "event_type": event_type,
+                "resource_type": resource_type,
+                "resource_id": resource_id,
+                "payload": payload,
+                "actor_id": actor_id,
+                "correlation_id": correlation_id or "",
+                "causation_id": causation_id or "",
+                "idempotency_key": idempotency_key,
+                "event_version": event_version,
+            },
+        )
+
     def transfer_money(
         self,
         *,
@@ -254,116 +308,133 @@ class NovaPayEcosystem:
         amount_decimal = Decimal(str(amount))
         if amount_decimal <= 0:
             raise ValueError("transfer_amount_must_be_positive")
-        existing = self.find_transaction(idempotency_key=idempotency_key)
-        if existing is not None:
-            return existing
-        approval = self.policy_decision(
-            role=actor_role,
-            action=transfer_type,
-            amount=amount_decimal,
-            organization_id=organization_id,
-            subject_id=actor_id,
-            workflow="transfer",
-            approval_required=require_approval,
-            metadata=metadata,
-        )
-        if not approval["approved"]:
-            raise PermissionError("policy_hold")
-        sender_after = self._adjust_wallet(sender_wallet_id, delta=-amount_decimal, reason=transfer_type)
-        receiver_after = self._adjust_wallet(receiver_wallet_id, delta=amount_decimal, reason=transfer_type)
-        transaction_id = f"txn-{uuid4().hex[:12]}"
-        transfer_id = f"xfer-{uuid4().hex[:12]}"
-        transaction_payload = {
-            "transaction_id": transaction_id,
-            "transfer_id": transfer_id,
-            "actor_id": actor_id,
-            "actor_role": actor_role,
-            "sender_wallet_id": sender_wallet_id,
-            "receiver_wallet_id": receiver_wallet_id,
-            "amount": _money(amount_decimal),
-            "currency": currency.upper(),
-            "transfer_type": transfer_type,
-            "idempotency_key": idempotency_key,
-            "provider": provider,
-            "metadata": metadata or {},
-        }
-        transaction = self.repository.upsert(
-            "novapay_transactions",
-            record_id=transaction_id,
-            organization_id=organization_id,
-            status="completed",
-            payload=transaction_payload,
-        )
-        self.repository.upsert(
-            "novapay_transfers",
-            record_id=transfer_id,
-            organization_id=organization_id,
-            status="completed",
-            payload={**transaction_payload, "sender_after": sender_after, "receiver_after": receiver_after},
-        )
-        self.repository.upsert(
-            "novapay_ledger_entries",
-            record_id=f"{transaction_id}-debit",
-            organization_id=organization_id,
-            status="posted",
-            payload={
+        with self.repository.transaction():
+            existing = self.find_transaction(idempotency_key=idempotency_key)
+            if existing is not None:
+                return existing
+            approval = self.policy_decision(
+                role=actor_role,
+                action=transfer_type,
+                amount=amount_decimal,
+                organization_id=organization_id,
+                subject_id=actor_id,
+                workflow="transfer",
+                approval_required=require_approval,
+                metadata=metadata,
+            )
+            if not approval["approved"]:
+                raise PermissionError("policy_hold")
+            sender_after = self._adjust_wallet(sender_wallet_id, delta=-amount_decimal, reason=transfer_type)
+            receiver_after = self._adjust_wallet(receiver_wallet_id, delta=amount_decimal, reason=transfer_type)
+            transaction_id = f"txn-{uuid4().hex[:12]}"
+            transfer_id = f"xfer-{uuid4().hex[:12]}"
+            transaction_payload = {
                 "transaction_id": transaction_id,
-                "wallet_id": sender_wallet_id,
-                "entry_type": "debit",
-                "amount": _money(amount_decimal),
-                "currency": currency.upper(),
-            },
-        )
-        self.repository.upsert(
-            "novapay_ledger_entries",
-            record_id=f"{transaction_id}-credit",
-            organization_id=organization_id,
-            status="posted",
-            payload={
-                "transaction_id": transaction_id,
-                "wallet_id": receiver_wallet_id,
-                "entry_type": "credit",
-                "amount": _money(amount_decimal),
-                "currency": currency.upper(),
-            },
-        )
-        receipt = self.issue_receipt(
-            organization_id=organization_id,
-            transaction_id=transaction_id,
-            actor_id=actor_id,
-            actor_role=actor_role,
-            payload={**transaction_payload, "sender_after": sender_after, "receiver_after": receiver_after},
-        )
-        self.repository.upsert(
-            "novapay_provider_events",
-            record_id=f"provider-{transaction_id}",
-            organization_id=organization_id,
-            status="published",
-            payload={
-                "provider": provider,
-                "event_type": transfer_type,
-                "transaction_id": transaction_id,
-                "receipt_id": receipt["receipt_id"],
-            },
-        )
-        self.repository.upsert(
-            "novapay_audit_events",
-            record_id=f"audit-{transaction_id}",
-            organization_id=organization_id,
-            status="recorded",
-            payload={
+                "transfer_id": transfer_id,
                 "actor_id": actor_id,
-                "role": actor_role,
-                "action": transfer_type,
-                "transaction_id": transaction_id,
-                "receipt_id": receipt["receipt_id"],
-            },
-        )
-        return {
-            "transaction": transaction.payload,
-            "transfer": self.repository.get("novapay_transfers", transfer_id).payload,
-            "receipt": receipt,
-        }
+                "actor_role": actor_role,
+                "sender_wallet_id": sender_wallet_id,
+                "receiver_wallet_id": receiver_wallet_id,
+                "amount": _money(amount_decimal),
+                "currency": currency.upper(),
+                "transfer_type": transfer_type,
+                "idempotency_key": idempotency_key,
+                "provider": provider,
+                "metadata": metadata or {},
+            }
+            transaction = self.repository.upsert(
+                "novapay_transactions",
+                record_id=transaction_id,
+                organization_id=organization_id,
+                status="completed",
+                payload=transaction_payload,
+            )
+            self.repository.upsert(
+                "novapay_transfers",
+                record_id=transfer_id,
+                organization_id=organization_id,
+                status="completed",
+                payload={**transaction_payload, "sender_after": sender_after, "receiver_after": receiver_after},
+            )
+            self.repository.upsert(
+                "novapay_ledger_entries",
+                record_id=f"{transaction_id}-debit",
+                organization_id=organization_id,
+                status="posted",
+                payload={
+                    "transaction_id": transaction_id,
+                    "wallet_id": sender_wallet_id,
+                    "entry_type": "debit",
+                    "amount": _money(amount_decimal),
+                    "currency": currency.upper(),
+                },
+            )
+            self.repository.upsert(
+                "novapay_ledger_entries",
+                record_id=f"{transaction_id}-credit",
+                organization_id=organization_id,
+                status="posted",
+                payload={
+                    "transaction_id": transaction_id,
+                    "wallet_id": receiver_wallet_id,
+                    "entry_type": "credit",
+                    "amount": _money(amount_decimal),
+                    "currency": currency.upper(),
+                },
+            )
+            receipt = self.issue_receipt(
+                organization_id=organization_id,
+                transaction_id=transaction_id,
+                actor_id=actor_id,
+                actor_role=actor_role,
+                payload={**transaction_payload, "sender_after": sender_after, "receiver_after": receiver_after},
+            )
+            self.repository.upsert(
+                "novapay_provider_events",
+                record_id=f"provider-{transaction_id}",
+                organization_id=organization_id,
+                status="published",
+                payload={
+                    "provider": provider,
+                    "event_type": transfer_type,
+                    "transaction_id": transaction_id,
+                    "receipt_id": receipt["receipt_id"],
+                },
+            )
+            self.repository.upsert(
+                "novapay_audit_events",
+                record_id=f"audit-{transaction_id}",
+                organization_id=organization_id,
+                status="recorded",
+                payload={
+                    "actor_id": actor_id,
+                    "role": actor_role,
+                    "action": transfer_type,
+                    "transaction_id": transaction_id,
+                    "receipt_id": receipt["receipt_id"],
+                },
+            )
+            self._enqueue_financial_event(
+                organization_id=organization_id,
+                event_type="TRANSFER_POSTED",
+                resource_type="TRANSFER",
+                resource_id=transfer_id,
+                payload={
+                    "transaction_id": transaction_id,
+                    "transfer_id": transfer_id,
+                    "amount": _money(amount_decimal),
+                    "currency": currency.upper(),
+                },
+                actor_id=actor_id,
+                correlation_id=idempotency_key,
+                causation_id=transaction_id,
+                idempotency_key=idempotency_key,
+            )
+            return {
+                "transaction": transaction.payload,
+                "transfer": self.repository.get("novapay_transfers", transfer_id).payload,
+                "receipt": receipt,
+            }
 
     def receive_money(self, **kwargs: Any) -> dict[str, Any]:
         params = dict(kwargs)
@@ -546,21 +617,37 @@ class NovaPayEcosystem:
             require_approval=require_approval,
         )
         refund_id = f"refund-{uuid4().hex[:12]}"
-        record = self.repository.upsert(
-            "novapay_refunds",
-            record_id=refund_id,
-            organization_id=organization_id,
-            status="completed",
-            payload={
-                "refund_id": refund_id,
-                "transaction_id": result["transaction"]["transaction_id"],
-                "reason": reason,
-                "amount": _money(amount),
-                "currency": currency.upper(),
-                "approval_status": "approved" if require_approval else "auto_approved",
-            },
-        )
-        return _record(record)
+        with self.repository.transaction():
+            record = self.repository.upsert(
+                "novapay_refunds",
+                record_id=refund_id,
+                organization_id=organization_id,
+                status="completed",
+                payload={
+                    "refund_id": refund_id,
+                    "transaction_id": result["transaction"]["transaction_id"],
+                    "reason": reason,
+                    "amount": _money(amount),
+                    "currency": currency.upper(),
+                    "approval_status": "approved" if require_approval else "auto_approved",
+                },
+            )
+            self._enqueue_financial_event(
+                organization_id=organization_id,
+                event_type="REFUND_COMPLETED",
+                resource_type="REFUND",
+                resource_id=refund_id,
+                payload={
+                    "refund_id": refund_id,
+                    "transaction_id": result["transaction"]["transaction_id"],
+                    "reason": reason,
+                },
+                actor_id=actor_id,
+                correlation_id=idempotency_key,
+                causation_id=result["transaction"]["transaction_id"],
+                idempotency_key=idempotency_key,
+            )
+            return _record(record)
 
     def dispute(
         self,
@@ -597,40 +684,62 @@ class NovaPayEcosystem:
         actor_id: str,
         actor_role: str,
     ) -> dict[str, Any]:
-        settlement_id = f"settlement-{uuid4().hex[:12]}"
-        record = self.repository.upsert(
-            "novapay_settlements",
-            record_id=settlement_id,
-            organization_id=organization_id,
-            status="settled",
-            payload={
-                "settlement_id": settlement_id,
-                "transaction_id": transaction_id,
-                "actor_id": actor_id,
-                "actor_role": actor_role,
-            },
-        )
-        return _record(record)
+        with self.repository.transaction():
+            settlement_id = f"settlement-{uuid4().hex[:12]}"
+            record = self.repository.upsert(
+                "novapay_settlements",
+                record_id=settlement_id,
+                organization_id=organization_id,
+                status="settled",
+                payload={
+                    "settlement_id": settlement_id,
+                    "transaction_id": transaction_id,
+                    "actor_id": actor_id,
+                    "actor_role": actor_role,
+                },
+            )
+            self._enqueue_financial_event(
+                organization_id=organization_id,
+                event_type="SETTLEMENT_COMPLETED",
+                resource_type="SETTLEMENT",
+                resource_id=settlement_id,
+                payload={"settlement_id": settlement_id, "transaction_id": transaction_id},
+                actor_id=actor_id,
+                correlation_id=transaction_id,
+                causation_id=transaction_id,
+            )
+            return _record(record)
 
     def reconcile(self, *, organization_id: str, batch_name: str, actor_id: str, actor_role: str) -> dict[str, Any]:
-        batch_id = f"recon-{uuid4().hex[:12]}"
-        transactions = self.repository.list("novapay_transactions", organization_id=organization_id)
-        gross = sum(Decimal(str(item.payload.get("amount", "0"))) for item in transactions)
-        record = self.repository.upsert(
-            "novapay_reconciliation_batches",
-            record_id=batch_id,
-            organization_id=organization_id,
-            status="closed",
-            payload={
-                "batch_id": batch_id,
-                "batch_name": batch_name,
-                "actor_id": actor_id,
-                "actor_role": actor_role,
-                "transaction_count": len(transactions),
-                "gross_amount": _money(gross),
-            },
-        )
-        return _record(record)
+        with self.repository.transaction():
+            batch_id = f"recon-{uuid4().hex[:12]}"
+            transactions = self.repository.list("novapay_transactions", organization_id=organization_id)
+            gross = sum(Decimal(str(item.payload.get("amount", "0"))) for item in transactions)
+            record = self.repository.upsert(
+                "novapay_reconciliation_batches",
+                record_id=batch_id,
+                organization_id=organization_id,
+                status="closed",
+                payload={
+                    "batch_id": batch_id,
+                    "batch_name": batch_name,
+                    "actor_id": actor_id,
+                    "actor_role": actor_role,
+                    "transaction_count": len(transactions),
+                    "gross_amount": _money(gross),
+                },
+            )
+            self._enqueue_financial_event(
+                organization_id=organization_id,
+                event_type="RECONCILIATION_RESOLVED",
+                resource_type="RECONCILIATION_BATCH",
+                resource_id=batch_id,
+                payload={"batch_id": batch_id, "batch_name": batch_name},
+                actor_id=actor_id,
+                correlation_id=batch_id,
+                causation_id=batch_id,
+            )
+            return _record(record)
 
     def issue_receipt(
         self,

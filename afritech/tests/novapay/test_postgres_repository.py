@@ -77,3 +77,41 @@ def test_postgres_repository_uses_normalized_schema_and_columns(monkeypatch) -> 
     assert upsert_params[2] == "active"
     assert record.payload["wallet_id"] == "wallet-1"
     assert record.payload["balance"] == "10.00"
+
+
+def test_postgres_repository_supports_financial_outbox_rows(monkeypatch) -> None:
+    connection = _Connection()
+    monkeypatch.setattr(
+        "afritech.novapay.repository.psycopg.connect",
+        lambda dsn, row_factory=None: connection,
+    )
+
+    repo = PostgresNovaPayRepository("postgresql://example/db")
+    event = repo.enqueue_outbox(
+        outbox_event_id="outbox-1",
+        organization_id="org-pay",
+        event_type="TRANSFER_POSTED",
+        resource_type="TRANSFER",
+        resource_id="transfer-1",
+        payload={"transaction_id": "txn-1", "amount": "10.00"},
+        idempotency_key="idem-1",
+        actor_id="actor-1",
+        correlation_id="corr-1",
+        causation_id="caus-1",
+    )
+
+    outbox_ddl = "\n".join(sql for sql, _ in connection.statements[: len(repo.table_names())])
+    assert "novapay_financial_outbox" in outbox_ddl
+    assert "outbox_event_id TEXT NOT NULL" in outbox_ddl
+    assert "retry_count INTEGER NOT NULL DEFAULT 0" in outbox_ddl
+    assert "dead_letter_reason TEXT" in outbox_ddl
+
+    outbox_sql, outbox_params = connection.statements[-1]
+    assert "novapay_financial_outbox" in outbox_sql
+    assert "payload_json" in outbox_sql
+    assert outbox_params is not None
+    assert outbox_params[0] == "outbox-1"
+    assert outbox_params[1] == "org-pay"
+    assert outbox_params[2] == "pending"
+    assert event.payload["event_type"] == "TRANSFER_POSTED"
+    assert event.payload["resource_id"] == "transfer-1"

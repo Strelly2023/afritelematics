@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 import os
 import json
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 from threading import RLock
 from typing import Any
@@ -47,12 +48,23 @@ class NovaPayRepository:
     def __init__(self, db_path: str | Path = ":memory:") -> None:
         self.db_path = str(db_path)
         self._lock = RLock()
+        self._transaction_depth = 0
         self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._ensure_schema()
 
     def close(self) -> None:
         self._conn.close()
+
+    @contextmanager
+    def transaction(self):
+        with self._lock:
+            self._transaction_depth += 1
+            try:
+                with self._conn:
+                    yield self
+            finally:
+                self._transaction_depth -= 1
 
     def _ensure_schema(self) -> None:
         with self._conn:
@@ -75,8 +87,26 @@ class NovaPayRepository:
         row_payload.setdefault("record_id", record_id)
         row_payload.setdefault("organization_id", organization_id)
         row_payload.setdefault("status", status)
-        with self._lock, self._conn:
-            self._conn.execute(
+        execute = self._conn.execute
+        if self._transaction_depth == 0:
+            with self._lock, self._conn:
+                execute(
+                    f"""
+                    INSERT OR REPLACE INTO {table_name} (
+                        record_id, organization_id, status, payload_json, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        record_id,
+                        organization_id,
+                        status,
+                        _dump(row_payload),
+                        created_at,
+                        now,
+                    ),
+                )
+        else:
+            execute(
                 f"""
                 INSERT OR REPLACE INTO {table_name} (
                     record_id, organization_id, status, payload_json, created_at, updated_at
@@ -150,6 +180,47 @@ class NovaPayRepository:
             for row in rows
         ]
 
+    def enqueue_outbox(
+        self,
+        *,
+        outbox_event_id: str,
+        organization_id: str,
+        event_type: str,
+        resource_type: str,
+        resource_id: str,
+        payload: dict[str, Any],
+        idempotency_key: str | None = None,
+        tenant_id: str = "",
+        actor_id: str = "",
+        causation_id: str = "",
+        correlation_id: str = "",
+        event_version: int = 1,
+        status: str = "pending",
+    ) -> NovaPayRecord:
+        return self.upsert(
+            "novapay_financial_outbox",
+            record_id=outbox_event_id,
+            organization_id=organization_id,
+            status=status,
+            payload={
+                "outbox_event_id": outbox_event_id,
+                "event_type": event_type,
+                "resource_type": resource_type,
+                "resource_id": resource_id,
+                "payload": payload,
+                "event_version": event_version,
+                "idempotency_key": idempotency_key,
+                "tenant_id": tenant_id or organization_id,
+                "actor_id": actor_id,
+                "causation_id": causation_id or "",
+                "correlation_id": correlation_id or "",
+                "status": status,
+            },
+        )
+
+    def list_outbox(self, *, organization_id: str | None = None, status: str | None = None, limit: int = 100) -> list[NovaPayRecord]:
+        return self.list("novapay_financial_outbox", organization_id=organization_id, status=status, limit=limit)
+
     def table_names(self) -> tuple[str, ...]:
         return TABLE_NAMES
 
@@ -185,6 +256,11 @@ class PostgresNovaPayRepository:
 
     def close(self) -> None:
         self._conn.close()
+
+    @contextmanager
+    def transaction(self):
+        with self._conn.transaction():
+            yield self
 
     def _ensure_schema(self) -> None:
         for table_name in TABLE_NAMES:
@@ -474,6 +550,47 @@ class PostgresNovaPayRepository:
         params.append(limit)
         rows = self._conn.execute(query, tuple(params)).fetchall()
         return [self._row_to_record(row) for row in rows]
+
+    def enqueue_outbox(
+        self,
+        *,
+        outbox_event_id: str,
+        organization_id: str,
+        event_type: str,
+        resource_type: str,
+        resource_id: str,
+        payload: dict[str, Any],
+        idempotency_key: str | None = None,
+        tenant_id: str = "",
+        actor_id: str = "",
+        causation_id: str = "",
+        correlation_id: str = "",
+        event_version: int = 1,
+        status: str = "pending",
+    ) -> NovaPayRecord:
+        return self.upsert(
+            "novapay_financial_outbox",
+            record_id=outbox_event_id,
+            organization_id=organization_id,
+            status=status,
+            payload={
+                "outbox_event_id": outbox_event_id,
+                "event_type": event_type,
+                "resource_type": resource_type,
+                "resource_id": resource_id,
+                "payload": payload,
+                "event_version": event_version,
+                "idempotency_key": idempotency_key,
+                "tenant_id": tenant_id or organization_id,
+                "actor_id": actor_id,
+                "causation_id": causation_id,
+                "correlation_id": correlation_id,
+                "status": status,
+            },
+        )
+
+    def list_outbox(self, *, organization_id: str | None = None, status: str | None = None, limit: int = 100) -> list[NovaPayRecord]:
+        return self.list("novapay_financial_outbox", organization_id=organization_id, status=status, limit=limit)
 
     def table_names(self) -> tuple[str, ...]:
         return TABLE_NAMES
