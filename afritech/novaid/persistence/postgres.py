@@ -123,6 +123,283 @@ class PostgresIdentityRepository(PostgresRepository):
             (tenant_id, normalized_email.lower()),
         ).fetchone()
 
+    def get_tenant_status(self, tenant_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT status FROM novaid_tenants WHERE tenant_id=%s",
+            (tenant_id,),
+        ).fetchone()
+
+    def get_idempotency_record(self, tenant_id: str, key: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT payload_hash,response_json FROM novaid_idempotency_records "
+            "WHERE tenant_id=%s AND idempotency_key=%s",
+            (tenant_id, key),
+        ).fetchone()
+
+    def insert_idempotency_record(
+        self, tenant_id: str, key: str, payload_hash: str, response_json: str, *, now: str
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_idempotency_records(tenant_id,idempotency_key,payload_hash,response_json,created_at) "
+            "VALUES(%s,%s,%s,%s,%s)",
+            (tenant_id, key, payload_hash, response_json, now),
+        )
+
+    def create_registration_membership(
+        self, membership_id: str, tenant_id: str, identity_id: str, *, now: str
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_tenant_memberships(membership_id,tenant_id,identity_id,role,status,created_at,updated_at,version) "
+            "VALUES(%s,%s,%s,'MEMBER','ACTIVE',%s,%s,1)",
+            (membership_id, tenant_id, identity_id, now, now),
+        )
+
+    def get_identity_for_tenant(self, tenant_id: str, identity_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT * FROM novaid_identities WHERE identity_id=%s AND tenant_id=%s",
+            (identity_id, tenant_id),
+        ).fetchone()
+
+    def activate_identity(self, tenant_id: str, identity_id: str, *, now: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_identities SET status='ACTIVE',updated_at=%s,version=version+1 "
+            "WHERE identity_id=%s AND tenant_id=%s",
+            (now, identity_id, tenant_id),
+        )
+        return row.rowcount
+
+    def create_registration_challenge(
+        self,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str,
+        purpose: str,
+        destination_reference: str,
+        secret_hash: str,
+        created_at: str,
+        expires_at: str,
+        maximum_attempts: int,
+        correlation_id: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_otp_challenges(challenge_id,tenant_id,identity_id,purpose,destination_reference,"
+            "secret_hash,created_at,expires_at,consumed_at,attempt_count,maximum_attempts,status,correlation_id) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,NULL,0,%s,'PENDING',%s)",
+            (
+                challenge_id,
+                tenant_id,
+                identity_id,
+                purpose,
+                destination_reference,
+                secret_hash,
+                created_at,
+                expires_at,
+                maximum_attempts,
+                correlation_id,
+            ),
+        )
+
+    def create_authentication_session(
+        self,
+        session_id: str,
+        tenant_id: str,
+        identity_id: str,
+        authentication_time: str,
+        authentication_strength: str,
+        credential_id: str,
+        risk_score: float,
+        membership_id: str,
+        *,
+        created_at: str,
+        expires_at: str,
+        pending_mfa_expires_at: str,
+        authentication_methods: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_authentication_sessions(session_id,tenant_id,identity_id,authentication_time,"
+            "authentication_strength,credential_id,device_reference,client_reference,risk_score,status,created_at,"
+            "last_seen_at,expires_at,revoked_at,revocation_reason,version,membership_id,authenticated_at,"
+            "idle_expires_at,absolute_expires_at,pending_mfa_expires_at,step_up_expires_at,locked_at,expired_at,"
+            "compromised_at,network_reference,authentication_methods,security_version,revoked_by,compromise_reason) "
+            "VALUES(%s,%s,%s,%s,%s,%s,NULL,NULL,%s,'PENDING_MFA',%s,%s,%s,NULL,NULL,1,%s,NULL,%s,%s,%s,NULL,NULL,NULL,NULL,NULL,%s,1,NULL,NULL)",
+            (
+                session_id,
+                tenant_id,
+                identity_id,
+                authentication_time,
+                authentication_strength,
+                credential_id,
+                risk_score,
+                created_at,
+                created_at,
+                expires_at,
+                membership_id,
+                created_at,
+                expires_at,
+                pending_mfa_expires_at,
+                authentication_methods,
+            ),
+        )
+
+    def create_login_challenge(
+        self,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str,
+        session_id: str,
+        secret_hash: str,
+        created_at: str,
+        expires_at: str,
+        correlation_id: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_otp_challenges(challenge_id,tenant_id,identity_id,purpose,destination_reference,"
+            "secret_hash,created_at,expires_at,consumed_at,attempt_count,maximum_attempts,status,correlation_id) "
+            "VALUES(%s,%s,%s,'LOGIN',%s,%s,%s,%s,NULL,0,5,'PENDING',%s)",
+            (challenge_id, tenant_id, identity_id, session_id, secret_hash, created_at, expires_at, correlation_id),
+        )
+
+    def get_pending_session(self, tenant_id: str, session_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT identity_id,status,expires_at FROM novaid_authentication_sessions "
+            "WHERE tenant_id=%s AND session_id=%s",
+            (tenant_id, session_id),
+        ).fetchone()
+
+    def get_recent_login_challenge(
+        self, tenant_id: str, identity_id: str, session_id: str
+    ) -> Any | None:
+        return self.connection.execute(
+            "SELECT challenge_id,created_at FROM novaid_otp_challenges "
+            "WHERE tenant_id=%s AND identity_id=%s AND purpose='LOGIN' "
+            "AND destination_reference=%s AND status='PENDING' ORDER BY created_at DESC LIMIT 1",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+
+    def get_login_identity(self, tenant_id: str, normalized_email: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT i.identity_id,i.status,m.membership_id,c.credential_id,p.password_hash "
+            "FROM novaid_identities i JOIN novaid_tenant_memberships m ON m.identity_id=i.identity_id AND m.tenant_id=i.tenant_id "
+            "JOIN novaid_credentials c ON c.identity_id=i.identity_id AND c.tenant_id=i.tenant_id "
+            "JOIN novaid_password_credentials p ON p.credential_id=c.credential_id "
+            "WHERE i.tenant_id=%s AND i.normalized_email=%s AND m.status='ACTIVE' AND c.status='ACTIVE'",
+            (tenant_id, normalized_email.lower()),
+        ).fetchone()
+
+    def update_otp_status(self, challenge_id: str, status: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET status=%s WHERE challenge_id=%s",
+            (status, challenge_id),
+        )
+        return row.rowcount
+
+    def supersede_challenge(self, challenge_id: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_otp_challenges SET status='SUPERSEDED' WHERE challenge_id=%s",
+            (challenge_id,),
+        )
+        return row.rowcount
+
+    def get_mfa_challenge_session(self, tenant_id: str, challenge_id: str, session_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT c.*,s.identity_id,s.status session_status FROM novaid_otp_challenges c "
+            "JOIN novaid_authentication_sessions s ON CAST(s.session_id AS TEXT)=c.destination_reference "
+            "WHERE c.challenge_id=%s AND c.tenant_id=%s AND s.session_id=%s",
+            (challenge_id, tenant_id, session_id),
+        ).fetchone()
+
+    def activate_session_and_refresh(self, session_id: str, *, now: str, authentication_methods: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',authentication_strength='PASSWORD_OTP',"
+            "authenticated_at=%s,authentication_methods=%s,pending_mfa_expires_at=NULL WHERE session_id=%s",
+            (now, authentication_methods, session_id),
+        )
+        return row.rowcount
+
+    def create_refresh_family(
+        self,
+        family_id: str,
+        session_id: str,
+        identity_id: str,
+        tenant_id: str,
+        *,
+        created_at: str,
+        expires_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_refresh_token_families(family_id,session_id,identity_id,tenant_id,status,created_at,expires_at,revoked_at,version) "
+            "VALUES(%s,%s,%s,%s,'ACTIVE',%s,%s,NULL,1)",
+            (family_id, session_id, identity_id, tenant_id, created_at, expires_at),
+        )
+
+    def create_refresh_token(
+        self,
+        token_id: str,
+        family_id: str,
+        session_id: str,
+        identity_id: str,
+        tenant_id: str,
+        token_hash: str,
+        parent_token_id: str | None,
+        *,
+        issued_at: str,
+        expires_at: str,
+    ) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_refresh_tokens(token_id,family_id,session_id,identity_id,tenant_id,token_hash,parent_token_id,issued_at,expires_at,used_at,revoked_at,replacement_token_id,status) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,NULL,NULL,'ACTIVE')",
+            (token_id, family_id, session_id, identity_id, tenant_id, token_hash, parent_token_id, issued_at, expires_at),
+        )
+
+    def get_refresh_context(self, tenant_id: str, token_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT t.*,f.status family_status,s.status session_status,"
+            "s.idle_expires_at,s.absolute_expires_at,s.expires_at session_expires_at "
+            "FROM novaid_refresh_tokens t "
+            "JOIN novaid_refresh_token_families f ON f.family_id=t.family_id "
+            "JOIN novaid_authentication_sessions s ON s.session_id=t.session_id "
+            "WHERE t.token_id=%s AND t.tenant_id=%s",
+            (token_id, tenant_id),
+        ).fetchone()
+
+    def mark_refresh_replayed(self, token_id: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_refresh_tokens SET status='REPLAYED' WHERE token_id=%s",
+            (token_id,),
+        )
+        return row.rowcount
+
+    def revoke_refresh_family(self, family_id: str, *, now: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=%s WHERE family_id=%s",
+            (now, family_id),
+        )
+        return row.rowcount
+
+    def revoke_refresh_session(self, session_id: str, *, now: str, reason: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',revoked_at=%s,revocation_reason=%s "
+            "WHERE session_id=%s",
+            (now, reason, session_id),
+        )
+        return row.rowcount
+
+    def expire_refresh_session(self, tenant_id: str, session_id: str, *, now: str, reason: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='EXPIRED',expired_at=%s,revoked_at=%s,revocation_reason=%s "
+            "WHERE tenant_id=%s AND session_id=%s AND status='ACTIVE'",
+            (now, now, reason, tenant_id, session_id),
+        )
+        return row.rowcount
+
+    def mark_refresh_used(self, token_id: str, successor_id: str, *, now: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_refresh_tokens SET status='USED',used_at=%s,replacement_token_id=%s "
+            "WHERE token_id=%s AND status='ACTIVE'",
+            (now, successor_id, token_id),
+        )
+        return row.rowcount
+
     def list_password_credentials(self, tenant_id: str, identity_id: str) -> list[Any]:
         rows = self.connection.execute(
             "SELECT c.credential_id,c.status,p.password_hash,c.created_at "
@@ -419,7 +696,28 @@ class PostgresRiskStateRepository(PostgresRepository):
 
 
 class PostgresSecurityEventRepository(PostgresRepository):
-    pass
+    def add(self, event: Any) -> None:
+        self.connection.execute(
+            "INSERT INTO novaid_security_events(event_id,event_type,severity,tenant_id,actor_identity_id,"
+            "subject_identity_id,correlation_id,request_id,occurred_at,recorded_at,outcome,reason_codes,metadata,schema_version) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (
+                event.event_id,
+                event.event_type,
+                event.severity,
+                event.tenant_id,
+                event.actor_identity_id,
+                event.subject_identity_id,
+                event.correlation_id,
+                event.request_id,
+                event.occurred_at,
+                event.recorded_at,
+                event.outcome,
+                json.dumps(event.reason_codes),
+                json.dumps(event.metadata),
+                event.schema_version,
+            ),
+        )
 
 
 class PostgresIdempotencyRepository(PostgresRepository):
@@ -637,6 +935,9 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         if row is None:
             raise LookupError("TENANT_ACCESS_DENIED")
         self.identities.increment_security_version(tenant_id, identity_id, int(row["version"]))
+
+    def record_security_event(self, event: Any) -> None:
+        self.security_events.add(event)
 
     def revoke_refresh_families_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> int:
         del reason
