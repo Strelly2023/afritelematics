@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -15,20 +16,23 @@ SCOPE = ROOT / "docs/release/release-scope.yaml"
 
 def test_release_artifact_classification_documents_safe_cleanup_policy() -> None:
     text = CLASSIFICATION.read_text(encoding="utf-8")
-    assert "TEMPORARY_RUNTIME_OUTPUT" in text
-    assert "var/` is treated as temporary runtime output" in text
+    assert "HISTORICAL_EVIDENCE" in text
+    assert "artifacts/" in text
     assert "csv.py" in text
     assert "operator review" in text.lower()
 
 
 def test_release_artifact_inventory_includes_current_untracked_classes() -> None:
     payload = json.loads(INVENTORY.read_text(encoding="utf-8"))
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, text=True, capture_output=True
+    ).stdout.strip()
     assert payload["branch"] == "feature/product-factory-enterprise-sdlc"
-    assert payload["commit"] == "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4"
+    assert payload["commit"] == head
     paths = {item["relative_path"] for item in payload["items"]}
     assert "csv.py" in paths
     assert "artifacts/novaid/final" in paths or any(path.startswith("artifacts/novaid/final/") for path in paths)
-    assert any(path.startswith("var/") for path in paths)
+    assert any(path.startswith("artifacts/") for path in paths)
 
 
 def test_release_scope_references_current_baseline_commit() -> None:

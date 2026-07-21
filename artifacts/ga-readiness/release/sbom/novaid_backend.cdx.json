@@ -1,0 +1,594 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:root",
+      "name": "novaid_backend",
+      "purl": "pkg:generic/novaid_backend@b7710da800f4",
+      "scope": "required",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:celery",
+      "name": "celery",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "celery"
+        }
+      ],
+      "purl": "pkg:pypi/celery",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:cryptography",
+      "name": "cryptography",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "cryptography"
+        }
+      ],
+      "purl": "pkg:pypi/cryptography",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:django",
+      "name": "django",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "django"
+        }
+      ],
+      "purl": "pkg:pypi/django",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:djangorestframework",
+      "name": "djangorestframework",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "djangorestframework"
+        }
+      ],
+      "purl": "pkg:pypi/djangorestframework",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:eth-typing",
+      "name": "eth-typing",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "eth-typing"
+        }
+      ],
+      "purl": "pkg:pypi/eth-typing",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:fastapi",
+      "name": "fastapi",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "fastapi"
+        }
+      ],
+      "purl": "pkg:pypi/fastapi",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:hexbytes",
+      "name": "hexbytes",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "hexbytes"
+        }
+      ],
+      "purl": "pkg:pypi/hexbytes",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:httpx",
+      "name": "httpx",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "httpx"
+        }
+      ],
+      "purl": "pkg:pypi/httpx",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:joblib",
+      "name": "joblib",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "joblib"
+        }
+      ],
+      "purl": "pkg:pypi/joblib",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:jsonschema",
+      "name": "jsonschema",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "jsonschema"
+        }
+      ],
+      "purl": "pkg:pypi/jsonschema",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:numpy",
+      "name": "numpy",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "numpy"
+        }
+      ],
+      "purl": "pkg:pypi/numpy",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:psycopg",
+      "name": "psycopg",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "psycopg[binary]"
+        }
+      ],
+      "purl": "pkg:pypi/psycopg",
+      "scope": "required",
+      "type": "library",
+      "version": "[binary]"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pydantic",
+      "name": "pydantic",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "pydantic"
+        }
+      ],
+      "purl": "pkg:pypi/pydantic",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pynacl",
+      "name": "pynacl",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "PyNaCl"
+        }
+      ],
+      "purl": "pkg:pypi/pynacl",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:redis",
+      "name": "redis",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "redis"
+        }
+      ],
+      "purl": "pkg:pypi/redis",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:scikit-learn",
+      "name": "scikit-learn",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "scikit-learn"
+        }
+      ],
+      "purl": "pkg:pypi/scikit-learn",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:uvicorn",
+      "name": "uvicorn",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "uvicorn[standard]"
+        }
+      ],
+      "purl": "pkg:pypi/uvicorn",
+      "scope": "required",
+      "type": "library",
+      "version": "[standard]"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:web3",
+      "name": "web3",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "web3"
+        }
+      ],
+      "purl": "pkg:pypi/web3",
+      "scope": "required",
+      "type": "library",
+      "version": "unspecified"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:fastapi",
+      "name": "fastapi",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "fastapi>=0.115"
+        }
+      ],
+      "purl": "pkg:pypi/fastapi",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=0.115"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:hypothesis",
+      "name": "hypothesis",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "hypothesis>=6.140"
+        }
+      ],
+      "purl": "pkg:pypi/hypothesis",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=6.140"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:jsonschema",
+      "name": "jsonschema",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "jsonschema>=4.25"
+        }
+      ],
+      "purl": "pkg:pypi/jsonschema",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=4.25"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:mypy",
+      "name": "mypy",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "mypy>=1.13"
+        }
+      ],
+      "purl": "pkg:pypi/mypy",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=1.13"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pynacl",
+      "name": "pynacl",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "pynacl>=1.5"
+        }
+      ],
+      "purl": "pkg:pypi/pynacl",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=1.5"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pytest",
+      "name": "pytest",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "pytest>=9"
+        }
+      ],
+      "purl": "pkg:pypi/pytest",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=9"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pytest-django",
+      "name": "pytest-django",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "pytest-django>=4.12"
+        }
+      ],
+      "purl": "pkg:pypi/pytest-django",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=4.12"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pytest-xdist",
+      "name": "pytest-xdist",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "pytest-xdist>=3.6"
+        }
+      ],
+      "purl": "pkg:pypi/pytest-xdist",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=3.6"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:pyyaml",
+      "name": "pyyaml",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "PyYAML>=6.0"
+        }
+      ],
+      "purl": "pkg:pypi/pyyaml",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=6.0"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:ruff",
+      "name": "ruff",
+      "properties": [
+        {
+          "name": "afritech:raw_requirement",
+          "value": "ruff>=0.9"
+        }
+      ],
+      "purl": "pkg:pypi/ruff",
+      "scope": "optional",
+      "type": "library",
+      "version": ">=0.9"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "urn:novatech:sbom:novaid_backend:celery",
+        "urn:novatech:sbom:novaid_backend:cryptography",
+        "urn:novatech:sbom:novaid_backend:django",
+        "urn:novatech:sbom:novaid_backend:djangorestframework",
+        "urn:novatech:sbom:novaid_backend:eth-typing",
+        "urn:novatech:sbom:novaid_backend:fastapi",
+        "urn:novatech:sbom:novaid_backend:hexbytes",
+        "urn:novatech:sbom:novaid_backend:httpx",
+        "urn:novatech:sbom:novaid_backend:joblib",
+        "urn:novatech:sbom:novaid_backend:jsonschema",
+        "urn:novatech:sbom:novaid_backend:numpy",
+        "urn:novatech:sbom:novaid_backend:psycopg",
+        "urn:novatech:sbom:novaid_backend:pydantic",
+        "urn:novatech:sbom:novaid_backend:pynacl",
+        "urn:novatech:sbom:novaid_backend:redis",
+        "urn:novatech:sbom:novaid_backend:scikit-learn",
+        "urn:novatech:sbom:novaid_backend:uvicorn",
+        "urn:novatech:sbom:novaid_backend:web3",
+        "urn:novatech:sbom:novaid_backend:fastapi",
+        "urn:novatech:sbom:novaid_backend:hypothesis",
+        "urn:novatech:sbom:novaid_backend:jsonschema",
+        "urn:novatech:sbom:novaid_backend:mypy",
+        "urn:novatech:sbom:novaid_backend:pynacl",
+        "urn:novatech:sbom:novaid_backend:pytest",
+        "urn:novatech:sbom:novaid_backend:pytest-django",
+        "urn:novatech:sbom:novaid_backend:pytest-xdist",
+        "urn:novatech:sbom:novaid_backend:pyyaml",
+        "urn:novatech:sbom:novaid_backend:ruff"
+      ],
+      "ref": "urn:novatech:sbom:novaid_backend:root"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:celery"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:cryptography"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:django"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:djangorestframework"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:eth-typing"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:fastapi"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:hexbytes"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:httpx"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:joblib"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:jsonschema"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:numpy"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:psycopg"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pydantic"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pynacl"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:redis"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:scikit-learn"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:uvicorn"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:web3"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:fastapi"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:hypothesis"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:jsonschema"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:mypy"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pynacl"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pytest"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pytest-django"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pytest-xdist"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:pyyaml"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novaid_backend:ruff"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "urn:novatech:sbom:novaid_backend:root",
+      "name": "novaid_backend",
+      "purl": "pkg:generic/novaid_backend@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    "properties": [
+      {
+        "name": "afritech:product",
+        "value": "NovaID"
+      },
+      {
+        "name": "afritech:source_path",
+        "value": "/Users/ostrinov/afritelematics/afritech/novaid"
+      },
+      {
+        "name": "afritech:component_id",
+        "value": "novaid_backend"
+      },
+      {
+        "name": "afritech:build_commit",
+        "value": "b7710da800f42c316e2b4ed16471723df8c4bbbe"
+      },
+      {
+        "name": "afritech:requirements_manifest",
+        "value": "/Users/ostrinov/afritelematics/requirements.txt"
+      }
+    ],
+    "timestamp": "2026-07-21T12:18:45.000+00:00",
+    "tools": [
+      {
+        "name": "generate_sbom_bundle.py",
+        "vendor": "AfriTech",
+        "version": "1"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:a082c8be-400a-565d-a1c6-475f11efb979",
+  "specVersion": "1.5",
+  "version": 1
+}

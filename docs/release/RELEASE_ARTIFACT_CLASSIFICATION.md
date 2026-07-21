@@ -4,6 +4,14 @@ This classification was generated from the current synchronized baseline.
 
 | path | type | classification | keep | ignore | archive | remove | review | reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/release-aggregate.cdx.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/report.json | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
+| artifacts/ga-readiness/release/sbom/report.md | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
 | artifacts/novaid/final/NOVAID_ACCESS_TOKEN_AUDIT_MODEL.md | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
 | artifacts/novaid/final/NOVAID_ACCESS_TOKEN_MODEL.md | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
 | artifacts/novaid/final/NOVAID_ACCOUNT_RECOVERY_CERTIFICATE.md | file | HISTORICAL_EVIDENCE | True | False | False | False | False | Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically. |
@@ -404,15 +412,9 @@ This classification was generated from the current synchronized baseline.
 | deployment-evidence/final-certification/DEPLOYMENT_HOST_PRECHECK.txt | file | REQUIRED_RELEASE_EVIDENCE | True | False | False | False | False | Historical deployment evidence should be preserved until explicitly superseded. |
 | deployment-evidence/final-certification/PRODUCTION_ENVIRONMENT_VALIDATION.json | file | REQUIRED_RELEASE_EVIDENCE | True | False | False | False | False | Historical deployment evidence should be preserved until explicitly superseded. |
 | deployment-evidence/security-distributed-runtime/phase6f_live_summary.json | file | REQUIRED_RELEASE_EVIDENCE | True | False | False | False | False | Historical deployment evidence should be preserved until explicitly superseded. |
-| scripts/release/generate_release_artifact_inventory.py | file | UNKNOWN | False | False | False | False | True | Path not recognized by inventory heuristics. |
-| var/novacodepro-development-worker-repo | directory | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novacodepro-development-worker-repo-debug | directory | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novacodepro-development-worker-repo-debug/.git | directory | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novacodepro-development-worker-repo-debug/README.md | file | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novacodepro-development-worker-repo/.git | directory | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novacodepro-development-worker-repo/README.md | file | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novaid-phase6f/novaid-a.pid | file | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
-| var/novaid-phase6f/novaid-b.pid | file | TEMPORARY_RUNTIME_OUTPUT | False | True | False | False | False | Runtime output; keep out of release commits and ignore narrowly. |
+| scripts/release/generate_sbom_bundle.py | file | UNKNOWN | False | False | False | False | True | Path not recognized by inventory heuristics. |
+| scripts/release/verify_sbom_bundle.py | file | UNKNOWN | False | False | False | False | True | Path not recognized by inventory heuristics. |
+| tests/release/test_sbom_bundle.py | file | UNKNOWN | False | False | False | False | True | Path not recognized by inventory heuristics. |
 
 ## Policy notes
 

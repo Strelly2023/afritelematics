@@ -1,0 +1,114 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:root",
+      "name": "novacodepro-portal",
+      "purl": "pkg:npm/novacodepro-portal@0.1.0",
+      "scope": "required",
+      "type": "application",
+      "version": "0.1.0"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:@vitejs/plugin-react",
+      "name": "@vitejs/plugin-react",
+      "purl": "pkg:npm/@vitejs/plugin-react@4.2.1",
+      "scope": "optional",
+      "type": "library",
+      "version": "4.2.1"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:react",
+      "name": "react",
+      "purl": "pkg:npm/react@18.2.0",
+      "scope": "required",
+      "type": "library",
+      "version": "18.2.0"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:react-dom",
+      "name": "react-dom",
+      "purl": "pkg:npm/react-dom@18.2.0",
+      "scope": "required",
+      "type": "library",
+      "version": "18.2.0"
+    },
+    {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:vite",
+      "name": "vite",
+      "purl": "pkg:npm/vite@5.4.14",
+      "scope": "optional",
+      "type": "library",
+      "version": "5.4.14"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "urn:novatech:sbom:novacodepro_portal:@vitejs/plugin-react",
+        "urn:novatech:sbom:novacodepro_portal:react",
+        "urn:novatech:sbom:novacodepro_portal:react-dom",
+        "urn:novatech:sbom:novacodepro_portal:vite"
+      ],
+      "ref": "urn:novatech:sbom:novacodepro_portal:root"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novacodepro_portal:@vitejs/plugin-react"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novacodepro_portal:react"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novacodepro_portal:react-dom"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:sbom:novacodepro_portal:vite"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "urn:novatech:sbom:novacodepro_portal:root",
+      "name": "novacodepro-portal",
+      "purl": "pkg:npm/novacodepro-portal@0.1.0",
+      "type": "application",
+      "version": "0.1.0"
+    },
+    "properties": [
+      {
+        "name": "afritech:product",
+        "value": "NovaCodePro"
+      },
+      {
+        "name": "afritech:source_path",
+        "value": "/Users/ostrinov/afritelematics/novacodepro_portal"
+      },
+      {
+        "name": "afritech:component_id",
+        "value": "novacodepro_portal"
+      },
+      {
+        "name": "afritech:build_commit",
+        "value": "b7710da800f42c316e2b4ed16471723df8c4bbbe"
+      },
+      {
+        "name": "afritech:source_mtime",
+        "value": "1784633851"
+      }
+    ],
+    "timestamp": "2026-07-21T12:18:45.000+00:00",
+    "tools": [
+      {
+        "name": "generate_sbom_bundle.py",
+        "vendor": "AfriTech",
+        "version": "1"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:2deb6925-cabd-5daf-87af-d529c154ee8d",
+  "specVersion": "1.5",
+  "version": 1
+}

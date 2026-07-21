@@ -2,23 +2,23 @@
   "entries": [
     {
       "path": "artifacts/ga-readiness/release/reproducibility/report.json",
-      "sha256": "20b2ae8effe94cdfb44698dde9a9ec476537fa4db1df46fa1966a680deb4f3ec",
+      "sha256": "18ea6df4352f3248b09942ce7b8b2994654864a60925d72bce30d0ecd7783de2",
       "size_bytes": 2817
     },
     {
       "path": "artifacts/ga-readiness/release/reproducibility/report.md",
-      "sha256": "202437ead79539b3d4f52c8c6dd2fe34ba5ffac017ac8e4c3b2d53cda56cadf7",
+      "sha256": "53440cf00cdfa31d728df293840b5324a89ae593c1a3f481df47c6a0249bfc0d",
       "size_bytes": 926
     },
     {
       "path": "docs/release/RELEASE_ARTIFACT_CLASSIFICATION.md",
-      "sha256": "5917466aaa07b57eb46e1cdc213a937d24023df0c510bf476efda309b01acde7",
-      "size_bytes": 102100
+      "sha256": "e7e332b2cfbd463545f55e037c576cdcb230978538f44e1615968cb2c53e816a",
+      "size_bytes": 102836
     },
     {
       "path": "docs/release/release-artifact-inventory.json",
-      "sha256": "6f16d0edfa79d370c06cacb13c0c23f9bbe6bc7d94dd952fc4171298dbe22ee7",
-      "size_bytes": 274832
+      "sha256": "3e78f41b5a1c580839529e134d8f3f2c0360c23ab8aad32b2f85c0fbc2081f7c",
+      "size_bytes": 276469
     },
     {
       "path": "docs/release/release-scope.yaml",

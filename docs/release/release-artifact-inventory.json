@@ -1,8 +1,160 @@
 {
   "branch": "feature/product-factory-enterprise-sdlc",
-  "commit": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
-  "generated_at": "2026-07-21T11:34:33.192962+00:00",
+  "commit": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
+  "generated_at": "2026-07-21T12:27:08.923646+00:00",
   "items": [
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.879974+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 15771,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.450949+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 3035,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.513124+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 15309,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.577587+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 15403,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.637113+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 15505,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.927565+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/release-aggregate.cdx.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 4299,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.944630+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/report.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1732,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-21T12:26:56.944771+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/ga-readiness/release/sbom/report.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 712,
+      "type": "file"
+    },
     {
       "archive": false,
       "classification": "HISTORICAL_EVIDENCE",
@@ -7613,180 +7765,60 @@
       "file_count": 1,
       "ignore": false,
       "keep": false,
-      "modified_at": "2026-07-21T11:34:22.635119+00:00",
+      "modified_at": "2026-07-21T12:26:08.500374+00:00",
       "reason": "Path not recognized by inventory heuristics.",
-      "relative_path": "scripts/release/generate_release_artifact_inventory.py",
+      "relative_path": "scripts/release/generate_sbom_bundle.py",
       "remove": false,
       "reproducible": "unknown",
       "requires_operator_review": true,
-      "size_bytes": 7869,
+      "size_bytes": 17193,
       "type": "file"
     },
     {
       "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "directory_count": 15,
-      "extension_distribution": {
-        ".md": 1,
-        ".sample": 14,
-        "<no_ext>": 12
-      },
-      "file_count": 27,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-18T10:38:33.767621+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 27079,
-      "type": "directory"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "directory_count": 15,
-      "extension_distribution": {
-        ".md": 1,
-        ".sample": 14,
-        "<no_ext>": 12
-      },
-      "file_count": 27,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-18T10:40:21.760903+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo-debug",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 27041,
-      "type": "directory"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "directory_count": 14,
-      "extension_distribution": {
-        ".sample": 14,
-        "<no_ext>": 12
-      },
-      "file_count": 26,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-18T10:40:21.837832+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo-debug/.git",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 27033,
-      "type": "directory"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
+      "classification": "UNKNOWN",
       "contains_sensitive_data": "unknown",
       "extension_distribution": {
-        ".md": 1
+        ".py": 1
       },
       "file_count": 1,
-      "ignore": true,
+      "ignore": false,
       "keep": false,
-      "modified_at": "2026-07-18T10:40:21.746431+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo-debug/README.md",
+      "modified_at": "2026-07-21T12:26:08.678210+00:00",
+      "reason": "Path not recognized by inventory heuristics.",
+      "relative_path": "scripts/release/verify_sbom_bundle.py",
       "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 8,
+      "reproducible": "unknown",
+      "requires_operator_review": true,
+      "size_bytes": 2481,
       "type": "file"
     },
     {
       "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "directory_count": 14,
-      "extension_distribution": {
-        ".sample": 14,
-        "<no_ext>": 12
-      },
-      "file_count": 26,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-18T10:41:15.662704+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo/.git",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 27052,
-      "type": "directory"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
+      "classification": "UNKNOWN",
       "contains_sensitive_data": "unknown",
       "extension_distribution": {
-        ".md": 1
+        ".py": 1
       },
       "file_count": 1,
-      "ignore": true,
+      "ignore": false,
       "keep": false,
-      "modified_at": "2026-07-18T10:40:38.847501+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novacodepro-development-worker-repo/README.md",
+      "modified_at": "2026-07-21T12:25:19.891758+00:00",
+      "reason": "Path not recognized by inventory heuristics.",
+      "relative_path": "tests/release/test_sbom_bundle.py",
       "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 27,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".pid": 1
-      },
-      "file_count": 1,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-19T00:00:23.227154+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novaid-phase6f/novaid-a.pid",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 6,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "TEMPORARY_RUNTIME_OUTPUT",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".pid": 1
-      },
-      "file_count": 1,
-      "ignore": true,
-      "keep": false,
-      "modified_at": "2026-07-19T00:00:23.227670+00:00",
-      "reason": "Runtime output; keep out of release commits and ignore narrowly.",
-      "relative_path": "var/novaid-phase6f/novaid-b.pid",
-      "remove": false,
-      "reproducible": "yes",
-      "requires_operator_review": false,
-      "size_bytes": 6,
+      "reproducible": "unknown",
+      "requires_operator_review": true,
+      "size_bytes": 1164,
       "type": "file"
     }
   ],
   "worktree": [
     "## feature/product-factory-enterprise-sdlc",
+    " M scripts/release/generate_release_manifest.py",
+    " M scripts/release/validate_release_baseline.py",
+    " M tests/release/test_release_manifest.py",
+    "?? artifacts/ga-readiness/release/sbom/",
     "?? artifacts/novaid/",
     "?? artifacts/novaride/database/",
     "?? artifacts/novaride/docker-recovery/",
@@ -7808,7 +7840,8 @@
     "?? artifacts/release-baseline/",
     "?? csv.py",
     "?? deployment-evidence/",
-    "?? scripts/release/",
-    "?? var/"
+    "?? scripts/release/generate_sbom_bundle.py",
+    "?? scripts/release/verify_sbom_bundle.py",
+    "?? tests/release/test_sbom_bundle.py"
   ]
 }

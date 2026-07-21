@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.release.verify_checksum_manifest import verify as verify_checksum_manifest
+from scripts.release.verify_sbom_bundle import verify_bundle as verify_sbom_bundle
 
 DEFAULT_REPORT_DIR = ROOT / "artifacts" / "ga-readiness" / "release" / "baseline"
 
@@ -81,8 +82,12 @@ def validate(report_dir: Path) -> dict[str, object]:
         manifest = load_json(manifest_path)
         if manifest.get("signature_status") != "EXTERNALLY_BLOCKED":
             blockers.append({"id": "signature_status_unexpected", "detail": manifest.get("signature_status")})
-    if not sbom_dir.exists() or not list(sbom_dir.glob("*.json")) and not list(sbom_dir.glob("*.cdx.json")):
+    if not sbom_dir.exists() or not list(sbom_dir.glob("*.cdx.json")):
         blockers.append({"id": "sbom_missing", "detail": str(sbom_dir.relative_to(ROOT))})
+    else:
+        sbom_report = verify_sbom_bundle(sbom_dir)
+        if sbom_report["status"] != "PASS":
+            blockers.append({"id": "sbom_invalid", "detail": sbom_report})
 
     status = "LOCAL_BASELINE_PASS" if not blockers else "RC_FREEZE_BLOCKED"
     report = {

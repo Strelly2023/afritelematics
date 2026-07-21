@@ -1,0 +1,148 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "urn:novatech:aggregate:novacodepro_portal.cdx",
+      "name": "novacodepro-portal",
+      "properties": [
+        {
+          "name": "afritech:sbom_path",
+          "value": "artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json"
+        },
+        {
+          "name": "afritech:sbom_serial",
+          "value": "urn:uuid:2deb6925-cabd-5daf-87af-d529c154ee8d"
+        }
+      ],
+      "purl": "pkg:npm/novacodepro-portal@0.1.0",
+      "type": "application",
+      "version": "0.1.0"
+    },
+    {
+      "bom-ref": "urn:novatech:aggregate:novaid_backend.cdx",
+      "name": "novaid_backend",
+      "properties": [
+        {
+          "name": "afritech:sbom_path",
+          "value": "artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json"
+        },
+        {
+          "name": "afritech:sbom_serial",
+          "value": "urn:uuid:a082c8be-400a-565d-a1c6-475f11efb979"
+        }
+      ],
+      "purl": "pkg:generic/novaid_backend@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    {
+      "bom-ref": "urn:novatech:aggregate:novapay_backend.cdx",
+      "name": "novapay_backend",
+      "properties": [
+        {
+          "name": "afritech:sbom_path",
+          "value": "artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json"
+        },
+        {
+          "name": "afritech:sbom_serial",
+          "value": "urn:uuid:392c269a-6ee6-52c3-accd-4d7830340327"
+        }
+      ],
+      "purl": "pkg:generic/novapay_backend@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    {
+      "bom-ref": "urn:novatech:aggregate:novaride_runtime.cdx",
+      "name": "novaride_runtime",
+      "properties": [
+        {
+          "name": "afritech:sbom_path",
+          "value": "artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json"
+        },
+        {
+          "name": "afritech:sbom_serial",
+          "value": "urn:uuid:87b4ed95-ea4b-5c02-9964-2e3897f72b83"
+        }
+      ],
+      "purl": "pkg:generic/novaride_runtime@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    {
+      "bom-ref": "urn:novatech:aggregate:novacodepro_backend.cdx",
+      "name": "novacodepro_backend",
+      "properties": [
+        {
+          "name": "afritech:sbom_path",
+          "value": "artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json"
+        },
+        {
+          "name": "afritech:sbom_serial",
+          "value": "urn:uuid:92d9aee9-4091-57ac-b063-c9212267c6ec"
+        }
+      ],
+      "purl": "pkg:generic/novacodepro_backend@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "urn:novatech:aggregate:novacodepro_portal.cdx",
+        "urn:novatech:aggregate:novaid_backend.cdx",
+        "urn:novatech:aggregate:novapay_backend.cdx",
+        "urn:novatech:aggregate:novaride_runtime.cdx",
+        "urn:novatech:aggregate:novacodepro_backend.cdx"
+      ],
+      "ref": "urn:novatech:sbom:release_bundle:root"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:aggregate:novacodepro_portal.cdx"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:aggregate:novaid_backend.cdx"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:aggregate:novapay_backend.cdx"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:aggregate:novaride_runtime.cdx"
+    },
+    {
+      "dependsOn": [],
+      "ref": "urn:novatech:aggregate:novacodepro_backend.cdx"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "urn:novatech:sbom:release_bundle:root",
+      "name": "novatech-release-bundle",
+      "purl": "pkg:generic/novatech-release-bundle@b7710da800f4",
+      "type": "application",
+      "version": "b7710da800f4"
+    },
+    "properties": [
+      {
+        "name": "afritech:bundle_commit",
+        "value": "b7710da800f42c316e2b4ed16471723df8c4bbbe"
+      }
+    ],
+    "timestamp": "2026-07-21T12:18:45.000+00:00",
+    "tools": [
+      {
+        "name": "generate_sbom_bundle.py",
+        "vendor": "AfriTech",
+        "version": "1"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:ebfabd69-76fe-5d67-a67a-0b9b078242e2",
+  "specVersion": "1.5",
+  "version": 1
+}

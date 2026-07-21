@@ -70,6 +70,17 @@ def build_manifest() -> dict[str, Any]:
     release_scope = ROOT / "docs" / "release" / "release-scope.yaml"
     checksum_manifest = ROOT / "artifacts" / "ga-readiness" / "release" / "checksums" / "SHA256SUMS"
     reproducibility = ROOT / "artifacts" / "ga-readiness" / "release" / "reproducibility" / "report.json"
+    sbom_dir = ROOT / "artifacts" / "ga-readiness" / "release" / "sbom"
+    sbom_references = []
+    if sbom_dir.exists():
+        sbom_references = sorted(
+            path.relative_to(ROOT).as_posix()
+            for path in sbom_dir.glob("*.cdx.json")
+            if path.name != "release-aggregate.cdx.json"
+        )
+        aggregate = sbom_dir / "release-aggregate.cdx.json"
+        if aggregate.exists():
+            sbom_references.append(aggregate.relative_to(ROOT).as_posix())
     commit_time = datetime.fromtimestamp(commit_epoch(), tz=timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
     return {
         "schema_version": 1,
@@ -164,7 +175,7 @@ def build_manifest() -> dict[str, Any]:
         },
         "container_digests": [],
         "database_migrations": [],
-        "sbom_references": [],
+        "sbom_references": sbom_references,
         "checksum_manifest": str(checksum_manifest.relative_to(ROOT)),
         "reproducibility_report": str(reproducibility.relative_to(ROOT)),
         "security_evidence": ["docs/release/GA_READINESS_BLOCKER_MATRIX.md"],

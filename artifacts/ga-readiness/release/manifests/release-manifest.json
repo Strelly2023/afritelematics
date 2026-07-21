@@ -17,7 +17,7 @@
     "npm run build --prefix novacodepro_portal"
   ],
   "checksum_manifest": "artifacts/ga-readiness/release/checksums/SHA256SUMS",
-  "commit_sha": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
+  "commit_sha": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
   "components": [
     {
       "artifact_type": "web_portal",
@@ -77,7 +77,7 @@
     }
   ],
   "container_digests": [],
-  "created_at": "2026-07-21T11:25:11.000Z",
+  "created_at": "2026-07-21T12:18:45.000Z",
   "database_migrations": [],
   "external_blockers": [
     "production signing material unavailable"
@@ -99,7 +99,7 @@
   "prr_evidence": [],
   "release_candidate": "novatech-2026.1.0-rc.1",
   "release_id": "novatech-2026.1.0",
-  "remote_commit_sha": "d99e60b72f14a32dc6675ccecc4ef9ffe11eb6d4",
+  "remote_commit_sha": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
   "repository": "afritelematics",
   "reproducibility_report": "artifacts/ga-readiness/release/reproducibility/report.json",
   "runtime_versions": {
@@ -108,13 +108,20 @@
     "npm": "10.8.2",
     "python": "3.11.8"
   },
-  "sbom_references": [],
+  "sbom_references": [
+    "artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json",
+    "artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json",
+    "artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json",
+    "artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json",
+    "artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json",
+    "artifacts/ga-readiness/release/sbom/release-aggregate.cdx.json"
+  ],
   "schema_version": 1,
   "security_evidence": [
     "docs/release/GA_READINESS_BLOCKER_MATRIX.md"
   ],
   "signature_status": "EXTERNALLY_BLOCKED",
-  "source_date_epoch": 1784633111,
+  "source_date_epoch": 1784636325,
   "status": "BASELINE_IN_PROGRESS",
   "tag": null,
   "test_commands": [

@@ -1,0 +1,46 @@
+{
+  "blocked": [],
+  "branch": "feature/product-factory-enterprise-sdlc",
+  "commit": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
+  "generated": [
+    {
+      "component_id": "novacodepro_portal",
+      "path": "artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json",
+      "product": "NovaCodePro",
+      "sha256": "fb29201d8855003ef95e756b7cc974b98cb6139bdd30239295eb883edc07b5ce"
+    },
+    {
+      "component_id": "novaid_backend",
+      "path": "artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json",
+      "product": "NovaID",
+      "sha256": "372e4c003bbdf66abe1288bec36f80345a628b4be638b4083d8645a99f723147"
+    },
+    {
+      "component_id": "novapay_backend",
+      "path": "artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json",
+      "product": "NovaPay",
+      "sha256": "520f7b76d42313595ffdeeaac4438479bfd968de5b3ae52e4e7cc1c89ec31cba"
+    },
+    {
+      "component_id": "novaride_runtime",
+      "path": "artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json",
+      "product": "NovaRide",
+      "sha256": "021dfd3d46b849ddbc9a599de68d83d4768af980d516c480f3db91ccfa8cbd51"
+    },
+    {
+      "component_id": "novacodepro_backend",
+      "path": "artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json",
+      "product": "NovaCodePro",
+      "sha256": "8787940157383c9fdbc44ef77f8528fef6bd0dee61882e8167a72524939561ee"
+    },
+    {
+      "component_id": "release_aggregate",
+      "path": "artifacts/ga-readiness/release/sbom/release-aggregate.cdx.json",
+      "product": "shared",
+      "sha256": "40de10faab042e9ae346b65e0c99092ff28dfd4ac604113e8cc575e3920ef499"
+    }
+  ],
+  "generated_at": "2026-07-21T12:26:56.928921+00:00",
+  "schema_version": 1,
+  "status": "PASS"
+}
