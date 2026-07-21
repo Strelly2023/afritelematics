@@ -8,6 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "test": "npm run typecheck && pytest -q tests/test_rider_app_surface.py",
     "typecheck": "tsc --noEmit",
     "test:internal-qa": "pytest tests/internal_qa -q",
     "test:controlled-pilot": "pytest tests/controlled_pilot -q",
