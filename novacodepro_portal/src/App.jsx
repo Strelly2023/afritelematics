@@ -26,6 +26,7 @@ import { SolutionEngineeringPortal } from "./solutions/SolutionEngineeringPortal
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { NovaCodeProWorkspaceHub } from "./novacodepro/NovaCodeProWorkspaceHub.jsx";
 import { StudioChrome } from "./novacodepro/StudioChrome.js";
+import { StudioExplorer } from "./novacodepro/explorer/StudioExplorer.js";
 import { ProductFactoryPortal } from "./novacodepro/ProductFactoryPortal.jsx";
 import { NCP003Portal } from "./novacodepro/NCP003Portal.jsx";
 import { NCP004Portal } from "./novacodepro/NCP004Portal.jsx";
@@ -4102,10 +4103,23 @@ function App() {
         statusItems={studioStatusItems}
         primaryAction={() => setFocusNav("Dashboard")}
         primaryActionLabel="Workspace overview"
-        onOpenPalette={() => setPaletteOpen(true)}
-        onActivityChange={(item) => setFocusNav(item.id)}
-        activeActivityId={focusNav}
+      onOpenPalette={() => setPaletteOpen(true)}
+      onActivityChange={(item) => setFocusNav(item.id)}
+      activeActivityId={focusNav}
       >
+      {focusNav === "Explorer" ? (
+        <StudioExplorer
+          session={session}
+          environment={environment}
+          activeRole={activeRole}
+          activeProject={activeProject}
+          baseUrl={AUTH_API_BASE}
+          navigate={(path, options) => navigateTo(path, options)}
+          onOpenPalette={() => setPaletteOpen(true)}
+          onFocusNav={(id) => setFocusNav(id)}
+        />
+      ) : (
+        <>
       {sessionWarning ? (
         <div className="session-warning">
           <span>Your session will expire in 2 minutes.</span>
@@ -7063,6 +7077,8 @@ function App() {
         <span>Separate from the current NovaTech dashboard surface.</span>
         <span>Role-aware workspace, governed access, synchronized state, and NovaID login.</span>
       </footer>
+        </>
+      )}
       </StudioChrome>
 
       {paletteOpen ? (
