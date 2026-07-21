@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -94,6 +94,42 @@ export default function App() {
   ]);
   const [webhookState, setWebhookState] = useState("Webhook not yet tested");
 
+  useEffect(() => {
+    let cancelled = false;
+    void loadIdentityProfile()
+      .then((nextProfile) => {
+        if (cancelled) {
+          return;
+        }
+        setProfile(nextProfile);
+        setCredentials(nextProfile.credentials);
+        setCertificates(nextProfile.certificates);
+        setDevices(nextProfile.devices);
+        setConsents(nextProfile.consents);
+        setEvents(nextProfile.events);
+        setVerification(null);
+        setBanner({
+          tone: nextProfile.summary.includes("backend synced") ? "success" : "info",
+          title: nextProfile.summary.includes("backend synced")
+            ? "NovaID backend synced"
+            : "Local identity profile loaded",
+          detail: nextProfile.summary,
+        });
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setBanner({
+            tone: "warning",
+            title: "NovaID sync unavailable",
+            detail: error instanceof Error ? error.message : "Using local identity profile data.",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const addEvent = (event: IdentityEvent) => {
     setEvents((current) => [event, ...current].slice(0, 12));
   };
@@ -125,26 +161,34 @@ export default function App() {
       }
       case "Verify Identity": {
         const request = await beginVerificationFlow(profile.id);
-        const certificate = await issueDigitalCertificate(profile.id, "Verified Identity Certificate", ["identity", "consent", "device_trust"]);
         setVerification(request);
-        setCertificates((current) => [certificate, ...current]);
         setProfile((current) => ({
           ...current,
-          trustLevel: "High",
-          verificationStatus: "verified",
-          biometricVerified: true,
-          certificateCount: current.certificateCount + 1,
-          identityScore: Math.min(current.identityScore + 2, 100),
+          verificationStatus: request.status,
+          summary:
+            request.status === "pending"
+              ? "Verification challenge issued by NovaID backend; completion is pending."
+              : current.summary,
         }));
         addEvent({
           id: `event-${timestamp}`,
-          type: "certificate_issued",
-          title: "Identity verified",
-          detail: "Biometric, document, liveness, and policy checks passed.",
+          type: "verification",
+          title: request.status === "pending" ? "Verification challenge issued" : "Identity verified",
+          detail:
+            request.status === "pending"
+              ? "NovaID backend accepted the verification request and issued a challenge."
+              : "Biometric, document, liveness, and policy checks passed.",
           timestamp,
-          severity: "success",
+          severity: request.status === "pending" ? "info" : "success",
         });
-        notify({ tone: "success", title: "Identity verified", detail: "Digital certificate issued." });
+        notify({
+          tone: request.status === "pending" ? "info" : "success",
+          title: request.status === "pending" ? "Verification started" : "Identity verified",
+          detail:
+            request.status === "pending"
+              ? "Complete the live NovaID challenge to finish verification."
+              : "Digital certificate issued.",
+        });
         break;
       }
       case "Share Identity": {
@@ -894,7 +938,7 @@ export default function App() {
 
         <View style={[styles.card, { backgroundColor: palette.surface, borderColor: palette.line }]}>
           <Text style={[styles.sectionTitle, { color: palette.ink }]}>Core controls</Text>
-          <Text style={[styles.sectionSubtitle, { color: palette.muted }]}>All buttons are wired to stateful actions, mock services, and visible confirmations.</Text>
+          <Text style={[styles.sectionSubtitle, { color: palette.muted }]}>All buttons are wired to stateful actions, governed service calls, and visible confirmations.</Text>
           <View style={styles.buttonGrid}>
             {appConfig.actions.map((action) => (
               <ActionButton key={action.label} palette={palette} action={action} onPress={() => void handleAction(action)} />
@@ -925,7 +969,7 @@ export default function App() {
           <ListPanel palette={palette} title="Event stream" items={events.map((event) => `${event.title} · ${event.severity}`)} />
         </SectionCard>
 
-        <SectionCard palette={palette} title="Integrated services" subtitle="Live-ready mock services and proof surfaces">
+        <SectionCard palette={palette} title="Integrated services" subtitle="Backend-synced identity services and proof surfaces">
           <ListPanel
             palette={palette}
             title="Service endpoints"
@@ -1006,7 +1050,13 @@ function IdentityCard({
         </View>
         <View style={[styles.glassPanel, { borderColor: palette.line }]}>
           <Text style={[styles.glassTitle, { color: palette.ink }]}>Replay proof</Text>
-          <Text style={[styles.glassText, { color: palette.muted }]}>{verification ? `Step ${verification.step} · score ${verification.policyEvaluation.score}` : "Awaiting verification refresh"}</Text>
+          <Text style={[styles.glassText, { color: palette.muted }]}>
+            {verification
+              ? verification.status === "pending"
+                ? `Step ${verification.step} · verification pending`
+                : `Step ${verification.step} · score ${verification.policyEvaluation.score}`
+              : "Awaiting verification refresh"}
+          </Text>
           <Text style={[styles.glassText, { color: palette.muted }]}>QR: {shareQr}</Text>
           <Text style={[styles.glassText, { color: palette.muted }]}>Link: {shareLink}</Text>
         </View>
