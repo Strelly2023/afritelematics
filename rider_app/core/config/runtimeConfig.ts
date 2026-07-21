@@ -3,6 +3,7 @@ import {
   API_HEALTH_PATH,
   APP_VERSION,
   RELEASE_CHANNEL,
+  RUNTIME_MODE,
   RUNTIME_ENVIRONMENT,
 } from "./environment";
 
@@ -11,6 +12,7 @@ export const runtimeConfig = {
   releaseVersion: APP_VERSION,
   versionCode: 7,
   releaseChannel: RELEASE_CHANNEL,
+  runtimeMode: RUNTIME_MODE,
   environment: RUNTIME_ENVIRONMENT,
   apiBaseUrl: API_BASE_URL,
   apiHealthUrl: `${API_BASE_URL}${API_HEALTH_PATH}`,

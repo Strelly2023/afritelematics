@@ -6,6 +6,13 @@ const RELEASE_CHANNEL_VALUE =
 const IS_PRODUCTION =
   RUNTIME_ENVIRONMENT_VALUE.toLowerCase() === "production" ||
   RELEASE_CHANNEL_VALUE.toUpperCase() === "PRODUCTION";
+export type RuntimeMode = "production" | "pilot" | "test";
+
+export const RUNTIME_MODE: RuntimeMode = IS_PRODUCTION
+  ? "production"
+  : process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE === "false"
+    ? "pilot"
+    : "test";
 
 function normalizeApiBaseUrl(value: string | undefined): string {
   const candidate = (value || DEFAULT_API_BASE_URL).trim();

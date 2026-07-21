@@ -28,6 +28,14 @@ function toApiError(payload: unknown, fallback: string, status?: number): Error 
 }
 
 async function readResponsePayload(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType && !/json/i.test(contentType)) {
+    const body = await response.text();
+    const preview = body.replace(/\s+/g, " ").slice(0, 160);
+    throw new Error(
+      `unexpected_content_type status=${response.status} content_type=${contentType} body=${preview}`,
+    );
+  }
   const body = await response.text();
   if (!body) {
     return {};
