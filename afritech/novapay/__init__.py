@@ -8,6 +8,7 @@ from .repository import (
     validate_database_runtime,
 )
 from .portal_suite import NovaPortalSuite
+from .migration import migrate_legacy_monetary_state
 from .service import NovaPayEcosystem
 from .surfaces import build_app_surfaces, build_trust_surfaces
 from .ecosystem_contract import novapay_ecosystem_contract
@@ -18,6 +19,7 @@ __all__ = [
     "NovaPayRepository",
     "PostgresNovaPayRepository",
     "NovaPortalSuite",
+    "migrate_legacy_monetary_state",
     "build_repository_from_environment",
     "build_app_surfaces",
     "build_trust_surfaces",
