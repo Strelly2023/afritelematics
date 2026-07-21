@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+
+import { createBuildInfo } from "./src/platform/buildInfo.js";
 
 const allowedHosts = [
   "afritechnology.com",
@@ -16,24 +17,12 @@ const allowedHosts = [
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 
-function resolveGitCommit() {
-  try {
-    return execSync("git rev-parse --short HEAD", { cwd: rootDir, stdio: ["ignore", "pipe", "ignore"] })
-      .toString()
-      .trim();
-  } catch {
-    return "unknown";
-  }
-}
-
-const buildInfo = {
+const buildInfo = createBuildInfo({
   application: "NovaCodePro Experience Platform",
   version: packageJson.version,
-  build_id: `${packageJson.version}-${resolveGitCommit()}`,
-  commit: resolveGitCommit(),
-  built_at: new Date().toISOString(),
-  api_base_url: "/v1",
-};
+  apiBaseUrl: "/v1",
+  rootDir,
+});
 
 export default defineConfig({
   base: "/novacodepro/",
