@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VENV_PY="$ROOT/venv/bin/python"
+VENV_PY="$ROOT/venv/bin/python3"
 
 if [ ! -x "$VENV_PY" ]; then
   echo "Missing virtualenv python at $VENV_PY" >&2

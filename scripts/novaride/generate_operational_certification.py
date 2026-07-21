@@ -76,7 +76,7 @@ write_json(
         "runs": [
             {
                 "suite": "novaride_runtime",
-                "command": "venv/bin/python -m pytest -q tests/novaride_runtime",
+                "command": "venv/bin/python3 -m pytest -q tests/novaride_runtime",
                 "passed": 49,
                 "failed": 0,
                 "skipped": 0,
