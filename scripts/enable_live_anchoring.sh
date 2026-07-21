@@ -21,7 +21,7 @@ echo "==> Checking chain readiness for $PROFILE"
 COMPOSE_FILE="$COMPOSE_FILE" ENV_FILE="$ENV_FILE" ./scripts/check_chain_ready.sh
 
 echo "==> Publishing Level 16 ecosystem anchor to $PROFILE"
-"${COMPOSE[@]}" exec -T afritech-api python - "$PROFILE" <<'PY'
+"${COMPOSE[@]}" exec -T afritech-api python3 - "$PROFILE" <<'PY'
 import json
 import os
 import re

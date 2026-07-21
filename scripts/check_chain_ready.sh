@@ -84,7 +84,7 @@ fi
 echo ""
 echo "==> Checking RPC connectivity"
 
-"${COMPOSE[@]}" exec -T afritech-api python - <<'EOF'
+"${COMPOSE[@]}" exec -T afritech-api python3 - <<'EOF'
 from web3 import Web3
 import os
 import sys
@@ -129,7 +129,7 @@ fi
 echo ""
 echo "==> Checking chain client health"
 
-"${COMPOSE[@]}" exec -T afritech-api python - <<'EOF'
+"${COMPOSE[@]}" exec -T afritech-api python3 - <<'EOF'
 from afritech.chain.contracts.contract_client import chain_health
 
 status = chain_health()

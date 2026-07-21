@@ -68,7 +68,7 @@ expect_http_200() {
 json_extract() {
   local file="$1"
   local expr="$2"
-  python - "$file" "$expr" <<'PY'
+  python3 - "$file" "$expr" <<'PY'
 import json, sys
 path = sys.argv[2].split(".")
 with open(sys.argv[1], "r", encoding="utf-8") as fh:
@@ -145,7 +145,7 @@ check_tables() {
 
 run_migration() {
   log "Running SQLite -> Postgres migration with verification"
-  python "$MIGRATOR" \
+  python3 "$MIGRATOR" \
     --sqlite-path "$AFRIRIDE_SQLITE_SOURCE" \
     --postgres-url "$AFRIRIDE_DATABASE_URL" \
     --truncate-target \
@@ -158,7 +158,7 @@ run_migration() {
 
 run_diff_checker() {
   log "Running replay diff checker"
-  python "$DIFF_CHECKER" \
+  python3 "$DIFF_CHECKER" \
     --source "$AFRIRIDE_SQLITE_SOURCE" \
     --target "$AFRIRIDE_DATABASE_URL" \
     >"$ARTIFACT_DIR/preboot_diff.json" || fail "replay diff checker failed"
@@ -194,14 +194,14 @@ main() {
   [[ -f "$MIGRATOR" ]] || fail "migrator missing: $MIGRATOR"
   [[ -f "$DIFF_CHECKER" ]] || fail "diff checker missing: $DIFF_CHECKER"
 
-  require_cmd python
+  require_cmd python3
   require_cmd curl
   require_cmd psql
   require_cmd uvicorn
 
   log "Artifacts will be stored in $ARTIFACT_DIR"
   log "Validating psycopg import"
-  python - <<'PY' >/dev/null
+  python3 - <<'PY' >/dev/null
 import psycopg
 PY
 
@@ -306,7 +306,7 @@ PY
   [[ "$receipt_before" == "$receipt_after" ]] || fail "receipt hash changed across restart"
 
   log "Running final replay diff checker after live write"
-  python "$DIFF_CHECKER" \
+  python3 "$DIFF_CHECKER" \
     --source "$AFRIRIDE_SQLITE_SOURCE" \
     --target "$AFRIRIDE_DATABASE_URL" \
     >"$ARTIFACT_DIR/postboot_diff.json" || fail "post-boot replay diff checker failed"

@@ -104,7 +104,7 @@ EOF
 wait_for_api() {
   echo "==> Waiting for afritech-api health"
   for attempt in {1..60}; do
-    if "${COMPOSE[@]}" exec -T afritech-api python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()" >/dev/null 2>&1; then
+    if "${COMPOSE[@]}" exec -T afritech-api python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()" >/dev/null 2>&1; then
       return 0
     fi
     if [[ "$attempt" -eq 60 ]]; then

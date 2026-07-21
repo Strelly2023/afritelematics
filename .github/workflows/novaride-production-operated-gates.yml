@@ -33,4 +33,4 @@ jobs:
             tests/novaride_runtime/persistence \
             tests/novaride_runtime/deployment
       - name: DR evidence dry run
-        run: python scripts/novaride/run_dr_exercise.py --exercise emergency-path-verification --environment controlled_pilot --region KE --output reports/novaride/dr
+        run: python3 scripts/novaride/run_dr_exercise.py --exercise emergency-path-verification --environment controlled_pilot --region KE --output reports/novaride/dr
