@@ -1,4 +1,11 @@
 const DEFAULT_API_BASE_URL = "https://api.afritechnology.com";
+const RUNTIME_ENVIRONMENT_VALUE =
+  process.env.EXPO_PUBLIC_NOVARIDE_ENVIRONMENT || "development";
+const RELEASE_CHANNEL_VALUE =
+  process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";
+const IS_PRODUCTION =
+  RUNTIME_ENVIRONMENT_VALUE.toLowerCase() === "production" ||
+  RELEASE_CHANNEL_VALUE.toUpperCase() === "PRODUCTION";
 
 function normalizeApiBaseUrl(value: string | undefined): string {
   const candidate = (value || DEFAULT_API_BASE_URL).trim();
@@ -23,7 +30,7 @@ export const ORGANIZATION_ID =
 export const REQUEST_TIMEOUT_MS = 8000;
 
 export const USE_MOCK_API =
-  process.env.EXPO_PUBLIC_AFRIRIDE_USE_MOCKS === "true";
+  !IS_PRODUCTION && process.env.EXPO_PUBLIC_AFRIRIDE_USE_MOCKS === "true";
 
 export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
@@ -49,10 +56,10 @@ export const APP_VERSION =
   process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.4";
 
 export const RELEASE_CHANNEL =
-  process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";
+  RELEASE_CHANNEL_VALUE;
 
 export const RUNTIME_ENVIRONMENT =
-  process.env.EXPO_PUBLIC_NOVARIDE_ENVIRONMENT || "PUBLIC_PILOT";
+  RUNTIME_ENVIRONMENT_VALUE;
 
 export const DEVICE_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_DEVICE_ID || "rider-test-device";

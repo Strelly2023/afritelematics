@@ -1,5 +1,14 @@
+const DEFAULT_API_BASE_URL = "https://api.afritechnology.com";
+const RUNTIME_ENVIRONMENT_VALUE =
+  process.env.EXPO_PUBLIC_NOVARIDE_ENVIRONMENT || "development";
+const RELEASE_CHANNEL_VALUE =
+  process.env.EXPO_PUBLIC_NOVARIDE_RELEASE_CHANNEL || "PUBLIC_PILOT";
+const IS_PRODUCTION =
+  RUNTIME_ENVIRONMENT_VALUE.toLowerCase() === "production" ||
+  RELEASE_CHANNEL_VALUE.toUpperCase() === "PRODUCTION";
+
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || "https://api.afritechnology.com";
+  process.env.EXPO_PUBLIC_AFRIRIDE_API_URL || DEFAULT_API_BASE_URL;
 
 export const ORGANIZATION_ID =
   process.env.EXPO_PUBLIC_AFRIRIDE_ORGANIZATION_ID || "afritech-core";
@@ -31,7 +40,7 @@ export const PILOT_SPEED_THRESHOLD_KPH = Number(
 );
 
 export const USE_MOCK_API =
-  process.env.EXPO_PUBLIC_AFRIRIDE_USE_MOCKS === "true";
+  !IS_PRODUCTION && process.env.EXPO_PUBLIC_AFRIRIDE_USE_MOCKS === "true";
 
 export const TEST_MODE =
   process.env.EXPO_PUBLIC_AFRIRIDE_TEST_MODE !== "false";
