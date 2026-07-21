@@ -8,7 +8,7 @@ local test adapter and is not presented as PostgreSQL operational evidence.
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import sqlite3
 from pathlib import Path
@@ -208,6 +208,7 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         self.connection = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.connection.executescript(SCHEMA)
+        self.sessions = self
 
     def __enter__(self) -> "NovaIDUnitOfWork":
         self.connection.execute("BEGIN IMMEDIATE")
@@ -227,6 +228,193 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
     def lock_idempotency_key(self, tenant_id: str, key: str) -> None:
         # BEGIN IMMEDIATE already serializes the local test adapter's writers.
         del tenant_id, key
+
+    def bump_identity_security_version(self, tenant_id: str, identity_id: str) -> None:
+        result = self.connection.execute(
+            "UPDATE novaid_identities SET security_version=security_version+1,version=version+1 "
+            "WHERE identity_id=? AND tenant_id=?",
+            (identity_id, tenant_id),
+        )
+        if result.rowcount != 1:
+            raise RuntimeError("CONCURRENCY_CONFLICT")
+
+    def _session_rows(self, query: str, parameters: tuple[Any, ...]) -> list[sqlite3.Row]:
+        return list(self.connection.execute(query, parameters).fetchall())
+
+    def list_sessions_for_identity(self, tenant_id: str, identity_id: str) -> list[sqlite3.Row]:
+        return self._session_rows(
+            "SELECT session_id,status,authentication_strength,created_at,last_seen_at,expires_at,"
+            "authenticated_at,idle_expires_at,absolute_expires_at,pending_mfa_expires_at,"
+            "step_up_expires_at,device_reference "
+            "FROM novaid_authentication_sessions WHERE tenant_id=? AND identity_id=? "
+            "ORDER BY created_at DESC",
+            (tenant_id, identity_id),
+        )
+
+    def list_for_identity(self, tenant_id: str, identity_id: str) -> list[sqlite3.Row]:
+        return [dict(row) for row in self.list_sessions_for_identity(tenant_id, identity_id)]
+
+    def get_session_for_identity(
+        self, tenant_id: str, identity_id: str, session_id: str
+    ) -> sqlite3.Row | None:
+        return self.connection.execute(
+            "SELECT expires_at,status FROM novaid_authentication_sessions "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=?",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+
+    def get_for_identity(self, tenant_id: str, identity_id: str, session_id: str) -> sqlite3.Row | None:
+        return self.get_session_for_identity(tenant_id, identity_id, session_id)
+
+    def revoke_session(self, tenant_id: str, identity_id: str, session_id: str, reason: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',"
+            "revoked_at=?,revocation_reason=? "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=?",
+            (datetime.utcnow().isoformat(), reason, tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def revoke(self, tenant_id: str, identity_id: str, session_id: str, reason: str) -> int:
+        return self.revoke_session(tenant_id, identity_id, session_id, reason)
+
+    def revoke_sessions_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> list[sqlite3.Row]:
+        rows = self._session_rows(
+            "SELECT session_id,expires_at FROM novaid_authentication_sessions "
+            "WHERE tenant_id=? AND identity_id=? AND status NOT IN ('REVOKED','EXPIRED')",
+            (tenant_id, identity_id),
+        )
+        self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',revoked_at=?,"
+            "revocation_reason=? WHERE tenant_id=? AND identity_id=? "
+            "AND status NOT IN ('REVOKED','EXPIRED')",
+            (datetime.utcnow().isoformat(), reason, tenant_id, identity_id),
+        )
+        return rows
+
+    def revoke_all_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> list[sqlite3.Row]:
+        return self.revoke_sessions_for_identity(tenant_id, identity_id, reason)
+
+    def update_session_touch(
+        self, tenant_id: str, identity_id: str, session_id: str, *, now: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET last_seen_at=?,idle_expires_at=? "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=? AND status='ACTIVE'",
+            (now, (datetime.fromisoformat(now) + timedelta(minutes=30)).isoformat(), tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def touch(self, tenant_id: str, identity_id: str, session_id: str, *, now: str) -> int:
+        return self.update_session_touch(tenant_id, identity_id, session_id, now=now)
+
+    def update_session_step_up(
+        self, tenant_id: str, identity_id: str, session_id: str, *, until: str
+    ) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='STEP_UP_REQUIRED',"
+            "step_up_expires_at=? WHERE tenant_id=? AND identity_id=? AND session_id=? "
+            "AND status='ACTIVE'",
+            (until, tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def require_step_up(
+        self, tenant_id: str, identity_id: str, session_id: str, *, until: str
+    ) -> int:
+        return self.update_session_step_up(tenant_id, identity_id, session_id, until=until)
+
+    def complete_session_step_up(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',step_up_expires_at=NULL,"
+            "authentication_strength='PASSWORD_OTP' WHERE tenant_id=? AND identity_id=? "
+            "AND session_id=? AND status='STEP_UP_REQUIRED'",
+            (tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def complete_step_up(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        return self.complete_session_step_up(tenant_id, identity_id, session_id)
+
+    def lock_session(self, tenant_id: str, identity_id: str, session_id: str, *, locked_at: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='LOCKED',locked_at=? "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=? "
+            "AND status IN ('ACTIVE','STEP_UP_REQUIRED')",
+            (locked_at, tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def unlock_session(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',locked_at=NULL "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=? AND status='LOCKED'",
+            (tenant_id, identity_id, session_id),
+        )
+        return result.rowcount
+
+    def lock(self, tenant_id: str, identity_id: str, session_id: str, *, locked_at: str) -> int:
+        return self.lock_session(tenant_id, identity_id, session_id, locked_at=locked_at)
+
+    def unlock(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        return self.unlock_session(tenant_id, identity_id, session_id)
+
+    def expire_sessions(self, tenant_id: str, *, now: str) -> int:
+        expired = 0
+        rules = (
+            ("PENDING_MFA", "pending_mfa_expires_at", "PENDING_MFA_EXPIRY"),
+            ("ACTIVE", "idle_expires_at", "IDLE_EXPIRY"),
+            ("STEP_UP_REQUIRED", "step_up_expires_at", "STEP_UP_EXPIRY"),
+        )
+        for status, column, reason in rules:
+            result = self.connection.execute(
+                f"UPDATE novaid_authentication_sessions SET status='EXPIRED',expired_at=?,"
+                "revoked_at=?,revocation_reason=? WHERE tenant_id=? AND status=? "
+                f"AND {column} IS NOT NULL AND {column}<=?",
+                (now, now, reason, tenant_id, status, now),
+            )
+            expired += result.rowcount
+        result = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='EXPIRED',expired_at=?,"
+            "revoked_at=?,revocation_reason='ABSOLUTE_EXPIRY' WHERE tenant_id=? "
+            "AND status IN ('ACTIVE','PENDING_MFA','STEP_UP_REQUIRED','LOCKED') "
+            "AND COALESCE(absolute_expires_at,expires_at)<=?",
+            (now, now, tenant_id, now),
+        )
+        expired += result.rowcount
+        return expired
+
+    def expire_stale(self, tenant_id: str, *, now: str) -> int:
+        return self.expire_sessions(tenant_id, now=now)
+
+    def mark_session_compromised(
+        self, tenant_id: str, identity_id: str, session_id: str, *, now: str
+    ) -> sqlite3.Row | None:
+        row = self.connection.execute(
+            "SELECT expires_at FROM novaid_authentication_sessions "
+            "WHERE tenant_id=? AND identity_id=? AND session_id=?",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+        if not row:
+            return None
+        self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='COMPROMISED',"
+            "revoked_at=?,compromised_at=?,revocation_reason='SECURITY_CONTAINMENT',"
+            "compromise_reason='SECURITY_CONTAINMENT' WHERE tenant_id=? AND identity_id=? "
+            "AND session_id=? AND status NOT IN ('COMPROMISED','REVOKED','EXPIRED')",
+            (now, now, tenant_id, identity_id, session_id),
+        )
+        self.connection.execute(
+            "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=? "
+            "WHERE tenant_id=? AND session_id=? AND status='ACTIVE'",
+            (now, tenant_id, session_id),
+        )
+        return row
+
+    def mark_compromised(
+        self, tenant_id: str, identity_id: str, session_id: str, *, now: str
+    ) -> sqlite3.Row | None:
+        return self.mark_session_compromised(tenant_id, identity_id, session_id, now=now)
 
     def add_identity(self, identity: Identity) -> None:
         self.connection.execute(

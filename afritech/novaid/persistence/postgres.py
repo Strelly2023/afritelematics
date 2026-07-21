@@ -148,6 +148,139 @@ class PostgresSessionRepository(PostgresRepository):
             (tenant_id, session_id),
         ).fetchone()
 
+    def list_for_identity(self, tenant_id: str, identity_id: str) -> list[Any]:
+        rows = self.connection.execute(
+            "SELECT session_id,status,authentication_strength,created_at,last_seen_at,expires_at,"
+            "authenticated_at,idle_expires_at,absolute_expires_at,pending_mfa_expires_at,"
+            "step_up_expires_at,device_reference "
+            "FROM novaid_authentication_sessions WHERE tenant_id=%s AND identity_id=%s "
+            "ORDER BY created_at DESC",
+            (tenant_id, identity_id),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def get_for_identity(self, tenant_id: str, identity_id: str, session_id: str) -> Any | None:
+        return self.connection.execute(
+            "SELECT expires_at,status FROM novaid_authentication_sessions "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+
+    def revoke(self, tenant_id: str, identity_id: str, session_id: str, reason: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',"
+            "revoked_at=NOW(),revocation_reason=%s "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s",
+            (reason, tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def revoke_all_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> list[Any]:
+        rows = self.connection.execute(
+            "SELECT session_id,expires_at FROM novaid_authentication_sessions "
+            "WHERE tenant_id=%s AND identity_id=%s AND status NOT IN ('REVOKED','EXPIRED')",
+            (tenant_id, identity_id),
+        ).fetchall()
+        self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='REVOKED',"
+            "revoked_at=NOW(),revocation_reason=%s WHERE tenant_id=%s AND identity_id=%s "
+            "AND status NOT IN ('REVOKED','EXPIRED')",
+            (reason, tenant_id, identity_id),
+        )
+        return [dict(row) for row in rows]
+
+    def touch(self, tenant_id: str, identity_id: str, session_id: str, *, now: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET last_seen_at=%s,idle_expires_at=%s "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s AND status='ACTIVE'",
+            (now, now, tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def require_step_up(self, tenant_id: str, identity_id: str, session_id: str, *, until: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='STEP_UP_REQUIRED',"
+            "step_up_expires_at=%s WHERE tenant_id=%s AND identity_id=%s AND session_id=%s "
+            "AND status='ACTIVE'",
+            (until, tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def complete_step_up(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',step_up_expires_at=NULL,"
+            "authentication_strength='PASSWORD_OTP' WHERE tenant_id=%s AND identity_id=%s "
+            "AND session_id=%s AND status='STEP_UP_REQUIRED'",
+            (tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def lock_session(self, tenant_id: str, identity_id: str, session_id: str, *, locked_at: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='LOCKED',locked_at=%s "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s "
+            "AND status IN ('ACTIVE','STEP_UP_REQUIRED')",
+            (locked_at, tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def unlock_session(self, tenant_id: str, identity_id: str, session_id: str) -> int:
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',locked_at=NULL "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s AND status='LOCKED'",
+            (tenant_id, identity_id, session_id),
+        )
+        return row.rowcount
+
+    def expire_stale(self, tenant_id: str, *, now: str) -> int:
+        expired = 0
+        rules = (
+            ("PENDING_MFA", "pending_mfa_expires_at", "PENDING_MFA_EXPIRY"),
+            ("ACTIVE", "idle_expires_at", "IDLE_EXPIRY"),
+            ("STEP_UP_REQUIRED", "step_up_expires_at", "STEP_UP_EXPIRY"),
+        )
+        for status, column, reason in rules:
+            row = self.connection.execute(
+                f"UPDATE novaid_authentication_sessions SET status='EXPIRED',expired_at=%s,"
+                "revoked_at=%s,revocation_reason=%s WHERE tenant_id=%s AND status=%s "
+                f"AND {column} IS NOT NULL AND {column}<=%s",
+                (now, now, reason, tenant_id, status, now),
+            )
+            expired += row.rowcount
+        row = self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='EXPIRED',expired_at=%s,"
+            "revoked_at=%s,revocation_reason='ABSOLUTE_EXPIRY' WHERE tenant_id=%s "
+            "AND status IN ('ACTIVE','PENDING_MFA','STEP_UP_REQUIRED','LOCKED') "
+            "AND COALESCE(absolute_expires_at,expires_at)<=%s",
+            (now, now, tenant_id, now),
+        )
+        expired += row.rowcount
+        return expired
+
+    def mark_compromised(
+        self, tenant_id: str, identity_id: str, session_id: str, *, now: str
+    ) -> Any | None:
+        row = self.connection.execute(
+            "SELECT expires_at FROM novaid_authentication_sessions "
+            "WHERE tenant_id=%s AND identity_id=%s AND session_id=%s",
+            (tenant_id, identity_id, session_id),
+        ).fetchone()
+        if not row:
+            return None
+        self.connection.execute(
+            "UPDATE novaid_authentication_sessions SET status='COMPROMISED',"
+            "revoked_at=%s,compromised_at=%s,revocation_reason='SECURITY_CONTAINMENT',"
+            "compromise_reason='SECURITY_CONTAINMENT' WHERE tenant_id=%s AND identity_id=%s "
+            "AND session_id=%s AND status NOT IN ('COMPROMISED','REVOKED','EXPIRED')",
+            (now, now, tenant_id, identity_id, session_id),
+        )
+        self.connection.execute(
+            "UPDATE novaid_refresh_token_families SET status='REVOKED',revoked_at=%s "
+            "WHERE tenant_id=%s AND session_id=%s AND status='ACTIVE'",
+            (now, tenant_id, session_id),
+        )
+        return row
+
 
 class PostgresRefreshTokenFamilyRepository(PostgresRepository):
     pass
@@ -248,6 +381,12 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
                 identity.version,
             ),
         )
+
+    def bump_identity_security_version(self, tenant_id: str, identity_id: str) -> None:
+        row = self.identities.get_for_tenant(tenant_id, identity_id)
+        if row is None:
+            raise LookupError("TENANT_ACCESS_DENIED")
+        self.identities.increment_security_version(tenant_id, identity_id, int(row["version"]))
 
     def lock_idempotency_key(self, tenant_id: str, key: str) -> None:
         self.connection.execute(
