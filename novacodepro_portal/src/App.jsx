@@ -2475,6 +2475,11 @@ function App() {
     : frontendProducts.map((product) => product.productCode);
   const renderingSnapshot = renderingRegistry.snapshot();
   const interactionSnapshot = interactionRegistry.snapshot();
+  const requestSummary = useMemo(() => {
+    const prompt = composerPrompt.trim();
+    return prompt.length ? prompt : selectedRequest?.request || STARTER_REQUESTS[0];
+  }, [composerPrompt, selectedRequest?.request]);
+  const selectedMode = COMPOSER_MODES.find((mode) => mode.id === composerMode) ?? COMPOSER_MODES[0];
 
   const aiWorkspaceModel = useMemo(
     () =>
@@ -3163,11 +3168,6 @@ function App() {
     : 0;
   const activeOutputTab = OUTPUT_TABS.includes(selectedOutputTab) ? selectedOutputTab : "Overview";
 
-  const requestSummary = useMemo(() => {
-    const prompt = composerPrompt.trim();
-    return prompt.length ? prompt : activeRequest?.request || STARTER_REQUESTS[0];
-  }, [activeRequest?.request, composerPrompt]);
-
   const suggestedTitle = useMemo(() => {
     const source = requestSummary.split(/[.!?]/)[0].trim();
     if (!source) {
@@ -3175,8 +3175,6 @@ function App() {
     }
     return source.length > 64 ? `${source.slice(0, 61)}...` : source;
   }, [requestSummary]);
-
-  const selectedMode = COMPOSER_MODES.find((mode) => mode.id === composerMode) ?? COMPOSER_MODES[0];
 
   const studioMenus = useMemo(
     () => [

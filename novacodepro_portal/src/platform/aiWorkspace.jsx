@@ -212,6 +212,8 @@ export function buildUniversalAIWorkspaceModel({
   standards,
   context,
   metrics,
+  timelineFilters,
+  onTimelineFilterChange,
   supportedActions,
 } = {}) {
   const normalizedRequest = request || {};
@@ -359,8 +361,8 @@ export function buildUniversalAIWorkspaceModel({
     standards: listify(standards),
     context: context || {},
     metrics: metrics || {},
-    timelineFilters: input.timelineFilters || {},
-    onTimelineFilterChange: input.onTimelineFilterChange,
+    timelineFilters: timelineFilters || {},
+    onTimelineFilterChange,
     supportedActions: {
       ask: Boolean(supportedActions?.ask),
       plan: Boolean(supportedActions?.plan),

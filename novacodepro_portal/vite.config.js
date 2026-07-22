@@ -16,6 +16,7 @@ const allowedHosts = [
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+const apiProxyTarget = process.env.VITE_NOVACODEPRO_PROXY_TARGET;
 
 const buildInfo = createBuildInfo({
   application: "NovaCodePro Experience Platform",
@@ -71,6 +72,14 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     allowedHosts,
+    proxy: apiProxyTarget
+      ? {
+          "/v1": {
+            target: apiProxyTarget,
+            changeOrigin: true,
+          },
+        }
+      : undefined,
     fs: {
       allow: [path.resolve(rootDir, "..")],
     },
