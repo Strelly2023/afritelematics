@@ -4,6 +4,7 @@ import { createNovaCodeProNcp003Api } from "../novacodepro/api/novacodeproNcp003
 import { createNovaCodeProNcp006bApi } from "../novacodepro/api/novacodeproNcp006bApi.js";
 
 const DESIGN_NAVIGATION = ["Dashboard","Projects","AI Designer","Research","User Personas","Journey Maps","Flows","Wireframes","Mockups","Components","Design System","Brand Studio","Accessibility","Prototype","Developer Handoff","Assets","Analytics","Version History","Reviews","Approvals","Export","Settings"];
+const DESIGN_ROUTES = { Research: "/novacodepro/design/research", "User Personas": "/novacodepro/design/personas", "Journey Maps": "/novacodepro/design/journeys", Flows: "/novacodepro/design/user-flows", Wireframes: "/novacodepro/design/studio" };
 const QUICK_ACTIONS = [
   ["Start Designing", "/novacodepro/design/studio"], ["Create Blank Project", "/novacodepro/projects"],
   ["Generate from Prompt", "/novacodepro/ai"], ["Import Requirements", "/novacodepro/requests"],
@@ -61,7 +62,7 @@ export function DesignDashboard({ session, baseUrl = "", onNavigate, onLogout })
       <div className="dashboard-header-actions"><button type="button" aria-label="Notifications">◌</button><button type="button" aria-label="Help">?</button><button type="button" className="dashboard-create" onClick={() => onNavigate("/novacodepro/projects")}>+ Create</button><button type="button" className="dashboard-avatar" aria-label="Open profile menu">{(session?.display_name || "NC").split(" ").map((part) => part[0]).slice(0,2).join("")}</button></div>
     </header>
     <aside className={sidebarOpen ? "design-sidebar open" : "design-sidebar"} aria-label="Design navigation">
-      <nav>{DESIGN_NAVIGATION.map((item) => <button type="button" key={item} className={item === "Dashboard" ? "active" : ""} onClick={() => onNavigate(item === "Dashboard" ? "/novacodepro/dashboard" : `/novacodepro/design/${item.toLowerCase().replaceAll(/[^a-z]+/g,"-")}`)}><span>{item.slice(0,1)}</span>{item}</button>)}</nav>
+      <nav>{DESIGN_NAVIGATION.map((item) => <button type="button" key={item} className={item === "Dashboard" ? "active" : ""} onClick={() => onNavigate(item === "Dashboard" ? "/novacodepro/dashboard" : DESIGN_ROUTES[item] || `/novacodepro/design/${item.toLowerCase().replaceAll(/[^a-z]+/g,"-")}`)}><span>{item.slice(0,1)}</span>{item}</button>)}</nav>
       <div className="design-sidebar-footer"><span><i/> Services connected</span><button type="button" onClick={onLogout}>Sign out</button></div>
     </aside>
     <main className="design-dashboard-main">

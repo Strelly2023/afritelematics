@@ -40,10 +40,17 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByRole("main", { name: "Infinite design canvas" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Desktop design frame" })).toBeVisible();
   const layerName = page.getByLabel("Layer name");
-  await layerName.fill("Available balance summary");
+  await layerName.fill(`${await layerName.inputValue()} updated`);
   await expect(page.getByText("● Unsaved changes")).toBeVisible();
   await page.getByRole("button", { name: "Save version" }).click();
   await expect(page.getByText("● Saved to governed workspace")).toBeVisible();
+  await page.getByRole("button", { name: "Research", exact: true }).click();
+  await expect(page.getByTestId("experience-mapping-studio")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Research & experience mapping" })).toBeVisible();
+  await page.getByRole("button", { name: "Save Research" }).click();
+  await expect(page.getByText("● Research saved with audit evidence")).toBeVisible();
+  await page.getByRole("button", { name: "Journeys", exact: true }).click();
+  await expect(page.locator('[aria-label="Journey map"]')).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");
