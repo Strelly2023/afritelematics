@@ -177,8 +177,9 @@ def _build_session_bootstrap(service: NovaCodeProPlatform, request: Request) -> 
         or "development",
     )
     workspace_data = workspace_manifest["workspace"]
+    active_workspace_id = str(current.get("workspace_id") or "").strip()
     workspace = {
-        "id": "novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"],
+        "id": active_workspace_id or ("novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"]),
         "name": "NovaTech Platform" if canonical_role == "ADMIN" else workspace_data["title"],
         "status": "ACTIVE",
         "home_route": "/novacodepro/dashboard" if canonical_role == "ADMIN" else workspace_data["home_route"],
@@ -187,7 +188,14 @@ def _build_session_bootstrap(service: NovaCodeProPlatform, request: Request) -> 
     }
     compatibility_roles = _normalize_roles(session_role, list(current.get("assigned_roles") or []))
     canonical_display_role = _bootstrap_role_label(canonical_role)
-    permissions = list(role_definition(canonical_role).get("permissions", ()))
+    # The authenticated session is the canonical source for effective permissions.
+    # Role definitions alone omit product capabilities added by the session policy
+    # (for example project.read and request.create), which caused valid sessions to
+    # be downgraded to a false FORBIDDEN state during frontend hydration.
+    permissions = [str(permission) for permission in current.get("permissions") or ()]
+    for role_permission in role_definition(canonical_role).get("permissions", ()):
+        if role_permission not in permissions:
+            permissions.append(role_permission)
     for required_permission in (
         "dashboard.read",
         "platform.read",

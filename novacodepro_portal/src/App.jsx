@@ -2199,7 +2199,9 @@ function App() {
         const bootstrapRoute = currentPathname === ROUTES.home
           ? ROUTES.home
           : returnTo ||
-            (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN"));
+            (isSolutionRoute(currentPathname) || parseNovaCodeProRoute(currentPathname)
+              ? currentPathname
+              : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN"));
         navigateTo(bootstrapRoute, { replace: true });
       } catch (error) {
         if (!active) {

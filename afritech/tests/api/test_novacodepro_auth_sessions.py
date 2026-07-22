@@ -47,6 +47,8 @@ def test_login_session_workspace_and_logout_cycle(tmp_path: Path) -> None:
     assert session.json()["canonical_role"] == "PLATFORM_ADMIN"
     assert session.json()["workspace"]["home_route"] == "/novacodepro/dashboard"
     assert session.json()["permissions"]
+    assert session.json()["workspace"]["id"] == login_body["session"]["workspace_id"]
+    assert {"workspace.read", "project.read", "request.create"}.issubset(session.json()["permissions"])
 
     workspace = client.get("/v1/novacodepro/workspace")
     assert workspace.status_code == 200

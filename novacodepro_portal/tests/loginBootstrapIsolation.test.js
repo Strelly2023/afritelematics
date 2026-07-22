@@ -19,3 +19,7 @@ test("login uses safe return destinations and normalized API failures", () => {
   assert.match(source, /userSafeText/);
   assert.doesNotMatch(source, /setBootstrapError\(detail\.message \|\|/);
 });
+
+test("authenticated bootstrap preserves registered NovaCodePro application routes", () => {
+  assert.match(source, /isSolutionRoute\(currentPathname\) \|\| parseNovaCodeProRoute\(currentPathname\)/);
+});
