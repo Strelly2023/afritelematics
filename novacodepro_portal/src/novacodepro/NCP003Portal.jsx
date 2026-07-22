@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { createNovaCodeProNcp003Api } from "./api/novacodeproNcp003Api.js";
+import { classifyNcp003RouteState, createNovaCodeProNcp003Api } from "./api/novacodeproNcp003Api.js";
 
 function parseRoute(pathname) {
   const parts = String(pathname || "")
@@ -78,7 +78,7 @@ function fieldValue(value) {
   return typeof value === "string" ? value : value == null ? "" : String(value);
 }
 
-export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogout }) {
+export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogout, onSessionChange }) {
   const client = useMemo(() => createNovaCodeProNcp003Api({ baseUrl }), [baseUrl]);
   const route = useMemo(() => parseRoute(pathname), [pathname]);
   const [loadState, setLoadState] = useState("loading");
@@ -118,10 +118,18 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
   const [assignmentDraft, setAssignmentDraft] = useState({ assignee_id: "", assignment_role: "REVIEWER" });
   const [attachmentDraft, setAttachmentDraft] = useState({ filename: "", content_type: "text/plain", content: "" });
   const [transitionTarget, setTransitionTarget] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
 
   const workspaceId = activeWorkspaceId || session?.workspace_id || session?.workspace?.id || "";
   const projectId = route.section === "projects" ? route.id : null;
   const requestId = route.section === "requests" ? route.id : null;
+  const permissionSet = useMemo(() => new Set((session?.permissions || []).map(String)), [session?.permissions]);
+  const hasPermission = (permission) => permissionSet.has(permission);
+  const canCreateProject = hasPermission("project.create");
+  const canCreateRequest = hasPermission("request.create");
 
   useEffect(() => {
     let cancelled = false;
@@ -230,7 +238,7 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
           return;
         }
         setLoadError(error);
-        setLoadState(error?.code === "session_required" ? "unauthorized" : error?.code === "workspace_forbidden" ? "forbidden" : error?.code === "workspace_not_found" || error?.code === "project_not_found" || error?.code === "request_not_found" ? "not_found" : error?.code === "timeout" ? "timeout" : error?.retryable === false ? "error" : "service_unavailable");
+        setLoadState(classifyNcp003RouteState(error));
       }
     }
     load();
@@ -241,12 +249,18 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
 
   const selectWorkspace = async (nextWorkspaceId) => {
     setActionError(null);
+    setLoadState("loading");
+    setWorkspaceDetail(null);
+    setProjects([]);
+    setRequests([]);
     try {
       const result = await client.selectWorkspace(nextWorkspaceId);
       setActiveWorkspaceId(result?.session?.workspace_id || nextWorkspaceId);
+      onSessionChange?.(result);
       navigate("/novacodepro/workspace");
     } catch (error) {
       setActionError(error);
+      setLoadState(classifyNcp003RouteState(error));
     }
   };
 
@@ -506,91 +520,63 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
 
   const workspaceLabel = workspaceDetail?.name || session?.workspace?.name || "Workspace";
   const workspaceItems = workspaces.length ? workspaces : [{ id: activeWorkspaceId || "enterprise-developer", name: workspaceLabel }];
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredProjects = projects.filter((item) =>
+    (!normalizedQuery || `${item.name || ""} ${item.description || ""} ${item.owner_id || ""}`.toLowerCase().includes(normalizedQuery)) &&
+    (statusFilter === "ALL" || item.status === statusFilter));
+  const filteredRequests = requests.filter((item) =>
+    (!normalizedQuery || `${item.id || ""} ${item.title || ""} ${item.description || ""}`.toLowerCase().includes(normalizedQuery)) &&
+    (statusFilter === "ALL" || item.status === statusFilter));
 
   const renderWorkspaceHome = () => (
-    <div className="grid two-col">
-      <SimpleSection title="Workspace selection" aside={<span>{workspaceLabel}</span>}>
-        <label className="field">
-          <span>Active workspace</span>
-          <select value={activeWorkspaceId} onChange={(event) => selectWorkspace(event.target.value)} aria-label="Active workspace">
-            {workspaceItems.map((workspace) => (
-              <option key={workspace.id} value={workspace.id}>
-                {workspace.name}
-              </option>
-            ))}
+    <div className="ncp003-page-grid" data-testid="workspace-home">
+      <section className="ncp003-hero-card">
+        <div>
+          <p className="section-label">Workspace overview</p>
+          <h2>{workspaceLabel}</h2>
+          <p>{session?.organization?.name || session?.organization || session?.tenant_id || "NovaTech"} · {session?.active_role || "Member"}</p>
+        </div>
+        <div className="ncp003-workspace-select">
+          <label htmlFor="active-workspace">Active workspace</label>
+          <select id="active-workspace" value={activeWorkspaceId} onChange={(event) => selectWorkspace(event.target.value)}>
+            {workspaceItems.map((workspace) => <option key={workspace.id} value={workspace.id}>{workspace.name}</option>)}
           </select>
-        </label>
-        <p className="helper-text">Selecting a workspace updates the server-side session and clears stale workspace context.</p>
-      </SimpleSection>
+        </div>
+      </section>
 
-      <SimpleSection title="Create project">
-        <form onSubmit={handleCreateProject} className="stack">
-          <label className="field">
-            <span>Project name</span>
-            <input value={projectDraft.name} onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))} required />
-          </label>
-          <label className="field">
-            <span>Description</span>
-            <textarea value={projectDraft.description} onChange={(event) => setProjectDraft((current) => ({ ...current, description: event.target.value }))} rows={4} />
-          </label>
-          <label className="field">
-            <span>Owner</span>
-            <input value={projectDraft.owner_id} onChange={(event) => setProjectDraft((current) => ({ ...current, owner_id: event.target.value }))} />
-          </label>
-          <ActionButton type="submit" disabled={saving || !projectDraft.name.trim()}>Create project</ActionButton>
-        </form>
-      </SimpleSection>
+      <section className="ncp003-metrics" aria-label="Workspace portfolio summary">
+        {[
+          ["Active projects", projects.filter((item) => item.status !== "ARCHIVED").length, "Delivery portfolio"],
+          ["Open requests", requests.filter((item) => !["COMPLETED", "CLOSED", "ARCHIVED"].includes(item.status)).length, "Governed intake"],
+          ["Pending approvals", workspaceApprovals.filter((item) => item.status === "PENDING").length, "Needs attention"],
+          ["Team members", workspaceMembers.length, "Workspace access"],
+        ].map(([label, value, note]) => (
+          <article className="ncp003-metric" key={label}><span>{label}</span><strong>{value}</strong><small>{note}</small></article>
+        ))}
+      </section>
 
-      <SimpleSection title="Create request draft">
-        <form onSubmit={handleCreateRequest} className="stack">
-          <label className="field">
-            <span>Title</span>
-            <input value={requestDraft.title} onChange={(event) => setRequestDraft((current) => ({ ...current, title: event.target.value }))} required />
-          </label>
-          <label className="field">
-            <span>Description</span>
-            <textarea value={requestDraft.description} onChange={(event) => setRequestDraft((current) => ({ ...current, description: event.target.value }))} rows={4} />
-          </label>
-          <label className="field">
-            <span>Project</span>
-            <select value={requestDraft.project_id} onChange={(event) => setRequestDraft((current) => ({ ...current, project_id: event.target.value }))}>
-              <option value="">No project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <ActionButton type="submit" disabled={saving || !requestDraft.title.trim()}>Create request draft</ActionButton>
-        </form>
-      </SimpleSection>
+      <section className="ncp003-panel ncp003-quick-actions">
+        <div className="ncp003-section-heading"><div><p className="section-label">Start work</p><h3>Quick actions</h3></div></div>
+        <div className="ncp003-action-grid">
+          <button type="button" disabled={!canCreateProject} onClick={() => navigate("/novacodepro/projects")}>New project<span>Define and govern delivery work</span></button>
+          <button type="button" disabled={!canCreateRequest} onClick={() => navigate("/novacodepro/requests")}>New request<span>Capture an idea or change</span></button>
+          <button type="button" onClick={() => projects[0] && navigate(`/novacodepro/projects/${projects[0].id}`)} disabled={!projects.length}>Open recent work<span>Resume the latest project</span></button>
+        </div>
+      </section>
 
-      <SimpleSection title="Recent activity">
-        <List
-          items={workspaceActivity.slice(0, 5)}
-          empty="No workspace activity yet."
-          renderItem={(item) => (
-            <div key={item.id || item.event_type} className="artifact-row">
-              <strong>{item.event_type}</strong>
-              <span>{item.timestamp || item.created_at || ""}</span>
-            </div>
-          )}
-        />
-      </SimpleSection>
+      <section className="ncp003-panel">
+        <div className="ncp003-section-heading"><div><p className="section-label">Portfolio</p><h3>Recent projects</h3></div><button type="button" onClick={() => navigate("/novacodepro/projects")}>View all</button></div>
+        <List items={projects.slice(0, 4)} empty="No projects yet. Create one when you are ready." renderItem={(item) => (
+          <button key={item.id} className="ncp003-list-row" type="button" onClick={() => navigate(`/novacodepro/projects/${item.id}`)}><span><strong>{item.name}</strong><small>{item.description || "No description"}</small></span><b>{item.status}</b></button>
+        )} />
+      </section>
 
-      <SimpleSection title="Notifications">
-        <List
-          items={workspaceNotifications.slice(0, 5)}
-          empty="No notifications."
-          renderItem={(item) => (
-            <div key={item.id} className="artifact-row">
-              <strong>{item.title}</strong>
-              <span>{item.status}</span>
-            </div>
-          )}
-        />
-      </SimpleSection>
+      <section className="ncp003-panel">
+        <div className="ncp003-section-heading"><div><p className="section-label">Traceability</p><h3>Recent activity</h3></div><span>Live workspace events</span></div>
+        <List items={workspaceActivity.slice(0, 6)} empty="No workspace activity yet." renderItem={(item) => (
+          <div key={item.id || item.event_type} className="ncp003-activity-row"><i aria-hidden="true" /><span><strong>{String(item.event_type || "Activity").replaceAll(".", " ")}</strong><small>{item.actor_id || session?.display_name || "Workspace member"}</small></span><time>{item.timestamp || item.created_at || "Recently"}</time></div>
+        )} />
+      </section>
     </div>
   );
 
@@ -831,101 +817,89 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
   };
 
   return (
-    <div className="app-shell novacodepro-ncp003">
-      <header className="topbar">
+    <div className="app-shell novacodepro-ncp003" data-testid="ncp003-authenticated-shell">
+      <a className="skip-link" href="#ncp003-main">Skip to content</a>
+      <header className="ncp003-topbar">
         <div className="brand-block">
-          <div className="brand-mark">N</div>
+          <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro" />
           <div>
-            <p className="eyebrow">NovaCodePro Internal Development Platform</p>
-            <strong>NCP-003 Workspace, Projects and Requests</strong>
+            <strong>NovaCodePro</strong>
+            <span>Governed product workspace</span>
           </div>
         </div>
-        <div className="topbar-actions">
-          <button type="button" className="toolbar-chip" onClick={() => navigate("/novacodepro/workspace")}>Workspace</button>
-          <button type="button" className="toolbar-chip" onClick={() => navigate("/novacodepro/projects")}>Projects</button>
-          <button type="button" className="toolbar-chip" onClick={() => navigate("/novacodepro/requests")}>Requests</button>
-          <button type="button" className="toolbar-chip danger" onClick={onLogout}>Log out</button>
+        <div className="ncp003-topbar-actions">
+          <span className="ncp003-environment">Local · Secure</span>
+          <button type="button" aria-label="Open navigation" className="ncp003-mobile-menu" onClick={() => setMobileNavigationOpen((value) => !value)}>☰</button>
+          <button type="button" className="ncp003-user-menu" onClick={onLogout} aria-label="Sign out">
+            <span>{(session?.display_name || "User").slice(0, 1)}</span>
+            <span><strong>{session?.display_name || "User"}</strong><small>{session?.active_role || "Member"}</small></span>
+          </button>
         </div>
       </header>
 
       <StateBanner state={loadState} error={loadError || actionError} />
 
-      <main className="workspace-shell">
-        <section className="workspace-band">
-          <div className="workspace-band-header">
-            <div>
-              <p className="section-label">Authenticated session</p>
-              <h1>{session?.display_name || session?.user?.display_name || session?.user?.username || "User"}</h1>
-              <p>{session?.organization?.name || session?.organization || "NovaTech"} · {workspaceLabel}</p>
-            </div>
-            <div className="workspace-summary">
-              <span>{session?.active_role || session?.user?.active_role || "Member"}</span>
-              <span>{workspaceId || "workspace-required"}</span>
-            </div>
-          </div>
-          <div className="workspace-tabs" role="tablist" aria-label="NovaCodePro navigation">
+      <div className="ncp003-layout">
+        <aside className={mobileNavigationOpen ? "ncp003-sidebar open" : "ncp003-sidebar"} aria-label="Application navigation">
+          <div className="ncp003-sidebar-workspace"><small>Current workspace</small><strong>{workspaceLabel}</strong><span>{session?.organization?.name || session?.organization || "NovaTech"}</span></div>
+          <nav>
             {[
-              { label: "Workspace", route: "/novacodepro/workspace" },
-              { label: "Projects", route: "/novacodepro/projects" },
-              { label: "Requests", route: "/novacodepro/requests" },
-              { label: "Activity", route: "/novacodepro/workspace/activity" },
-              { label: "Notifications", route: "/novacodepro/workspace/notifications" },
-            ].map((item) => (
-              <button key={item.route} type="button" className="workspace-tab" onClick={() => navigate(item.route)}>
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </section>
+              ["Overview", "/novacodepro/dashboard"],
+              ["Workspace", "/novacodepro/workspace"],
+              ["Projects", "/novacodepro/projects"],
+              ["Requests", "/novacodepro/requests"],
+              ["Activity", "/novacodepro/workspace/activity"],
+              ["Notifications", "/novacodepro/workspace/notifications"],
+            ].map(([label, path]) => <button key={path} type="button" aria-current={pathname === path ? "page" : undefined} onClick={() => { setMobileNavigationOpen(false); navigate(path); }}><span aria-hidden="true">{label.slice(0, 1)}</span>{label}</button>)}
+          </nav>
+          <div className="ncp003-sidebar-trust"><span>✓</span><div><strong>Protected by NovaID</strong><small>Tenant and workspace enforced</small></div></div>
+        </aside>
+
+        <main id="ncp003-main" className="ncp003-main" tabIndex={-1}>
+          <header className="ncp003-page-header">
+            <div>
+              <p className="ncp003-breadcrumb">NovaCodePro / {route.section}</p>
+              <h1>{route.section === "projects" ? "Projects" : route.section === "requests" ? "Requests" : "Workspace"}</h1>
+              <p>{route.section === "projects" ? "Plan, govern, and deliver your product portfolio." : route.section === "requests" ? "Capture ideas, requirements, change requests, incidents, and delivery work." : "Your governed home for teams, work, approvals, and traceability."}</p>
+            </div>
+            {route.section === "projects" && !projectId && canCreateProject ? <button type="button" className="primary-action" onClick={() => setComposerOpen(true)}>Create project</button> : null}
+            {route.section === "requests" && !requestId && canCreateRequest ? <button type="button" className="primary-action" onClick={() => setComposerOpen(true)}>Create request</button> : null}
+          </header>
 
         {loadState === "ready" ? (
           <>
             {route.section === "workspace" ? renderWorkspaceHome() : null}
             {route.section === "projects" && !projectId ? (
-              <div className="grid two-col">
-                <SimpleSection title="Projects">
-                  <List
-                    items={projects}
-                    empty="No projects yet."
-                    renderItem={(item) => (
-                      <button key={item.id} type="button" className="list-link" onClick={() => navigate(`/novacodepro/projects/${encodeURIComponent(item.id)}`)}>
-                        <strong>{item.name}</strong>
-                        <span>{item.status}</span>
-                      </button>
-                    )}
-                  />
-                </SimpleSection>
-                <SimpleSection title="Create project">
-                  <form onSubmit={handleCreateProject} className="stack">
-                    <input placeholder="Project name" value={projectDraft.name} onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))} />
-                    <textarea placeholder="Description" rows={4} value={projectDraft.description} onChange={(event) => setProjectDraft((current) => ({ ...current, description: event.target.value }))} />
-                    <ActionButton type="submit" disabled={saving || !projectDraft.name.trim()}>Create project</ActionButton>
-                  </form>
-                </SimpleSection>
+              <div data-testid="projects-page" className="ncp003-page-stack">
+                <section className="ncp003-metrics" aria-label="Project summary">
+                  {[["Total projects", projects.length], ["Active", projects.filter((item) => item.status === "ACTIVE").length], ["At risk", projects.filter((item) => item.health === "AT_RISK").length], ["Recently updated", projects.slice(0, 7).length]].map(([label, value]) => <article className="ncp003-metric" key={label}><span>{label}</span><strong>{value}</strong><small>Current workspace</small></article>)}
+                </section>
+                <section className="ncp003-panel">
+                  <div className="ncp003-toolbar">
+                    <label><span className="sr-only">Search projects</span><input type="search" placeholder="Search projects" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /></label>
+                    <label><span className="sr-only">Project status</span><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">All statuses</option><option value="ACTIVE">Active</option><option value="ARCHIVED">Archived</option></select></label>
+                    {(searchQuery || statusFilter !== "ALL") ? <button type="button" onClick={() => { setSearchQuery(""); setStatusFilter("ALL"); }}>Clear filters</button> : null}
+                  </div>
+                  <div className="ncp003-project-grid">
+                    {filteredProjects.map((item) => <button key={item.id} type="button" className="ncp003-project-card" onClick={() => navigate(`/novacodepro/projects/${encodeURIComponent(item.id)}`)}><span className="ncp003-card-top"><b>{item.status || "ACTIVE"}</b><small>{item.updated_at || item.created_at || "Recently updated"}</small></span><strong>{item.name}</strong><p>{item.description || "No project description has been added."}</p><span className="ncp003-card-meta"><small>Owner</small><b>{item.owner_id || item.created_by || "Workspace team"}</b></span><span className="ncp003-progress"><i style={{ width: item.status === "ARCHIVED" ? "100%" : "48%" }} /></span></button>)}
+                    {!filteredProjects.length ? <div className="ncp003-empty"><strong>{projects.length ? "No projects match these filters." : "Create your first governed project."}</strong><span>Projects connect requests, delivery activity, evidence, and approvals.</span></div> : null}
+                  </div>
+                </section>
+                {composerOpen ? <section className="ncp003-composer" role="dialog" aria-modal="true" aria-labelledby="create-project-title"><div className="ncp003-composer-head"><div><p className="section-label">New governed work</p><h2 id="create-project-title">Create project</h2></div><button type="button" aria-label="Close create project" onClick={() => setComposerOpen(false)}>×</button></div><form onSubmit={handleCreateProject} className="stack"><label className="field"><span>Project name</span><input autoFocus required value={projectDraft.name} onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))} /></label><label className="field"><span>Description</span><textarea rows={4} value={projectDraft.description} onChange={(event) => setProjectDraft((current) => ({ ...current, description: event.target.value }))} /></label><label className="field"><span>Owner</span><input value={projectDraft.owner_id} onChange={(event) => setProjectDraft((current) => ({ ...current, owner_id: event.target.value }))} /></label><ActionButton type="submit" disabled={saving || !projectDraft.name.trim()}>{saving ? "Creating…" : "Create project"}</ActionButton></form></section> : null}
               </div>
             ) : null}
             {route.section === "projects" && projectId ? renderProjectDetail() : null}
             {route.section === "requests" && !requestId ? (
-              <div className="grid two-col">
-                <SimpleSection title="Requests">
-                  <List
-                    items={requests}
-                    empty="No requests yet."
-                    renderItem={(item) => (
-                      <button key={item.id} type="button" className="list-link" onClick={() => navigate(`/novacodepro/requests/${encodeURIComponent(item.id)}`)}>
-                        <strong>{item.title}</strong>
-                        <span>{item.status}</span>
-                      </button>
-                    )}
-                  />
-                </SimpleSection>
-                <SimpleSection title="Request draft">
-                  <form onSubmit={handleCreateRequest} className="stack">
-                    <input placeholder="Title" value={requestDraft.title} onChange={(event) => setRequestDraft((current) => ({ ...current, title: event.target.value }))} />
-                    <textarea placeholder="Description" rows={4} value={requestDraft.description} onChange={(event) => setRequestDraft((current) => ({ ...current, description: event.target.value }))} />
-                    <ActionButton type="submit" disabled={saving || !requestDraft.title.trim()}>Create draft</ActionButton>
-                  </form>
-                </SimpleSection>
+              <div data-testid="requests-page" className="ncp003-page-stack">
+                <section className="ncp003-metrics" aria-label="Request pipeline summary">
+                  {["DRAFT", "SUBMITTED", "ANALYSING", "APPROVED"].map((status) => <article className="ncp003-metric" key={status}><span>{status === "ANALYSING" ? "Under review" : status.toLowerCase()}</span><strong>{requests.filter((item) => item.status === status).length}</strong><small>Governed intake</small></article>)}
+                </section>
+                <section className="ncp003-panel">
+                  <div className="ncp003-toolbar"><label><span className="sr-only">Search requests</span><input type="search" placeholder="Search requests" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /></label><label><span className="sr-only">Request status</span><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="ALL">All statuses</option>{["DRAFT", "SUBMITTED", "ANALYSING", "APPROVED", "REJECTED", "COMPLETED"].map((status) => <option key={status}>{status}</option>)}</select></label></div>
+                  <div className="ncp003-request-table" role="table" aria-label="Requests"><div className="ncp003-request-row heading" role="row"><span>Request</span><span>Type</span><span>Priority</span><span>Status</span><span>Updated</span></div>{filteredRequests.map((item) => <button type="button" role="row" className="ncp003-request-row" key={item.id} onClick={() => navigate(`/novacodepro/requests/${encodeURIComponent(item.id)}`)}><span><strong>{item.title}</strong><small>{item.id}</small></span><span>{item.request_type || "TEXT"}</span><span>{item.priority || "MEDIUM"}</span><span><b>{item.status}</b></span><span>{item.updated_at || item.created_at || "Recently"}</span></button>)}</div>
+                  {!filteredRequests.length ? <div className="ncp003-empty"><strong>{requests.length ? "No requests match these filters." : "Your request pipeline is ready."}</strong><span>Capture ideas, requirements, incidents, and governed delivery work.</span></div> : null}
+                </section>
+                {composerOpen ? <section className="ncp003-composer" role="dialog" aria-modal="true" aria-labelledby="create-request-title"><div className="ncp003-composer-head"><div><p className="section-label">Governed intake</p><h2 id="create-request-title">Create request</h2></div><button type="button" aria-label="Close create request" onClick={() => setComposerOpen(false)}>×</button></div><form onSubmit={handleCreateRequest} className="stack"><label className="field"><span>Title</span><input autoFocus required value={requestDraft.title} onChange={(event) => setRequestDraft((current) => ({ ...current, title: event.target.value }))} /></label><label className="field"><span>Request type</span><select value={requestDraft.request_type} onChange={(event) => setRequestDraft((current) => ({ ...current, request_type: event.target.value }))}><option value="TEXT">Product request</option><option value="CHANGE">Change request</option><option value="INCIDENT">Incident</option></select></label><label className="field"><span>Description</span><textarea required rows={5} value={requestDraft.description} onChange={(event) => setRequestDraft((current) => ({ ...current, description: event.target.value }))} /></label><label className="field"><span>Related project</span><select value={requestDraft.project_id} onChange={(event) => setRequestDraft((current) => ({ ...current, project_id: event.target.value }))}><option value="">No project</option>{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label><label className="field"><span>Priority</span><select value={requestDraft.priority} onChange={(event) => setRequestDraft((current) => ({ ...current, priority: event.target.value }))}>{["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((value) => <option key={value}>{value}</option>)}</select></label><ActionButton type="submit" disabled={saving || !requestDraft.title.trim() || !requestDraft.description.trim()}>{saving ? "Saving…" : "Create draft"}</ActionButton></form></section> : null}
               </div>
             ) : null}
             {route.section === "requests" && requestId ? renderRequestDetail() : null}
@@ -1022,7 +996,8 @@ export function NCP003Portal({ session, pathname, navigate, baseUrl = "", onLogo
             {route.section === "requests" && requestId ? null : null}
           </>
         ) : null}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

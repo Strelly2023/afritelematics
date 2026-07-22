@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createNovaCodeProNcp003Api } from "../src/novacodepro/api/novacodeproNcp003Api.js";
+import { classifyNcp003RouteState, createNovaCodeProNcp003Api } from "../src/novacodepro/api/novacodeproNcp003Api.js";
 
 function jsonResponse(body, ok = true, status = 200) {
   return {
@@ -50,4 +50,11 @@ test("NCP003 API client resolves workspace and project routes", async () => {
   assert.equal(calls[1].options.method, "POST");
   assert.equal(calls[2].options.headers["Idempotency-Key"], "project-key");
   assert.equal(calls[3].options.headers["Idempotency-Key"], "request-key");
+});
+
+test("NCP003 route failures distinguish authentication, authorization, workspace and service states", () => {
+  assert.equal(classifyNcp003RouteState({ status: 401 }), "unauthorized");
+  assert.equal(classifyNcp003RouteState({ status: 403 }), "forbidden");
+  assert.equal(classifyNcp003RouteState({ status: 409, code: "workspace_required" }), "workspace_required");
+  assert.equal(classifyNcp003RouteState({ code: "network_unavailable", retryable: true }), "service_unavailable");
 });

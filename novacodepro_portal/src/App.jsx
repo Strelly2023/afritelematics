@@ -24,7 +24,7 @@ import { buildRoleWorkspaceModel } from "./platform/roleWorkspace.js";
 import { resolveWorkspaceLoginRoleFromPathname } from "./platform/workspaceRoutes.js";
 import { isSolutionRoute } from "./platform/solutionRoutes.js";
 import { StudioChrome } from "./novacodepro/StudioChrome.js";
-import { isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
+import { findNovaCodeProAppByPath, isNovaCodeProRouteAccessible, parseNovaCodeProRoute } from "./platform/appRegistry.js";
 import { clearNovaCodeProSessionState } from "./platform/sessionState.js";
 import {
   createDefaultFrontendRuntimeConfig,
@@ -2854,6 +2854,7 @@ function App() {
     bootstrapError || "A managed recovery state is required before the dashboard can render.",
     bootstrapState,
   );
+  const deniedApplication = findNovaCodeProAppByPath(currentPathname);
   const forbiddenScreen = (
     <div className="auth-shell">
       <header className="auth-topbar">
@@ -2868,12 +2869,15 @@ function App() {
 
       <main className="auth-panel">
         <section className="auth-copy">
-          <p className="section-label">Forbidden</p>
-          <h1>You do not have access to this workspace route.</h1>
+          <p className="section-label">Access denied</p>
+          <h1>You do not have access to this area.</h1>
           <p className="hero-summary">
-            The current session does not have the permissions required for this application or section.
+            Your authenticated session is valid, but the current workspace role does not grant this capability.
           </p>
           <p className="auth-error">State: FORBIDDEN</p>
+          <p className="hero-summary">Workspace: {session?.workspace?.name || session?.workspace_id || "Not selected"}</p>
+          <p className="hero-summary">Role: {session?.active_role || "Member"}</p>
+          {deniedApplication?.requiredPermissions?.length ? <p className="hero-summary">Required capability: {deniedApplication.requiredPermissions.join(", ")}</p> : null}
         </section>
         <div className="auth-form">
           <button
@@ -2888,8 +2892,8 @@ function App() {
           >
             Recheck access
           </button>
-          <button type="button" className="secondary-action" onClick={() => navigateTo(ROUTES.dashboard, { replace: true })}>
-            Open dashboard
+          <button type="button" className="secondary-action" onClick={() => navigateTo(ROUTES.workspaceRoot, { replace: true })}>
+            Return to workspace
           </button>
           <button type="button" className="secondary-action" onClick={handleLogout}>
             Sign out
@@ -3911,6 +3915,11 @@ function App() {
             navigate={(path, options) => navigateTo(path, options)}
             baseUrl={AUTH_API_BASE}
             onLogout={handleLogout}
+            onSessionChange={(result) => {
+              const next = buildSessionFromAuthPayload(result, session?.active_role || loginRole, session?.email || loginEmail);
+              setSession((current) => ({ ...(current || {}), ...next }));
+              setBootstrapAttempt((value) => value + 1);
+            }}
           />
         </Suspense>
       );

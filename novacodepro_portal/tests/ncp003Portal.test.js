@@ -12,7 +12,11 @@ test("NCP003 routes are wired into the main app shell", () => {
 test("NCP003 portal source includes project and request controls", () => {
   const source = readFileSync(new URL("../src/novacodepro/NCP003Portal.jsx", import.meta.url), "utf8");
   assert.ok(source.includes("Create project"));
-  assert.ok(source.includes("Create request draft"));
+  assert.ok(source.includes("Create request"));
+  assert.ok(source.includes('data-testid="ncp003-authenticated-shell"'));
+  assert.ok(source.includes('data-testid="workspace-home"'));
+  assert.ok(source.includes('data-testid="projects-page"'));
+  assert.ok(source.includes('data-testid="requests-page"'));
   assert.ok(source.includes("Archive project"));
   assert.ok(source.includes("Assign reviewer"));
   assert.ok(source.includes("Upload attachment"));

@@ -4,10 +4,13 @@ function normalizeError(error, fallbackCode = "NCP003_REQUEST_FAILED") {
   if (error && typeof error === "object" && error.code) {
     return error;
   }
-  return {
-    code: fallbackCode,
-    message: error instanceof Error ? error.message : String(error || fallbackCode),
-  };
+  if (error?.name === "AbortError") {
+    return { code: "timeout", message: "The request timed out. Try again.", retryable: true };
+  }
+  if (error instanceof TypeError) {
+    return { code: "network_unavailable", message: "NovaCodePro services cannot be reached right now.", retryable: true };
+  }
+  return { code: fallbackCode, message: error instanceof Error && error.message ? error.message : "NovaCodePro could not complete this request.", retryable: true };
 }
 
 async function readPayload(response) {
@@ -39,6 +42,16 @@ function createRequestError(response, payload) {
     retryable: response.status >= 500,
     details: detail,
   };
+}
+
+export function classifyNcp003RouteState(error) {
+  if (!error) return "error";
+  if (error.status === 401 || ["session_required", "session_expired", "token_revoked"].includes(error.code)) return "unauthorized";
+  if (error.status === 403) return "forbidden";
+  if (error.status === 409 && String(error.code).includes("workspace")) return "workspace_required";
+  if (error.status === 404) return "not_found";
+  if (["timeout", "network_unavailable", "service_unavailable"].includes(error.code) || error.status >= 500 || error.retryable) return "service_unavailable";
+  return "error";
 }
 
 export function createNovaCodeProNcp003Api({ baseUrl = "", fetchImpl = fetch } = {}) {
