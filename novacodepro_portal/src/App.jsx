@@ -42,6 +42,7 @@ import { createDefaultInteractionRegistry } from "./platform/interaction/index.j
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 import { PublicLandingPage } from "./public/PublicLandingPage.jsx";
+import { LoginPage } from "./auth/LoginPage.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -1964,6 +1965,7 @@ function App() {
   const [loginPassword, setLoginPassword] = useState("NovaCodePro123!");
   const [loginRole, setLoginRole] = useState(initialLoginRole);
   const [loginError, setLoginError] = useState("");
+  const [loginStatus, setLoginStatus] = useState("idle");
   const [toolView, setToolView] = useState("ai");
   const [smartCommand, setSmartCommand] = useState("");
   const [roleId, setRoleId] = useState(resolveProfileIdForRole(initialLoginRole));
@@ -2241,9 +2243,14 @@ function App() {
     return () => window.clearInterval(interval);
   }, [authStatus, loginEmail, loginRole]);
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (event, rememberDevice = false) => {
     event.preventDefault();
     setLoginError("");
+    if (!loginEmail.trim() || !loginPassword) {
+      setLoginError("Enter your email or username and password.");
+      return;
+    }
+    setLoginStatus("submitting");
     try {
       const response = await fetch(`${SESSION_API_BASE}/login`, {
         method: "POST",
@@ -2255,11 +2262,14 @@ function App() {
           email: loginEmail,
           password: loginPassword,
           role: loginRole,
+          remember_device: Boolean(rememberDevice),
         }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(payload.detail || "Login failed");
+        if (response.status === 423) throw new Error("This account is temporarily locked. Contact your NovaID administrator.");
+        if (response.status === 429) throw new Error("Too many attempts. Wait a moment before trying again.");
+        throw new Error(response.status === 401 ? "The credentials or selected role could not be verified." : "NovaID could not complete sign-in.");
       }
       const loginSession = buildSessionFromAuthPayload(payload, loginRole, loginEmail);
       setSession(loginSession);
@@ -2333,6 +2343,8 @@ function App() {
       clearNovaCodeProSessionState();
       setLoginError(message);
       setAuthStatus("signed-out");
+    } finally {
+      setLoginStatus("idle");
     }
   };
 
@@ -2832,131 +2844,19 @@ function App() {
     </div>
   );
   const signedOutScreen = (
-    <div className="auth-shell">
-        <header className="auth-topbar">
-          <div className="brand-block">
-            <img className="brand-logo" src="/brand/NOVACODEPRO.webp" alt="NovaCodePro logo" />
-            <div>
-              <p className="eyebrow">NovaTech enterprise workspace</p>
-              <strong>NovaCodePro</strong>
-            </div>
-          </div>
-        </header>
-
-        <main className="auth-panel">
-          <section className="auth-copy">
-            <p className="section-label">Welcome to NovaCodePro</p>
-            <h1>Sign in to access your NovaTech workspace.</h1>
-            <p className="hero-summary">
-              Signed out
-              {" "}
-              {"→"}
-              {" "}
-              Sign in
-              {" "}
-              {"→"}
-              {" "}
-              Identity verification
-              {" "}
-              {"→"}
-              {" "}
-              Role resolution
-              {" "}
-              {"→"}
-              {" "}
-              Workspace load
-              {" "}
-              {"→"}
-              {" "}
-              Session monitoring
-              {" "}
-              {"→"}
-              {" "}
-              Sign out
-              {" "}
-              {"→"}
-              {" "}
-              Session revoked
-            </p>
-            {bootstrapError ? <p className="auth-error">{bootstrapError}</p> : null}
-          </section>
-
-          <form className="auth-form" onSubmit={handleLogin}>
-            <button type="button" className="novaid-button" onClick={handleLogin}>
-              Sign in with NovaID
-            </button>
-
-            <label className="auth-field">
-              <span>Email</span>
-              <input
-                type="email"
-                value={loginEmail}
-                onChange={(event) => setLoginEmail(event.target.value)}
-                autoComplete="email"
-              />
-            </label>
-
-            <label className="auth-field">
-              <span>Password</span>
-              <input
-                type="password"
-                value={loginPassword}
-                onChange={(event) => setLoginPassword(event.target.value)}
-                autoComplete="current-password"
-              />
-            </label>
-
-            <label className="auth-field">
-              <span>Role</span>
-              <select value={loginRole} onChange={(event) => setLoginRole(event.target.value)}>
-                {[
-                  "ADMIN",
-                  "DEVELOPER",
-                  "PRODUCT_MANAGER",
-                  "BUSINESS_ANALYST",
-                  "UI_UX_DESIGNER",
-                  "PROJECT_MANAGER",
-                  "ARCHITECT",
-                  "QA_ENGINEER",
-                  "DEVOPS_ENGINEER",
-                  "CUSTOMER_SUPPORT",
-                  "OPERATIONS_TEAM",
-                  "BRAND_TEAM",
-                  "COMPLIANCE_TEAM",
-                  "AUDIT_TEAM",
-                  "SECURITY_ENGINEER",
-                  "INCIDENT_RESPONSE_TEAM",
-                  "DATA_ARCHITECT",
-                  "DATA_ENGINEER",
-                  "DATABASE_ENGINEER",
-                  "AI_ML_ENGINEER",
-                  "DATA_SCIENTIST",
-                  "PRIVACY_COMPLIANCE",
-                  "RISK_MANAGEMENT",
-                  "LEGAL",
-                  "EXTERNAL_REGULATOR",
-                ].map((role) => (
-                  <option key={role} value={role}>
-                    {role.replaceAll("_", " ")}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {loginError ? <p className="auth-error">{loginError}</p> : null}
-
-            <button type="submit" className="auth-submit">
-              Sign In
-            </button>
-
-            <div className="auth-links">
-              <button type="button">Forgot password?</button>
-              <button type="button">Use passkey</button>
-              <button type="button">Need help?</button>
-            </div>
-          </form>
-        </main>
-      </div>
+    <LoginPage
+      email={loginEmail}
+      password={loginPassword}
+      role={loginRole}
+      error={loginError || bootstrapError}
+      status={loginStatus}
+      onEmailChange={setLoginEmail}
+      onPasswordChange={setLoginPassword}
+      onRoleChange={setLoginRole}
+      onSubmit={handleLogin}
+      onHome={() => navigateTo(ROUTES.home)}
+      onUnavailable={setLoginError}
+    />
   );
 
   const activeAutomationTemplate =

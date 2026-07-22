@@ -25,8 +25,9 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByTestId("novacodepro-public-page")).toBeVisible();
   await expect(page.getByText("NovaCodePro recovery screen")).toHaveCount(0);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Sign in to access your NovaTech workspace." })).toBeVisible();
-  await page.getByRole("button", { name: "Sign In", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Sign in to continue" })).toBeVisible();
+  await expect(page.getByTestId("novacodepro-login-page")).toBeVisible();
+  await page.getByRole("button", { name: "Sign in securely", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "Universal AI Workspace", level: 1 })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
