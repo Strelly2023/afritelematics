@@ -72,6 +72,17 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await page.getByRole("button", { name: "Run AI design review" }).click();
   await expect(page.getByText("● AI review recorded — not a certification")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Evidence-backed scorecard" })).toBeVisible();
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/design/accessibility");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByTestId("accessibility-studio")).toBeVisible();
+  await page.getByRole("button", { name: "Run accessibility analysis" }).click();
+  await expect(page.getByText("● Analysis recorded — manual verification required")).toBeVisible();
+  await page.getByRole("button", { name: "Apply safe fix" }).first().click();
+  await expect(page.getByText("● Safe automated fix applied; human confirmation pending")).toBeVisible();
+  await page.getByLabel("Keyboard only").check();
+  await expect(page.locator('.responsive-preview[data-keyboard-only="true"]')).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");

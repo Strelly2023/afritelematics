@@ -157,6 +157,8 @@ export function createNovaCodeProNcp006bApi({ baseUrl = "", session = {}, timeou
     updateLocalizationResource: localization.update,
     listAccessibilityRequirements: accessibility.list,
     createAccessibilityRequirement: accessibility.create,
+    getAccessibilityRequirement: accessibility.get,
+    updateAccessibilityRequirement: accessibility.update,
     listPrototypes: prototypes.list,
     createPrototype: prototypes.create,
     getPrototype: prototypes.get,
