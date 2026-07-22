@@ -1,0 +1,12 @@
+gitleaks	MISSING
+trufflehog	MISSING
+semgrep	MISSING
+bandit	MISSING
+pip-audit	MISSING
+npm	/Users/ostrinov/.nvm/versions/node/v20.19.5/bin/npm
+trivy	MISSING
+syft	MISSING
+grype	MISSING
+osv-scanner	MISSING
+cosign	MISSING
+gpg	MISSING

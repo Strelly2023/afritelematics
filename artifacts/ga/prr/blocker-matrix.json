@@ -1,0 +1,19 @@
+{
+  "release_candidate": "v2026.1.5-rc.1",
+  "release_candidate_commit": "82fabb8000bd5c4d512b307f0f61db09197af6a2",
+  "decision": "NO-GO",
+  "blockers": [
+    {"id": "GA-BUILD-001", "severity": "High", "owner": "Build and Release Engineering", "status": "FAILED", "required_evidence": "All scoped artifacts built twice from the RC, immutable digests/checksums, SBOMs, provenance, and authenticated registry publication."},
+    {"id": "GA-DEPLOY-001", "severity": "High", "owner": "Platform Operations", "status": "BLOCKED", "required_evidence": "Complete production-equivalent service topology deployed exclusively by RC digests with commit endpoints and healthy dependencies."},
+    {"id": "GA-TLS-001", "severity": "High", "owner": "Platform Operations", "status": "FAILED", "required_evidence": "Trusted exact-name SAN coverage for every nested production hostname, including NovaPay, NovaRide, and NovaLogistics APIs."},
+    {"id": "GA-SEC-001", "severity": "High", "owner": "Security", "status": "BLOCKED", "required_evidence": "Secret, SAST, dependency, image, DAST, authorization, and qualified manual penetration results with zero unresolved Critical or High findings."},
+    {"id": "GA-E2E-001", "severity": "High", "owner": "Quality Engineering", "status": "BLOCKED", "required_evidence": "Deployed RC API and browser journeys across required products and browser matrix."},
+    {"id": "GA-MOBILE-001", "severity": "High", "owner": "Mobile QA", "status": "BLOCKED", "required_evidence": "Signed Rider and Driver artifacts tested on required physical Android and iOS devices."},
+    {"id": "GA-PROVIDER-001", "severity": "High", "owner": "Integration and Financial Risk", "status": "BLOCKED", "required_evidence": "Approved provider tests including signing, replay, outage, reconciliation, and settlement controls."},
+    {"id": "GA-PERF-001", "severity": "High", "owner": "Performance Engineering", "status": "BLOCKED", "required_evidence": "Predeclared SLOs and passing deployed baseline, peak, burst, concurrency, and soak results."},
+    {"id": "GA-RECOVERY-001", "severity": "High", "owner": "SRE and Data", "status": "BLOCKED", "required_evidence": "Executed backup restore, rollback, failover and DR with measured RPO/RTO."},
+    {"id": "GA-OPS-001", "severity": "High", "owner": "SRE", "status": "BLOCKED", "required_evidence": "End-to-end telemetry and completed critical alert drills with routing and resolution timelines."},
+    {"id": "GA-SIGN-001", "severity": "High", "owner": "Release Management", "status": "BLOCKED", "required_evidence": "Deterministic manifest signed and verified by an approved organisational identity."},
+    {"id": "GA-APPROVAL-001", "severity": "High", "owner": "Release Governance", "status": "BLOCKED", "required_evidence": "Explicit RC and manifest-bound approvals from every mandatory reviewer."}
+  ]
+}

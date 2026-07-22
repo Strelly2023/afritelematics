@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "classification": "FAILED",
+  "release_version": "2026.1.5-rc.1",
+  "source_commit": "82fabb8000bd5c4d512b307f0f61db09197af6a2",
+  "build_worktree": "/private/tmp/afritelematics-ga-rc-build",
+  "clean_source_worktree": true,
+  "aggregate_api": {
+    "requested_tags": [
+      "afritech-api:2026.1.5-rc.1",
+      "afritech-api:sha-82fabb800"
+    ],
+    "dependency_install": "COMPLETED",
+    "application_wheel": "COMPLETED_IN_INTERMEDIATE_LAYER",
+    "image_export": "FAILED_OR_INCOMPLETE",
+    "local_image_verified": false,
+    "digest": null
+  },
+  "remaining_images": "NOT_EXECUTED",
+  "second_build": "NOT_EXECUTED",
+  "sbom": "NOT_EXECUTED",
+  "registry_push": "NOT_EXECUTED",
+  "reproducibility": "NOT_EXECUTED",
+  "result": "FAILED",
+  "blockers": [
+    "Docker did not complete image export/tagging and became non-responsive to subsequent version and image inspection commands.",
+    "No registry destination or authenticated immutable repository was established.",
+    "Independent product-service Dockerfiles and deployable artifacts are not defined by the active production compose file."
+  ]
+}

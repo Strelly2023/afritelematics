@@ -1,16 +1,26 @@
 {
-  "release_candidate_commit": null,
-  "assessment_commit": "11afddf2ab8777d520e2e1ab56a8bab9e1ca6765",
+  "release_candidate_commit": "82fabb8000bd5c4d512b307f0f61db09197af6a2",
+  "release_candidate_tag": "v2026.1.5-rc.1",
+  "assessment_commit": "51e5acd4a563d5bf5c8c2d906cf4d6601db5a771",
   "decision": "NO-GO",
-  "decision_date_utc": "2026-07-22T05:17:38Z",
+  "decision_date_utc": "2026-07-22T06:19:29Z",
   "critical_blockers": [],
   "high_blockers": [
+    "GA-BUILD-001",
     "GA-DEPLOY-001",
     "GA-TLS-001",
     "GA-SEC-001",
-    "GA-RECOVERY-001"
+    "GA-RECOVERY-001",
+    "GA-E2E-001",
+    "GA-MOBILE-001",
+    "GA-PROVIDER-001",
+    "GA-PERF-001",
+    "GA-OPS-001",
+    "GA-SIGN-001",
+    "GA-APPROVAL-001"
   ],
   "failed_gates": [
+    "reproducible digest-pinned artifact build",
     "immutable release candidate deployment",
     "independent product service deployment",
     "nested-domain TLS coverage",
@@ -23,10 +33,12 @@
     "evidence signatures and organisational approvals"
   ],
   "passed_gates": [
-    "production route method/path uniqueness on assessment commit",
-    "OpenAPI operation ID uniqueness on assessment commit",
-    "focused affected API tests: 47 passed",
-    "focused repository security tests: 27 passed",
+    "clean synchronized certification branch baseline",
+    "immutable annotated RC tag pushed and remotely resolved",
+    "production route method/path uniqueness on RC commit",
+    "OpenAPI operation ID uniqueness on RC commit",
+    "focused route API and security tests: 70 passed",
+    "constitutional hook-equivalent validator chain passed before RC selection",
     "live NGINX health and unknown-host rejection"
   ],
   "evidence_manifest": null,
