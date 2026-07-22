@@ -1884,6 +1884,10 @@ const FRONTEND_RUNTIME_CONFIG_URL = resolveFrontendRuntimeConfigUrl();
 const SESSION_API_BASE = `${AUTH_API_BASE}/v1/novacodepro/session`;
 const AUTH_WARNING_MS = 2 * 60 * 1000;
 
+function userSafeText(value, fallback) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
 function resolveProfileIdForRole(role) {
   return AUTH_ROLE_TO_PROFILE_ID[role] || AUTH_ROLE_TO_PROFILE_ID.ADMIN;
 }
@@ -1963,6 +1967,7 @@ function App() {
   const [authStatus, setAuthStatus] = useState("checking");
   const [bootstrapState, setBootstrapState] = useState("loading");
   const [bootstrapError, setBootstrapError] = useState("");
+  const [bootstrapErrorReference, setBootstrapErrorReference] = useState("");
   const [bootstrapContext, setBootstrapContext] = useState(null);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [session, setSession] = useState(null);
@@ -2126,6 +2131,8 @@ function App() {
             clearNovaCodeProSessionState();
             return;
           }
+          const normalizedFailure = normalizeApiError(detail, response);
+          setBootstrapErrorReference(getCorrelationId(normalizedFailure) || createClientReferenceId());
           if (response.status === 401 || code.includes("SESSION_EXPIRED") || code.includes("SESSION_REQUIRED")) {
             setBootstrapState("SESSION_EXPIRED");
             setBootstrapError("Your session expired. Please sign in again.");
@@ -2133,27 +2140,27 @@ function App() {
             setAuthStatus("signed-out");
             clearNovaCodeProSessionState();
             if (currentPathname !== ROUTES.home) {
-              navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+              navigateTo(ROUTES.loginWithReason("session_expired", resolveSafeReturnTo(currentPathname, "")), { replace: true });
             }
             return;
           }
           if (response.status === 403) {
             setBootstrapState("FORBIDDEN");
-            setBootstrapError(detail.message || "Access denied.");
+            setBootstrapError(userSafeText(detail.message, "Access denied."));
             return;
           }
           if (response.status === 409) {
             setBootstrapState(String(detail.code || "WORKSPACE_REQUIRED").toUpperCase());
-            setBootstrapError(detail.message || "Workspace or tenant context is required.");
+            setBootstrapError(userSafeText(detail.message, "Workspace or tenant context is required."));
             return;
           }
           if (response.status >= 500) {
             setBootstrapState("API_UNAVAILABLE");
-            setBootstrapError(detail.message || "Bootstrap service unavailable.");
+            setBootstrapError(userSafeText(detail.message, "Bootstrap service unavailable."));
             return;
           }
           setBootstrapState("APPLICATION_ERROR");
-          setBootstrapError(detail.message || "Unable to initialize the workspace.");
+          setBootstrapError(userSafeText(detail.message, "Unable to initialize the workspace."));
           return;
         }
 
@@ -2173,7 +2180,7 @@ function App() {
           setAuthStatus("signed-out");
           clearNovaCodeProSessionState();
           if (currentPathname !== ROUTES.home) {
-            navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+            navigateTo(ROUTES.loginWithReason("session_expired", resolveSafeReturnTo(currentPathname, "")), { replace: true });
           }
           return;
         }
@@ -2185,6 +2192,7 @@ function App() {
         setAuthStatus("signed-in");
         setBootstrapState("READY");
         setBootstrapError("");
+        setBootstrapErrorReference("");
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
         const returnTo = resolveSafeReturnTo(new URLSearchParams(window.location.search).get("returnTo"), "");
@@ -2211,6 +2219,7 @@ function App() {
         const normalizedError = normalizeApiError(error);
         setBootstrapState("API_UNAVAILABLE");
         setBootstrapError(getUserSafeMessage(normalizedError));
+        setBootstrapErrorReference(getCorrelationId(normalizedError) || createClientReferenceId());
         setSession(null);
         setAuthStatus("signed-out");
         clearNovaCodeProSessionState();
@@ -2258,7 +2267,8 @@ function App() {
           setSessionWarning(Date.parse(nextSession.idle_expires_at) - Date.now() <= AUTH_WARNING_MS);
         })
         .catch((error) => {
-          const message = error instanceof Error ? error.message : String(error || "session_refresh_failed");
+          const normalizedError = normalizeApiError(error);
+          const message = normalizedError.code === "SESSION_EXPIRED" ? "session_expired" : getUserSafeMessage(normalizedError);
           if (/session(_| )?(expired|required|revoked)/i.test(message)) {
             setBootstrapState("SESSION_EXPIRED");
             setBootstrapError("Your session expired. Please sign in again.");
@@ -2345,6 +2355,7 @@ function App() {
           setEnvironment(normalized.workspace?.selected_environment ?? "Production");
           setBootstrapState("READY");
           setBootstrapError("");
+          setBootstrapErrorReference("");
           nextRoute =
             returnTo ||
             (isSolutionRoute(currentPathname)
@@ -2352,20 +2363,22 @@ function App() {
               : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? loginSession.active_role ?? loginRole));
         } else if (bootstrapResponse.status === 401 || bootstrapResponse.status === 403) {
           const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
-          const code = String(detail.code || bootstrapResponse.statusText || "SESSION_EXPIRED").toUpperCase();
-          throw new Error(detail.message || code || "Unable to establish a dashboard session");
+          throw { ...normalizeApiError(detail, bootstrapResponse), code: "SESSION_EXPIRED" };
         } else {
           const detail = bootstrapPayload?.detail ?? bootstrapPayload ?? {};
           setBootstrapState("DEGRADED");
-          setBootstrapError(detail.message || bootstrapResponse.statusText || "Bootstrap service unavailable.");
+          setBootstrapError(userSafeText(detail.message, bootstrapResponse.statusText || "Bootstrap service unavailable."));
+          setBootstrapErrorReference(getCorrelationId(normalizeApiError(detail, bootstrapResponse)) || createClientReferenceId());
         }
       } catch (bootstrapError) {
-        const message = bootstrapError instanceof Error ? bootstrapError.message : String(bootstrapError || "SESSION_EXPIRED");
+        const normalizedBootstrapError = normalizeApiError(bootstrapError);
+        const message = normalizedBootstrapError.code === "SESSION_EXPIRED" ? "session_expired" : getUserSafeMessage(normalizedBootstrapError);
         if (/session(_| )?(expired|required|revoked)/i.test(message)) {
           throw new Error(message);
         }
         setBootstrapState("DEGRADED");
         setBootstrapError(message);
+        setBootstrapErrorReference(getCorrelationId(normalizedBootstrapError) || createClientReferenceId());
       }
       const loginRoute =
         nextRoute;
@@ -2442,7 +2455,7 @@ function App() {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(payload.detail || "Unable to switch role");
+        throw normalizeApiError(payload, response);
       }
       setSession(payload.session);
       setRoleId(resolveProfileIdForRole(role));
@@ -2451,7 +2464,7 @@ function App() {
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
     } catch (error) {
-      setLoginError(error instanceof Error ? error.message : "Unable to switch role");
+      setLoginError(getUserSafeMessage(normalizeApiError(error)));
     }
   };
 
@@ -2776,6 +2789,7 @@ function App() {
           <h1>{title}</h1>
           <p className="hero-summary">{message}</p>
           <p className="auth-error">State: {code}</p>
+          {bootstrapErrorReference ? <p className="hero-summary">Diagnostic reference: {bootstrapErrorReference}</p> : null}
           <p className="hero-summary">
             Version {NOVACODEPRO_BUILD_INFO.version} · Build {NOVACODEPRO_BUILD_INFO.build_id} · Commit{" "}
             {NOVACODEPRO_BUILD_INFO.commit}
@@ -2788,6 +2802,7 @@ function App() {
             onClick={() => {
               setBootstrapState("loading");
               setBootstrapError("");
+              setBootstrapErrorReference("");
               setAuthStatus("checking");
               setBootstrapAttempt((value) => value + 1);
             }}

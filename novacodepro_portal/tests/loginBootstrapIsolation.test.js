@@ -15,4 +15,7 @@ test("login uses safe return destinations and normalized API failures", () => {
   assert.match(source, /resolveSafeReturnTo/);
   assert.match(source, /normalizeApiError/);
   assert.match(source, /getUserSafeMessage/);
+  assert.match(source, /Diagnostic reference:/);
+  assert.match(source, /userSafeText/);
+  assert.doesNotMatch(source, /setBootstrapError\(detail\.message \|\|/);
 });

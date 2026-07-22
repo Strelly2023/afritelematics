@@ -27,6 +27,8 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Sign in to continue" })).toBeVisible();
   await expect(page.getByTestId("novacodepro-login-page")).toBeVisible();
+  await page.getByRole("textbox", { name: "Email or username" }).fill("platformadministrator.test@afritechnology.com");
+  await page.locator('input[autocomplete="current-password"]').fill("NovaCodePro123!");
   await page.getByRole("button", { name: "Sign in securely", exact: true }).click();
 
   await expect(page.getByTestId("design-dashboard")).toBeVisible();
@@ -88,8 +90,12 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
   await expect(page.getByTestId("prototype-collaboration-studio")).toBeVisible();
-  await page.getByRole("button", { name: "New prototype" }).click();
-  await expect(page.getByText("● Prototype created and versioned")).toBeVisible();
+  const [prototypeResponse] = await Promise.all([
+    page.waitForResponse((response) => response.request().method() === "POST" && /\/v1\/novacodepro\/design\/prototypes$/.test(new URL(response.url()).pathname)),
+    page.getByRole("button", { name: "New prototype" }).click(),
+  ]);
+  expect(prototypeResponse.ok()).toBe(true);
+  await expect(page.getByText(/v1 — created/).first()).toBeVisible();
   const collaborationComment = `@designer Validate the MFA transition ${Date.now()}.`;
   await page.getByLabel("Add prototype comment").fill(collaborationComment);
   await page.getByRole("button", { name: "Comment", exact: true }).click();
