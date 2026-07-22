@@ -21,6 +21,10 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
     consoleErrors.filter((message) => /requestSummary|selectedMode|before initialization|ReferenceError/i.test(message)),
     `runtime console errors: ${consoleErrors.join(" | ")}`,
   ).toEqual([]);
+  await expect(page.getByRole("heading", { name: "UI/UX Design & Wireframing Studio" })).toBeVisible();
+  await expect(page.getByTestId("novacodepro-public-page")).toBeVisible();
+  await expect(page.getByText("NovaCodePro recovery screen")).toHaveCount(0);
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Sign in to access your NovaTech workspace." })).toBeVisible();
   await page.getByRole("button", { name: "Sign In", exact: true }).click();
 

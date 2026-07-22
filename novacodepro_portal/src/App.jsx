@@ -41,6 +41,7 @@ import { createDefaultRenderingRegistry } from "./platform/rendering/index.js";
 import { createDefaultInteractionRegistry } from "./platform/interaction/index.js";
 import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
+import { PublicLandingPage } from "./public/PublicLandingPage.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -2109,7 +2110,9 @@ function App() {
             setSession(null);
             setAuthStatus("signed-out");
             clearNovaCodeProSessionState();
-            navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+            if (currentPathname !== ROUTES.home) {
+              navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+            }
             return;
           }
           if (response.status === 403) {
@@ -2139,7 +2142,9 @@ function App() {
           setSession(null);
           setAuthStatus("signed-out");
           clearNovaCodeProSessionState();
-          navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+          if (currentPathname !== ROUTES.home) {
+            navigateTo(ROUTES.loginWithReason("session_expired", isSolutionRoute(currentPathname) ? currentPathname : undefined), { replace: true });
+          }
           return;
         }
         setBootstrapContext(normalized);
@@ -2153,9 +2158,10 @@ function App() {
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
         const returnTo = new URLSearchParams(window.location.search).get("returnTo");
-        const bootstrapRoute =
-          returnTo ||
-          (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN"));
+        const bootstrapRoute = currentPathname === ROUTES.home
+          ? ROUTES.home
+          : returnTo ||
+            (isSolutionRoute(currentPathname) ? currentPathname : normalized.default_route || ROUTES.roleDashboard(normalized.roles?.[0] ?? "ADMIN"));
         navigateTo(bootstrapRoute, { replace: true });
       } catch (error) {
         if (!active) {
@@ -3891,6 +3897,9 @@ function App() {
     }
   }
 
+  if (currentPathname === ROUTES.home) {
+    return <PublicLandingPage session={session} onNavigate={(path) => navigateTo(path)} />;
+  }
   if (bootstrapState === "loading") {
     return bootstrapLoadingScreen;
   }

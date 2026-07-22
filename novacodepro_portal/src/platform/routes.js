@@ -24,6 +24,7 @@ export function appUrl(path = "/", query = {}) {
 }
 
 export const ROUTES = {
+  home: appPath("/"),
   login: appPath("/login"),
   dashboard: appPath("/dashboard"),
   logout: appPath("/logout"),
