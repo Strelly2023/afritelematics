@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "release_version": "2026.1.5-rc.1",
+  "source_commit": "82fabb8000bd5c4d512b307f0f61db09197af6a2",
+  "source_tree": "079535ab47da95b7ed2ca7a954ee927544e764f5",
+  "configuration": [
+    {"path": "deploy/production/docker-compose.trust-node.yml", "sha256": "18939738a186b59e9d3c93330d2cea7d499c08fdfda1a2a3e17a36b0119de548"},
+    {"path": "deploy/staging/Dockerfile.api", "sha256": "4005d7dcc8780da5121592f78de19a1bc86e554a26ff876c3774c37965ae9735"},
+    {"path": "deploy/staging/Dockerfile.dashboard", "sha256": "84c21814858113a473093b8f7d9b4e8ade586e2e98d956562fa0c7b688ffcbcb"},
+    {"path": "deploy/staging/Dockerfile.novacodepro_portal", "sha256": "abdc614a504056f519ba3ba1b952d6de9b2db7506a137b67a405e48fdb937d0d"},
+    {"path": "deploy/public-web/Dockerfile", "sha256": "14f371bf589b393bbe64d45f81535cee92f27787066644126aeb7a9ada2f3364"}
+  ],
+  "dependency_locks": "dependency-lock-hashes.txt",
+  "migrations": "migration-inventory.txt",
+  "tracked_source": "tracked-files.txt",
+  "build_status": "NOT_EXECUTED"
+}

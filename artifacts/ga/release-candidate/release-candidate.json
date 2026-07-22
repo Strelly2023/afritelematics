@@ -1,0 +1,27 @@
+{
+  "version": "2026.1.5-rc.1",
+  "commit": "82fabb8000bd5c4d512b307f0f61db09197af6a2",
+  "tree": "079535ab47da95b7ed2ca7a954ee927544e764f5",
+  "parent": "35e529005bbd1edf2e45d6250216653bff4b04cc",
+  "tag": "v2026.1.5-rc.1",
+  "branch": "certification/ga-rc-20260722",
+  "clean_worktree_before_evidence_generation": true,
+  "remote_tag_verified": true,
+  "created_at_utc": "2026-07-22T06:11:32Z",
+  "author": "Djuma Kikombe",
+  "release_scope": [
+    "aggregate AfriTech API",
+    "public web",
+    "dashboard",
+    "NovaCodePro portal",
+    "production NGINX configuration"
+  ],
+  "excluded_scope": [
+    "real payment processing",
+    "production customer data",
+    "independent product APIs until built and deployed",
+    "mobile GA until signed physical-device testing completes"
+  ],
+  "status": "CANDIDATE",
+  "release_decision": "NO-GO"
+}

@@ -1,0 +1,15 @@
+tag v2026.1.5-rc.1
+
+NovaTech GA release candidate 2026.1.5-rc.1
+82fabb800 (HEAD -> certification/ga-rc-20260722, tag: v2026.1.5-rc.1, origin/certification/ga-rc-20260722) docs(release): record canonical GA certification baseline
+ artifacts/ga/repository/branch.txt                 |    1 +
+ artifacts/ga/repository/diff-check.txt             |    0
+ artifacts/ga/repository/fsck.txt                   | 4248 ++++++++++++++++++++
+ artifacts/ga/repository/local-head.txt             |    1 +
+ artifacts/ga/repository/recent-log.txt             |   10 +
+ artifacts/ga/repository/remote-head.txt            |    1 +
+ artifacts/ga/repository/repository-assessment.json |   25 +
+ artifacts/ga/repository/status-porcelain.txt       |    0
+ artifacts/ga/repository/status-short.txt           |    1 +
+ artifacts/ga/repository/unresolved-conflicts.txt   |    0
+ 10 files changed, 4287 insertions(+)
