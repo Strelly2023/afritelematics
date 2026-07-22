@@ -46,6 +46,7 @@ import { LoginPage } from "./auth/LoginPage.jsx";
 import { DesignDashboard } from "./design/DesignDashboard.jsx";
 import { DesignStudioWorkspace } from "./design/DesignStudioWorkspace.jsx";
 import { ExperienceMappingStudio } from "./design/ExperienceMappingStudio.jsx";
+import { DesignSystemStudio } from "./design/DesignSystemStudio.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -3821,6 +3822,10 @@ function App() {
   if (["/novacodepro/design/research", "/novacodepro/design/personas", "/novacodepro/design/journeys", "/novacodepro/design/user-flows"].includes(currentPathname)) {
     const section = { research: "Research", personas: "Personas", journeys: "Journeys", "user-flows": "Flows" }[currentPathname.split("/").at(-1)];
     return <ExperienceMappingStudio session={session} baseUrl={AUTH_API_BASE} initialSection={section} onNavigate={(path) => navigateTo(path)} />;
+  }
+  if (["/novacodepro/design/components", "/novacodepro/design/design-system", "/novacodepro/design/brand-studio", "/novacodepro/design/templates"].includes(currentPathname)) {
+    const section = { components: "Components", "design-system": "Design System", "brand-studio": "Brand Studio", templates: "Templates" }[currentPathname.split("/").at(-1)];
+    return <DesignSystemStudio session={session} baseUrl={AUTH_API_BASE} initialSection={section} onNavigate={(path) => navigateTo(path)} />;
   }
   if (isNovaCodeProRouteAccessible(currentPathname, session?.permissions || []) === false) {
     return forbiddenScreen;

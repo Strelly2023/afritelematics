@@ -51,6 +51,16 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByText("● Research saved with audit evidence")).toBeVisible();
   await page.getByRole("button", { name: "Journeys", exact: true }).click();
   await expect(page.locator('[aria-label="Journey map"]')).toBeVisible();
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/design/design-system");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByTestId("design-system-studio")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Global → semantic → component" })).toBeVisible();
+  const tokenPath = page.getByLabel("Token path");
+  await tokenPath.fill(`brand.runtime.${Date.now()}`);
+  await page.getByRole("button", { name: "Save design token" }).click();
+  await expect(page.getByText("● Token saved and versioned")).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");

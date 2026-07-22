@@ -28,6 +28,7 @@ export function createNovaCodeProNcp006bApi({ baseUrl = "", session = {}, timeou
   const systems = collection("/systems", "design_systems");
   const tokens = collection("/tokens", "design_tokens");
   const themes = collection("/themes", "themes");
+  const brands = collection("/brands", "brands");
   const components = collection("/components", "components");
   const interactionPatterns = collection("/interaction-patterns", "interaction_patterns");
   const responsiveSpecifications = collection("/responsive-specifications", "responsive_specifications");
@@ -123,6 +124,10 @@ export function createNovaCodeProNcp006bApi({ baseUrl = "", session = {}, timeou
     validateTheme: (themeId) => mutation(`${DESIGN_ROOT}/themes/${encodeURIComponent(themeId)}/validate`, {}),
     previewTheme: (themeId) => mutation(`${DESIGN_ROOT}/themes/${encodeURIComponent(themeId)}/preview`, {}),
     publishTheme: (themeId) => mutation(`${DESIGN_ROOT}/themes/${encodeURIComponent(themeId)}/publish`, {}),
+    listBrands: brands.list,
+    createBrand: brands.create,
+    getBrand: brands.get,
+    updateBrand: brands.update,
     listComponents: components.list,
     createComponent: components.create,
     getComponent: components.get,

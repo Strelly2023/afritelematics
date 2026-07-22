@@ -13,6 +13,7 @@ const STARTER_NODES = [
 ];
 
 function clamp(value, minimum, maximum) { return Math.max(minimum, Math.min(maximum, value)); }
+function errorMessage(error, fallback) { return typeof error?.message === "string" ? error.message : error?.message?.message || error?.detail?.message || fallback; }
 
 export function DesignStudioWorkspace({ session, baseUrl = "", onNavigate }) {
   const api = useMemo(() => createNovaCodeProNcp006bApi({ baseUrl, session }), [baseUrl, session]);
@@ -56,7 +57,7 @@ export function DesignStudioWorkspace({ session, baseUrl = "", onNavigate }) {
       setWireframeId(record.id || wireframeId);
       setSaveState("Saved to governed workspace");
     } catch (error) {
-      setSaveState(error?.message || "Save failed — retry safely");
+      setSaveState(errorMessage(error, "Save failed — retry safely"));
     }
   }
 

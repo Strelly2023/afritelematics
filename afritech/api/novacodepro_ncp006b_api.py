@@ -352,6 +352,7 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
         ("/systems", "design_system", "design_systems"),
         ("/tokens", "design_token", "design_tokens"),
         ("/themes", "theme", "themes"),
+        ("/brands", "brand", "brands"),
         ("/components", "component_definition", "components"),
         ("/interaction-patterns", "interaction_pattern", "interaction_patterns"),
         ("/responsive-specifications", "responsive_specification", "responsive_specifications"),

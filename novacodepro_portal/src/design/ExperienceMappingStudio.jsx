@@ -6,6 +6,7 @@ const SECTIONS = ["Research", "Personas", "Journeys", "Flows"];
 const JOURNEY_STAGES = ["Discover", "Evaluate", "Register", "Authenticate", "Verify identity", "Configure", "Perform task", "Confirm", "Receive support", "Return"];
 const FLOW_TYPES = ["START", "SCREEN", "USER_ACTION", "DECISION", "VALIDATION", "API_CALL", "AUTHENTICATION", "AUTHORIZATION", "EXTERNAL_SERVICE", "ERROR", "RETRY", "NOTIFICATION", "BACKGROUND_PROCESS", "END"];
 const SINGULAR = { Research: "Research", Personas: "Persona", Journeys: "Journey", Flows: "Flow" };
+function errorMessage(error, fallback) { return typeof error?.message === "string" ? error.message : error?.message?.message || error?.detail?.message || fallback; }
 const initialDrafts = {
   Research: { name: "Small-business banking discovery", research_questions: "How do owners review cash flow and approve payments?", market_observations: "Mobile-first operations with desktop reconciliation.", evidence_references: "" },
   Personas: { name: "Amina — Business owner", role: "Owner and payment approver", region: "East Africa", language: "English, Swahili", goals: "Understand cash position; approve urgent payments", frustrations: "Fragmented balances and unclear trust signals", accessibility_needs: "Plain language; large touch targets", device_preferences: "Mobile and laptop" },
@@ -32,7 +33,7 @@ export function ExperienceMappingStudio({ session, baseUrl = "", initialSection 
       setRecords({ Research: research, Personas: personas, Journeys: journeys, Flows: flows });
       setSelected((current) => current || research[0] || null);
       setStatus("All changes are tenant-scoped and versioned");
-    } catch (error) { setStatus(error?.message || "Experience services unavailable"); }
+    } catch (error) { setStatus(errorMessage(error, "Experience services unavailable")); }
   }
   useEffect(() => { reload(); }, [api]);
   useEffect(() => { setSection(SECTIONS.includes(initialSection) ? initialSection : "Research"); }, [initialSection]);
@@ -50,19 +51,19 @@ export function ExperienceMappingStudio({ session, baseUrl = "", initialSection 
       setSelected(record);
       await reload();
       setStatus(`${SINGULAR[section]} saved with audit evidence`);
-    } catch (error) { setStatus(error?.message || "Save failed"); }
+    } catch (error) { setStatus(errorMessage(error, "Save failed")); }
   }
 
   async function addJourneyStage() {
     if (!selected?.id) return;
     const stage = { name: `Stage ${(selected.stages?.length || 0) + 1}`, order: (selected.stages?.length || 0) + 1, user_action: "Describe the user action", goal: "Complete this step", emotion: "NEUTRAL", evidence: [], requirement_references: [] };
-    try { await api.addJourneyStage(selected.id, stage); await reload(); setStatus("Journey stage saved"); } catch (error) { setStatus(error?.message || "Stage save failed"); }
+    try { await api.addJourneyStage(selected.id, stage); await reload(); setStatus("Journey stage saved"); } catch (error) { setStatus(errorMessage(error, "Stage save failed")); }
   }
 
   async function addFlowNode(type) {
     if (!selected?.id) return;
     const count = selected.nodes?.length || 0;
-    try { await api.addFlowNode(selected.id, { id: `node-${crypto.randomUUID()}`, type, name: type.replaceAll("_", " "), x: 80 + count * 35, y: 100 + (count % 3) * 90 }); await reload(); setStatus(`${type.replaceAll("_", " ")} node saved`); } catch (error) { setStatus(error?.message || "Node save failed"); }
+    try { await api.addFlowNode(selected.id, { id: `node-${crypto.randomUUID()}`, type, name: type.replaceAll("_", " "), x: 80 + count * 35, y: 100 + (count % 3) * 90 }); await reload(); setStatus(`${type.replaceAll("_", " ")} node saved`); } catch (error) { setStatus(errorMessage(error, "Node save failed")); }
   }
 
   const list = records[section];

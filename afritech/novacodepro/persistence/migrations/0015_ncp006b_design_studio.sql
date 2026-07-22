@@ -52,7 +52,25 @@ CREATE TABLE IF NOT EXISTS design_token (
   metadata TEXT NOT NULL DEFAULT '{}'
 );
 
+CREATE TABLE IF NOT EXISTS brand (
+  id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  workspace_id TEXT,
+  project_id TEXT,
+  name TEXT NOT NULL,
+  version INTEGER NOT NULL DEFAULT 1,
+  status TEXT NOT NULL DEFAULT 'DRAFT',
+  attributes TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  created_by TEXT NOT NULL,
+  updated_by TEXT NOT NULL,
+  correlation_id TEXT NOT NULL,
+  metadata TEXT NOT NULL DEFAULT '{}'
+);
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_design_token_tenant_path ON design_token(tenant_id, path);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_design_brand_tenant_name ON brand(tenant_id, name);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_design_component_version ON component_definition(tenant_id, name, version);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_design_localization_locale_key ON localization_resource(tenant_id, locale, key);
 CREATE INDEX IF NOT EXISTS idx_design_traceability_source ON design_traceability_link(tenant_id, source_type, source_id);
@@ -63,7 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_design_validation_result_resource ON design_valid
 -- Representative governed collections used by the service layer:
 -- experience_brief, research_study, persona, journey_map, service_blueprint,
 -- information_architecture, user_flow, wireframe, screen_design, design_system,
--- design_token, theme, component_definition, interaction_pattern,
+-- design_token, theme, brand, component_definition, interaction_pattern,
 -- responsive_specification, content_specification, localization_resource,
 -- accessibility_requirement, prototype, design_review, design_approval,
 -- design_baseline, design_validation_rule, design_validation_result,

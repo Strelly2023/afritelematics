@@ -125,6 +125,7 @@ DESIGN_COLLECTIONS = {
     "design_system",
     "design_token",
     "theme",
+    "brand",
     "component_definition",
     "component_contract",
     "interaction_pattern",
