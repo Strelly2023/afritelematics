@@ -261,9 +261,20 @@ def _safe_not_found(message: str) -> HTTPException:
 
 def build_data_governance_router(
     repository: EnterpriseMetadataRepository | None = None,
+    *,
+    include_platform_aliases: bool = True,
 ) -> APIRouter:
     router = APIRouter(tags=["data-governance"])
     repo = _repository(repository)
+
+    def platform_alias(path: str, *, methods: list[str]):
+        if include_platform_aliases:
+            return router.api_route(path, methods=methods)
+
+        def unchanged(endpoint):
+            return endpoint
+
+        return unchanged
 
     @router.get("/v1/novatech/data-governance")
     @router.get("/v1/platform/data-governance")
@@ -300,7 +311,7 @@ def build_data_governance_router(
         }
 
     @router.get("/v1/novatech/data-governance/products")
-    @router.get("/v1/platform/products")
+    @platform_alias("/v1/platform/products", methods=["GET"])
     async def list_products(
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER", "VERIFIER")),
     ) -> dict[str, Any]:
@@ -312,7 +323,7 @@ def build_data_governance_router(
         }
 
     @router.post("/v1/novatech/data-governance/products")
-    @router.post("/v1/platform/products")
+    @platform_alias("/v1/platform/products", methods=["POST"])
     async def register_product(
         payload: ProductRegistrationRequest,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER")),
@@ -353,7 +364,7 @@ def build_data_governance_router(
         return result
 
     @router.get("/v1/novatech/data-governance/products/{product_code}")
-    @router.get("/v1/platform/products/{product_code}")
+    @platform_alias("/v1/platform/products/{product_code}", methods=["GET"])
     async def get_product(
         product_code: str,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER", "VERIFIER")),
@@ -596,7 +607,7 @@ def build_data_governance_router(
             raise _safe_not_found(str(exc)) from exc
 
     @router.get("/v1/novatech/data-governance/migrations")
-    @router.get("/v1/platform/migrations")
+    @platform_alias("/v1/platform/migrations", methods=["GET"])
     async def list_migrations(
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER", "VERIFIER")),
     ) -> dict[str, Any]:
@@ -608,7 +619,7 @@ def build_data_governance_router(
         }
 
     @router.post("/v1/novatech/data-governance/migrations")
-    @router.post("/v1/platform/migrations")
+    @platform_alias("/v1/platform/migrations", methods=["POST"])
     async def register_migration(
         payload: MigrationRegistrationRequest,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER")),
@@ -619,7 +630,7 @@ def build_data_governance_router(
         return result
 
     @router.get("/v1/novatech/data-governance/migrations/{migration_id}")
-    @router.get("/v1/platform/migrations/{migration_id}")
+    @platform_alias("/v1/platform/migrations/{migration_id}", methods=["GET"])
     async def get_migration(
         migration_id: str,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER", "VERIFIER")),
@@ -763,7 +774,7 @@ def build_data_governance_router(
         }
 
     @router.get("/v1/novatech/data-governance/products/{product_code}/entities")
-    @router.get("/v1/platform/products/{product_code}/entities")
+    @platform_alias("/v1/platform/products/{product_code}/entities", methods=["GET"])
     async def product_entities(
         product_code: str,
         claims = Depends(require_roles("ADMIN", "OPERATOR", "DEVELOPER", "VERIFIER")),

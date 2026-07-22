@@ -779,7 +779,6 @@ def build_novaride_runtime_router() -> APIRouter:
         require_driver_ownership_or_operations(context=context, driver_identity_id=context.subject_id)
         return _json(_RUNTIME.driver.start_shift(ctx, context.subject_id))
 
-    @router.put("/driver/{driver_id}/availability")
     @router.put("/novaride/runtime/driver/{driver_id}/availability")
     def driver_availability(context: DriverAvailabilityContext, driver_id: str, location_fresh: bool = True) -> dict[str, Any]:
         require_driver_ownership_or_operations(context=context, driver_identity_id=driver_id)
@@ -800,7 +799,7 @@ def build_novaride_runtime_router() -> APIRouter:
             "correlation_id": ctx.correlation_id,
         }
 
-    @router.get("/driver/{driver_id}/ride-queue")
+    @router.get("/novaride/runtime/driver/{driver_id}/ride-queue")
     def driver_ride_queue(driver_id: str, context: RuntimeReadContext) -> dict[str, Any]:
         return {"offers": _RUNTIME.read_models.driver_queue(context.tenant_id, driver_id)}
 
