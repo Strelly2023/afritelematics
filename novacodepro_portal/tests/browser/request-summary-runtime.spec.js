@@ -83,6 +83,19 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByText("● Safe automated fix applied; human confirmation pending")).toBeVisible();
   await page.getByLabel("Keyboard only").check();
   await expect(page.locator('.responsive-preview[data-keyboard-only="true"]')).toBeVisible();
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/design/prototype");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByTestId("prototype-collaboration-studio")).toBeVisible();
+  await page.getByRole("button", { name: "New prototype" }).click();
+  await expect(page.getByText("● Prototype created and versioned")).toBeVisible();
+  await page.getByLabel("Add prototype comment").fill("@designer Validate the MFA transition.");
+  await page.getByRole("button", { name: "Comment", exact: true }).click();
+  await expect(page.getByText("● Comment shared with collaborators")).toBeVisible();
+  await page.getByRole("button", { name: "Present", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Prototype presentation" })).toBeVisible();
+  await page.getByRole("button", { name: "Exit presentation" }).click();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");

@@ -135,6 +135,7 @@ DESIGN_COLLECTIONS = {
     "accessibility_requirement",
     "accessibility_review",
     "prototype",
+    "design_comment",
     "design_review",
     "design_approval",
     "design_baseline",

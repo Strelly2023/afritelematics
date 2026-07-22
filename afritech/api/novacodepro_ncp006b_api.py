@@ -360,6 +360,7 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
         ("/localization", "localization_resource", "localization_resources"),
         ("/accessibility", "accessibility_requirement", "accessibility_requirements"),
         ("/prototypes", "prototype", "prototypes"),
+        ("/comments", "design_comment", "comments"),
         ("/risks", "design_risk", "risks"),
         ("/debt", "design_debt_item", "debt"),
     ]:

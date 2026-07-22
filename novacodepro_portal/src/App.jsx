@@ -49,6 +49,7 @@ import { ExperienceMappingStudio } from "./design/ExperienceMappingStudio.jsx";
 import { DesignSystemStudio } from "./design/DesignSystemStudio.jsx";
 import { AIDesignStudio } from "./design/AIDesignStudio.jsx";
 import { AccessibilityStudio } from "./design/AccessibilityStudio.jsx";
+import { PrototypeCollaborationStudio } from "./design/PrototypeCollaborationStudio.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -3834,6 +3835,9 @@ function App() {
   }
   if (currentPathname === "/novacodepro/design/accessibility") {
     return <AccessibilityStudio session={session} baseUrl={AUTH_API_BASE} onNavigate={(path) => navigateTo(path)} />;
+  }
+  if (["/novacodepro/design/prototype", "/novacodepro/design/version-history"].includes(currentPathname)) {
+    return <PrototypeCollaborationStudio session={session} baseUrl={AUTH_API_BASE} onNavigate={(path) => navigateTo(path)} />;
   }
   if (isNovaCodeProRouteAccessible(currentPathname, session?.permissions || []) === false) {
     return forbiddenScreen;

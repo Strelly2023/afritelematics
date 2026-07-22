@@ -36,6 +36,7 @@ export function createNovaCodeProNcp006bApi({ baseUrl = "", session = {}, timeou
   const localization = collection("/localization", "localization_resources");
   const accessibility = collection("/accessibility", "accessibility_requirements");
   const prototypes = collection("/prototypes", "prototypes");
+  const comments = collection("/comments", "comments");
 
   return {
     createCorrelationId,
@@ -166,6 +167,9 @@ export function createNovaCodeProNcp006bApi({ baseUrl = "", session = {}, timeou
     validatePrototype: (prototypeId) => mutation(`${DESIGN_ROOT}/prototypes/${encodeURIComponent(prototypeId)}/validate`, {}),
     publishPrototype: (prototypeId) => mutation(`${DESIGN_ROOT}/prototypes/${encodeURIComponent(prototypeId)}/publish`, {}),
     archivePrototype: (prototypeId) => mutation(`${DESIGN_ROOT}/prototypes/${encodeURIComponent(prototypeId)}/archive`, {}),
+    listComments: comments.list,
+    createComment: comments.create,
+    updateComment: comments.update,
     listValidationRules: (signal) => safeGet(`${DESIGN_ROOT}/validation/rules`, { signal }).then((body) => body?.rules || []),
     createValidationRule: (payload) => mutation(`${DESIGN_ROOT}/validation/rules`, payload),
     listValidationResults: (signal) => safeGet(`${DESIGN_ROOT}/validation/results`, { signal }).then((body) => body?.results || []),
