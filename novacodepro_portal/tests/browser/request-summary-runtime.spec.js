@@ -29,18 +29,23 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByTestId("novacodepro-login-page")).toBeVisible();
   await page.getByRole("button", { name: "Sign in securely", exact: true }).click();
 
-  await expect(page.getByRole("heading", { name: "Universal AI Workspace", level: 1 })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
+  await expect(page.getByTestId("design-dashboard")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Good morning/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start Designing" })).toBeVisible();
+  const dashboardSearch = page.getByRole("textbox", { name: /Search projects and designs/i });
+  await dashboardSearch.fill("accessible banking");
+  await expect(dashboardSearch).toHaveValue("accessible banking");
+
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByRole("heading", { name: "Djuma Platform Administrator", level: 1 })).toBeVisible();
+  await expect(page.getByRole("tablist", { name: "NovaCodePro navigation" })).toBeVisible();
   await expect(page.getByText("NovaCodePro recovery screen")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Projects", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Projects", exact: true })).toHaveClass(/active/);
-
-  const starterRequest = page.getByRole("button", { name: /Build a modern customer-service portal/i }).first();
-  await expect(starterRequest).toBeVisible();
-  await starterRequest.click();
-  await expect(page.getByText("NovaCodePro interpretation")).toBeVisible();
-  await expect(page.locator(".interpretation-card .studio-note")).not.toBeEmpty();
+  await expect(page.getByRole("heading", { name: "Create request draft" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Title" })).toBeVisible();
 
   const runtimeErrors = [...pageErrors, ...consoleErrors].filter((message) =>
     /requestSummary|selectedMode|before initialization|ReferenceError/i.test(message),

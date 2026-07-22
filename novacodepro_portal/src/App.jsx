@@ -43,6 +43,7 @@ import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 import { PublicLandingPage } from "./public/PublicLandingPage.jsx";
 import { LoginPage } from "./auth/LoginPage.jsx";
+import { DesignDashboard } from "./design/DesignDashboard.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -3808,6 +3809,9 @@ function App() {
   }
   if (authStatus !== "signed-in") {
     return signedOutScreen;
+  }
+  if (currentPathname === ROUTES.dashboard) {
+    return <DesignDashboard session={session} baseUrl={AUTH_API_BASE} onNavigate={(path) => navigateTo(path)} onLogout={handleLogout} />;
   }
   if (isNovaCodeProRouteAccessible(currentPathname, session?.permissions || []) === false) {
     return forbiddenScreen;
