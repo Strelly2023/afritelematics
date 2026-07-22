@@ -123,12 +123,14 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
-  await expect(page.getByRole("heading", { name: "Djuma Platform Administrator", level: 1 })).toBeVisible();
-  await expect(page.getByRole("tablist", { name: "NovaCodePro navigation" })).toBeVisible();
+  await expect(page.getByTestId("ncp003-authenticated-shell")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Workspace", level: 1 })).toBeVisible();
+  await expect(page.getByTestId("workspace-home")).toBeVisible();
   await expect(page.getByText("NovaCodePro recovery screen")).toHaveCount(0);
 
-  await expect(page.getByRole("heading", { name: "Create request draft" })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "Title" })).toBeVisible();
+  await page.getByRole("button", { name: "Requests", exact: true }).click();
+  await expect(page.getByTestId("requests-page")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create request" })).toBeVisible();
 
   const runtimeErrors = [...pageErrors, ...consoleErrors].filter((message) =>
     /requestSummary|selectedMode|before initialization|ReferenceError/i.test(message),

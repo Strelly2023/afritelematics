@@ -3,9 +3,10 @@ import { expect, test } from "@playwright/test";
 const EMAIL = "platformadministrator.test@afritechnology.com";
 const PASSWORD = "NovaCodePro123!";
 
-async function signIn(page, returnTo = "/novacodepro/workspace") {
+async function signIn(page, returnTo = "/novacodepro/workspace", { email = EMAIL, role = "ADMIN" } = {}) {
   await page.goto(`/novacodepro/login?returnTo=${encodeURIComponent(returnTo)}`);
-  await page.getByRole("textbox", { name: "Email or username" }).fill(EMAIL);
+  await page.getByRole("textbox", { name: "Email or username" }).fill(email);
+  await page.getByLabel("Workspace role").selectOption(role);
   await page.locator('input[autocomplete="current-password"]').fill(PASSWORD);
   const responsePromise = page.waitForResponse((response) => response.url().includes("/session/login"));
   await page.getByRole("button", { name: "Sign in securely" }).click();
@@ -54,6 +55,15 @@ test("authorized NovaID session reaches all NCP-003 routes", async ({ page }) =>
 
   expect(pageErrors).toEqual([]);
   expect(failedRequests.filter((entry) => !entry.startsWith("401 "))).toEqual([]);
+});
+
+test("limited role remains blocked from project routes without an authorization bypass", async ({ page }) => {
+  await signIn(page, "/novacodepro/projects", { email: "regulator.test@afritechnology.com", role: "EXTERNAL_REGULATOR" });
+  await expect(page).toHaveURL(/\/novacodepro\/projects$/);
+  await expect(page.getByRole("heading", { name: "You do not have access to this area." })).toBeVisible();
+  await expect(page.getByText("Required capability: project.read")).toBeVisible();
+  await page.goto("/novacodepro/workspace", { waitUntil: "networkidle" });
+  await expect(page.getByTestId("workspace-home")).toBeVisible();
 });
 
 test("authenticated shell remains usable across supported viewports", async ({ page }) => {
