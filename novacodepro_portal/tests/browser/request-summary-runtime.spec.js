@@ -61,6 +61,17 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await tokenPath.fill(`brand.runtime.${Date.now()}`);
   await page.getByRole("button", { name: "Save design token" }).click();
   await expect(page.getByText("● Token saved and versioned")).toBeVisible();
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/design/ai-designer");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByTestId("ai-design-studio")).toBeVisible();
+  await page.getByRole("button", { name: /Generate governed draft/ }).click();
+  await expect(page.getByText("● Draft generated — human review required")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "NovaPay AI dashboard" })).toBeVisible();
+  await page.getByRole("button", { name: "Run AI design review" }).click();
+  await expect(page.getByText("● AI review recorded — not a certification")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Evidence-backed scorecard" })).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");

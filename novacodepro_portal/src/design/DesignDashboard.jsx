@@ -4,7 +4,7 @@ import { createNovaCodeProNcp003Api } from "../novacodepro/api/novacodeproNcp003
 import { createNovaCodeProNcp006bApi } from "../novacodepro/api/novacodeproNcp006bApi.js";
 
 const DESIGN_NAVIGATION = ["Dashboard","Projects","AI Designer","Research","User Personas","Journey Maps","Flows","Wireframes","Mockups","Components","Design System","Brand Studio","Accessibility","Prototype","Developer Handoff","Assets","Analytics","Version History","Reviews","Approvals","Export","Settings"];
-const DESIGN_ROUTES = { Research: "/novacodepro/design/research", "User Personas": "/novacodepro/design/personas", "Journey Maps": "/novacodepro/design/journeys", Flows: "/novacodepro/design/user-flows", Wireframes: "/novacodepro/design/studio" };
+const DESIGN_ROUTES = { "AI Designer": "/novacodepro/design/ai-designer", Research: "/novacodepro/design/research", "User Personas": "/novacodepro/design/personas", "Journey Maps": "/novacodepro/design/journeys", Flows: "/novacodepro/design/user-flows", Wireframes: "/novacodepro/design/studio" };
 const QUICK_ACTIONS = [
   ["Start Designing", "/novacodepro/design/studio"], ["Create Blank Project", "/novacodepro/projects"],
   ["Generate from Prompt", "/novacodepro/ai"], ["Import Requirements", "/novacodepro/requests"],

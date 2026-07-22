@@ -687,6 +687,10 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
         except DesignError as error:
             _handle(error)
 
+    @router.get("/reviews")
+    def list_reviews(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"reviews": design.list_collection("design_review", _ctx(claims))}
+
     @router.post("/reviews")
     def create_review(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
         try:
@@ -700,6 +704,10 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
             return design.complete_review(str(payload.get("resource_type") or "design_artifact"), str(payload.get("resource_id") or ""), review_id, payload, _ctx(claims))
         except DesignError as error:
             _handle(error)
+
+    @router.get("/approvals")
+    def list_approvals(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"approvals": design.list_collection("design_approval", _ctx(claims))}
 
     @router.post("/approvals")
     def create_approval(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
@@ -842,6 +850,17 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
     @router.get("/handoffs")
     def list_handoffs(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         return {"handoffs": design.list_collection("design_handoff", _ctx(claims))}
+
+    @router.get("/ai/generations")
+    def list_ai_generations(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"generations": design.list_collection("design_generation_record", _ctx(claims))}
+
+    @router.post("/ai/drafts")
+    def create_ai_design_draft(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return design.create_ai_design_draft(payload, _ctx(claims, project_id=payload.get("project_id")))
+        except DesignError as error:
+            _handle(error)
 
     @router.get("/handoffs/{handoff_id}")
     def get_handoff(handoff_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
