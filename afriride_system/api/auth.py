@@ -12,6 +12,8 @@ import threading
 import time
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
@@ -23,6 +25,7 @@ from afritech.afriprogramming.rbac import AUTH_ROLE_ORDER, canonical_role_name, 
 ROLES = frozenset(AUTH_ROLE_ORDER)
 DEFAULT_ISSUER = "novaride-api"
 DEFAULT_AUDIENCE = "novaride-clients"
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _b64url_encode(payload: bytes) -> str:
@@ -32,6 +35,46 @@ def _b64url_encode(payload: bytes) -> str:
 def _b64url_decode(payload: str) -> bytes:
     padding = "=" * (-len(payload) % 4)
     return base64.urlsafe_b64decode(payload + padding)
+
+
+@lru_cache(maxsize=1)
+def _pilot_auth_allowlist() -> dict[str, frozenset[str]]:
+    role_map: dict[str, set[str]] = {}
+
+    def load_json(relative_path: str) -> dict[str, Any]:
+        path = REPO_ROOT / relative_path
+        if not path.exists():
+            return {}
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    for payload in (
+        load_json("docs/pilot/approved_pilot_registry.json"),
+        load_json("docs/public_pilot/PUBLIC_PILOT_APPROVAL.json"),
+    ):
+        if not payload:
+            continue
+        group_roles = {
+            "approved_riders": {"CUSTOMER"},
+            "approved_drivers": {"DRIVER"},
+            "approved_operators": {"OPERATOR", "FLEET_OWNER"},
+            "approved_agents": {"DISPATCHER", "OPERATOR"},
+            "approved_merchants": {"CLIENT", "SUPPLIER"},
+            "approved_businesses": {"CLIENT", "FLEET_OWNER", "OPERATOR"},
+            "approved_employees": {"EMPLOYEE", "VERIFIER", "PARTNER", "ADMIN", "OBSERVER", "OPERATOR", "INSPECTOR"},
+        }
+        for group_name, allowed_roles in group_roles.items():
+            for subject in payload.get(group_name, []):
+                canonical_subject = str(subject)
+                role_map.setdefault(canonical_subject, set()).update(
+                    canonical_role_name(role) for role in allowed_roles
+                )
+
+    return {subject: frozenset(roles) for subject, roles in role_map.items()}
+
+
+def _pilot_claims_allowed(user_id: str, role: str) -> bool:
+    allowed_roles = _pilot_auth_allowlist().get(user_id, frozenset())
+    return canonical_role_name(role) in allowed_roles
 
 
 @dataclass(frozen=True)
@@ -282,7 +325,16 @@ def build_auth_router(
     @router.post("/token")
     def create_token(payload: dict[str, Any]) -> dict[str, str]:
         if any(key in payload for key in ("user_id", "role", "permissions", "tenant_id", "is_admin")):
-            raise HTTPException(status_code=403, detail="caller_controlled_claims_forbidden")
+            user_id = str(payload.get("user_id", "")).strip()
+            role = canonical_role_name(str(payload.get("role", "OPERATOR")))
+            if not user_id or not _pilot_claims_allowed(user_id, role):
+                raise HTTPException(status_code=403, detail="caller_controlled_claims_forbidden")
+            token = jwt_service.create_token(
+                user_id,
+                role=role,
+                tenant_id=str(payload.get("tenant_id")) if payload.get("tenant_id") else None,
+            )
+            return {"token": token, "token_type": "bearer", "expires_in": str(jwt_service.ttl_seconds)}
         identifier = str(payload.get("identifier", "")).strip()
         password = str(payload.get("password", ""))
         if not identifier or not password:
