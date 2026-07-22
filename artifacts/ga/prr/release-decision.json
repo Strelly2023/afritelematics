@@ -1,0 +1,36 @@
+{
+  "release_candidate_commit": null,
+  "assessment_commit": "11afddf2ab8777d520e2e1ab56a8bab9e1ca6765",
+  "decision": "NO-GO",
+  "decision_date_utc": "2026-07-22T05:17:38Z",
+  "critical_blockers": [],
+  "high_blockers": [
+    "GA-DEPLOY-001",
+    "GA-TLS-001",
+    "GA-SEC-001",
+    "GA-RECOVERY-001"
+  ],
+  "failed_gates": [
+    "immutable release candidate deployment",
+    "independent product service deployment",
+    "nested-domain TLS coverage",
+    "complete dynamic security certification",
+    "physical Android certification",
+    "physical iOS certification",
+    "external provider certification",
+    "performance and soak certification",
+    "backup restore failover and disaster recovery",
+    "evidence signatures and organisational approvals"
+  ],
+  "passed_gates": [
+    "production route method/path uniqueness on assessment commit",
+    "OpenAPI operation ID uniqueness on assessment commit",
+    "focused affected API tests: 47 passed",
+    "focused repository security tests: 27 passed",
+    "live NGINX health and unknown-host rejection"
+  ],
+  "evidence_manifest": null,
+  "manifest_verified": false,
+  "signature_verified": false,
+  "approvals": []
+}

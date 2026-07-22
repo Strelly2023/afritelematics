@@ -1,0 +1,29 @@
+{
+  "assessment_commit": "11afddf2ab8777d520e2e1ab56a8bab9e1ca6765",
+  "classification": "STAGING_TESTED",
+  "environment": "ec2-production-labelled-no-ga-certification",
+  "services": [
+    {"service": "AfriTech aggregate API", "container": "production-afritech-api-1", "image": "production-afritech-api:latest", "status": "deployed_healthy_not_commit_bound"},
+    {"service": "AfriTech dashboard", "container": "production-afritech-dashboard-1", "image": "production-afritech-dashboard:latest", "status": "deployed_healthy_not_commit_bound"},
+    {"service": "Public web", "container": "production-public-web-1", "image": "production-public-web:latest", "status": "deployed_healthy_not_commit_bound"},
+    {"service": "NovaCodePro portal", "container": "production-novacodepro-portal-1", "image": "production-novacodepro-portal:latest", "status": "deployed_healthy_not_commit_bound"},
+    {"service": "NGINX", "container": "production-nginx-1", "image": "nginx:1.27-alpine", "status": "deployed_healthy"},
+    {"service": "Prometheus", "container": "production-prometheus-1", "image": "prom/prometheus:v2.54.1", "status": "deployed_no_healthcheck_evidence"},
+    {"service": "Grafana", "container": "production-grafana-1", "image": "grafana/grafana:11.2.2", "status": "deployed_no_healthcheck_evidence"},
+    {"service": "OpenTelemetry collector", "container": "production-otel-collector-1", "image": "otel/opentelemetry-collector-contrib:0.109.0", "status": "deployed_no_healthcheck_evidence"},
+    {"service": "NovaID API", "status": "not_independently_deployed"},
+    {"service": "NovaPay API", "status": "not_independently_deployed"},
+    {"service": "NovaRide API", "status": "not_independently_deployed"},
+    {"service": "NovaLogistics API", "status": "not_independently_deployed"},
+    {"service": "NovaTrust API", "status": "not_independently_deployed"},
+    {"service": "NovaPolicy API", "status": "not_independently_deployed"},
+    {"service": "PostgreSQL", "status": "not_present_in_active_compose_project"},
+    {"service": "Redis", "status": "not_present_in_active_compose_project"},
+    {"service": "Kafka or Redpanda", "status": "not_present_in_active_compose_project"}
+  ],
+  "limitations": [
+    "The EC2 checkout was f2ff9538adf65c258b524c02346feee10a6e7326, ahead 3 and behind 11, with untracked artifacts.",
+    "Application images use mutable latest tags and have no recorded release-candidate digest binding.",
+    "Healthy aggregate routing is not evidence of independent product deployment."
+  ]
+}
