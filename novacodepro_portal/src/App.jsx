@@ -43,6 +43,8 @@ import { usePlatformRuntime } from "./platform/usePlatformRuntime.js";
 import { NOVACODEPRO_BUILD_INFO } from "./platform/version.js";
 import { PublicLandingPage } from "./public/PublicLandingPage.jsx";
 import { LoginPage } from "./auth/LoginPage.jsx";
+import { createClientReferenceId, getCorrelationId, getUserSafeMessage, normalizeApiError } from "./auth/authErrors.js";
+import { isPublicAuthPath, resolveSafeReturnTo } from "./auth/authRouting.js";
 import { DesignDashboard } from "./design/DesignDashboard.jsx";
 import { DesignStudioWorkspace } from "./design/DesignStudioWorkspace.jsx";
 import { ExperienceMappingStudio } from "./design/ExperienceMappingStudio.jsx";
@@ -1969,11 +1971,13 @@ function App() {
   const [frontendRuntimeState, setFrontendRuntimeState] = useState("LOADING");
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("platformadministrator.test@afritechnology.com");
-  const [loginPassword, setLoginPassword] = useState("NovaCodePro123!");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [loginRole, setLoginRole] = useState(initialLoginRole);
   const [loginError, setLoginError] = useState("");
+  const [loginErrorReference, setLoginErrorReference] = useState("");
   const [loginStatus, setLoginStatus] = useState("idle");
+  const publicAuthRoute = isPublicAuthPath(currentPathname);
   const [toolView, setToolView] = useState("ai");
   const [smartCommand, setSmartCommand] = useState("");
   const [roleId, setRoleId] = useState(resolveProfileIdForRole(initialLoginRole));
@@ -2114,6 +2118,14 @@ function App() {
         if (!response.ok) {
           const detail = payload?.detail ?? payload ?? {};
           const code = String(detail.code || response.statusText || "APPLICATION_ERROR").toUpperCase();
+          if (publicAuthRoute) {
+            setBootstrapState("PUBLIC_READY");
+            setBootstrapError("");
+            setSession(null);
+            setAuthStatus("signed-out");
+            clearNovaCodeProSessionState();
+            return;
+          }
           if (response.status === 401 || code.includes("SESSION_EXPIRED") || code.includes("SESSION_REQUIRED")) {
             setBootstrapState("SESSION_EXPIRED");
             setBootstrapError("Your session expired. Please sign in again.");
@@ -2145,6 +2157,14 @@ function App() {
           return;
         }
 
+        if (publicAuthRoute && !payload?.authenticated) {
+          setBootstrapState("PUBLIC_READY");
+          setBootstrapError("");
+          setSession(null);
+          setAuthStatus("signed-out");
+          clearNovaCodeProSessionState();
+          return;
+        }
         const normalized = normalizeBootstrapResponse(payload);
         if (!normalized.authenticated) {
           setBootstrapState("SESSION_EXPIRED");
@@ -2167,7 +2187,7 @@ function App() {
         setBootstrapError("");
         setLoginError("");
         setActiveWorkspaceSurfaceId("dashboard");
-        const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+        const returnTo = resolveSafeReturnTo(new URLSearchParams(window.location.search).get("returnTo"), "");
         const bootstrapRoute = currentPathname === ROUTES.home
           ? ROUTES.home
           : returnTo ||
@@ -2177,12 +2197,20 @@ function App() {
         if (!active) {
           return;
         }
-        const message = error instanceof Error ? error.message : String(error || "APPLICATION_ERROR");
-        if (message === "AbortError") {
+        if (error?.name === "AbortError") {
           return;
         }
+        if (publicAuthRoute) {
+          setBootstrapState("PUBLIC_READY");
+          setBootstrapError("");
+          setSession(null);
+          setAuthStatus("signed-out");
+          clearNovaCodeProSessionState();
+          return;
+        }
+        const normalizedError = normalizeApiError(error);
         setBootstrapState("API_UNAVAILABLE");
-        setBootstrapError(message);
+        setBootstrapError(getUserSafeMessage(normalizedError));
         setSession(null);
         setAuthStatus("signed-out");
         clearNovaCodeProSessionState();
@@ -2193,7 +2221,7 @@ function App() {
       active = false;
       controller.abort();
     };
-  }, [bootstrapAttempt]);
+  }, [bootstrapAttempt, publicAuthRoute]);
 
   useEffect(() => {
     if (authStatus !== "signed-in" || !session) {
@@ -2254,6 +2282,7 @@ function App() {
   const handleLogin = async (event, rememberDevice = false) => {
     event.preventDefault();
     setLoginError("");
+    setLoginErrorReference("");
     if (!loginEmail.trim() || !loginPassword) {
       setLoginError("Enter your email or username and password.");
       return;
@@ -2275,9 +2304,7 @@ function App() {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        if (response.status === 423) throw new Error("This account is temporarily locked. Contact your NovaID administrator.");
-        if (response.status === 429) throw new Error("Too many attempts. Wait a moment before trying again.");
-        throw new Error(response.status === 401 ? "The credentials or selected role could not be verified." : "NovaID could not complete sign-in.");
+        throw normalizeApiError(payload, response);
       }
       const loginSession = buildSessionFromAuthPayload(payload, loginRole, loginEmail);
       setSession(loginSession);
@@ -2287,10 +2314,11 @@ function App() {
       setAuthStatus("signed-in");
       setBootstrapState("READY");
       setBootstrapError("");
+      setLoginPassword("");
       setAccountMenuOpen(false);
       setShowRoleSwitcher(false);
       setActiveWorkspaceSurfaceId("dashboard");
-      const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+      const returnTo = resolveSafeReturnTo(new URLSearchParams(window.location.search).get("returnTo"), "");
       let nextRoute =
         returnTo ||
         (isSolutionRoute(currentPathname) ? currentPathname : ROUTES.roleDashboard(loginSession.active_role ?? loginRole));
@@ -2343,13 +2371,15 @@ function App() {
         nextRoute;
       navigateTo(loginRoute, { replace: true });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Login failed";
-      if (/session(_| )?(expired|required)/i.test(message)) {
+      const normalizedError = normalizeApiError(error);
+      if (normalizedError.code === "SESSION_EXPIRED") {
         setBootstrapState("SESSION_EXPIRED");
         setBootstrapError("Your session expired. Please sign in again.");
       }
       clearNovaCodeProSessionState();
-      setLoginError(message);
+      setLoginPassword("");
+      setLoginError(getUserSafeMessage(normalizedError));
+      setLoginErrorReference(getCorrelationId(normalizedError) || createClientReferenceId());
       setAuthStatus("signed-out");
     } finally {
       setLoginStatus("idle");
@@ -2857,7 +2887,9 @@ function App() {
       password={loginPassword}
       role={loginRole}
       error={loginError || bootstrapError}
+      errorReference={loginErrorReference}
       status={loginStatus}
+      buildInfo={NOVACODEPRO_BUILD_INFO}
       onEmailChange={setLoginEmail}
       onPasswordChange={setLoginPassword}
       onRoleChange={setLoginRole}
@@ -3807,6 +3839,9 @@ function App() {
 
   if (currentPathname === ROUTES.home) {
     return <PublicLandingPage session={session} onNavigate={(path) => navigateTo(path)} />;
+  }
+  if (publicAuthRoute && authStatus !== "signed-in") {
+    return signedOutScreen;
   }
   if (bootstrapState === "loading") {
     return bootstrapLoadingScreen;

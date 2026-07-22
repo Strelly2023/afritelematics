@@ -13,7 +13,9 @@ export function LoginPage({
   password,
   role,
   error,
+  errorReference,
   status,
+  buildInfo,
   onEmailChange,
   onPasswordChange,
   onRoleChange,
@@ -23,7 +25,7 @@ export function LoginPage({
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberDevice, setRememberDevice] = useState(false);
-  const [theme, setTheme] = useState("system");
+  const [theme, setTheme] = useState("dark");
   const [language, setLanguage] = useState("en-AU");
   const busy = status === "submitting";
 
@@ -42,30 +44,32 @@ export function LoginPage({
 
       <main className="next-auth-main">
         <section className="next-auth-story" aria-labelledby="login-story-title">
-          <div className="public-kicker"><span /> Secure enterprise design</div>
-          <h1 id="login-story-title">Design with clarity.<br /><em>Deliver with confidence.</em></h1>
-          <p>Continue designing, governing, and delivering digital products from one trusted NovaCodePro workspace.</p>
+          <div className="public-kicker"><span /> Governed intelligence for enterprise delivery</div>
+          <h1 id="login-story-title">Build the future with<br /><em>governed intelligence.</em></h1>
+          <p>Design, develop, test, deploy, and operate enterprise software from one trusted workspace.</p>
           <div className="auth-visual" aria-label="NovaCodePro governed design workflow preview">
             <div className="auth-visual-canvas"><span className="auth-node first">Requirements<small>24 linked</small></span><i /><span className="auth-node second">Wireframes<small>12 screens</small></span><i /><span className="auth-node third">Approval<small>Review ready</small></span></div>
             <div className="auth-visual-score"><span>Accessibility review</span><strong>98</strong><small>Evidence attached</small></div>
           </div>
-          <ul className="auth-trust-list"><li>NovaID protected</li><li>Tenant isolated</li><li>Audit recorded</li></ul>
+          <ul className="auth-trust-list"><li>AI-powered development</li><li>Enterprise governance</li><li>Secure delivery</li><li>End-to-end traceability</li></ul>
+          <p className="auth-protected"><span aria-hidden="true">◆</span> Protected by NovaID</p>
         </section>
 
         <section className="next-auth-card" aria-labelledby="login-title">
-          <div className="auth-card-heading"><p>WELCOME TO NOVACODEPRO</p><h2 id="login-title">Sign in to continue</h2><span>Access your permitted projects, design systems, reviews, and handoff workspace.</span></div>
-          <form id="login-form" onSubmit={(event) => onSubmit(event, rememberDevice)} noValidate>
-            <label className="next-auth-field"><span>Email or username</span><input type="text" value={email} onChange={(event) => onEmailChange(event.target.value)} autoComplete="username" required aria-invalid={Boolean(error)} /></label>
+          <div className="auth-card-heading"><p>WELCOME BACK</p><h2 id="login-title">Sign in to continue</h2><span>Continue to NovaCodePro and your permitted enterprise workspace.</span></div>
+          <form id="login-form" onSubmit={(event) => onSubmit(event, rememberDevice)} noValidate aria-busy={busy}>
+            <label className="next-auth-field"><span>Email or username</span><input type="text" value={email} onChange={(event) => onEmailChange(event.target.value)} autoComplete="username" inputMode="email" required aria-invalid={Boolean(error)} aria-describedby={error ? "login-error" : undefined} autoFocus /></label>
             <label className="next-auth-field"><span>Password</span><div className="password-control"><input type={showPassword ? "text" : "password"} value={password} onChange={(event) => onPasswordChange(event.target.value)} autoComplete="current-password" required aria-invalid={Boolean(error)} /><button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? "Hide" : "Show"}</button></div></label>
             <label className="next-auth-field"><span>Workspace role</span><select value={role} onChange={(event) => onRoleChange(event.target.value)}>{LOGIN_ROLES.map((item) => <option key={item} value={item}>{item.replaceAll("_", " ")}</option>)}</select></label>
             <div className="auth-form-options"><label><input type="checkbox" checked={rememberDevice} onChange={(event) => setRememberDevice(event.target.checked)} /> Remember this device</label><button type="button" onClick={() => onUnavailable("Password recovery is managed by your NovaID administrator.")}>Forgot password?</button></div>
-            {error ? <div className="next-auth-error" role="alert"><strong>We couldn’t sign you in.</strong><span>{error}</span></div> : null}
+            {error ? <div id="login-error" className="next-auth-error" role="alert"><strong>We couldn’t sign you in.</strong><span>{error}</span>{errorReference ? <small>Reference {errorReference}</small> : null}</div> : null}
             <button type="submit" className="next-auth-submit" disabled={busy}>{busy ? <><i className="auth-spinner" /> Verifying identity…</> : "Sign in securely"}</button>
             <div className="auth-divider"><span>or continue with</span></div>
             <div className="auth-provider-grid"><button type="button" onClick={() => onUnavailable("Passkey sign-in is not enabled for this NovaCodePro workspace.")}><span aria-hidden="true">◇</span> Passkey</button><button type="button" onClick={() => onUnavailable("Single sign-on is not enabled for this NovaCodePro workspace.")}><span aria-hidden="true">◫</span> Enterprise SSO</button></div>
             <p className="auth-policy-note">MFA and adaptive verification continue automatically when required by your NovaID tenant policy.</p>
           </form>
           <footer className="auth-card-footer"><button type="button" onClick={() => onUnavailable("Account provisioning is managed by your organisation.")}>Request access</button><span>·</span><a href="#privacy">Privacy</a><span>·</span><a href="#terms">Terms</a><span>·</span><button type="button" onClick={() => onUnavailable("Contact your NovaCodePro workspace administrator for support.")}>Help</button></footer>
+          <p className="auth-build">Version {buildInfo?.version || "—"} · Build {buildInfo?.build_id || "local"}</p>
         </section>
       </main>
     </div>

@@ -14,10 +14,20 @@ test("secure login experience exposes required NovaID controls and states", () =
     "Enterprise SSO",
     "MFA and adaptive verification",
     "Verifying identity",
+    "Build the future with",
+    "Protected by NovaID",
+    "aria-busy",
+    "autoFocus",
     'role="alert"',
   ]) {
     assert.ok(source.includes(token), `expected login page to include ${token}`);
   }
+});
+
+test("login renders normalized messages and diagnostic references", () => {
+  assert.ok(source.includes("errorReference"));
+  assert.ok(source.includes("Reference {errorReference}"));
+  assert.ok(!source.includes("{String(error)}"));
 });
 
 test("unsupported identity capabilities are represented honestly", () => {

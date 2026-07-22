@@ -8,7 +8,7 @@ function normalizeError(error, fallbackCode = "APPLICATION_ERROR") {
   }
   return {
     code: fallbackCode,
-    message: error instanceof Error ? error.message : String(error || fallbackCode),
+    message: error instanceof Error ? error.message : typeof error === "string" ? error : "The authentication service could not be reached.",
   };
 }
 
