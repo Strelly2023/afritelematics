@@ -90,12 +90,28 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   await expect(page.getByTestId("prototype-collaboration-studio")).toBeVisible();
   await page.getByRole("button", { name: "New prototype" }).click();
   await expect(page.getByText("● Prototype created and versioned")).toBeVisible();
-  await page.getByLabel("Add prototype comment").fill("@designer Validate the MFA transition.");
+  const collaborationComment = `@designer Validate the MFA transition ${Date.now()}.`;
+  await page.getByLabel("Add prototype comment").fill(collaborationComment);
   await page.getByRole("button", { name: "Comment", exact: true }).click();
-  await expect(page.getByText("● Comment shared with collaborators")).toBeVisible();
+  await expect(page.getByText(collaborationComment)).toBeVisible();
   await page.getByRole("button", { name: "Present", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Prototype presentation" })).toBeVisible();
   await page.getByRole("button", { name: "Exit presentation" }).click();
+  await page.evaluate(() => {
+    window.history.pushState({}, "", "/novacodepro/design/reviews");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect(page.getByTestId("delivery-governance-studio")).toBeVisible();
+  await page.getByRole("button", { name: /Request review for version/ }).click();
+  await expect(page.getByText("● Review requested for exact version")).toBeVisible();
+  await page.getByRole("button", { name: "Approvals", exact: true }).click();
+  await page.getByRole("button", { name: "Request exact-version approval" }).click();
+  await expect(page.getByText(/● Approval requested/)).toBeVisible();
+  await page.getByRole("button", { name: "Approve pending version" }).click();
+  await expect(page.getByText("● Exact reviewed version approved")).toBeVisible();
+  await page.getByRole("button", { name: "Export", exact: true }).click();
+  await page.getByRole("button", { name: /Create governed React export/ }).click();
+  await expect(page.getByText("● React export recorded with checksum")).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");

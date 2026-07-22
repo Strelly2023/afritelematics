@@ -50,6 +50,7 @@ import { DesignSystemStudio } from "./design/DesignSystemStudio.jsx";
 import { AIDesignStudio } from "./design/AIDesignStudio.jsx";
 import { AccessibilityStudio } from "./design/AccessibilityStudio.jsx";
 import { PrototypeCollaborationStudio } from "./design/PrototypeCollaborationStudio.jsx";
+import { DeliveryGovernanceStudio } from "./design/DeliveryGovernanceStudio.jsx";
 
 function lazyNamed(loader, exportName) {
   return lazy(() => loader().then((module) => ({ default: module[exportName] })));
@@ -3838,6 +3839,10 @@ function App() {
   }
   if (["/novacodepro/design/prototype", "/novacodepro/design/version-history"].includes(currentPathname)) {
     return <PrototypeCollaborationStudio session={session} baseUrl={AUTH_API_BASE} onNavigate={(path) => navigateTo(path)} />;
+  }
+  if (["/novacodepro/design/developer-handoff", "/novacodepro/design/reviews", "/novacodepro/design/approvals", "/novacodepro/design/export"].includes(currentPathname)) {
+    const section = {"developer-handoff":"Developer Handoff",reviews:"Reviews",approvals:"Approvals",export:"Export"}[currentPathname.split("/").at(-1)];
+    return <DeliveryGovernanceStudio session={session} baseUrl={AUTH_API_BASE} initialSection={section} onNavigate={(path)=>navigateTo(path)}/>;
   }
   if (isNovaCodeProRouteAccessible(currentPathname, session?.permissions || []) === false) {
     return forbiddenScreen;

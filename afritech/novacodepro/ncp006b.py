@@ -1263,6 +1263,7 @@ class NovaCodeProNCP006BService:
             "decision": "PENDING",
             "required_role": str(payload.get("required_role") or "DESIGN"),
             "risk_severity": str(payload.get("risk_severity") or "MEDIUM"),
+            "reviewed_version": int(payload.get("reviewed_version") or record.get("version") or 1),
             "reason": str(payload.get("reason") or ""),
             "conditions": list(payload.get("conditions") or []),
             "created_by": ctx.actor_id,
@@ -1280,6 +1281,8 @@ class NovaCodeProNCP006BService:
         if approval is None:
             raise DesignError("design_artifact_not_found", "Design approval not found.", 404)
         record = self.get_resource(resource_type, resource_id, ctx)
+        if int(approval.get("reviewed_version") or 0) != int(record.get("version") or 1):
+            raise DesignError("design_version_conflict", "The artifact changed after review; approve the reviewed version only.", 409)
         if _upper(decision) == "APPROVED" and approval.get("required_role") and _upper(approval["required_role"]) not in {_upper(ctx.role), "DESIGN", "UI_UX_DESIGNER", "ARCHITECT"} and not self._admin_override(ctx):
             raise DesignError("design_risk_acceptance_forbidden", "Approval by this role is not permitted.", 403)
         if _upper(decision) == "APPROVED":

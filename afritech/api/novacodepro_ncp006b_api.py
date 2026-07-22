@@ -738,6 +738,10 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
         except DesignError as error:
             _handle(error)
 
+    @router.get("/baselines")
+    def list_baselines(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"baselines": design.list_collection("design_baseline", _ctx(claims))}
+
     @router.post("/baselines")
     def create_baseline(payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
         try:
@@ -814,6 +818,10 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
         except DesignError as error:
             _handle(error)
 
+    @router.get("/imports")
+    def list_imports(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"imports": design.list_collection("design_import", _ctx(claims))}
+
     @router.get("/imports/{import_id}")
     def get_import(import_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
         try:
@@ -830,6 +838,10 @@ def build_novacodepro_ncp006b_router(service: NovaCodeProPlatform) -> APIRouter:
             return design.create_export_record(payload, _ctx(claims))
         except DesignError as error:
             _handle(error)
+
+    @router.get("/exports")
+    def list_exports(claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        return {"exports": design.list_collection("design_export", _ctx(claims))}
 
     @router.get("/exports/{export_id}")
     def get_export(export_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
