@@ -1,0 +1,10 @@
+35e529005 (HEAD -> certification/ga-rc-20260722, origin/certification/ga-rc-20260722) docs(architecture): refresh runtime boundary scan
+0896c577d (origin/recovery/ga-implementation-20260722, recovery/ga-implementation-20260722) docs(prr): record interim GA no-go assessment
+11afddf2a fix(api): resolve route ownership conflicts
+fe9b4352b fix(nginx): preserve health while rejecting unknown hosts
+153a5142f Fix NovaCodePro production API and runtime routing
+c78f4e02f (origin/afriride-live-pilot-001, pull-safe-check, afriride-live-pilot-001) Fix: close certification blockers and refresh evidence
+7fd2c835d Evidence: refresh certification manifest after gate matrix update
+bbbf6f632 Evidence: complete operational certification and record PRR decision
+ff5f8bedb Evidence: complete operational certification and record PRR decision
+ed6fc4caa Evidence: record live production certification and release decision

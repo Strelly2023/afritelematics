@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "classification": "SOURCE_REVIEWED",
+  "branch": "certification/ga-rc-20260722",
+  "local_commit": "35e529005bbd1edf2e45d6250216653bff4b04cc",
+  "upstream_commit": "35e529005bbd1edf2e45d6250216653bff4b04cc",
+  "clean_status_before_evidence_generation": true,
+  "unresolved_conflicts": false,
+  "detached_head": false,
+  "fetch_timestamp_utc": "2026-07-22T06:10:10Z",
+  "repository_integrity": {
+    "git_fsck_exit_code": 0,
+    "fatal_or_corrupt_objects_reported": false,
+    "dangling_or_unreachable_notices": 4248,
+    "result": "PASS_WITH_HISTORICAL_DANGLING_OBJECTS"
+  },
+  "remote_branch_published": true,
+  "certification_eligibility": "ELIGIBLE_FOR_BASELINE_ONLY",
+  "release_candidate_selected": false,
+  "limitations": [
+    "Evidence files are committed after the assessed source commit and therefore do not themselves constitute an immutable release candidate.",
+    "The shared pre-commit hook assumes ./venv exists inside every worktree. All five hook commands were run manually with /Users/ostrinov/afritelematics/venv/bin/python and passed before commit 35e529005; the commit used --no-verify only after that investigation.",
+    "Mandatory build, deployment, security, device, provider, resilience, signature, and approval gates remain open."
+  ]
+}
