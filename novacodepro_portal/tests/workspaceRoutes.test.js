@@ -28,6 +28,7 @@ test("canonical role workspace route is dashboard based", () => {
   assert.equal(ROUTES.login, "/novacodepro/login");
   assert.equal(ROUTES.dashboard, "/novacodepro/dashboard");
   assert.equal(ROUTES.logout, "/novacodepro/logout");
+  assert.equal(ROUTES.strategyRoot, "/novacodepro/strategy");
   assert.equal(ROUTES.roleDashboard("ADMIN"), "/novacodepro/workspace/admin/dashboard");
   assert.equal(ROUTES.roleDashboard("DEVELOPER"), "/novacodepro/workspace/developer/dashboard");
 });

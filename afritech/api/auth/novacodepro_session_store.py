@@ -531,7 +531,8 @@ class NovaCodeProSessionStore:
         now = _utcnow()
         absolute_expires_at = now + timedelta(hours=self.absolute_timeout_hours)
         idle_expires_at = now + timedelta(minutes=self.idle_timeout_minutes)
-        workspace_id = f"enterprise-{requested_role.lower().replace('_', '-')}"
+        admin_roles = {"ADMIN", "PLATFORM_ADMIN", "PLATFORM_OWNER", "SUPER_ADMIN", "SYSTEM_ADMIN"}
+        workspace_id = "novatech-platform" if requested_role in admin_roles else f"enterprise-{requested_role.lower().replace('_', '-')}"
         access_token = self.jwt_service.create_token(
             account["username"],
             role=requested_role,

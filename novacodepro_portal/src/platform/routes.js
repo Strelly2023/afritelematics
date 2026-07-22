@@ -30,6 +30,7 @@ export const ROUTES = {
   logout: appPath("/logout"),
   workspaceRoot: appPath("/workspace"),
   productFactoryRoot: appPath("/product-factory"),
+  strategyRoot: appPath("/strategy"),
   projectsRoot: appPath("/projects"),
   requestsRoot: appPath("/requests"),
   aiRoot: appPath("/ai"),

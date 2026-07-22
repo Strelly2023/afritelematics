@@ -179,7 +179,7 @@ def _build_session_bootstrap(service: NovaCodeProPlatform, request: Request) -> 
     workspace_data = workspace_manifest["workspace"]
     active_workspace_id = str(current.get("workspace_id") or "").strip()
     workspace = {
-        "id": active_workspace_id or ("novatech-platform" if canonical_role == "ADMIN" else workspace_data["id"]),
+        "id": "novatech-platform" if canonical_role == "ADMIN" else active_workspace_id or workspace_data["id"],
         "name": "NovaTech Platform" if canonical_role == "ADMIN" else workspace_data["title"],
         "status": "ACTIVE",
         "home_route": "/novacodepro/dashboard" if canonical_role == "ADMIN" else workspace_data["home_route"],

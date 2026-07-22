@@ -147,6 +147,7 @@ CORE_ROLE_DEFINITIONS: dict[str, dict[str, Any]] = {
             "audit.view",
             "certification.issue",
             "verification.view",
+            "strategy.read",
         ),
         "visible_panels": (
             "Governance",
@@ -175,6 +176,7 @@ CORE_ROLE_DEFINITIONS: dict[str, dict[str, Any]] = {
             "product.read",
             "product.create",
             "product.update",
+            "strategy.read",
             "roadmap.read",
             "roadmap.create",
             "roadmap.update",

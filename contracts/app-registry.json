@@ -27,6 +27,18 @@
       "order": 15
     },
     {
+      "id": "strategy",
+      "name": "Strategy Workspace",
+      "route": "/novacodepro/strategy",
+      "icon": "strategy",
+      "requiredPermissions": ["strategy.read"],
+      "featureFlag": "novacodepro.strategy.enabled",
+      "status": "internal",
+      "domain": "planning",
+      "description": "Enterprise vision, goals, research, roadmap, risk, KPIs, and approvals.",
+      "order": 18
+    },
+    {
       "id": "requests",
       "name": "Request Composer",
       "route": "/novacodepro/requests",

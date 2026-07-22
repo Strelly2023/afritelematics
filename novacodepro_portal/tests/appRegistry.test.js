@@ -14,6 +14,7 @@ test("NovaCodePro registry exposes the governed workspace surfaces", () => {
   const apps = listNovaCodeProApps();
   assert.ok(apps.length >= 10);
   assert.equal(apps[0].id, "workspace");
+  assert.ok(apps.some((app) => app.id === "strategy"));
   assert.ok(apps.some((app) => app.id === "requests"));
   assert.ok(apps.some((app) => app.id === "projects"));
   assert.ok(apps.some((app) => app.id === "ai"));
@@ -41,12 +42,20 @@ test("NovaCodePro route parsing resolves the launcher surfaces", () => {
     section: "projects",
     subRoute: "/",
   });
+  assert.deepEqual(parseNovaCodeProRoute("/novacodepro/strategy"), {
+    path: "/novacodepro/strategy",
+    appId: "strategy",
+    section: "strategy",
+    subRoute: "/",
+  });
   assert.equal(findNovaCodeProAppByPath("/novacodepro/requests").id, "requests");
   assert.equal(ROUTES.workspaceRoot, "/novacodepro/workspace");
+  assert.equal(ROUTES.strategyRoot, "/novacodepro/strategy");
   assert.equal(ROUTES.requestsRoot, "/novacodepro/requests");
 });
 
 test("NovaCodePro route access blocks forbidden apps", () => {
   assert.equal(isNovaCodeProRouteAccessible("/novacodepro/workspace", ["workspace.read"]), true);
+  assert.equal(isNovaCodeProRouteAccessible("/novacodepro/strategy", ["strategy.read"]), true);
   assert.equal(isNovaCodeProRouteAccessible("/novacodepro/security", ["workspace.read"]), false);
 });

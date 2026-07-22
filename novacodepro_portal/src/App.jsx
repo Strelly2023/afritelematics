@@ -62,6 +62,7 @@ const LazySolutionEngineeringPortal = lazyNamed(() => import("./solutions/Soluti
 const LazyNovaCodeProWorkspaceHub = lazyNamed(() => import("./novacodepro/NovaCodeProWorkspaceHub.jsx"), "NovaCodeProWorkspaceHub");
 const LazyStudioExplorer = lazyNamed(() => import("./novacodepro/explorer/StudioExplorer.js"), "StudioExplorer");
 const LazyProductFactoryPortal = lazyNamed(() => import("./novacodepro/ProductFactoryPortal.jsx"), "ProductFactoryPortal");
+const LazyStrategyWorkspace = lazyNamed(() => import("./strategy/StrategyWorkspace.jsx"), "StrategyWorkspace");
 const LazyNCP003Portal = lazyNamed(() => import("./novacodepro/NCP003Portal.jsx"), "NCP003Portal");
 const LazyNCP004Portal = lazyNamed(() => import("./novacodepro/NCP004Portal.jsx"), "NCP004Portal");
 const LazyNCP005Portal = lazyNamed(() => import("./novacodepro/NCP005Portal.jsx"), "NCP005Portal");
@@ -3879,6 +3880,19 @@ function App() {
   if (currentPathname === "/novacodepro/design/studio") {
     return <DesignStudioWorkspace session={session} baseUrl={AUTH_API_BASE} onNavigate={(path) => navigateTo(path)} />;
   }
+  if (currentPathname === ROUTES.strategyRoot) {
+    return (
+      <Suspense fallback={<StudioSurfaceFallback />}>
+        <LazyStrategyWorkspace
+          session={session}
+          pathname={currentPathname}
+          navigate={(path, options) => navigateTo(path, options)}
+          baseUrl={AUTH_API_BASE}
+          onLogout={handleLogout}
+        />
+      </Suspense>
+    );
+  }
   if (["/novacodepro/design/research", "/novacodepro/design/personas", "/novacodepro/design/journeys", "/novacodepro/design/user-flows"].includes(currentPathname)) {
     const section = { research: "Research", personas: "Personas", journeys: "Journeys", "user-flows": "Flows" }[currentPathname.split("/").at(-1)];
     return <ExperienceMappingStudio session={session} baseUrl={AUTH_API_BASE} initialSection={section} onNavigate={(path) => navigateTo(path)} />;
@@ -3928,6 +3942,19 @@ function App() {
       return (
         <Suspense fallback={suspenseFallback}>
           <LazyProductFactoryPortal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
+      );
+    }
+    if (parsedRoute.appId === "strategy") {
+      return (
+        <Suspense fallback={suspenseFallback}>
+          <LazyStrategyWorkspace
             session={session}
             pathname={currentPathname}
             navigate={(path, options) => navigateTo(path, options)}
