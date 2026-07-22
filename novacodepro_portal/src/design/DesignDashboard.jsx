@@ -5,7 +5,7 @@ import { createNovaCodeProNcp006bApi } from "../novacodepro/api/novacodeproNcp00
 
 const DESIGN_NAVIGATION = ["Dashboard","Projects","AI Designer","Research","User Personas","Journey Maps","Flows","Wireframes","Mockups","Components","Design System","Brand Studio","Accessibility","Prototype","Developer Handoff","Assets","Analytics","Version History","Reviews","Approvals","Export","Settings"];
 const QUICK_ACTIONS = [
-  ["Start Designing", "/novacodepro/design"], ["Create Blank Project", "/novacodepro/projects"],
+  ["Start Designing", "/novacodepro/design/studio"], ["Create Blank Project", "/novacodepro/projects"],
   ["Generate from Prompt", "/novacodepro/ai"], ["Import Requirements", "/novacodepro/requests"],
   ["Import Existing Design", "/novacodepro/design/imports"], ["Open Repository", "/novacodepro/code"],
   ["Open Existing Project", "/novacodepro/projects"], ["Create from Template", "/novacodepro/design/templates"],

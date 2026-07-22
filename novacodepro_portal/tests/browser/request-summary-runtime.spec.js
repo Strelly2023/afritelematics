@@ -35,6 +35,15 @@ test("NovaCodePro renders without request summary TDZ failures", async ({ page }
   const dashboardSearch = page.getByRole("textbox", { name: /Search projects and designs/i });
   await dashboardSearch.fill("accessible banking");
   await expect(dashboardSearch).toHaveValue("accessible banking");
+  await page.getByRole("button", { name: /Start Designing/i }).click();
+  await expect(page.getByTestId("design-studio-workspace")).toBeVisible();
+  await expect(page.getByRole("main", { name: "Infinite design canvas" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Desktop design frame" })).toBeVisible();
+  const layerName = page.getByLabel("Layer name");
+  await layerName.fill("Available balance summary");
+  await expect(page.getByText("● Unsaved changes")).toBeVisible();
+  await page.getByRole("button", { name: "Save version" }).click();
+  await expect(page.getByText("● Saved to governed workspace")).toBeVisible();
 
   await page.evaluate(() => {
     window.history.pushState({}, "", "/novacodepro/workspace/admin/dashboard");
