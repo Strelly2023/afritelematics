@@ -15,12 +15,12 @@ def setup_function() -> None:
     reset_gateway()
 
 
-def test_auth_token_endpoint_issues_role_token() -> None:
+def test_auth_token_endpoint_rejects_caller_controlled_role() -> None:
     client = TestClient(app)
     response = client.post("/auth/token", json={"user_id": "rider-1", "role": "RIDER"})
 
-    assert response.status_code == 200
-    assert response.json()["token"]
+    assert response.status_code == 403
+    assert response.json()["error"]["message"] == "caller_controlled_claims_forbidden"
 
 
 def test_missing_auth_is_rejected_for_protected_route() -> None:

@@ -10,7 +10,7 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, Field
 
-from afritech.api.auth.jwt_device_auth import JWT, JWTClaims, get_current_claims, require_roles
+from afriride_system.api.auth import AuthClaims as JWTClaims, JWT, get_current_claims, require_roles
 from afritech.afriprogramming.control_plane import get_control_plane
 from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afritech.afriprogramming.rbac import canonical_role_name

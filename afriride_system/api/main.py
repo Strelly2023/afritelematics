@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import asyncio
+from importlib import import_module
 import json
 import os
 import secrets
@@ -21,7 +22,6 @@ from afriride_system.api.payment_routes import router as payment_router
 from afriride_system.api.global_routes import router as global_router
 from afriride_system.api.corridors_routes import router as corridors_router
 from afriride_system.api.architecture_routes import router as architecture_router
-from afriride_system.api.internal_qa_contract_routes import router as internal_qa_contract_router
 from afriride_system.api.controlled_pilot_routes import router as controlled_pilot_router
 from afriride_system.api.public_pilot_routes import router as public_pilot_router
 from afriride_system.api.trace_middleware import trace_enforcement_middleware
@@ -32,16 +32,17 @@ from afriride_system.api.treasury_routes import router as treasury_router
 from afriride_system.integration.websocket_gateway.mobility_hub import mobility_hub
 from afritech.api.ingestion.event_ingestion import EventIngestionAPI, build_router
 from afritech.api.afriride_next_gen_mobile_api import build_afriride_next_gen_mobile_router
+from afriride_system.api.runtime_security import (
+    allowed_origins,
+    assert_secure_startup,
+    internal_qa_routes_enabled,
+)
 
+assert_secure_startup()
 app = FastAPI(title="NovaRide API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://afriride-api.onrender.com",
-    ],
-    allow_origin_regex=r"https://.*\.onrender\.com",
+    allow_origins=allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,7 +64,11 @@ app.include_router(payment_router)
 app.include_router(global_router)
 app.include_router(corridors_router)
 app.include_router(architecture_router)
-app.include_router(internal_qa_contract_router)
+if internal_qa_routes_enabled():
+    internal_qa_contract_router = import_module(
+        "afriride_system.api.internal_qa_contract_routes"
+    ).router
+    app.include_router(internal_qa_contract_router, prefix="/internal/qa")
 app.include_router(controlled_pilot_router)
 app.include_router(public_pilot_router)
 app.include_router(treasury_router)

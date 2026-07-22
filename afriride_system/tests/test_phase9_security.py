@@ -6,6 +6,8 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
+
 from afriride_system.api.main import app
 from afriride_system.api.security import (
     POLICY,
@@ -62,6 +64,7 @@ def test_mutation_nonce_is_rejected_on_replay(monkeypatch) -> None:
     monkeypatch.setenv("AFRIRIDE_ENFORCE_REPLAY_PROTECTION", "true")
     reset_security_state()
     headers = {
+        "Authorization": f"Bearer {JWT.create_token('operator-1', 'OPERATOR')}",
         "X-Request-Timestamp": __import__("time").time().__str__(),
         "X-Request-Nonce": "phase9-request-nonce-00000001",
     }

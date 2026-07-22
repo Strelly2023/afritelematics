@@ -2,8 +2,6 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi.testclient import TestClient
 
-from afritech.api.auth.jwt_device_auth import JWT as DeviceJWT
-from afritech.afriprogramming.persistence import DEFAULT_ORGANIZATION_ID
 from afriride_system.api.auth import JWT
 from afriride_system.api.dispatcher_adapter import reset_gateway
 from afriride_system.api.main import app
@@ -15,9 +13,7 @@ def auth(role: str, actor: str) -> dict[str, str]:
 
 
 def device_auth(role: str, actor: str) -> dict[str, str]:
-    token = DeviceJWT.create_token(
-        actor, role=role, organization_id=DEFAULT_ORGANIZATION_ID
-    )
+    token = JWT.create_token(actor, role)
     return {"Authorization": f"Bearer {token}"}
 
 
