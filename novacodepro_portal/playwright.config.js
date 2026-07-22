@@ -42,7 +42,7 @@ export default defineConfig({
       },
     },
     {
-      command: "npm run dev -- --host 127.0.0.1 --port 15173 --strictPort",
+      command: "npm run dev:frontend -- --host 127.0.0.1 --port 15173 --strictPort",
       cwd: ".",
       url: `${frontendBaseUrl}/novacodepro/`,
       reuseExistingServer: false,

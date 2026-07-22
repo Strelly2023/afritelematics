@@ -2,25 +2,21 @@
 
 ## Supported local startup
 
-Start the API from the repository root:
-
-```bash
-AFRITECH_ENV=test \
-AFRITECH_JWT_SECRET=replace-with-a-local-secret \
-./venv/bin/python -m uvicorn afritech.api.app:app --host 127.0.0.1 --port 8000
-```
-
-Start the frontend in another terminal:
+The default frontend command now starts the local FastAPI service, waits for `/health`, and then starts Vite:
 
 ```bash
 cd novacodepro_portal
 npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
 
+This requires the repository virtual environment at `venv/bin/python`. The launcher keeps local runtime databases and evidence under the operating-system temporary directory, generates an ephemeral local JWT signing secret when one is not supplied, and shuts down the API when Vite exits.
+
+For an independently managed backend, start only Vite with `npm run dev:frontend` and set `VITE_NOVACODEPRO_PROXY_TARGET` as needed.
+
 The Vite development server proxies same-origin `/v1` requests to `http://127.0.0.1:8000` by default. Override only when the API intentionally runs elsewhere:
 
 ```bash
-VITE_NOVACODEPRO_PROXY_TARGET=http://127.0.0.1:18002 npm run dev -- --port 5173
+VITE_NOVACODEPRO_PROXY_TARGET=http://127.0.0.1:18002 npm run dev:frontend -- --port 5173
 ```
 
 `VITE_NOVACODEPRO_API_BASE_URL` remains available for an explicitly configured cross-origin API. Do not put credentials, tokens, or secrets in frontend environment variables.
@@ -51,7 +47,7 @@ npx playwright test tests/browser/login-lifecycle.spec.js --project=chromium --r
 ## Troubleshooting `API_UNAVAILABLE`
 
 1. Confirm the API responds at `/health` on the configured proxy target.
-2. Confirm Vite was started from `novacodepro_portal` and inspect `VITE_NOVACODEPRO_PROXY_TARGET`.
+2. Use `npm run dev` for the managed full stack. A repeated `ECONNREFUSED 127.0.0.1:8000` means a frontend-only Vite process is running without its API.
 3. Confirm `/v1/novacodepro/session` returns JSON, not the Vite base-path 404 page.
 4. For cross-origin development, verify FastAPI allows the exact frontend origin and credentialed requests. Prefer the same-origin Vite proxy.
 5. Confirm browser cookies are permitted for the host and that frontend/API hostnames are consistent; `localhost` and `127.0.0.1` are different cookie sites.

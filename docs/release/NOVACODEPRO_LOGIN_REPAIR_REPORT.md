@@ -22,6 +22,7 @@ Captured pre-fix response:
 - Authentication and recovery failures use a typed normalized model, safe messages and diagnostic references.
 - Passwords start empty, are never logged or locally persisted, and are cleared after failed or successful submission; usernames remain available after a failed attempt.
 - Existing credentialed cookie, refresh, logout, tenant, workspace and permission behavior is preserved.
+- `npm run dev` now health-gates and launches the local FastAPI service before Vite; `npm run dev:frontend` preserves the previous frontend-only workflow for managed backends and Playwright.
 
 ## Browser certification
 
