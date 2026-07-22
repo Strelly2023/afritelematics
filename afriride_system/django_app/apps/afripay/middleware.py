@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
+import json
 from dataclasses import dataclass
 import os
+import time
 from typing import Callable
 
 from django.http import JsonResponse
 
-from afritech.afriprogramming.rbac import role_payment_scopes
+from afritech.afriprogramming.rbac import canonical_role_name, role_payment_scopes
 from afriride_system.api.auth import JWTService
 from afriride_system.django_app.apps.afripay.security import (
     AfriPayRateLimiter,
@@ -98,12 +103,13 @@ class AfriPaySecurityMiddleware:
 
     @staticmethod
     def _principal_from_role_token(token: str, original_error: ValueError):
+        secret = os.environ.get("AFRIRIDE_JWT_SECRET", "")
         try:
-            claims = JWTService(
-                os.environ.get("AFRIRIDE_JWT_SECRET", "")
-            ).verify_token(token)
+            claims = JWTService(secret).verify_token(token)
         except ValueError as exc:
-            raise original_error from exc
+            if str(exc) != "missing_required_claim":
+                raise original_error from exc
+            claims = AfriPaySecurityMiddleware._legacy_role_token_claims(token, secret)
         scopes = role_payment_scopes(claims.role)
         if not scopes:
             raise original_error
@@ -113,3 +119,38 @@ class AfriPaySecurityMiddleware:
             scopes=tuple(scopes),
             client_name=claims.role,
         )
+
+    @staticmethod
+    def _legacy_role_token_claims(token: str, secret: str):
+        if not secret:
+            raise ValueError("missing_required_claim")
+        try:
+            encoded_header, encoded_payload, encoded_signature = token.split(".")
+            header = json.loads(_b64url_decode(encoded_header))
+            payload = json.loads(_b64url_decode(encoded_payload))
+        except Exception as exc:  # pragma: no cover - defensive parse guard
+            raise ValueError("invalid_token") from exc
+        if header.get("alg") != "HS256" or header.get("typ") != "JWT":
+            raise ValueError("invalid_algorithm")
+        signing_input = f"{encoded_header}.{encoded_payload}"
+        expected = hmac.new(secret.encode("utf-8"), signing_input.encode("ascii"), hashlib.sha256).digest()
+        supplied = _b64url_decode(encoded_signature)
+        if not hmac.compare_digest(expected, supplied):
+            raise ValueError("invalid_signature")
+        if int(payload.get("exp", 0)) <= int(time.time()):
+            raise ValueError("token_expired")
+        role = canonical_role_name(str(payload.get("role", "")))
+        if not role:
+            raise ValueError("invalid_role")
+
+        class LegacyClaims:
+            def __init__(self, sub: str, role: str) -> None:
+                self.sub = sub
+                self.role = role
+
+        return LegacyClaims(sub=str(payload.get("sub", "")), role=role)
+
+
+def _b64url_decode(payload: str) -> bytes:
+    padding = "=" * (-len(payload) % 4)
+    return base64.urlsafe_b64decode(payload + padding)
