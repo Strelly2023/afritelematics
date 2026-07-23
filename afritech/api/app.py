@@ -79,6 +79,7 @@ from afritech.api.novaid_api import build_novaid_router
 from afritech.api.novaid_audit_replay_api import build_novaid_audit_replay_router
 from afritech.novaid.runtime import build_default_durable_router
 from afritech.api.novacodepro_platform_api import build_novacodepro_platform_router
+from afritech.api.ai_auto_generator_api import build_ai_auto_generator_router
 from afritech.novacodepro.platform import get_novacodepro_platform
 from afritech.api.novacodepro_ncp007_api import build_novacodepro_ncp007_router
 from afritech.api.novacodepro_ncp008_api import build_novacodepro_ncp008_router
@@ -477,6 +478,7 @@ app.include_router(build_novaid_router())
 app.include_router(build_default_durable_router())
 app.include_router(build_novaid_audit_replay_router())
 app.include_router(build_novacodepro_platform_router())
+app.include_router(build_ai_auto_generator_router(get_novacodepro_platform()))
 app.include_router(build_novacodepro_ncp007_router(get_novacodepro_platform()))
 app.include_router(build_novacodepro_ncp008_router(get_novacodepro_platform()))
 app.include_router(build_novacodepro_workflow_fabric_router())
