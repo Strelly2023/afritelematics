@@ -10,6 +10,18 @@ function randomId(prefix) {
   return `${prefix}-${token}`;
 }
 
+function buildQueryString(params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") {
+      return;
+    }
+    search.set(key, String(value));
+  });
+  const query = search.toString();
+  return query ? `?${query}` : "";
+}
+
 async function readPayload(response) {
   const text = await response.text();
   if (!text) {
@@ -146,9 +158,24 @@ export function createAIWorkspaceClient({ baseUrl = "", session = {}, timeoutMs 
     verifyLegacy: (requestId) => post(`/v1/novacodepro/ai/requests/${encodeURIComponent(requestId)}/verify`, {}),
     getEvidenceLegacy: (requestId) => safeGet(`/v1/novacodepro/ai/requests/${encodeURIComponent(requestId)}/evidence`),
     saveKnowledge: (payload) => post("/v1/novacodepro/ai/knowledge", payload),
-    listConversations: () => safeGet("/v1/novacodepro/ai/conversations"),
+    listConversations: (filters = {}) => {
+      const query = typeof filters === "string" ? { query: filters } : filters;
+      return safeGet(`/v1/novacodepro/ai/conversations${buildQueryString(query)}`);
+    },
     getConversation: (conversationId) => safeGet(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}`),
-    searchConversations: (query) => safeGet(`/v1/novacodepro/ai/conversations?query=${encodeURIComponent(query)}`),
+    searchConversations: (query) => safeGet(`/v1/novacodepro/ai/conversations${buildQueryString({ query })}`),
+    createConversation: (payload, idempotencyKey) => post("/v1/novacodepro/ai/conversations", payload, idempotencyKey),
+    updateConversation: (conversationId, payload) => request(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}`, { method: "PATCH", body: payload }),
+    postConversationMessage: (conversationId, payload) =>
+      post(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/messages`, payload),
+    getConversationContext: (conversationId) => safeGet(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/context`),
+    updateConversationContext: (conversationId, payload) =>
+      request(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/context`, { method: "PUT", body: payload }),
+    getConversationArtifacts: (conversationId) => safeGet(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/artifacts`),
+    getConversationTraceability: (conversationId) => safeGet(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/traceability`),
+    archiveConversation: (conversationId) => post(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/archive`, {}),
+    restoreConversation: (conversationId) => post(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}/restore`, {}),
+    deleteConversation: (conversationId) => request(`/v1/novacodepro/ai/conversations/${encodeURIComponent(conversationId)}`, { method: "DELETE" }),
     createNotConnected,
   };
 }

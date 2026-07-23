@@ -521,8 +521,143 @@ def build_novacodepro_ncp004_router(service: NovaCodeProPlatform) -> APIRouter:
         return {"knowledge": []}
 
     @router.get("/conversations")
-    def conversations() -> dict[str, Any]:
-        return {"conversations": []}
+    def conversations(
+        query: str | None = None,
+        tenant_id: str | None = None,
+        workspace_id: str | None = None,
+        project_id: str | None = None,
+        repository: str | None = None,
+        branch: str | None = None,
+        environment: str | None = None,
+        status: str | None = None,
+        artifact_type: str | None = None,
+        pinned: bool | None = None,
+        archived: bool | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+        claims: JWTClaims = Depends(observer),
+    ) -> dict[str, Any]:
+        filters = {
+            "query": query,
+            "tenant_id": tenant_id or str(getattr(claims, "tenant_id", None) or claims.organization_id or ""),
+            "workspace_id": workspace_id or claims.workspace_id,
+            "project_id": project_id,
+            "repository": repository,
+            "branch": branch,
+            "environment": environment,
+            "status": status,
+            "artifact_type": artifact_type,
+            "pinned": pinned,
+            "archived": archived,
+            "limit": limit,
+            "offset": offset,
+        }
+        return {"conversations": service.conversations(filters)}
+
+    @router.post("/conversations")
+    def create_conversation(
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(editor),
+        idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        data = dict(payload)
+        tenant_id = str(claims.organization_id or claims.tenant_id or "").lower()
+        data.setdefault("tenant_id", tenant_id)
+        data.setdefault("organization_id", claims.organization_id or tenant_id)
+        data.setdefault("workspace_id", claims.workspace_id or payload.get("workspace_id"))
+        data.setdefault("actor_id", claims.sub)
+        if idempotency_key:
+            data["idempotency_key"] = idempotency_key
+        try:
+            return service.create_conversation(data)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.get("/conversations/{conversation_id}")
+    def get_conversation(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.get_conversation(conversation_id)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.patch("/conversations/{conversation_id}")
+    def update_conversation(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.update_conversation(conversation_id, payload, actor=claims.sub)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.post("/conversations/{conversation_id}/messages")
+    def post_conversation_message(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            message = dict(payload)
+            message.setdefault("actor", claims.sub)
+            return service.add_conversation_message(conversation_id, message, actor=claims.sub)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.get("/conversations/{conversation_id}/context")
+    def get_conversation_context(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.conversation_context(conversation_id)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.put("/conversations/{conversation_id}/context")
+    def update_conversation_context(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            context = dict(payload.get("context") or payload)
+            return service.update_conversation(
+                conversation_id,
+                {
+                    "context": context,
+                    "context_sources": list(payload.get("context_sources") or []),
+                    "workspace_id": payload.get("workspace_id"),
+                    "project_id": payload.get("project_id"),
+                    "repository": payload.get("repository"),
+                    "branch": payload.get("branch"),
+                    "environment": payload.get("environment"),
+                    "correlation_id": payload.get("correlation_id"),
+                },
+                actor=claims.sub,
+            )
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.get("/conversations/{conversation_id}/artifacts")
+    def get_conversation_artifacts(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return {"artifacts": service.conversation_artifacts(conversation_id)}
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.get("/conversations/{conversation_id}/traceability")
+    def get_conversation_traceability(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.conversation_traceability(conversation_id)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.post("/conversations/{conversation_id}/archive")
+    def archive_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.archive_conversation(conversation_id, actor=claims.sub)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.post("/conversations/{conversation_id}/restore")
+    def restore_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.restore_conversation(conversation_id, actor=claims.sub)
+        except Exception as exc:
+            raise _map_error(exc) from exc
+
+    @router.delete("/conversations/{conversation_id}")
+    def delete_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.delete_conversation(conversation_id, actor=claims.sub)
+        except Exception as exc:
+            raise _map_error(exc) from exc
 
     return router
 

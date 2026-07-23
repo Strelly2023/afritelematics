@@ -75,6 +75,18 @@
       "order": 40
     },
     {
+      "id": "conversation",
+      "name": "Conversation Studio",
+      "route": "/novacodepro/conversation",
+      "icon": "spark",
+      "requiredPermissions": ["ai.request"],
+      "featureFlag": "novacodepro.conversation.enabled",
+      "status": "active",
+      "domain": "shared",
+      "description": "Chat-first workspace for requirements, architecture, design, code, testing, security, deployment, and evidence.",
+      "order": 42
+    },
+    {
       "id": "requirements",
       "name": "Requirements Manager",
       "route": "/novacodepro/requirements",

@@ -65,6 +65,7 @@ const LazyProductFactoryPortal = lazyNamed(() => import("./novacodepro/ProductFa
 const LazyStrategyWorkspace = lazyNamed(() => import("./strategy/StrategyWorkspace.jsx"), "StrategyWorkspace");
 const LazyNCP003Portal = lazyNamed(() => import("./novacodepro/NCP003Portal.jsx"), "NCP003Portal");
 const LazyNCP004Portal = lazyNamed(() => import("./novacodepro/NCP004Portal.jsx"), "NCP004Portal");
+const LazyConversationStudio = lazyNamed(() => import("./novacodepro/ConversationStudio.jsx"), "ConversationStudio");
 const LazyNCP005Portal = lazyNamed(() => import("./novacodepro/NCP005Portal.jsx"), "NCP005Portal");
 const LazyNCP006APortal = lazyNamed(() => import("./novacodepro/NCP006APortal.jsx"), "NCP006APortal");
 const LazyNCP006BPortal = lazyNamed(() => import("./novacodepro/NCP006BPortal.jsx"), "NCP006BPortal");
@@ -3968,6 +3969,19 @@ function App() {
       return (
         <Suspense fallback={suspenseFallback}>
           <LazyNCP004Portal
+            session={session}
+            pathname={currentPathname}
+            navigate={(path, options) => navigateTo(path, options)}
+            baseUrl={AUTH_API_BASE}
+            onLogout={handleLogout}
+          />
+        </Suspense>
+      );
+    }
+    if (parsedRoute.appId === "conversation") {
+      return (
+        <Suspense fallback={suspenseFallback}>
+          <LazyConversationStudio
             session={session}
             pathname={currentPathname}
             navigate={(path, options) => navigateTo(path, options)}

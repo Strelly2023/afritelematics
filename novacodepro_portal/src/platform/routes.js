@@ -34,6 +34,7 @@ export const ROUTES = {
   projectsRoot: appPath("/projects"),
   requestsRoot: appPath("/requests"),
   aiRoot: appPath("/ai"),
+  conversationRoot: appPath("/conversation"),
   architectureRoot: appPath("/architecture"),
   designRoot: appPath("/design"),
   codeRoot: appPath("/code"),

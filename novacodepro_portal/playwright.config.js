@@ -24,32 +24,35 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: [
-    {
-      command: "venv/bin/python -m uvicorn afritech.api.app:app --host 127.0.0.1 --port 18002",
-      cwd: "..",
-      url: `${backendBaseUrl}/health`,
-      reuseExistingServer: false,
-      timeout: 120_000,
-      env: {
-        AFRITECH_ENV: "test",
-        AFRITECH_JWT_SECRET: "novacodepro-browser-test-secret",
-        AFRITECH_RUNTIME_ENVIRONMENT: "TEST",
-        AFRIRIDE_DB_PATH: "/private/tmp/novacodepro-browser-certification.sqlite3",
-        AFRITECH_MIGRATION_STATE_PATH: "/private/tmp/novacodepro-browser-migrations.json",
-        NOVATECH_RUNTIME_CONTROL_SQLITE_PATH: "/private/tmp/novacodepro-browser-control.sqlite3",
-        NOVATECH_EVIDENCE_ROOT: "/private/tmp/novacodepro-browser-evidence",
-      },
-    },
-    {
-      command: "npm run dev:frontend -- --host 127.0.0.1 --port 15173 --strictPort",
-      cwd: ".",
-      url: `${frontendBaseUrl}/novacodepro/`,
-      reuseExistingServer: false,
-      timeout: 120_000,
-      env: {
-        VITE_NOVACODEPRO_PROXY_TARGET: backendBaseUrl,
-      },
-    },
-  ],
+  webServer:
+    process.env.PLAYWRIGHT_USE_WEBSERVER === "0"
+      ? undefined
+      : [
+          {
+            command: "venv/bin/python -m uvicorn afritech.api.app:app --host 127.0.0.1 --port 18002",
+            cwd: "..",
+            url: `${backendBaseUrl}/health`,
+            reuseExistingServer: false,
+            timeout: 120_000,
+            env: {
+              AFRITECH_ENV: "test",
+              AFRITECH_JWT_SECRET: "novacodepro-browser-test-secret",
+              AFRITECH_RUNTIME_ENVIRONMENT: "TEST",
+              AFRIRIDE_DB_PATH: "/private/tmp/novacodepro-browser-certification.sqlite3",
+              AFRITECH_MIGRATION_STATE_PATH: "/private/tmp/novacodepro-browser-migrations.json",
+              NOVATECH_RUNTIME_CONTROL_SQLITE_PATH: "/private/tmp/novacodepro-browser-control.sqlite3",
+              NOVATECH_EVIDENCE_ROOT: "/private/tmp/novacodepro-browser-evidence",
+            },
+          },
+          {
+            command: "npm run dev:frontend -- --host 127.0.0.1 --port 15173 --strictPort",
+            cwd: ".",
+            url: `${frontendBaseUrl}/novacodepro/`,
+            reuseExistingServer: false,
+            timeout: 120_000,
+            env: {
+              VITE_NOVACODEPRO_PROXY_TARGET: backendBaseUrl,
+            },
+          },
+        ],
 });

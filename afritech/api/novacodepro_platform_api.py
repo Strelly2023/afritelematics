@@ -779,8 +779,32 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
     router.include_router(build_novacodepro_ncp006a_router(service))
     router.include_router(build_novacodepro_ncp006b_router(service))
     router.include_router(build_novacodepro_ncp007_router(service))
-    observer = require_roles("OPERATOR", "ADMIN", "VERIFIER", "OBSERVER", "DEVELOPER")
-    editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER")
+    observer = require_roles(
+        "OPERATOR",
+        "ADMIN",
+        "VERIFIER",
+        "OBSERVER",
+        "DEVELOPER",
+        "PRODUCT_MANAGER",
+        "PROJECT_MANAGER",
+        "BUSINESS_ANALYST",
+        "ARCHITECT",
+        "QA_ENGINEER",
+        "UI_UX_DESIGNER",
+        "SECURITY_ENGINEER",
+    )
+    editor = require_roles(
+        "OPERATOR",
+        "ADMIN",
+        "DEVELOPER",
+        "PRODUCT_MANAGER",
+        "PROJECT_MANAGER",
+        "BUSINESS_ANALYST",
+        "ARCHITECT",
+        "QA_ENGINEER",
+        "UI_UX_DESIGNER",
+        "SECURITY_ENGINEER",
+    )
     ux_editor = require_roles("OPERATOR", "ADMIN", "DEVELOPER", "UI_UX_DESIGNER")
 
     def _tenant_context(claims: JWTClaims) -> str:
@@ -1209,6 +1233,145 @@ def build_novacodepro_platform_router(platform: NovaCodeProPlatform | None = Non
             return service.post_comment(thread_id, payload.body, author=payload.author or claims.sub)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="thread_not_found") from exc
+
+    @router.get("/conversations")
+    def conversations(
+        claims: JWTClaims = Depends(observer),
+        query: str | None = None,
+        tenant_id: str | None = None,
+        workspace_id: str | None = None,
+        project_id: str | None = None,
+        repository: str | None = None,
+        branch: str | None = None,
+        environment: str | None = None,
+        status: str | None = None,
+        artifact_type: str | None = None,
+        pinned: bool | None = None,
+        archived: bool | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "conversations": service.conversations(
+                {
+                    "query": query,
+                    "tenant_id": tenant_id or _tenant_context(claims),
+                    "workspace_id": workspace_id or claims.workspace_id,
+                    "project_id": project_id,
+                    "repository": repository,
+                    "branch": branch,
+                    "environment": environment,
+                    "status": status,
+                    "artifact_type": artifact_type,
+                    "pinned": pinned,
+                    "archived": archived,
+                    "limit": limit,
+                    "offset": offset,
+                }
+            )
+        }
+
+    @router.post("/conversations")
+    def create_conversation(
+        payload: dict[str, Any],
+        claims: JWTClaims = Depends(editor),
+        idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    ) -> dict[str, Any]:
+        data = dict(payload)
+        data.setdefault("tenant_id", _tenant_context(claims))
+        data.setdefault("organization_id", claims.organization_id or _tenant_context(claims))
+        data.setdefault("workspace_id", claims.workspace_id or payload.get("workspace_id"))
+        data.setdefault("actor_id", claims.sub)
+        if idempotency_key:
+            data["idempotency_key"] = idempotency_key
+        return service.create_conversation(data)
+
+    @router.get("/conversations/{conversation_id}")
+    def get_conversation(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.get_conversation(conversation_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.patch("/conversations/{conversation_id}")
+    def update_conversation(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.update_conversation(conversation_id, payload, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.post("/conversations/{conversation_id}/messages")
+    def post_conversation_message(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            message = dict(payload)
+            message.setdefault("actor", claims.sub)
+            return service.add_conversation_message(conversation_id, message, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.get("/conversations/{conversation_id}/context")
+    def get_conversation_context(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.conversation_context(conversation_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.put("/conversations/{conversation_id}/context")
+    def update_conversation_context(conversation_id: str, payload: dict[str, Any], claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.update_conversation(
+                conversation_id,
+                {
+                    "context": dict(payload.get("context") or payload),
+                    "context_sources": list(payload.get("context_sources") or []),
+                    "workspace_id": payload.get("workspace_id"),
+                    "project_id": payload.get("project_id"),
+                    "repository": payload.get("repository"),
+                    "branch": payload.get("branch"),
+                    "environment": payload.get("environment"),
+                    "linked_requirement_id": payload.get("linked_requirement_id"),
+                    "linked_release_id": payload.get("linked_release_id"),
+                    "linked_incident_id": payload.get("linked_incident_id"),
+                },
+                actor=claims.sub,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.get("/conversations/{conversation_id}/artifacts")
+    def get_conversation_artifacts(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return {"artifacts": service.conversation_artifacts(conversation_id)}
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.get("/conversations/{conversation_id}/traceability")
+    def get_conversation_traceability(conversation_id: str, claims: JWTClaims = Depends(observer)) -> dict[str, Any]:
+        try:
+            return service.conversation_traceability(conversation_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.post("/conversations/{conversation_id}/archive")
+    def archive_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.archive_conversation(conversation_id, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.post("/conversations/{conversation_id}/restore")
+    def restore_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.restore_conversation(conversation_id, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
+
+    @router.delete("/conversations/{conversation_id}")
+    def delete_conversation(conversation_id: str, claims: JWTClaims = Depends(editor)) -> dict[str, Any]:
+        try:
+            return service.delete_conversation(conversation_id, actor=claims.sub)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="conversation_not_found") from exc
 
     @router.get("/integrations")
     def integrations(claims: JWTClaims = Depends(observer)) -> list[dict[str, Any]]:

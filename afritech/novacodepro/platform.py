@@ -1569,6 +1569,368 @@ class NovaCodeProPlatform:
     def collaboration_threads(self) -> list[dict[str, Any]]:
         return self.repository.list("collaboration_thread")
 
+    def _conversation_defaults(self, payload: dict[str, Any]) -> dict[str, Any]:
+        project_id = str(payload.get("project_id") or self.projects()[0]["id"])
+        project = self.repository.get("project", project_id) or {}
+        conversation_id = str(payload.get("id") or _new_id("conversation"))
+        title = str(payload.get("title") or payload.get("scope") or payload.get("request") or "Conversation")
+        summary = str(payload.get("summary") or payload.get("description") or title)
+        thread = {
+            "id": conversation_id,
+            "tenant_id": str(payload.get("tenant_id") or self.tenants()[0]["id"]),
+            "organization_id": str(payload.get("organization_id") or payload.get("tenant_id") or self.tenants()[0]["id"]),
+            "workspace_id": str(payload.get("workspace_id") or project.get("tenant_id") or project.get("workspace_id") or "novacodepro"),
+            "project_id": project_id,
+            "repository": str(payload.get("repository") or project.get("repository") or ""),
+            "branch": str(payload.get("branch") or project.get("branch") or "main"),
+            "environment": str(payload.get("environment") or "development"),
+            "title": title,
+            "summary": summary,
+            "scope": str(payload.get("scope") or title),
+            "state": str(payload.get("state") or "active").lower(),
+            "status": str(payload.get("status") or "ACTIVE").upper(),
+            "pinned": bool(payload.get("pinned") or False),
+            "archived": bool(payload.get("archived") or False),
+            "deleted": bool(payload.get("deleted") or False),
+            "collection_id": str(payload.get("collection_id") or ""),
+            "correlation_id": str(payload.get("correlation_id") or conversation_id),
+            "actor_id": str(payload.get("actor_id") or "NovaCodePro"),
+            "idempotency_key": str(payload.get("idempotency_key") or ""),
+            "model": str(payload.get("model") or ""),
+            "provider": str(payload.get("provider") or ""),
+            "approval_state": str(payload.get("approval_state") or "NOT_REQUIRED").upper(),
+            "validation_state": str(payload.get("validation_state") or "PENDING").upper(),
+            "traceability_state": str(payload.get("traceability_state") or "OPEN").upper(),
+            "context": dict(payload.get("context") or {}),
+            "context_sources": list(payload.get("context_sources") or []),
+            "artifacts": list(payload.get("artifacts") or []),
+            "approvals": list(payload.get("approvals") or []),
+            "evidence": list(payload.get("evidence") or []),
+            "validation_results": list(payload.get("validation_results") or []),
+            "messages": list(payload.get("messages") or []),
+            "participants": list(payload.get("participants") or []),
+            "linked_requirement_id": str(payload.get("linked_requirement_id") or ""),
+            "linked_release_id": str(payload.get("linked_release_id") or ""),
+            "linked_incident_id": str(payload.get("linked_incident_id") or ""),
+            "tags": list(payload.get("tags") or []),
+            "created_at": str(payload.get("created_at") or _now()),
+            "updated_at": str(payload.get("updated_at") or _now()),
+        }
+        return thread
+
+    def _conversation_view(self, thread: dict[str, Any]) -> dict[str, Any]:
+        project = self.repository.get("project", str(thread.get("project_id") or "")) or {}
+        workspace_id = str(thread.get("workspace_id") or project.get("workspace_id") or project.get("tenant_id") or "")
+        repository = str(thread.get("repository") or project.get("repository") or "")
+        branch = str(thread.get("branch") or project.get("branch") or "main")
+        environment = str(thread.get("environment") or project.get("environment") or "development")
+        messages = list(thread.get("messages") or [])
+        latest_message = messages[0] if messages else {}
+        return {
+            **thread,
+            "workspace_id": workspace_id,
+            "repository": repository,
+            "branch": branch,
+            "environment": environment,
+            "message_count": len(messages),
+            "last_message": latest_message,
+            "artifact_count": len(thread.get("artifacts") or []),
+            "evidence_count": len(thread.get("evidence") or []),
+            "approval_count": len(thread.get("approvals") or []),
+            "context_size": len(thread.get("context_sources") or []),
+            "preview": thread.get("summary") or thread.get("title") or thread.get("scope") or "",
+            "conversation_url": f"/novacodepro/conversation/{thread['id']}",
+        }
+
+    def conversations(self, filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+        filters = dict(filters or {})
+        query = str(filters.get("query") or "").strip().lower()
+        include_archived = bool(filters.get("include_archived"))
+        include_deleted = bool(filters.get("include_deleted"))
+        conversations: list[dict[str, Any]] = []
+        for thread in self.collaboration_threads():
+            view = self._conversation_view(thread)
+            if not include_deleted and bool(view.get("deleted")):
+                continue
+            if not include_archived and bool(view.get("archived")):
+                continue
+            if filters.get("tenant_id") and str(view.get("tenant_id") or "") != str(filters["tenant_id"]):
+                continue
+            if filters.get("organization_id") and str(view.get("organization_id") or view.get("tenant_id") or "") != str(filters["organization_id"]):
+                continue
+            if filters.get("workspace_id") and str(view.get("workspace_id") or "") != str(filters["workspace_id"]):
+                continue
+            if filters.get("project_id") and str(view.get("project_id") or "") != str(filters["project_id"]):
+                continue
+            if filters.get("repository") and str(view.get("repository") or "") != str(filters["repository"]):
+                continue
+            if filters.get("branch") and str(view.get("branch") or "") != str(filters["branch"]):
+                continue
+            if filters.get("environment") and str(view.get("environment") or "") != str(filters["environment"]):
+                continue
+            if filters.get("status") and str(view.get("status") or "") != str(filters["status"]).upper():
+                continue
+            if filters.get("pinned") is not None and bool(view.get("pinned")) != bool(filters["pinned"]):
+                continue
+            if filters.get("collection_id") and str(view.get("collection_id") or "") != str(filters["collection_id"]):
+                continue
+            if filters.get("linked_requirement_id") and str(view.get("linked_requirement_id") or "") != str(filters["linked_requirement_id"]):
+                continue
+            if filters.get("linked_release_id") and str(view.get("linked_release_id") or "") != str(filters["linked_release_id"]):
+                continue
+            if filters.get("linked_incident_id") and str(view.get("linked_incident_id") or "") != str(filters["linked_incident_id"]):
+                continue
+            if filters.get("artifact_type"):
+                artifact_types = {str(item.get("type") or item.get("artifact_type") or "") for item in list(view.get("artifacts") or [])}
+                if str(filters["artifact_type"]) not in artifact_types:
+                    continue
+            if query:
+                haystack = " ".join(
+                    [
+                        str(view.get("title") or ""),
+                        str(view.get("summary") or ""),
+                        str(view.get("scope") or ""),
+                        str(view.get("repository") or ""),
+                        str(view.get("branch") or ""),
+                        str(view.get("environment") or ""),
+                        " ".join(str(item.get("body") or "") for item in list(view.get("messages") or [])),
+                    ]
+                ).lower()
+                if query not in haystack:
+                    continue
+            conversations.append(view)
+        conversations.sort(key=lambda item: (str(item.get("pinned")).lower(), str(item.get("updated_at") or ""), str(item.get("id") or "")), reverse=True)
+        offset = max(int(filters.get("offset") or 0), 0)
+        limit = int(filters.get("limit") or 0)
+        if offset:
+            conversations = conversations[offset:]
+        if limit > 0:
+            conversations = conversations[:limit]
+        return conversations
+
+    def get_conversation(self, conversation_id: str) -> dict[str, Any]:
+        thread = self.repository.get("collaboration_thread", conversation_id)
+        if thread is None:
+            raise KeyError("conversation_not_found")
+        return self._conversation_view(thread)
+
+    def create_conversation(self, payload: dict[str, Any]) -> dict[str, Any]:
+        idempotency_key = str(payload.get("idempotency_key") or "").strip()
+        if idempotency_key:
+            existing = next(
+                (
+                    self._conversation_view(thread)
+                    for thread in self.collaboration_threads()
+                    if str(thread.get("idempotency_key") or "") == idempotency_key
+                    and str(thread.get("tenant_id") or "") == str(payload.get("tenant_id") or self.tenants()[0]["id"])
+                    and str(thread.get("workspace_id") or "") == str(payload.get("workspace_id") or "")
+                ),
+                None,
+            )
+            if existing is not None:
+                return existing
+        thread = self._conversation_defaults(payload)
+        if payload.get("prompt"):
+            thread["messages"] = [
+                {
+                    "id": _new_id("message"),
+                    "type": "user_request",
+                    "role": "user",
+                    "actor": str(payload.get("actor_id") or thread["actor_id"]),
+                    "body": str(payload["prompt"]),
+                    "attachments": list(payload.get("attachments") or []),
+                    "context_sources": list(payload.get("context_sources") or []),
+                    "artifact_refs": list(payload.get("artifact_refs") or []),
+                    "evidence_refs": list(payload.get("evidence_refs") or []),
+                    "at": _now(),
+                }
+            ]
+        self.repository.upsert("collaboration_thread", thread)
+        self.repository.append_audit(
+            kind="collaboration",
+            actor=str(payload.get("actor_id") or "NovaCodePro"),
+            service="Conversation Service",
+            subject=thread["title"],
+            action="conversation.created",
+            evidence=thread["id"],
+            detail="Governed conversation created with persisted workspace context.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="conversation.created",
+                actor_type="user",
+                actor_id=str(payload.get("actor_id") or "NovaCodePro"),
+                tenant_id=thread["tenant_id"],
+                organization_id=thread["organization_id"],
+                project_id=thread["project_id"],
+                workflow_id=None,
+                correlation_id=thread["correlation_id"],
+                causation_id=thread["id"],
+                data={"conversation_id": thread["id"], "title": thread["title"], "workspace_id": thread["workspace_id"]},
+            )
+        )
+        return self._conversation_view(thread)
+
+    def update_conversation(self, conversation_id: str, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        thread = self.repository.get("collaboration_thread", conversation_id)
+        if thread is None:
+            raise KeyError("conversation_not_found")
+        for key in (
+            "title",
+            "summary",
+            "scope",
+            "state",
+            "status",
+            "pinned",
+            "archived",
+            "deleted",
+            "collection_id",
+            "workspace_id",
+            "project_id",
+            "repository",
+            "branch",
+            "environment",
+            "context",
+            "context_sources",
+            "artifacts",
+            "approvals",
+            "evidence",
+            "validation_results",
+            "approval_state",
+            "validation_state",
+            "traceability_state",
+            "linked_requirement_id",
+            "linked_release_id",
+            "linked_incident_id",
+            "tags",
+            "model",
+            "provider",
+        ):
+            if key in payload and payload[key] is not None:
+                thread[key] = payload[key]
+        if "context" in payload and isinstance(payload["context"], dict):
+            thread["context"] = dict(payload["context"])
+        if "context_sources" in payload:
+            thread["context_sources"] = list(payload.get("context_sources") or [])
+        if "artifacts" in payload:
+            thread["artifacts"] = list(payload.get("artifacts") or [])
+        if "approvals" in payload:
+            thread["approvals"] = list(payload.get("approvals") or [])
+        if "evidence" in payload:
+            thread["evidence"] = list(payload.get("evidence") or [])
+        if "validation_results" in payload:
+            thread["validation_results"] = list(payload.get("validation_results") or [])
+        thread["updated_at"] = _now()
+        self.repository.upsert("collaboration_thread", thread)
+        self.repository.append_audit(
+            kind="collaboration",
+            actor=actor,
+            service="Conversation Service",
+            subject=thread["title"],
+            action="conversation.updated",
+            evidence=thread["id"],
+            detail="Conversation metadata updated through governed workspace controls.",
+        )
+        return self._conversation_view(thread)
+
+    def archive_conversation(self, conversation_id: str, actor: str = "NovaCodePro") -> dict[str, Any]:
+        return self.update_conversation(conversation_id, {"archived": True, "state": "archived", "status": "ARCHIVED"}, actor=actor)
+
+    def restore_conversation(self, conversation_id: str, actor: str = "NovaCodePro") -> dict[str, Any]:
+        return self.update_conversation(conversation_id, {"archived": False, "deleted": False, "state": "active", "status": "ACTIVE"}, actor=actor)
+
+    def delete_conversation(self, conversation_id: str, actor: str = "NovaCodePro") -> dict[str, Any]:
+        return self.update_conversation(conversation_id, {"deleted": True, "archived": True, "state": "deleted", "status": "DELETED"}, actor=actor)
+
+    def add_conversation_message(self, conversation_id: str, payload: dict[str, Any], actor: str = "NovaCodePro") -> dict[str, Any]:
+        thread = self.repository.get("collaboration_thread", conversation_id)
+        if thread is None:
+            raise KeyError("conversation_not_found")
+        message = {
+            "id": _new_id("message"),
+            "type": str(payload.get("type") or "assistant_response"),
+            "role": str(payload.get("role") or actor),
+            "actor": str(payload.get("actor") or actor),
+            "body": str(payload.get("body") or payload.get("message") or ""),
+            "attachments": list(payload.get("attachments") or []),
+            "context_sources": list(payload.get("context_sources") or []),
+            "artifact_refs": list(payload.get("artifact_refs") or []),
+            "evidence_refs": list(payload.get("evidence_refs") or []),
+            "metadata": dict(payload.get("metadata") or {}),
+            "at": _now(),
+        }
+        thread.setdefault("messages", [])
+        thread["messages"] = [message, *thread["messages"]]
+        thread["updated_at"] = _now()
+        if payload.get("approval_state"):
+            thread["approval_state"] = str(payload["approval_state"]).upper()
+        if payload.get("validation_state"):
+            thread["validation_state"] = str(payload["validation_state"]).upper()
+        if payload.get("summary"):
+            thread["summary"] = str(payload["summary"])
+        if payload.get("title"):
+            thread["title"] = str(payload["title"])
+        self.repository.upsert("collaboration_thread", thread)
+        self.repository.append_audit(
+            kind="collaboration",
+            actor=actor,
+            service="Conversation Service",
+            subject=thread["title"],
+            action="message.posted",
+            evidence=message["body"],
+            detail="Conversation message appended to the governed thread.",
+        )
+        self.repository.append_event(
+            _event_envelope(
+                event_type="conversation.message.posted",
+                actor_type="user",
+                actor_id=actor,
+                tenant_id=thread["tenant_id"],
+                organization_id=thread["organization_id"],
+                project_id=thread["project_id"],
+                workflow_id=None,
+                correlation_id=thread["correlation_id"],
+                causation_id=message["id"],
+                data={"conversation_id": thread["id"], "message_id": message["id"], "message_type": message["type"]},
+            )
+        )
+        return self._conversation_view(thread)
+
+    def conversation_context(self, conversation_id: str) -> dict[str, Any]:
+        conversation = self.get_conversation(conversation_id)
+        return {
+            "conversation_id": conversation_id,
+            "context": conversation.get("context") or {},
+            "context_sources": conversation.get("context_sources") or [],
+            "workspace_id": conversation.get("workspace_id") or "",
+            "project_id": conversation.get("project_id") or "",
+            "repository": conversation.get("repository") or "",
+            "branch": conversation.get("branch") or "",
+            "environment": conversation.get("environment") or "",
+            "correlation_id": conversation.get("correlation_id") or "",
+        }
+
+    def conversation_artifacts(self, conversation_id: str) -> list[dict[str, Any]]:
+        conversation = self.get_conversation(conversation_id)
+        return list(conversation.get("artifacts") or [])
+
+    def conversation_traceability(self, conversation_id: str) -> dict[str, Any]:
+        conversation = self.get_conversation(conversation_id)
+        return {
+            "conversation_id": conversation_id,
+            "requirements": [conversation.get("linked_requirement_id")] if conversation.get("linked_requirement_id") else [],
+            "releases": [conversation.get("linked_release_id")] if conversation.get("linked_release_id") else [],
+            "incidents": [conversation.get("linked_incident_id")] if conversation.get("linked_incident_id") else [],
+            "artifacts": [artifact.get("id") for artifact in list(conversation.get("artifacts") or []) if isinstance(artifact, dict) and artifact.get("id")],
+            "evidence": list(conversation.get("evidence") or []),
+            "approvals": list(conversation.get("approvals") or []),
+            "validation_state": conversation.get("validation_state") or "PENDING",
+            "approval_state": conversation.get("approval_state") or "NOT_REQUIRED",
+        }
+
+    def search_conversations(self, query: str) -> list[dict[str, Any]]:
+        return self.conversations({"query": query})
+
     def knowledge_graph(self) -> list[dict[str, Any]]:
         return self.repository.list("knowledge_node")
 
@@ -4314,82 +4676,10 @@ class NovaCodeProPlatform:
         return self.create_uxos_service_record("ux_digital_twin_simulation", data, actor=actor)
 
     def create_thread(self, payload: dict[str, Any]) -> dict[str, Any]:
-        thread = {
-            "id": _new_id("thread"),
-            "tenant_id": str(payload.get("tenant_id") or self.tenants()[0]["id"]),
-            "project_id": str(payload.get("project_id") or self.projects()[0]["id"]),
-            "scope": str(payload["scope"]),
-            "participants": list(payload.get("participants") or []),
-            "state": "active",
-            "messages": [],
-            "created_at": _now(),
-            "updated_at": _now(),
-        }
-        self.repository.upsert("collaboration_thread", thread)
-        self.repository.append_audit(
-            kind="collaboration",
-            actor="NovaID",
-            service="Collaboration Service",
-            subject=thread["scope"],
-            action="thread.created",
-            evidence=", ".join(thread["participants"]),
-            detail="Thread created for a governed workspace discussion.",
-        )
-        self.repository.append_event(
-            _event_envelope(
-                event_type="collaboration.thread.created",
-                actor_type="user",
-                actor_id="NovaID",
-                tenant_id=thread["tenant_id"],
-                organization_id=thread["tenant_id"],
-                project_id=thread["project_id"],
-                workflow_id=None,
-                correlation_id=thread["id"],
-                causation_id=thread["id"],
-                data={"thread_id": thread["id"], "scope": thread["scope"]},
-            )
-        )
-        return thread
+        return self.create_conversation(payload)
 
     def post_comment(self, thread_id: str, body: str, author: str = "NovaCodePro") -> dict[str, Any]:
-        thread = self.repository.get("collaboration_thread", thread_id)
-        if thread is None:
-            raise KeyError("thread_not_found")
-        message = {
-            "id": _new_id("message"),
-            "author": author,
-            "body": body,
-            "at": _now(),
-        }
-        thread.setdefault("messages", [])
-        thread["messages"] = [message, *thread["messages"]]
-        thread["state"] = "active"
-        thread["updated_at"] = _now()
-        self.repository.upsert("collaboration_thread", thread)
-        self.repository.append_audit(
-            kind="collaboration",
-            actor=author,
-            service="Collaboration Service",
-            subject=thread["scope"],
-            action="comment.posted",
-            evidence=body,
-            detail="Collaborative comment appended to the active thread.",
-        )
-        self.repository.append_event(
-            _event_envelope(
-                event_type="collaboration.message.posted",
-                actor_type="user",
-                actor_id=author,
-                tenant_id=thread["tenant_id"],
-                organization_id=thread["tenant_id"],
-                project_id=thread["project_id"],
-                workflow_id=None,
-                correlation_id=thread["id"],
-                causation_id=message["id"],
-                data={"thread_id": thread["id"], "message_id": message["id"], "body": body},
-            )
-        )
-        return thread
+        return self.add_conversation_message(thread_id, {"body": body, "actor": author, "role": author, "type": "comment"}, actor=author)
 
     def focus_node(self, node_id: str) -> dict[str, Any]:
         node = self.repository.get("knowledge_node", node_id)
