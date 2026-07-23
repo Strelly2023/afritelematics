@@ -1,43 +1,401 @@
-version: 1
-source_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+schema_version: 2
+catalogue: novaride_enterprise
 release_target: CONTROLLED_PILOT_CANDIDATE
+baseline_commit: 94ba38da884ca9676cb500a7d32cac14ecefa055
+status: active_gap_control
 requirements:
-  - id: NR-MVP-001
-    statement: A verified rider and approved driver can complete the governed release-boundary journey with operations evidence.
-    evidence: docs/novaride/strategy/NOVARIDE_MVP_SCOPE.md
+  - id: NR-STRATEGY-001
+    title: Evidence-based regional launch
+    description: Launch scope and expansion decisions use approved research, economics, risk and pilot evidence.
+    objective: Establish a viable trust-first mobility operating model.
+    phase: 1
+    domains: [strategy, market_research, accessibility, regional_expansion]
+    priority: P0
+    owner: product_director
+    status: external_blocked
+    risk: high
+    acceptance_criteria: [Research protocol is approved, regional evidence meets sample targets, decisions record limitations and owners]
+    architecture_links: [docs/novaride/implementation/NOVARIDE_11_PHASE_BASELINE.md]
+    implementation_links: [docs/novaride/strategy/NOVARIDE_MARKET_RESEARCH_AND_DELIVERY_PLAN.md]
+    test_links: []
+    security_links: [docs/novaride/strategy/NOVARIDE_MARKET_RESEARCH_AND_DELIVERY_PLAN.md]
+    evidence_links: []
+    release_gates: [NR-COMMERCIAL-APPROVAL]
+    approval_state: pending_external_research
+    introduced_commit: a5fc54219578ebe8afc715f007acba959aa02d93
+    validated_commit: null
+    gap: Live participant research and accountable commercial approval are required.
+
+  - id: NR-COMMERCIAL-001
+    title: Approved unit economics
+    description: Commercial decisions use sourced, dated and scenario-tested unit economics.
+    objective: Prevent unsupported economic or scale claims.
+    phase: 2
+    domains: [business_case, unit_economics, provider_selection]
+    priority: P0
+    owner: commercial_finance
+    status: external_blocked
+    risk: high
+    acceptance_criteria: [All required assumptions have sources and dates, downside scenarios are reviewed, accountable approval exists]
+    architecture_links: [docs/novaride/strategy/NOVARIDE_TECHNOLOGY_DECISION_REGISTER.md]
+    implementation_links: [docs/novaride/strategy/novaride_unit_economics.yaml]
+    test_links: []
+    security_links: [docs/novaride/strategy/NOVARIDE_TECHNOLOGY_DECISION_REGISTER.md]
+    evidence_links: []
+    release_gates: [NR-COMMERCIAL-APPROVAL]
+    approval_state: pending
+    introduced_commit: a5fc54219578ebe8afc715f007acba959aa02d93
+    validated_commit: null
+    gap: Provider quotations, contracts and observed pilot economics are unavailable.
+
   - id: NR-IDENTITY-001
-    statement: Rider and driver identity, consent, approval, suspension, role and tenant boundaries are enforced.
-    evidence: tests/controlled_pilot/test_controlled_pilot_access_control.py
+    title: Governed participant identity and sessions
+    description: Rider, driver, fleet, corporate and privileged users use NovaID-backed authentication and revocable sessions.
+    objective: Admit only verified and authorised participants.
+    phase: 3
+    domains: [rider_onboarding, driver_onboarding, fleet_onboarding, corporate_onboarding, identity_verification, authentication, passkeys, mfa, session_management]
+    priority: P0
+    owner: identity_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Tenant and region are server-derived, privileged roles require approved strong authentication, revocation is enforced]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/security.py, afritech/novaid]
+    test_links: [tests/controlled_pilot/test_controlled_pilot_access_control.py]
+    security_links: [config/novaride/route_authorization_matrix.json]
+    evidence_links: [artifacts/novaride/final/NOVARIDE_REQUIREMENT_TRACEABILITY.json]
+    release_gates: [NR-SEC-001, NR-ID-001]
+    approval_state: pending_live_integration
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Current-commit live NovaID, MFA and passkey certification is required.
+
+  - id: NR-AUTHZ-001
+    title: Tenant, region and privileged-action authorisation
+    description: RBAC and ABAC enforce least privilege, tenant isolation, region isolation and approval for sensitive actions.
+    objective: Prevent cross-boundary access and unauthorised intervention.
+    phase: 3
+    domains: [rbac, abac, tenant_isolation, region_isolation, audit]
+    priority: P0
+    owner: security_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Cross-tenant tests fail closed, privileged actions are audited, policy decisions are server-authoritative]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/security.py]
+    test_links: [tests/novaride_runtime/security/test_boundaries.py]
+    security_links: [config/novaride/route_authorization_matrix.json]
+    evidence_links: [artifacts/novaride/operational/AUTHORIZATION_MATRIX_RESULTS.json]
+    release_gates: [NR-SEC-001]
+    approval_state: pending_current_certification
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Evidence is historical and independent assessment is absent.
+
+  - id: NR-UX-001
+    title: Inclusive resilient participant experiences
+    description: Critical journeys provide accessible, localisable, offline-aware and recoverable interaction states.
+    objective: Make safe mobility usable across participant roles, devices and connectivity conditions.
+    phase: 4
+    domains: [ux_design, accessibility, localisation, offline_recovery, participant_research]
+    priority: P0
+    owner: experience_owner
+    status: partial
+    risk: high
+    acceptance_criteria: [Automated accessibility gates pass, every stateful screen has failure and recovery states, manual research limitations are disclosed]
+    architecture_links: [docs/novaride/design/NOVARIDE_DESIGN_SYSTEM.md]
+    implementation_links: [rider_app, driver_app, apps/novaride-operations]
+    test_links: [tests/test_controlled_pilot_button_registry.py]
+    security_links: [docs/standards/NOVARIDE_PLATFORM_STANDARDS.md]
+    evidence_links: [artifacts/novaride/uiux/ACCESSIBILITY_AUTOMATION_RESULTS.json]
+    release_gates: [NR-UX-001, NR-A11Y-001]
+    approval_state: pending_manual_validation
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Usability sessions, manual assistive-technology testing and complete visual regression are outstanding.
+
+  - id: NR-BOOKING-001
+    title: Governed ride products
+    description: Quotes and bookings support approved immediate and advanced ride products without client authority.
+    objective: Provide reliable and transparent mobility choices.
+    phase: 6
+    domains: [ride_quoting, immediate_rides, scheduled_rides, multi_stop_rides, recurring_rides, accessibility_rides, airport_rides, event_rides, corporate_rides, fleet_rides, geofencing]
+    priority: P0
+    owner: rider_product_owner
+    status: partial
+    risk: high
+    acceptance_criteria: [Quotes are server-calculated and expire, booking mutations are idempotent, unsupported products fail explicitly]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/booking, afritech/novaride_runtime/pricing]
+    test_links: [tests/mobile_release/test_novaride_rider_primary_journey.py]
+    security_links: [afritech/guards/guard_novaride_runtime_authority.py]
+    evidence_links: [artifacts/novaride/final/NOVARIDE_REQUIREMENT_TRACEABILITY.json]
+    release_gates: [NR-RIDER-001]
+    approval_state: approved_mvp_only
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Scheduled, recurring, multi-stop, airport, event and accessibility variants require complete implementation and tests.
+
   - id: NR-DISPATCH-001
-    statement: Dispatch assigns at most one eligible driver and safely handles decline, timeout and reassignment.
-    evidence: afritech/novaride_runtime/dispatch
+    title: Safe deterministic dispatch
+    description: Dispatch filters eligibility and assigns at most one compliant driver with timeout, cancellation and recovery.
+    objective: Match riders safely, fairly and reliably.
+    phase: 7
+    domains: [dispatch, reassignment, driver_queues, emergency_overrides, marketplace_balance]
+    priority: P0
+    owner: dispatch_owner
+    status: implemented
+    risk: critical
+    acceptance_criteria: [No double assignment, ineligible drivers are excluded, retry and reassignment are idempotent]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/dispatch, afritech/novaride_runtime/state_machines.py]
+    test_links: [tests/controlled_pilot/test_novaride_flows.py, tests/novaride_runtime/unit/test_state_machines.py]
+    security_links: [afritech/guards/guard_novaride_runtime_authority.py]
+    evidence_links: [artifacts/novaride/operational/DISPATCH_CERTIFICATE.md]
+    release_gates: [NR-DISPATCH-001]
+    approval_state: pending_current_certification
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Current-commit load, regional failover and field evidence remain required.
+
+  - id: NR-MARKETPLACE-001
+    title: Marketplace policy lifecycle
+    description: Policy governs surge, suppression, wait compensation, no-shows, incentives and supply interventions.
+    objective: Operate a balanced marketplace without unsafe automation.
+    phase: 8
+    domains: [surge_pricing, surge_suppression, driver_wait_time_compensation, rider_no_show, driver_no_show, driver_incentives]
+    priority: P1
+    owner: marketplace_owner
+    status: planned
+    risk: high
+    acceptance_criteria: [Every adjustment has policy version and explanation, emergency suppression overrides automation, disputes reference immutable evidence]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: []
+    test_links: []
+    security_links: [afritech/novaride_runtime/policy]
+    evidence_links: []
+    release_gates: [NR-MARKETPLACE-001]
+    approval_state: pending_design
+    introduced_commit: null
+    validated_commit: null
+    gap: End-to-end marketplace policy implementation is not complete.
+
   - id: NR-TRIP-001
-    statement: Trip transitions follow the declared lifecycle and reject invalid or duplicate mutations.
-    evidence: afritech/novaride_runtime/state_machines.py
+    title: Authoritative trip lifecycle
+    description: Trip transitions, cancellation and completion are server-authoritative and replayable.
+    objective: Preserve a single auditable trip truth.
+    phase: 8
+    domains: [trip_completion, trip_cancellation, cancellation_fees, offline_recovery]
+    priority: P0
+    owner: trip_owner
+    status: implemented
+    risk: critical
+    acceptance_criteria: [Invalid transitions fail, duplicate commands are idempotent, timeline can be reconstructed]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/trip, afritech/novaride_runtime/state_machines.py]
+    test_links: [tests/novaride_runtime/unit/test_state_machines.py]
+    security_links: [afritech/guards/guard_novaride_runtime_authority.py]
+    evidence_links: [artifacts/novaride/operational/TRIP_LIFECYCLE_CERTIFICATE.md]
+    release_gates: [NR-TRIP-001]
+    approval_state: pending_current_certification
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Infrastructure-backed and real-device current-commit certification is outstanding.
+
   - id: NR-PAYMENT-001
-    statement: MVP payment recording is idempotent, trip-linked and limited to approved operating modes.
-    evidence: tests/controlled_pilot/test_controlled_pilot_payment_safety.py
+    title: Complete idempotent payment lifecycle
+    description: Authorisation through settlement, refunds, disputes, payouts and reconciliation is provider-isolated and auditable.
+    objective: Prevent loss, duplication and unauthorised movement of money.
+    phase: 8
+    domains: [payment_authorisation, payment_capture, payment_settlement, cash_handling, tipping, refunds, partial_refunds, disputes, chargebacks, reconciliation, driver_earnings, payouts, tax_documents, receipts]
+    priority: P0
+    owner: payments_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Callbacks and commands are idempotent, ledger reconciles to provider, live mode fails closed without approvals]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/wallet_adapter, afritech/novaride_runtime/common/idempotency.py]
+    test_links: [tests/controlled_pilot/test_controlled_pilot_payment_safety.py]
+    security_links: [afritech/guards/guard_novaride_real_payments.py, afritech/guards/guard_novaride_payment_boundary.py]
+    evidence_links: [artifacts/novaride/operational/PAYMENT_E2E_RESULTS.json]
+    release_gates: [NR-PAY-001]
+    approval_state: sandbox_and_cash_only
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Live provider, chargeback, payout, tax and full dispute certification are incomplete.
+
   - id: NR-SAFETY-001
-    statement: SOS, sharing, incident alerting and auditable operations response work in controlled tests.
-    evidence: afritech/novaride_runtime/incidents.py
-  - id: NR-METRICS-001
-    statement: Pilot promotion uses measurable field outcomes and zero-tolerance trust and critical-defect gates.
-    evidence: docs/novaride/strategy/NOVARIDE_PILOT_SUCCESS_CRITERIA.md
-  - id: NR-RIDER-001
-    statement: Rider can request and complete a priced trip through authoritative APIs.
-    evidence: tests/mobile_release/test_novaride_rider_primary_journey.py
-  - id: NR-DRIVER-001
-    statement: Driver can operate with location, offline diagnostics and controlled trip transitions.
-    evidence: tests/mobile_release/test_novaride_driver_offline_state.py
-  - id: NR-RUNTIME-001
-    statement: Runtime supports durable events, replay, resilience and regional operation.
-    evidence: tests/novaride_runtime
-  - id: NR-OPS-001
-    statement: Operations users can monitor and intervene through role-controlled surfaces.
-    evidence: apps/novaride-operations
-  - id: NR-SEC-001
-    statement: Clients and APIs enforce secure transport, access control and server authority.
-    evidence: tests/controlled_pilot/test_controlled_pilot_novaride_e2e.py
-  - id: NR-REL-001
-    statement: Release artifacts are versioned, checksummed and governed by explicit gates.
-    evidence: apk-public/novaride/releases/2026.1.4
+    title: Safety incident and evidence lifecycle
+    description: SOS, misconduct, evidence, cases, suspensions, appeals and lawful disclosure are governed and auditable.
+    objective: Protect participants and support accountable response.
+    phase: 8
+    domains: [safety_incidents, sos, misconduct_reports, evidence_collection, case_management, suspensions, appeals, legal_data_release]
+    priority: P0
+    owner: safety_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Critical alerts reach staffed operations, evidence access is restricted, disclosure requires approval]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/incidents.py, afritech/novaride_runtime/safety]
+    test_links: [tests/controlled_pilot/test_controlled_pilot_incident_response.py]
+    security_links: [config/novaride/route_authorization_matrix.json]
+    evidence_links: [artifacts/novaride/final/NOVARIDE_REQUIREMENT_TRACEABILITY.json]
+    release_gates: [NR-SAFETY-001]
+    approval_state: pending_staffed_drill
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Silent emergency, attachments, appeals, disclosure and staffed field drills require closure.
+
+  - id: NR-VEHICLE-001
+    title: Driver, vehicle and fleet compliance
+    description: Credentials, vehicles, insurance, inspections, maintenance and telematics govern eligibility.
+    objective: Admit safe, compliant supply.
+    phase: 8
+    domains: [vehicle_verification, licensing, insurance, background_checks, fleet_management, vehicle_inspections, maintenance, telematics]
+    priority: P0
+    owner: fleet_compliance_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Expired or failed credentials block dispatch, inspection evidence is immutable, reinstatement is approved]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/driver, afritech/novaride_runtime/fleet]
+    test_links: [tests/mobile_release/test_novaride_driver_diagnostics.py]
+    security_links: [config/novaride/route_authorization_matrix.json]
+    evidence_links: []
+    release_gates: [NR-DRIVER-001, NR-FLEET-001]
+    approval_state: pending_field_validation
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Inspector, maintenance, telematics and field compliance evidence are incomplete.
+
+  - id: NR-PORTAL-001
+    title: Governed participant and partner portals
+    description: Every claimed portal is buildable, secured, integrated, tested and deployable.
+    objective: Provide role-specific enterprise operations without empty shells.
+    phase: 9
+    domains: [corporate_policy, partner_operations, government_reporting, support, fraud_investigations, compliance]
+    priority: P1
+    owner: enterprise_experience_owner
+    status: partial
+    risk: high
+    acceptance_criteria: [No production mock data, role and tenant isolation are tested, privileged actions require approval and audit]
+    architecture_links: [docs/novaride/implementation/NOVARIDE_COMPATIBILITY_MATRIX.md]
+    implementation_links: [apps/novaride-operations, apps/novaride-admin, apps/novaride-corporate, apps/novaride-fraud-center]
+    test_links: [tests/test_novaride_apps.py]
+    security_links: [config/novaride/route_authorization_matrix.json]
+    evidence_links: [artifacts/novaride/uiux/API_CONNECTION_MATRIX.json]
+    release_gates: [NR-PORTAL-001]
+    approval_state: pending_scope_completion
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Self-service, support, inspector, government and partner portals are incomplete or absent.
+
+  - id: NR-ANALYTICS-001
+    title: Governed mobility analytics
+    description: Curated, lineage-aware and tenant-safe metrics support operational and executive decisions.
+    objective: Establish trusted descriptive through prescriptive intelligence.
+    phase: 10
+    domains: [analytics, semantic_metrics, data_lineage, data_quality, self_service_bi, digital_twin]
+    priority: P1
+    owner: data_owner
+    status: planned
+    risk: high
+    acceptance_criteria: [Metrics have formula grain owner and quality rules, tenant RLS is tested, simulations are labelled non-production]
+    architecture_links: [docs/novaride/strategy/NOVARIDE_TECHNOLOGY_DECISION_REGISTER.md]
+    implementation_links: [afritech/novaride_runtime/read_models]
+    test_links: []
+    security_links: [afritech/data_governance]
+    evidence_links: []
+    release_gates: [NR-DATA-001]
+    approval_state: pending_architecture
+    introduced_commit: null
+    validated_commit: null
+    gap: Warehouse/lakehouse, semantic layer, catalogue, lineage, BI and simulation are not complete.
+
+  - id: NR-AI-001
+    title: Policy-subordinate dispatch intelligence
+    description: ML recommendations are versioned, evaluated, explainable and unable to bypass deterministic safety policy.
+    objective: Improve mobility decisions without transferring authority to models.
+    phase: 7
+    domains: [ai_ml_governance, eta_prediction, demand_forecasting, cancellation_prediction, no_show_prediction, fairness, drift_monitoring]
+    priority: P1
+    owner: ai_governance_owner
+    status: planned
+    risk: critical
+    acceptance_criteria: [Model registry and card exist, fairness and calibration gates pass, kill switch restores deterministic dispatch]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/dispatch_intelligence]
+    test_links: [afritech/tests/api/test_novaride_demand_forecast_api.py]
+    security_links: [afritech/guards/guard_novaride_runtime_authority.py]
+    evidence_links: []
+    release_gates: [NR-AI-001]
+    approval_state: advisory_only
+    introduced_commit: null
+    validated_commit: null
+    gap: Governed model lifecycle and current model evidence are not implemented.
+
+  - id: NR-NFR-001
+    title: Production service quality
+    description: Performance, reliability, availability, scalability, localisation and accessibility meet approved targets.
+    objective: Operate predictable supported services across regions and degraded conditions.
+    phase: 11
+    domains: [performance, reliability, availability, scalability, accessibility, localisation, multi_currency, multi_region, disaster_recovery]
+    priority: P0
+    owner: sre_owner
+    status: external_blocked
+    risk: critical
+    acceptance_criteria: [Current-commit load soak failover backup restore and DR tests pass, supported accessibility and locale matrices pass]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/resilience.py, config/novaride/resilience]
+    test_links: [tests/novaride_runtime/deployment/test_resilience_production_configs.py]
+    security_links: [docs/standards/NOVARIDE_PLATFORM_STANDARDS.md]
+    evidence_links: [artifacts/novaride/operational/RESILIENCE_MATRIX_RESULTS.json]
+    release_gates: [NR-OPS-001, NR-DR-001]
+    approval_state: pending_production_equivalent_environment
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Current production-equivalent and long-duration operational evidence is unavailable.
+
+  - id: NR-PRIVACY-001
+    title: Privacy, retention and deletion
+    description: Personal, location, identity, safety and financial data is classified, minimised, retained and deleted by policy.
+    objective: Protect participant data and satisfy regional obligations.
+    phase: 5
+    domains: [privacy, security, retention, data_classification]
+    priority: P0
+    owner: privacy_owner
+    status: partial
+    risk: critical
+    acceptance_criteria: [Data classes and retention are approved, deletion propagates lawfully, logs and analytics exclude prohibited data]
+    architecture_links: [docs/novaride/architecture/NOVARIDE_ARCHITECTURE.md]
+    implementation_links: [afritech/novaride_runtime/security.py]
+    test_links: [tests/novaride_runtime/security/test_boundaries.py]
+    security_links: [docs/standards/NOVARIDE_PLATFORM_STANDARDS.md]
+    evidence_links: []
+    release_gates: [NR-PRIVACY-001]
+    approval_state: pending_data_architecture
+    introduced_commit: null
+    validated_commit: null
+    gap: Complete classification, retention, archival and deletion architecture is pending.
+
+  - id: NR-RELEASE-001
+    title: Immutable evidence-bound release
+    description: One clean release commit produces reproducible signed artifacts, SBOMs, checksums and attributable decisions.
+    objective: Ensure the approved software is exactly the software deployed.
+    phase: 11
+    domains: [release_governance, artifact_provenance, approvals]
+    priority: P0
+    owner: release_manager
+    status: external_blocked
+    risk: critical
+    acceptance_criteria: [Worktree is clean, artifacts and evidence bind to one commit, required authenticated approvals exist]
+    architecture_links: [docs/novaride/implementation/NOVARIDE_ROLLBACK_PLAN.md]
+    implementation_links: [tests/release, tests/mobile_release]
+    test_links: [tests/release/test_release_manifest.py, tests/mobile_release/test_novaride_release_provenance.py]
+    security_links: [docs/standards/PLATFORM_RELEASE_POLICY.md]
+    evidence_links: [artifacts/ga-readiness/release/manifests/release-manifest.json]
+    release_gates: [NR-PRR-001, NR-GA-001]
+    approval_state: blocked
+    introduced_commit: 63ef5e0c94333d5482ede1c19b13db908ad76e7d
+    validated_commit: null
+    gap: Current immutable RC, current evidence, external certification and approvals do not exist.
