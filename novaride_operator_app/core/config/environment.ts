@@ -67,6 +67,12 @@ export const ATTESTATION_POLICY = normalizeAttestationPolicy(
   process.env.EXPO_PUBLIC_NOVARIDE_ATTESTATION_POLICY,
 );
 
+if (IS_PRODUCTION && (TEST_MODE || USE_MOCK_API || ATTESTATION_POLICY !== "strict")) {
+  throw new Error(
+    "NovaRide production configuration forbids test mode, mock APIs, and degraded attestation.",
+  );
+}
+
 export const APP_VERSION =
   process.env.EXPO_PUBLIC_AFRIRIDE_APP_VERSION || "2026.1.3";
 
