@@ -1,0 +1,44 @@
+schema_version: 1
+status: assumptions_pending_validation
+currency: null
+region: null
+scenario: base
+effective_date: null
+owner: commercial_finance
+approval_state: pending
+assumptions:
+  monthly_completed_trips: null
+  average_fare: null
+  take_rate: null
+  rider_service_fee_per_trip: null
+  subscription_revenue_monthly: null
+  driver_payout_per_trip: null
+  payment_fee_per_trip: null
+  identity_fee_per_trip: null
+  mapping_and_messaging_per_trip: null
+  incentive_cost_per_trip: null
+  support_cost_per_trip: null
+  insurance_cost_per_trip: null
+  fraud_loss_per_trip: null
+  refund_and_chargeback_cost_per_trip: null
+  infrastructure_cost_per_trip: null
+  rider_acquisition_cost: null
+  driver_acquisition_cost: null
+  monthly_rider_retention: null
+  monthly_driver_retention: null
+  fixed_monthly_cost: null
+derived_metrics:
+  gross_booking_value: null
+  revenue_per_trip: null
+  variable_cost_per_trip: null
+  contribution_per_trip: null
+  contribution_margin: null
+  rider_lifetime_value: null
+  driver_lifetime_value: null
+  break_even_trip_volume: null
+validation_rules:
+  - missing_inputs_are_not_zero
+  - rates_are_between_zero_and_one
+  - monetary_values_are_non_negative
+  - assumptions_require_source_and_date_before_approval
+  - downside_and_severe_scenarios_required_for_commercial_approval
