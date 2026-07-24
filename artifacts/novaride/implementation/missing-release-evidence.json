@@ -1,0 +1,1457 @@
+{
+  "generated_at": "2026-07-24T06:27:48.477478+00:00",
+  "items": [
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A01",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A02",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A03",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A04",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A05",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A06",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A07",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A08",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A09",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A10",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A11",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A12",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A13",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A14",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A15",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A16",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A17",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "rider",
+      "field": "build_artifact",
+      "id": "NR-RIDER-A18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-rider.aab"
+    },
+    {
+      "application": "rider",
+      "field": "evidence_file",
+      "id": "NR-RIDER-A18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/rider-onboarding.json"
+    },
+    {
+      "application": "rider",
+      "field": "release_commit",
+      "id": "NR-RIDER-A18",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B01",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B02",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B03",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B04",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B05",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B06",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B07",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B08",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B09",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B10",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B11",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B12",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B13",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B14",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B15",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B16",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B17",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "operator",
+      "field": "build_artifact",
+      "id": "NR-OPERATOR-B18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-operations.tar.gz"
+    },
+    {
+      "application": "operator",
+      "field": "evidence_file",
+      "id": "NR-OPERATOR-B18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/operator-authentication.json"
+    },
+    {
+      "application": "operator",
+      "field": "release_commit",
+      "id": "NR-OPERATOR-B18",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D01",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D01",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D02",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D02",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D03",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D03",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D04",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D04",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D05",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D05",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D06",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D06",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D07",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D07",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D08",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D08",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D09",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D09",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D10",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D10",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D11",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D11",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D12",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D12",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D13",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D13",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D14",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D14",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D15",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D15",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D16",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D16",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D17",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D17",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D18",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D18",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D19",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D19",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D19",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D20",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D20",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D20",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D21",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D21",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D21",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D22",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D22",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D22",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D23",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D23",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D23",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D24",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D24",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D24",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D25",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D25",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D25",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D26",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D26",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D26",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D27",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D27",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D27",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D28",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D28",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D28",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D29",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D29",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D29",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D30",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D30",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D30",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D31",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D31",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D31",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D32",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D32",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D32",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    },
+    {
+      "application": "driver",
+      "field": "build_artifact",
+      "id": "NR-DRIVER-D33",
+      "reason": "missing_or_placeholder",
+      "value": "pending/release/novaride-driver.aab"
+    },
+    {
+      "application": "driver",
+      "field": "evidence_file",
+      "id": "NR-DRIVER-D33",
+      "reason": "missing_or_placeholder",
+      "value": "pending/evidence/driver-authentication.json"
+    },
+    {
+      "application": "driver",
+      "field": "release_commit",
+      "id": "NR-DRIVER-D33",
+      "reason": "missing_or_placeholder",
+      "value": ""
+    }
+  ],
+  "missing_count": 207,
+  "requirement_count": 69,
+  "schema_version": 1
+}
