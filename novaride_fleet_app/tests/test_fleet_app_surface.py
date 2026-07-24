@@ -10,13 +10,13 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_driver_app_has_pilot_and_store_build_profiles() -> None:
+def test_fleet_app_has_pilot_and_store_build_profiles() -> None:
     app = read("App.tsx")
     app_config = read("app.json")
     eas = read("eas.json")
 
-    assert "NovaRide Operator" in app_config
-    assert "novaride-operator" in app_config
+    assert "NovaRide Fleet" in app_config
+    assert "novaride-fleet" in app_config
     assert '"test_mode": true' in app_config
     assert '"distribution": "internal"' in eas
     assert '"distribution": "store"' in eas
@@ -25,12 +25,12 @@ def test_driver_app_has_pilot_and_store_build_profiles() -> None:
     assert '"owner": "ostrinov23"' in app_config
     assert "ITSAppUsesNonExemptEncryption" in app_config
     assert "EXPO_PUBLIC_AFRIRIDE_TEST_MODE" in eas
-    assert "LIVE CITY MAP" in app
+    assert "FLEET UTILIZATION" in app
     assert "audit event recorded" in app
     assert 'throw new Error("Test mode required")' not in app
 
 
-def test_driver_api_layer_owns_required_http_paths() -> None:
+def test_fleet_scaffold_currently_exposes_driver_operational_paths() -> None:
     source = read("core/api/driver.service.ts")
     evidence = read("core/services/pilotEvidence.service.ts")
 
@@ -50,7 +50,7 @@ def test_driver_api_layer_owns_required_http_paths() -> None:
     assert '"/v1/drivers/location"' in source
 
 
-def test_driver_flow_hydrates_availability_and_polls_for_new_rides() -> None:
+def test_fleet_scaffold_monitors_driver_availability_and_ride_queue() -> None:
     source = read("state/providers/useDriverFlow.ts")
     service = read("core/api/driver.service.ts")
 
@@ -62,14 +62,14 @@ def test_driver_flow_hydrates_availability_and_polls_for_new_rides() -> None:
     assert 'state.availability?.status !== "available"' in source
 
 
-def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
+def test_fleet_dashboard_exposes_fleet_trust_surfaces() -> None:
     app = read("App.tsx")
     screen = read("ui/screens/OperatorDashboardScreen.tsx")
     service = read("core/api/operator.service.ts")
     mock = read("core/api/mockOperator.service.ts")
 
-    assert "LIVE CITY MAP" in app
-    assert "NOVARIDE X CONTROL PLANE" in app
+    assert "FLEET UTILIZATION" in app
+    assert "NOVARIDE X FLEET CLOUD" in app
     assert "Fleet Trust" in screen
     assert "Pilot Evidence" in screen
     assert "Replay Exceptions" in screen
@@ -81,7 +81,7 @@ def test_operator_dashboard_exposes_fleet_trust_surfaces() -> None:
     assert "publicVerification" in mock
 
 
-def test_driver_api_client_sends_test_instrumentation() -> None:
+def test_fleet_api_client_sends_test_instrumentation() -> None:
     source = read("core/api/client.ts")
     instrumentation = read("core/api/testInstrumentation.ts")
     environment = read("core/config/environment.ts")
@@ -114,7 +114,7 @@ def test_availability_screen_only_requests_state_changes() -> None:
     assert "Go available" in source
 
 
-def test_driver_home_enforces_shift_before_availability() -> None:
+def test_fleet_scaffold_observes_driver_shift_gating() -> None:
     source = read("ui/screens/DriverHomeScreen.tsx")
     pilot_hook = read("state/providers/usePilotEvidence.ts")
 
@@ -126,15 +126,15 @@ def test_driver_home_enforces_shift_before_availability() -> None:
     assert "captureLocationEvidence(driverId, lastPosition, position)" in pilot_hook
 
 
-def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
+def test_fleet_app_exposes_pilot_diagnostics_and_fleet_evidence() -> None:
     app = read("App.tsx")
     diagnostics = read("ui/screens/DiagnosticsScreen.tsx")
     pilot_hook = read("state/providers/usePilotEvidence.ts")
     evidence_service = read("core/services/pilotEvidence.service.ts")
     models = read("core/models/pilotEvidence.ts")
 
-    assert "LIVE CITY MAP" in app
-    assert "Live operations synchronized" in app
+    assert "FLEET UTILIZATION" in app
+    assert "Fleet synchronized" in app
     assert "Start evidence shift" in diagnostics
     assert "driver_shift_started" in pilot_hook
     assert "driver_location_event" in pilot_hook
@@ -165,7 +165,7 @@ def test_driver_app_exposes_pilot_diagnostics_and_real_world_evidence() -> None:
     assert "ride_accept_latency" in models
 
 
-def test_ride_requests_screen_exposes_accept_and_reject_only() -> None:
+def test_fleet_scaffold_exposes_ride_request_controls() -> None:
     source = read("ui/screens/RideRequestsScreen.tsx")
 
     assert "onAccept" in source
@@ -173,7 +173,7 @@ def test_ride_requests_screen_exposes_accept_and_reject_only() -> None:
     assert "quotedTotalText" in source
 
 
-def test_trip_lifecycle_screen_requires_system_state() -> None:
+def test_fleet_trip_monitoring_requires_system_state() -> None:
     source = read("ui/screens/TripLifecycleScreen.tsx")
 
     assert "assertTripSnapshot(trip)" in source
@@ -182,7 +182,7 @@ def test_trip_lifecycle_screen_requires_system_state() -> None:
     assert "onComplete" in source
 
 
-def test_novaride_driver_trust_uix_primitives_are_integrated() -> None:
+def test_fleet_trust_uix_primitives_are_integrated() -> None:
     widgets = [
         "TrustScoreCard",
         "LifecycleTimeline",
@@ -217,7 +217,7 @@ def test_novaride_driver_trust_uix_primitives_are_integrated() -> None:
     assert "EvidenceSummaryCard" in trust_profile
 
 
-def test_driver_product_completion_surfaces_are_wired() -> None:
+def test_fleet_scaffold_surfaces_are_wired() -> None:
     app = read("App.tsx")
     home_source = read("ui/screens/DriverHomeScreen.tsx")
     screens = [

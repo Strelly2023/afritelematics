@@ -9,6 +9,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
+    "test": "npm run typecheck && pytest -q tests",
     "test:internal-qa": "pytest tests/internal_qa -q",
     "test:controlled-pilot": "pytest tests/controlled_pilot -q",
     "test:public-pilot": "pytest tests/public_pilot -q"
