@@ -1,7 +1,7 @@
 {
   "branch": "feature/product-factory-enterprise-sdlc",
-  "commit": "b7710da800f42c316e2b4ed16471723df8c4bbbe",
-  "generated_at": "2026-07-21T12:27:08.923646+00:00",
+  "commit": "a0532798456283c76e7e94ff8731b8572a0ff358",
+  "generated_at": "2026-07-24T06:38:42.083972+00:00",
   "items": [
     {
       "archive": false,
@@ -13,127 +13,13 @@
       "file_count": 1,
       "ignore": false,
       "keep": true,
-      "modified_at": "2026-07-21T12:26:56.879974+00:00",
+      "modified_at": "2026-07-22T20:42:52.413915+00:00",
       "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/novacodepro_backend.cdx.json",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/api-inventory.json",
       "remove": false,
       "reproducible": "no",
       "requires_operator_review": false,
-      "size_bytes": 15771,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.450949+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/novacodepro_portal.cdx.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 3035,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.513124+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/novaid_backend.cdx.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 15309,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.577587+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/novapay_backend.cdx.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 15403,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.637113+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/novaride_runtime.cdx.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 15505,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.927565+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/release-aggregate.cdx.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 4299,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "HISTORICAL_EVIDENCE",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".json": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": true,
-      "modified_at": "2026-07-21T12:26:56.944630+00:00",
-      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/report.json",
-      "remove": false,
-      "reproducible": "no",
-      "requires_operator_review": false,
-      "size_bytes": 1732,
+      "size_bytes": 2053,
       "type": "file"
     },
     {
@@ -146,13 +32,298 @@
       "file_count": 1,
       "ignore": false,
       "keep": true,
-      "modified_at": "2026-07-21T12:26:56.944771+00:00",
+      "modified_at": "2026-07-22T20:42:52.856992+00:00",
       "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
-      "relative_path": "artifacts/ga-readiness/release/sbom/report.md",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/backend-inventory.md",
       "remove": false,
       "reproducible": "no",
       "requires_operator_review": false,
-      "size_bytes": 712,
+      "size_bytes": 1603,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.167714+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/baseline-failures.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 730,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.011476+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/baseline-tests.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 805,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.336838+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/compatibility-risks.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 717,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:52.560653+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/database-inventory.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1147,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:52.119167+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/existing-capabilities.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1041,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:52.709687+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/frontend-inventory.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1296,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".txt": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:51.829645+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/git-state.txt",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1195,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:51.973063+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/repository-inventory.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 3958,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:52.263335+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/baseline/route-inventory.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 1998,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.652431+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/compatibility-matrix.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 828,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.492823+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/implementation-plan.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 679,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.819811+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/migration-plan.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 468,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:53.977041+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/rollback-plan.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 453,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:54.313242+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/test-plan.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 522,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-22T20:42:54.139280+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novacodepro/studio-upgrade/plans/threat-model.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 702,
       "type": "file"
     },
     {
@@ -4492,6 +4663,63 @@
       "classification": "HISTORICAL_EVIDENCE",
       "contains_sensitive_data": "unknown",
       "extension_distribution": {
+        ".csv": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-24T02:19:23.372123+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novaride/completion-matrix/novaride-completion-matrix.csv",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 25347,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".json": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-24T02:19:23.370315+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novaride/completion-matrix/novaride-completion-matrix.json",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 75690,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
+        ".md": 1
+      },
+      "file_count": 1,
+      "ignore": false,
+      "keep": true,
+      "modified_at": "2026-07-24T02:19:23.370961+00:00",
+      "reason": "Existing artifacts capture prior release and certification evidence; preserve unless later regenerated canonically.",
+      "relative_path": "artifacts/novaride/completion-matrix/novaride-completion-matrix.md",
+      "remove": false,
+      "reproducible": "no",
+      "requires_operator_review": false,
+      "size_bytes": 29879,
+      "type": "file"
+    },
+    {
+      "archive": false,
+      "classification": "HISTORICAL_EVIDENCE",
+      "contains_sensitive_data": "unknown",
+      "extension_distribution": {
         ".json": 1
       },
       "file_count": 1,
@@ -7760,18 +7988,18 @@
       "classification": "UNKNOWN",
       "contains_sensitive_data": "unknown",
       "extension_distribution": {
-        ".py": 1
+        ".json": 1
       },
       "file_count": 1,
       "ignore": false,
       "keep": false,
-      "modified_at": "2026-07-21T12:26:08.500374+00:00",
+      "modified_at": "2026-07-23T02:18:33.002550+00:00",
       "reason": "Path not recognized by inventory heuristics.",
-      "relative_path": "scripts/release/generate_sbom_bundle.py",
+      "relative_path": "novacodepro_portal/test-results/browser/.last-run.json",
       "remove": false,
       "reproducible": "unknown",
       "requires_operator_review": true,
-      "size_bytes": 17193,
+      "size_bytes": 45,
       "type": "file"
     },
     {
@@ -7784,42 +8012,21 @@
       "file_count": 1,
       "ignore": false,
       "keep": false,
-      "modified_at": "2026-07-21T12:26:08.678210+00:00",
+      "modified_at": "2026-07-23T22:15:52.217571+00:00",
       "reason": "Path not recognized by inventory heuristics.",
-      "relative_path": "scripts/release/verify_sbom_bundle.py",
+      "relative_path": "scripts/novaride/completion_generator_matrix_report.py",
       "remove": false,
       "reproducible": "unknown",
       "requires_operator_review": true,
-      "size_bytes": 2481,
-      "type": "file"
-    },
-    {
-      "archive": false,
-      "classification": "UNKNOWN",
-      "contains_sensitive_data": "unknown",
-      "extension_distribution": {
-        ".py": 1
-      },
-      "file_count": 1,
-      "ignore": false,
-      "keep": false,
-      "modified_at": "2026-07-21T12:25:19.891758+00:00",
-      "reason": "Path not recognized by inventory heuristics.",
-      "relative_path": "tests/release/test_sbom_bundle.py",
-      "remove": false,
-      "reproducible": "unknown",
-      "requires_operator_review": true,
-      "size_bytes": 1164,
+      "size_bytes": 51132,
       "type": "file"
     }
   ],
   "worktree": [
-    "## feature/product-factory-enterprise-sdlc",
-    " M scripts/release/generate_release_manifest.py",
-    " M scripts/release/validate_release_baseline.py",
-    " M tests/release/test_release_manifest.py",
-    "?? artifacts/ga-readiness/release/sbom/",
+    "## feature/product-factory-enterprise-sdlc...origin/feature/product-factory-enterprise-sdlc [ahead 1]",
+    "?? artifacts/novacodepro/studio-upgrade/",
     "?? artifacts/novaid/",
+    "?? artifacts/novaride/completion-matrix/",
     "?? artifacts/novaride/database/",
     "?? artifacts/novaride/docker-recovery/",
     "?? artifacts/novaride/e2e/",
@@ -7840,8 +8047,7 @@
     "?? artifacts/release-baseline/",
     "?? csv.py",
     "?? deployment-evidence/",
-    "?? scripts/release/generate_sbom_bundle.py",
-    "?? scripts/release/verify_sbom_bundle.py",
-    "?? tests/release/test_sbom_bundle.py"
+    "?? novacodepro_portal/test-results/",
+    "?? scripts/novaride/completion_generator_matrix_report.py"
   ]
 }

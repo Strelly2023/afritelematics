@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
 from afriride_system.api.main import app
 from tests.controlled_pilot._helpers import PILOT_ACCOUNTS, auth_header, token_payload
 
@@ -65,7 +66,7 @@ def test_approved_users_devices_and_roles_are_enforced() -> None:
 
     unapproved = client.post(
         "/v1/pilot/access/check",
-        headers=auth_header(client.post("/auth/token", json=token_payload("intruder-1", "CUSTOMER")).json()["token"]),
+        headers=auth_header(JWT.create_token("intruder-1", role="CUSTOMER")),
         json={"device_id": "device-011", "surface": "rider"},
     )
     assert unapproved.status_code == 200

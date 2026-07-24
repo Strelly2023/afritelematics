@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from afriride_system.api.auth import JWT
 from afriride_system.api.main import app
 from tests.controlled_pilot._helpers import PILOT_ACCOUNTS, auth_header, load_source_text, token_payload
 
@@ -19,11 +20,11 @@ def _token(client: TestClient, user_key: str) -> str:
 
 def test_novaid_pilot_identity_flows_are_visible_in_app_surfaces() -> None:
     client = TestClient(app)
-    personal_token = client.post("/auth/token", json=token_payload("rider-002", "OBSERVER")).json()["token"]
-    business_token = client.post("/auth/token", json=token_payload("business-001", "OBSERVER")).json()["token"]
-    employee_token = client.post("/auth/token", json=token_payload("employee-003", "OBSERVER")).json()["token"]
-    partner_token = client.post("/auth/token", json=token_payload("merchant-002", "PARTNER")).json()["token"]
-    inspector_token = client.post("/auth/token", json=token_payload("employee-002", "VERIFIER")).json()["token"]
+    personal_token = JWT.create_token("rider-002", role="OBSERVER")
+    business_token = JWT.create_token("business-001", role="OBSERVER")
+    employee_token = JWT.create_token("employee-003", role="OBSERVER")
+    partner_token = JWT.create_token("merchant-002", role="PARTNER")
+    inspector_token = JWT.create_token("employee-002", role="VERIFIER")
 
     for token, device in [
         (personal_token, "device-012"),
