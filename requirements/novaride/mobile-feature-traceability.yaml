@@ -1,0 +1,304 @@
+schema_version: 1
+policy: novaride-rider-operator-addendum
+requirements:
+  - &rider
+    id: NR-RIDER-A01
+    title: Welcome and onboarding
+    application: rider
+    journey: Welcome and permission onboarding
+    screen: RiderLoginScreen
+    component: onboarding flow
+    source_file: rider_app/ui/screens/RiderLoginScreen.tsx
+    api_endpoint: /api/v1/novaride/rider/onboarding
+    event: novaride.rider.onboarding.completed
+    backend_service: NovaRide rider service
+    database_entity: rider_profile
+    novaid_policy: verified-rider
+    novapay_transaction: not-applicable
+    authorization_rule: rider:self
+    unit_test: rider_app/tests/test_rider_app_surface.py
+    integration_test: tests/mobile_release/test_novaride_rider_primary_journey.py
+    mobile_e2e_test: pending/mobile/rider-onboarding.e2e
+    cross_application_e2e_test: pending/e2e/rider-driver-operator.e2e
+    build_artifact: pending/release/novaride-rider.aab
+    evidence_file: pending/evidence/rider-onboarding.json
+    release_commit: null
+    state: PARTIALLY_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A02
+    title: Sign in and account creation
+    journey: NovaID authentication
+    api_endpoint: /api/v1/auth/login
+    event: novaid.session.created
+    database_entity: identity_session
+    state: PARTIALLY_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A03
+    title: Rider home and location
+    journey: Select pickup and destination
+    screen: RiderHomeScreen
+    source_file: rider_app/ui/screens/RiderHomeScreen.tsx
+    api_endpoint: /api/v1/novaride/service-area
+  - <<: *rider
+    id: NR-RIDER-A04
+    title: Ride search and booking
+    journey: Quote and request ride
+    screen: BookingScreen
+    source_file: rider_app/ui/screens/BookingScreen.tsx
+    api_endpoint: /api/v1/rides
+    event: novaride.ride.requested
+    database_entity: ride_request
+  - <<: *rider
+    id: NR-RIDER-A05
+    title: Driver assignment
+    journey: Receive and track assignment
+    screen: DriverAssignedScreen
+    source_file: rider_app/ui/screens/DriverAssignedScreen.tsx
+    api_endpoint: /api/v1/rides/{ride_id}
+    event: novaride.driver.assigned
+  - <<: *rider
+    id: NR-RIDER-A06
+    title: Driver and vehicle verification
+    journey: Verify trip PIN or QR
+    screen: WaitingForDriverScreen
+    source_file: rider_app/ui/screens/WaitingForDriverScreen.tsx
+    api_endpoint: /api/v1/rides/{ride_id}/verify
+    event: novaride.rider.verified
+  - <<: *rider
+    id: NR-RIDER-A07
+    title: During-trip experience
+    journey: Monitor active trip
+    screen: LiveTrackingScreen
+    source_file: rider_app/ui/screens/LiveTrackingScreen.tsx
+    api_endpoint: /api/v1/rides/{ride_id}/events
+    event: novaride.trip.state.changed
+  - <<: *rider
+    id: NR-RIDER-A08
+    title: Rider safety centre
+    journey: Create and track safety incident
+    screen: SafetyCentre
+    source_file: rider_app/core/api/support.service.ts
+    api_endpoint: /api/v1/incidents
+    event: novaride.safety.incident.created
+    database_entity: safety_incident
+    state: NOT_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A09
+    title: Arrival and trip completion
+    journey: Receive server completion
+    screen: ReceiptScreen
+    source_file: rider_app/ui/screens/ReceiptScreen.tsx
+    api_endpoint: /api/v1/rides/{ride_id}
+    event: novaride.trip.completed
+  - <<: *rider
+    id: NR-RIDER-A10
+    title: NovaPay payment
+    journey: Authorize and confirm payment
+    screen: WalletScreen
+    source_file: rider_app/ui/screens/WalletScreen.tsx
+    api_endpoint: /api/v1/payments/intents
+    event: novapay.payment.captured
+    backend_service: NovaPay
+    database_entity: payment_intent
+    novapay_transaction: rider-trip-payment
+    state: NOT_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A11
+    title: Digital receipt
+    journey: View and share immutable receipt
+    screen: ReceiptScreen
+    source_file: rider_app/ui/screens/ReceiptScreen.tsx
+    api_endpoint: /api/v1/receipts/{receipt_id}
+    database_entity: receipt
+  - <<: *rider
+    id: NR-RIDER-A12
+    title: Driver rating and feedback
+    journey: Rate driver
+    screen: ReceiptScreen
+    api_endpoint: /api/v1/rides/{ride_id}/rating
+    event: novaride.driver.rated
+    database_entity: trip_rating
+    state: NOT_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A13
+    title: Trip history
+    journey: Review trips and receipts
+    screen: RideHistoryScreen
+    source_file: rider_app/ui/screens/RideHistoryScreen.tsx
+    api_endpoint: /api/v1/rides/history
+  - <<: *rider
+    id: NR-RIDER-A14
+    title: Lost property
+    journey: Submit and track lost item
+    screen: RideHistoryScreen
+    api_endpoint: /api/v1/lost-property
+    event: novaride.lost_property.created
+    database_entity: support_case
+    state: NOT_IMPLEMENTED
+  - <<: *rider
+    id: NR-RIDER-A15
+    title: Ride cancellation
+    journey: Preview and confirm cancellation
+    screen: WaitingForDriverScreen
+    api_endpoint: /api/v1/rides/{ride_id}/cancel
+    event: novaride.ride.cancelled
+  - <<: *rider
+    id: NR-RIDER-A16
+    title: Help and support
+    journey: Create and track support case
+    screen: ActivityScreen
+    source_file: rider_app/ui/screens/ActivityScreen.tsx
+    api_endpoint: /api/v1/support/cases
+    event: novaride.support.case.created
+    database_entity: support_case
+  - <<: *rider
+    id: NR-RIDER-A17
+    title: Account and settings
+    journey: Manage rider profile and security
+    screen: RiderProfileScreen
+    source_file: rider_app/ui/screens/RiderProfileScreen.tsx
+    api_endpoint: /api/v1/riders/me
+  - <<: *rider
+    id: NR-RIDER-A18
+    title: Governed rider AI
+    journey: Receive advisory recommendations
+    screen: RiderHomeScreen
+    source_file: rider_app/core/api/intelligence.service.ts
+    api_endpoint: /api/v1/intelligence/recommendations
+    event: novaride.ai.recommendation.created
+    database_entity: ai_decision_log
+    state: PARTIALLY_IMPLEMENTED
+  - &operator
+    <<: *rider
+    id: NR-OPERATOR-B01
+    title: Operator authentication
+    application: operator
+    journey: NovaID operator login
+    screen: Operations login
+    component: authentication boundary
+    source_file: apps/novaride-operations/src/main.tsx
+    api_endpoint: /api/v1/novaride/operations/session
+    event: novaid.operator.session.created
+    backend_service: NovaRide operations service
+    database_entity: operator_session
+    novaid_policy: novaride-operator
+    authorization_rule: operator:region-and-tenant
+    unit_test: apps/novaride-operations/tests/operations.test.js
+    integration_test: afritech/tests/api/test_novaride_operations_api.py
+    mobile_e2e_test: apps/novaride-operations/tests/browser/authentication.spec.ts
+    cross_application_e2e_test: pending/e2e/rider-driver-operator.e2e
+    build_artifact: pending/release/novaride-operations.tar.gz
+    evidence_file: pending/evidence/operator-authentication.json
+  - <<: *operator
+    id: NR-OPERATOR-B02
+    title: Operations dashboard
+    journey: Monitor regional operations
+    screen: Overview
+    api_endpoint: /api/v1/novaride/operations/overview
+  - <<: *operator
+    id: NR-OPERATOR-B03
+    title: Live dispatch
+    journey: Monitor and intervene in dispatch
+    screen: Dispatch
+    api_endpoint: /api/v1/novaride/operations/dispatch
+    event: novaride.dispatch.override.requested
+  - <<: *operator
+    id: NR-OPERATOR-B04
+    title: Driver management
+    journey: Review driver eligibility
+    screen: Drivers
+    api_endpoint: /api/v1/novaride/operations/drivers
+  - <<: *operator
+    id: NR-OPERATOR-B05
+    title: Rider management
+    journey: Review rider account and trips
+    screen: Riders
+    api_endpoint: /api/v1/novaride/operations/riders
+  - <<: *operator
+    id: NR-OPERATOR-B06
+    title: Trip management and replay
+    journey: Inspect and correct trip state
+    screen: Trips
+    api_endpoint: /api/v1/novaride/operations/trips
+    event: novaride.trip.operator_action
+  - <<: *operator
+    id: NR-OPERATOR-B07
+    title: Pricing management
+    journey: Govern pricing changes
+    screen: Pricing
+    api_endpoint: /api/v1/novaride/operations/pricing
+    state: NOT_IMPLEMENTED
+  - <<: *operator
+    id: NR-OPERATOR-B08
+    title: Fleet operations
+    journey: Monitor vehicle compliance
+    screen: Fleet
+    api_endpoint: /api/v1/novaride/operations/fleet
+  - <<: *operator
+    id: NR-OPERATOR-B09
+    title: Safety operations centre
+    journey: Triage safety alerts
+    screen: Safety
+    api_endpoint: /api/v1/novaride/operations/safety
+    event: novaride.safety.alert.acknowledged
+  - <<: *operator
+    id: NR-OPERATOR-B10
+    title: Incident management
+    journey: Investigate and resolve incident
+    screen: Incidents
+    api_endpoint: /api/v1/novaride/operations/incidents
+    database_entity: safety_incident
+  - <<: *operator
+    id: NR-OPERATOR-B11
+    title: NovaPay operations
+    journey: Review payment exceptions
+    screen: Payments
+    api_endpoint: /api/v1/novaride/operations/payments
+    backend_service: NovaPay operations
+    novapay_transaction: operations-payment-review
+  - <<: *operator
+    id: NR-OPERATOR-B12
+    title: Reports and analytics
+    journey: Generate authorized reports
+    screen: Reports
+    api_endpoint: /api/v1/novaride/operations/reports
+  - <<: *operator
+    id: NR-OPERATOR-B13
+    title: Notifications
+    journey: Send governed notification
+    screen: Notifications
+    api_endpoint: /api/v1/novaride/operations/notifications
+    state: NOT_IMPLEMENTED
+  - <<: *operator
+    id: NR-OPERATOR-B14
+    title: Driver support
+    journey: Resolve driver case
+    screen: Support
+    api_endpoint: /api/v1/novaride/operations/support
+  - <<: *operator
+    id: NR-OPERATOR-B15
+    title: Rider support
+    journey: Resolve rider case
+    screen: Support
+    api_endpoint: /api/v1/novaride/operations/support
+  - <<: *operator
+    id: NR-OPERATOR-B16
+    title: Governed AI operations
+    journey: Review and override recommendation
+    screen: Investigations
+    api_endpoint: /api/v1/novaride/operations/investigations
+    database_entity: ai_decision_log
+  - <<: *operator
+    id: NR-OPERATOR-B17
+    title: Shift handover
+    journey: Transfer operational responsibility
+    screen: Handover
+    api_endpoint: /api/v1/novaride/operations/handover
+    state: NOT_IMPLEMENTED
+  - <<: *operator
+    id: NR-OPERATOR-B18
+    title: Operator roles
+    journey: Enforce least privilege
+    screen: All
+    api_endpoint: /api/v1/novaride/operations/authorization
+    authorization_rule: operator:deny-by-default

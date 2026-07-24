@@ -1,0 +1,265 @@
+schema_version: 1
+policy: novaride-driver-addendum
+requirements:
+  - &driver
+    id: NR-DRIVER-D01
+    title: Driver authentication and session security
+    application: driver
+    journey: Authenticate through NovaID
+    screen: DriverLoginScreen
+    component: authentication flow
+    source_file: driver_app/ui/screens/DriverLoginScreen.tsx
+    api_endpoint: /api/v1/auth/login
+    event: novaid.driver.session.created
+    backend_service: NovaID
+    database_entity: identity_session
+    novaid_policy: verified-driver
+    novapay_transaction: not-applicable
+    authorization_rule: driver:self
+    unit_test: driver_app/tests/test_driver_app_surface.py
+    integration_test: tests/mobile_release/test_novaride_driver_diagnostics.py
+    mobile_e2e_test: pending/mobile/driver-workflow.e2e
+    cross_application_e2e_test: pending/e2e/rider-driver-operator.e2e
+    build_artifact: pending/release/novaride-driver.aab
+    evidence_file: pending/evidence/driver-authentication.json
+    release_commit: null
+    state: PARTIALLY_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D02
+    title: Driver eligibility gate
+    journey: Validate driver vehicle and region
+    screen: AvailabilityScreen
+    source_file: driver_app/ui/screens/AvailabilityScreen.tsx
+    api_endpoint: /api/v1/drivers/me/eligibility
+    event: novaride.driver.eligibility.checked
+    database_entity: driver_eligibility
+  - <<: *driver
+    id: NR-DRIVER-D03
+    title: Pre-trip vehicle inspection
+    journey: Submit vehicle inspection
+    screen: VehicleManagementScreen
+    source_file: driver_app/ui/screens/VehicleManagementScreen.tsx
+    api_endpoint: /api/v1/driver/inspections
+    event: novaride.vehicle.inspection.completed
+    database_entity: vehicle_inspection
+  - <<: *driver
+    id: NR-DRIVER-D04
+    title: Start shift
+    journey: Create server-side shift
+    screen: AvailabilityScreen
+    api_endpoint: /api/v1/driver/shifts
+    event: novaride.driver.shift.started
+    database_entity: driver_shift
+  - <<: *driver
+    id: NR-DRIVER-D05
+    title: Go online and availability
+    journey: Become dispatch eligible
+    screen: AvailabilityScreen
+    api_endpoint: /api/v1/driver/availability
+    event: novaride.driver.available
+  - <<: *driver
+    id: NR-DRIVER-D06
+    title: Driver dashboard
+    journey: Review shift state
+    screen: DriverHomeScreen
+    source_file: driver_app/ui/screens/DriverHomeScreen.tsx
+    api_endpoint: /api/v1/driver/dashboard
+  - <<: *driver
+    id: NR-DRIVER-D07
+    title: Receive ride request
+    journey: Receive expiring dispatch offer
+    screen: IncomingRideModal
+    source_file: driver_app/ui/screens/IncomingRideModal.tsx
+    api_endpoint: /api/v1/driver/offers
+    event: novaride.dispatch.offer.created
+  - <<: *driver
+    id: NR-DRIVER-D08
+    title: Acceptance and dispatch confirmation
+    journey: Accept offer server-side
+    screen: IncomingRideModal
+    api_endpoint: /api/v1/driver/offers/{offer_id}/accept
+    event: novaride.dispatch.offer.accepted
+  - <<: *driver
+    id: NR-DRIVER-D09
+    title: Navigation to pickup
+    journey: Navigate to rider
+    screen: TripLifecycleScreen
+    source_file: driver_app/ui/screens/TripLifecycleScreen.tsx
+    api_endpoint: /api/v1/trips/{trip_id}/route
+  - <<: *driver
+    id: NR-DRIVER-D10
+    title: Driver arrival
+    journey: Confirm arrival within policy radius
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/arrive
+    event: novaride.driver.arrived
+  - <<: *driver
+    id: NR-DRIVER-D11
+    title: Rider verification
+    journey: Verify PIN or QR
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/verify-rider
+    event: novaride.rider.verified
+  - <<: *driver
+    id: NR-DRIVER-D12
+    title: Start trip
+    journey: Start verified trip server-side
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/start
+    event: novaride.trip.started
+  - <<: *driver
+    id: NR-DRIVER-D13
+    title: During-trip experience
+    journey: Execute active trip
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/events
+    event: novaride.trip.state.changed
+  - <<: *driver
+    id: NR-DRIVER-D14
+    title: Driver safety
+    journey: Create emergency incident
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/incidents
+    event: novaride.driver.sos.created
+    database_entity: safety_incident
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D15
+    title: Route and trip change management
+    journey: Receive authorized route change
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/route-changes
+  - <<: *driver
+    id: NR-DRIVER-D16
+    title: Complete trip
+    journey: Complete trip server-side
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/complete
+    event: novaride.trip.completed
+  - <<: *driver
+    id: NR-DRIVER-D17
+    title: NovaPay driver payment and earnings
+    journey: Receive ledger-backed earnings
+    screen: EarningsScreen
+    source_file: driver_app/ui/screens/EarningsScreen.tsx
+    api_endpoint: /api/v1/driver/earnings
+    event: novapay.driver.earnings.posted
+    backend_service: NovaPay
+    database_entity: ledger_entry
+    novapay_transaction: driver-trip-earnings
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D18
+    title: Driver ratings and rider feedback
+    journey: Submit rider feedback
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/rider-rating
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D19
+    title: Break mode
+    journey: Pause dispatch eligibility
+    screen: AvailabilityScreen
+    api_endpoint: /api/v1/driver/shifts/{shift_id}/break
+    event: novaride.driver.break.started
+  - <<: *driver
+    id: NR-DRIVER-D20
+    title: Incident management
+    journey: Report and track incident
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/incidents
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D21
+    title: Rider no-show
+    journey: Complete policy waiting workflow
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/no-show
+    event: novaride.rider.no_show.confirmed
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D22
+    title: Lost property
+    journey: Record found property
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/lost-property
+    state: NOT_IMPLEMENTED
+  - <<: *driver
+    id: NR-DRIVER-D23
+    title: Earnings dashboard
+    journey: Review ledger-backed earnings
+    screen: EarningsScreen
+    source_file: driver_app/ui/screens/EarningsScreen.tsx
+    api_endpoint: /api/v1/driver/earnings
+    novapay_transaction: driver-earnings-query
+  - <<: *driver
+    id: NR-DRIVER-D24
+    title: Driver documents
+    journey: Upload and renew documents
+    screen: DriverProfileScreen
+    source_file: driver_app/ui/screens/DriverProfileScreen.tsx
+    api_endpoint: /api/v1/driver/documents
+  - <<: *driver
+    id: NR-DRIVER-D25
+    title: Vehicle change
+    journey: Change to authorized vehicle
+    screen: VehicleManagementScreen
+    api_endpoint: /api/v1/driver/shifts/{shift_id}/vehicle
+  - <<: *driver
+    id: NR-DRIVER-D26
+    title: End shift
+    journey: Close server-side shift
+    screen: AvailabilityScreen
+    api_endpoint: /api/v1/driver/shifts/{shift_id}/complete
+    event: novaride.driver.shift.completed
+  - <<: *driver
+    id: NR-DRIVER-D27
+    title: Governed AI driver assistant
+    journey: Receive advisory recommendation
+    screen: DriverHomeScreen
+    source_file: driver_app/core/api/intelligence.service.ts
+    api_endpoint: /api/v1/intelligence/driver-recommendations
+    event: novaride.ai.driver_recommendation.created
+    database_entity: ai_decision_log
+  - <<: *driver
+    id: NR-DRIVER-D28
+    title: Offline and recovery behaviour
+    journey: Reconcile after connectivity loss
+    screen: TripLifecycleScreen
+    source_file: driver_app/core/services/offlineQueue.service.ts
+    api_endpoint: /api/v1/trips/{trip_id}/reconcile
+    event: novaride.client.reconciled
+  - <<: *driver
+    id: NR-DRIVER-D29
+    title: Driver notifications
+    journey: Receive safe deep-linked notification
+    screen: DriverNotificationsScreen
+    source_file: driver_app/ui/screens/DriverNotificationsScreen.tsx
+    api_endpoint: /api/v1/driver/notifications
+  - <<: *driver
+    id: NR-DRIVER-D30
+    title: Driver accessibility and usability
+    journey: Operate accessible driving interface
+    screen: All driver screens
+    api_endpoint: /api/v1/driver/preferences
+  - <<: *driver
+    id: NR-DRIVER-D31
+    title: Driver privacy
+    journey: Control off-shift data collection
+    screen: DriverProfileScreen
+    api_endpoint: /api/v1/driver/privacy
+  - <<: *driver
+    id: NR-DRIVER-D32
+    title: Driver application security
+    journey: Submit governed device risk signal
+    screen: DiagnosticsScreen
+    source_file: driver_app/ui/screens/DiagnosticsScreen.tsx
+    api_endpoint: /api/v1/device-integrity/signals
+    event: novaride.device.risk.detected
+  - <<: *driver
+    id: NR-DRIVER-D33
+    title: Driver real-time synchronization
+    journey: Reconnect replay and reconcile state
+    screen: TripLifecycleScreen
+    api_endpoint: /api/v1/trips/{trip_id}/events
+    event: novaride.trip.state.changed
