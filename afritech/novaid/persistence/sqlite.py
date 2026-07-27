@@ -15,6 +15,15 @@ from pathlib import Path
 from typing import Any
 
 from ..domain.models import Identity, IdentityStatus, RequestContext, SecurityEvent
+from .identity_codec import (
+    encode_addresses,
+    encode_contact_points,
+    encode_identifiers,
+    encode_identity_names,
+    encode_legal_name,
+    encode_metadata,
+    identity_from_row,
+)
 
 
 SCHEMA = """
@@ -27,6 +36,16 @@ CREATE TABLE IF NOT EXISTS novaid_identities(
  status TEXT NOT NULL CHECK(status IN ('PENDING_VERIFICATION','ACTIVE','LOCKED','SUSPENDED','DISABLED','DELETED')),
  created_at TEXT NOT NULL, updated_at TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1,
  security_version INTEGER NOT NULL DEFAULT 1,
+ identity_type TEXT NOT NULL DEFAULT 'PERSON',
+ legal_name TEXT,
+ preferred_name TEXT,
+ alternative_names TEXT NOT NULL DEFAULT '[]',
+ contact_points TEXT NOT NULL DEFAULT '[]',
+ addresses TEXT NOT NULL DEFAULT '[]',
+ identifiers TEXT NOT NULL DEFAULT '[]',
+ verification_status TEXT NOT NULL DEFAULT 'UNVERIFIED',
+ assurance_level TEXT NOT NULL DEFAULT 'NID-AL0',
+ metadata TEXT NOT NULL DEFAULT '{}',
  UNIQUE(tenant_id, normalized_email));
 CREATE INDEX IF NOT EXISTS ix_novaid_identity_tenant ON novaid_identities(tenant_id);
 CREATE TABLE IF NOT EXISTS novaid_tenant_memberships(
@@ -1223,16 +1242,31 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
 
     def add_identity(self, identity: Identity) -> None:
         self.connection.execute(
-            "INSERT INTO novaid_identities VALUES(?,?,?,?,?,?,?,?)",
+            "INSERT INTO novaid_identities("
+            "identity_id,tenant_id,normalized_email,status,created_at,"
+            "updated_at,version,security_version,identity_type,legal_name,"
+            "preferred_name,alternative_names,contact_points,addresses,"
+            "identifiers,verification_status,assurance_level,metadata"
+            ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 identity.identity_id,
                 identity.tenant_id,
                 identity.normalized_email.lower(),
-                identity.status,
+                identity.status.value,
                 identity.created_at.isoformat(),
                 identity.updated_at.isoformat(),
                 identity.version,
                 1,
+                identity.identity_type.value,
+                encode_legal_name(identity.legal_name),
+                identity.preferred_name,
+                encode_identity_names(identity.alternative_names),
+                encode_contact_points(identity.contact_points),
+                encode_addresses(identity.addresses),
+                encode_identifiers(identity.identifiers),
+                identity.verification_status.value,
+                identity.assurance_level.value,
+                encode_metadata(identity.metadata),
             ),
         )
 
@@ -1336,7 +1370,7 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             "revocation_reason,version,membership_id,authenticated_at,idle_expires_at,"
             "absolute_expires_at,pending_mfa_expires_at,step_up_expires_at,locked_at,expired_at,"
             "compromised_at,network_reference,authentication_methods,security_version,revoked_by,"
-            "compromise_reason) VALUES(?,?,?,?,?,?,?,?,?,'PENDING_MFA',?,?,?,?,?,1,?,NULL,?,?,?,NULL,NULL,NULL,NULL,?,1,NULL,NULL)",
+            "compromise_reason) VALUES(?,?,?,?,?,?,?,?,?,'PENDING_MFA',?,?,?,?,?,1,?,NULL,?,?,?,NULL,NULL,NULL,NULL,NULL,?,1,NULL,NULL)",
             (
                 session_id,
                 tenant_id,
@@ -1353,7 +1387,6 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
                 None,
                 None,
                 membership_id,
-                None,
                 created_at,
                 expires_at,
                 pending_mfa_expires_at,
@@ -1441,11 +1474,23 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
     def activate_session_and_refresh(
         self, session_id: str, *, now: str, authentication_methods: str
     ) -> int:
+        idle_expires_at = (
+            datetime.fromisoformat(now) + timedelta(minutes=30)
+        ).isoformat()
+
         result = self.connection.execute(
             "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
             "authentication_strength='PASSWORD_OTP',authenticated_at=?,"
-            "authentication_methods=?,pending_mfa_expires_at=NULL WHERE session_id=?",
-            (now, authentication_methods, session_id),
+            "last_seen_at=?,idle_expires_at=?,authentication_methods=?,"
+            "pending_mfa_expires_at=NULL WHERE session_id=? "
+            "AND status='PENDING_MFA'",
+            (
+                now,
+                now,
+                idle_expires_at,
+                authentication_methods,
+                session_id,
+            ),
         )
         return result.rowcount
 
@@ -1645,17 +1690,11 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             "SELECT * FROM novaid_identities WHERE identity_id=? AND tenant_id=?",
             (identity_id, context.tenant_id),
         ).fetchone()
+
         if row is None:
             raise LookupError("TENANT_ACCESS_DENIED")
-        return Identity(
-            row["identity_id"],
-            row["tenant_id"],
-            row["normalized_email"],
-            IdentityStatus(row["status"]),
-            datetime.fromisoformat(row["created_at"]),
-            datetime.fromisoformat(row["updated_at"]),
-            row["version"],
-        )
+
+        return identity_from_row(row)
 
     def update_identity(
         self, context: RequestContext, identity: Identity, expected_version: int

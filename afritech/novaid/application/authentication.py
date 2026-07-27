@@ -11,7 +11,7 @@ import secrets
 from uuid import uuid4
 from typing import TYPE_CHECKING
 
-from ..domain import Identity
+from ..domain import Identity, SecurityEvent
 from ..persistence import NovaIDUnitOfWork
 from ..security import PasswordHasher
 
@@ -59,28 +59,24 @@ class DurableAuthenticationService:
         request: str,
         outcome: str = "SUCCESS",
     ) -> None:
-        now = _now().isoformat()
+        now = _now()
         self.uow.record_security_event(
-            type(
-                "SecurityEventRecord",
-                (),
-                {
-                    "event_id": _id(),
-                    "event_type": event_type,
-                    "severity": "HIGH" if "REPLAY" in event_type else "INFO",
-                    "tenant_id": tenant,
-                    "actor_identity_id": actor,
-                    "subject_identity_id": subject,
-                    "correlation_id": correlation,
-                    "request_id": request,
-                    "occurred_at": now,
-                    "recorded_at": now,
-                    "outcome": outcome,
-                    "reason_codes": [],
-                    "metadata": {},
-                    "schema_version": 1,
-                },
-            )()
+            SecurityEvent(
+                event_id=_id(),
+                event_type=event_type,
+                severity="HIGH" if "REPLAY" in event_type else "INFO",
+                tenant_id=tenant,
+                actor_identity_id=actor,
+                subject_identity_id=subject,
+                correlation_id=correlation,
+                request_id=request,
+                occurred_at=now,
+                recorded_at=now,
+                outcome=outcome,
+                reason_codes=(),
+                metadata={},
+                schema_version=1,
+            )
         )
 
     def register(

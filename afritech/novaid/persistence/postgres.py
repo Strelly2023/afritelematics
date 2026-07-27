@@ -4,14 +4,23 @@
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import json
 from typing import Any
 from uuid import UUID
 
 from .pool import NovaIDPostgresPool
-from ..domain.models import Identity
+from .identity_codec import (
+    encode_addresses,
+    encode_contact_points,
+    encode_identifiers,
+    encode_identity_names,
+    encode_legal_name,
+    encode_metadata,
+    identity_from_row,
+)
+from ..domain.models import Identity, RequestContext
 
 try:
     import psycopg
@@ -308,11 +317,30 @@ class PostgresIdentityRepository(PostgresRepository):
             (challenge_id, tenant_id, session_id),
         ).fetchone()
 
-    def activate_session_and_refresh(self, session_id: str, *, now: str, authentication_methods: str) -> int:
+    def activate_session_and_refresh(
+        self,
+        session_id: str,
+        *,
+        now: str,
+        authentication_methods: str,
+    ) -> int:
+        idle_expires_at = (
+            datetime.fromisoformat(now) + timedelta(minutes=30)
+        ).isoformat()
+
         row = self.connection.execute(
-            "UPDATE novaid_authentication_sessions SET status='ACTIVE',authentication_strength='PASSWORD_OTP',"
-            "authenticated_at=%s,authentication_methods=%s,pending_mfa_expires_at=NULL WHERE session_id=%s",
-            (now, authentication_methods, session_id),
+            "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
+            "authentication_strength='PASSWORD_OTP',authenticated_at=%s,"
+            "last_seen_at=%s,idle_expires_at=%s,authentication_methods=%s,"
+            "pending_mfa_expires_at=NULL WHERE session_id=%s "
+            "AND status='PENDING_MFA'",
+            (
+                now,
+                now,
+                idle_expires_at,
+                authentication_methods,
+                session_id,
+            ),
         )
         return row.rowcount
 
@@ -818,18 +846,51 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
             (tenant_id, name, now, now),
         )
 
+    def get_identity(
+        self,
+        context: RequestContext,
+        identity_id: str,
+    ) -> Identity:
+        row = self.connection.execute(
+            "SELECT * FROM novaid_identities "
+            "WHERE identity_id=? AND tenant_id=?",
+            (identity_id, context.tenant_id),
+        ).fetchone()
+
+        if row is None:
+            raise LookupError("TENANT_ACCESS_DENIED")
+
+        return identity_from_row(row)
+
     def add_identity(self, identity: Identity) -> None:
         self.connection.execute(
-            "INSERT INTO novaid_identities(identity_id,tenant_id,normalized_email,status,created_at,"
-            "updated_at,version,security_version) VALUES(?,?,?,?,?,?,?,1)",
+            "INSERT INTO novaid_identities("
+            "identity_id,tenant_id,normalized_email,status,created_at,"
+            "updated_at,version,security_version,identity_type,legal_name,"
+            "preferred_name,alternative_names,contact_points,addresses,"
+            "identifiers,verification_status,assurance_level,metadata"
+            ") VALUES("
+            "?,?,?,?,?,?,?,1,?,?::jsonb,?,?::jsonb,?::jsonb,"
+            "?::jsonb,?::jsonb,?,?,?::jsonb"
+            ")",
             (
                 identity.identity_id,
                 identity.tenant_id,
                 identity.normalized_email.lower(),
-                str(identity.status),
+                identity.status.value,
                 identity.created_at,
                 identity.updated_at,
                 identity.version,
+                identity.identity_type.value,
+                encode_legal_name(identity.legal_name),
+                identity.preferred_name,
+                encode_identity_names(identity.alternative_names),
+                encode_contact_points(identity.contact_points),
+                encode_addresses(identity.addresses),
+                encode_identifiers(identity.identifiers),
+                identity.verification_status.value,
+                identity.assurance_level.value,
+                encode_metadata(identity.metadata),
             ),
         )
 

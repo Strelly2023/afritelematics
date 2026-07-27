@@ -12,7 +12,7 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `790`
+- Startup-safe closure size: `801`
 - Django-bound modules declared in repo: `255`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `107`
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (790 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (801 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -261,7 +261,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (625)
+### Other (636)
 
 - `afritech`
 - `afritech.afripay`
@@ -678,11 +678,22 @@ flowchart TD
 - `afritech.novaid.config`
 - `afritech.novaid.core`
 - `afritech.novaid.domain`
+- `afritech.novaid.domain.domain_event_codec`
+- `afritech.novaid.domain.domain_events`
+- `afritech.novaid.domain.identity_events`
+- `afritech.novaid.domain.identity_merge_service`
+- `afritech.novaid.domain.identity_policy`
+- `afritech.novaid.domain.identity_service`
+- `afritech.novaid.domain.merge_events`
 - `afritech.novaid.domain.models`
+- `afritech.novaid.domain.tenant_boundary`
+- `afritech.novaid.domain.verification_events`
+- `afritech.novaid.domain.verification_service`
 - `afritech.novaid.domain.webauthn`
 - `afritech.novaid.observability`
 - `afritech.novaid.outbox`
 - `afritech.novaid.persistence`
+- `afritech.novaid.persistence.identity_codec`
 - `afritech.novaid.persistence.migrations`
 - `afritech.novaid.persistence.pool`
 - `afritech.novaid.persistence.postgres`
