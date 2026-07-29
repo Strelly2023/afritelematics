@@ -11,6 +11,7 @@ from typing import Any
 from uuid import UUID
 
 from .pool import NovaIDPostgresPool
+from .authorization_repository import AuthorizationRepository
 from .identity_codec import (
     encode_addresses,
     encode_contact_points,
@@ -812,6 +813,7 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         self.security_events = PostgresSecurityEventRepository(self.connection)
         self.idempotency = PostgresIdempotencyRepository(self.connection)
         self.authentication_locks = PostgresAuthenticationLockRepository(self.connection)
+        self.authorization = AuthorizationRepository(self.connection)
 
     def __enter__(self) -> "PostgresNovaIdUnitOfWork":
         if self._connection is not None:

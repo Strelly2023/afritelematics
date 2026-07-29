@@ -17,6 +17,7 @@ from uuid import uuid4
 
 from ..domain.models import Identity, IdentityStatus, RequestContext, SecurityEvent
 from .biometric_sqlite_repository import BiometricSQLiteRepositoryMixin
+from .authorization_repository import AuthorizationRepository
 from .identity_codec import (
     encode_addresses,
     encode_contact_points,
@@ -32,7 +33,10 @@ SCHEMA = """
 PRAGMA foreign_keys=ON;
 CREATE TABLE IF NOT EXISTS novaid_tenants(
  tenant_id TEXT PRIMARY KEY, name TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('ACTIVE','SUSPENDED','DISABLED')),
- created_at TEXT NOT NULL, updated_at TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1);
+ created_at TEXT NOT NULL, updated_at TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1,
+ tenant_type TEXT NOT NULL DEFAULT 'ORGANISATION',tier TEXT NOT NULL DEFAULT 'STANDARD',
+ legal_entity TEXT,brand TEXT,settings TEXT NOT NULL DEFAULT '{}',
+ security_policy TEXT NOT NULL DEFAULT '{}',metadata TEXT NOT NULL DEFAULT '{}');
 CREATE TABLE IF NOT EXISTS novaid_identities(
  identity_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id), normalized_email TEXT NOT NULL,
  status TEXT NOT NULL CHECK(status IN ('PENDING_VERIFICATION','ACTIVE','LOCKED','SUSPENDED','DISABLED','DELETED')),
@@ -54,7 +58,30 @@ CREATE TABLE IF NOT EXISTS novaid_tenant_memberships(
  membership_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
  identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id), role TEXT NOT NULL, status TEXT NOT NULL,
  created_at TEXT NOT NULL, updated_at TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1,
+ CHECK(status IN ('INVITED','ACTIVE','SUSPENDED','REVOKED','EXPIRED')),
  UNIQUE(tenant_id, identity_id));
+CREATE TABLE IF NOT EXISTS novaid_permissions(
+ permission_id TEXT PRIMARY KEY,tenant_id TEXT,resource TEXT NOT NULL,action TEXT NOT NULL,effect TEXT NOT NULL,
+ resource_owner_only INTEGER NOT NULL DEFAULT 0,require_trusted_device INTEGER NOT NULL DEFAULT 0,
+ minimum_assurance_level TEXT NOT NULL DEFAULT 'NID-AL0',
+ minimum_authentication_strength TEXT NOT NULL DEFAULT 'PASSWORD',created_at TEXT NOT NULL,
+ UNIQUE(tenant_id,resource,action,effect));
+CREATE TABLE IF NOT EXISTS novaid_roles(
+ role_id TEXT PRIMARY KEY,tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),name TEXT NOT NULL,
+ enabled INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,
+ version INTEGER NOT NULL DEFAULT 1,UNIQUE(tenant_id,name));
+CREATE TABLE IF NOT EXISTS novaid_role_permissions(
+ tenant_id TEXT NOT NULL,role_id TEXT NOT NULL REFERENCES novaid_roles(role_id),
+ permission_id TEXT NOT NULL REFERENCES novaid_permissions(permission_id),created_at TEXT NOT NULL,
+ PRIMARY KEY(tenant_id,role_id,permission_id));
+CREATE TABLE IF NOT EXISTS novaid_membership_roles(
+ tenant_id TEXT NOT NULL,membership_id TEXT NOT NULL REFERENCES novaid_tenant_memberships(membership_id),
+ role_id TEXT NOT NULL REFERENCES novaid_roles(role_id),valid_from TEXT,valid_until TEXT,created_at TEXT NOT NULL,
+ PRIMARY KEY(tenant_id,membership_id,role_id));
+CREATE TABLE IF NOT EXISTS novaid_authorization_policy_versions(
+ tenant_id TEXT NOT NULL,policy_version TEXT NOT NULL,status TEXT NOT NULL,policy_json TEXT NOT NULL,
+ created_at TEXT NOT NULL,activated_at TEXT,created_by TEXT NOT NULL,
+ PRIMARY KEY(tenant_id,policy_version));
 CREATE TABLE IF NOT EXISTS novaid_credentials(
  credential_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
  kind TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1);
@@ -714,6 +741,7 @@ class NovaIDUnitOfWork(
         self.identities = self
         self.authentication_locks = self
         self.sessions = self
+        self.authorization = AuthorizationRepository(self.connection)
 
     def __enter__(self) -> "NovaIDUnitOfWork":
         self.connection.execute("BEGIN IMMEDIATE")
@@ -730,7 +758,8 @@ class NovaIDUnitOfWork(
 
     def create_tenant(self, tenant_id: str, name: str, now: datetime) -> None:
         self.connection.execute(
-            "INSERT INTO novaid_tenants VALUES(?,?,?,?,?,1)",
+            "INSERT INTO novaid_tenants"
+            "(tenant_id,name,status,created_at,updated_at,version) VALUES(?,?,?,?,?,1)",
             (tenant_id, name, "ACTIVE", now.isoformat(), now.isoformat()),
         )
 
@@ -1785,7 +1814,9 @@ class NovaIDUnitOfWork(
         self, membership_id: str, tenant_id: str, identity_id: str, *, now: str
     ) -> None:
         self.connection.execute(
-            "INSERT INTO novaid_tenant_memberships VALUES(?,?,?,?,?,?,?,?)",
+            "INSERT INTO novaid_tenant_memberships"
+            "(membership_id,tenant_id,identity_id,role,status,created_at,updated_at,version) "
+            "VALUES(?,?,?,?,?,?,?,?)",
             (membership_id, tenant_id, identity_id, "MEMBER", "ACTIVE", now, now, 1),
         )
 

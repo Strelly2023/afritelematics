@@ -99,6 +99,12 @@ class AuthenticationLockRepository(Protocol):
     def delete(self, tenant_id: str, identifier_hash: str) -> None: ...
 
 
+class AuthorizationRepositoryProtocol(Protocol):
+    def list_effective_permissions(
+        self, *, tenant_id: str, membership_id: str, now: Any
+    ) -> list[Any]: ...
+
+
 @runtime_checkable
 class NovaIdUnitOfWork(Protocol):
     connection: Connection
@@ -109,6 +115,7 @@ class NovaIdUnitOfWork(Protocol):
     refresh_tokens: RefreshTokenRepository
     idempotency: IdempotencyRepository
     authentication_locks: AuthenticationLockRepository
+    authorization: AuthorizationRepositoryProtocol
 
     def __enter__(self) -> "NovaIdUnitOfWork": ...
 

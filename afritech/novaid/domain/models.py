@@ -99,6 +99,35 @@ class TenantStatus(StrEnum):
     DISABLED = "DISABLED"
 
 
+class MembershipStatus(StrEnum):
+    INVITED = "INVITED"
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    REVOKED = "REVOKED"
+    EXPIRED = "EXPIRED"
+
+
+MEMBERSHIP_TRANSITIONS = {
+    MembershipStatus.INVITED: {
+        MembershipStatus.ACTIVE,
+        MembershipStatus.REVOKED,
+        MembershipStatus.EXPIRED,
+    },
+    MembershipStatus.ACTIVE: {
+        MembershipStatus.SUSPENDED,
+        MembershipStatus.REVOKED,
+        MembershipStatus.EXPIRED,
+    },
+    MembershipStatus.SUSPENDED: {
+        MembershipStatus.ACTIVE,
+        MembershipStatus.REVOKED,
+        MembershipStatus.EXPIRED,
+    },
+    MembershipStatus.REVOKED: set(),
+    MembershipStatus.EXPIRED: set(),
+}
+
+
 class AuthenticationStrength(StrEnum):
     PASSWORD = "PASSWORD"
     PASSWORD_OTP = "PASSWORD_OTP"
@@ -777,10 +806,74 @@ class TenantMembership:
     tenant_id: str
     identity_id: str
     role: str
-    status: str = "ACTIVE"
+    status: MembershipStatus = MembershipStatus.ACTIVE
     created_at: datetime = field(default_factory=utcnow)
     updated_at: datetime = field(default_factory=utcnow)
     version: int = 1
+    roles: frozenset[str] = field(default_factory=frozenset)
+    direct_permissions: frozenset[str] = field(default_factory=frozenset)
+    valid_from: datetime | None = None
+    valid_until: datetime | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for value, reason in (
+            (self.membership_id, "MEMBERSHIP_ID_REQUIRED"),
+            (self.tenant_id, "TENANT_ID_REQUIRED"),
+            (self.identity_id, "IDENTITY_ID_REQUIRED"),
+            (self.role, "MEMBERSHIP_ROLE_REQUIRED"),
+        ):
+            if not value.strip():
+                raise ValueError(reason)
+        if self.version < 1:
+            raise ValueError("INVALID_AGGREGATE_VERSION")
+        if self.valid_from and self.valid_until and self.valid_until <= self.valid_from:
+            raise ValueError("INVALID_MEMBERSHIP_VALIDITY")
+        normalized_roles = frozenset(
+            {self.role.strip().upper()}
+            | {role.strip().upper() for role in self.roles if role.strip()}
+        )
+        object.__setattr__(self, "membership_id", self.membership_id.strip())
+        object.__setattr__(self, "tenant_id", self.tenant_id.strip())
+        object.__setattr__(self, "identity_id", self.identity_id.strip())
+        object.__setattr__(self, "role", self.role.strip().upper())
+        object.__setattr__(self, "status", MembershipStatus(self.status))
+        object.__setattr__(self, "roles", normalized_roles)
+        object.__setattr__(
+            self,
+            "direct_permissions",
+            frozenset(
+                permission.strip().lower()
+                for permission in self.direct_permissions
+                if permission.strip()
+            ),
+        )
+        object.__setattr__(self, "metadata", dict(self.metadata))
+
+    def transition(
+        self,
+        target: MembershipStatus | str,
+        *,
+        now: datetime | None = None,
+    ) -> "TenantMembership":
+        normalized_target = MembershipStatus(target)
+        if normalized_target not in MEMBERSHIP_TRANSITIONS[self.status]:
+            raise ValueError("INVALID_MEMBERSHIP_TRANSITION")
+        transition_time = now or utcnow()
+        return replace(
+            self,
+            status=normalized_target,
+            updated_at=transition_time,
+            version=self.version + 1,
+        )
+
+    def is_effective(self, *, now: datetime | None = None) -> bool:
+        evaluation_time = now or utcnow()
+        return (
+            self.status is MembershipStatus.ACTIVE
+            and (self.valid_from is None or evaluation_time >= self.valid_from)
+            and (self.valid_until is None or evaluation_time < self.valid_until)
+        )
 
 
 @dataclass(frozen=True)

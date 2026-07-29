@@ -209,6 +209,8 @@ from .models import (
     IdentityType,
     IdentifierType,
     LegalName,
+    MembershipStatus,
+    MEMBERSHIP_TRANSITIONS,
     NameType,
     RequestContext,
     SecurityEvent,
@@ -224,6 +226,23 @@ from .models import (
     VerificationStatus,
     identifier,
     utcnow,
+)
+from .authorization import (
+    AuthorizationContext,
+    AuthorizationDecision,
+    AuthorizationOutcome,
+    AuthorizationPolicyEngine,
+    Permission,
+    PermissionEffect,
+    Role,
+)
+from .membership_events import (
+    MembershipLifecycleEvent,
+    membership_lifecycle_event,
+)
+from .membership_service import (
+    MembershipLifecycleResult,
+    MembershipLifecycleService,
 )
 from .tenant_boundary import (
     TenantBoundaryService,
@@ -345,6 +364,19 @@ __all__ = [
     "TenantTier",
     "TenantStatus",
     "TenantMembership",
+    "MembershipStatus",
+    "MEMBERSHIP_TRANSITIONS",
+    "AuthorizationContext",
+    "AuthorizationDecision",
+    "AuthorizationOutcome",
+    "AuthorizationPolicyEngine",
+    "Permission",
+    "PermissionEffect",
+    "Role",
+    "MembershipLifecycleEvent",
+    "MembershipLifecycleResult",
+    "MembershipLifecycleService",
+    "membership_lifecycle_event",
     "TenantBoundaryService",
     "VerificationStatus",
     "WebAuthnChallengeStatus",

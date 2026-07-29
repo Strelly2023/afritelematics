@@ -10,6 +10,7 @@ EXPECTED_REVISIONS = (
     "0007_novaid_webauthn_distributed_runtime.sql",
     "0008_novaid_governed_audit_replay.sql",
     "0009_canonical_identity_profile.sql",
+    "0010_tenant_authorization.sql",
 )
 
 
