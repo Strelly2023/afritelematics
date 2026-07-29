@@ -31,7 +31,10 @@ def seed(tmp_path):
         uow.create_tenant(tenant, "Recovery tenant", now)
         for subject, email in ((identity, "recover@example.com"), (admin, "admin@example.com")):
             uow.connection.execute(
-                "INSERT INTO novaid_identities VALUES(?,?,?,?,?,?,?,?)",
+                "INSERT INTO novaid_identities("
+                "identity_id,tenant_id,normalized_email,status,created_at,"
+                "updated_at,version,security_version"
+                ") VALUES(?,?,?,?,?,?,?,?)",
                 (subject, tenant, email, "ACTIVE", now.isoformat(), now.isoformat(), 1, 1),
             )
         uow.connection.execute(

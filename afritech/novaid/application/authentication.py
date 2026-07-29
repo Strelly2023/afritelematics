@@ -203,15 +203,28 @@ class DurableAuthenticationService:
     ) -> dict[str, str]:
         if self.lockout and self.lockout.is_locked(tenant_id, email):
             raise AuthenticationError("INVALID_CREDENTIALS")
+        normalized_email = email.strip().lower()
+        candidate = self.uow.get_login_identity(tenant_id, normalized_email)
+        if (
+            not candidate
+            or candidate["status"] != "ACTIVE"
+            or not self.hasher.verify(password, candidate["password_hash"])
+        ):
+            # A failed authentication transaction must not roll back the
+            # durable abuse counter. Record the failure in its own unit of
+            # work before returning the enumeration-safe error.
+            if self.lockout:
+                self.lockout.record_failure(tenant_id, email)
+            raise AuthenticationError("INVALID_CREDENTIALS")
         with self.uow:
-            row = self.uow.get_login_identity(tenant_id, email.strip().lower())
+            # Re-read inside the transaction so a concurrently disabled
+            # identity or credential cannot authenticate from the pre-check.
+            row = self.uow.get_login_identity(tenant_id, normalized_email)
             if (
                 not row
                 or row["status"] != "ACTIVE"
                 or not self.hasher.verify(password, row["password_hash"])
             ):
-                if self.lockout:
-                    self.lockout.record_failure(tenant_id, email)
                 raise AuthenticationError("INVALID_CREDENTIALS")
             if self.lockout:
                 self.lockout.reset(tenant_id, email)

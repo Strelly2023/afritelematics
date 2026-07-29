@@ -71,7 +71,10 @@ def test_session_expiry_and_compromise(tmp_path) -> None:
     with store:
         store.create_tenant(tenant, "Expiry", now)
         store.connection.execute(
-            "INSERT INTO novaid_identities VALUES(?,?,?,?,?,?,?,?)",
+            "INSERT INTO novaid_identities("
+            "identity_id,tenant_id,normalized_email,status,created_at,"
+            "updated_at,version,security_version"
+            ") VALUES(?,?,?,?,?,?,?,?)",
             (
                 identity,
                 tenant,

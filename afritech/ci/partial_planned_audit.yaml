@@ -14,6 +14,14 @@ policy:
     - trace_schema_terminology
 
 allowed_occurrences:
+  - path: afritech/novaid/domain/document_ocr_models.py
+    class: state_vocabulary
+    reason: declares the governed OCR extraction decision for incomplete provider evidence
+
+  - path: afritech/novaid/domain/identity_verification_service.py
+    class: transition_policy
+    reason: maps the governed partial OCR decision to fail-closed recapture or review
+
   - path: afritech/ci/witness_validator.py
     class: validator_policy
     reason: rejects forbidden implementation states

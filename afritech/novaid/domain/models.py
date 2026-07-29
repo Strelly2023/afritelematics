@@ -1,3 +1,4 @@
+#afritech/novaid/domain/models.py
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
@@ -72,6 +73,61 @@ class IdentifierType(StrEnum):
     EMPLOYEE_ID = "EMPLOYEE_ID"
     CUSTOMER_REFERENCE = "CUSTOMER_REFERENCE"
     EXTERNAL_SUBJECT_ID = "EXTERNAL_SUBJECT_ID"
+
+
+class TenantType(StrEnum):
+    ORGANISATION = "ORGANISATION"
+    GOVERNMENT = "GOVERNMENT"
+    BUSINESS = "BUSINESS"
+    NON_PROFIT = "NON_PROFIT"
+    EDUCATION = "EDUCATION"
+    HEALTHCARE = "HEALTHCARE"
+    SANDBOX = "SANDBOX"
+
+
+class TenantTier(StrEnum):
+    FREE = "FREE"
+    STANDARD = "STANDARD"
+    PROFESSIONAL = "PROFESSIONAL"
+    ENTERPRISE = "ENTERPRISE"
+    GOVERNMENT = "GOVERNMENT"
+
+
+class TenantStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    DISABLED = "DISABLED"
+
+
+class AuthenticationStrength(StrEnum):
+    PASSWORD = "PASSWORD"
+    PASSWORD_OTP = "PASSWORD_OTP"
+    MFA = "MFA"
+    FIDO2 = "FIDO2"
+    PASSKEY = "PASSKEY"
+    CERTIFICATE = "CERTIFICATE"
+    PHISHING_RESISTANT = "PHISHING_RESISTANT"
+
+
+AUTHENTICATION_STRENGTH_ORDER = {
+    AuthenticationStrength.PASSWORD: 10,
+    AuthenticationStrength.PASSWORD_OTP: 20,
+    AuthenticationStrength.MFA: 20,
+    AuthenticationStrength.FIDO2: 30,
+    AuthenticationStrength.PASSKEY: 30,
+    AuthenticationStrength.CERTIFICATE: 30,
+    AuthenticationStrength.PHISHING_RESISTANT: 40,
+}
+
+
+PHISHING_RESISTANT_STRENGTHS = frozenset(
+    {
+        AuthenticationStrength.FIDO2,
+        AuthenticationStrength.PASSKEY,
+        AuthenticationStrength.CERTIFICATE,
+        AuthenticationStrength.PHISHING_RESISTANT,
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -189,6 +245,21 @@ TRANSITIONS = {
 }
 
 
+TENANT_TRANSITIONS = {
+    TenantStatus.ACTIVE: {
+        TenantStatus.SUSPENDED,
+        TenantStatus.DISABLED,
+    },
+    TenantStatus.SUSPENDED: {
+        TenantStatus.ACTIVE,
+        TenantStatus.DISABLED,
+    },
+    TenantStatus.DISABLED: {
+        TenantStatus.ACTIVE,
+    },
+}
+
+
 @dataclass(frozen=True)
 class RequestContext:
     tenant_id: str
@@ -232,14 +303,472 @@ class Identity:
         return replace(self, status=target, updated_at=utcnow(), version=self.version + 1)
 
 
+
+@dataclass(frozen=True)
+class LegalEntity:
+    legal_name: str
+    registration_number: str | None = None
+    tax_identifier: str | None = None
+    country_code: str = "AU"
+
+    def __post_init__(self) -> None:
+        legal_name = self.legal_name.strip()
+
+        if not legal_name:
+            raise ValueError(
+                "LEGAL_ENTITY_NAME_REQUIRED"
+            )
+
+        country_code = self.country_code.strip().upper()
+
+        if (
+            len(country_code) != 2
+            or not country_code.isalpha()
+        ):
+            raise ValueError(
+                "INVALID_COUNTRY_CODE"
+            )
+
+        registration_number = (
+            self.registration_number.strip()
+            if self.registration_number
+            else None
+        )
+        tax_identifier = (
+            self.tax_identifier.strip()
+            if self.tax_identifier
+            else None
+        )
+
+        object.__setattr__(
+            self,
+            "legal_name",
+            legal_name,
+        )
+        object.__setattr__(
+            self,
+            "registration_number",
+            registration_number or None,
+        )
+        object.__setattr__(
+            self,
+            "tax_identifier",
+            tax_identifier or None,
+        )
+        object.__setattr__(
+            self,
+            "country_code",
+            country_code,
+        )
+
+
+@dataclass(frozen=True)
+class TenantBrand:
+    display_name: str
+    short_name: str | None = None
+    primary_domain: str | None = None
+    support_email: str | None = None
+
+    def __post_init__(self) -> None:
+        display_name = self.display_name.strip()
+
+        if not display_name:
+            raise ValueError(
+                "TENANT_BRAND_NAME_REQUIRED"
+            )
+
+        short_name = (
+            self.short_name.strip()
+            if self.short_name
+            else None
+        )
+        primary_domain = (
+            self.primary_domain.strip().lower()
+            if self.primary_domain
+            else None
+        )
+        support_email = (
+            self.support_email.strip().lower()
+            if self.support_email
+            else None
+        )
+
+        object.__setattr__(
+            self,
+            "display_name",
+            display_name,
+        )
+        object.__setattr__(
+            self,
+            "short_name",
+            short_name or None,
+        )
+        object.__setattr__(
+            self,
+            "primary_domain",
+            primary_domain or None,
+        )
+        object.__setattr__(
+            self,
+            "support_email",
+            support_email or None,
+        )
+
+
+@dataclass(frozen=True)
+class TenantSettings:
+    self_registration_enabled: bool = False
+    identity_verification_required: bool = True
+    passkeys_enabled: bool = True
+    federation_enabled: bool = False
+    scim_enabled: bool = False
+    api_access_enabled: bool = True
+    audit_retention_days: int = 2555
+    default_language: str = "en"
+    supported_languages: tuple[str, ...] = (
+        "en",
+        "fr",
+        "sw",
+    )
+    feature_flags: frozenset[str] = frozenset()
+
+    def __post_init__(self) -> None:
+        if self.audit_retention_days < 1:
+            raise ValueError(
+                "INVALID_AUDIT_RETENTION_DAYS"
+            )
+
+        default_language = self.default_language.strip().lower()
+
+        if not default_language:
+            raise ValueError(
+                "TENANT_DEFAULT_LANGUAGE_REQUIRED"
+            )
+
+        supported_languages = tuple(
+            dict.fromkeys(
+                language.strip().lower()
+                for language in self.supported_languages
+                if language and language.strip()
+            )
+        )
+
+        if not supported_languages:
+            raise ValueError(
+                "TENANT_SUPPORTED_LANGUAGE_REQUIRED"
+            )
+
+        if default_language not in supported_languages:
+            raise ValueError(
+                "TENANT_DEFAULT_LANGUAGE_NOT_SUPPORTED"
+            )
+
+        feature_flags = frozenset(
+            flag.strip().lower()
+            for flag in self.feature_flags
+            if flag and flag.strip()
+        )
+
+        object.__setattr__(
+            self,
+            "default_language",
+            default_language,
+        )
+        object.__setattr__(
+            self,
+            "supported_languages",
+            supported_languages,
+        )
+        object.__setattr__(
+            self,
+            "feature_flags",
+            feature_flags,
+        )
+
+    def supports_language(
+        self,
+        language: str,
+    ) -> bool:
+        normalized = language.strip().lower()
+
+        return (
+            bool(normalized)
+            and normalized in self.supported_languages
+        )
+
+    def feature_enabled(
+        self,
+        feature: str,
+    ) -> bool:
+        normalized = feature.strip().lower()
+
+        return (
+            bool(normalized)
+            and normalized in self.feature_flags
+        )
+
+
+@dataclass(frozen=True)
+class TenantSecurityPolicy:
+    minimum_authentication_strength: AuthenticationStrength = (
+        AuthenticationStrength.PASSWORD_OTP
+    )
+    minimum_assurance_level: AssuranceLevel = (
+        AssuranceLevel.NID_AL1
+    )
+
+    mfa_required: bool = True
+    phishing_resistant_authentication_required: bool = False
+    device_binding_required: bool = False
+
+    session_idle_timeout_minutes: int = 30
+    session_absolute_timeout_minutes: int = 720
+    maximum_concurrent_sessions: int = 5
+    maximum_registered_devices: int = 10
+
+    minimum_password_length: int = 12
+    password_history_count: int = 10
+    password_rotation_days: int | None = None
+
+    risk_step_up_threshold: float = 0.60
+    risk_lock_threshold: float = 0.90
+
+    audit_logging_required: bool = True
+    immutable_audit_required: bool = True
+    pii_encryption_required: bool = True
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "minimum_authentication_strength",
+            AuthenticationStrength(
+                self.minimum_authentication_strength
+            ),
+        )
+        object.__setattr__(
+            self,
+            "minimum_assurance_level",
+            AssuranceLevel(
+                self.minimum_assurance_level
+            ),
+        )
+
+        if self.session_idle_timeout_minutes < 1:
+            raise ValueError(
+                "INVALID_SESSION_IDLE_TIMEOUT"
+            )
+
+        if (
+            self.session_absolute_timeout_minutes
+            < self.session_idle_timeout_minutes
+        ):
+            raise ValueError(
+                "INVALID_SESSION_ABSOLUTE_TIMEOUT"
+            )
+
+        if self.maximum_concurrent_sessions < 1:
+            raise ValueError(
+                "INVALID_MAXIMUM_CONCURRENT_SESSIONS"
+            )
+
+        if self.maximum_registered_devices < 1:
+            raise ValueError(
+                "INVALID_MAXIMUM_REGISTERED_DEVICES"
+            )
+
+        if self.minimum_password_length < 8:
+            raise ValueError(
+                "MINIMUM_PASSWORD_LENGTH_TOO_SHORT"
+            )
+
+        if self.password_history_count < 0:
+            raise ValueError(
+                "INVALID_PASSWORD_HISTORY_COUNT"
+            )
+
+        if (
+            self.password_rotation_days is not None
+            and self.password_rotation_days < 1
+        ):
+            raise ValueError(
+                "INVALID_PASSWORD_ROTATION_DAYS"
+            )
+
+        if not 0 <= self.risk_step_up_threshold <= 1:
+            raise ValueError(
+                "INVALID_RISK_STEP_UP_THRESHOLD"
+            )
+
+        if not 0 <= self.risk_lock_threshold <= 1:
+            raise ValueError(
+                "INVALID_RISK_LOCK_THRESHOLD"
+            )
+
+        if self.risk_step_up_threshold >= self.risk_lock_threshold:
+            raise ValueError(
+                "INVALID_RISK_THRESHOLD_ORDER"
+            )
+
+        if (
+            self.phishing_resistant_authentication_required
+            and self.minimum_authentication_strength
+            not in PHISHING_RESISTANT_STRENGTHS
+        ):
+            raise ValueError(
+                "PHISHING_RESISTANT_STRENGTH_REQUIRED"
+            )
+
+        if (
+            self.mfa_required
+            and AUTHENTICATION_STRENGTH_ORDER[
+                self.minimum_authentication_strength
+            ]
+            < AUTHENTICATION_STRENGTH_ORDER[
+                AuthenticationStrength.PASSWORD_OTP
+            ]
+        ):
+            raise ValueError(
+                "MFA_CAPABLE_STRENGTH_REQUIRED"
+            )
+
+    def allows_authentication_strength(
+        self,
+        authentication_strength: AuthenticationStrength | str,
+    ) -> bool:
+        try:
+            normalized = AuthenticationStrength(
+                authentication_strength
+            )
+        except ValueError:
+            return False
+
+        if (
+            self.phishing_resistant_authentication_required
+            and normalized not in PHISHING_RESISTANT_STRENGTHS
+        ):
+            return False
+
+        return (
+            AUTHENTICATION_STRENGTH_ORDER[normalized]
+            >= AUTHENTICATION_STRENGTH_ORDER[
+                self.minimum_authentication_strength
+            ]
+        )
+
+    def requires_step_up(
+        self,
+        *,
+        authentication_strength: AuthenticationStrength | str,
+        risk_score: float,
+    ) -> bool:
+        if not 0 <= risk_score <= 1:
+            raise ValueError("INVALID_RISK_SCORE")
+
+        if risk_score >= self.risk_lock_threshold:
+            return False
+
+        if risk_score >= self.risk_step_up_threshold:
+            return True
+
+        return not self.allows_authentication_strength(
+            authentication_strength
+        )
+
+    def requires_lock(
+        self,
+        *,
+        risk_score: float,
+    ) -> bool:
+        if not 0 <= risk_score <= 1:
+            raise ValueError("INVALID_RISK_SCORE")
+
+        return risk_score >= self.risk_lock_threshold
+
+
 @dataclass(frozen=True)
 class Tenant:
+    # Existing positional fields remain in this order for compatibility.
     tenant_id: str
     name: str
-    status: str = "ACTIVE"
+    status: TenantStatus = TenantStatus.ACTIVE
     created_at: datetime = field(default_factory=utcnow)
     updated_at: datetime = field(default_factory=utcnow)
     version: int = 1
+
+    # Canonical tenant fields are appended.
+    tenant_type: TenantType = TenantType.ORGANISATION
+    tier: TenantTier = TenantTier.STANDARD
+
+    legal_entity: LegalEntity | None = None
+    brand: TenantBrand | None = None
+    settings: TenantSettings = field(
+        default_factory=TenantSettings
+    )
+    security_policy: TenantSecurityPolicy = field(
+        default_factory=TenantSecurityPolicy
+    )
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        tenant_id = self.tenant_id.strip()
+        name = self.name.strip()
+
+        if not tenant_id:
+            raise ValueError("TENANT_ID_REQUIRED")
+
+        if not name:
+            raise ValueError("TENANT_NAME_REQUIRED")
+
+        if self.version < 1:
+            raise ValueError("INVALID_AGGREGATE_VERSION")
+
+        object.__setattr__(
+            self,
+            "tenant_id",
+            tenant_id,
+        )
+        object.__setattr__(
+            self,
+            "name",
+            name,
+        )
+        object.__setattr__(
+            self,
+            "status",
+            TenantStatus(self.status),
+        )
+        object.__setattr__(
+            self,
+            "tenant_type",
+            TenantType(self.tenant_type),
+        )
+        object.__setattr__(
+            self,
+            "tier",
+            TenantTier(self.tier),
+        )
+        object.__setattr__(
+            self,
+            "metadata",
+            dict(self.metadata),
+        )
+
+    def transition(
+        self,
+        target: TenantStatus,
+    ) -> "Tenant":
+        normalized_target = TenantStatus(target)
+
+        if normalized_target not in TENANT_TRANSITIONS[self.status]:
+            raise ValueError("INVALID_TENANT_TRANSITION")
+
+        return replace(
+            self,
+            status=normalized_target,
+            updated_at=utcnow(),
+            version=self.version + 1,
+        )
 
 
 @dataclass(frozen=True)

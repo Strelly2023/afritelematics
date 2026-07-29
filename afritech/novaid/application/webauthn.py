@@ -487,7 +487,7 @@ class WebAuthnService:
                 backup_state=verified.credential_backed_up,
                 expected_sign_count=old,
             )
-            if changed.rowcount != 1:
+            if changed != 1:
                 raise WebAuthnError("WEBAUTHN_COUNTER_CONFLICT")
         self._emit_distributed_event(
             tenant_id=tenant_id,
@@ -547,6 +547,18 @@ class WebAuthnService:
                 pending_mfa_expires_at=(now + timedelta(minutes=30)).isoformat(),
                 authentication_methods='["WEBAUTHN","PASSKEY"]',
             )
+            if (
+                self.uow.activate_session_and_refresh(
+                    session_id,
+                    now=now.isoformat(),
+                    authentication_methods='["WEBAUTHN","PASSKEY"]',
+                    authentication_strength="PHISHING_RESISTANT",
+                )
+                != 1
+            ):
+                raise WebAuthnError(
+                    "WEBAUTHN_SESSION_ACTIVATION_FAILED"
+                )
             self.uow.create_refresh_family(
                 family_id,
                 session_id,

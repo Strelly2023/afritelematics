@@ -323,6 +323,7 @@ class PostgresIdentityRepository(PostgresRepository):
         *,
         now: str,
         authentication_methods: str,
+        authentication_strength: str = "PASSWORD_OTP",
     ) -> int:
         idle_expires_at = (
             datetime.fromisoformat(now) + timedelta(minutes=30)
@@ -330,11 +331,12 @@ class PostgresIdentityRepository(PostgresRepository):
 
         row = self.connection.execute(
             "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
-            "authentication_strength='PASSWORD_OTP',authenticated_at=%s,"
+            "authentication_strength=%s,authenticated_at=%s,"
             "last_seen_at=%s,idle_expires_at=%s,authentication_methods=%s,"
             "pending_mfa_expires_at=NULL WHERE session_id=%s "
             "AND status='PENDING_MFA'",
             (
+                authentication_strength,
                 now,
                 now,
                 idle_expires_at,

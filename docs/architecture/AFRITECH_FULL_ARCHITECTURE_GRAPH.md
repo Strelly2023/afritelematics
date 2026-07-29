@@ -12,8 +12,8 @@ Generated: `deterministic-repo-snapshot`
 ## Runtime Summary
 
 - Startup module: `afritech.api.app`
-- Startup-safe closure size: `801`
-- Django-bound modules declared in repo: `255`
+- Startup-safe closure size: `830`
+- Django-bound modules declared in repo: `265`
 - Runtime-boundary violations: `0`
 - Direct startup imports from `afritech.api.app`: `107`
 
@@ -25,7 +25,7 @@ flowchart LR
     Dashboard["React Dashboard\ndashboard/src"] --> Edge
     Edge --> App["FastAPI Runtime\nafritech/api/app.py"]
 
-    subgraph FastAPI["Startup-Safe FastAPI Surface (801 modules)"]
+    subgraph FastAPI["Startup-Safe FastAPI Surface (830 modules)"]
         App --> Api["API Routers\nauth, trace, system, public verify"]
         App --> Workspace["AfriPro Workspace API"]
         App --> Governance["Ops Governance API"]
@@ -39,7 +39,7 @@ flowchart LR
         Queue --> Worker["Worker Pool"]
     end
 
-    subgraph State["Stateful Domain Surfaces (255 Django-bound modules declared)"]
+    subgraph State["Stateful Domain Surfaces (265 Django-bound modules declared)"]
         Worker --> Domain["AfriRide Backend\nafriride_system/backend"]
         Domain --> Django["Django State Layer\nafriride_system/django_app"]
     end
@@ -261,7 +261,7 @@ flowchart TD
 - `afritech.monitoring.alerts`
 - `afritech.monitoring.realtime_anomaly_alerting`
 
-### Other (636)
+### Other (665)
 
 - `afritech`
 - `afritech.afripay`
@@ -678,21 +678,50 @@ flowchart TD
 - `afritech.novaid.config`
 - `afritech.novaid.core`
 - `afritech.novaid.domain`
+- `afritech.novaid.domain.biometric_events`
+- `afritech.novaid.domain.biometric_models`
+- `afritech.novaid.domain.biometric_verification_events`
+- `afritech.novaid.domain.biometric_verification_models`
+- `afritech.novaid.domain.document_authenticity_events`
+- `afritech.novaid.domain.document_authenticity_models`
+- `afritech.novaid.domain.document_authenticity_service`
+- `afritech.novaid.domain.document_models`
+- `afritech.novaid.domain.document_ocr_events`
+- `afritech.novaid.domain.document_ocr_models`
+- `afritech.novaid.domain.document_ocr_service`
+- `afritech.novaid.domain.document_selfie_match_events`
+- `afritech.novaid.domain.document_selfie_match_models`
+- `afritech.novaid.domain.document_selfie_match_service`
 - `afritech.novaid.domain.domain_event_codec`
 - `afritech.novaid.domain.domain_events`
+- `afritech.novaid.domain.face_authentication_events`
+- `afritech.novaid.domain.face_authentication_models`
+- `afritech.novaid.domain.face_authentication_service`
+- `afritech.novaid.domain.face_enrollment_service`
+- `afritech.novaid.domain.face_verification_service`
 - `afritech.novaid.domain.identity_events`
 - `afritech.novaid.domain.identity_merge_service`
 - `afritech.novaid.domain.identity_policy`
 - `afritech.novaid.domain.identity_service`
+- `afritech.novaid.domain.identity_verification_events`
+- `afritech.novaid.domain.identity_verification_models`
+- `afritech.novaid.domain.identity_verification_service`
+- `afritech.novaid.domain.liveness_events`
+- `afritech.novaid.domain.liveness_models`
+- `afritech.novaid.domain.liveness_service`
 - `afritech.novaid.domain.merge_events`
 - `afritech.novaid.domain.models`
 - `afritech.novaid.domain.tenant_boundary`
+- `afritech.novaid.domain.tenant_events`
+- `afritech.novaid.domain.tenant_service`
 - `afritech.novaid.domain.verification_events`
 - `afritech.novaid.domain.verification_service`
 - `afritech.novaid.domain.webauthn`
 - `afritech.novaid.observability`
 - `afritech.novaid.outbox`
 - `afritech.novaid.persistence`
+- `afritech.novaid.persistence.biometric_codec`
+- `afritech.novaid.persistence.biometric_sqlite_repository`
 - `afritech.novaid.persistence.identity_codec`
 - `afritech.novaid.persistence.migrations`
 - `afritech.novaid.persistence.pool`

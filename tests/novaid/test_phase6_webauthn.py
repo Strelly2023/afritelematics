@@ -103,7 +103,10 @@ def seed(tmp_path):
     with uow:
         uow.create_tenant(tenant, "WebAuthn", now)
         uow.connection.execute(
-            "INSERT INTO novaid_identities VALUES(?,?,?,?,?,?,?,?)",
+            "INSERT INTO novaid_identities("
+            "identity_id,tenant_id,normalized_email,status,created_at,"
+            "updated_at,version,security_version"
+            ") VALUES(?,?,?,?,?,?,?,?)",
             (
                 identity,
                 tenant,

@@ -13,8 +13,10 @@ import json
 import sqlite3
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from ..domain.models import Identity, IdentityStatus, RequestContext, SecurityEvent
+from .biometric_sqlite_repository import BiometricSQLiteRepositoryMixin
 from .identity_codec import (
     encode_addresses,
     encode_contact_points,
@@ -219,10 +221,492 @@ CREATE TABLE IF NOT EXISTS novaid_audit_replay_event_results(
  result_id TEXT PRIMARY KEY,replay_request_id TEXT NOT NULL,tenant_id TEXT NOT NULL,organization_id TEXT NOT NULL,
  event_id TEXT NOT NULL,event_type TEXT NOT NULL,decision TEXT NOT NULL,reason TEXT NOT NULL,created_at TEXT NOT NULL,
  UNIQUE(replay_request_id,event_id,decision));
+
+CREATE TABLE IF NOT EXISTS novaid_biometric_consents(
+ consent_id TEXT PRIMARY KEY,
+ tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+ identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
+ purpose TEXT NOT NULL,
+ policy_version TEXT NOT NULL,
+ granted_at TEXT NOT NULL,
+ status TEXT NOT NULL,
+ expires_at TEXT,
+ revoked_at TEXT,
+ capture_notice_version TEXT,
+ lawful_basis_reference TEXT,
+ metadata TEXT NOT NULL DEFAULT '{}',
+ CHECK(status IN ('ACTIVE','REVOKED','EXPIRED'))
+);
+
+CREATE INDEX IF NOT EXISTS ix_novaid_biometric_consent_identity
+ ON novaid_biometric_consents(
+  tenant_id,
+  identity_id,
+  purpose,
+  status
+ );
+
+CREATE TABLE IF NOT EXISTS novaid_biometric_enrollments(
+ enrollment_id TEXT PRIMARY KEY,
+ tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+ identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
+ biometric_type TEXT NOT NULL,
+ purpose TEXT NOT NULL,
+ consent_id TEXT NOT NULL
+  REFERENCES novaid_biometric_consents(consent_id),
+ template_reference TEXT NOT NULL,
+ provider_reference TEXT NOT NULL,
+ algorithm_version TEXT NOT NULL,
+ status TEXT NOT NULL,
+ capture_device TEXT,
+ capture_environment TEXT,
+ capture_quality TEXT,
+ enrolled_at TEXT,
+ expires_at TEXT,
+ revoked_at TEXT,
+ created_at TEXT NOT NULL,
+ updated_at TEXT NOT NULL,
+ version INTEGER NOT NULL,
+ metadata TEXT NOT NULL DEFAULT '{}',
+ CHECK(version >= 1),
+ CHECK(
+  biometric_type IN (
+   'FACE',
+   'FINGERPRINT',
+   'IRIS',
+   'VOICE'
+  )
+ ),
+ CHECK(
+  status IN (
+   'PENDING',
+   'ACTIVE',
+   'SUSPENDED',
+   'REVOKED',
+   'EXPIRED'
+  )
+ )
+);
+
+CREATE INDEX IF NOT EXISTS ix_novaid_biometric_enrollment_identity
+ ON novaid_biometric_enrollments(
+  tenant_id,
+  identity_id,
+  biometric_type,
+  status
+ );
+
+CREATE INDEX IF NOT EXISTS ix_novaid_biometric_enrollment_consent
+ ON novaid_biometric_enrollments(
+  tenant_id,
+  consent_id
+ );
+
+CREATE TABLE IF NOT EXISTS novaid_face_verifications(
+ verification_id TEXT PRIMARY KEY,
+ tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+ identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
+ enrollment_id TEXT NOT NULL
+  REFERENCES novaid_biometric_enrollments(enrollment_id),
+ consent_id TEXT NOT NULL
+  REFERENCES novaid_biometric_consents(consent_id),
+ purpose TEXT NOT NULL,
+ decision TEXT NOT NULL,
+ similarity_score REAL NOT NULL,
+ match_threshold REAL NOT NULL,
+ manual_review_threshold REAL NOT NULL,
+ provider_reference TEXT NOT NULL,
+ algorithm_version TEXT NOT NULL,
+ capture_device TEXT NOT NULL,
+ capture_environment TEXT NOT NULL,
+ capture_quality TEXT NOT NULL,
+ verified_at TEXT NOT NULL,
+ version INTEGER NOT NULL DEFAULT 1,
+ reason_codes TEXT NOT NULL DEFAULT '[]',
+ metadata TEXT NOT NULL DEFAULT '{}',
+ CHECK(similarity_score >= 0.0 AND similarity_score <= 1.0),
+ CHECK(match_threshold >= 0.0 AND match_threshold <= 1.0),
+ CHECK(
+  manual_review_threshold >= 0.0
+  AND manual_review_threshold <= 1.0
+ ),
+ CHECK(version >= 1),
+ CHECK(
+  decision IN (
+   'MATCH',
+   'NO_MATCH',
+   'MANUAL_REVIEW'
+  )
+ )
+);
+
+CREATE INDEX IF NOT EXISTS ix_novaid_face_verification_identity
+ ON novaid_face_verifications(
+  tenant_id,
+  identity_id,
+  verified_at
+ );
+
+CREATE INDEX IF NOT EXISTS ix_novaid_face_verification_enrollment
+ ON novaid_face_verifications(
+  tenant_id,
+  enrollment_id,
+  verified_at
+ );
+
+CREATE TABLE IF NOT EXISTS novaid_face_authentications(
+ authentication_id TEXT PRIMARY KEY,
+ tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+ identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
+ verification_id TEXT NOT NULL
+  REFERENCES novaid_face_verifications(verification_id),
+ enrollment_id TEXT NOT NULL
+  REFERENCES novaid_biometric_enrollments(enrollment_id),
+ purpose TEXT NOT NULL,
+ decision TEXT NOT NULL,
+ verification_decision TEXT NOT NULL,
+ risk_score REAL NOT NULL,
+ authentication_strength TEXT NOT NULL,
+ current_assurance_level TEXT NOT NULL,
+ required_assurance_level TEXT NOT NULL,
+ authenticated_at TEXT NOT NULL,
+ reason_codes TEXT NOT NULL DEFAULT '[]',
+ metadata TEXT NOT NULL DEFAULT '{}',
+ CHECK(risk_score >= 0.0 AND risk_score <= 1.0),
+ CHECK(
+  decision IN (
+   'ALLOW',
+   'REQUIRE_STEP_UP',
+   'REQUIRE_MANUAL_REVIEW',
+   'DENY',
+   'LOCK_SESSION',
+   'LOCK_IDENTITY'
+  )
+ ),
+ CHECK(
+  verification_decision IN (
+   'MATCH',
+   'NO_MATCH',
+   'MANUAL_REVIEW'
+  )
+ )
+);
+
+CREATE INDEX IF NOT EXISTS ix_novaid_face_authentication_identity
+ ON novaid_face_authentications(
+  tenant_id,
+  identity_id,
+  authenticated_at
+ );
+
+CREATE INDEX IF NOT EXISTS ix_novaid_face_authentication_verification
+ ON novaid_face_authentications(
+  tenant_id,
+  verification_id
+ );
+
+CREATE TABLE IF NOT EXISTS novaid_liveness_assessments(
+ assessment_id TEXT PRIMARY KEY,
+ tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+ identity_id TEXT NOT NULL REFERENCES novaid_identities(identity_id),
+ purpose TEXT NOT NULL,
+ decision TEXT NOT NULL,
+ attempt_number INTEGER NOT NULL,
+ mode TEXT NOT NULL,
+ liveness_score REAL NOT NULL,
+ presentation_attack_score REAL NOT NULL,
+ provider_reference TEXT NOT NULL,
+ algorithm_version TEXT NOT NULL,
+ capture_device TEXT NOT NULL,
+ capture_environment TEXT NOT NULL,
+ capture_quality TEXT NOT NULL,
+ assessed_at TEXT NOT NULL,
+ detected_attack_types TEXT NOT NULL DEFAULT '[]',
+ reason_codes TEXT NOT NULL DEFAULT '[]',
+ metadata TEXT NOT NULL DEFAULT '{}',
+ CHECK(attempt_number >= 1),
+ CHECK(liveness_score >= 0.0 AND liveness_score <= 1.0),
+ CHECK(
+  presentation_attack_score >= 0.0
+  AND presentation_attack_score <= 1.0
+ ),
+ CHECK(mode IN ('PASSIVE','ACTIVE','HYBRID')),
+ CHECK(
+  decision IN (
+   'PASS',
+   'RECAPTURE',
+   'MANUAL_REVIEW',
+   'FAIL',
+   'LOCK_SESSION'
+  )
+ )
+);
+
+CREATE INDEX IF NOT EXISTS ix_novaid_liveness_identity
+ ON novaid_liveness_assessments(
+  tenant_id,
+  identity_id,
+  assessed_at
+ );
+
+CREATE INDEX IF NOT EXISTS ix_novaid_liveness_decision
+ ON novaid_liveness_assessments(
+  tenant_id,
+  decision,
+  assessed_at
+ );
+
+
+-- ============================================================
+-- NID-P1-004 Step 4F — Governed identity verification
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS
+ novaid_identity_verification_evidence (
+  workflow_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  identity_id TEXT NOT NULL,
+  document_id TEXT NOT NULL,
+  document_version INTEGER NOT NULL
+   CHECK(document_version >= 1),
+  ocr_extraction_id TEXT NOT NULL,
+  authenticity_assessment_id TEXT NOT NULL,
+  selfie_match_id TEXT NOT NULL,
+  evidence_payload TEXT NOT NULL,
+  evidence_hash TEXT,
+  schema_version INTEGER NOT NULL DEFAULT 1
+   CHECK(schema_version >= 1),
+  persisted_at TEXT NOT NULL,
+
+  FOREIGN KEY(tenant_id)
+   REFERENCES novaid_tenants(tenant_id),
+
+  FOREIGN KEY(identity_id)
+   REFERENCES novaid_identities(identity_id),
+
+  UNIQUE(
+   tenant_id,
+   workflow_id
+  )
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_evidence_identity
+ ON novaid_identity_verification_evidence(
+  tenant_id,
+  identity_id,
+  persisted_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_evidence_document
+ ON novaid_identity_verification_evidence(
+  tenant_id,
+  document_id,
+  document_version
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_evidence_components
+ ON novaid_identity_verification_evidence(
+  tenant_id,
+  ocr_extraction_id,
+  authenticity_assessment_id,
+  selfie_match_id
+ );
+
+
+CREATE TABLE IF NOT EXISTS
+ novaid_identity_verifications (
+  verification_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  identity_id TEXT NOT NULL,
+  workflow_id TEXT NOT NULL,
+  document_id TEXT NOT NULL,
+  document_version INTEGER NOT NULL
+   CHECK(document_version >= 1),
+  decision TEXT NOT NULL,
+  current_assurance_level TEXT NOT NULL,
+  resulting_assurance_level TEXT NOT NULL,
+  policy_version TEXT NOT NULL,
+  combined_score REAL NOT NULL
+   CHECK(
+    combined_score >= 0.0
+    AND combined_score <= 1.0
+   ),
+  ocr_score REAL NOT NULL
+   CHECK(
+    ocr_score >= 0.0
+    AND ocr_score <= 1.0
+   ),
+  authenticity_score REAL NOT NULL
+   CHECK(
+    authenticity_score >= 0.0
+    AND authenticity_score <= 1.0
+   ),
+  selfie_match_score REAL NOT NULL
+   CHECK(
+    selfie_match_score >= 0.0
+    AND selfie_match_score <= 1.0
+   ),
+  liveness_score REAL NOT NULL
+   CHECK(
+    liveness_score >= 0.0
+    AND liveness_score <= 1.0
+   ),
+  reason_codes TEXT NOT NULL,
+  verification_payload TEXT NOT NULL,
+  verification_hash TEXT,
+  verified_at TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  version INTEGER NOT NULL DEFAULT 1
+   CHECK(version >= 1),
+
+  FOREIGN KEY(tenant_id)
+   REFERENCES novaid_tenants(tenant_id),
+
+  FOREIGN KEY(identity_id)
+   REFERENCES novaid_identities(identity_id),
+
+  FOREIGN KEY(workflow_id)
+   REFERENCES novaid_identity_verification_evidence(
+    workflow_id
+   ),
+
+  UNIQUE(
+   tenant_id,
+   verification_id
+  ),
+
+  UNIQUE(
+   tenant_id,
+   workflow_id
+  )
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verifications_identity
+ ON novaid_identity_verifications(
+  tenant_id,
+  identity_id,
+  verified_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verifications_decision
+ ON novaid_identity_verifications(
+  tenant_id,
+  decision,
+  verified_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verifications_document
+ ON novaid_identity_verifications(
+  tenant_id,
+  document_id,
+  document_version
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verifications_policy
+ ON novaid_identity_verifications(
+  tenant_id,
+  policy_version,
+  verified_at
+ );
+
+
+CREATE TABLE IF NOT EXISTS
+ novaid_identity_verification_events (
+  event_id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL,
+  identity_id TEXT NOT NULL,
+  verification_id TEXT NOT NULL,
+  workflow_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  decision TEXT NOT NULL,
+  correlation_id TEXT NOT NULL,
+  request_id TEXT NOT NULL,
+  actor_identity_id TEXT,
+  actor_membership_id TEXT,
+  policy_version TEXT NOT NULL,
+  event_payload TEXT NOT NULL,
+  event_hash TEXT,
+  occurred_at TEXT NOT NULL,
+  persisted_at TEXT NOT NULL,
+  schema_version INTEGER NOT NULL DEFAULT 1
+   CHECK(schema_version >= 1),
+
+  FOREIGN KEY(tenant_id)
+   REFERENCES novaid_tenants(tenant_id),
+
+  FOREIGN KEY(identity_id)
+   REFERENCES novaid_identities(identity_id),
+
+  FOREIGN KEY(verification_id)
+   REFERENCES novaid_identity_verifications(
+    verification_id
+   ),
+
+  FOREIGN KEY(workflow_id)
+   REFERENCES novaid_identity_verification_evidence(
+    workflow_id
+   ),
+
+  UNIQUE(
+   tenant_id,
+   event_id
+  )
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_events_verification
+ ON novaid_identity_verification_events(
+  tenant_id,
+  verification_id,
+  occurred_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_events_identity
+ ON novaid_identity_verification_events(
+  tenant_id,
+  identity_id,
+  occurred_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_events_workflow
+ ON novaid_identity_verification_events(
+  tenant_id,
+  workflow_id,
+  occurred_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_events_correlation
+ ON novaid_identity_verification_events(
+  tenant_id,
+  correlation_id,
+  occurred_at
+ );
+
+CREATE INDEX IF NOT EXISTS
+ ix_novaid_identity_verification_events_type
+ ON novaid_identity_verification_events(
+  tenant_id,
+  event_type,
+  occurred_at
+ );
 """
 
 
-class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
+class NovaIDUnitOfWork(
+    BiometricSQLiteRepositoryMixin,
+    AbstractContextManager["NovaIDUnitOfWork"],
+):
     def __init__(self, path: str | Path = ":memory:") -> None:
         self.connection = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
@@ -403,7 +887,6 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         version: int,
         updated_at: str,
     ) -> None:
-        del reason
         self.connection.execute(
             "DELETE FROM novaid_tenant_webauthn_policies WHERE tenant_id=?",
             (tenant_id,),
@@ -444,7 +927,7 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
             "INSERT INTO novaid_tenant_webauthn_policy_history(policy_history_id,tenant_id,"
             "policy_version,status,policy,reason,created_at,created_by) VALUES(?,?,?,?,?,?,?,?)",
             (
-                _id(),
+                str(uuid4()),
                 tenant_id,
                 version,
                 "ACTIVE",
@@ -1472,7 +1955,12 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
         ).fetchone()
 
     def activate_session_and_refresh(
-        self, session_id: str, *, now: str, authentication_methods: str
+        self,
+        session_id: str,
+        *,
+        now: str,
+        authentication_methods: str,
+        authentication_strength: str = "PASSWORD_OTP",
     ) -> int:
         idle_expires_at = (
             datetime.fromisoformat(now) + timedelta(minutes=30)
@@ -1480,11 +1968,12 @@ class NovaIDUnitOfWork(AbstractContextManager["NovaIDUnitOfWork"]):
 
         result = self.connection.execute(
             "UPDATE novaid_authentication_sessions SET status='ACTIVE',"
-            "authentication_strength='PASSWORD_OTP',authenticated_at=?,"
+            "authentication_strength=?,authenticated_at=?,"
             "last_seen_at=?,idle_expires_at=?,authentication_methods=?,"
             "pending_mfa_expires_at=NULL WHERE session_id=? "
             "AND status='PENDING_MFA'",
             (
+                authentication_strength,
                 now,
                 now,
                 idle_expires_at,
