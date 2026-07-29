@@ -6,7 +6,9 @@ __pycache__/
 *.pyc
 # Hypothesis cache
 .hypothesis/
-
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Virtual environments
 venv/
@@ -101,7 +103,13 @@ deploy/production/.env.production.save
 deploy/production/secrets/
 *.pem
 deploy/production/.env.production.trust-node
-ignored:
+
+# Repository-local generated reports and test support
+repo_intelligence.json
+test-results/
+playwright-report/
+csv.py
+
 novascript-site/dist/
 novascript-site/node_modules/
 

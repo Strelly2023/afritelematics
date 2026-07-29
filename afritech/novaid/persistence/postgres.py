@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import json
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from .pool import NovaIDPostgresPool
 from .authorization_repository import AuthorizationRepository
@@ -1315,7 +1315,6 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         version: int,
         updated_at: str,
     ) -> None:
-        del reason
         self.connection.execute(
             "DELETE FROM novaid_tenant_webauthn_policies WHERE tenant_id=%s",
             (tenant_id,),
@@ -1356,7 +1355,7 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
             "INSERT INTO novaid_tenant_webauthn_policy_history(policy_history_id,tenant_id,"
             "policy_version,status,policy,reason,created_at,created_by) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
             (
-                _id(),
+                str(uuid4()),
                 tenant_id,
                 version,
                 "ACTIVE",
