@@ -50,7 +50,9 @@ class SessionRepository(Protocol):
 
     def revoke(self, tenant_id: str, identity_id: str, session_id: str, reason: str) -> int: ...
 
-    def revoke_all_for_identity(self, tenant_id: str, identity_id: str, reason: str) -> list[Any]: ...
+    def revoke_all_for_identity(
+        self, tenant_id: str, identity_id: str, reason: str
+    ) -> list[Any]: ...
 
     def touch(
         self, tenant_id: str, identity_id: str, session_id: str, *, now: str
@@ -62,13 +64,22 @@ class SessionRepository(Protocol):
 
     def complete_step_up(self, tenant_id: str, identity_id: str, session_id: str) -> int: ...
 
-    def lock_session(self, tenant_id: str, identity_id: str, session_id: str, *, locked_at: str) -> int: ...
+    def lock_session(
+        self,
+        tenant_id: str,
+        identity_id: str,
+        session_id: str,
+        *,
+        locked_at: str,
+    ) -> int: ...
 
     def unlock_session(self, tenant_id: str, identity_id: str, session_id: str) -> int: ...
 
     def expire_stale(self, tenant_id: str, *, now: str) -> int: ...
 
-    def mark_compromised(self, tenant_id: str, identity_id: str, session_id: str, *, now: str) -> Any | None: ...
+    def mark_compromised(
+        self, tenant_id: str, identity_id: str, session_id: str, *, now: str
+    ) -> Any | None: ...
 
     def get_active_strength(
         self, tenant_id: str, identity_id: str, session_id: str

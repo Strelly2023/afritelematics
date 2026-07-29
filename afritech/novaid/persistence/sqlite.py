@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from ..domain.models import Identity, IdentityStatus, RequestContext, SecurityEvent
+from ..domain.models import Identity, RequestContext, SecurityEvent
 from .biometric_sqlite_repository import BiometricSQLiteRepositoryMixin
 from .authorization_repository import AuthorizationRepository
 from .identity_codec import (

@@ -260,8 +260,6 @@ from .verification_events import (
     verification_event,
 )
 from .verification_service import (
-    IdentityVerificationResult,
-    IdentityVerificationService,
     VERIFICATION_TRANSITIONS,
 )
 from .webauthn import (
@@ -270,43 +268,6 @@ from .webauthn import (
     WebAuthnChallengeStatus,
     WebAuthnCredential,
     WebAuthnCredentialStatus,
-)
-
-
-# ---------------------------------------------------------------------------
-# Canonical NID-P1-004 Step 4E orchestration exports
-#
-# NovaID already contains an earlier IdentityVerificationService in
-# verification_service.py for aggregate lifecycle transitions. The imports
-# below intentionally occur after all other domain imports so the public
-# package surface resolves IdentityVerification* names to the complete eKYC
-# orchestration implementation.
-# ---------------------------------------------------------------------------
-from .identity_verification_events import (
-    IdentityVerificationOutcomeEvent
-    as IdentityVerificationOutcomeEvent,
-    identity_verification_outcome_event
-    as identity_verification_outcome_event,
-)
-from .identity_verification_models import (
-    FORBIDDEN_IDENTITY_VERIFICATION_FIELDS
-    as FORBIDDEN_IDENTITY_VERIFICATION_FIELDS,
-    IdentityVerificationDecision
-    as IdentityVerificationDecision,
-    IdentityVerificationEvidence
-    as IdentityVerificationEvidence,
-    IdentityVerificationPolicy
-    as IdentityVerificationPolicy,
-    IdentityVerificationRecord
-    as IdentityVerificationRecord,
-    IdentityVerificationStage
-    as IdentityVerificationStage,
-)
-from .identity_verification_service import (
-    IdentityVerificationResult
-    as IdentityVerificationResult,
-    IdentityVerificationService
-    as IdentityVerificationService,
 )
 __all__ = [
     "AddressType",
