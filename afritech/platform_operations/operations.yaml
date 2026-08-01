@@ -3,6 +3,21 @@ version: 1.0.0
 status: ACTIVE
 governing_adr: ADR-0051
 
+implementation_binding:
+  binding: afritech/governance/bindings/BIND-PLATFORM-OPERATIONS-TOOLING.yaml
+  runtime_package: afritech.platform_operations
+  validator: afritech.ci.novatech_platform_operations_validator
+  operator_surface: apps/novaride-operations
+  api_surface: afritech.api.runtime_operations_api
+  execution_authority: false
+  required_modules:
+    - policy
+    - workflow
+    - reliability
+    - rollout
+    - feature_flags
+    - registry
+
 policy:
   engine: NovaPower
   policy_version: 1.0.0

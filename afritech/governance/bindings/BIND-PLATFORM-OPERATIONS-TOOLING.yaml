@@ -1,0 +1,26 @@
+id: BIND-PLATFORM-OPERATIONS-TOOLING
+schema: novatech.operations_binding.v1
+status: active
+authority:
+  owner: Platform Operations
+  execution_authority: false
+  rule: tooling may observe, validate, recommend, and orchestrate only through governed APIs
+implementation:
+  contract: afritech/platform_operations/operations.yaml
+  runtime_package: afritech/platform_operations
+  validator: afritech/ci/novatech_platform_operations_validator.py
+  operator_surface: apps/novaride-operations
+  api_surface: afritech/api/runtime_operations_api.py
+capabilities:
+  - versioned_fail_closed_policy
+  - durable_compensating_workflow
+  - service_objectives_and_error_budgets
+  - governed_canary_and_rollback
+  - expiring_tenant_scoped_feature_flags
+  - data_classification_and_retention
+enforcement:
+  tests:
+    - afritech/tests/platform_operations/test_operations.py
+    - afritech/tests/ci/test_novatech_platform_operations_validator.py
+    - apps/novaride-operations/tests/operations.test.js
+failure_policy: HARD_FAILURE

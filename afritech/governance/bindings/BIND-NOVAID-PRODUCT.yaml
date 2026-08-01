@@ -1,0 +1,39 @@
+id: BIND-NOVAID-PRODUCT
+schema: novatech.product_binding.v1
+status: active
+product: NovaID
+authority:
+  owner: NovaID
+  capabilities:
+    - identity
+    - authentication
+    - verification
+    - authorization_claims
+    - device_trust
+    - session_risk
+  forbidden_capabilities:
+    - wallet_ledger
+    - payment_execution
+    - settlement
+    - ride_dispatch
+    - ride_lifecycle
+runtime:
+  canonical_package: afritech.novaid
+  composition_root: afritech.novaid.runtime
+  api_surfaces:
+    - afritech.api.novaid_api
+    - afritech.api.novaid_audit_replay_api
+  persistence:
+    - afritech.novaid.persistence.postgres
+    - afritech.novaid.persistence.sqlite
+contracts:
+  boundary: docs/architecture/NOVATECH_PRODUCT_BOUNDARIES_2026.md
+  integration: docs/architecture/NOVATECH_INTEGRATION_CONTRACTS_2026.md
+  identity_model: docs/architecture/NOVAID_IDENTITY_FRAMEWORK_2026.md
+enforcement:
+  validator: afritech.ci.novatech_product_binding_validator
+  tests:
+    - tests/test_novatech_product_boundaries.py
+    - afritech/tests/ci/test_novatech_product_binding_validator.py
+    - afritech/tests/novaid/test_runtime_guard.py
+failure_policy: HARD_FAILURE
