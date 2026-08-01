@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -51,8 +52,7 @@ def validate_runtime_environment(stage: str, backend: str) -> None:
         raise RuntimeError("wildcard_novaid_audience")
     if os.getenv("NOVAID_TOKEN_ALGORITHM", "HS256") != "HS256":
         raise RuntimeError("unsupported_novaid_token_algorithm")
-    if len(os.getenv("NOVAID_SIGNING_KEY", "").encode()) < 32:
-        raise RuntimeError("invalid_novaid_signing_key")
+    _load_signing_keyring(require_rotation=True)
     if os.getenv("NOVAID_REDIS_REQUIRED", "true").lower() == "true" and not os.getenv(
         "NOVAID_REDIS_URL"
     ):
@@ -87,7 +87,9 @@ def build_default_durable_router():
         path = Path(os.getenv("NOVAID_DURABLE_DB_PATH", "/tmp/novaid-durable.sqlite3"))
         uow = NovaIDUnitOfWork(path)
     pepper = os.getenv("NOVAID_TOKEN_PEPPER", "development-only-novaid-pepper-0001").encode()
-    signing = os.getenv("NOVAID_SIGNING_KEY", "development-only-signing-key-00001").encode()
+    signing_keys, active_signing_key_id = _load_signing_keyring(
+        require_rotation=stage in {"production", "prod"}
+    )
     redis_url = os.getenv("NOVAID_REDIS_URL", "")
     if redis_url:
         import redis
@@ -121,7 +123,8 @@ def build_default_durable_router():
     tokens = AccessTokenService(
         uow,
         revocations,
-        signing_key=signing,
+        signing_keys=signing_keys,
+        active_key_id=active_signing_key_id,
         issuer=config.jwt_issuer or "novaid-development",
         audience=config.jwt_audience or "novaid-development-clients",
         lifetime_seconds=config.access_token_seconds,
@@ -218,3 +221,35 @@ def build_default_durable_router():
             RevocationConsumer(redis_client, uow=consumer_uow, metrics=metrics, tracer=tracer),
         )
     return router
+
+
+def _load_signing_keyring(*, require_rotation: bool) -> tuple[dict[str, bytes], str]:
+    encoded_registry = os.getenv("NOVAID_SIGNING_KEYS_JSON", "")
+    active_key_id = os.getenv("NOVAID_ACTIVE_SIGNING_KEY_ID", "")
+    if encoded_registry:
+        try:
+            parsed = json.loads(encoded_registry)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("invalid_novaid_signing_key_registry") from exc
+        if not isinstance(parsed, dict) or not parsed:
+            raise RuntimeError("invalid_novaid_signing_key_registry")
+        keys = {
+            str(key_id): str(secret).encode()
+            for key_id, secret in parsed.items()
+        }
+        if (
+            not active_key_id
+            or active_key_id not in keys
+            or any(len(secret) < 32 for secret in keys.values())
+        ):
+            raise RuntimeError("invalid_novaid_signing_key_registry")
+        return keys, active_key_id
+    if require_rotation:
+        raise RuntimeError("missing_novaid_signing_key_registry")
+    legacy_key = os.getenv(
+        "NOVAID_SIGNING_KEY",
+        "development-only-signing-key-00001",
+    ).encode()
+    if len(legacy_key) < 32:
+        raise RuntimeError("invalid_novaid_signing_key")
+    return {"development-v1": legacy_key}, "development-v1"

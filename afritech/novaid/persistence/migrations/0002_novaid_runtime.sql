@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS novaid_schema_migrations (
  revision text PRIMARY KEY,
+ checksum text,
  applied_at timestamptz NOT NULL DEFAULT now()
 );
 

@@ -1,5 +1,3 @@
-BEGIN;
-
 ALTER TABLE novaid_tenants
     ADD COLUMN IF NOT EXISTS tenant_type TEXT NOT NULL DEFAULT 'ORGANISATION',
     ADD COLUMN IF NOT EXISTS tier TEXT NOT NULL DEFAULT 'STANDARD',
@@ -22,7 +20,7 @@ ALTER TABLE novaid_tenant_memberships
 
 CREATE TABLE IF NOT EXISTS novaid_permissions(
     permission_id TEXT PRIMARY KEY,
-    tenant_id TEXT REFERENCES novaid_tenants(tenant_id),
+    tenant_id UUID REFERENCES novaid_tenants(tenant_id),
     resource TEXT NOT NULL,
     action TEXT NOT NULL,
     effect TEXT NOT NULL CHECK (effect IN ('ALLOW','DENY')),
@@ -36,7 +34,7 @@ CREATE TABLE IF NOT EXISTS novaid_permissions(
 
 CREATE TABLE IF NOT EXISTS novaid_roles(
     role_id TEXT PRIMARY KEY,
-    tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+    tenant_id UUID NOT NULL REFERENCES novaid_tenants(tenant_id),
     name TEXT NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL,
@@ -46,7 +44,7 @@ CREATE TABLE IF NOT EXISTS novaid_roles(
 );
 
 CREATE TABLE IF NOT EXISTS novaid_role_permissions(
-    tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+    tenant_id UUID NOT NULL REFERENCES novaid_tenants(tenant_id),
     role_id TEXT NOT NULL REFERENCES novaid_roles(role_id),
     permission_id TEXT NOT NULL REFERENCES novaid_permissions(permission_id),
     created_at TIMESTAMPTZ NOT NULL,
@@ -54,8 +52,8 @@ CREATE TABLE IF NOT EXISTS novaid_role_permissions(
 );
 
 CREATE TABLE IF NOT EXISTS novaid_membership_roles(
-    tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
-    membership_id TEXT NOT NULL REFERENCES novaid_tenant_memberships(membership_id),
+    tenant_id UUID NOT NULL REFERENCES novaid_tenants(tenant_id),
+    membership_id UUID NOT NULL REFERENCES novaid_tenant_memberships(membership_id),
     role_id TEXT NOT NULL REFERENCES novaid_roles(role_id),
     valid_from TIMESTAMPTZ,
     valid_until TIMESTAMPTZ,
@@ -65,7 +63,7 @@ CREATE TABLE IF NOT EXISTS novaid_membership_roles(
 );
 
 CREATE TABLE IF NOT EXISTS novaid_authorization_policy_versions(
-    tenant_id TEXT NOT NULL REFERENCES novaid_tenants(tenant_id),
+    tenant_id UUID NOT NULL REFERENCES novaid_tenants(tenant_id),
     policy_version TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('DRAFT','ACTIVE','RETIRED')),
     policy_json JSONB NOT NULL,
@@ -83,5 +81,3 @@ CREATE INDEX IF NOT EXISTS ix_novaid_role_permissions_tenant
 INSERT INTO novaid_schema_migrations(revision)
 VALUES ('0010_tenant_authorization.sql')
 ON CONFLICT (revision) DO NOTHING;
-
-COMMIT;

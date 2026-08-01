@@ -8,6 +8,7 @@ from datetime import UTC, datetime, timedelta
 import hashlib
 import hmac
 import json
+import re
 from uuid import uuid4
 
 from .persistence import NovaIDUnitOfWork
@@ -32,14 +33,37 @@ class AccessTokenService:
         uow: NovaIDUnitOfWork,
         revocations: RevocationStore,
         *,
-        signing_key: bytes,
+        signing_key: bytes | None = None,
+        signing_keys: dict[str, bytes] | None = None,
+        active_key_id: str | None = None,
         issuer: str,
         audience: str,
         lifetime_seconds: int = 900,
     ) -> None:
-        if len(signing_key) < 32 or not issuer or not audience or audience == "*":
+        if signing_keys is None:
+            if signing_key is None:
+                raise ValueError("invalid_access_token_configuration")
+            resolved_key_id = active_key_id or "legacy-v1"
+            signing_keys = {resolved_key_id: signing_key}
+            active_key_id = resolved_key_id
+        if (
+            not signing_keys
+            or not active_key_id
+            or active_key_id not in signing_keys
+            or any(
+                not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", key_id)
+                or len(key) < 32
+                for key_id, key in signing_keys.items()
+            )
+            or not issuer
+            or not audience
+            or audience == "*"
+            or not 1 <= lifetime_seconds <= 3600
+        ):
             raise ValueError("invalid_access_token_configuration")
-        self.uow, self.revocations, self.key = uow, revocations, signing_key
+        self.uow, self.revocations = uow, revocations
+        self.signing_keys = dict(signing_keys)
+        self.active_key_id = active_key_id
         self.issuer, self.audience, self.lifetime = issuer, audience, lifetime_seconds
 
     def issue(self, tenant_id: str, session_id: str, membership_id: str) -> str:
@@ -73,23 +97,40 @@ class AccessTokenService:
             "security_version": row["security_version"],
             "token_version": 1,
         }
-        header = {"alg": "HS256", "typ": "JWT"}
+        header = {"alg": "HS256", "typ": "JWT", "kid": self.active_key_id}
         signing = f"{_encode(json.dumps(header, separators=(',', ':')).encode())}.{_encode(json.dumps(payload, separators=(',', ':')).encode())}"
-        signature = hmac.new(self.key, signing.encode(), hashlib.sha256).digest()
+        signature = hmac.new(
+            self.signing_keys[self.active_key_id],
+            signing.encode(),
+            hashlib.sha256,
+        ).digest()
         return f"{signing}.{_encode(signature)}"
 
     def validate(
         self, token: str, *, expected_tenant: str, minimum_strength: str = "PASSWORD_OTP"
     ) -> dict[str, object]:
+        if not isinstance(token, str) or len(token) > 16_384:
+            raise AccessTokenError("INVALID_ACCESS_TOKEN")
         try:
             encoded_header, encoded_payload, signature = token.split(".")
             header = json.loads(_decode(encoded_header))
             payload = json.loads(_decode(encoded_payload))
+            decoded_signature = _decode(signature)
         except Exception as exc:
             raise AccessTokenError("INVALID_ACCESS_TOKEN") from exc
+        if not isinstance(header, dict) or not isinstance(payload, dict):
+            raise AccessTokenError("INVALID_ACCESS_TOKEN")
+        key_id = header.get("kid")
+        key = self.signing_keys.get(key_id) if isinstance(key_id, str) else None
+        if key is None:
+            raise AccessTokenError("INVALID_ACCESS_TOKEN")
         signing = f"{encoded_header}.{encoded_payload}"
-        expected = hmac.new(self.key, signing.encode(), hashlib.sha256).digest()
-        if header.get("alg") != "HS256" or not hmac.compare_digest(expected, _decode(signature)):
+        expected = hmac.new(key, signing.encode(), hashlib.sha256).digest()
+        if (
+            header.get("alg") != "HS256"
+            or header.get("typ") != "JWT"
+            or not hmac.compare_digest(expected, decoded_signature)
+        ):
             raise AccessTokenError("INVALID_ACCESS_TOKEN")
         now = int(datetime.now(UTC).timestamp())
         required = {
@@ -111,6 +152,11 @@ class AccessTokenService:
             not required.issubset(payload)
             or payload["iss"] != self.issuer
             or payload["aud"] != self.audience
+            or not all(
+                isinstance(payload[name], int)
+                for name in ("iat", "nbf", "exp", "security_version", "token_version")
+            )
+            or payload["token_version"] != 1
         ):
             raise AccessTokenError("INVALID_ACCESS_TOKEN")
         if payload["exp"] <= now or payload["nbf"] > now:

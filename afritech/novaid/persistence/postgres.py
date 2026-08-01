@@ -1647,6 +1647,70 @@ class PostgresNovaIdUnitOfWork(AbstractContextManager["PostgresNovaIdUnitOfWork"
         ).fetchone()
         return int(row[0] if row is not None else 0)
 
+    def get_tenant_status(self, tenant_id: str) -> Any | None:
+        return self.identities.get_tenant_status(tenant_id)
+
+    def get_idempotency_record(self, tenant_id: str, key: str) -> Any | None:
+        return self.identities.get_idempotency_record(tenant_id, key)
+
+    def insert_idempotency_record(
+        self,
+        tenant_id: str,
+        key: str,
+        payload_hash: str,
+        response_json: str,
+        *,
+        now: str,
+    ) -> None:
+        self.identities.insert_idempotency_record(
+            tenant_id,
+            key,
+            payload_hash,
+            response_json,
+            now=now,
+        )
+
+    def create_registration_membership(
+        self,
+        membership_id: str,
+        tenant_id: str,
+        identity_id: str,
+        *,
+        now: str,
+    ) -> None:
+        self.identities.create_registration_membership(
+            membership_id,
+            tenant_id,
+            identity_id,
+            now=now,
+        )
+
+    def create_registration_challenge(
+        self,
+        challenge_id: str,
+        tenant_id: str,
+        identity_id: str,
+        purpose: str,
+        destination_reference: str,
+        secret_hash: str,
+        created_at: str,
+        expires_at: str,
+        maximum_attempts: int,
+        correlation_id: str,
+    ) -> None:
+        self.identities.create_registration_challenge(
+            challenge_id,
+            tenant_id,
+            identity_id,
+            purpose,
+            destination_reference,
+            secret_hash,
+            created_at,
+            expires_at,
+            maximum_attempts,
+            correlation_id,
+        )
+
     def lock_idempotency_key(self, tenant_id: str, key: str) -> None:
         self.connection.execute(
             "SELECT pg_advisory_xact_lock(hashtextextended(?,0))",

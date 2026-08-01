@@ -90,3 +90,7 @@ CREATE INDEX IF NOT EXISTS ix_novaid_verification_status
 
 CREATE INDEX IF NOT EXISTS ix_novaid_assurance_level
     ON novaid_identities(tenant_id, assurance_level);
+
+INSERT INTO novaid_schema_migrations(revision)
+VALUES ('0009_canonical_identity_profile.sql')
+ON CONFLICT(revision) DO NOTHING;
